@@ -140,16 +140,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				},
 				cleave = {
 					enabled = true, -- 12
-				},
-				condemn = {
-					enabled = true, -- 13
-				},
-				condemnMinimum = {
-					enabled = true, -- 14
-				},
-				condemnMaximum = {
-					enabled = true, -- 15
-				},
+				}
 			},
 			displayBar = {
 				alwaysShow=false,
@@ -659,36 +650,33 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.executeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_execute", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.executeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Execute/Condemn (if |cFFFF4040Venthyr|r)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute or Condemn (if |cFFFF4040Venthyr|r). Only visible when the current target is in Execute health range or available from a Sudden Death proc. Will move along the bar between the current minimum and maximum Rage cost amounts."
-		f:SetChecked(spec.thresholds.execute.enabled or spec.thresholds.condemn.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Execute")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute. Only visible when the current target is in Execute health range or available from a Sudden Death proc. Will move along the bar between the current minimum and maximum Rage cost amounts."
+		f:SetChecked(spec.thresholds.execute.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.execute.enabled = self:GetChecked()
-			spec.thresholds.condemn.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
 		controls.checkBoxes.executeMinimumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_executeMinimum", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.executeMinimumThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Execute/Condemn (if |cFFFF4040Venthyr|r) (minimum)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute or Condemn (if |cFFFF4040Venthyr|r) at its minimum Rage cost. Only visible when the current target is in Execute health range or available from a Sudden Death proc."
-		f:SetChecked(spec.thresholds.executeMinimum.enabled or spec.thresholds.condemnMinimum.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Execute (minimum)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute at its minimum Rage cost. Only visible when the current target is in Execute health range or available from a Sudden Death proc."
+		f:SetChecked(spec.thresholds.executeMinimum.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.executeMinimum.enabled = self:GetChecked()
-			spec.thresholds.condemnMinimum.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
 		controls.checkBoxes.executeMaximumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_executeMaximum", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.executeMaximumThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Execute/Condemn (if |cFFFF4040Venthyr|r) (maximum)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute or Condemn (if |cFFFF4040Venthyr|r) at its maximum Rage cost. Only visible when the current target is in Execute health range or available from a Sudden Death proc."
-		f:SetChecked(spec.thresholds.executeMaximum.enabled or spec.thresholds.condemnMaximum.enabled)
+		getglobal(f:GetName() .. 'Text'):SetText("Execute (maximum)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute at its maximum Rage cost. Only visible when the current target is in Execute health range or available from a Sudden Death proc."
+		f:SetChecked(spec.thresholds.executeMaximum.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.executeMaximum.enabled = self:GetChecked()
-			spec.thresholds.condemnMaximum.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -1039,7 +1027,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f = controls.checkBoxes.suddenDeathAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Sudden Death proc (if talented)")
-		f.tooltip = "Play an audio cue when you get a Sudden Death proc that allows you to use Execute/Condemn for 0 Rage and above normal execute range enemy health."
+		f.tooltip = "Play an audio cue when you get a Sudden Death proc that allows you to use Execute for 0 Rage and above normal execute range enemy health."
 		f:SetChecked(spec.audio.suddenDeath.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.suddenDeath.enabled = self:GetChecked()

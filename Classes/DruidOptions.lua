@@ -2312,7 +2312,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f = controls.checkBoxes.apcAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when an Apex Predator's Craving proc occurs")
-		f.tooltip = "Play an audio cue when an Apex Predator's Craving (legendary) proc occurs, allowing a max damage Ferocious Bite to be cast without spending any Energy or Combo Points."
+		f.tooltip = "Play an audio cue when an Apex Predator's Craving proc occurs, allowing a max damage Ferocious Bite to be cast without spending any Energy or Combo Points."
 		f:SetChecked(spec.audio.apexPredatorsCraving.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.apexPredatorsCraving.enabled = self:GetChecked()

@@ -132,28 +132,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				holyWordSanctifyEnabled=true,
 				holyWordSerenityEnabled=true
 			},
-			wrathfulFaerie={
-				mode="time",
-				procsMax=4,
-				gcdsMax=2,
-				timeMax=90.0,
-				procDelay=0.15,
-				enabled=true
-			},
 			endOfApotheosis = {
 				enabled=true,
 				mode="gcd",
 				gcdsMax=2,
 				timeMax=3.0
-			},
-			flashConcentration = {
-				enabled=true,
-				enabledUncapped=false,
-				enabledOutOfCombat=true,
-				enabledUncappedOutOfCombat=false,
-				mode="gcd",
-				gcdsMax=3.5,
-				timeMax=5.0
 			},
 			passiveGeneration = {
 				innervate = true,
@@ -187,7 +170,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					holyWordSerenity="FF00FF00",
 					surgeOfLight1="FFFCE58E",
 					surgeOfLight2="FFAF9942",
-					flashConcentration="FFFF0000",
 					--casting="FF555555",
 					spending="FFFFFFFF",
 					passive="FF8080FF",
@@ -220,12 +202,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				},
 				surgeOfLight2={
 					name = "Innervate (2 stacks)",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},
-				flashConcentration={
-					name = "Flash Concentration",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -301,7 +277,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				fontSize = 13
 			},
 			right = {
-				text="{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$wfInsanity}[#wf$wfInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$damInsanity}[#dam$damInsanity+]$insanity",
+				text="{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$damInsanity}[#dam$damInsanity+]$insanity",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 22
@@ -393,14 +369,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					enabled=false,
 					thresholdStacks=10
 				}
-			},
-			wrathfulFaerie={
-				mode="gcd",
-				procsMax=4,
-				gcdsMax=2,
-				timeMax=3.0,
-				procDelay=0.15,
-				enabled=true
 			},
 			endOfVoidform = {
 				enabled=true,
@@ -721,7 +689,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, Wrathful Faerie procs, etc)", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
@@ -754,12 +722,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.colors.surgeOfLight2
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "surgeOfLight2")
-		end)
-
-		controls.colors.flashConcentration = TRB.UiFunctions:BuildColorPicker(parent, "Border when Flash Concentration is expiring or not up (per settings)", spec.colors.bar.flashConcentration, 300, 25, oUi.xCoord2, yCoord-120)
-		f = controls.colors.flashConcentration
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "flashConcentration")
 		end)
 
 
@@ -870,115 +832,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			value = TRB.Functions.RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.endOfApotheosis.timeMax = value
-		end)
-
-
-		yCoord = yCoord - 30
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Flash Concentration Expiration Configuration", 0, yCoord)
-
-
-		--NOTE: the order of these checkboxes is reversed!
-		yCoord = yCoord - 30
-		controls.checkBoxes.flashConcentrationOOC = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_flashConcentrationOOC_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashConcentrationOOC
-		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
-		getglobal(f:GetName() .. 'Text'):SetText("Also change bar border color for expiration when out of combat?")
-		f.tooltip = "Changes the bar's border color for Flash Concentration when your buff will expire when both in and out of combat."
-		f:SetChecked(spec.flashConcentration.enabledOutOfCombat)
-		f:SetScript("OnClick", function(self, ...)
-			spec.flashConcentration.enabledOutOfCombat = self:GetChecked()
-		end)
-
-		controls.checkBoxes.flashConcentration = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_flashConcentration_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashConcentration
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar border when your Flash Concentration buff is close to expiring (if equipped)")
-		f.tooltip = "Changes the bar border color when your Flash Concentration buff is expiring in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(spec.flashConcentration.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.flashConcentration.enabled = self:GetChecked()
-
-			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.flashConcentrationOOC, spec.flashConcentration.enabled)
-		end)
-
-		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.flashConcentrationOOC, spec.flashConcentration.enabled)
-
-
-		--NOTE: the order of these checkboxes is reversed!
-		yCoord = yCoord - 40
-		controls.checkBoxes.flashConcentrationUncappedOOC = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_flashConcentrationUncappedOOC_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashConcentrationUncappedOOC
-		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
-		getglobal(f:GetName() .. 'Text'):SetText("Also change bar border color for < 5 stacks when out of combat?")
-		f.tooltip = "Changes the bar's border color for Flash Concentration when you do not have max stacks when both in and out of combat."
-		f:SetChecked(spec.flashConcentration.enabledUncappedOutOfCombat)
-		f:SetScript("OnClick", function(self, ...)
-			spec.flashConcentration.enabledUncappedOutOfCombat = self:GetChecked()
-		end)
-
-		controls.checkBoxes.flashConcentrationUncapped = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_flashConcentrationUncapped_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashConcentrationUncapped
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar border when your Flash Concentration buff has < 5 stacks (if equipped)")
-		f.tooltip = "Changes the bar border color when your Flash Concentration buff has fewer than 5 (max) stacks."
-		f:SetChecked(spec.flashConcentration.enabledUncapped)
-		f:SetScript("OnClick", function(self, ...)
-			spec.flashConcentration.enabledUncapped = self:GetChecked()
-
-			TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.flashConcentrationUncappedOOC, spec.flashConcentration.enabledUncapped)
-		end)
-
-		TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.flashConcentrationUncappedOOC, spec.flashConcentration.enabledUncapped)
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.flashConcentrationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_flashConcentration_M_GCD", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.flashConcentrationModeGCDs
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs left on Flash Concentration buff")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar border color based on how many GCDs remain until Flash Concentration will end."
-		if spec.flashConcentration.mode == "gcd" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.flashConcentrationModeGCDs:SetChecked(true)
-			controls.checkBoxes.flashConcentrationModeTime:SetChecked(false)
-			spec.flashConcentration.mode = "gcd"
-		end)
-
-		title = "Flash Concentration GCDs - 0.75sec Floor"
-		controls.flashConcentrationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 30, spec.flashConcentration.gcdsMax, 0.25, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.flashConcentrationGCDs:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			spec.flashConcentration.gcdsMax = value
-		end)
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.flashConcentrationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_flashConcentration_M_TIME", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.flashConcentrationModeTime
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time left on Flash Concentration buff")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar border color based on how many seconds remain until Flash Concentration will end."
-		if spec.flashConcentration.mode == "time" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.flashConcentrationModeGCDs:SetChecked(false)
-			controls.checkBoxes.flashConcentrationModeTime:SetChecked(true)
-			spec.flashConcentration.mode = "time"
-		end)
-
-		title = "Flash Concentration Time Remaining"
-		controls.flashConcentrationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 20, spec.flashConcentration.timeMax, 0.25, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.flashConcentrationTime:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			spec.flashConcentration.timeMax = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -1299,73 +1152,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.flashConcentrationAudioCB = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_FlashConcentration", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashConcentrationAudioCB
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Flash Concentration is going to expire, based on settings")
-		f.tooltip = "Play audio cue when your Flash Concentration buff is close to expiring. This uses the configuration from the Bar Settings menu for border color change even if that feature is disabled."
-		f:SetChecked(spec.audio.flashConcentration.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.audio.flashConcentration.enabled = self:GetChecked()
-
-			if spec.audio.flashConcentration.enabled then
----@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(spec.audio.flashConcentration.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.flashConcentrationAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Holy_flashConcentrationAudio", parent)
-		controls.dropDown.flashConcentrationAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.flashConcentrationAudio, oUi.sliderWidth)
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.flashConcentrationAudio, spec.audio.flashConcentration.soundName)
-		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.flashConcentrationAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		LibDD:UIDropDownMenu_Initialize(controls.dropDown.flashConcentrationAudio, function(self, level, menuList)
-			local entries = 25
-			local info = LibDD:UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					LibDD:UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == spec.audio.flashConcentration.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						LibDD:UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.flashConcentrationAudio:SetValue(newValue, newName)
-			spec.audio.flashConcentration.sound = newValue
-			spec.audio.flashConcentration.soundName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.flashConcentrationAudio, newName)
-			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(spec.audio.flashConcentration.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-
 		
 		yCoord = yCoord - 60
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Passive External Mana Generation Tracking", 0, yCoord)
@@ -1402,110 +1188,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnClick", function(self, ...)
 			spec.passiveGeneration.symbolOfHope = self:GetChecked()
 		end)
-
-		yCoord = yCoord - 30
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Wrathful Faerie Tracking", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.wrathfulFaerie = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_WrathfulFaerieTracking_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.wrathfulFaerie
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Track Wrathful Faerie and Fae Fermata Mana Gain")
-		f.tooltip = "Show the gain of mana over the next serveral procs, GCDs, or fixed length of time. Select which to track from the options below."
-		f:SetChecked(spec.wrathfulFaerie.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.wrathfulFaerie.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 40
-		title = "Proc Delay after ICD Reset"
-		controls.wrathfulFaerieGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 0.75, spec.wrathfulFaerie.procDelay, 0.05, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.wrathfulFaerieGCDs:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			spec.wrathfulFaerie.procDelay = value
-		end)
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.wrathfulFaerieModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_WrathfulFaerieTracking_1", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.wrathfulFaerieModeGCDs
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mana from GCDs remaining")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Mana incoming over the up to next X GCDs, based on player's current GCD."
-		if spec.wrathfulFaerie.mode == "gcd" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.wrathfulFaerieModeGCDs:SetChecked(true)
-			controls.checkBoxes.wrathfulFaerieModeProcs:SetChecked(false)
-			controls.checkBoxes.wrathfulFaerieModeTime:SetChecked(false)
-			spec.wrathfulFaerie.mode = "gcd"
-		end)
-
-		title = "GCDs - 0.75sec Floor"
-		controls.wrathfulFaerieGCDs = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.wrathfulFaerie.gcdsMax, 1, 0,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.wrathfulFaerieGCDs:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			spec.wrathfulFaerie.gcdsMax = value
-		end)
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.wrathfulFaerieModeProcs = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_WrathfulFaerieTracking_2", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.wrathfulFaerieModeProcs
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mana from Procs remaining")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Mana incoming over the up to next X procs from Wrathful Faerie/Fae Fermata."
-		if spec.wrathfulFaerie.mode == "procs" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.wrathfulFaerieModeGCDs:SetChecked(false)
-			controls.checkBoxes.wrathfulFaerieModeProcs:SetChecked(true)
-			controls.checkBoxes.wrathfulFaerieModeTime:SetChecked(false)
-			spec.wrathfulFaerie.mode = "procs"
-		end)
-
-		title = "Wrathful Faerie Procs - No Floor"
-		controls.wrathfulFaerieProcs = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.wrathfulFaerie.procsMax, 1, 0,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.wrathfulFaerieProcs:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			spec.wrathfulFaerie.procsMax = value
-		end)
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.wrathfulFaerieModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_WrathfulFaerieTracking_3", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.wrathfulFaerieModeTime
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mana from Time remaining")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Mana incoming over the up to next X seconds."
-		if spec.wrathfulFaerie.mode == "time" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.wrathfulFaerieModeGCDs:SetChecked(false)
-			controls.checkBoxes.wrathfulFaerieModeProcs:SetChecked(false)
-			controls.checkBoxes.wrathfulFaerieModeTime:SetChecked(true)
-			spec.wrathfulFaerie.mode = "time"
-		end)
-
-		title = "Wrathful Faerie Time Remaining (sec)"
-		controls.wrathfulFaerieTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 90, spec.wrathfulFaerie.timeMax, 0.25, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.wrathfulFaerieTime:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			spec.wrathfulFaerie.timeMax = value
-		end)
-
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.holy = controls
@@ -1876,7 +1558,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Insanity from Auspicious Spirits, Shadowfiend/Mindbender swings, Death and Madness ticks, Lash of Insanity ticks, and Wrathful Faerie procs.", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Insanity from Auspicious Spirits, Shadowfiend/Mindbender swings, Death and Madness ticks, and Lash of Insanity ticks.", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
@@ -2595,111 +2277,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			self.EditBox:SetText(value)
 			spec.mindbender.timeMax = value
 		end)
-
-
-		yCoord = yCoord - 30
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Wrathful Faerie Tracking", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.wrathfulFaerie = CreateFrame("CheckButton", "TRB_WrathfulFaerieTracking_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.wrathfulFaerie
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Track Wrathful Faerie and Fae Fermata Insanity Gain")
-		f.tooltip = "Show the gain of Insanity over the next serveral procs, GCDs, or fixed length of time. Select which to track from the options below."
-		f:SetChecked(spec.wrathfulFaerie.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.wrathfulFaerie.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 40
-		title = "Proc Delay after ICD Reset"
-		controls.wrathfulFaerieGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 0.75, spec.wrathfulFaerie.procDelay, 0.05, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.wrathfulFaerieGCDs:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			spec.wrathfulFaerie.procDelay = value
-		end)
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.wrathfulFaerieModeGCDs = CreateFrame("CheckButton", "TRB_WrathfulFaerieTracking_1", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.wrathfulFaerieModeGCDs
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Insanity from GCDs remaining")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Insanity incoming over the up to next X GCDs, based on player's current GCD."
-		if spec.wrathfulFaerie.mode == "gcd" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.wrathfulFaerieModeGCDs:SetChecked(true)
-			controls.checkBoxes.wrathfulFaerieModeProcs:SetChecked(false)
-			controls.checkBoxes.wrathfulFaerieModeTime:SetChecked(false)
-			spec.wrathfulFaerie.mode = "gcd"
-		end)
-
-		title = "GCDs - 0.75sec Floor"
-		controls.wrathfulFaerieGCDs = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.wrathfulFaerie.gcdsMax, 1, 0,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.wrathfulFaerieGCDs:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			spec.wrathfulFaerie.gcdsMax = value
-		end)
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.wrathfulFaerieModeProcs = CreateFrame("CheckButton", "TRB_WrathfulFaerieTracking_2", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.wrathfulFaerieModeProcs
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Insanity from Procs remaining")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Insanity incoming over the up to next X procs from Wrathful Faerie/Fae Fermata."
-		if spec.wrathfulFaerie.mode == "procs" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.wrathfulFaerieModeGCDs:SetChecked(false)
-			controls.checkBoxes.wrathfulFaerieModeProcs:SetChecked(true)
-			controls.checkBoxes.wrathfulFaerieModeTime:SetChecked(false)
-			spec.wrathfulFaerie.mode = "procs"
-		end)
-
-		title = "Wrathful Faerie Procs - No Floor"
-		controls.wrathfulFaerieProcs = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.wrathfulFaerie.procsMax, 1, 0,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.wrathfulFaerieProcs:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			spec.wrathfulFaerie.procsMax = value
-		end)
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.wrathfulFaerieModeTime = CreateFrame("CheckButton", "TRB_WrathfulFaerieTracking_3", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.wrathfulFaerieModeTime
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Insanity from Time remaining")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Insanity incoming over the up to next X seconds."
-		if spec.wrathfulFaerie.mode == "time" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.wrathfulFaerieModeGCDs:SetChecked(false)
-			controls.checkBoxes.wrathfulFaerieModeProcs:SetChecked(false)
-			controls.checkBoxes.wrathfulFaerieModeTime:SetChecked(true)
-			spec.wrathfulFaerie.mode = "time"
-		end)
-
-		title = "Wrathful Faerie Time Remaining (sec)"
-		controls.wrathfulFaerieTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 20, spec.wrathfulFaerie.timeMax, 0.25, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.wrathfulFaerieTime:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			spec.wrathfulFaerie.timeMax = value
-		end)
-
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.shadow = controls

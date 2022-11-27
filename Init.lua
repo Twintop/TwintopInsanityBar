@@ -181,12 +181,6 @@ TRB.Data = {}
 
 TRB.Data.constants = {
 	borderWidthFactor = 4,
-	sanctumOfDominationZoneId = 1998, --zoneGroupId = "g426"
-	overgrowthSeedling = {
-		id = 347934,
-		resourceModifier = 0.7
-	},
-	rampagingId = 352263,
 	defaultSettings = {
 		fonts = {
 			fontFace = "Fonts\\FRIZQT__.TTF",

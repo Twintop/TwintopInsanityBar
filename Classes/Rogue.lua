@@ -75,18 +75,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			maxResource = 100,
             maxResource2 = 5,
 			effects = {
-				overgrowthSeedling = 1.0,
-				nimbleFingersReduction = 0,
-				rushedSetupModifier = 0
-			},
-			items = {
-				tinyToxicBlade = false
-			},
-			torghast = {
-				rampaging = {
-					spellCostModifier = 1.0,
-					coolDownReduction = 1.0
-				}
 			}
 		}
 
@@ -245,7 +233,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				isSnowflake = true,
                 cooldown = 25,
 				thresholdUsable = false,
-				idLegendaryBonus = 7112,
 				isTalent = true,
 				baseline = true
 			},
@@ -574,22 +561,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				cooldown = 45
 			},
 
-			-- Conduits
-			nimbleFingersConduit = {
-				id = 341311,
-				name = "",
-				icon = "",
-				conduitId = 230,
-				conduitRanks = {}
-			},
-			rushedSetupConduit = {
-				id = 341534,
-				name = "",
-				icon = "",
-				conduitId = 235,
-				conduitRanks = {}
-			},
-
 			adrenalineRush = {
 				id = 13750,
 				name = "",
@@ -746,16 +717,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			maxResource = 100,
             maxResource2 = 5,
 			effects = {
-				overgrowthSeedling = 1.0
-			},
-			items = {
-				tinyToxicBlade = false
-			},
-			torghast = {
-				rampaging = {
-					spellCostModifier = 1.0,
-					coolDownReduction = 1.0
-				}
 			}
 		}
 
@@ -902,7 +863,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				isSnowflake = true,
                 cooldown = 25,
 				thresholdUsable = false,
-				idLegendaryBonus = 7112,
 				isTalent = true,
 				baseline = true
 			},
@@ -1264,28 +1224,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdUsable = false,
 				cooldown = 45
 			},
-
-			-- Conduits
-			nimbleFingersConduit = {
-				id = 341311,
-				name = "",
-				icon = "",
-				conduitId = 230,
-				conduitRanks = {}
-			},
-			rushedSetupConduit = {
-				id = 341534,
-				name = "",
-				icon = "",
-				conduitId = 235,
-				conduitRanks = {}
-			},
-			countTheOddsConduit = {
-				id = 341546,
-				name = "",
-				icon = "",
-				duration = 5
-			},
 		}
 
 		specCache.outlaw.snapshotData.energyRegen = 0
@@ -1462,41 +1400,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		Setup_Assassination()
 		local spells = TRB.Functions.FillSpellData(specCache.assassination.spells)
 		
-		-- Conduit Ranks
-		spells.nimbleFingersConduit.conduitRanks[0] = 0
-		spells.nimbleFingersConduit.conduitRanks[1] = 5
-		spells.nimbleFingersConduit.conduitRanks[2] = 6
-		spells.nimbleFingersConduit.conduitRanks[3] = 7
-		spells.nimbleFingersConduit.conduitRanks[4] = 8
-		spells.nimbleFingersConduit.conduitRanks[5] = 9
-		spells.nimbleFingersConduit.conduitRanks[6] = 10
-		spells.nimbleFingersConduit.conduitRanks[7] = 11
-		spells.nimbleFingersConduit.conduitRanks[8] = 12
-		spells.nimbleFingersConduit.conduitRanks[9] = 13
-		spells.nimbleFingersConduit.conduitRanks[10] = 14
-		spells.nimbleFingersConduit.conduitRanks[11] = 15
-		spells.nimbleFingersConduit.conduitRanks[12] = 16
-		spells.nimbleFingersConduit.conduitRanks[13] = 17
-		spells.nimbleFingersConduit.conduitRanks[14] = 18
-		spells.nimbleFingersConduit.conduitRanks[15] = 19
-
-		spells.rushedSetupConduit.conduitRanks[0] = 0
-		spells.rushedSetupConduit.conduitRanks[1] = 0.2
-		spells.rushedSetupConduit.conduitRanks[2] = 0.22
-		spells.rushedSetupConduit.conduitRanks[3] = 0.24
-		spells.rushedSetupConduit.conduitRanks[4] = 0.26
-		spells.rushedSetupConduit.conduitRanks[5] = 0.28
-		spells.rushedSetupConduit.conduitRanks[6] = 0.3
-		spells.rushedSetupConduit.conduitRanks[7] = 0.32
-		spells.rushedSetupConduit.conduitRanks[8] = 0.34
-		spells.rushedSetupConduit.conduitRanks[9] = 0.36
-		spells.rushedSetupConduit.conduitRanks[10] = 0.38
-		spells.rushedSetupConduit.conduitRanks[11] = 0.4
-		spells.rushedSetupConduit.conduitRanks[12] = 0.42
-		spells.rushedSetupConduit.conduitRanks[13] = 0.44
-		spells.rushedSetupConduit.conduitRanks[14] = 0.46
-		spells.rushedSetupConduit.conduitRanks[15] = 0.48
-
 		-- This is done here so that we can get icons for the options menu!
 		specCache.assassination.barTextVariables.icons = {
 			{ variable = "#casting", icon = "", description = "The icon of the Energy generating spell you are currently hardcasting", printInSettings = true },
@@ -1590,8 +1493,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$ruptureCount", description = "Number of Rupture bleeds active on targets", printInSettings = true, color = false },
 			{ variable = "$ruptureTime", description = "Time remaining on Rupture on your current target", printInSettings = true, color = false },
 		
-			{ variable = "$sbsCount", description = "Number of Serrated Bone Spike bleeds active on targets (if |cFF40BF40Necrolord|r)", printInSettings = true, color = false },
-			{ variable = "$serratedBoneSpikeCount", description = "Number of Serrated Bone Spike bleeds active on targets (if |cFF40BF40Necrolord|r)", printInSettings = false, color = false },
+			{ variable = "$sbsCount", description = "Number of Serrated Bone Spike bleeds active on targets", printInSettings = true, color = false },
+			{ variable = "$serratedBoneSpikeCount", description = "Number of Serrated Bone Spike bleeds active on targets", printInSettings = false, color = false },
 
 			-- Poisons
 			
@@ -1635,41 +1538,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	local function FillSpellData_Outlaw()
 		Setup_Outlaw()
 		local spells = TRB.Functions.FillSpellData(specCache.outlaw.spells)
-
-		-- Conduit Ranks
-		spells.nimbleFingersConduit.conduitRanks[0] = 0
-		spells.nimbleFingersConduit.conduitRanks[1] = 5
-		spells.nimbleFingersConduit.conduitRanks[2] = 6
-		spells.nimbleFingersConduit.conduitRanks[3] = 7
-		spells.nimbleFingersConduit.conduitRanks[4] = 8
-		spells.nimbleFingersConduit.conduitRanks[5] = 9
-		spells.nimbleFingersConduit.conduitRanks[6] = 10
-		spells.nimbleFingersConduit.conduitRanks[7] = 11
-		spells.nimbleFingersConduit.conduitRanks[8] = 12
-		spells.nimbleFingersConduit.conduitRanks[9] = 13
-		spells.nimbleFingersConduit.conduitRanks[10] = 14
-		spells.nimbleFingersConduit.conduitRanks[11] = 15
-		spells.nimbleFingersConduit.conduitRanks[12] = 16
-		spells.nimbleFingersConduit.conduitRanks[13] = 17
-		spells.nimbleFingersConduit.conduitRanks[14] = 18
-		spells.nimbleFingersConduit.conduitRanks[15] = 19
-
-		spells.rushedSetupConduit.conduitRanks[0] = 0
-		spells.rushedSetupConduit.conduitRanks[1] = 0.2
-		spells.rushedSetupConduit.conduitRanks[2] = 0.22
-		spells.rushedSetupConduit.conduitRanks[3] = 0.24
-		spells.rushedSetupConduit.conduitRanks[4] = 0.26
-		spells.rushedSetupConduit.conduitRanks[5] = 0.28
-		spells.rushedSetupConduit.conduitRanks[6] = 0.3
-		spells.rushedSetupConduit.conduitRanks[7] = 0.32
-		spells.rushedSetupConduit.conduitRanks[8] = 0.34
-		spells.rushedSetupConduit.conduitRanks[9] = 0.36
-		spells.rushedSetupConduit.conduitRanks[10] = 0.38
-		spells.rushedSetupConduit.conduitRanks[11] = 0.4
-		spells.rushedSetupConduit.conduitRanks[12] = 0.42
-		spells.rushedSetupConduit.conduitRanks[13] = 0.44
-		spells.rushedSetupConduit.conduitRanks[14] = 0.46
-		spells.rushedSetupConduit.conduitRanks[15] = 0.48
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.outlaw.barTextVariables.icons = {
@@ -1818,22 +1686,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end
         
         if settings ~= nil then
-			-- Legendaries
-			local waistItemLink = GetInventoryItemLink("player", 6)
-			local feetItemLink = GetInventoryItemLink("player", 8)
-
-			local tinyToxicBlade = false
-			if waistItemLink ~= nil then
-				tinyToxicBlade = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(waistItemLink, 172320, TRB.Data.spells.shiv.idLegendaryBonus)
-			end
-
-			if tinyToxicBlade == false and waistItemLink ~= nil then
-				tinyToxicBlade = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(feetItemLink, 173244, TRB.Data.spells.shiv.idLegendaryBonus)
-			end
-			TRB.Data.character.items.tinyToxicBlade = tinyToxicBlade
-
-			TRB.Data.character.effects.nimbleFingersConduitReduction = TRB.Data.spells.nimbleFingersConduit.conduitRanks[TRB.Functions.GetSoulbindEquippedConduitRank(TRB.Data.spells.nimbleFingersConduit.conduitId)]
-			TRB.Data.character.effects.rushedSetupConduitModifier = 1 - TRB.Data.spells.rushedSetupConduit.conduitRanks[TRB.Functions.GetSoulbindEquippedConduitRank(TRB.Data.spells.rushedSetupConduit.conduitId)]
 			TRB.Data.character.isPvp = TRB.Functions.ArePvpTalentsActive()
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
@@ -1918,15 +1770,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
         local modifier = 1.0
 
 		-- TODO: validate how Nimble Fingers reduces energy costs. Is it before or after percentage modifiers? Assuming before for now
-		if nimbleFingers == true then
-			resource = resource + TRB.Data.character.effects.nimbleFingersConduitReduction
+		if nimbleFingers == true and TRB.Functions.IsTalentActive(TRB.Data.spells.nimbleFingers) then
+			resource = resource + TRB.Data.spells.nimbleFingers.energyMod
 		end
 
-		if rushedSetup == true then
-			modifier = modifier * TRB.Data.character.effects.rushedSetupConduitModifier
+		if rushedSetup == true and TRB.Functions.IsTalentActive(TRB.Data.spells.rushedSetup) then
+			modifier = modifier * TRB.Data.spells.rushedSetup.energyMod
 		end
-
-		modifier = modifier * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
 
         return resource * modifier
     end
@@ -3662,7 +3512,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							local energyAmount = CalculateAbilityResourceValue(spell.energy, true, spell.nimbleFingersConduit, spell.rushedSetupConduit)
+							local energyAmount = CalculateAbilityResourceValue(spell.energy, true, spell.nimbleFingers, spell.rushedSetup)
 							TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.assassination, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.rogue.assassination.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
@@ -3710,7 +3560,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 									elseif spell.id == TRB.Data.spells.shiv.id then
 										if not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 											showThreshold = false
-										elseif TRB.Data.character.items.tinyToxicBlade == true or TRB.Functions.IsTalentActive(TRB.Data.spells.tinyToxicBlade) then -- Don't show this threshold
+										elseif TRB.Functions.IsTalentActive(TRB.Data.spells.tinyToxicBlade) then -- Don't show this threshold
 											showThreshold = false
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
@@ -3975,7 +3825,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then	
-							local energyAmount = CalculateAbilityResourceValue(spell.energy, true, spell.nimbleFingersConduit, spell.rushedSetupConduit)
+							local energyAmount = CalculateAbilityResourceValue(spell.energy, true, spell.nimbleFingers, spell.rushedSetup)
 							TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.outlaw, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.rogue.outlaw.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
@@ -3987,9 +3837,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							else
 								if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 									if spell.id == TRB.Data.spells.shiv.id then
-										if TRB.Data.character.items.tinyToxicBlade == true then -- Don't show this threshold
-											showThreshold = false
-										elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.unusable
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then

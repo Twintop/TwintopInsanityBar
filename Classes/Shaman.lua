@@ -80,16 +80,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			earthShockThreshold = 60,
 			earthquakeThreshold = 60,
 			effects = {
-				overgrowthSeedling = 1.0
 			},
 			items = {
-			},
-			torghast = {
-				rampaging = {
-					spellCostModifier = 1.0,
-					coolDownReduction = 1.0
-				},
-				depletedTeslaCoil = false
 			}
 		}
 
@@ -298,21 +290,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			},
 
 			--TODO: Add Searing Flames passive maelstrom
-
-			-- Legendaries
-			echoesOfGreatSunderingLegendary = {
-				id = 336217,
-				name = "",
-				icon = ""
-			},
-
-			-- Torghast
-			depletedTeslaCoil = {
-				id = 350248,
-				name = "",
-				icon = "",
-				duration = 25
-			}
 		}
 		
 		specCache.elemental.snapshotData.audio = {
@@ -347,11 +324,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			duration = 0,
 			endTime = nil
 		}
-		specCache.elemental.snapshotData.echoesOfGreatSunderingLegendary = {
-			isActive = false,
-			duration = 0,
-			endTime = nil
-		}
 		specCache.elemental.snapshotData.targetData = {
 			ttdIsActive = false,
 			currentTargetGuid = nil,
@@ -380,9 +352,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,
 			effects = {
-				overgrowthSeedlingModifier = 1
-			},
-			talents = {
 			},
 			items = {
 				potions = {
@@ -404,12 +373,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					}
 				},
 				alchemyStone = false
-			},
-			torghast = {
-				rampaging = {
-					spellCostModifier = 1.0,
-					coolDownReduction = 1.0
-				}
 			}
 		}
 
@@ -448,10 +411,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				duration = 10,
 				isActive = false
 			},
-
-			-- Covenant
-
-			-- Conduit
 
 			-- Potions
 			potionOfSpiritualClarity = {
@@ -508,8 +467,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					175943
 				}
 			}
-
-			-- Torghast
 		}
 
 		specCache.restoration.snapshotData.manaRegen = 0
@@ -598,7 +555,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "#ascendance", icon = spells.ascendance.icon, description = spells.ascendance.name, printInSettings = true },
 			{ variable = "#chainLightning", icon = spells.chainLightning.icon, description = spells.chainLightning.name, printInSettings = true },
 			{ variable = "#elementalBlast", icon = spells.elementalBlast.icon, description = spells.elementalBlast.name, printInSettings = true },
-			{ variable = "#eogs", icon = spells.echoesOfGreatSunderingLegendary.icon, description = spells.echoesOfGreatSunderingLegendary.name, printInSettings = true },
+			{ variable = "#eogs", icon = spells.echoesOfGreatSundering.icon, description = spells.echoesOfGreatSundering.name, printInSettings = true },
 			{ variable = "#flameShock", icon = spells.flameShock.icon, description = spells.flameShock.name, printInSettings = true },
 			{ variable = "#frostShock", icon = spells.frostShock.icon, description = spells.frostShock.name, printInSettings = true },
 			{ variable = "#icefury", icon = spells.icefury.icon, description = spells.icefury.name, printInSettings = true },
@@ -637,11 +594,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
-
-			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$maelstrom", description = "Current Maelstrom", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Maelstrom", printInSettings = false, color = false },
@@ -729,11 +681,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
-
 			{ variable = "$mana", description = "Current Mana", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },
 			{ variable = "$manaPercent", description = "Current Mana Percentage", printInSettings = true, color = false },
@@ -816,25 +763,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			else
 				resourceFrame.thresholds[2]:Hide()
 			end
-
-			-- Torghast
-			if IsInJailersTower() then			
-				if TRB.Functions.FindAuraById(TRB.Data.spells.depletedTeslaCoil.id, "player", "MAW") then
-					TRB.Data.character.torghast.depletedTeslaCoil = true
-				else
-					TRB.Data.character.torghast.depletedTeslaCoil = false
-				end
-			else -- Elsewhere
-				TRB.Data.character.torghast.depletedTeslaCoil = false
-			end
 		elseif specId == 3 then
 			TRB.Data.character.specName = "restoration"
 ---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
 			TRB.Functions.FillSpellDataManaCost(TRB.Data.spells)
 
-
-			-- Legendaries
 			local trinket1ItemLink = GetInventoryItemLink("player", 13)
 			local trinket2ItemLink = GetInventoryItemLink("player", 14)
 			
@@ -861,7 +795,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 
 			TRB.Data.character.items.alchemyStone = alchemyStone
-			-- Torghast
 		end
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
@@ -1052,11 +985,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function GetechoesOfGreatSunderingRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.echoesOfGreatSundering)
 	end
-	
-	local function GetechoesOfGreatSunderingLegendaryRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.echoesOfGreatSunderingLegendary)
-	end
-	
+		
 	local function GetIcefuryRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.icefury)
 	end
@@ -1157,7 +1086,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					valid = true
 				end
 			elseif var == "$eogsTime" then
-				if GetechoesOfGreatSunderingRemainingTime() > 0 or GetechoesOfGreatSunderingLegendaryRemainingTime() > 0 then
+				if GetechoesOfGreatSunderingRemainingTime() > 0 then
 					valid = true
 				end
 			end
@@ -1348,10 +1277,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		--$eogsTime
 		local _eogsTime = GetechoesOfGreatSunderingRemainingTime()
 
-		if _eogsTime == 0 then
-			_eogsTime = GetechoesOfGreatSunderingLegendaryRemainingTime()
-		end
-
 		local eogsTime = "0.0"
 		if _eogsTime > 0 then
 			eogsTime = string.format("%.1f", _eogsTime)
@@ -1376,7 +1301,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["#ascendance"] = TRB.Data.spells.ascendance.icon
 		lookup["#chainLightning"] = TRB.Data.spells.chainLightning.icon
 		lookup["#elementalBlast"] = TRB.Data.spells.elementalBlast.icon
-		lookup["#eogs"] = TRB.Data.spells.echoesOfGreatSunderingLegendary.icon
+		lookup["#eogs"] = TRB.Data.spells.echoesOfGreatSundering.icon
 		lookup["#flameShock"] = TRB.Data.spells.flameShock.icon
 		lookup["#frostShock"] = TRB.Data.spells.frostShock.icon
 		lookup["#icefury"] = TRB.Data.spells.icefury.icon
@@ -1740,7 +1665,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 					if spellId then
-						local manaCost = -TRB.Functions.GetSpellManaCost(spellId) * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
+						local manaCost = -TRB.Functions.GetSpellManaCost(spellId)
 
 						TRB.Data.snapshotData.casting.startTime = currentSpellStartTime / 1000
 						TRB.Data.snapshotData.casting.endTime = currentSpellEndTime / 1000
@@ -1871,15 +1796,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local currentTime = GetTime()
 		UpdateIcefury()
-
-		if IsInJailersTower() then
-			TRB.Data.character.torghast.rampaging.spellCostModifier = 1
-			-- Doesn't change ability costs for Maelstrom abilities.
-			_, TRB.Data.character.torghast.rampaging.coolDownReduction = TRB.Functions.GetRampagingBuff()
-		else
-			TRB.Data.character.torghast.rampaging.spellCostModifier = 1
-			TRB.Data.character.torghast.rampaging.coolDownReduction = 1
-		end
 	
 		if (TRB.Functions.IsTalentActive(TRB.Data.spells.elementalBlast) and TRB.Data.spells.elementalBlast.maelstrom < TRB.Data.character.maxResource) then
 			TRB.Data.character.earthShockThreshold = -(TRB.Data.spells.elementalBlast.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].elementalBlast)
@@ -1887,8 +1803,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.character.earthShockThreshold = -(TRB.Data.spells.earthShock.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].earthShock)
 		end
 
-		TRB.Data.character.earthShockThreshold = TRB.Data.character.earthShockThreshold * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
-		TRB.Data.character.earthquakeThreshold = -(TRB.Data.spells.earthquake.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].earthquake) * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
+		TRB.Data.character.earthShockThreshold = TRB.Data.character.earthShockThreshold
+		TRB.Data.character.earthquakeThreshold = -(TRB.Data.spells.earthquake.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].earthquake)
 
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShock then
@@ -1898,10 +1814,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining = expiration - currentTime
 				end
 			end
-		end
-
-		if TRB.Data.character.torghast.depletedTeslaCoil then
-			UpdateStormkeeper()
 		end
 	end
 
@@ -2072,7 +1984,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					end
 					
 					if TRB.Data.settings.shaman.elemental.thresholds.earthquake.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.earthquake) then
-						if TRB.Data.snapshotData.echoesOfGreatSundering.isActive or TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.isActive then
+						if TRB.Data.snapshotData.echoesOfGreatSundering.isActive then
 							thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.echoesOfGreatSundering
 							frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 						elseif TRB.Data.snapshotData.resource >= TRB.Data.character.earthquakeThreshold then
@@ -2480,16 +2392,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Data.snapshotData.echoesOfGreatSundering.spellId = nil
 							TRB.Data.snapshotData.echoesOfGreatSundering.duration = 0
 							TRB.Data.snapshotData.echoesOfGreatSundering.endTime = nil
-						end
-					elseif spellId == TRB.Data.spells.echoesOfGreatSunderingLegendary.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.duration, TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.endTime, _, _, _, TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.echoesOfGreatSunderingLegendary.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.isActive = false
-							TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.spellId = nil
-							TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.duration = 0
-							TRB.Data.snapshotData.echoesOfGreatSunderingLegendary.endTime = nil
 						end
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "restoration" then

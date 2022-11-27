@@ -66,7 +66,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				fontSize = 13
 			},
 			middle = {
-				text="{$frenzyStacks}[#frenzy$frenzyTime - $frenzyStacks#frenzy]||n{$flayersMarkTime}[#flayersMark $flayersMarkTime #flayersMark]",
+				text="{$frenzyStacks}[#frenzy$frenzyTime - $frenzyStacks#frenzy]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -219,18 +219,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
-				},
-				flayersMark={
-					name = "Flayer's Mark Proc",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},
-				nesingwarysTrappingApparatus={
-					name = "Nesingwary's Trapping Apparatus Proc",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
 				}
             },
 			textures = {
@@ -297,7 +285,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				fontSize = 13
 			},
 			middle = {
-				text="{$flayersMarkTime}[#flayersMark $flayersMarkTime #flayersMark||n]{$trueshotTime}[#trueshot $trueshotTime #trueshot]",
+				text="{$trueshotTime}[#trueshot $trueshotTime #trueshot]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -479,20 +467,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-				nesingwarysTrappingApparatus={
-					name = "Nesingwary's Trapping Apparatus Proc",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},
 				killShot={
 					name = "Kill Shot Ready",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},
-				flayersMark={
-					name = "Flayer's Mark Proc",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -562,7 +538,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				fontSize = 13
 			},
 			middle = {
-				text="{$flayersMarkTime}[#flayersMark $flayersMarkTime #flayersMark||n]{$coordinatedAssaultTime}[#coordinatedAssault $coordinatedAssaultTime #coordinatedAssault]",
+				text="{$coordinatedAssaultTime}[#coordinatedAssault $coordinatedAssaultTime #coordinatedAssault]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -715,18 +691,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				},
 				killShot={
 					name = "Kill Shot Ready",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},
-				flayersMark={
-					name = "Flayer's Mark Proc",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},
-				nesingwarysTrappingApparatus={
-					name = "Nesingwary's Trapping Apparatus Proc",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -1462,139 +1426,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flayersMarkAudio
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if |cFFFF4040Venthyr|r)")
-		f.tooltip = "Play an audio cue when you get a Flayer's Mark proc that allows you to cast Kill Shot for 0 Focus and above normal execute range enemy health."
-		f:SetChecked(spec.audio.flayersMark.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.audio.flayersMark.enabled = self:GetChecked()
-
-			if spec.audio.flayersMark.enabled then
----@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(spec.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.flayersMarkAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_BeastMastery_flayersMark_Audio", parent)
-		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, oUi.dropdownWidth)
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, spec.audio.flayersMark.soundName)
-		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.flayersMarkAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		LibDD:UIDropDownMenu_Initialize(controls.dropDown.flayersMarkAudio, function(self, level, menuList)
-			local entries = 25
-			local info = LibDD:UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					LibDD:UIDropDownMenu_AddButton(info)
-				end
-			else  
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == spec.audio.flayersMark.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						LibDD:UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.flayersMarkAudio:SetValue(newValue, newName)
-			spec.audio.flayersMark.sound = newValue
-			spec.audio.flayersMark.soundName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
-			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(spec.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.nesingwarysTrappingApparatusAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_nesingwarysTrappingApparatus_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.nesingwarysTrappingApparatusAudio
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Nesingwary's Trapping Apparatus proc")
-		f.tooltip = "Play an audio cue when you get a Nesingwary's Trapping Apparatus proc that allows your next Aimed Shot to cost 0 Focus."
-		f:SetChecked(spec.audio.nesingwarysTrappingApparatus.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.audio.nesingwarysTrappingApparatus.enabled = self:GetChecked()
-
-			if spec.audio.nesingwarysTrappingApparatus.enabled then
----@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(spec.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.nesingwarysTrappingApparatusAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_BeastMastery_nesingwarysTrappingApparatusAudio", parent)
-		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, oUi.dropdownWidth)
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, spec.audio.nesingwarysTrappingApparatus.soundName)
-		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.nesingwarysTrappingApparatusAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		LibDD:UIDropDownMenu_Initialize(controls.dropDown.nesingwarysTrappingApparatusAudio, function(self, level, menuList)
-			local entries = 25
-			local info = LibDD:UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					LibDD:UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == spec.audio.nesingwarysTrappingApparatus.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						LibDD:UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.nesingwarysTrappingApparatusAudio:SetValue(newValue, newName)
-			spec.audio.nesingwarysTrappingApparatus.sound = newValue
-			spec.audio.nesingwarysTrappingApparatus.soundName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
-			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(spec.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 		yCoord = yCoord - 60
@@ -2849,141 +2680,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flayersMarkAudio
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if |cFFFF4040Venthyr|r)")
-		f.tooltip = "Play an audio cue when you get a Flayer's Mark proc that allows you to cast Kill Shot for 0 Focus and above normal execute range enemy health."
-		f:SetChecked(spec.audio.flayersMark.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.audio.flayersMark.enabled = self:GetChecked()
-
-			if spec.audio.flayersMark.enabled then
----@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(spec.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.flayersMarkAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Marksmanship_flayersMark_Audio", parent)
-		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, oUi.dropdownWidth)
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, spec.audio.flayersMark.soundName)
-		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.flayersMarkAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		LibDD:UIDropDownMenu_Initialize(controls.dropDown.flayersMarkAudio, function(self, level, menuList)
-			local entries = 25
-			local info = LibDD:UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					LibDD:UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == spec.audio.flayersMark.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						LibDD:UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.flayersMarkAudio:SetValue(newValue, newName)
-			spec.audio.flayersMark.sound = newValue
-			spec.audio.flayersMark.soundName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
-			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(spec.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.nesingwarysTrappingApparatusAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_nesingwarysTrappingApparatus_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.nesingwarysTrappingApparatusAudio
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Nesingwary's Trapping Apparatus proc")
-		f.tooltip = "Play an audio cue when you get a Nesingwary's Trapping Apparatus proc that allows your next Aimed Shot to cost 0 Focus."
-		f:SetChecked(spec.audio.nesingwarysTrappingApparatus.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.audio.nesingwarysTrappingApparatus.enabled = self:GetChecked()
-
-			if spec.audio.nesingwarysTrappingApparatus.enabled then
----@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(spec.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.nesingwarysTrappingApparatusAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Marksmanship_nesingwarysTrappingApparatusAudio", parent)
-		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, oUi.dropdownWidth)
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, spec.audio.nesingwarysTrappingApparatus.soundName)
-		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.nesingwarysTrappingApparatusAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		LibDD:UIDropDownMenu_Initialize(controls.dropDown.nesingwarysTrappingApparatusAudio, function(self, level, menuList)
-			local entries = 25
-			local info = LibDD:UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					LibDD:UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == spec.audio.nesingwarysTrappingApparatus.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						LibDD:UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.nesingwarysTrappingApparatusAudio:SetValue(newValue, newName)
-			spec.audio.nesingwarysTrappingApparatus.sound = newValue
-			spec.audio.nesingwarysTrappingApparatus.soundName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
-			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(spec.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-
-
-
 		yCoord = yCoord - 60
 		controls.checkBoxes.secretsOfTheUnblinkingVigilAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_secretsOfTheUnblinkingVigil_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.secretsOfTheUnblinkingVigilAudio
@@ -3987,141 +3683,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
-
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.flayersMarkAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_flayersMark_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flayersMarkAudio
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Flayer's Mark proc (if |cFFFF4040Venthyr|r)")
-		f.tooltip = "Play an audio cue when you get a Flayer's Mark proc that allows you to cast Kill Shot for 0 Focus and above normal execute range enemy health."
-		f:SetChecked(spec.audio.flayersMark.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.audio.flayersMark.enabled = self:GetChecked()
-
-			if spec.audio.flayersMark.enabled then
----@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(spec.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.flayersMarkAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Survival_flayersMark_Audio", parent)
-		controls.dropDown.flayersMarkAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.flayersMarkAudio, oUi.dropdownWidth)
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, spec.audio.flayersMark.soundName)
-		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.flayersMarkAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		LibDD:UIDropDownMenu_Initialize(controls.dropDown.flayersMarkAudio, function(self, level, menuList)
-			local entries = 25
-			local info = LibDD:UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					LibDD:UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == spec.audio.flayersMark.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						LibDD:UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.flayersMarkAudio:SetValue(newValue, newName)
-			spec.audio.flayersMark.sound = newValue
-			spec.audio.flayersMark.soundName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.flayersMarkAudio, newName)
-			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(spec.audio.flayersMark.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.nesingwarysTrappingApparatusAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_nesingwarysTrappingApparatus_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.nesingwarysTrappingApparatusAudio
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Nesingwary's Trapping Apparatus proc")
-		f.tooltip = "Play an audio cue when you get a Nesingwary's Trapping Apparatus proc that allows your next Aimed Shot to cost 0 Focus."
-		f:SetChecked(spec.audio.nesingwarysTrappingApparatus.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.audio.nesingwarysTrappingApparatus.enabled = self:GetChecked()
-
-			if spec.audio.nesingwarysTrappingApparatus.enabled then
----@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(spec.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.nesingwarysTrappingApparatusAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Hunter_Survival_nesingwarysTrappingApparatusAudio", parent)
-		controls.dropDown.nesingwarysTrappingApparatusAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.nesingwarysTrappingApparatusAudio, oUi.dropdownWidth)
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, spec.audio.nesingwarysTrappingApparatus.soundName)
-		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.nesingwarysTrappingApparatusAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		LibDD:UIDropDownMenu_Initialize(controls.dropDown.nesingwarysTrappingApparatusAudio, function(self, level, menuList)
-			local entries = 25
-			local info = LibDD:UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					LibDD:UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == spec.audio.nesingwarysTrappingApparatus.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						LibDD:UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.nesingwarysTrappingApparatusAudio:SetValue(newValue, newName)
-			spec.audio.nesingwarysTrappingApparatus.sound = newValue
-			spec.audio.nesingwarysTrappingApparatus.soundName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.nesingwarysTrappingApparatusAudio, newName)
-			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(spec.audio.nesingwarysTrappingApparatus.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-
 
 		yCoord = yCoord - 60
 		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)

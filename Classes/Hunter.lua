@@ -75,16 +75,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			petGuid = UnitGUID("pet"),
 			specId = 1,
 			maxResource = 100,
-			covenantId = 0,
-			effects = {
-				overgrowthSeedling = 1.0
-			},
-			torghast = {
-				rampaging = {
-					spellCostModifier = 1.0,
-					coolDownReduction = 1.0
-				}
-			}
+			covenantId = 0
 		}
 
 		specCache.beastMastery.spells = {
@@ -438,16 +429,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			specGroup = GetActiveSpecGroup(),
 			specId = 2,
 			maxResource = 100,
-			covenantId = 0,
-			effects = {
-				overgrowthSeedling = 1.0
-			},
-			torghast = {
-				rampaging = {
-					spellCostModifier = 1.0,
-					coolDownReduction = 1.0
-				}
-			}
+			covenantId = 0
 		}
 
 		specCache.marksmanship.spells = {
@@ -851,16 +833,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			specGroup = GetActiveSpecGroup(),
 			specId = 3,
 			maxResource = 100,
-			covenantId = 0,
-			effects = {
-				overgrowthSeedling = 1.0
-			},
-			torghast = {
-				rampaging = {
-					spellCostModifier = 1.0,
-					coolDownReduction = 1.0
-				}
-			}
+			covenantId = 0
 		}
 
 		specCache.survival.spells = {
@@ -1336,11 +1309,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
-
 			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
 			{ variable = "$focusMax", description = "Maximum Focus", printInSettings = true, color = false },
@@ -1430,11 +1398,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
-
-			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
@@ -1600,12 +1563,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					modifier = modifier * TRB.Data.spells.trueshot.modifier
 				end
 			end
-		end
-
-		if resource > 0 then
-			
-		else
-			modifier = modifier * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
 		end
 
         return resource * modifier

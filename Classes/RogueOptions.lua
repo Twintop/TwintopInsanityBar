@@ -1459,7 +1459,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sepsisAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_sepsis_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sepsisAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you gain Sepsis buff (if |cFF68CCEFKyrian|r)")
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you gain Sepsis buff")
 		f.tooltip = "Play an audio cue when you gain Sepsis buff that allows you to use a stealth ability outside of steath."
 		f:SetChecked(spec.audio.sepsis.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1950,7 +1950,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 		end)
 
-		controls.colors.comboPoints.echoingReprimand = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point when Echoing Reprimand (|cFF68CCEFKyrian|r) buff is up", spec.colors.comboPoints.echoingReprimand, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.echoingReprimand = TRB.UiFunctions:BuildColorPicker(parent, "Combo Point when Echoing Reprimand buff is up", spec.colors.comboPoints.echoingReprimand, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.echoingReprimand
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "echoingReprimand")
@@ -2113,7 +2113,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sepsisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_sepsis", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sepsisThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sepsis (if |cFFA330C9Night Fae|r)")
+		getglobal(f:GetName() .. 'Text'):SetText("Sepsis")
 		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis. If on cooldown, will be colored as 'unusable'."
 		f:SetChecked(spec.thresholds.sepsis.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -2125,7 +2125,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.shivThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Shiv")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If on cooldown, will be colored as 'unusable'. If using the Tiny Toxic Blade legendary, no threshold will be shown."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If on cooldown, will be colored as 'unusable'. If talented in to Tiny Toxic Blade, no threshold will be shown."
 		f:SetChecked(spec.thresholds.shiv.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shiv.enabled = self:GetChecked()
@@ -2598,7 +2598,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sepsisAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_sepsis_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sepsisAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you gain Sepsis buff (if |cFF68CCEFKyrian|r)")
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you gain Sepsis buff")
 		f.tooltip = "Play an audio cue when you gain Sepsis buff that allows you to use a stealth ability outside of steath."
 		f:SetChecked(spec.audio.sepsis.enabled)
 		f:SetScript("OnClick", function(self, ...)

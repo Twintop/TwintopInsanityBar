@@ -1707,10 +1707,6 @@ local function RefreshLookupDataBase(settings)
 	lookup["$stam"] = stam
 	lookup["$stamina"] = stam
 
-	lookup["$isKyrian"] = tostring(TRB.Functions.IsValidVariableBase("$isKyrian"))
-	lookup["$isVenthyr"] = tostring(TRB.Functions.IsValidVariableBase("$isVenthyr"))
-	lookup["$isNightFae"] = tostring(TRB.Functions.IsValidVariableBase("$isNightFae"))
-	lookup["$isNecrolord"] = tostring(TRB.Functions.IsValidVariableBase("$isNecrolord"))
 	lookup["$gcd"] = gcd
 	lookup["$ttd"] = ttd
 	lookup["$ttdSeconds"] = ttdTotalSeconds
@@ -1835,22 +1831,6 @@ local function IsValidVariableBase(var)
 		valid = true
 	elseif var == "$ttd" or var == "$ttdSeconds" then
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd > 0 then
-			valid = true
-		end
-	elseif var == "$isKyrian" then
-		if TRB.Data.character.covenantId == 1 then
-			valid = true
-		end
-	elseif var == "$isVentyr" then
-		if TRB.Data.character.covenantId == 2 then
-			valid = true
-		end
-	elseif var == "$isNightFae" then
-		if TRB.Data.character.covenantId == 3 then
-			valid = true
-		end
-	elseif var == "$isNecrolord" then
-		if TRB.Data.character.covenantId == 4 then
 			valid = true
 		end
 	end
@@ -2391,12 +2371,6 @@ local function CheckCharacter()
     TRB.Data.character.specGroup = GetActiveSpecGroup()
 	TRB.Data.character.covenantId = C_Covenants.GetActiveCovenantID()
 
-	-- Sanctum of Domination
-	if C_Map.GetBestMapForUnit("player") == TRB.Data.constants.sanctumOfDominationZoneId and TRB.Functions.FindAuraById(TRB.Data.constants.overgrowthSeedling.id, "player", "MAW") then
-		TRB.Data.character.effects.overgrowthSeedlingModifier = TRB.Data.constants.overgrowthSeedling.resourceModifier
-	else
-		TRB.Data.character.effects.overgrowthSeedlingModifier = 1
-	end
 	TRB.Data.barTextCache = {}
 	TRB.Functions.FillSpellData()
 end
@@ -2435,12 +2409,6 @@ local function UpdateSnapshot()
 	---@diagnostic disable-next-line: assign-type-mismatch
 	TRB.Data.snapshotData.intellect, _, _, _ = UnitStat("player", 4)
 
-	if IsInJailersTower() then
-		TRB.Data.character.torghast.rampaging.spellCostModifier, TRB.Data.character.torghast.rampaging.coolDownReduction = TRB.Functions.GetRampagingBuff()
-	else
-		TRB.Data.character.torghast.rampaging.spellCostModifier = 1
-		TRB.Data.character.torghast.rampaging.coolDownReduction = 1
-	end
 end
 TRB.Functions.UpdateSnapshot = UpdateSnapshot
 
@@ -2474,64 +2442,6 @@ local function DoesItemLinkMatchId(itemLink, id)
 end
 TRB.Functions.DoesItemLinkMatchId = DoesItemLinkMatchId
 
-local function IsSoulbindActive(id)
-	local soulbindId = C_Soulbinds.GetActiveSoulbindID()
-    local soulbindData = C_Soulbinds.GetSoulbindData(soulbindId)
-    local length = TableLength(soulbindData.tree.nodes)
-
-	for x = 1, length do
-		if soulbindData.tree.nodes[x].conduitID == id then
-			return true
-		end
-	end
-
-	return false
-end
-TRB.Functions.IsSoulbindActive = IsSoulbindActive
-
-local function GetSoulbindItemLevel(id)
-	local conduit = C_Soulbinds.GetConduitCollectionData(id)
-
-	if conduit ~= nil then
-		return conduit.conduitItemLevel
-	end
-	return 0
-end
-TRB.Functions.GetSoulbindItemLevel = GetSoulbindItemLevel
-
-local function GetSoulbindEquippedConduitRank(id)
-    return 0
-	--TODO: do a check for being in Shadowlands zones
-	--[[local soulbindId = C_Soulbinds.GetActiveSoulbindID()
-    local soulbindData = C_Soulbinds.GetSoulbindData(soulbindId)
-    local nodes = soulbindData.tree.nodes
-    local length = TableLength(nodes)
-    
-    for x = 1, length do
-        if nodes[x].spellID ~= nil and nodes[x].spellID == 0 and nodes[x].conduitID ~= nil and nodes[x].conduitID == id then
-			local empowered = 0
-
-			if nodes[x].socketEnhanced then
-				empowered = 2
-			end
-
-			return nodes[x].conduitRank + empowered
-        end        
-    end
-	return 0]]
-end
-TRB.Functions.GetSoulbindEquippedConduitRank = GetSoulbindEquippedConduitRank
-
-local function GetSoulbindRank(id)
-	local conduit = C_Soulbinds.GetConduitCollectionData(id)
-
-	if conduit ~= nil then
-		return conduit.conduitRank
-	end
-	return 0
-end
-TRB.Functions.GetSoulbindRank = GetSoulbindRank
-
 -- Source: https://www.wowinterface.com/forums/showpost.php?p=338665&postcount=5
 local function ArePvpTalentsActive()
     local inInstance, instanceType = IsInInstance()
@@ -2550,19 +2460,6 @@ local function ArePvpTalentsActive()
     end
 end
 TRB.Functions.ArePvpTalentsActive = ArePvpTalentsActive
-
--- Torghast specific
-
-local function GetRampagingBuff()
-	local name, _, _, _, _, _, _, _, _, _, _, _, _, _, _, manaCost, cdr = TRB.Functions.FindBuffById(TRB.Data.constants.rampagingId)
-
-	if name == nil then
-		return 1, 1
-	else
-		return 1 + (manaCost/100), 1 / (1 + (cdr/100))
-	end
-end
-TRB.Functions.GetRampagingBuff = GetRampagingBuff
 
 -- LibSharedMedia Support Functions
 
@@ -2776,7 +2673,6 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 5 then -- Priests
 			if specId == 2 then -- Holy
 				configuration.endOfApotheosis = settings.endOfApotheosis
-				configuration.flashConcentration = settings.flashConcentration
 			elseif specId == 3 then -- Shadow
 				configuration.endOfVoidform = settings.endOfVoidform
 			end
@@ -2886,11 +2782,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 5 then -- Priests
 			if specId == 2 then -- Holy
-				configuration.wrathfulFaerie = settings.wrathfulFaerie
 				configuration.passiveGeneration = settings.passiveGeneration
 			elseif specId == 3 then -- Shadow
 				configuration.mindbender = settings.mindbender
-				configuration.wrathfulFaerie = settings.wrathfulFaerie
 				configuration.auspiciousSpiritsTracker = settings.auspiciousSpiritsTracker
 				configuration.voidTendrilTracker = settings.voidTendrilTracker
 			end

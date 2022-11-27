@@ -83,13 +83,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			starsurgeThreshold = 40,
 			starfallThreshold = 50,
 			effects = {
-				overgrowthSeedling = 1.0
-			},
-			torghast = {
-				rampaging = {
-					spellCostModifier = 1.0,
-					coolDownReduction = 1.0
-				}
 			}
 		}
 
@@ -436,13 +429,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
             maxResource2 = 5,
 			covenantId = 0,
 			effects = {
-				overgrowthSeedling = 1.0
-			},
-			torghast = {
-				rampaging = {
-					spellCostModifier = 1.0,
-					coolDownReduction = 1.0
-				}
 			}
 		}
 
@@ -873,7 +859,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,
 			effects = {
-				overgrowthSeedlingModifier = 1
 			},
 			items = {
 				potions = {
@@ -895,12 +880,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					}
 				},
 				alchemyStone = false
-			},
-			torghast = {
-				rampaging = {
-					spellCostModifier = 1.0,
-					coolDownReduction = 1.0
-				}
 			}
 		}
 
@@ -956,10 +935,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				duration = 8,
 				isActive = false
 			},
-
-			-- Covenant
-
-			-- Conduit
 
 			-- Potions
 			potionOfSpiritualClarity = {
@@ -1198,11 +1173,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
-
 			{ variable = "$moonkinForm", description = "Currently in Moonkin Form. Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$eclipse", description = "Currently in any kind of Eclipse. Logic variable only!", printInSettings = true, color = false },
 			{ variable = "$eclipseTime", description = "Remaining duration of Eclipse.", printInSettings = true, color = false },
@@ -1333,11 +1303,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			
 			{ variable = "$energy", description = "Current Energy", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Energy", printInSettings = false, color = false },
 			{ variable = "$energyMax", description = "Maximum Energy", printInSettings = true, color = false },
@@ -1393,7 +1358,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$berserkTime", description = "Time remaining on your Berserk or Incarnation: King of the Jungle buff", printInSettings = true, color = false },
 			{ variable = "$incarnationTime", description = "Time remaining on your Berserk or Incarnation: King of the Jungle buff", printInSettings = false, color = false },
 
-			{ variable = "$suddenAmbushTime", description = "Time remaining on your Sudden Ambush proc (if conduit socketed)", printInSettings = true, color = false },
+			{ variable = "$suddenAmbushTime", description = "Time remaining on your Sudden Ambush proc", printInSettings = true, color = false },
 			
 			{ variable = "$apexPredatorsCravingTime", description = "Time remaining on your Apex Predator's Craving proc (if equipped)", printInSettings = true, color = false },
 			
@@ -1461,11 +1426,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
-
-			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
 
 			{ variable = "$mana", description = "Current Mana", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },
@@ -1574,8 +1534,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
 			TRB.Functions.FillSpellDataManaCost(TRB.Data.spells)
 
-
-			-- Legendaries
 			local trinket1ItemLink = GetInventoryItemLink("player", 13)
 			local trinket2ItemLink = GetInventoryItemLink("player", 14)
 			
@@ -1602,7 +1560,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 
 			TRB.Data.character.items.alchemyStone = alchemyStone
-			-- Torghast
 		end
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
@@ -1660,8 +1617,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
     local function CalculateAbilityResourceValue(resource, threshold)
         local modifier = 1.0
 		local specId = GetSpecialization()
-
-		modifier = modifier * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
 
 		if specId == 2 then
 			if TRB.Data.spells.incarnationAvatarOfAshamane.isActive then
@@ -3769,7 +3724,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 					if spellId then
-						local manaCost = -TRB.Functions.GetSpellManaCost(spellId) * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
+						local manaCost = -TRB.Functions.GetSpellManaCost(spellId)
 
 						TRB.Data.snapshotData.casting.startTime = currentSpellStartTime / 1000
 						TRB.Data.snapshotData.casting.endTime = currentSpellEndTime / 1000
@@ -3917,8 +3872,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			incarnationChosenOfEluneStarsurgeModifier = TRB.Data.spells.elunesGuidance.modifierStarsurge
 		end
 
-		TRB.Data.character.starsurgeThreshold = (TRB.Data.spells.starsurge.astralPower + incarnationChosenOfEluneStarsurgeModifier) * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier * (1+rattleTheStarsModifier)
-		TRB.Data.character.starfallThreshold = (TRB.Data.spells.starfall.astralPower + incarnationChosenOfEluneStarfallModifier) * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier * (1+rattleTheStarsModifier)
+		TRB.Data.character.starsurgeThreshold = (TRB.Data.spells.starsurge.astralPower + incarnationChosenOfEluneStarsurgeModifier) * (1+rattleTheStarsModifier)
+		TRB.Data.character.starfallThreshold = (TRB.Data.spells.starfall.astralPower + incarnationChosenOfEluneStarfallModifier) * (1+rattleTheStarsModifier)
 
 		TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))
 

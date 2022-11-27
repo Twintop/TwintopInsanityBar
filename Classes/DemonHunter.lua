@@ -61,15 +61,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			maxResource = 120,
 			covenantId = 0,
 			effects = {
-				overgrowthSeedling = 1.0
 			},
 			items = {
-			},
-			torghast = {
-				rampaging = {
-					spellCostModifier = 1.0,
-					coolDownReduction = 1.0
-				}
 			}
 		}
 
@@ -454,11 +447,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
-
 			{ variable = "$fury", description = "Current Fury", printInSettings = true, color = false },
             { variable = "$resource", description = "Current Fury", printInSettings = false, color = false },
 			{ variable = "$furyMax", description = "Maximum Fury", printInSettings = true, color = false },
@@ -574,7 +562,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	end
 
     local function CalculateAbilityResourceValue(resource)
-		local modifier = 1.0 * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
+		local modifier = 1.0
 
         return resource * modifier
     end

@@ -1759,9 +1759,6 @@ function TRB.Options:PortForwardSettings()
             overlapBorder = TwintopInsanityBarSettings.priest.shadow.thresholdsOverlapBorder,
             devouringPlague = {
                 enabled = TwintopInsanityBarSettings.priest.shadow.devouringPlagueThreshold
-            },
-            searingNightmare = {
-                enabled = TwintopInsanityBarSettings.priest.shadow.searingNightmareThreshold
             }
         }
 

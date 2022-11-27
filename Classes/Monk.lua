@@ -71,9 +71,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,
 			effects = {
-				overgrowthSeedlingModifier = 1
-			},
-			talents = {
 			},
 			items = {
 				potions = {
@@ -95,12 +92,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					}
 				},
 				alchemyStone = false
-			},
-			torghast = {
-				rampaging = {
-					spellCostModifier = 1.0,
-					coolDownReduction = 1.0
-				}
 			}
 		}
 
@@ -129,10 +120,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				duration = 8,
 				isActive = false
 			},
-
-			-- Covenant
-
-			-- Conduit
 
 			-- Potions
 			potionOfSpiritualClarity = {
@@ -189,8 +176,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					175943
 				}
 			}
-
-			-- Torghast
 		}
 
 		specCache.mistweaver.snapshotData.manaRegen = 0
@@ -270,15 +255,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
             maxResource2 = 5,
 			covenantId = 0,
 			effects = {
-				overgrowthSeedling = 1.0
 			},
-			items = {},
-			torghast = {
-				rampaging = {
-					spellCostModifier = 1.0,
-					coolDownReduction = 1.0
-				}
-			}
+			items = {}
 		}
 
 		specCache.windwalker.spells = {
@@ -602,11 +580,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
-
 			{ variable = "$mana", description = "Current Mana", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },
 			{ variable = "$manaPercent", description = "Current Mana Percentage", printInSettings = true, color = false },
@@ -712,11 +685,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
 
-			{ variable = "$isKyrian", description = "Is the character a member of the |cFF68CCEFKyrian|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNecrolord", description = "Is the character a member of the |cFF40BF40Necrolord|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isNightFae", description = "Is the character a member of the |cFFA330C9Night Fae|r Covenant? Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$isVenthyr", description = "Is the character a member of the |cFFFF4040Venthyr|r Covenant? Logic variable only!", printInSettings = true, color = false },
-
 			{ variable = "$energy", description = "Current Energy", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Energy", printInSettings = false, color = false },
 			{ variable = "$energyMax", description = "Maximum Energy", printInSettings = true, color = false },
@@ -764,7 +732,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
         local maxComboPoints = 0
         local settings = nil
-
 		
 		if specId == 2 then
 			TRB.Data.character.specName = "mistweaver"
@@ -772,8 +739,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
 			TRB.Functions.FillSpellDataManaCost(TRB.Data.spells)
 
-
-			-- Legendaries
 			local trinket1ItemLink = GetInventoryItemLink("player", 13)
 			local trinket2ItemLink = GetInventoryItemLink("player", 14)
 			
@@ -800,7 +765,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 
 			TRB.Data.character.items.alchemyStone = alchemyStone
-			-- Torghast
 		elseif specId == 3 then
 ---@diagnostic disable-next-line: missing-parameter, missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
@@ -865,8 +829,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 	local function CalculateAbilityResourceValue(resource, threshold)
         local modifier = 1.0
-
-		modifier = modifier * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
 
         return resource * modifier
     end
@@ -1735,7 +1697,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 					if spellId then
-						local manaCost = -TRB.Functions.GetSpellManaCost(spellId) * TRB.Data.character.effects.overgrowthSeedlingModifier * TRB.Data.character.torghast.rampaging.spellCostModifier
+						local manaCost = -TRB.Functions.GetSpellManaCost(spellId)
 
 						TRB.Data.snapshotData.casting.startTime = currentSpellStartTime / 1000
 						TRB.Data.snapshotData.casting.endTime = currentSpellEndTime / 1000
