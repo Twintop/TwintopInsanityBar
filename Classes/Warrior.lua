@@ -233,6 +233,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				hasCooldown = true,
 				thresholdUsable = false
 			},
+			
+			spearOfBastion = {
+				id = 376079,
+				name = "",
+				icon = "",
+				rage = 20
+			},
 
 			--Arms Talent abilities
 			mortalStrike = {
@@ -493,6 +500,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = true,
 				hasCooldown = true,
 				thresholdUsable = false
+			},
+			spearOfBastion = {
+				id = 376079,
+				name = "",
+				icon = "",
+				rage = 20
 			},
 
 			-- Fury Talent abilities
