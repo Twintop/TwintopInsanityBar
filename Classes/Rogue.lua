@@ -620,7 +620,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			duration = 0,
 			enabled = false
 		}
-		specCache.outlaw.snapshotData.gouge = {
+		specCache.assassination.snapshotData.gouge = {
 			startTime = nil,
 			duration = 0
 		}
