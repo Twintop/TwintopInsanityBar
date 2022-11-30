@@ -2851,6 +2851,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
             TRB.Data.snapshotData.voidform.duration = 0
 			TRB.Data.snapshotData.voidform.remainingTime = 0
 		else
+			_, _, _, _, TRB.Data.snapshotData.voidform.duration, TRB.Data.snapshotData.voidform.endTime, _, _, _, TRB.Data.snapshotData.voidform.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.voidform.id)
 			TRB.Data.snapshotData.voidform.remainingTime = GetVoidformRemainingTime()
         end
 
