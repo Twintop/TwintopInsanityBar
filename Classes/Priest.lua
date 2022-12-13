@@ -273,9 +273,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			resonantWords = {
 				id = 372313,
+				talentId = 372309,
 				name = "",
 				icon = "",
-				maxStacks = 2
+				isTalent = true
+			},
+			lightweaver = {
+				id = 390993,
+				talentId = 390992,
+				name = "",
+				icon = "",
+				maxStacks = 2,
+				isTalent = true
 			},
 
 
@@ -393,6 +402,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.holy.snapshotData.audio = {
 			innervateCue = false,
 			resonantWordsCue = false,
+			lightweaverCue = false,
 			surgeOfLightCue = false,
 			surgeOfLight2Cue = false
 		}
@@ -431,6 +441,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			stacks = 0
 		}
 		specCache.holy.snapshotData.resonantWords = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0,
+			stacks = 0
+		}
+		specCache.holy.snapshotData.lightweaver = {
 			spellId = nil,
 			duration = 0,
 			endTime = nil,
@@ -916,6 +933,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#hwSerenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = true },
 			{ variable = "#serenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = false },
 			{ variable = "#holyWordSerenity", icon = spells.holyWordSerenity.icon, description = spells.holyWordSerenity.name, printInSettings = false },
+			{ variable = "#lightweaver", icon = spells.lightweaver.icon, description = spells.lightweaver.name, printInSettings = true },
 			{ variable = "#rw", icon = spells.resonantWords.icon, description = spells.resonantWords.name, printInSettings = true },
 			{ variable = "#resonantWords", icon = spells.resonantWords.icon, description = spells.resonantWords.name, printInSettings = false },
 			{ variable = "#innervate", icon = spells.innervate.icon, description = spells.innervate.name, printInSettings = true },
@@ -1004,6 +1022,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			
 			{ variable = "$solStacks", description = "Number of Surge of Light stacks", printInSettings = true, color = false },
 			{ variable = "$solTime", description = "Time left on Surge of Light", printInSettings = true, color = false },
+			
+			{ variable = "$lightweaverStacks", description = "Number of Lightweaver stacks", printInSettings = true, color = false },
+			{ variable = "$lightweaverTime", description = "Time left on Lightweaver", printInSettings = true, color = false },
 
 			{ variable = "$rwTime", description = "Time left on Resonant Words", printInSettings = true, color = false },
 
@@ -1470,6 +1491,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.resonantWords)
 	end
 
+	local function GetLightweaverRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.lightweaver)
+	end
+
 	local function GetChanneledPotionRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.channeledManaPotion)
 	end
@@ -1586,8 +1611,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if TRB.Data.snapshotData.symbolOfHope.isActive then
 					valid = true
 				end
+			elseif var == "$lightweaverTime" then
+				if TRB.Data.snapshotData.symbolOfHope.isActive then
+					valid = true
+				end
+			elseif var == "$lightweaverTicks" then
+				if TRB.Data.snapshotData.lightweaver.isActive then
+					valid = true
+				end
 			elseif var == "$rwTime" then
-				if TRB.Data.snapshotData.resonantWords.remainingTime > 0 then
+				if TRB.Data.snapshotData.lightweaver.remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$innervateMana" then
@@ -1906,6 +1939,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$solTime
 		local _solTime = TRB.Data.snapshotData.surgeOfLight.remainingTime or 0
 		local solTime = string.format("%.1f", _solTime)
+
+		--$lightweaverStacks
+		local _lightweaverStacks = TRB.Data.snapshotData.lightweaver.stacks or 0
+		local lightweaverStacks = string.format("%.0f", _lightweaverStacks)
+		--$lightweaverTime
+		local _lightweaverTime = TRB.Data.snapshotData.lightweaver.remainingTime or 0
+		local lightweaverTime = string.format("%.1f", _lightweaverTime)
 		
 		--$rwTime
 		local _rwTime = TRB.Data.snapshotData.resonantWords.remainingTime or 0
@@ -1977,6 +2017,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#hwSerenity"] = TRB.Data.spells.holyWordSerenity.icon
 		lookup["#serenity"] = TRB.Data.spells.holyWordSerenity.icon
 		lookup["#holyWordSerenity"] = TRB.Data.spells.holyWordSerenity.icon
+		lookup["#lightweaver"] = TRB.Data.spells.lightweaver.icon
 		lookup["#rw"] = TRB.Data.spells.resonantWords.icon
 		lookup["#resonantWords"] = TRB.Data.spells.resonantWords.icon
 		lookup["#innervate"] = TRB.Data.spells.innervate.icon
@@ -2039,6 +2080,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$potionCooldownSeconds"] = potionCooldownSeconds
 		lookup["$solStacks"] = solStacks
 		lookup["$solTime"] = solTime
+		lookup["$lightweaverStacks"] = lightweaverStacks
+		lookup["$lightweaverTime"] = lightweaverTime
 		lookup["$apotheosisTime"] = apotheosisTime
 		lookup["$swpCount"] = shadowWordPainCount
 		lookup["$swpTime"] = shadowWordPainTime
@@ -2083,6 +2126,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$potionCooldownSeconds"] = potionCooldown
 		lookupLogic["$solStacks"] = _solStacks
 		lookupLogic["$solTime"] = _solTime
+		lookupLogic["$lightweaverStacks"] = _lightweaverStacks
+		lookupLogic["$lightweaverTime"] = _lightweaverTime
 		lookupLogic["$apotheosisTime"] = _apotheosisTime
 		lookupLogic["$swpCount"] = _shadowWordPainCount
 		lookupLogic["$swpTime"] = _shadowWordPainTime
@@ -2859,8 +2904,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end
 
-		_, _, TRB.Data.snapshotData.resonantWords.stacks, _, TRB.Data.snapshotData.resonantWords.duration, TRB.Data.snapshotData.resonantWords.endTime, _, _, _, TRB.Data.snapshotData.resonantWords.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.resonantWords.id)
+		_, _, _, _, TRB.Data.snapshotData.resonantWords.duration, TRB.Data.snapshotData.resonantWords.endTime, _, _, _, TRB.Data.snapshotData.resonantWords.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.resonantWords.id)
 		TRB.Data.snapshotData.resonantWords.remainingTime = GetResonantWordsRemainingTime()
+
+		_, _, TRB.Data.snapshotData.lightweaver.stacks, _, TRB.Data.snapshotData.lightweaver.duration, TRB.Data.snapshotData.lightweaver.endTime, _, _, _, TRB.Data.snapshotData.lightweaver.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.lightweaver.id)
+		TRB.Data.snapshotData.lightweaver.remainingTime = GetLightweaverRemainingTime()
 
 		_, _, TRB.Data.snapshotData.surgeOfLight.stacks, _, TRB.Data.snapshotData.surgeOfLight.duration, TRB.Data.snapshotData.surgeOfLight.endTime, _, _, _, TRB.Data.snapshotData.surgeOfLight.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.surgeOfLight.id)
 		TRB.Data.snapshotData.surgeOfLight.remainingTime = GetSurgeOfLightRemainingTime()
@@ -3003,6 +3051,34 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local currentMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 					local barBorderColor = TRB.Data.settings.priest.holy.colors.bar.border
 
+					if TRB.Data.snapshotData.lightweaver.remainingTime ~= nil and TRB.Data.snapshotData.lightweaver.remainingTime > 0 then
+						if TRB.Data.settings.priest.holy.colors.bar.lightweaverBorderChange then
+							barBorderColor = TRB.Data.settings.priest.holy.colors.bar.lightweaver
+						end
+
+						if TRB.Data.settings.priest.holy.audio.lightweaver.enabled and TRB.Data.snapshotData.audio.lightweaverCue == false then
+							TRB.Data.snapshotData.audio.lightweaverCue = true
+---@diagnostic disable-next-line: redundant-parameter
+							PlaySoundFile(TRB.Data.settings.priest.holy.audio.lightweaver.sound, TRB.Data.settings.core.audio.channel.channel)
+						end
+					else
+						TRB.Data.snapshotData.audio.lightweaverCue = false
+					end
+
+					if TRB.Data.snapshotData.resonantWords.remainingTime ~= nil and TRB.Data.snapshotData.resonantWords.remainingTime > 0 then
+						if TRB.Data.settings.priest.holy.colors.bar.resonantWordsBorderChange then
+							barBorderColor = TRB.Data.settings.priest.holy.colors.bar.resonantWords
+						end
+
+						if TRB.Data.settings.priest.holy.audio.resonantWords.enabled and TRB.Data.snapshotData.audio.resonantWordsCue == false then
+							TRB.Data.snapshotData.audio.resonantWordsCue = true
+---@diagnostic disable-next-line: redundant-parameter
+							PlaySoundFile(TRB.Data.settings.priest.holy.audio.resonantWords.sound, TRB.Data.settings.core.audio.channel.channel)
+						end
+					else
+						TRB.Data.snapshotData.audio.resonantWordsCue = false
+					end
+
 					if TRB.Data.snapshotData.surgeOfLight.stacks == 1 then
 						if TRB.Data.settings.priest.holy.colors.bar.surgeOfLightBorderChange1 then
 							barBorderColor = TRB.Data.settings.priest.holy.colors.bar.surgeOfLight1
@@ -3038,21 +3114,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							PlaySoundFile(TRB.Data.settings.priest.holy.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					end
-
-					if TRB.Data.snapshotData.resonantWords.remainingTime ~= nil and TRB.Data.snapshotData.resonantWords.remainingTime > 0 then
-						if TRB.Data.settings.priest.holy.colors.bar.resonantWordsBorderChange then
-							barBorderColor = TRB.Data.settings.priest.holy.colors.bar.resonantWords
-						end
-
-						if TRB.Data.settings.priest.holy.audio.resonantWords.enabled and TRB.Data.snapshotData.audio.resonantWordsCue == false then
-							TRB.Data.snapshotData.audio.resonantWordsCue = true
----@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(TRB.Data.settings.priest.holy.audio.resonantWords.sound, TRB.Data.settings.core.audio.channel.channel)
-						end
-					else
-						TRB.Data.snapshotData.audio.resonantWordsCue = false
-					end
-
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
 
 					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.holy, resourceFrame, currentMana)

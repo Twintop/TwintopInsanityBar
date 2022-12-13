@@ -176,7 +176,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					holyWordSerenity="FF00FF00",
 					surgeOfLight1="FFFCE58E",
 					surgeOfLight2="FFAF9942",
-					resonantWords="FFFF0000",
+					resonantWords="FFAA00FF",
+					lightweaver="FF00FFFF",
 					--casting="FF555555",
 					spending="FFFFFFFF",
 					passive="FF8080FF",
@@ -184,6 +185,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					surgeOfLightBorderChange2=true,
 					innervateBorderChange=true,
 					resonantWordsBorderChange=true,
+					lightweaverBorderChange=true,
 					--flashAlpha=0.70,
 					--flashPeriod=0.5,
 					--flashEnabled=true,
@@ -216,6 +218,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				},
 				resonantWords={
 					name = "Resonant Words",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+				lightweaver={
+					name = "Lightweaver",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -738,10 +746,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "surgeOfLight2")
 		end)
 
-		controls.colors.resonantWords = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have any stacks of Resonant Words", spec.colors.bar.innervate, 300, 25, oUi.xCoord2, yCoord-120)
+		controls.colors.resonantWords = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have Resonant Words", spec.colors.bar.resonantWords, 300, 25, oUi.xCoord2, yCoord-120)
 		f = controls.colors.resonantWords
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "resonantWords")
+		end)
+
+		controls.colors.lightweaver = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have any stacks of Lightweaver", spec.colors.bar.lightweaver, 300, 25, oUi.xCoord2, yCoord-150)
+		f = controls.colors.lightweaver
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "lightweaver")
 		end)
 
 
@@ -783,10 +797,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.resonantWordsBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Resonant Words")
-		f.tooltip = "This will change the bar border color when you have any stacks of Resonant Words."
+		f.tooltip = "This will change the bar border color when you have Resonant Words."
 		f:SetChecked(spec.colors.bar.resonantWordsBorderChange)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.resonantWordsBorderChange = self:GetChecked()
+		end)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.lightweaverBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_lightweaverBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.lightweaverBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Lightweaver")
+		f.tooltip = "This will change the bar border color when you have any stacks of Lightweaver."
+		f:SetChecked(spec.colors.bar.lightweaverBorderChange)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.lightweaverBorderChange = self:GetChecked()
 		end)
 
 
@@ -1247,6 +1272,71 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.resonantWords.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+		
+		yCoord = yCoord - 60
+		controls.checkBoxes.lightweaverAudioCB = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_lightweaver", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.lightweaverAudioCB
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you gain Lightweaver")
+		f.tooltip = "Play audio cue when you gain Lightweaver."
+		f:SetChecked(spec.audio.lightweaver.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.audio.lightweaver.enabled = self:GetChecked()
+
+			if spec.audio.lightweaver.enabled then
+---@diagnostic disable-next-line: redundant-parameter
+				PlaySoundFile(spec.audio.lightweaver.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.lightweaverAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Holy_lightweaverAudio", parent)
+		controls.dropDown.lightweaverAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.lightweaverAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.lightweaverAudio, spec.audio.lightweaver.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.lightweaverAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.lightweaverAudio, function(self, level, menuList)
+			local entries = 25
+			local info = LibDD:UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					LibDD:UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == spec.audio.lightweaver.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						LibDD:UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.lightweaverAudio:SetValue(newValue, newName)
+			spec.audio.lightweaver.sound = newValue
+			spec.audio.lightweaver.soundName = newName
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.lightweaverAudio, newName)
+			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
+			PlaySoundFile(spec.audio.lightweaver.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 		yCoord = yCoord - 60
