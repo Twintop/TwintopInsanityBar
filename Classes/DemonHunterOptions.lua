@@ -912,14 +912,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		tabs[4] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_DemonHunter_Havoc_Tab5", "Bar Text", 4, parent, 60, tabs[3])
 		tabs[5] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_DemonHunter_Havoc_Tab1", "Reset Defaults", 5, parent, 100, tabs[4])
 
-		PanelTemplates_TabResize(tabs[1], 0)
-		PanelTemplates_TabResize(tabs[2], 0)
-		PanelTemplates_TabResize(tabs[3], 0)
-		PanelTemplates_TabResize(tabs[4], 0)
-		PanelTemplates_TabResize(tabs[5], 0)
 		yCoord = yCoord - 15
 
 		for i = 1, 5 do
+			PanelTemplates_TabResize(tabs[i], 0)
+			PanelTemplates_DeselectTab(tabs[i])
+			tabs[i].Text:SetPoint("TOP", 0, 0)
 			tabsheets[i] = TRB.UiFunctions:CreateTabFrameContainer("TwintopResourceBar_DemonHunter_Havoc_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
 			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
