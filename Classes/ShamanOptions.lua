@@ -230,7 +230,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "{$potionCooldown}[#psc $potionCooldown] ",
+				text = "{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -269,17 +269,23 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					width=24,
 					height=24
 				},
-				potionOfSpiritualClarity = {
-					enabled = true, -- 1
+				aeratedManaPotionRank1 = {
+					enabled = false, -- 1
 				},
-				spiritualRejuvenationPotion = {
+				aeratedManaPotionRank2 = {
 					enabled = false, -- 2
 				},
-				spiritualManaPotion = {
+				aeratedManaPotionRank3 = {
 					enabled = true, -- 3
 				},
-				soulfulManaPotion = {
+				potionOfFrozenFocusRank1 = {
 					enabled = false, -- 4
+				},
+				potionOfFrozenFocusRank2 = {
+					enabled = false, -- 5
+				},
+				potionOfFrozenFocusRank3 = {
+					enabled = true, -- 6
 				},
 				potionCooldown = {
 					enabled=true,

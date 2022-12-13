@@ -74,22 +74,30 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			},
 			items = {
 				potions = {
-					potionOfSpiritualClarity = {
-						id = 171272,
-						mana = 10000
+					aeratedManaPotionRank3 = {
+						id = 191386,
+						mana = 27600
 					},
-					spiritualRejuvenationPotion = {
-						id = 171269,
-						mana = 2500
+					aeratedManaPotionRank2 = {
+						id = 191385,
+						mana = 24000
 					},
-					spiritualManaPotion = {
-						id = 171268,
-						mana = 6000
+					aeratedManaPotionRank1 = {
+						id = 191384,
+						mana = 20869
 					},
-					soulfulManaPotion = {
-						id = 180318,
-						mana = 4000
-					}
+					potionOfFrozenFocusRank3 = {
+						id = 191365,
+						mana = 48300
+					},
+					potionOfFrozenFocusRank2 = {
+						id = 191364,
+						mana = 42000
+					},
+					potionOfFrozenFocusRank1 = {
+						id = 191363,
+						mana = 36521
+					},
 				},
 				alchemyStone = false
 			}
@@ -122,45 +130,71 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			},
 
 			-- Potions
-			potionOfSpiritualClarity = {
-				itemId = 171272,
-				spellId = 307161,
-				name = "",
-				icon = "",
-				texture = "",
-				thresholdId = 1,
-				settingKey = "potionOfSpiritualClarity",
-				thresholdUsable = false,
-				mana = 1000,
-				duration = 10,
-				ticks = 10
-			},
-			spiritualRejuvenationPotion = {
-				itemId = 171269,
+			aeratedManaPotionRank1 = {
+				itemId = 191384,
 				name = "",
 				icon = "",
 				texture = "",
 				thresholdId = 2,
-				settingKey = "spiritualRejuvenationPotion",
+				settingKey = "aeratedManaPotionRank1",
 				thresholdUsable = false
 			},
-			spiritualManaPotion = {
-				itemId = 171268,
+			aeratedManaPotionRank2 = {
+				itemId = 191385,
 				name = "",
 				icon = "",
 				texture = "",
 				thresholdId = 3,
-				settingKey = "spiritualManaPotion",
+				settingKey = "aeratedManaPotionRank2",
 				thresholdUsable = false
 			},
-			soulfulManaPotion = {
-				itemId = 180318,
+			aeratedManaPotionRank3 = {
+				itemId = 191386,
 				name = "",
 				icon = "",
 				texture = "",
 				thresholdId = 4,
-				settingKey = "soulfulManaPotion",
+				settingKey = "aeratedManaPotionRank3",
 				thresholdUsable = false
+			},
+			potionOfFrozenFocusRank1 = {
+				itemId = 171272,
+				spellId = 371033,
+				name = "",
+				icon = "",
+				texture = "",
+				thresholdId = 4,
+				settingKey = "potionOfFrozenFocusRank1",
+				thresholdUsable = false,
+				mana = 3652,
+				duration = 10,
+				ticks = 10
+			},
+			potionOfFrozenFocusRank2 = {
+				itemId = 171272,
+				spellId = 371033,
+				name = "",
+				icon = "",
+				texture = "",
+				thresholdId = 5,
+				settingKey = "potionOfFrozenFocusRank2",
+				thresholdUsable = false,
+				mana = 4200,
+				duration = 10,
+				ticks = 10
+			},
+			potionOfFrozenFocusRank3 = {
+				itemId = 171272,
+				spellId = 371033,
+				name = "",
+				icon = "",
+				texture = "",
+				thresholdId = 6,
+				settingKey = "potionOfFrozenFocusRank3",
+				thresholdUsable = false,
+				mana = 4830,
+				duration = 10,
+				ticks = 10
 			},
 
 			-- Alchemist Stone
@@ -543,12 +577,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "#soh", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = true },
 			{ variable = "#symbolOfHope", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = false },
 
-			{ variable = "#psc", icon = spells.potionOfSpiritualClarity.icon, description = spells.potionOfSpiritualClarity.name, printInSettings = true },
-			{ variable = "#potionOfSpiritualClarity", icon = spells.potionOfSpiritualClarity.icon, description = spells.potionOfSpiritualClarity.name, printInSettings = false },
-			{ variable = "#srp", icon = spells.spiritualRejuvenationPotion.icon, description = spells.spiritualRejuvenationPotion.name, printInSettings = true },
-			{ variable = "#spiritualRejuvenationPotion", icon = spells.spiritualRejuvenationPotion.icon, description = spells.spiritualRejuvenationPotion.name, printInSettings = false },
-			{ variable = "#spiritualManaPotion", icon = spells.spiritualManaPotion.icon, description = spells.spiritualManaPotion.name, printInSettings = true },
-			{ variable = "#soulfulManaPotion", icon = spells.soulfulManaPotion.icon, description = spells.soulfulManaPotion.name, printInSettings = true },
+			{ variable = "#potionOfFrozenFocus", icon = spells.potionOfFrozenFocusRank1.icon, description = spells.potionOfFrozenFocusRank1.name, printInSettings = false },
+			{ variable = "#amp", icon = spells.aeratedManaPotionRank1.icon, description = spells.aeratedManaPotionRank1.name, printInSettings = true },
+			{ variable = "#aeratedManaPotion", icon = spells.aeratedManaPotionRank1.icon, description = spells.aeratedManaPotionRank1.name, printInSettings = false },
+			{ variable = "#poff", icon = spells.potionOfFrozenFocusRank1.icon, description = spells.potionOfFrozenFocusRank1.name, printInSettings = true },
+			{ variable = "#potionOfFrozenFocus", icon = spells.potionOfFrozenFocusRank1.icon, description = spells.potionOfFrozenFocusRank1.name, printInSettings = true },
 		}
 		specCache.mistweaver.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -610,9 +643,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "$wfProcs", description = "Number of Procs left on Wrathful Faerie", printInSettings = true, color = false },
 			{ variable = "$wfTime", description = "Time left on Wrathful Faerie", printInSettings = true, color = false },
 			
-			{ variable = "$pscMana", description = "Mana while channeling of Potion of Spiritual Clarity", printInSettings = true, color = false },
-			{ variable = "$pscTicks", description = "Number of ticks left channeling Potion of Spiritual Clarity", printInSettings = true, color = false },
-			{ variable = "$pscTime", description = "Amount of time, in seconds, remaining of your channel of Potion of Spiritual Clarity", printInSettings = true, color = false },
+			{ variable = "$channeledMana", description = "Mana while channeling of Potion of Frozen Focus", printInSettings = true, color = false },
+			{ variable = "$potionOfFrozenFocusTicks", description = "Number of ticks left channeling Potion of Frozen Focus", printInSettings = true, color = false },
+			{ variable = "$potionOfFrozenFocusTime", description = "Amount of time, in seconds, remaining of your channel of Potion of Frozen Focus", printInSettings = true, color = false },
 			
 			{ variable = "$potionCooldown", description = "How long, in seconds, is left on your potion's cooldown in MM:SS format", printInSettings = true, color = false },
 			{ variable = "$potionCooldownSeconds", description = "How long, in seconds, is left on your potion's cooldown in seconds", printInSettings = true, color = false },
@@ -897,7 +930,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end
 
 		if specId == 2 then
-			for x = 1, 4 do
+			for x = 1, 6 do
 				if TRB.Frames.resourceFrame.thresholds[x] == nil then
 					TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
@@ -917,11 +950,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				TRB.Frames.passiveFrame.thresholds[x]:Hide()
 			end
 			
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.potionOfSpiritualClarity.settingKey, TRB.Data.settings.monk.mistweaver)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.spiritualRejuvenationPotion.settingKey, TRB.Data.settings.monk.mistweaver)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.spiritualManaPotion.settingKey, TRB.Data.settings.monk.mistweaver)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.soulfulManaPotion.settingKey, TRB.Data.settings.monk.mistweaver)		
-			TRB.Frames.resource2ContainerFrame:Hide()
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.aeratedManaPotionRank1.settingKey, TRB.Data.settings.monk.mistweaver)
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.aeratedManaPotionRank2.settingKey, TRB.Data.settings.monk.mistweaver)
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.aeratedManaPotionRank3.settingKey, TRB.Data.settings.monk.mistweaver)
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.potionOfFrozenFocusRank1.settingKey, TRB.Data.settings.monk.mistweaver)
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[5], TRB.Data.spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.monk.mistweaver)
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[6], TRB.Data.spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.monk.mistweaver)
+		TRB.Frames.resource2ContainerFrame:Hide()
 		elseif specId == 3 then
 			for k, v in pairs(TRB.Data.spells) do
 				local spell = TRB.Data.spells[k]
@@ -955,7 +990,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.danceOfChiJi)
 	end
 	
-	local function GetPotionOfSpiritualClarityRemainingTime()
+	local function GetChanneledPotionRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.channeledManaPotion)
 	end
 
@@ -1016,7 +1051,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					valid = true
 				end
 			elseif var == "$passive" then
-				if IsValidVariableForSpec("$pscMana") or
+				if IsValidVariableForSpec("$channeledMana") or
 					IsValidVariableForSpec("$sohMana") or
 					IsValidVariableForSpec("$innervateMana") or
 					IsValidVariableForSpec("$mttMana") then
@@ -1050,16 +1085,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				if TRB.Data.snapshotData.manaTideTotem.isActive then
 					valid = true
 				end
-			elseif var == "$pscMana" then
+			elseif var == "$channeledMana" then
 				if TRB.Data.snapshotData.channeledManaPotion.mana > 0 then
 					valid = true
 				end
-			elseif var == "$pscTicks" then
+			elseif var == "$potionOfFrozenFocusTicks" then
 				if TRB.Data.snapshotData.channeledManaPotion.ticksRemaining > 0 then
 					valid = true
 				end
-			elseif var == "$pscTime" then
-				if GetPotionOfSpiritualClarityRemainingTime() > 0 then
+			elseif var == "$potionOfFrozenFocusTime" then
+				if GetChanneledPotionRemainingTime() > 0 then
 					valid = true
 				end
 			elseif var == "$potionCooldown" then
@@ -1245,11 +1280,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 ---@diagnostic disable-next-line: cast-local-type
 		TRB.Data.snapshotData.manaRegen, _ = GetPowerRegen()
 
-		local currentManaColor = TRB.Data.settings.priest.holy.colors.text.current
-		local castingManaColor = TRB.Data.settings.priest.holy.colors.text.casting
+		local currentManaColor = TRB.Data.settings.monk.mistweaver.colors.text.current
+		local castingManaColor = TRB.Data.settings.monk.mistweaver.colors.text.casting
 
 		--$mana
-		local manaPrecision = TRB.Data.settings.priest.holy.manaPrecision or 1
+		local manaPrecision = TRB.Data.settings.monk.mistweaver.manaPrecision or 1
 		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 		--$casting
 		local _castingMana = TRB.Data.snapshotData.casting.resourceFinal
@@ -1290,18 +1325,18 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		--$potionCooldown
 		local potionCooldown = string.format("%d:%0.2d", _potionCooldownMinutes, _potionCooldownSeconds)
 
-		--$pscMana
-		local _pscMana = CalculateManaGain(TRB.Data.snapshotData.channeledManaPotion.mana, true)
-		local pscMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_pscMana, manaPrecision, "floor", true))
-		--$pscTicks
-		local _pscTicks = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining or 0
-		local pscTicks = string.format("%.0f", _pscTicks)
-		--$pscTime
-		local _pscTime = GetPotionOfSpiritualClarityRemainingTime()
-		local pscTime = string.format("%.1f", _pscTime)
+		--$channeledMana
+		local _channeledMana = CalculateManaGain(TRB.Data.snapshotData.channeledManaPotion.mana, true)
+		local channeledMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_channeledMana, manaPrecision, "floor", true))
+		--$potionOfFrozenFocusTicks
+		local _potionOfFrozenFocusTicks = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining or 0
+		local potionOfFrozenFocusTicks = string.format("%.0f", _potionOfFrozenFocusTicks)
+		--$potionOfFrozenFocusTime
+		local _potionOfFrozenFocusTime = GetChanneledPotionRemainingTime()
+		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
 		--$passive
-		local _passiveMana = _sohMana + _pscMana + _innervateMana + _mttMana
-		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.priest.holy.colors.text.passive, TRB.Functions.ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
+		local _passiveMana = _sohMana + _channeledMana + _innervateMana + _mttMana
+		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.monk.mistweaver.colors.text.passive, TRB.Functions.ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 		--$manaTotal
 		local _manaTotal = math.min(_passiveMana + TRB.Data.snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 		local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
@@ -1327,12 +1362,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		----------
 
 		Global_TwintopResourceBar.resource.passive = _passiveMana
-		Global_TwintopResourceBar.resource.potionOfSpiritualClarity = _pscMana or 0
+		Global_TwintopResourceBar.resource.potionOfSpiritualClarity = _channeledMana or 0
 		Global_TwintopResourceBar.resource.manaTideTotem = _mttMana or 0
 		Global_TwintopResourceBar.resource.innervate = _innervateMana or 0
 		Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
 		Global_TwintopResourceBar.potionOfSpiritualClarity = {
-			mana = _pscMana,
+			mana = _channeledMana,
 			ticks = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining or 0
 		}
 		Global_TwintopResourceBar.symbolOfHope = {
@@ -1347,12 +1382,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["#manaTideTotem"] = TRB.Data.spells.manaTideTotem.icon
 		lookup["#soh"] = TRB.Data.spells.symbolOfHope.icon
 		lookup["#symbolOfHope"] = TRB.Data.spells.symbolOfHope.icon
-		lookup["#psc"] = TRB.Data.spells.potionOfSpiritualClarity.icon
-		lookup["#potionOfSpiritualClarity"] = TRB.Data.spells.potionOfSpiritualClarity.icon
-		lookup["#srp"] = TRB.Data.spells.spiritualRejuvenationPotion.icon
-		lookup["#spiritualRejuvenationPotion"] = TRB.Data.spells.spiritualRejuvenationPotion.icon
-		lookup["#spiritualManaPotion"] = TRB.Data.spells.spiritualManaPotion.icon
-		lookup["#soulfulManaPotion"] = TRB.Data.spells.soulfulManaPotion.icon
+		lookup["#potionOfFrozenFocus"] = TRB.Data.spells.potionOfFrozenFocusRank1.icon
+		lookup["#amp"] = TRB.Data.spells.aeratedManaPotionRank1.icon
+		lookup["#aeratedManaPotion"] = TRB.Data.spells.aeratedManaPotionRank1.icon
+		lookup["#poff"] = TRB.Data.spells.potionOfFrozenFocusRank1.icon
+		lookup["#potionOfFrozenFocus"] = TRB.Data.spells.potionOfFrozenFocusRank1.icon
 		lookup["$manaPlusCasting"] = manaPlusCasting
 		lookup["$manaPlusPassive"] = manaPlusPassive
 		lookup["$manaTotal"] = manaTotal
@@ -1374,9 +1408,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["$innervateTime"] = innervateTime
 		lookup["$mttMana"] = mttMana
 		lookup["$mttTime"] = mttTime
-		lookup["$pscMana"] = pscMana
-		lookup["$pscTicks"] = pscTicks
-		lookup["$pscTime"] = pscTime
+		lookup["$channeledMana"] = channeledMana
+		lookup["$potionOfFrozenFocusTicks"] = potionOfFrozenFocusTicks
+		lookup["$potionOfFrozenFocusTime"] = potionOfFrozenFocusTime
 		lookup["$potionCooldown"] = potionCooldown
 		lookup["$potionCooldownSeconds"] = potionCooldownSeconds
 		TRB.Data.lookup = lookup
@@ -1403,9 +1437,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookupLogic["$innervateTime"] = _innervateTime
 		lookupLogic["$mttMana"] = _mttMana
 		lookupLogic["$mttTime"] = _mttTime
-		lookupLogic["$pscMana"] = _pscMana
-		lookupLogic["$pscTicks"] = _pscTicks
-		lookupLogic["$pscTime"] = _pscTime
+		lookupLogic["$channeledMana"] = _channeledMana
+		lookupLogic["$potionOfFrozenFocusTicks"] = _potionOfFrozenFocusTicks
+		lookupLogic["$potionOfFrozenFocusTime"] = _potionOfFrozenFocusTime
 		lookupLogic["$potionCooldown"] = potionCooldown
 		lookupLogic["$potionCooldownSeconds"] = potionCooldown
 		TRB.Data.lookupLogic = lookupLogic
@@ -1773,7 +1807,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		TRB.Data.snapshotData.markOfTheCrane.maxEndTime = maxEndTime
 	end
 
-	local function UpdatePotionOfSpiritualClarity(forceCleanup)
+	local function UpdateChanneledManaPotion(forceCleanup)
 		if TRB.Data.snapshotData.channeledManaPotion.isActive or forceCleanup then
 			local currentTime = GetTime()
 			if forceCleanup or TRB.Data.snapshotData.channeledManaPotion.endTime == nil or currentTime > TRB.Data.snapshotData.channeledManaPotion.endTime then
@@ -1781,10 +1815,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				TRB.Data.snapshotData.channeledManaPotion.endTime = nil
 				TRB.Data.snapshotData.channeledManaPotion.mana = 0
 				TRB.Data.snapshotData.channeledManaPotion.isActive = false
+				TRB.Data.snapshotData.channeledManaPotion.spellKey = nil
 			else
-				TRB.Data.snapshotData.channeledManaPotion.ticksRemaining = math.ceil((TRB.Data.snapshotData.channeledManaPotion.endTime - currentTime) / (TRB.Data.spells.potionOfSpiritualClarity.duration / TRB.Data.spells.potionOfSpiritualClarity.ticks))
-				local nextTickRemaining = TRB.Data.snapshotData.channeledManaPotion.endTime - currentTime - math.floor((TRB.Data.snapshotData.channeledManaPotion.endTime - currentTime) / (TRB.Data.spells.potionOfSpiritualClarity.duration / TRB.Data.spells.potionOfSpiritualClarity.ticks))
-				TRB.Data.snapshotData.channeledManaPotion.mana = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfSpiritualClarity.mana, true) + ((TRB.Data.snapshotData.channeledManaPotion.ticksRemaining - 1 + nextTickRemaining) * TRB.Data.snapshotData.manaRegen)
+				TRB.Data.snapshotData.channeledManaPotion.ticksRemaining = math.ceil((TRB.Data.snapshotData.channeledManaPotion.endTime - currentTime) / (TRB.Data.spells[TRB.Data.snapshotData.channeledManaPotion.spellKey].duration / TRB.Data.spells[TRB.Data.snapshotData.channeledManaPotion.spellKey].ticks))
+				local nextTickRemaining = TRB.Data.snapshotData.channeledManaPotion.endTime - currentTime - math.floor((TRB.Data.snapshotData.channeledManaPotion.endTime - currentTime) / (TRB.Data.spells[TRB.Data.snapshotData.channeledManaPotion.spellKey].duration / TRB.Data.spells[TRB.Data.snapshotData.channeledManaPotion.spellKey].ticks))
+				TRB.Data.snapshotData.channeledManaPotion.mana = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells[TRB.Data.snapshotData.channeledManaPotion.spellKey].mana, true) + ((TRB.Data.snapshotData.channeledManaPotion.ticksRemaining - 1 + nextTickRemaining) * TRB.Data.snapshotData.manaRegen)
 			end
 		end
 	end
@@ -1866,7 +1901,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	local function UpdateSnapshot_Mistweaver()
 		UpdateSnapshot()
 		UpdateSymbolOfHope()
-		UpdatePotionOfSpiritualClarity()
+		UpdateChanneledManaPotion()
 		UpdateInnervate()
 		UpdateManaTideTotem()
 
@@ -1882,7 +1917,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
         end
 
 		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
-		TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration, _ = GetItemCooldown(TRB.Data.character.items.potions.potionOfSpiritualClarity.id)
+		TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration, _ = GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
 		if TRB.Data.snapshotData.potion.startTime > 0 and TRB.Data.snapshotData.potion.duration > 0 then
 			TRB.Data.snapshotData.potion.onCooldown = true
 		else
@@ -2022,9 +2057,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						if TRB.Data.snapshotData.potion.onCooldown then
 							potionThresholdColor = TRB.Data.settings.monk.mistweaver.colors.threshold.unusable
 						end
-						local poscTotal = CalculateManaGain(TRB.Data.character.items.potions.potionOfSpiritualClarity.mana, true) + (TRB.Data.spells.potionOfSpiritualClarity.duration * TRB.Data.snapshotData.manaRegen)
-						if TRB.Data.settings.monk.mistweaver.thresholds.potionOfSpiritualClarity.enabled and (castingBarValue + poscTotal) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (castingBarValue + poscTotal), TRB.Data.character.maxResource)
+						local ampr1Total = CalculateManaGain(TRB.Data.character.items.potions.aeratedManaPotionRank1.mana, true)
+						if TRB.Data.settings.monk.mistweaver.thresholds.aeratedManaPotionRank1.enabled and (castingBarValue + ampr1Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (castingBarValue + ampr1Total), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
@@ -2039,10 +2074,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						else
 							TRB.Frames.resourceFrame.thresholds[1]:Hide()
 						end
-
-						local srpTotal = CalculateManaGain(TRB.Data.character.items.potions.spiritualRejuvenationPotion.mana, true)
-						if TRB.Data.settings.monk.mistweaver.thresholds.spiritualRejuvenationPotion.enabled and (castingBarValue + srpTotal) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (castingBarValue + srpTotal), TRB.Data.character.maxResource)
+						
+						local ampr2Total = CalculateManaGain(TRB.Data.character.items.potions.aeratedManaPotionRank2.mana, true)
+						if TRB.Data.settings.monk.mistweaver.thresholds.aeratedManaPotionRank2.enabled and (castingBarValue + ampr2Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (castingBarValue + ampr2Total), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
@@ -2057,10 +2092,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						else
 							TRB.Frames.resourceFrame.thresholds[2]:Hide()
 						end
-
-						local smpTotal = CalculateManaGain(TRB.Data.character.items.potions.spiritualManaPotion.mana, true)
-						if TRB.Data.settings.monk.mistweaver.thresholds.spiritualManaPotion.enabled and (castingBarValue + smpTotal) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (castingBarValue + smpTotal), TRB.Data.character.maxResource)
+						
+						local ampr3Total = CalculateManaGain(TRB.Data.character.items.potions.aeratedManaPotionRank3.mana, true)
+						if TRB.Data.settings.monk.mistweaver.thresholds.aeratedManaPotionRank3.enabled and (castingBarValue + ampr3Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (castingBarValue + ampr3Total), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
@@ -2076,9 +2111,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							TRB.Frames.resourceFrame.thresholds[3]:Hide()
 						end
 
-						local sompTotal = CalculateManaGain(TRB.Data.character.items.potions.soulfulManaPotion.mana, true)
-						if TRB.Data.settings.monk.mistweaver.thresholds.soulfulManaPotion.enabled and (castingBarValue + sompTotal) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (castingBarValue + sompTotal), TRB.Data.character.maxResource)
+						local poffr1Total = CalculateManaGain(TRB.Data.character.items.potions.potionOfFrozenFocusRank1.mana, true)
+						if TRB.Data.settings.monk.mistweaver.thresholds.potionOfFrozenFocusRank1.enabled and (castingBarValue + poffr1Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (castingBarValue + poffr1Total), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
@@ -2093,11 +2128,49 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						else
 							TRB.Frames.resourceFrame.thresholds[4]:Hide()
 						end
+
+						local poffr2Total = CalculateManaGain(TRB.Data.character.items.potions.potionOfFrozenFocusRank2.mana, true)
+						if TRB.Data.settings.monk.mistweaver.thresholds.potionOfFrozenFocusRank2.enabled and (castingBarValue + poffr2Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.resourceFrame.thresholds[5], resourceFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (castingBarValue + poffr2Total), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+							TRB.Frames.resourceFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+							TRB.Frames.resourceFrame.thresholds[5].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+							TRB.Frames.resourceFrame.thresholds[5]:Show()
+								
+							if TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[5].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[5].icon.cooldown:SetCooldown(0, 0)
+							end
+						else
+							TRB.Frames.resourceFrame.thresholds[5]:Hide()
+						end
+
+						local poffr3Total = CalculateManaGain(TRB.Data.character.items.potions.potionOfFrozenFocusRank3.mana, true)
+						if TRB.Data.settings.monk.mistweaver.thresholds.potionOfFrozenFocusRank3.enabled and (castingBarValue + poffr3Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.resourceFrame.thresholds[6], resourceFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (castingBarValue + poffr3Total), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+							TRB.Frames.resourceFrame.thresholds[6].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+							TRB.Frames.resourceFrame.thresholds[6].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+							TRB.Frames.resourceFrame.thresholds[6]:Show()
+								
+							if TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[6].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[6].icon.cooldown:SetCooldown(0, 0)
+							end
+						else
+							TRB.Frames.resourceFrame.thresholds[6]:Hide()
+						end
 					else
 						TRB.Frames.resourceFrame.thresholds[1]:Hide()
 						TRB.Frames.resourceFrame.thresholds[2]:Hide()
 						TRB.Frames.resourceFrame.thresholds[3]:Hide()
 						TRB.Frames.resourceFrame.thresholds[4]:Hide()
+						TRB.Frames.resourceFrame.thresholds[5]:Hide()
+						TRB.Frames.resourceFrame.thresholds[6]:Hide()
 					end
 
 					local passiveValue = 0
@@ -2494,15 +2567,38 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							-- Let UpdateSymbolOfHope() clean this up
 							UpdateSymbolOfHope(true)
 						end
-					elseif spellId == TRB.Data.spells.potionOfSpiritualClarity.spellId then
-						if type == "SPELL_AURA_APPLIED" then -- Gain Potion of Spiritual Clarity
+					elseif spellId == TRB.Data.spells.potionOfFrozenFocusRank1.spellId then
+						if type == "SPELL_AURA_APPLIED" then -- Gain Potion of Frozen Focus
+							TRB.Data.snapshotData.channeledManaPotion.spellKey = "potionOfFrozenFocusRank1"
 							TRB.Data.snapshotData.channeledManaPotion.isActive = true
-							TRB.Data.snapshotData.channeledManaPotion.ticksRemaining = TRB.Data.spells.potionOfSpiritualClarity.ticks
-							TRB.Data.snapshotData.channeledManaPotion.mana = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfSpiritualClarity.mana, true)
-							TRB.Data.snapshotData.channeledManaPotion.endTime = currentTime + TRB.Data.spells.potionOfSpiritualClarity.duration
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Spiritual Clarity channel
-							-- Let UpdatePotionOfSpiritualClarity() clean this up
-							UpdatePotionOfSpiritualClarity(true)
+							TRB.Data.snapshotData.channeledManaPotion.ticksRemaining = TRB.Data.spells.potionOfFrozenFocusRank1.ticks
+							TRB.Data.snapshotData.channeledManaPotion.mana = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfFrozenFocusRank1.mana, true)
+							TRB.Data.snapshotData.channeledManaPotion.endTime = currentTime + TRB.Data.spells.potionOfFrozenFocusRank1.duration
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Frozen Focus channel
+							-- Let UpdateChanneledManaPotion() clean this up
+							UpdateChanneledManaPotion(true)
+						end
+					elseif spellId == TRB.Data.spells.potionOfFrozenFocusRank2.spellId then
+						if type == "SPELL_AURA_APPLIED" then -- Gain Potion of Frozen Focus
+							TRB.Data.snapshotData.channeledManaPotion.spellKey = "potionOfFrozenFocusRank2"
+							TRB.Data.snapshotData.channeledManaPotion.isActive = true
+							TRB.Data.snapshotData.channeledManaPotion.ticksRemaining = TRB.Data.spells.potionOfFrozenFocusRank2.ticks
+							TRB.Data.snapshotData.channeledManaPotion.mana = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfFrozenFocusRank2.mana, true)
+							TRB.Data.snapshotData.channeledManaPotion.endTime = currentTime + TRB.Data.spells.potionOfFrozenFocusRank2.duration
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Frozen Focus channel
+							-- Let UpdateChanneledManaPotion() clean this up
+							UpdateChanneledManaPotion(true)
+						end
+					elseif spellId == TRB.Data.spells.potionOfFrozenFocusRank3.spellId then
+						if type == "SPELL_AURA_APPLIED" then -- Gain Potion of Frozen Focus
+							TRB.Data.snapshotData.channeledManaPotion.spellKey = "potionOfFrozenFocusRank3"
+							TRB.Data.snapshotData.channeledManaPotion.isActive = true
+							TRB.Data.snapshotData.channeledManaPotion.ticksRemaining = TRB.Data.spells.potionOfFrozenFocusRank3.ticks
+							TRB.Data.snapshotData.channeledManaPotion.mana = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfFrozenFocusRank3.mana, true)
+							TRB.Data.snapshotData.channeledManaPotion.endTime = currentTime + TRB.Data.spells.potionOfFrozenFocusRank3.duration
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Frozen Focus channel
+							-- Let UpdateChanneledManaPotion() clean this up
+							UpdateChanneledManaPotion(true)
 						end
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "windwalker" then --Windwalker

@@ -1781,47 +1781,75 @@ function TRB.UiFunctions:GenerateThresholdLinesForHealers(parent, controls, spec
         TRB.Functions.RedrawThresholdLines(spec)
     end)
 
-    controls.checkBoxes.potionOfSpiritualClarityThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_PotionOfSpiritualClarity", parent, "ChatConfigCheckButtonTemplate")
-    f = controls.checkBoxes.potionOfSpiritualClarityThresholdShow
+    controls.labels.builders = TRB.UiFunctions:BuildLabel(parent, "Aerated Mana Potion", 5, yCoord, 300, 20)
+    yCoord = yCoord - 20
+
+    controls.checkBoxes.aeratedManaPotionRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_AeratedManaPotionRank3", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.aeratedManaPotionRank3ThresholdShow
     f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-    getglobal(f:GetName() .. 'Text'):SetText("Potion of Spiritual Clarity (10,000 + regen)")
-    f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Potion of Spirital Clarity (10,000 + 10 seconds of passive mana regen)"
-    f:SetChecked(spec.thresholds.potionOfSpiritualClarity.enabled)
+    getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. "27,600 mana")
+    f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8) .. " (27,600 mana)"
+    f:SetChecked(spec.thresholds.aeratedManaPotionRank3.enabled)
     f:SetScript("OnClick", function(self, ...)
-        spec.thresholds.potionOfSpiritualClarity.enabled = self:GetChecked()
+        spec.thresholds.aeratedManaPotionRank3.enabled = self:GetChecked()
     end)
 
     yCoord = yCoord - 25
-    controls.checkBoxes.soulfulManaPotionThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_SoulfulManaPotion", parent, "ChatConfigCheckButtonTemplate")
-    f = controls.checkBoxes.soulfulManaPotionThresholdShow
+    controls.checkBoxes.aeratedManaPotionRank2ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_AeratedManaPotionRank2", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.aeratedManaPotionRank2ThresholdShow
     f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-    getglobal(f:GetName() .. 'Text'):SetText("Soulful Mana Potion (4,000)")
-    f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Soulful Mana Potion (4,000)"
-    f:SetChecked(spec.thresholds.soulfulManaPotion.enabled)
+    getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. "24,000 mana")
+    f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8) .. " (24,000 mana)"
+    f:SetChecked(spec.thresholds.aeratedManaPotionRank2.enabled)
     f:SetScript("OnClick", function(self, ...)
-        spec.thresholds.soulfulManaPotion.enabled = self:GetChecked()
+        spec.thresholds.aeratedManaPotionRank2.enabled = self:GetChecked()
+    end)
+    yCoord = yCoord - 25
+
+    controls.checkBoxes.aeratedManaPotionRank1ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_AeratedManaPotionRank1", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.aeratedManaPotionRank1ThresholdShow
+    f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+    getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. "20,869 mana")
+    f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8) .. " (20,869 mana)"
+    f:SetChecked(spec.thresholds.aeratedManaPotionRank1.enabled)
+    f:SetScript("OnClick", function(self, ...)
+        spec.thresholds.aeratedManaPotionRank1.enabled = self:GetChecked()
+    end)
+    yCoord = yCoord - 25
+
+    controls.labels.builders = TRB.UiFunctions:BuildLabel(parent, "Potion of Frozen Focus", 5, yCoord, 300, 20)
+    yCoord = yCoord - 20
+
+    controls.checkBoxes.potionOfFrozenFocusRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_potionOfFrozenFocusRank3", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.potionOfFrozenFocusRank3ThresholdShow
+    f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+    getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. "48,300 mana + regen")
+    f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8) .. " (48,300 mana + regen)"
+    f:SetChecked(spec.thresholds.potionOfFrozenFocusRank3.enabled)
+    f:SetScript("OnClick", function(self, ...)
+        spec.thresholds.potionOfFrozenFocusRank3.enabled = self:GetChecked()
     end)
 
     yCoord = yCoord - 25
-    controls.checkBoxes.spiritualManaPotionThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_SpiritualManaPotion", parent, "ChatConfigCheckButtonTemplate")
-    f = controls.checkBoxes.spiritualManaPotionThresholdShow
+    controls.checkBoxes.potionOfFrozenFocusRank2ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_potionOfFrozenFocusRank2", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.potionOfFrozenFocusRank2ThresholdShow
     f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-    getglobal(f:GetName() .. 'Text'):SetText("Spiritual Mana Potion (6,000)")
-    f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Spiritual Mana Potion (6,000)"
-    f:SetChecked(spec.thresholds.spiritualManaPotion.enabled)
+    getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. "42,000 mana + regen")
+    f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8) .. " (42,000 mana + regen)"
+    f:SetChecked(spec.thresholds.potionOfFrozenFocusRank2.enabled)
     f:SetScript("OnClick", function(self, ...)
-        spec.thresholds.spiritualManaPotion.enabled = self:GetChecked()
+        spec.thresholds.potionOfFrozenFocusRank2.enabled = self:GetChecked()
     end)
 
     yCoord = yCoord - 25
-    controls.checkBoxes.spiritualRejuvenationPotionThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_SpiritualRejuvenationPotion", parent, "ChatConfigCheckButtonTemplate")
-    f = controls.checkBoxes.spiritualRejuvenationPotionThresholdShow
+    controls.checkBoxes.potionOfFrozenFocusRank1ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_potionOfFrozenFocusRank1", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.potionOfFrozenFocusRank1ThresholdShow
     f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-    getglobal(f:GetName() .. 'Text'):SetText("Spiritual Rejuvenation Potion (2,500)")
-    f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use a Spiritual Rejuvenation Potion (2,500)"
-    f:SetChecked(spec.thresholds.spiritualRejuvenationPotion.enabled)
+    getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. "36,531 mana + regen")
+    f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8) .. " (36,531 mana + regen)"
+    f:SetChecked(spec.thresholds.potionOfFrozenFocusRank1.enabled)
     f:SetScript("OnClick", function(self, ...)
-        spec.thresholds.spiritualRejuvenationPotion.enabled = self:GetChecked()
+        spec.thresholds.potionOfFrozenFocusRank1.enabled = self:GetChecked()
     end)
 
     yCoord = yCoord - 25
