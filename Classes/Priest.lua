@@ -230,7 +230,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				isTalent = true
 			},
 			holyWordSanctify = {
-				id = 373481,
+				id = 34861,
 				name = "",
 				icon = "",
 				duration = 60,

@@ -1945,7 +1945,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
-		yCoord = yCoord - 60
+		yCoord = yCoord - 30
 		controls.checkBoxes.dpReady = CreateFrame("CheckButton", "TwintopResourceBar_CB3_3", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dpReady
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
