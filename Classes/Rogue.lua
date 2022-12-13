@@ -3718,7 +3718,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					
 					local sbsCp = 0
 					
-					if TRB.Functions.IsTalentActive(TRB.Data.spells.serratedBoneSpike) and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.serratedBoneSpike.charges > 0 then
+					if TRB.Data.settings.rogue.assassination.comboPoints.spec.serratedBoneSpikeColor and TRB.Functions.IsTalentActive(TRB.Data.spells.serratedBoneSpike) and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.serratedBoneSpike.charges > 0 then
 						sbsCp = 1 + TRB.Data.snapshotData.targetData.serratedBoneSpike
 
 						if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] == nil or

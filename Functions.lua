@@ -2690,7 +2690,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.endOfEclipse = settings.endOfEclipse
 			elseif specId == 2 then -- Feral
 				configuration.colors.comboPoints = settings.colors.comboPoints
-				configuration.comboPoints = settings.comboPoints				
+				configuration.comboPoints = settings.comboPoints
 			elseif specId == 4 then -- Restoration
 			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter

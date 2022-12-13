@@ -210,6 +210,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 relativeTo="TOP",
                 relativeToName="Above - Middle",
                 fullWidth=false,
+				spec={
+					serratedBoneSpikeColor = true,
+				}
             },
 			colors = {
 				text = {
@@ -824,11 +827,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.comboPoints.sameColor = self:GetChecked()
 		end)
 
-
 		controls.colors.comboPoints.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled Combo Point background", spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
+		end)
+
+		yCoord = yCoord - 20
+
+		controls.checkBoxes.serratedBoneSpikeComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_comboPointsSerratedBoneSpikeColor", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.serratedBoneSpikeComboPoint
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change color for Serrated Bone Spike generation?")
+		f.tooltip = "When checked, any unfilled combo points that will generate on your next use of Serrated Bone Spike will be a different color (as specified above)."
+		f:SetChecked(spec.comboPoints.spec.serratedBoneSpikeColor)
+		f:SetScript("OnClick", function(self, ...)
+			spec.comboPoints.spec.serratedBoneSpikeColor = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
