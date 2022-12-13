@@ -2056,8 +2056,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					local currentMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 					local barBorderColor = TRB.Data.settings.shaman.restoration.colors.bar.border
 
-					if TRB.Data.spells.innervate.isActive and TRB.Data.settings.shaman.restoration.colors.bar.innervateBorderChange then
-						barBorderColor = TRB.Data.settings.shaman.restoration.colors.bar.innervate
+					if TRB.Data.spells.innervate.isActive then
+						if TRB.Data.settings.shaman.restoration.colors.bar.innervateBorderChange then
+							barBorderColor = TRB.Data.settings.shaman.restoration.colors.bar.innervate
+						end
 
 						if TRB.Data.settings.shaman.restoration.audio.innervate.enabled and TRB.Data.snapshotData.audio.innervateCue == false then
 							TRB.Data.snapshotData.audio.innervateCue = true

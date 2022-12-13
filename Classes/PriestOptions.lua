@@ -176,12 +176,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					holyWordSerenity="FF00FF00",
 					surgeOfLight1="FFFCE58E",
 					surgeOfLight2="FFAF9942",
+					resonantWords="FFFF0000",
 					--casting="FF555555",
 					spending="FFFFFFFF",
 					passive="FF8080FF",
 					surgeOfLightBorderChange1=true,
 					surgeOfLightBorderChange2=true,
 					innervateBorderChange=true,
+					resonantWordsBorderChange=true,
 					--flashAlpha=0.70,
 					--flashPeriod=0.5,
 					--flashEnabled=true,
@@ -208,6 +210,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				},
 				surgeOfLight2={
 					name = "Innervate (2 stacks)",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+				resonantWords={
+					name = "Resonant Words",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -730,6 +738,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "surgeOfLight2")
 		end)
 
+		controls.colors.resonantWords = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have any stacks of Resonant Words", spec.colors.bar.innervate, 300, 25, oUi.xCoord2, yCoord-120)
+		f = controls.colors.resonantWords
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "resonantWords")
+		end)
+
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervateBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_innervateBorderChange", parent, "ChatConfigCheckButtonTemplate")
@@ -762,6 +776,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(spec.colors.bar.surgeOfLightBorderChange2)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.surgeOfLightBorderChange2 = self:GetChecked()
+		end)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.resonantWordsBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_resonantWordsBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.resonantWordsBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Resonant Words")
+		f.tooltip = "This will change the bar border color when you have any stacks of Resonant Words."
+		f:SetChecked(spec.colors.bar.resonantWordsBorderChange)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.resonantWordsBorderChange = self:GetChecked()
 		end)
 
 
@@ -1159,6 +1184,71 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			PlaySoundFile(spec.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 		
+		yCoord = yCoord - 60
+		controls.checkBoxes.resonantWordsAudioCB = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_resonantWords", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.resonantWordsAudioCB
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you gain Resonant Words")
+		f.tooltip = "Play audio cue when you gain a Resonant Words proc."
+		f:SetChecked(spec.audio.resonantWords.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.audio.resonantWords.enabled = self:GetChecked()
+
+			if spec.audio.resonantWords.enabled then
+---@diagnostic disable-next-line: redundant-parameter
+				PlaySoundFile(spec.audio.resonantWords.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.resonantWordsAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Holy_resonantWordsAudio", parent)
+		controls.dropDown.resonantWordsAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.resonantWordsAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.resonantWordsAudio, spec.audio.resonantWords.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.resonantWordsAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.resonantWordsAudio, function(self, level, menuList)
+			local entries = 25
+			local info = LibDD:UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					LibDD:UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == spec.audio.resonantWords.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						LibDD:UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.resonantWordsAudio:SetValue(newValue, newName)
+			spec.audio.resonantWords.sound = newValue
+			spec.audio.resonantWords.soundName = newName
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.resonantWordsAudio, newName)
+			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
+			PlaySoundFile(spec.audio.resonantWords.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
 		yCoord = yCoord - 60
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Passive External Mana Generation Tracking", 0, yCoord)
 		

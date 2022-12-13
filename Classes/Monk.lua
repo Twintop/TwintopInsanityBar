@@ -2018,8 +2018,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					local currentMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 					local barBorderColor = TRB.Data.settings.monk.mistweaver.colors.bar.border
 
-					if TRB.Data.spells.innervate.isActive and TRB.Data.settings.monk.mistweaver.colors.bar.innervateBorderChange then
-						barBorderColor = TRB.Data.settings.monk.mistweaver.colors.bar.innervate
+					if TRB.Data.spells.innervate.isActive then
+						if TRB.Data.settings.monk.mistweaver.colors.bar.innervateBorderChange then
+							barBorderColor = TRB.Data.settings.monk.mistweaver.colors.bar.innervate
+						end
 
 						if TRB.Data.settings.monk.mistweaver.audio.innervate.enabled and TRB.Data.snapshotData.audio.innervateCue == false then
 							TRB.Data.snapshotData.audio.innervateCue = true
