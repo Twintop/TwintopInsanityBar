@@ -3193,7 +3193,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						if TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey] ~= nil and
 							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey ~= nil and
 							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction ~= nil and
-							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction >= 0 then
+							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction >= 0 and
+							TRB.Functions.IsTalentActive(TRB.Data.spells[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey]) then
 
 							local castTimeRemains = TRB.Data.snapshotData.casting.endTime - currentTime
 
