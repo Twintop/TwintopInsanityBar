@@ -749,7 +749,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			},
 			-- TODO: circleOfLifeAndDeath implementation for timers
 			apexPredatorsCraving = {
-				id = 339140,
+				id = 391882,
 				name = "",
 				icon = ""
 			}
