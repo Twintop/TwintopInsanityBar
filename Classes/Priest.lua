@@ -1612,11 +1612,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$lightweaverTime" then
-				if TRB.Data.snapshotData.lightweaver.isActive then
+				if TRB.Data.snapshotData.lightweaver.remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$lightweaverStacks" then
-				if TRB.Data.snapshotData.lightweaver.isActive then
+				if TRB.Data.snapshotData.lightweaver.remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$rwTime" then
