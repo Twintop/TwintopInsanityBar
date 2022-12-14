@@ -1612,15 +1612,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$lightweaverTime" then
-				if TRB.Data.snapshotData.symbolOfHope.isActive then
+				if TRB.Data.snapshotData.lightweaver.isActive then
 					valid = true
 				end
-			elseif var == "$lightweaverTicks" then
+			elseif var == "$lightweaverStacks" then
 				if TRB.Data.snapshotData.lightweaver.isActive then
 					valid = true
 				end
 			elseif var == "$rwTime" then
-				if TRB.Data.snapshotData.lightweaver.remainingTime > 0 then
+				if TRB.Data.snapshotData.resonantWords.remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$innervateMana" then
