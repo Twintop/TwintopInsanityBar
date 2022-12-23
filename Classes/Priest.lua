@@ -808,7 +808,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				duration = 15,
 				ticks = 15,
 				tickDuration = 1, --This is NOT hasted
-				tocMinVersion = 90001
 			},
 			lashOfInsanity_Lasher = {
 				id = 344838, --Doesn't actually exist / unused?
@@ -819,7 +818,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				duration = 15,
 				ticks = 15,
 				tickDuration = 1, --This is hasted
-				tocMinVersion = 90002
 			},			
 		}
 
@@ -1111,7 +1109,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 																															  
 			{ variable = "#tof", icon = spells.twistOfFate.icon, description = spells.twistOfFate.name, printInSettings = true },
 			{ variable = "#twistOfFate", icon = spells.twistOfFate.icon, description = spells.twistOfFate.name, printInSettings = false },
-																															  
+			
+			{ variable = "#cthun", icon = spells.idolOfCthun.icon, description = spells.idolOfCthun.name, printInSettings = true },
+			{ variable = "#idolOfCthun", icon = spells.idolOfCthun.icon, description = spells.idolOfCthun.name, printInSettings = false },
+			{ variable = "#loi", icon = spells.idolOfCthun.icon, description = spells.idolOfCthun.name, printInSettings = false },
+			
 			{ variable = "#md", icon = spells.massDispel.icon, description = spells.massDispel.name, printInSettings = true },
 			{ variable = "#massDispel", icon = spells.massDispel.icon, description = spells.massDispel.name, printInSettings = false }
 		}
@@ -2376,6 +2378,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#massDispel"] = TRB.Data.spells.massDispel.icon
 		lookup["#dam"] = TRB.Data.spells.deathAndMadness.icon
 		lookup["#deathAndMadness"] = TRB.Data.spells.deathAndMadness.icon
+		lookup["#cthun"] = TRB.Data.spells.idolOfCthun.icon
+		lookup["#idolOfCthun"] = TRB.Data.spells.idolOfCthun.icon
+		lookup["#loi"] = TRB.Data.spells.idolOfCthun.icon
 		lookup["$swpCount"] = shadowWordPainCount
 		lookup["$swpTime"] = shadowWordPainTime
 		lookup["$vtCount"] = vampiricTouchCount
