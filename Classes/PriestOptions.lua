@@ -2343,7 +2343,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnClick", function(self, ...)
 			spec.auspiciousSpiritsTracker = self:GetChecked()
 
-			if ((spec.auspiciousSpiritsTracker and TRB.Functions.IsTalentActive(TRB.Data.spells.as)) or TRB.Functions.IsTtdActive(spec)) and GetSpecialization() == 3 then
+			if ((spec.auspiciousSpiritsTracker and TRB.Functions.IsTalentActive(TRB.Data.spells.auspiciousSpirits)) or TRB.Functions.IsTtdActive(spec)) and GetSpecialization() == 3 then
 				targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			else
 				targetsTimerFrame:SetScript("OnUpdate", nil)
