@@ -614,7 +614,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 321973,
 				name = "",
 				icon = "",
-				insanity = 10,
+				insanity = 7.5,
 				ticks = 4,
 				duration = 4,
 				isTalent = true
