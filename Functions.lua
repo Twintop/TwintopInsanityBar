@@ -376,7 +376,6 @@ local function GetTalents(baselineTalents)
 
 					if entryId ~= nil then
 						local entryInfo = C_Traits.GetEntryInfo(configId, entryId)
-						--print(configId, entryId, entryInfo.definitionID)
 						local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
 
 						if definitionInfo ~= nil then

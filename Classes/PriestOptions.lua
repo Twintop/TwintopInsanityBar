@@ -423,6 +423,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				bar={
 					border="FF431863",
 					borderOvercap="FFFF0000",
+					borderMindFlayInsanity="FF00FF00",
 					background="66000000",
 					base="FF763BAF",
 					devouringPlagueUsable="FF5C2F89",
@@ -435,7 +436,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					flashAlpha=0.70,
 					flashPeriod=0.5,
 					flashEnabled=true,
-					overcapEnabled=true
+					overcapEnabled=true,
+					mindFlayInsanityBorderChange=true
 				},
 				threshold={
 					under="FFFFFFFF",
@@ -717,12 +719,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
 		end)
 
-
 		yCoord = yCoord - 40
 		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
 
 		yCoord = yCoord - 25
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Border's normal/base border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord-0)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Border is normal/base border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord-0)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 2)
@@ -1697,14 +1698,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		controls.colors.inVoidform1GCD = TRB.UiFunctions:BuildColorPicker(parent, "Insanity while you have less than 1 GCD left in Voidform / Dark Ascension (if enabled)", spec.colors.bar.inVoidform1GCD, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.inVoidform1GCD		
+		f = controls.colors.inVoidform1GCD
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inVoidform1GCD")
 		end)
 
 		yCoord = yCoord - 30
 		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Insanity from hardcasting spells", spec.colors.bar.casting, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.casting		
+		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 3)
 		end)
@@ -1722,30 +1723,51 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Insanity", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Insanity from Auspicious Spirits, Shadowfiend/Mindbender swings, Death and Madness ticks, and Lash of Insanity ticks.", spec.colors.bar.passive, 600, 25, oUi.xCoord, yCoord)
+		f = controls.colors.passive
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
+		end)
+
+		yCoord = yCoord - 40
+		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
+
+		yCoord = yCoord - 25
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Border is normal/base border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.border
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Border when your current hardcast will overcap Insanity", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderOvercap		
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.background		
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
+		controls.checkBoxes.mindFlayInsanityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_mindFlayInsanityBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.mindFlayInsanityBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Mind Flay: Insanity")
+		f.tooltip = "This will change the bar border color when you are able to cast Mind Flay: Insanity"
+		f:SetChecked(spec.colors.bar.mindFlayInsanityBorderChange)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.mindFlayInsanityBorderChange = self:GetChecked()
 		end)
 
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.border		
+		controls.colors.borderMindFlayInsanity = TRB.UiFunctions:BuildColorPicker(parent, "Border when you can channel Mind Flay: Insanity", spec.colors.bar.borderMindFlayInsanity, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.borderMindFlayInsanity
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Insanity from Auspicious Spirits, Shadowfiend/Mindbender swings, Death and Madness ticks, and Lash of Insanity ticks.", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
-		f = controls.colors.passive
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderMindFlayInsanity")
 		end)
 
 		yCoord = yCoord - 40

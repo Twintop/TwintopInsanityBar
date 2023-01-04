@@ -731,6 +731,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 391403,
 				name = "",
 				icon = "",
+				buffId = 391401,
 				insanity = 4,
 				isTalent = false,
 				baseline = true
@@ -880,6 +881,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			consumedTime = nil,
 			mindSearWithMindDevourer = false,
 			mindSearChannelStartTime = nil
+		}
+		specCache.shadow.snapshotData.mindFlayInsanity = {
+			spellId = nil,
+			endTime = nil,
+			duration = 0
 		}
 		specCache.shadow.snapshotData.twistOfFate = {
 			spellId = nil,
@@ -1078,6 +1084,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 																															  
 			{ variable = "#mb", icon = spells.mindBlast.icon, description = spells.mindBlast.name, printInSettings = true },
 			{ variable = "#mindBlast", icon = spells.mindBlast.icon, description = spells.mindBlast.name, printInSettings = false },
+			{ variable = "#mfi", icon = spells.mindFlayInsanity.icon, description = spells.mindFlayInsanity.name, printInSettings = true },
+			{ variable = "#mindFlayInsanity", icon = spells.mindFlayInsanity.icon, description = spells.mindFlayInsanity.name, printInSettings = false },
 			{ variable = "#mf", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = true },
 			{ variable = "#mindFlay", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = false },
 			{ variable = "#ms", icon = spells.mindSear.icon, description = spells.mindSear.name, printInSettings = true },
@@ -1187,6 +1195,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$tofTime", description = "Time remaining on Twist of Fate buff", printInSettings = true, color = false },
 
 			{ variable = "$mdTime", description = "Time remaining on Mind Devourer buff", printInSettings = true, color = false },
+
+			{ variable = "$mfiTime", description = "Time remaining on Mind Flay: Insanity buff", printInSettings = true, color = false },
 
 			{ variable = "$vfTime", description = "Duration remaining of Voidform", printInSettings = true, color = false },
 
@@ -1802,6 +1812,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if TRB.Data.spells.mindDevourer.isActive then
 					valid = true
 				end
+			elseif var == "$mfiTime" then
+				if TRB.Data.spells.mindFlayInsanity.isActive then
+					valid = true
+				end
 			elseif var == "$tofTime" then
 				if TRB.Data.snapshotData.twistOfFate.spellId ~= nil then
 					valid = true
@@ -2292,14 +2306,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		--$mdTime
 		local _mdTime = 0
-		if TRB.Data.spells.mindDevourer.isActive then
+		if TRB.Data.snapshotData.mindDevourer.endTime then
 			_mdTime = math.abs(TRB.Data.snapshotData.mindDevourer.endTime - currentTime)
 		end
 		local mdTime = string.format("%.1f", _mdTime)
+		
+		--$mfiTime
+		local _mfiTime = 0
+		if TRB.Data.snapshotData.mindFlayInsanity.endTime then
+			_mfiTime = math.abs(TRB.Data.snapshotData.mindFlayInsanity.endTime - currentTime)
+		end
+		local mfiTime = string.format("%.1f", _mfiTime)
 
 		--$tofTime
 		local _tofTime = 0
-		if TRB.Data.snapshotData.twistOfFate.spellId ~= nil then
+		if TRB.Data.snapshotData.twistOfFate.endTime then
 			_tofTime = math.abs(TRB.Data.snapshotData.twistOfFate.endTime - currentTime)
 		end
 		local tofTime = string.format("%.1f", _tofTime)
@@ -2350,6 +2371,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#mindBlast"] = TRB.Data.spells.mindBlast.icon
 		lookup["#mf"] = TRB.Data.spells.mindFlay.icon
 		lookup["#mindFlay"] = TRB.Data.spells.mindFlay.icon
+		lookup["#mfi"] = TRB.Data.spells.mindFlayInsanity.icon
+		lookup["#mindFlayInsanity"] = TRB.Data.spells.mindFlayInsanity.icon
 		lookup["#ms"] = TRB.Data.spells.mindSear.icon
 		lookup["#mindSear"] = TRB.Data.spells.mindSear.icon
 		lookup["#mindbender"] = TRB.Data.spells.mindbender.icon
@@ -2383,6 +2406,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$dpCount"] = devouringPlagueCount
 		lookup["$dpTime"] = devouringPlagueTime
 		lookup["$mdTime"] = mdTime
+		lookup["$mfiTime"] = mfiTime
 		lookup["$tofTime"] = tofTime
 		lookup["$vfTime"] = voidformTime
 		lookup["$insanityPlusCasting"] = insanityPlusCasting
@@ -2422,6 +2446,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$dpCount"] = devouringPlagueCount
 		lookupLogic["$dpTime"] = devouringPlagueTime
 		lookupLogic["$mdTime"] = _mdTime
+		lookupLogic["$mfiTime"] = _mfiTime
 		lookupLogic["$tofTime"] = _tofTime
 		lookupLogic["$vfTime"] = _voidformTime
 		lookupLogic["$insanityPlusCasting"] = _insanityPlusCasting
@@ -2976,6 +3001,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.snapshotData.darkAscension.remainingTime = GetDarkAscensionRemainingTime()
         end
 
+		if TRB.Data.snapshotData.mindFlayInsanity.endTime ~= nil and currentTime > (TRB.Data.snapshotData.mindFlayInsanity.endTime) then
+            TRB.Data.snapshotData.mindFlayInsanity.endTime = nil
+            TRB.Data.snapshotData.mindFlayInsanity.duration = 0
+			TRB.Data.snapshotData.mindFlayInsanity.spellId = nil
+		end
+
+		if TRB.Data.snapshotData.mindDevourer.endTime ~= nil and currentTime > (TRB.Data.snapshotData.mindDevourer.endTime) then
+            TRB.Data.snapshotData.mindDevourer.endTime = nil
+            TRB.Data.snapshotData.mindDevourer.duration = 0
+			TRB.Data.snapshotData.mindDevourer.spellId = nil
+		end
+
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPain then
 				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.shadowWordPain.id, "target", "player"))
@@ -3451,28 +3488,31 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local currentInsanity = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
 					local passiveValue = 0
-					if TRB.Data.settings.priest.shadow.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.borderOvercap, true))
+					local barBorderColor = TRB.Data.settings.priest.shadow.colors.bar.border
 
+					if TRB.Data.settings.priest.shadow.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+						barBorderColor = TRB.Data.settings.priest.shadow.colors.bar.borderOvercap
 						if TRB.Data.settings.priest.shadow.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
 ---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.priest.shadow.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					else
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.priest.shadow.colors.bar.border, true))
+						barBorderColor = TRB.Data.settings.priest.shadow.colors.bar.border
 						TRB.Data.snapshotData.audio.overcapCue = false
 					end
 
-					--TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.shadow, resourceFrame, currentInsanity)
+					if TRB.Data.settings.priest.shadow.colors.bar.mindFlayInsanityBorderChange and IsValidVariableForSpec("$mfiTime") then
+						barBorderColor = TRB.Data.settings.priest.shadow.colors.bar.borderMindFlayInsanity
+					end
+					
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
 
 					if CastingSpell() and TRB.Data.settings.priest.shadow.bar.showCasting  then
 						castingBarValue = TRB.Data.snapshotData.casting.resourceFinal + currentInsanity
 					else
 						castingBarValue = currentInsanity
 					end
-
-					--TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.shadow, castingFrame, castingBarValue)
 
 					if TRB.Data.settings.priest.shadow.bar.showPassive and
 						(TRB.Functions.IsTalentActive(TRB.Data.spells.auspiciousSpirits) or
@@ -3496,8 +3536,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Frames.passiveFrame.thresholds[2]:Hide()
 						passiveValue = 0
 					end
-
-					--TRB.Functions.SetBarCurrentValue(TRB.Data.settings.priest.shadow, passiveFrame, passiveBarValue)
 
 					if TRB.Data.settings.priest.shadow.thresholds.devouringPlague.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.devouringPlague) then
 						TRB.Frames.resourceFrame.thresholds[1]:Show()
@@ -3939,6 +3977,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.mindDevourer.spellId = nil
 							TRB.Data.snapshotData.mindDevourer.duration = 0
 							TRB.Data.snapshotData.mindDevourer.endTime = nil
+						end
+					elseif spellId == TRB.Data.spells.mindFlayInsanity.buffId then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
+							TRB.Data.spells.mindFlayInsanity.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.duration, TRB.Data.snapshotData.mindFlayInsanity.endTime, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.mindFlayInsanity.buffId)
+						elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_DISPEL" then -- Lost buff
+							TRB.Data.spells.mindFlayInsanity.isActive = false
+							TRB.Data.snapshotData.mindFlayInsanity.spellId = nil
+							TRB.Data.snapshotData.mindFlayInsanity.duration = 0
+							TRB.Data.snapshotData.mindFlayInsanity.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.twistOfFate.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
