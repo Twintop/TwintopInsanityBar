@@ -389,12 +389,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 
 			-- Set Bonuses
-			divineConversation = {
+			divineConversation = { -- T29 4P
 				id = 363727,
 				name = "",
 				icon = "",
 				reduction = 15,
 				reductionPvp = 10
+			},
+			prayerFocus = { -- T30 2P
+				id = 394729,
+				name = "",
+				icon = "",
+				holyWordReduction = 2
 			}
 		}
 
@@ -493,6 +499,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			duration = 0
 		}
 		specCache.holy.snapshotData.divineConversation = {
+			isActive = false
+		}
+		specCache.holy.snapshotData.prayerFocus = {
 			isActive = false
 		}
 
@@ -1535,9 +1544,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData.holyWordChastise)
 	end
 
-	local function CalculateHolyWordCooldown(base)
+	local function CalculateHolyWordCooldown(base, spellId)
 		local mod = 1
 		local divineConversationValue = 0
+		local prayerFocusValue = 0
 
 		if TRB.Data.snapshotData.divineConversation.isActive then
 			if TRB.Data.character.isPvp then
@@ -1545,6 +1555,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			else
 				divineConversationValue = TRB.Data.spells.divineConversation.reduction
 			end
+		end
+
+		if TRB.Data.snapshotData.prayerFocus.isActive and (spellId == TRB.Data.spells.heal.id or spellId == TRB.Data.spells.prayerOfHealing.id) then
+			prayerFocusValue = TRB.Data.spells.prayerFocus.holyWordReduction
 		end
 
 		if TRB.Data.spells.apotheosis.isActive then
@@ -1555,7 +1569,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			mod = mod * (1 + (TRB.Data.spells.lightOfTheNaaru.holyWordModifier * TRB.Data.talents[TRB.Data.spells.lightOfTheNaaru.id].currentRank))
 		end
 
-		return mod * base + divineConversationValue
+		return mod * (base + prayerFocusValue) + divineConversationValue
 	end
 
 	local function CalculateManaGain(mana, isPotion)
@@ -3418,31 +3432,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Functions.IsTalentActive(TRB.Data.spells[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey]) then
 
 							local castTimeRemains = TRB.Data.snapshotData.casting.endTime - currentTime
+							local holyWordCooldownRemaining = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey])
 
-							--[[TODO: Check if this is still needed?
-							if TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey2 ~= nil and
-								TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction2 ~= nil and
-								TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction2 >= 0 then --We have an edge case, boiz
-								local holyWordCooldownRemaining1 = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey])
-								local holyWordCooldownRemaining2 = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey2])
-
-								local remaining1 = holyWordCooldownRemaining1 - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction) - castTimeRemains
-								local remaining2 = holyWordCooldownRemaining2 - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction2) - castTimeRemains
-
-								if remaining1 <= 0 and remaining2 > 0 and TRB.Data.settings.priest.holy.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey .. "Enabled"] then
-									resourceBarColor = TRB.Data.settings.priest.holy.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey]
-								elseif remaining1 > 0 and remaining2 <= 0 and TRB.Data.settings.priest.holy.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey2 .. "Enabled"] then
-									resourceBarColor = TRB.Data.settings.priest.holy.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey2]
-								elseif remaining1 <= 0 and remaining2 <= 0 and TRB.Data.settings.priest.holy.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey .. "Enabled"] then
-									resourceBarColor = TRB.Data.settings.priest.holy.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey]
-								end
-							else]]
-								local holyWordCooldownRemaining = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey])
-
-								if (holyWordCooldownRemaining - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction) - castTimeRemains) <= 0 and TRB.Data.settings.priest.holy.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey .. "Enabled"] then
-									resourceBarColor = TRB.Data.settings.priest.holy.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey]
-								end
-							--end
+							if (holyWordCooldownRemaining - CalculateHolyWordCooldown(TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction, TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].id) - castTimeRemains) <= 0 and TRB.Data.settings.priest.holy.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey .. "Enabled"] then
+								resourceBarColor = TRB.Data.settings.priest.holy.colors.bar[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey]
+							end
 						end
 					end
 
@@ -3863,6 +3857,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.divineConversation.isActive = true
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.divineConversation.isActive = false
+						end
+					elseif spellId == TRB.Data.spells.prayerFocus.id then
+						if type == "SPELL_AURA_APPLIED" then -- Gained buff
+							TRB.Data.snapshotData.prayerFocus.isActive = true
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.prayerFocus.isActive = false
 						end
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then

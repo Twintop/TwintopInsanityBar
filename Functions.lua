@@ -2457,6 +2457,7 @@ local function ArePvpTalentsActive()
             end
         end
     end
+	return false
 end
 TRB.Functions.ArePvpTalentsActive = ArePvpTalentsActive
 
