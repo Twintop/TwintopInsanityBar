@@ -433,7 +433,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
 			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
 			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatilit y% (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
 			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
 			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
 			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },

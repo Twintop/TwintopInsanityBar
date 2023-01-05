@@ -988,7 +988,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
 			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
 			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatilit y% (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
 			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
 			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
 			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
@@ -1148,7 +1148,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
 			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
 			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatilit y% (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
 			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
 			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
 			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
@@ -3910,16 +3910,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.deathAndMadness.lastTick = currentTime
 						end
 					elseif spellId == TRB.Data.spells.mindSear.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_CAST_SUCCESS" then
-							--[[if TRB.Data.snapshotData.mindDevourer.spellId ~= nil then
-								TRB.Data.snapshotData.casting.mindSearWithMindDevourer = true
-							else
-								TRB.Data.snapshotData.casting.mindSearWithMindDevourer = false
-							end]]
-						elseif type == "SPELL_AURA_REMOVED" then
+						if type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshotData.casting.mindSearWithMindDevourer = false
 						end
-					elseif spellId == TRB.Data.spells.mindSear.idTick then
 					elseif spellId == TRB.Data.spells.vampiricTouch.id then
 						if InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- VT Applied to Target
@@ -3933,7 +3926,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouchRemaining = 0
 								TRB.Data.snapshotData.targetData.vampiricTouch = TRB.Data.snapshotData.targetData.vampiricTouch - 1
 								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
 						end
 					elseif spellId == TRB.Data.spells.devouringPlague.id then
@@ -3949,7 +3941,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								TRB.Data.snapshotData.targetData.targets[destGUID].devouringPlagueRemaining = 0
 								TRB.Data.snapshotData.targetData.devouringPlague = TRB.Data.snapshotData.targetData.devouringPlague - 1
 								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
 						end
 					elseif settings.auspiciousSpiritsTracker and TRB.Functions.IsTalentActive(TRB.Data.spells.auspiciousSpirits) and spellId == TRB.Data.spells.auspiciousSpirits.idSpawn and type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
@@ -3970,7 +3961,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.spells.mindDevourer.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.mindDevourer.duration, TRB.Data.snapshotData.mindDevourer.endTime, _, _, _, TRB.Data.snapshotData.mindDevourer.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.mindDevourer.buffId)
 						elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_DISPEL" then -- Lost buff
-							if type == "SPELL_AURA_REMOVED" and TRB.Data.snapshotData.mindDevourer.endTime > currentTime then
+							if type == "SPELL_AURA_REMOVED" and TRB.Data.snapshotData.mindDevourer.endTime ~= nil and TRB.Data.snapshotData.mindDevourer.endTime > currentTime then
 								TRB.Data.snapshotData.mindDevourer.consumedTime = currentTime
 							end
 							TRB.Data.spells.mindDevourer.isActive = false

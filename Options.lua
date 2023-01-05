@@ -1956,6 +1956,7 @@ function TRB.Options:CleanupSettings(oldSettings)
                 k == "demonhunter" or
                 k == "deathknight" or
                 k == "druid" or
+                k == "evoker" or
                 k == "hunter" or
                 k == "mage" or
                 k == "monk" or
