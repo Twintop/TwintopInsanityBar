@@ -82,6 +82,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			maxResource = 100,
 			starsurgeThreshold = 40,
 			starfallThreshold = 50,
+			pandemicModifier = 1.0,
 			effects = {
 			}
 		}
@@ -94,7 +95,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				icon = "",
 				astralPower = 2,
 				pandemic = true,
-				pandemicTime = 16.5 * 0.3,
+				pandemicTime = 22 * 0.3,
 				baseline = true
 			},
 		
@@ -150,7 +151,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				icon = "",
 				astralPower = 2,
 				pandemic = true,
-				pandemicTime = 13.5 * 0.3,
+				pandemicTime = 18 * 0.3,
 				isTalent = true
 			},
 
@@ -210,7 +211,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				icon = "",
 				astralPower = 8,
 				pandemic = true,
-				pandemicTime = 18 * 0.3,
+				pandemicTime = 24 * 0.3,
 				isTalent = true
 			},
 			rattleTheStars = {
@@ -262,13 +263,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				isTalent = true
 			},
 			-- TODO: Add Wild Mushroom + associated tracking
-			-- TODO: Implement this when calcululating pandemic timings
 			circleOfLifeAndDeath = {
 				id = 391969,
 				name = "",
 				icon = "",
 				isTalent = true,
-				modifier = .75
+				modifier = 0.75
 			},
 			incarnationChosenOfElune = {
 				id = 394013,
@@ -428,7 +428,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			specId = 1,
 			maxResource = 100,
             maxResource2 = 5,
-			covenantId = 0,
+			pandemicModifier = 1.0,
 			effects = {
 			}
 		}
@@ -759,7 +759,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				isTalent = true,
 				energyModifier = 0.8
 			},
-			-- TODO: circleOfLifeAndDeath implementation for timers
+			circleOfLifeAndDeath = {
+				id = 391969,
+				name = "",
+				icon = "",
+				isTalent = true,
+				modifier = 0.75
+			},
 			apexPredatorsCraving = {
 				id = 391882,
 				name = "",
@@ -1612,12 +1618,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local specId = GetSpecialization()
 		TRB.Functions.CheckCharacter()
 		TRB.Data.character.className = "druid"
-		
+
 		if specId == 1 then
 			TRB.Data.character.specName = "balance"
 ---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.LunarPower)
 			GetCurrentMoonSpell()
+
+			if TRB.Functions.IsTalentActive(TRB.Data.spells.circleOfLifeAndDeath) then
+				TRB.Data.character.pandemicModifier = TRB.Data.spells.circleOfLifeAndDeath.modifier
+			end
 		elseif specId == 2 then
 			TRB.Data.character.specName = "feral"
 ---@diagnostic disable-next-line: missing-parameter
@@ -1625,12 +1635,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 ---@diagnostic disable-next-line: missing-parameter
 			local maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
 			local settings = TRB.Data.settings.druid.feral
-	
+
 			if settings ~= nil then
 				if maxComboPoints ~= TRB.Data.character.maxResource2 then
 					TRB.Data.character.maxResource2 = maxComboPoints
 					TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
 				end
+			end
+
+			if TRB.Functions.IsTalentActive(TRB.Data.spells.circleOfLifeAndDeath) then
+				TRB.Data.character.pandemicModifier = TRB.Data.spells.circleOfLifeAndDeath.modifier
 			end
 		elseif specId == 4 then
 			TRB.Data.character.specName = "restoration"
@@ -2767,7 +2781,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		if TRB.Data.settings.druid.balance.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].sunfire then
-				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].sunfireRemaining > TRB.Data.spells.sunfire.pandemicTime then
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].sunfireRemaining > (TRB.Data.character.pandemicModifier * TRB.Data.spells.sunfire.pandemicTime) then
 					sunfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.up, _sunfireCount)
 					sunfireTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.balance.colors.text.dots.up, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].sunfireRemaining)
 				else
@@ -2780,7 +2794,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfire then
-				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfireRemaining > TRB.Data.spells.moonfire.pandemicTime then
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfireRemaining > (TRB.Data.character.pandemicModifier * TRB.Data.spells.moonfire.pandemicTime) then
 					moonfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.up, _moonfireCount)
 					moonfireTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.balance.colors.text.dots.up, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfireRemaining)
 				else
@@ -2793,7 +2807,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].stellarFlare then
-				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].stellarFlareRemaining > TRB.Data.spells.stellarFlare.pandemicTime then
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].stellarFlareRemaining > (TRB.Data.character.pandemicModifier * TRB.Data.spells.stellarFlare.pandemicTime) then
 					stellarFlareCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.up, _stellarFlareCount)
 					stellarFlareTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.balance.colors.text.dots.up, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].stellarFlareRemaining)
 				else
@@ -4439,7 +4453,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
 
 						if currentResource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.starweaversWarp.isActive then
-							if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > TRB.Data.spells.starfall.pandemicTime then
+							if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > (TRB.Data.character.pandemicModifier * TRB.Data.spells.starfall.pandemicTime) then
 		---@diagnostic disable-next-line: undefined-field
 								resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
 		---@diagnostic disable-next-line: undefined-field
@@ -4505,7 +4519,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								barColor = TRB.Data.settings.druid.balance.colors.bar.celestial
 							elseif TRB.Data.spells.eclipseSolar.isActive then
 								barColor = TRB.Data.settings.druid.balance.colors.bar.solar
-							else--if TRB.Data.spells.eclipseLunar.isActive then
+							else
 								barColor = TRB.Data.settings.druid.balance.colors.bar.lunar
 							end
 						end
@@ -4517,7 +4531,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if flashBar then
 						TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.druid.balance.colors.bar.flashAlpha, TRB.Data.settings.druid.balance.colors.bar.flashPeriod)
 					end
-				end			
+				end
 			end
 			TRB.Functions.UpdateResourceBar(TRB.Data.settings.druid.balance, refreshText)
 		elseif specId == 2 then
@@ -5536,13 +5550,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.tigersFury.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.tigersFury.duration, TRB.Data.snapshotData.tigersFury.endTime, _, _, _, TRB.Data.snapshotData.tigersFury.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.tigersFury.id)
-							print("Gain")
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.tigersFury.isActive = false
 							TRB.Data.snapshotData.tigersFury.spellId = nil
 							TRB.Data.snapshotData.tigersFury.duration = 0
 							TRB.Data.snapshotData.tigersFury.endTime = nil
-							print("Lose")
 						end
 					elseif spellId == TRB.Data.spells.bloodtalons.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
