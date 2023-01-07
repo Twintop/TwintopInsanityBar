@@ -267,7 +267,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 391969,
 				name = "",
 				icon = "",
-				isTalent = true
+				isTalent = true,
+				modifier = .75
 			},
 			incarnationChosenOfElune = {
 				id = 394013,
@@ -556,38 +557,41 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 22568,
 				name = "",
 				icon = "",
-				energy = -20,
-				energyMax = -40,
+				energy = -25,
+				energyMax = -50,
 				comboPoints = true,
 				texture = "",
 				thresholdId = 6,
 				settingKey = "ferociousBite",
-				isSnowflake = true, -- Really between 20-40 energy
-				thresholdUsable = false
+				isSnowflake = true, -- Really between 25-50 energy, minus Relentless Predator
+				thresholdUsable = false,
+				relentlessPredator = true
 			},
 			ferociousBiteMinimum = {
 				id = 22568,
 				name = "",
 				icon = "",
-				energy = -20,
+				energy = -25,
 				comboPoints = true,
 				texture = "",
 				thresholdId = 7,
 				settingKey = "ferociousBiteMinimum",
 				isSnowflake = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				relentlessPredator = true
 			},
 			ferociousBiteMaximum = {
 				id = 22568,
 				name = "",
 				icon = "",
-				energy = -40,
+				energy = -50,
 				comboPoints = true,
 				texture = "",
 				thresholdId = 8,
 				settingKey = "ferociousBiteMaximum",
 				isSnowflake = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				relentlessPredator = true
 			},
 			prowl = {
 				id = 5215,
@@ -615,6 +619,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				modifier = 1.15,
+				cooldown = 30,
 				isTalent = true
 			},
 			omenOfClarity = {
@@ -747,6 +752,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				icon = "",
 				energyModifier = 0.8
 			},
+			relentlessPredator = {
+				id = 393771,
+				name = "",
+				icon = "",
+				isTalent = true,
+				energyModifier = 0.8
+			},
 			-- TODO: circleOfLifeAndDeath implementation for timers
 			apexPredatorsCraving = {
 				id = 391882,
@@ -798,7 +810,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		specCache.feral.snapshotData.tigersFury = {
 			spellId = nil,
 			endTime = nil,
-			duration = 0
+			duration = 0,
+			cooldown = {
+				startTime = nil,
+				duration = 0
+			}
 		}
 		specCache.feral.snapshotData.shadowmeld = {
 			isActive = false
@@ -1448,6 +1464,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			
 			{ variable = "$apexPredatorsCravingTime", description = "Time remaining on your Apex Predator's Craving proc (if equipped)", printInSettings = true, color = false },
 			
+			{ variable = "$tigersFuryTime", description = "Time remaining on your Tiger's Fury buff", printInSettings = true, color = false },
+			{ variable = "$tigersFuryCooldownTime", description = "Time remaining on your Tiger's Fury ability cooldown", printInSettings = true, color = false },
+
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
@@ -1711,13 +1730,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 	
-    local function CalculateAbilityResourceValue(resource, threshold)
+    local function CalculateAbilityResourceValue(resource, threshold, relentlessPredator)
         local modifier = 1.0
 		local specId = GetSpecialization()
 
 		if specId == 2 then
 			if TRB.Data.spells.incarnationAvatarOfAshamane.isActive then
 				modifier = modifier * TRB.Data.spells.incarnationAvatarOfAshamane.energyModifier
+			end
+			
+			if relentlessPredator and TRB.Functions.IsTalentActive(TRB.Data.spells.relentlessPredator) then
+				modifier = modifier * TRB.Data.spells.relentlessPredator.energyModifier
 			end
 		end
 
@@ -1973,6 +1996,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 	end
 	
+	local function GetTigersFuryCooldownRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.tigersFury.cooldown)
+	end
+
 	local function GetTigersFuryRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.tigersFury)
 	end
@@ -2086,7 +2113,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if bonuses.tigersFury == true and GetTigersFuryRemainingTime() > 0 then
 			local tfBonus = TRB.Data.spells.carnivorousInstinct.modifierPerStack * TRB.Data.talents[TRB.Data.spells.carnivorousInstinct.id].currentRank
 
-			snapshot = snapshot *  (TRB.Data.spells.tigersFury.modifier + tfBonus)
+			snapshot = snapshot * (TRB.Data.spells.tigersFury.modifier + tfBonus)
 		end
 
 		if bonuses.momentOfClarity == true and TRB.Functions.IsTalentActive(TRB.Data.spells.momentOfClarity) == true and ((TRB.Data.snapshotData.clearcasting.stacks ~= nil and TRB.Data.snapshotData.clearcasting.stacks > 0) or GetClearcastingRemainingTime(true) > 0) then
@@ -2532,6 +2559,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 			elseif var == "$apexPredatorsCravingTime" then
 				if GetApexPredatorsCravingRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$tigersFuryTime" then
+				if TRB.Data.snapshotData.tigersFury.duration > 0 then
+					valid = true
+				end
+			elseif var == "$tigersFuryCooldownTime" then
+				if TRB.Data.snapshotData.tigersFury.cooldown.duration > 0 then
 					valid = true
 				end
 			end
@@ -3310,6 +3345,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local _bloodtalonsTime = TRB.Data.snapshotData.bloodtalons.remainingTime or 0
 		local bloodtalonsTime = string.format("%.1f", _bloodtalonsTime)
 		
+		--$tigersFuryTime
+		local _tigersFuryTime = GetTigersFuryRemainingTime()
+		local tigersFuryTime = "0"
+		if _tigersFuryTime ~= nil then
+			tigersFuryTime = string.format("%.1f", _tigersFuryTime)
+		end
+		
+		--$tigersFuryCooldownTime
+		local _tigersFuryCooldownTime = GetTigersFuryCooldownRemainingTime()
+		local tigersFuryCooldownTime = "0"
+		if _tigersFuryCooldownTime ~= nil then
+			tigersFuryCooldownTime = string.format("%.1f", _tigersFuryCooldownTime)
+		end
+
 		--$suddenAmbushTime
 		local _suddenAmbushTime = GetSuddenAmbushRemainingTime()
 		local suddenAmbushTime = "0"
@@ -3414,6 +3463,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$berserkTime"] = berserkTime
 		lookup["$incarnationTime"] = berserkTime
 		lookup["$apexPredatorsCravingTime"] = apexPredatorsCravingTime
+		lookup["$tigersFuryTime"] = tigersFuryTime
+		lookup["$tigersFuryCooldownTime"] = tigersFuryCooldownTime
 
 		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$energyTotal"] = energyTotal
@@ -3469,6 +3520,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookupLogic["$berserkTime"] = _berserkTime
 		lookupLogic["$incarnationTime"] = _berserkTime
 		lookupLogic["$apexPredatorsCravingTime"] = _apexPredatorsCravingTime
+		lookupLogic["$tigersFuryTime"] = _tigersFuryTime
+		lookupLogic["$tigersFuryCooldownTime"] = _tigersFuryCooldownTime
 		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
 		lookupLogic["$energyTotal"] = _energyTotal
 		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
@@ -4081,7 +4134,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if TRB.Data.snapshotData.suddenAmbush.endTimeLeeway ~= nil and TRB.Data.snapshotData.suddenAmbush.endTimeLeeway < currentTime then
 			TRB.Data.snapshotData.suddenAmbush.endTimeLeeway = nil
 		end
-		
+
+		TRB.Data.snapshotData.tigersFury.cooldown.startTime, TRB.Data.snapshotData.tigersFury.cooldown.duration, _, _ = GetSpellCooldown(TRB.Data.spells.tigersFury.id)
 		
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rip then
@@ -4526,7 +4580,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							local energyAmount = CalculateAbilityResourceValue(spell.energy, true)
+							local energyAmount = CalculateAbilityResourceValue(spell.energy, true, spell.relentlessPredator)
 							TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.druid.feral.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
@@ -4587,7 +4641,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								end
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.ferociousBite.id and spell.settingKey == "ferociousBite" then
-									TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.druid.feral.thresholds.width, math.min(math.max(-energyAmount, TRB.Data.snapshotData.resource), -CalculateAbilityResourceValue(TRB.Data.spells.ferociousBite.energyMax, true)), TRB.Data.character.maxResource)
+									TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.druid.feral.thresholds.width, math.min(math.max(-energyAmount, TRB.Data.snapshotData.resource), -CalculateAbilityResourceValue(TRB.Data.spells.ferociousBite.energyMax, true, true)), TRB.Data.character.maxResource)
 									
 									if TRB.Data.snapshotData.resource >= -energyAmount or TRB.Data.spells.apexPredatorsCraving.isActive == true then
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
@@ -4596,6 +4650,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.ferociousBiteMinimum.id and spell.settingKey == "ferociousBiteMinimum" then
+									TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.druid.feral.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
+									
 									if TRB.Data.snapshotData.resource >= -energyAmount or TRB.Data.spells.apexPredatorsCraving.isActive == true then
 										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
 									else
@@ -4712,7 +4768,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						barColor = TRB.Data.settings.druid.feral.colors.bar.clearcasting
 					end
 
-					if (TRB.Data.snapshotData.resource2 == 5 and TRB.Data.snapshotData.resource >= -CalculateAbilityResourceValue(TRB.Data.spells.ferociousBiteMaximum.energy, true)) then
+					if (TRB.Data.snapshotData.resource2 == 5 and TRB.Data.snapshotData.resource >= -CalculateAbilityResourceValue(TRB.Data.spells.ferociousBiteMaximum.energy, true, true)) then
 						barColor = TRB.Data.settings.druid.feral.colors.bar.maxBite
 					end
 
@@ -5480,11 +5536,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.tigersFury.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.tigersFury.duration, TRB.Data.snapshotData.tigersFury.endTime, _, _, _, TRB.Data.snapshotData.tigersFury.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.tigersFury.id)
+							print("Gain")
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.tigersFury.isActive = false
 							TRB.Data.snapshotData.tigersFury.spellId = nil
 							TRB.Data.snapshotData.tigersFury.duration = 0
 							TRB.Data.snapshotData.tigersFury.endTime = nil
+							print("Lose")
 						end
 					elseif spellId == TRB.Data.spells.bloodtalons.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then

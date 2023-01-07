@@ -2183,7 +2183,7 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 									end
 
 									if TRB.Data.lookupLogic[var] ~= nil and pSymbol ~= "!" and ((pSymbol ~= "{" and pSymbol ~= "|" and pSymbol ~= "&" and pSymbol ~= "(") or (nSymbol ~= "}" and nSymbol ~= "|" and nSymbol ~= "&" and nSymbol ~= ")")) then
-										valid = TRB.Data.lookupLogic[var]									
+										valid = TRB.Data.lookupLogic[var]
 									end
 
 									if string.sub(beforeVar, string.len(beforeVar)) == "!" then
@@ -2203,7 +2203,7 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 							end
 
 							outputString = string.lower(outputString)
-							outputString = string.gsub(outputString, " ", "")						
+							--outputString = string.gsub(outputString, " ", "") -- This is causing problems with ! nots
 							outputString = string.gsub(outputString, "%(%)", "")
 							outputString = string.gsub(outputString, "=", "==")
 							outputString = string.gsub(outputString, "!==", "!=")
