@@ -887,6 +887,28 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						mana = 36521
 					},
 				},
+				conjuredChillglobe = {
+					id = 194300,
+					isEquipped = false,
+					equippedVersion = "lfr",
+					manaThresholdPercent = 0.65,
+					lfr = {
+						bonusId = 2161,
+						mana = 10877
+					},
+					normal = {
+						bonusId = 2158,
+						mana = 11735
+					},
+					heroic = {
+						bonusId = 2159,
+						mana = 14430
+					},
+					mythic = {
+						bonusId = 2160,
+						mana = 17625
+					}
+				},
 				alchemyStone = false
 			}
 		}
@@ -947,36 +969,42 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			-- Potions
 			aeratedManaPotionRank1 = {
 				itemId = 191384,
+				spellId = 370607,
 				name = "",
 				icon = "",
+				useSpellIcon = true,
 				texture = "",
-				thresholdId = 2,
+				thresholdId = 1,
 				settingKey = "aeratedManaPotionRank1",
 				thresholdUsable = false
 			},
 			aeratedManaPotionRank2 = {
 				itemId = 191385,
+				spellId = 370607,
 				name = "",
 				icon = "",
+				useSpellIcon = true,
 				texture = "",
-				thresholdId = 3,
+				thresholdId = 2,
 				settingKey = "aeratedManaPotionRank2",
 				thresholdUsable = false
 			},
 			aeratedManaPotionRank3 = {
 				itemId = 191386,
+				spellId = 370607,
 				name = "",
 				icon = "",
 				texture = "",
-				thresholdId = 4,
+				thresholdId = 3,
 				settingKey = "aeratedManaPotionRank3",
 				thresholdUsable = false
 			},
 			potionOfFrozenFocusRank1 = {
-				itemId = 171272,
+				itemId = 191363,
 				spellId = 371033,
 				name = "",
 				icon = "",
+				useSpellIcon = true,
 				texture = "",
 				thresholdId = 4,
 				settingKey = "potionOfFrozenFocusRank1",
@@ -986,10 +1014,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				ticks = 10
 			},
 			potionOfFrozenFocusRank2 = {
-				itemId = 171272,
+				itemId = 191364,
 				spellId = 371033,
 				name = "",
 				icon = "",
+				useSpellIcon = true,
 				texture = "",
 				thresholdId = 5,
 				settingKey = "potionOfFrozenFocusRank2",
@@ -999,13 +1028,30 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				ticks = 10
 			},
 			potionOfFrozenFocusRank3 = {
-				itemId = 171272,
+				itemId = 191365,
 				spellId = 371033,
 				name = "",
 				icon = "",
+				useSpellIcon = true,
 				texture = "",
 				thresholdId = 6,
 				settingKey = "potionOfFrozenFocusRank3",
+				thresholdUsable = false,
+				mana = 4830,
+				duration = 10,
+				ticks = 10
+			},
+
+			-- Conjured Chillglobe
+			conjuredChillglobe = {
+				itemId = 194300,
+				spellId = 396391,
+				name = "",
+				icon = "",
+				useSpellIcon = true,
+				texture = "",
+				thresholdId = 7,
+				settingKey = "conjuredChillglobe",
 				thresholdUsable = false,
 				mana = 4830,
 				duration = 10,
@@ -1082,6 +1128,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			lastTick = nil
 		}
 		specCache.restoration.snapshotData.potion = {
+			onCooldown = false,
+			startTime = nil,
+			duration = 0
+		}
+		specCache.holy.snapshotData.conjuredChillglobe = {
 			onCooldown = false,
 			startTime = nil,
 			duration = 0
@@ -1569,9 +1620,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			local trinket1ItemLink = GetInventoryItemLink("player", 13)
 			local trinket2ItemLink = GetInventoryItemLink("player", 14)
-			
+
 			local alchemyStone = false
-			
+			local conjuredChillglobe = false
+			local conjuredChillglobeVersion = ""
+						
 			if trinket1ItemLink ~= nil then
 				for x = 1, TRB.Functions.TableLength(TRB.Data.spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
@@ -1579,6 +1632,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					else
 						break
 					end
+				end
+
+				if alchemyStone == false then
+					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.CheckTrinketForConjuredChillglobe(trinket1ItemLink)
 				end
 			end
 
@@ -1592,7 +1649,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 			end
 
+			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
+				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.CheckTrinketForConjuredChillglobe(trinket2ItemLink)
+			end
+
 			TRB.Data.character.items.alchemyStone = alchemyStone
+			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
+			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
 		end
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
@@ -1872,7 +1935,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 			TRB.Frames.resource2ContainerFrame:Show()
 		elseif specId == 4 then
-			for x = 1, 6 do
+			for x = 1, 7 do
 				if TRB.Frames.resourceFrame.thresholds[x] == nil then
 					TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
@@ -1898,6 +1961,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.potionOfFrozenFocusRank1.settingKey, TRB.Data.settings.druid.restoration)
 			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[5], TRB.Data.spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.druid.restoration)
 			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[6], TRB.Data.spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.druid.restoration)
+			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[7], TRB.Data.spells.conjuredChillglobe.settingKey, TRB.Data.settings.druid.restoration)
 			TRB.Frames.resource2ContainerFrame:Hide()
 		end
 
@@ -4077,7 +4141,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.snapshotData.potion.onCooldown = true
 		else
 			TRB.Data.snapshotData.potion.onCooldown = false
-		end		
+		end
+
+		TRB.Data.snapshotData.conjuredChillglobe.startTime, TRB.Data.snapshotData.conjuredChillglobe.duration, _ = GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
+		if TRB.Data.snapshotData.conjuredChillglobe.startTime > 0 and TRB.Data.snapshotData.conjuredChillglobe.duration > 0 then
+			TRB.Data.snapshotData.conjuredChillglobe.onCooldown = true
+		else
+			TRB.Data.snapshotData.conjuredChillglobe.onCooldown = false
+		end
 		
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].sunfire then
@@ -4863,6 +4934,31 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						TRB.Frames.resourceFrame.thresholds[4]:Hide()
 						TRB.Frames.resourceFrame.thresholds[5]:Hide()
 						TRB.Frames.resourceFrame.thresholds[6]:Hide()
+					end
+					
+					if TRB.Data.character.items.conjuredChillglobe.isEquipped and (currentMana / TRB.Data.character.maxResource) < TRB.Data.character.items.conjuredChillglobe.manaThresholdPercent then
+						local conjuredChillglobeTotal = CalculateManaGain(TRB.Data.character.items.conjuredChillglobe[TRB.Data.character.items.conjuredChillglobe.equippedVersion].mana, true)
+						if TRB.Data.settings.druid.restoration.thresholds.conjuredChillglobe.enabled and (castingBarValue + conjuredChillglobeTotal) < TRB.Data.character.maxResource then
+							if TRB.Data.snapshotData.conjuredChillglobe.onCooldown then
+								potionThresholdColor = TRB.Data.settings.druid.restoration.colors.threshold.unusable
+							end
+							TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.restoration, TRB.Frames.resourceFrame.thresholds[7], resourceFrame, TRB.Data.settings.druid.restoration.thresholds.width, (castingBarValue + conjuredChillglobeTotal), TRB.Data.character.maxResource)
+	---@diagnostic disable-next-line: undefined-field
+							TRB.Frames.resourceFrame.thresholds[7].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+	---@diagnostic disable-next-line: undefined-field
+							TRB.Frames.resourceFrame.thresholds[7].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+							TRB.Frames.resourceFrame.thresholds[7]:Show()
+								
+							if TRB.Data.settings.druid.restoration.thresholds.icons.showCooldown then
+								TRB.Frames.resourceFrame.thresholds[7].icon.cooldown:SetCooldown(TRB.Data.snapshotData.conjuredChillglobe.startTime, TRB.Data.snapshotData.conjuredChillglobe.duration)
+							else
+								TRB.Frames.resourceFrame.thresholds[7].icon.cooldown:SetCooldown(0, 0)
+							end
+						else
+							TRB.Frames.resourceFrame.thresholds[7]:Hide()
+						end
+					else
+						TRB.Frames.resourceFrame.thresholds[7]:Hide()
 					end
 		
 					local passiveValue = 0

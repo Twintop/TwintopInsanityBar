@@ -1300,6 +1300,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			local alchemyStone = false
 			local conjuredChillglobe = false
+			local conjuredChillglobeVersion = ""
 						
 			if trinket1ItemLink ~= nil then
 				for x = 1, TRB.Functions.TableLength(TRB.Data.spells.alchemistStone.itemIds) do
@@ -1311,31 +1312,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 
 				if alchemyStone == false then
-					conjuredChillglobe = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(trinket1ItemLink, TRB.Data.character.items.conjuredChillglobe.id, TRB.Data.character.items.conjuredChillglobe.lfr.bonusId)
-					if conjuredChillglobe == true then
-						TRB.Data.character.items.conjuredChillglobe.equippedVersion = "lfr"
-					else
-						if conjuredChillglobe == false then
-							conjuredChillglobe = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(trinket1ItemLink, TRB.Data.character.items.conjuredChillglobe.id, TRB.Data.character.items.conjuredChillglobe.normal.bonusId)
-							if conjuredChillglobe == true then
-								TRB.Data.character.items.conjuredChillglobe.equippedVersion = "normal"
-							else
-								if conjuredChillglobe == false then
-									conjuredChillglobe = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(trinket1ItemLink, TRB.Data.character.items.conjuredChillglobe.id, TRB.Data.character.items.conjuredChillglobe.heroic.bonusId)
-									if conjuredChillglobe == true then
-										TRB.Data.character.items.conjuredChillglobe.equippedVersion = "heroic"
-									else
-										if conjuredChillglobe == false then
-											conjuredChillglobe = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(trinket1ItemLink, TRB.Data.character.items.conjuredChillglobe.id, TRB.Data.character.items.conjuredChillglobe.mythic.bonusId)
-											if conjuredChillglobe == true then
-												TRB.Data.character.items.conjuredChillglobe.equippedVersion = "mythic"
-											end
-										end
-									end
-								end
-							end
-						end
-					end
+					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.CheckTrinketForConjuredChillglobe(trinket1ItemLink)
 				end
 			end
 
@@ -1350,35 +1327,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
-				conjuredChillglobe = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(trinket2ItemLink, TRB.Data.character.items.conjuredChillglobe.id, TRB.Data.character.items.conjuredChillglobe.lfr.bonusId)
-				if conjuredChillglobe == true then
-					TRB.Data.character.items.conjuredChillglobe.equippedVersion = "lfr"
-				else
-					if conjuredChillglobe == false then
-						conjuredChillglobe = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(trinket2ItemLink, TRB.Data.character.items.conjuredChillglobe.id, TRB.Data.character.items.conjuredChillglobe.normal.bonusId)
-						if conjuredChillglobe == true then
-							TRB.Data.character.items.conjuredChillglobe.equippedVersion = "normal"
-						else
-							if conjuredChillglobe == false then
-								conjuredChillglobe = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(trinket2ItemLink, TRB.Data.character.items.conjuredChillglobe.id, TRB.Data.character.items.conjuredChillglobe.heroic.bonusId)
-								if conjuredChillglobe == true then
-									TRB.Data.character.items.conjuredChillglobe.equippedVersion = "heroic"
-								else
-									if conjuredChillglobe == false then
-										conjuredChillglobe = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(trinket2ItemLink, TRB.Data.character.items.conjuredChillglobe.id, TRB.Data.character.items.conjuredChillglobe.mythic.bonusId)
-										if conjuredChillglobe == true then
-											TRB.Data.character.items.conjuredChillglobe.equippedVersion = "mythic"
-										end
-									end
-								end
-							end
-						end
-					end
-				end
+				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.CheckTrinketForConjuredChillglobe(trinket2ItemLink)
 			end
 
 			TRB.Data.character.items.alchemyStone = alchemyStone
 			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
+			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
 		elseif specId == 3 then
 			TRB.Data.character.specName = "shadow"
 ---@diagnostic disable-next-line: missing-parameter

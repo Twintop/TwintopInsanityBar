@@ -2445,6 +2445,31 @@ local function DoesItemLinkMatchId(itemLink, id)
 end
 TRB.Functions.DoesItemLinkMatchId = DoesItemLinkMatchId
 
+local function CheckTrinketForConjuredChillglobe(trinketItemLink)
+	local conjuredChillglobe = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(trinketItemLink, TRB.Data.character.items.conjuredChillglobe.id, TRB.Data.character.items.conjuredChillglobe.lfr.bonusId)
+	if conjuredChillglobe == true then
+		return true, "lfr"
+	end
+	
+	conjuredChillglobe = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(trinketItemLink, TRB.Data.character.items.conjuredChillglobe.id, TRB.Data.character.items.conjuredChillglobe.normal.bonusId)
+	if conjuredChillglobe == true then
+		return true, "normal"
+	end
+	
+	conjuredChillglobe = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(trinketItemLink, TRB.Data.character.items.conjuredChillglobe.id, TRB.Data.character.items.conjuredChillglobe.heroic.bonusId)
+	if conjuredChillglobe == true then
+		return true, "heroic"
+	end
+
+	conjuredChillglobe = TRB.Functions.DoesItemLinkMatchMatchIdAndHaveBonus(trinketItemLink, TRB.Data.character.items.conjuredChillglobe.id, TRB.Data.character.items.conjuredChillglobe.mythic.bonusId)
+	if conjuredChillglobe == true then
+		return true, "mythic"
+	end
+	
+	return false, ""
+end
+TRB.Functions.CheckTrinketForConjuredChillglobe = CheckTrinketForConjuredChillglobe
+
 -- Source: https://www.wowinterface.com/forums/showpost.php?p=338665&postcount=5
 local function ArePvpTalentsActive()
     local inInstance, instanceType = IsInInstance()

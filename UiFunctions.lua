@@ -1855,8 +1855,7 @@ function TRB.UiFunctions:GenerateThresholdLinesForHealers(parent, controls, spec
     yCoord = yCoord - 25
     controls.labels.builders = TRB.UiFunctions:BuildLabel(parent, "Items", 5, yCoord, 300, 20)
     yCoord = yCoord - 20
-
-    yCoord = yCoord - 25
+    
     controls.checkBoxes.snThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_conjuredChillglobe", parent, "ChatConfigCheckButtonTemplate")
     f = controls.checkBoxes.snThresholdShow
     f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
