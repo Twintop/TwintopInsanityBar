@@ -594,7 +594,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			startTime = nil,
 			duration = 0
 		}
-		specCache.holy.snapshotData.conjuredChillglobe = {
+		specCache.restoration.snapshotData.conjuredChillglobe = {
 			onCooldown = false,
 			startTime = nil,
 			duration = 0

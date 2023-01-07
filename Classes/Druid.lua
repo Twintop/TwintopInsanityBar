@@ -1132,7 +1132,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			startTime = nil,
 			duration = 0
 		}
-		specCache.holy.snapshotData.conjuredChillglobe = {
+		specCache.restoration.snapshotData.conjuredChillglobe = {
 			onCooldown = false,
 			startTime = nil,
 			duration = 0

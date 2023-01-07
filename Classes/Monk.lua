@@ -305,7 +305,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			startTime = nil,
 			duration = 0
 		}
-		specCache.holy.snapshotData.conjuredChillglobe = {
+		specCache.mistweaver.snapshotData.conjuredChillglobe = {
 			onCooldown = false,
 			startTime = nil,
 			duration = 0
