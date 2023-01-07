@@ -429,7 +429,7 @@ local function FillSpellData(spells)
 
 	for k, v in pairs(spells) do
 		if spells[k] ~= nil and (spells[k]["tocMinVersion"] == nil or toc >= spells[k]["tocMinVersion"]) then
-			if spells[k]["itemId"] ~= nil then
+			if spells[k]["itemId"] ~= nil and spells[k]["useSpellIcon"] ~= true then
 				local _, name, icon
 				name, _, _, _, _, _, _, _, _, icon = GetItemInfo(spells[k]["itemId"])
 				if name ~= nil then
@@ -444,9 +444,13 @@ local function FillSpellData(spells)
 					spells[k]["icon"] = string.format("|T%s:0|t", icon)
 					spells[k]["texture"] = icon
 				end
-			elseif spells[k]["id"] ~= nil then
+			elseif spells[k]["id"] ~= nil or (spells[k]["spellId"] ~= nil and spells[k]["useSpellIcon"] == true) then
 				local _, name, icon
-				name, _, icon = GetSpellInfo(spells[k]["id"])
+				if spells[k]["spellId"] ~= nil and spells[k]["useSpellIcon"] == true then
+					name, _, icon = GetSpellInfo(spells[k]["spellId"])
+				else					
+					name, _, icon = GetSpellInfo(spells[k]["id"])
+				end
 				
 				if spells[k]["iconName"] ~= nil then
 					icon = "Interface\\Icons\\" .. spells[k]["iconName"]

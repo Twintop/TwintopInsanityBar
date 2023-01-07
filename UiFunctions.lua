@@ -1752,13 +1752,13 @@ function TRB.UiFunctions:GenerateThresholdLinesForHealers(parent, controls, spec
     controls.colors.threshold = {}
 
     yCoord = yCoord - 25
-    controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Mana gain from potions (when usable)", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-0)
+    controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Mana gain from potions and items (when usable)", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-0)
     f = controls.colors.threshold.over
     f:SetScript("OnMouseDown", function(self, button, ...)
         TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
     end)
 
-    controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Mana potion on cooldown", spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-30)
+    controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Mana potion or item on cooldown", spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-30)
     f = controls.colors.threshold.unusable
     f:SetScript("OnMouseDown", function(self, button, ...)
         TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
@@ -1853,7 +1853,21 @@ function TRB.UiFunctions:GenerateThresholdLinesForHealers(parent, controls, spec
     end)
 
     yCoord = yCoord - 25
+    controls.labels.builders = TRB.UiFunctions:BuildLabel(parent, "Items", 5, yCoord, 300, 20)
+    yCoord = yCoord - 20
+
     yCoord = yCoord - 25
+    controls.checkBoxes.snThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_conjuredChillglobe", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.snThresholdShow
+    f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+    getglobal(f:GetName() .. 'Text'):SetText("Conjured Chillglobe")
+    f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use the Conjured Chillglobe trinket. Only shown below 65% mana."
+    f:SetChecked(spec.thresholds.conjuredChillglobe.enabled)
+    f:SetScript("OnClick", function(self, ...)
+        spec.thresholds.conjuredChillglobe.enabled = self:GetChecked()
+    end)
+
+    yCoord = yCoord - 40
 
     return yCoord
 end
