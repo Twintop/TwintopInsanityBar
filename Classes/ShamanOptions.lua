@@ -287,6 +287,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				potionOfFrozenFocusRank3 = {
 					enabled = true, -- 6
 				},
+				conjuredChillglobe = {
+					enabled = true, -- 7
+				},
 				potionCooldown = {
 					enabled=true,
 					mode="time",

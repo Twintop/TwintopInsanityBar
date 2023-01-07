@@ -579,6 +579,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				potionOfFrozenFocusRank3 = {
 					enabled = true, -- 6
 				},
+				conjuredChillglobe = {
+					enabled = true, -- 7
+				},
 				potionCooldown = {
 					enabled=true,
 					mode="time",
