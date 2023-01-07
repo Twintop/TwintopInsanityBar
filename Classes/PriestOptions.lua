@@ -293,7 +293,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				fontSize = 13
 			},
 			middle = {
-				text="{$mdTime}[#mDev $mdTime #mDev{$vfTime}[||n]]{$vfTime}[$vfTime]",
+				text="{$mdTime}[#mDev $mdTime #mDev{$vfTime|$mfiTime}[||n]]{$mfiTime}[#mfi $mfiTime #mfi{$vfTime}[||n]]{$vfTime}[$vfTime]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
