@@ -467,6 +467,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				spellId = 370607,
 				name = "",
 				icon = "",
+				useSpellIcon = true,
 				texture = "",
 				thresholdId = 3,
 				settingKey = "aeratedManaPotionRank3",

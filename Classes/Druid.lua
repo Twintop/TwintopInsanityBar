@@ -994,6 +994,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				spellId = 370607,
 				name = "",
 				icon = "",
+				useSpellIcon = true,
 				texture = "",
 				thresholdId = 3,
 				settingKey = "aeratedManaPotionRank3",
