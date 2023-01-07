@@ -767,7 +767,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				perRank = 0.5,
 				isTalent = true
 			},
-			--TODO: Whispers of the Damned?
 			piercingShadows = {
 				id = 73510,
 				name = "",
@@ -783,6 +782,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				insanity = 3,
 				isTalent = true
+			},
+			devouredDespair = { -- Idol of Y'Shaarj proc
+				id = 373317,
+				name = "",
+				icon = "",
+				insanity = 5,
+				duration = 15,
+				ticks = 15
 			},
 			mindDevourer = {
 				id = 373202,
@@ -875,6 +882,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			resourceRaw = 0,
 			resourceFinal = 0
+		}
+		specCache.shadow.snapshotData.devouredDespair = {
+			isActive = false,
+			spellId = nil,
+			endTime = nil,
+			duration = 0,
+			insanity = 0
 		}
 		specCache.shadow.snapshotData.voidTendrils = {
 			numberActive = 0,
@@ -2720,6 +2734,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 				if TRB.Functions.IsTalentActive(TRB.Data.spells.mindbender) then
 					TRB.Data.snapshotData.mindbender.resourceRaw = countValue * TRB.Data.spells.mindbender.insanity
+					if TRB.Data.snapshotData.devouredDespair.isActive and TRB.Data.snapshotData.devouredDespair.endTime ~= nil and TRB.Data.snapshotData.devouredDespair.endTime > currentTime then
+						local ddTicks = TRB.Functions.RoundTo(TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.devouredDespair), 0, "ceil")
+						TRB.Data.snapshotData.mindbender.resourceRaw = TRB.Data.snapshotData.mindbender.resourceRaw + (ddTicks * TRB.Data.spells.devouredDespair.insanity)
+					end
 				else
 					TRB.Data.snapshotData.mindbender.resourceRaw = countValue * TRB.Data.spells.shadowfiend.insanity
 				end
@@ -3968,6 +3986,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.mindDevourer.spellId = nil
 							TRB.Data.snapshotData.mindDevourer.duration = 0
 							TRB.Data.snapshotData.mindDevourer.endTime = nil
+						end
+					elseif spellId == TRB.Data.spells.devouredDespair.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
+							TRB.Data.snapshotData.devouredDespair.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.devouredDespair.duration, TRB.Data.snapshotData.devouredDespair.endTime, _, _, _, TRB.Data.snapshotData.devouredDespair.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.devouredDespair.id)
+						elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_DISPEL" then -- Lost buff
+							TRB.Data.snapshotData.devouredDespair.isActive = false
+							TRB.Data.snapshotData.devouredDespair.spellId = nil
+							TRB.Data.snapshotData.devouredDespair.duration = 0
+							TRB.Data.snapshotData.devouredDespair.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.mindFlayInsanity.buffId then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
