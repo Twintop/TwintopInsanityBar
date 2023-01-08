@@ -664,6 +664,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 
 			{ variable = "$mana", description = "Current Mana", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },
@@ -769,6 +771,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 
 			{ variable = "$energy", description = "Current Energy", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Energy", printInSettings = false, color = false },

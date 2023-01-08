@@ -683,6 +683,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 
 			{ variable = "$rage", description = "Current Rage", printInSettings = true, color = false },
             { variable = "$resource", description = "Current Rage", printInSettings = false, color = false },
@@ -766,6 +768,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 
 			{ variable = "$rage", description = "Current Rage", printInSettings = true, color = false },
             { variable = "$resource", description = "Current Rage", printInSettings = false, color = false },

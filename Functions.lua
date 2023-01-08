@@ -1709,6 +1709,7 @@ local function RefreshLookupDataBase(settings)
 	lookup["$agility"] = agi
 	lookup["$stam"] = stam
 	lookup["$stamina"] = stam
+	lookup["$inCombat"] = tostring(UnitAffectingCombat("player"))
 
 	lookup["$gcd"] = gcd
 	lookup["$ttd"] = ttd
@@ -1753,6 +1754,7 @@ local function RefreshLookupDataBase(settings)
 	lookupLogic["$gcd"] = _gcd
 	lookupLogic["$ttd"] = _ttd
 	lookupLogic["$ttdSeconds"] = _ttd
+	lookupLogic["$inCombat"] = tostring(UnitAffectingCombat("player"))
 	TRB.Data.lookupLogic = lookupLogic
 
 	Global_TwintopResourceBar = {
@@ -1834,6 +1836,10 @@ local function IsValidVariableBase(var)
 		valid = true
 	elseif var == "$ttd" or var == "$ttdSeconds" then
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd > 0 then
+			valid = true
+		end
+	elseif var == "$inCombat" then
+		if UnitAffectingCombat("player") then
 			valid = true
 		end
 	end
@@ -2215,7 +2221,7 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 							outputString = string.gsub(outputString, "!", " not ")
 							outputString = string.gsub(outputString, "&", " and ")
 							outputString = string.gsub(outputString, "||", " or ")
-
+							
 							local resultCode, resultFunc = pcall(assert, loadstring("return (" .. outputString .. ")"))
 							
 							if resultCode then

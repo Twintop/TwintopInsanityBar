@@ -1452,6 +1452,18 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
 			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
 
+			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
+			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
+			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
+			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
+			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
+			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
+			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
+			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+
+
 			{ variable = "$energy", description = "Current Energy", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Energy", printInSettings = false, color = false },
 			{ variable = "$energyMax", description = "Maximum Energy", printInSettings = true, color = false },
@@ -1597,6 +1609,18 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
 			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
 			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+
+			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
+			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
+			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
+			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
+			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
+			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
+			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
+			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+
 
 			{ variable = "$energy", description = "Current Energy", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Energy", printInSettings = false, color = false },

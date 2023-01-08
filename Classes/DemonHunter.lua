@@ -446,7 +446,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
-
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+			
 			{ variable = "$fury", description = "Current Fury", printInSettings = true, color = false },
             { variable = "$resource", description = "Current Fury", printInSettings = false, color = false },
 			{ variable = "$furyMax", description = "Maximum Fury", printInSettings = true, color = false },

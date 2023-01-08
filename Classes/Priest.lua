@@ -1067,6 +1067,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 
 			{ variable = "$mana", description = "Current Mana", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },
@@ -1227,6 +1229,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 
 			{ variable = "$insanity", description = "Current Insanity", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Insanity", printInSettings = false, color = false },

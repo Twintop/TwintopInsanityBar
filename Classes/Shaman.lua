@@ -677,6 +677,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 
 			{ variable = "$maelstrom", description = "Current Maelstrom", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Maelstrom", printInSettings = false, color = false },
@@ -761,6 +763,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 
 			{ variable = "$mana", description = "Current Mana", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },

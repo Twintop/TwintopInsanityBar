@@ -1215,6 +1215,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 
 			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
@@ -1308,6 +1310,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 
 			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
@@ -1398,6 +1402,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
 			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 
 			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },

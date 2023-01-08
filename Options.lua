@@ -1678,8 +1678,6 @@ function TRB.Options:ConstructOptionsPanel()
     interfaceSettingsFrame.controls.labels.infoReleased = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Released:", TRB.Details.addonReleaseDate, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 450, 15, 15)
     yCoord = yCoord - 40
     interfaceSettingsFrame.controls.labels.infoSupport = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Supported Specs (Dragonflight):", TRB.Details.supportedSpecs, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 450, 15, 300)
-    yCoord = yCoord - 80
-    interfaceSettingsFrame.controls.labels.infoSupport = TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, "Not Yet Updated Specs (Dragonflight):", TRB.Details.needUpdatingSpecs, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 450, 15, 300)
 
 
     interfaceSettingsFrame.panel.yCoord = yCoord
