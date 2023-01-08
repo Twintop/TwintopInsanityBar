@@ -2221,7 +2221,7 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 							outputString = string.gsub(outputString, "!", " not ")
 							outputString = string.gsub(outputString, "&", " and ")
 							outputString = string.gsub(outputString, "||", " or ")
-							
+
 							local resultCode, resultFunc = pcall(assert, loadstring("return (" .. outputString .. ")"))
 							
 							if resultCode then
@@ -2486,6 +2486,7 @@ local function ArePvpTalentsActive()
     else
         local talents = C_SpecializationInfo.GetAllSelectedPvpTalentIDs()
         for _, pvptalent in pairs(talents) do
+---@diagnostic disable-next-line: missing-parameter
             local spellID = select(6, GetPvpTalentInfoByID(pvptalent))
             if IsPlayerSpell(spellID) then
                 return true

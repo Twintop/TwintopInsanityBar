@@ -34,7 +34,7 @@ function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultV
     f:SetScript("OnValueChanged", function(self, value)
 		self.EditBox:SetText(value)
 	end)
-    f.MinLabel = f:CreateFontString(nil, "Overlay")
+    f.MinLabel = f:CreateFontString(nil, "OVERLAY")
     f.MinLabel:SetFontObject(GameFontHighlightSmall)
     f.MinLabel:SetSize(0, 14)
     ---@diagnostic disable-next-line: redundant-parameter
@@ -42,7 +42,7 @@ function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultV
 ---@diagnostic disable-next-line: param-type-mismatch
     f.MinLabel:SetPoint("TopLeft", f, "BottomLeft", 0, -1)
     f.MinLabel:SetText(minValue)
-    f.MaxLabel = f:CreateFontString(nil, "Overlay")
+    f.MaxLabel = f:CreateFontString(nil, "OVERLAY")
     f.MaxLabel:SetFontObject(GameFontHighlightSmall)
     f.MaxLabel:SetSize(0, 14)
     ---@diagnostic disable-next-line: redundant-parameter
@@ -50,7 +50,7 @@ function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultV
 ---@diagnostic disable-next-line: param-type-mismatch
     f.MaxLabel:SetPoint("TopRight", f, "BottomRight", 0, -1)
     f.MaxLabel:SetText(maxValue)
-    f.Title = f:CreateFontString(nil, "Overlay")
+    f.Title = f:CreateFontString(nil, "OVERLAY")
     f.Title:SetFontObject(GameFontNormal)
     f.Title:SetSize(0, 14)
     ---@diagnostic disable-next-line: redundant-parameter
@@ -58,7 +58,7 @@ function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultV
 ---@diagnostic disable-next-line: param-type-mismatch
     f.Title:SetPoint("Bottom", f, "Top")
     f.Title:SetText(title)
-    f.Thumb = f:CreateTexture(nil, "Artwork")
+    f.Thumb = f:CreateTexture(nil, "ARTWORK")
     f.Thumb:SetSize(32, 32)
     f.Thumb:SetTexture("Interface\\Buttons\\UI-SliderBar-Button-Horizontal")
     f:SetThumbTexture(f.Thumb)
@@ -67,7 +67,7 @@ function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultV
     eb:EnableMouseWheel(true)
     eb:SetAutoFocus(false)
     eb:SetNumeric(false)
-    eb:SetJustifyH("Center")
+    eb:SetJustifyH("CENTER")
     eb:SetFontObject(GameFontHighlightSmall)
     eb:SetSize(50, 14)
 ---@diagnostic disable-next-line: param-type-mismatch
@@ -159,7 +159,7 @@ function TRB.UiFunctions:BuildTextBox(parent, text, maxLetters, width, height, x
 	f:SetPoint("TOPLEFT", xPos, yPos)
 	f:SetAutoFocus(false)
 	f:SetMaxLetters(maxLetters)
-    f:SetJustifyH("Left")
+    f:SetJustifyH("LEFT")
     f:SetFontObject(GameFontHighlight)
     f:SetSize(width, height)
     f:SetTextInsets(4, 4, 0, 0)
@@ -1855,7 +1855,7 @@ function TRB.UiFunctions:GenerateThresholdLinesForHealers(parent, controls, spec
     yCoord = yCoord - 25
     controls.labels.builders = TRB.UiFunctions:BuildLabel(parent, "Items", 5, yCoord, 300, 20)
     yCoord = yCoord - 20
-    
+
     controls.checkBoxes.snThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_conjuredChillglobe", parent, "ChatConfigCheckButtonTemplate")
     f = controls.checkBoxes.snThresholdShow
     f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)

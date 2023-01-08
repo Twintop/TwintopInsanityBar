@@ -4155,6 +4155,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.snapshotData.suddenAmbush.endTimeLeeway = nil
 		end
 
+---@diagnostic disable-next-line: cast-local-type
 		TRB.Data.snapshotData.tigersFury.cooldown.startTime, TRB.Data.snapshotData.tigersFury.cooldown.duration, _, _ = GetSpellCooldown(TRB.Data.spells.tigersFury.id)
 		
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then

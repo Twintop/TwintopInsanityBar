@@ -1555,7 +1555,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
             TRB.Data.snapshotData.thunderClap.startTime = nil
             TRB.Data.snapshotData.thunderClap.duration = 0
 		elseif TRB.Data.snapshotData.thunderClap.startTime ~= nil then
-			---@diagnostic disable-next-line: redundant-parameter
+			---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 			TRB.Data.snapshotData.thunderClap.startTime, TRB.Data.snapshotData.thunderClap.duration, _, _ = GetSpellCooldown(TRB.Data.spells.thunderClap.id)
         end
 
