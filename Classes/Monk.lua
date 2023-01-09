@@ -126,6 +126,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		}
 
 		specCache.mistweaver.spells = {
+			-- Monk Class Talents		
+			soothingMist = {
+				id = 115175,
+				name = "",
+				icon = "",
+				isTalent = true,
+				baseline = true
+			},
+
 			-- External mana
 			symbolOfHope = {
 				id = 64901,
@@ -437,7 +446,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
             -- Windwalker Spec Baseline Abilities
 
-			-- Monk Class Talents			
+			-- Monk Class Talents
 			risingSunKick = {
 				id = 107428,
 				name = "",
@@ -1794,7 +1803,18 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		else
 			if specId == 2 then
 				if currentSpellName == nil then
-					TRB.Functions.ResetCastingSnapshotData()
+					if currentChannelId == TRB.Data.spells.soothingMist.id then
+						local manaCost = -TRB.Functions.GetSpellManaCostPerSecond(currentChannelId)
+						
+						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.soothingMist.id
+						TRB.Data.snapshotData.casting.startTime = currentTime
+						TRB.Data.snapshotData.casting.resourceRaw = manaCost
+						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.soothingMist.icon
+
+						UpdateCastingResourceFinal_Mistweaver()
+					else
+						TRB.Functions.ResetCastingSnapshotData()
+					end
 					return false
 				else
 					local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)

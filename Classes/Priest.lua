@@ -586,9 +586,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				swings = 0,
 				time = 0
 			},
-			mindSear = {
-				targetsHit = 0
-			},
 			deathAndMadness = {
 				insanity = 0,
 				ticks = 0

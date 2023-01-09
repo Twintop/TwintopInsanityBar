@@ -486,6 +486,20 @@ local function GetSpellManaCost(spellId)
 end
 TRB.Functions.GetSpellManaCost = GetSpellManaCost
 
+local function GetSpellManaCostPerSecond(spellId)
+---@diagnostic disable-next-line: redundant-parameter
+	local spc = GetSpellPowerCost(spellId)
+	local length = TRB.Functions.TableLength(spc)
+
+	for x = 1, length do
+		if spc[x]["name"] == "MANA" and spc[x]["costPerSec"] > 0 then
+			return spc[x]["costPerSec"]
+		end
+	end
+	return 0
+end
+TRB.Functions.GetSpellManaCostPerSecond = GetSpellManaCostPerSecond
+
 local function FillSpellDataManaCost(spells)
 	if spells == nil then
 		spells = TRB.Data.spells
