@@ -383,19 +383,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					equippedVersion = "lfr",
 					manaThresholdPercent = 0.65,
 					lfr = {
-						bonusId = 2161,
+						bonusId = 7982,
 						mana = 10877
 					},
 					normal = {
-						bonusId = 2158,
+						bonusId = 7979,
 						mana = 11735
 					},
 					heroic = {
-						bonusId = 2159,
+						bonusId = 7980,
 						mana = 14430
 					},
 					mythic = {
-						bonusId = 2160,
+						bonusId = 7981,
 						mana = 17625
 					}
 				},

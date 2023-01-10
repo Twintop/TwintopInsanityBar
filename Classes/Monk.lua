@@ -105,19 +105,19 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					equippedVersion = "lfr",
 					manaThresholdPercent = 0.65,
 					lfr = {
-						bonusId = 2161,
+						bonusId = 7982,
 						mana = 10877
 					},
 					normal = {
-						bonusId = 2158,
+						bonusId = 7979,
 						mana = 11735
 					},
 					heroic = {
-						bonusId = 2159,
+						bonusId = 7980,
 						mana = 14430
 					},
 					mythic = {
-						bonusId = 2160,
+						bonusId = 7981,
 						mana = 17625
 					}
 				},
@@ -1805,7 +1805,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				if currentSpellName == nil then
 					if currentChannelId == TRB.Data.spells.soothingMist.id then
 						local manaCost = -TRB.Functions.GetSpellManaCostPerSecond(currentChannelId)
-						
+
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.soothingMist.id
 						TRB.Data.snapshotData.casting.startTime = currentTime
 						TRB.Data.snapshotData.casting.resourceRaw = manaCost
