@@ -2728,6 +2728,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
+				configuration.endOfAscendance = settings.endOfAscendance
 			elseif specId == 3 then -- Restoration
 			end
 		elseif classId == 10 then -- Monk

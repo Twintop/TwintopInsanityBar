@@ -120,6 +120,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				showPassive=true,
 				showCasting=true
 			},
+			endOfAscendance = {
+				enabled=true,
+				mode="gcd",
+				gcdsMax=2,
+				timeMax=3.0
+			},
 			colors = {
 				text = {
 					currentMaelstrom="FF6563E0",
@@ -147,6 +153,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					casting="FFFFFFFF",
 					passive="FF995BDD",
 					earthShock="FF00096A",
+					inAscendance="FFFA8128",
+					inAscendance1GCD="FFFF0000",
 					flashAlpha=0.70,
 					flashPeriod=0.5,
 					flashEnabled=true,
@@ -518,10 +526,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 		end)
 
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.border
+		controls.colors.inAscendance = TRB.UiFunctions:BuildColorPicker(parent, "Maelstrom while in Ascendance", spec.colors.bar.inAscendance, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.inAscendance		
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 1)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance")
 		end)
 
 		yCoord = yCoord - 30
@@ -531,10 +539,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "earthShock")
 		end)
 
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.background
+		controls.colors.inAscendance1GCD = TRB.UiFunctions:BuildColorPicker(parent, "Maestrom while you have less than 1 GCD left in Ascendance (if enabled)", spec.colors.bar.inAscendance1GCD, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.inAscendance1GCD
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
 		end)
 
 		yCoord = yCoord - 30
@@ -544,17 +552,31 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 1)
 		end)
 
-		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Maelstrom", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.border
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 1)
+		end)
+
+		yCoord = yCoord - 30
+
+		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Maelstrom", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
 		end)
 
-		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Maelstrom from Passive Sources", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
+		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Maelstrom from Passive Sources", spec.colors.bar.passive, 550, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
 		end)
 
 
@@ -623,6 +645,71 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 1, yCoord)
 
 		yCoord = yCoord - 40
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "End of Ascendance Configuration", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.endOfAscendance = CreateFrame("CheckButton", "TRB_EOVA_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfAscendance
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Ascendance")
+		f.tooltip = "Changes the bar color when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(spec.endOfAscendance.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.endOfAscendance.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 40
+		controls.checkBoxes.endOfAscendanceModeGCDs = CreateFrame("CheckButton", "TRB_EOFA_M_GCD", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfAscendanceModeGCDs
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Ascendance ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many GCDs remain until Ascendance ends."
+		if spec.endOfAscendance.mode == "gcd" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfAscendanceModeGCDs:SetChecked(true)
+			controls.checkBoxes.endOfAscendanceModeTime:SetChecked(false)
+			spec.endOfAscendance.mode = "gcd"
+		end)
+
+		title = "Ascendance GCDs - 0.75sec Floor"
+		controls.endOfAscendanceGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 10, spec.endOfAscendance.gcdsMax, 0.25, 2,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.endOfAscendanceGCDs:SetScript("OnValueChanged", function(self, value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+			spec.endOfAscendance.gcdsMax = value
+		end)
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.endOfAscendanceModeTime = CreateFrame("CheckButton", "TRB_EOFA_M_TIME", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfAscendanceModeTime
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Time until Ascendance ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many seconds remain until Ascendance will end."
+		if spec.endOfAscendance.mode == "time" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfAscendanceModeGCDs:SetChecked(false)
+			controls.checkBoxes.endOfAscendanceModeTime:SetChecked(true)
+			spec.endOfAscendance.mode = "time"
+		end)
+
+		title = "Ascendance Time Remaining"
+		controls.endOfAscendanceTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.endOfAscendance.timeMax, 0.25, 2,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.endOfAscendanceTime:SetScript("OnValueChanged", function(self, value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.RoundTo(value, 2)
+			self.EditBox:SetText(value)
+			spec.endOfAscendance.timeMax = value
+		end)
+
+		yCoord = yCoord - 40
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
@@ -630,7 +717,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f = controls.checkBoxes.overcapEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
-		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Insanity."
+		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Maelstrom."
 		f:SetChecked(spec.colors.bar.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.overcapEnabled = self:GetChecked()
