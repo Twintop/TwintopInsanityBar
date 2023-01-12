@@ -436,14 +436,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 
 			-- Set Bonuses
-			divineConversation = { -- T29 4P
+			divineConversation = { -- T28 4P
 				id = 363727,
 				name = "",
 				icon = "",
 				reduction = 15,
 				reductionPvp = 10
 			},
-			prayerFocus = { -- T30 2P
+			prayerFocus = { -- T29 2P
 				id = 394729,
 				name = "",
 				icon = "",
