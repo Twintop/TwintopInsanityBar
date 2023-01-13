@@ -2328,36 +2328,36 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end
 				end
 			elseif var == "$pulsarCollected" then
-				if TRB.Data.character.items.primordialArcanicPulsar then
+				if TRB.Functions.IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
 					valid = true
 				end
 			elseif var == "$pulsarCollectedPercent" then
-				if TRB.Data.character.items.primordialArcanicPulsar then
+				if TRB.Functions.IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
 					valid = true
 				end
 			elseif var == "$pulsarRemaining" then
-				if TRB.Data.character.items.primordialArcanicPulsar then
+				if TRB.Functions.IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
 					valid = true
 				end
 			elseif var == "$pulsarRemainingPercent" then
-				if TRB.Data.character.items.primordialArcanicPulsar then
+				if TRB.Functions.IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
 					valid = true
 				end
 			elseif var == "$pulsarStarsurgeCount" then
-				if TRB.Data.character.items.primordialArcanicPulsar then
+				if TRB.Functions.IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
 					valid = true
 				end
 			elseif var == "$pulsarStarfallCount" then
-				if TRB.Data.character.items.primordialArcanicPulsar then
+				if TRB.Functions.IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
 					valid = true
 				end
 			elseif var == "$pulsarNextStarsurge" then
-				if TRB.Data.character.items.primordialArcanicPulsar and
+				if TRB.Functions.IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) and
 					(((TRB.Data.spells.primordialArcanicPulsar.maxAstralPower or 0) - (TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower or 0)) <= TRB.Data.character.starsurgeThreshold) then
 					valid = true
 				end
 			elseif var == "$pulsarNextStarfall" then
-				if TRB.Data.character.items.primordialArcanicPulsar and
+				if TRB.Functions.IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) and
 					(((TRB.Data.spells.primordialArcanicPulsar.maxAstralPower or 0) - (TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower or 0)) <= TRB.Data.character.starfallThreshold) then
 					valid = true
 				end
