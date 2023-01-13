@@ -7,6 +7,7 @@
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Death%20Knight?color=C41E3A&label=Death%20Knight)](https://github.com/Twintop/TwintopInsanityBar/labels/Death%20Knight)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Death%20Knight?color=A330C9&label=Demon%20Hunter)](https://github.com/Twintop/TwintopInsanityBar/labels/Demon%20Hunter)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Druid?color=FF7C0A&label=Druid)](https://github.com/Twintop/TwintopInsanityBar/labels/Druid)
+[![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Evoker?color=33937F&label=Evoker)](https://github.com/Twintop/TwintopInsanityBar/labels/Evoker)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Hunter?color=AAD372&label=Hunter)](https://github.com/Twintop/TwintopInsanityBar/labels/Hunter)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Mage?color=3FC7EB&label=Mage)](https://github.com/Twintop/TwintopInsanityBar/labels/Mage)
 [![Issues](https://img.shields.io/github/issues/Twintop/TwintopInsanityBar/Monk?color=00FF98&label=Monk)](https://github.com/Twintop/TwintopInsanityBar/labels/Monk)
