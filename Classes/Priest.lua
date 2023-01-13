@@ -689,6 +689,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				isTalent = true
 			},
+			halo = {
+				id = 120644,
+				name = "",
+				icon = "",
+				isTalent = true,
+				insanity = 10
+			},
+			mindgames = {
+				id = 375901,
+				name = "",
+				icon = "",
+				isTalent = true,
+				insanity = 10
+			},
 
 
 			-- Shadow Talent Abilities			
@@ -1162,12 +1176,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#mindFlayInsanity", icon = spells.mindFlayInsanity.icon, description = spells.mindFlayInsanity.name, printInSettings = false },
 			{ variable = "#mf", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = true },
 			{ variable = "#mindFlay", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = false },
+			{ variable = "#mindgames", icon = spells.mindgames.icon, description = spells.mindgames.name, printInSettings = true },
 			{ variable = "#ms", icon = spells.mindSear.icon, description = spells.mindSear.name, printInSettings = true },
 			{ variable = "#mindSear", icon = spells.mindSear.icon, description = spells.mindSear.name, printInSettings = false },
 			{ variable = "#voit", icon = spells.voidTorrent.icon, description = spells.voidTorrent.name, printInSettings = true },
 			{ variable = "#voidTorrent", icon = spells.voidTorrent.icon, description = spells.voidTorrent.name, printInSettings = false },
 			{ variable = "#dam", icon = spells.deathAndMadness.icon, description = spells.deathAndMadness.name, printInSettings = true },
 			{ variable = "#deathAndMadness", icon = spells.deathAndMadness.icon, description = spells.deathAndMadness.name, printInSettings = false },
+			{ variable = "#halo", icon = spells.halo.icon, description = spells.halo.name, printInSettings = true },
 																															  
 			{ variable = "#swp", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = true },
 			{ variable = "#shadowWordPain", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = false },
@@ -2468,6 +2484,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#mindFlay"] = TRB.Data.spells.mindFlay.icon
 		lookup["#mfi"] = TRB.Data.spells.mindFlayInsanity.icon
 		lookup["#mindFlayInsanity"] = TRB.Data.spells.mindFlayInsanity.icon
+		lookup["#mindgames"] = TRB.Data.spells.mindgames.icon
 		lookup["#ms"] = TRB.Data.spells.mindSear.icon
 		lookup["#mindSear"] = TRB.Data.spells.mindSear.icon
 		lookup["#mindbender"] = TRB.Data.spells.mindbender.icon
@@ -2719,6 +2736,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.vampiricTouch.insanity
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.vampiricTouch.id
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.vampiricTouch.icon
+					elseif currentSpellId == TRB.Data.spells.mindgames.id then
+						TRB.Data.snapshotData.casting.startTime = currentTime
+						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindgames.insanity
+						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.mindgames.id
+						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.mindgames.icon
+					elseif currentSpellId == TRB.Data.spells.halo.id then
+						TRB.Data.snapshotData.casting.startTime = currentTime
+						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.halo.insanity
+						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.halo.id
+						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.halo.icon
 					elseif currentSpellId == TRB.Data.spells.massDispel.id and TRB.Functions.IsTalentActive(TRB.Data.spells.hallucinations) and affectingCombat then
 						TRB.Data.snapshotData.casting.startTime = currentTime
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.hallucinations.insanity

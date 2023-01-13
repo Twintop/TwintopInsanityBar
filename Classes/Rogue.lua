@@ -218,6 +218,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				},
 				baseline = true
 			},
+			feint = {
+				id = 1966,
+				name = "",
+				icon = "",
+				energy = -35,
+                comboPointsGenerated = 0,
+				texture = "",
+				thresholdId = 7,
+				settingKey = "feint",
+                hasCooldown = true,
+                cooldown = 15,
+				nimbleFingers = true,
+				thresholdUsable = false,
+				isTalent = false,
+				baseline = true
+			},
 
 			--Rogue Talent Abilities
 			shiv = {
@@ -227,7 +243,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				energy = -20,
                 comboPointsGenerated = 1,
 				texture = "",
-				thresholdId = 7,
+				thresholdId = 8,
 				settingKey = "shiv",
                 hasCooldown = true,
 				isSnowflake = true,
@@ -244,24 +260,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 comboPointsGenerated = 0,
                 stealth = true,
 				texture = "",
-				thresholdId = 8,
+				thresholdId = 9,
 				settingKey = "sap",
 				rushedSetup = true,
-				thresholdUsable = false,
-				isTalent = true
-			},
-			feint = {
-				id = 1966,
-				name = "",
-				icon = "",
-				energy = -35,
-                comboPointsGenerated = 0,
-				texture = "",
-				thresholdId = 9,
-				settingKey = "feint",
-                hasCooldown = true,
-                cooldown = 15,
-				nimbleFingers = true,
 				thresholdUsable = false,
 				isTalent = true
 			},
@@ -848,6 +849,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				},
 				baseline = true
 			},
+			feint = {
+				id = 1966,
+				name = "",
+				icon = "",
+				energy = -35,
+                comboPointsGenerated = 0,
+				texture = "",
+				thresholdId = 7,
+				settingKey = "feint",
+                hasCooldown = true,
+                cooldown = 15,
+				nimbleFingers = true,
+				thresholdUsable = false,
+				isTalent = false,
+				baseline = true
+			},
 
 			--Rogue Talent Abilities
 			shiv = {
@@ -857,7 +874,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				energy = -20,
                 comboPointsGenerated = 1,
 				texture = "",
-				thresholdId = 7,
+				thresholdId = 8,
 				settingKey = "shiv",
                 hasCooldown = true,
 				isSnowflake = true,
@@ -874,24 +891,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 comboPointsGenerated = 0,
                 stealth = true,
 				texture = "",
-				thresholdId = 8,
+				thresholdId = 9,
 				settingKey = "sap",
 				rushedSetup = true,
-				thresholdUsable = false,
-				isTalent = true
-			},
-			feint = {
-				id = 1966,
-				name = "",
-				icon = "",
-				energy = -35,
-                comboPointsGenerated = 0,
-				texture = "",
-				thresholdId = 9,
-				settingKey = "feint",
-                hasCooldown = true,
-                cooldown = 15,
-				nimbleFingers = true,
 				thresholdUsable = false,
 				isTalent = true
 			},
