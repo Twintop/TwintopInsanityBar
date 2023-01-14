@@ -44,10 +44,15 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				resource = 0,
 				passive = 0,
 				burningHatred = 0,
+				tacticalRetreat = 0
 			},
 			dots = {
 			},
 			burningHatred = {
+				fury = 0,
+				ticks = 0
+			},
+			tacticalRetreat = {
 				fury = 0,
 				ticks = 0
 			}
@@ -244,7 +249,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
                 isHasted = true,
 				isTalent = true
 			},
-			--TODO: Add Tactical Retreat
 			glaiveTempest = {
 				id = 342817,
 				name = "",
@@ -290,19 +294,20 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				icon = "",
                 furyAdjustment = -20
 			},
+			tacticalRetreat = {
+				id = 389890,
+				name = "",
+				icon = "",
+				fury = 8,
+				ticks = 10,
+				duration = 10,
+				isTalent = true
+			},
 			momentum = {
 				id = 206476,
 				name = "",
 				icon = "",
-			},
-			prepared = {
-				id = 203650,
-				name = "",
-				icon = "",
-                fury = 1,
-                ticks = 80,
-                duration = 10
-			},
+			}
 		}
 
 		specCache.havoc.snapshotData.audio = {
@@ -370,7 +375,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			startTime = nil,
 			duration = 0
 		}
-		specCache.havoc.snapshotData.prepared = {
+		specCache.havoc.snapshotData.tacticalRetreat = {
 			isActive = false,
 			ticksRemaining = 0,
 			fury = 0,
@@ -417,7 +422,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
 			{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 			{ variable = "#momentum", icon = spells.momentum.icon, description = spells.momentum.name, printInSettings = true },
-			{ variable = "#prepared", icon = spells.prepared.icon, description = spells.prepared.name, printInSettings = true },
+			{ variable = "#tacticalRetreat", icon = spells.tacticalRetreat.icon, description = spells.tacticalRetreat.name, printInSettings = true },
 			{ variable = "#unboundChaos", icon = spells.unboundChaos.icon, description = spells.unboundChaos.name, printInSettings = true },
 			{ variable = "#unleashedPower", icon = spells.unleashedPower.icon, description = spells.unleashedPower.name, printInSettings = true },
         }
@@ -477,9 +482,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 			{ variable = "$ucTime", description = "Time remaining on Unbound Chaos", printInSettings = true, color = false },
 
-			{ variable = "$preparedFury", description = "Fury from Prepared (if talented)", printInSettings = true, color = false },
-			{ variable = "$preparedTicks", description = "Number of ticks left on Prepared (if talented)", printInSetting = true, color = false },
-			{ variable = "$preparedTime", description = "Time remaining on Prepared (if talented)", printInSettings = true, color = false },
+			{ variable = "$tacticalRetreatFury", description = "Fury from Tactical Retreat (if talented)", printInSettings = true, color = false },
+			{ variable = "$tacticalRetreatTicks", description = "Number of ticks left on Tactical Retreat (if talented)", printInSetting = true, color = false },
+			{ variable = "$tacticalRetreatTime", description = "Time remaining on Tactical Retreat (if talented)", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
             { variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -559,8 +564,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	local function GetMetamorphosisRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.metamorphosis)
 	end
-	local function GetPreparedRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.prepared)
+
+	local function GetTacticalRetreatRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.tacticalRetreat)
 	end
 	
 	local function GetUnboundChaosRemainingTime()
@@ -654,16 +660,16 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				if GetUnboundChaosRemainingTime() > 0 then
 					valid = true
 				end
-			elseif var == "$preparedFury" then
-				if TRB.Data.snapshotData.prepared.fury > 0 then
+			elseif var == "$tacticalRetreatFury" then
+				if TRB.Data.snapshotData.tacticalRetreat.fury > 0 then
 					valid = true
 				end
-			elseif var == "$preparedTicks" then
-				if TRB.Data.snapshotData.prepared.ticksRemaining > 0 then
+			elseif var == "$tacticalRetreatTicks" then
+				if TRB.Data.snapshotData.tacticalRetreat.ticksRemaining > 0 then
 					valid = true
 				end
-			elseif var == "$preparedTime" then
-				if GetPreparedRemainingTime() > 0 then
+			elseif var == "$tacticalRetreatTime" then
+				if GetTacticalRetreatRemainingTime() > 0 then
 					valid = true
 				end
             end
@@ -701,7 +707,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				valid = true
 			end
 		elseif var == "$passive" then
-			if IsValidVariableForSpec("$bhFury") then
+			if IsValidVariableForSpec("$bhFury") or IsValidVariableForSpec("$tacticalRetreatFury") then
 				valid = true
 			end
 		end
@@ -769,17 +775,17 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			bhTime = string.format("%.1f", _bhTime)
 		end
 
-		--$preparedFury
-		local preparedFury = TRB.Data.snapshotData.prepared.fury
+		--$tacticalRetreatFury
+		local tacticalRetreatFury = TRB.Data.snapshotData.tacticalRetreat.fury
 
-		--$preparedTicks
-		local preparedTicks = TRB.Data.snapshotData.prepared.ticksRemaining
+		--$tacticalRetreatTicks
+		local tacticalRetreatTicks = TRB.Data.snapshotData.tacticalRetreat.ticksRemaining
 
-		--$preparedTime
-		local _preparedTime = GetPreparedRemainingTime()
-		local preparedTime = "0.0"
-		if _preparedTime ~= nil then
-			preparedTime = string.format("%.1f", _preparedTime)
+		--$tacticalRetreatTime
+		local _tacticalRetreatTime = GetTacticalRetreatRemainingTime()
+		local tacticalRetreatTime = "0.0"
+		if _tacticalRetreatTime ~= nil then
+			tacticalRetreatTime = string.format("%.1f", _tacticalRetreatTime)
 		end
 
 		--$fury
@@ -789,7 +795,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local _castingFury = TRB.Data.snapshotData.casting.resourceFinal
 		local castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.RoundTo(_castingFury, furyPrecision, "floor"))
 		--$passive
-		local _passiveFury = bhFury + preparedFury
+		local _passiveFury = bhFury + tacticalRetreatFury
 		local passiveFury = string.format("|c%s%s|r", TRB.Data.settings.demonhunter.havoc.colors.text.passive, TRB.Functions.RoundTo(_passiveFury, furyPrecision, "floor"))
 		
 		--$furyTotal
@@ -806,16 +812,16 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		Global_TwintopResourceBar.resource.resource = normalizedFury
 		Global_TwintopResourceBar.resource.passive = _passiveFury
 		Global_TwintopResourceBar.resource.burningHatred = bhFury
-		Global_TwintopResourceBar.resource.prepared = preparedFury
+		Global_TwintopResourceBar.resource.tacticalRetreat = tacticalRetreatFury
 		Global_TwintopResourceBar.burningHatred = {
 			fury = bhFury,
 			ticks = bhTicks,
 			time = bhTime
 		}
-		Global_TwintopResourceBar.prepared = {
-			fury = preparedFury,
-			ticks = preparedTicks,
-			time = preparedTime
+		Global_TwintopResourceBar.tacticalRetreat = {
+			fury = tacticalRetreatFury,
+			ticks = tacticalRetreatTicks,
+			time = tacticalRetreatTime
 		}
 
 		local lookup = TRB.Data.lookup or {}
@@ -838,7 +844,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
         lookup["#meta"] = TRB.Data.spells.metamorphosis.icon
         lookup["#metamorphosis"] = TRB.Data.spells.metamorphosis.icon
 		lookup["#momentum"] = TRB.Data.spells.momentum.icon
-		lookup["#prepared"] = TRB.Data.spells.prepared.icon
+		lookup["#tacticalRetreat"] = TRB.Data.spells.tacticalRetreat.icon
 		lookup["#unboundChaos"] = TRB.Data.spells.unboundChaos.icon
 		lookup["#unleashedPower"] = TRB.Data.spells.unleashedPower.icon
 		lookup["$metaTime"] = metamorphosisTime
@@ -848,9 +854,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookup["$iaTicks"] = bhTicks
 		lookup["$iaTime"] = bhTime
 		lookup["$bhTime"] = bhTime
-		lookup["$preparedFury"] = preparedFury
-		lookup["$preparedTicks"] = preparedTicks
-		lookup["$preparedTime"] = preparedTime
+		lookup["$tacticalRetreatFury"] = tacticalRetreatFury
+		lookup["$tacticalRetreatTicks"] = tacticalRetreatTicks
+		lookup["$tacticalRetreatTime"] = _tacticalRetreatTime
 		lookup["$ucTime"] = unboundChaosTime
 		lookup["$furyPlusCasting"] = furyPlusCasting
 		lookup["$furyTotal"] = furyTotal
@@ -868,7 +874,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookup["$furyOvercap"] = overcap
 		TRB.Data.lookup = lookup
 
-		local lookupLogic = TRB.Data.lookupLogic or {}		
+		local lookupLogic = TRB.Data.lookupLogic or {}
 		lookupLogic["$metaTime"] = _metamorphosisTime
 		lookupLogic["$metamorphosisTime"] = _metamorphosisTime
 		lookupLogic["$bhFury"] = bhFury
@@ -876,9 +882,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookupLogic["$iaTicks"] = bhTicks
 		lookupLogic["$iaTime"] = _bhTime
 		lookupLogic["$bhTime"] = _bhTime
-		lookupLogic["$preparedFury"] = preparedFury
-		lookupLogic["$preparedTicks"] = preparedTicks
-		lookupLogic["$preparedTime"] = _preparedTime
+		lookupLogic["$tacticalRetreatFury"] = tacticalRetreatFury
+		lookupLogic["$tacticalRetreatTicks"] = tacticalRetreatTicks
+		lookupLogic["$tacticalRetreatTime"] = _tacticalRetreatTime
 		lookupLogic["$ucTime"] = _unboundChaosTime
 		lookupLogic["$furyPlusCasting"] = _furyPlusCasting
 		lookupLogic["$furyTotal"] = _furyTotal
@@ -966,17 +972,17 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end
 	end
 
-	local function UpdatePrepared()
-		if TRB.Data.snapshotData.prepared.isActive then
+	local function UpdateTacticalRetreat()
+		if TRB.Data.snapshotData.tacticalRetreat.isActive then
 			local currentTime = GetTime()
-			if TRB.Data.snapshotData.prepared.endTime == nil or currentTime > TRB.Data.snapshotData.prepared.endTime then
-				TRB.Data.snapshotData.prepared.ticksRemaining = 0
-				TRB.Data.snapshotData.prepared.endTime = nil
-				TRB.Data.snapshotData.prepared.fury = 0
-				TRB.Data.snapshotData.prepared.isActive = false
+			if TRB.Data.snapshotData.tacticalRetreat.endTime == nil or currentTime > TRB.Data.snapshotData.tacticalRetreat.endTime then
+				TRB.Data.snapshotData.tacticalRetreat.ticksRemaining = 0
+				TRB.Data.snapshotData.tacticalRetreat.endTime = nil
+				TRB.Data.snapshotData.tacticalRetreat.fury = 0
+				TRB.Data.snapshotData.tacticalRetreat.isActive = false
 			else
-				TRB.Data.snapshotData.prepared.ticksRemaining = math.ceil((TRB.Data.snapshotData.prepared.endTime - currentTime) / (TRB.Data.spells.prepared.duration / TRB.Data.spells.prepared.ticks))
-				TRB.Data.snapshotData.prepared.fury = TRB.Data.snapshotData.prepared.ticksRemaining * TRB.Data.spells.prepared.fury
+				TRB.Data.snapshotData.tacticalRetreat.ticksRemaining = math.ceil((TRB.Data.snapshotData.tacticalRetreat.endTime - currentTime) / (TRB.Data.spells.tacticalRetreat.duration / TRB.Data.spells.tacticalRetreat.ticks))
+				TRB.Data.snapshotData.tacticalRetreat.fury = TRB.Data.snapshotData.tacticalRetreat.ticksRemaining * TRB.Data.spells.tacticalRetreat.fury
 			end
 		end
 	end
@@ -1003,7 +1009,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		UpdateSnapshot()
 		UpdateMetamorphosis()
 		UpdateBurningHatred()
-		UpdatePrepared()
+		UpdateTacticalRetreat()
 
 		local currentTime = GetTime()
 		local _
@@ -1116,8 +1122,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							passiveValue = passiveValue + TRB.Data.snapshotData.immolationAura.fury
 						end
 
-						if TRB.Data.snapshotData.prepared.fury > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshotData.prepared.fury
+						if TRB.Data.snapshotData.tacticalRetreat.fury > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshotData.tacticalRetreat.fury
 						end
 					end
 
@@ -1436,28 +1442,28 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							TRB.Data.snapshotData.unboundChaos.duration = 0
 							TRB.Data.snapshotData.unboundChaos.endTime = nil
 						end
-					elseif spellId == TRB.Data.spells.prepared.id then
-						if type == "SPELL_AURA_APPLIED" then -- Gain Prepared
-							TRB.Data.snapshotData.prepared.isActive = true
-							TRB.Data.snapshotData.prepared.ticksRemaining = TRB.Data.spells.prepared.ticks								
-							TRB.Data.snapshotData.prepared.fury = TRB.Data.snapshotData.prepared.ticksRemaining * TRB.Data.spells.prepared.fury
-							TRB.Data.snapshotData.prepared.endTime = currentTime + TRB.Data.spells.prepared.duration
-							TRB.Data.snapshotData.prepared.lastTick = currentTime
+					elseif spellId == TRB.Data.spells.tacticalRetreat.id then
+						if type == "SPELL_AURA_APPLIED" then -- Gain Tactical Retreat
+							TRB.Data.snapshotData.tacticalRetreat.isActive = true
+							TRB.Data.snapshotData.tacticalRetreat.ticksRemaining = TRB.Data.spells.tacticalRetreat.ticks								
+							TRB.Data.snapshotData.tacticalRetreat.fury = TRB.Data.snapshotData.tacticalRetreat.ticksRemaining * TRB.Data.spells.tacticalRetreat.fury
+							TRB.Data.snapshotData.tacticalRetreat.endTime = currentTime + TRB.Data.spells.tacticalRetreat.duration
+							TRB.Data.snapshotData.tacticalRetreat.lastTick = currentTime
 						elseif type == "SPELL_AURA_REFRESH" then -- It shouldn't refresh but let's check for it anyway
-							TRB.Data.snapshotData.prepared.ticksRemaining = TRB.Data.spells.prepared.ticks + 1
-							TRB.Data.snapshotData.prepared.fury = TRB.Data.snapshotData.prepared.ticksRemaining * TRB.Data.spells.prepared.fury
-							TRB.Data.snapshotData.prepared.endTime = currentTime + TRB.Data.spells.prepared.duration + ((TRB.Data.spells.prepared.duration / TRB.Data.spells.prepared.ticks) - (currentTime - TRB.Data.snapshotData.prepared.lastTick))
-							TRB.Data.snapshotData.prepared.lastTick = currentTime
+							TRB.Data.snapshotData.tacticalRetreat.ticksRemaining = TRB.Data.spells.tacticalRetreat.ticks + 1
+							TRB.Data.snapshotData.tacticalRetreat.fury = TRB.Data.snapshotData.tacticalRetreat.ticksRemaining * TRB.Data.spells.tacticalRetreat.fury
+							TRB.Data.snapshotData.tacticalRetreat.endTime = currentTime + TRB.Data.spells.tacticalRetreat.duration + ((TRB.Data.spells.tacticalRetreat.duration / TRB.Data.spells.tacticalRetreat.ticks) - (currentTime - TRB.Data.snapshotData.tacticalRetreat.lastTick))
+							TRB.Data.snapshotData.tacticalRetreat.lastTick = currentTime
 						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshotData.prepared.isActive = false
-							TRB.Data.snapshotData.prepared.ticksRemaining = 0
-							TRB.Data.snapshotData.prepared.fury = 0
-							TRB.Data.snapshotData.prepared.endTime = nil
-							TRB.Data.snapshotData.prepared.lastTick = nil
+							TRB.Data.snapshotData.tacticalRetreat.isActive = false
+							TRB.Data.snapshotData.tacticalRetreat.ticksRemaining = 0
+							TRB.Data.snapshotData.tacticalRetreat.fury = 0
+							TRB.Data.snapshotData.tacticalRetreat.endTime = nil
+							TRB.Data.snapshotData.tacticalRetreat.lastTick = nil
 						elseif type == "SPELL_PERIODIC_ENERGIZE" then
-							TRB.Data.snapshotData.prepared.ticksRemaining = TRB.Data.snapshotData.prepared.ticksRemaining - 1
-							TRB.Data.snapshotData.prepared.fury = TRB.Data.snapshotData.prepared.ticksRemaining * TRB.Data.spells.prepared.fury
-							TRB.Data.snapshotData.prepared.lastTick = currentTime
+							TRB.Data.snapshotData.tacticalRetreat.ticksRemaining = TRB.Data.snapshotData.tacticalRetreat.ticksRemaining - 1
+							TRB.Data.snapshotData.tacticalRetreat.fury = TRB.Data.snapshotData.tacticalRetreat.ticksRemaining * TRB.Data.spells.tacticalRetreat.fury
+							TRB.Data.snapshotData.tacticalRetreat.lastTick = currentTime
 						end
 					end
 				end
