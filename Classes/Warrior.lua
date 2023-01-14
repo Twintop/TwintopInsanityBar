@@ -552,6 +552,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isHasted = true,
 				energizeId = 334934
 			},
+			stormOfSteel = {
+				id = 132096,
+				name = "",
+				icon = "",
+				rage = 5,
+				charges = 2,
+				isTalent = true
+			}
 		}
 
 		specCache.fury.snapshotData.audio = {
@@ -2186,10 +2194,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						end
 					elseif spellId == TRB.Data.spells.ravager.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Ravager used
+							local ravagerRage = TRB.Data.spells.ravager.rage
+							if TRB.Functions.IsTalentActive(TRB.Data.spells.stormOfSteel) then
+								ravagerRage = ravagerRage + TRB.Data.spells.stormOfSteel.rage
+							end
 							TRB.Data.snapshotData.ravager.isActive = true
 							TRB.Data.snapshotData.ravager.totalDuration = TRB.Data.spells.ravager.duration * (TRB.Functions.GetCurrentGCDTime(true) / 1.5)
 							TRB.Data.snapshotData.ravager.ticksRemaining = TRB.Data.spells.ravager.ticks
-							TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage
+							TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * ravagerRage
 							TRB.Data.snapshotData.ravager.endTime = currentTime + TRB.Data.snapshotData.ravager.totalDuration
 							TRB.Data.snapshotData.ravager.lastTick = currentTime
 							if TRB.Data.snapshotData.ravager.rage < 0 then
@@ -2197,7 +2209,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							end
 						end
 					elseif spellId == TRB.Data.spells.ravager.energizeId then
-						if type == "SPELL_ENERGIZE" then						
+						if type == "SPELL_ENERGIZE" then
+							local ravagerRage = TRB.Data.spells.ravager.rage
+							if TRB.Functions.IsTalentActive(TRB.Data.spells.stormOfSteel) then
+								ravagerRage = ravagerRage + TRB.Data.spells.stormOfSteel.rage
+							end
+
 							TRB.Data.snapshotData.ravager.ticksRemaining = TRB.Data.snapshotData.ravager.ticksRemaining - 1
 							if TRB.Data.snapshotData.ravager.ticksRemaining == 0 then
 								TRB.Data.snapshotData.ravager.ticksRemaining = 0
@@ -2206,7 +2223,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								TRB.Data.snapshotData.ravager.isActive = false
 								TRB.Data.snapshotData.ravager.totalDuration = 0
 							else
-								TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage
+								TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * ravagerRage
 								TRB.Data.snapshotData.ravager.lastTick = currentTime
 								if TRB.Data.snapshotData.ravager.rage < 0 then
 									TRB.Data.snapshotData.ravager.rage = 0
