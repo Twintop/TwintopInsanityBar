@@ -128,7 +128,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			   demonForm = false,
 			   isTalent = false,
 			   baseline = true
-            },			
+            },
             annihilation = {
 				id = 201427,
 				name = "",
@@ -204,6 +204,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
                 fury = 5,
                 ticks = 12,
                 duration = 12,
+				isTalent = true
+			},
+			furiousThrows = {
+				id = 393029,
+				name = "",
+				icon = "",
+				fury = -25,
 				isTalent = true
 			},
 			felfireHeart = { --TODO: figure out how this plays with Burning Hatred
@@ -391,7 +398,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-			--[[
 			{ variable = "#annihilation", icon = spells.annihilation.icon, description = spells.annihilation.name, printInSettings = true },
 			{ variable = "#bladeDance", icon = spells.bladeDance.icon, description = spells.bladeDance.name, printInSettings = true },
 			{ variable = "#blindFury", icon = spells.blindFury.icon, description = spells.blindFury.name, printInSettings = true },
@@ -412,10 +418,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 			{ variable = "#momentum", icon = spells.momentum.icon, description = spells.momentum.name, printInSettings = true },
 			{ variable = "#prepared", icon = spells.prepared.icon, description = spells.prepared.name, printInSettings = true },
-			{ variable = "#trailOfRuin", icon = spells.trailOfRuin.icon, description = spells.trailOfRuin.name, printInSettings = true },
 			{ variable = "#unboundChaos", icon = spells.unboundChaos.icon, description = spells.unboundChaos.name, printInSettings = true },
 			{ variable = "#unleashedPower", icon = spells.unleashedPower.icon, description = spells.unleashedPower.name, printInSettings = true },
-]]
         }
 		specCache.havoc.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -1198,16 +1202,21 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 									else
 										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end									
+									end
 								elseif spell.id == TRB.Data.spells.throwGlaive.id then
-									if TRB.Data.snapshotData.throwGlaive.charges == 0 then
-										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif TRB.Data.snapshotData.resource >= -furyAmount then
-										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.over
+									if TRB.Functions.IsTalentActive(TRB.Data.spells.furiousThrows) then
+										furyAmount = TRB.Data.spells.furiousThrows.fury
+										if TRB.Data.snapshotData.throwGlaive.charges == 0 then
+											thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+										elseif TRB.Data.snapshotData.resource >= -furyAmount then
+											thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.over
+										else
+											thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+										end
 									else
-										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+										showThreshold = false
 									end
 								end
 							elseif spell.hasCooldown then
