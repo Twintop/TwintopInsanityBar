@@ -147,6 +147,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				gcdsMax=2,
 				timeMax=3.0
 			},
+			shadowfiend={
+				mode="time",
+				swingsMax=4,
+				gcdsMax=2,
+				timeMax=15.0,
+				enabled=true
+			},
 			passiveGeneration = {
 				innervate = true,
 				manaTideTotem = true,
@@ -181,7 +188,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					surgeOfLight2="FFAF9942",
 					resonantWords="FFAA00FF",
 					lightweaver="FF00FFFF",
-					--casting="FF555555",
 					spending="FFFFFFFF",
 					passive="FF8080FF",
 					surgeOfLightBorderChange1=true,
@@ -189,9 +195,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					innervateBorderChange=true,
 					resonantWordsBorderChange=true,
 					lightweaverBorderChange=true,
-					--flashAlpha=0.70,
-					--flashPeriod=0.5,
-					--flashEnabled=true,
 				},
 				threshold={
 					unusable="FFFF0000",
@@ -389,11 +392,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				swingsMax=4,
 				gcdsMax=2,
 				timeMax=3.0,
-				enabled=true,
-				useNotification = {
-					enabled=false,
-					thresholdStacks=10
-				}
+				enabled=true
 			},
 			endOfVoidform = {
 				enabled=true,
@@ -1377,6 +1376,98 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(spec.passiveGeneration.symbolOfHope)
 		f:SetScript("OnClick", function(self, ...)
 			spec.passiveGeneration.symbolOfHope = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 30
+		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Shadowfiend Tracking", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.shadowfiend = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Shadowfiend_Enabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.shadowfiend
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Track Shadowfiend Mana Gain")
+		f.tooltip = "Show the gain of Mana over the next serveral swings, GCDs, or fixed length of time. Select which to track from the options below."
+		f:SetChecked(spec.shadowfiend.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.shadowfiend.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.shadowfiendModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_ShadowfiendMode_GCDs", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.shadowfiendModeGCDs
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Mana from GCDs remaining")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Shows the amount of Mana incoming over the up to next X GCDs, based on player's current GCD."
+		if spec.shadowfiend.mode == "gcd" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.shadowfiendModeGCDs:SetChecked(true)
+			controls.checkBoxes.shadowfiendModeSwings:SetChecked(false)
+			controls.checkBoxes.shadowfiendModeTime:SetChecked(false)
+			spec.shadowfiend.mode = "gcd"
+		end)
+
+		title = "Shadowfiend GCDs - 0.75sec Floor"
+		controls.shadowfiendGCDs = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.shadowfiend.gcdsMax, 1, 0,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.shadowfiendGCDs:SetScript("OnValueChanged", function(self, value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+			spec.shadowfiend.gcdsMax = value
+		end)
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.shadowfiendModeSwings = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_ShadowfiendMode_Swings", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.shadowfiendModeSwings
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Mana from Swings remaining")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Shows the amount of Mana incoming over the up to next X melee swings from Shadowfiend. This is only different from the GCD option if you are above 200% haste (GCD cap)."
+		if spec.shadowfiend.mode == "swing" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.shadowfiendModeGCDs:SetChecked(false)
+			controls.checkBoxes.shadowfiendModeSwings:SetChecked(true)
+			controls.checkBoxes.shadowfiendModeTime:SetChecked(false)
+			spec.shadowfiend.mode = "swing"
+		end)
+
+		title = "Shadowfiend Swings - No Floor"
+		controls.shadowfiendSwings = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.shadowfiend.swingsMax, 1, 0,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.shadowfiendSwings:SetScript("OnValueChanged", function(self, value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+			spec.shadowfiend.swingsMax = value
+		end)
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.shadowfiendModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_ShadowfiendMode_Time", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.shadowfiendModeTime
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Mana from Time remaining")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Shows the amount of Mana incoming over the up to next X seconds."
+		if spec.shadowfiend.mode == "time" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.shadowfiendModeGCDs:SetChecked(false)
+			controls.checkBoxes.shadowfiendModeSwings:SetChecked(false)
+			controls.checkBoxes.shadowfiendModeTime:SetChecked(true)
+			spec.shadowfiend.mode = "time"
+		end)
+
+		title = "Shadowfiend Remaining (sec)"
+		controls.shadowfiendTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.shadowfiend.timeMax, 0.25, 2,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.shadowfiendTime:SetScript("OnValueChanged", function(self, value)
+			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.RoundTo(value, 2)
+			self.EditBox:SetText(value)
+			spec.shadowfiend.timeMax = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
