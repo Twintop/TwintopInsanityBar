@@ -1938,6 +1938,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function UpdateSnapshot()
+		local currentTime = GetTime()
 		TRB.Functions.UpdateSnapshot()
 			
 		if TRB.Data.snapshotData.ascendance.startTime ~= nil and currentTime > (TRB.Data.snapshotData.ascendance.startTime + TRB.Data.snapshotData.ascendance.duration) then
