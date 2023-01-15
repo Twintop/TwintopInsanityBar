@@ -75,10 +75,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			covenantId = 0,
 			effects = {
 			},
-			items = {
-				glory = false,
-				naturesFury = false
-			}
+			pandemicModifier = 0
 		}
 
 		specCache.arms.spells = {
@@ -261,7 +258,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = true
 			},
 			rend = {
-				id = 772,
+				id = 388539,
+				talentId = 772,
 				name = "",
 				icon = "",
 				rage = -30,
@@ -297,6 +295,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				healthMinimum = 0.35,
+				isTalent = true
+			},
+			bloodletting = {
+				id = 383154,
+				name = "",
+				icon = "",
+				modifier = 6,
 				isTalent = true
 			},
 			stormOfSwords = {
@@ -387,10 +392,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			maxResource = 100,
 			covenantId = 0,
 			effects = {
-			},
-			items = {
-				glory = false,
-				naturesFury = false
 			}
 		}
 
@@ -874,6 +875,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
         if specId == 1 then		
 			TRB.Data.character.specName = "arms"
+
+			if TRB.Functions.IsTalentActive(TRB.Data.spells.bloodletting) then
+				TRB.Data.character.pandemicModifier = TRB.Data.spells.bloodletting.modifier
+			end
         elseif specId == 2 then
 			TRB.Data.character.specName = "fury"
 		elseif specId == 3 then
@@ -1281,7 +1286,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		if TRB.Data.settings.warrior.arms.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rend then
-				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining > TRB.Data.spells.rend.pandemicTime then
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining > ((TRB.Data.spells.rend.baseDuration + TRB.Data.character.pandemicModifier) * 0.3) then
 					rendCount = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.dots.up, _rendCount)
 					rendTime = string.format("|c%s%.1f|r", TRB.Data.settings.warrior.arms.colors.text.dots.up, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining)
 				else
@@ -1294,7 +1299,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWounds then
-				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining > TRB.Data.spells.deepWounds.pandemicTime then
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining > ((TRB.Data.spells.deepWounds.baseDuration + TRB.Data.character.pandemicModifier) * 0.3) then
 					deepWoundsCount = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.dots.up, _deepWoundsCount)
 					deepWoundsTime = string.format("|c%s%.1f|r", TRB.Data.settings.warrior.arms.colors.text.dots.up, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining)
 				else
