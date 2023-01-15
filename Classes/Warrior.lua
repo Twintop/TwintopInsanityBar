@@ -1900,7 +1900,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 									thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									isUsable = false
 								elseif currentRage >= -rageAmount then
 									thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
 								else
