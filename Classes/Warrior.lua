@@ -2290,7 +2290,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
 							_, _, _, _, TRB.Data.snapshotData.battlelord.duration, TRB.Data.snapshotData.battlelord.endTime, _, _, _, TRB.Data.snapshotData.battlelord.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.battlelord.id)
 							TRB.Data.spells.battlelord.isActive = true
-							print(proc)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.battlelord.endTime = nil
 							TRB.Data.snapshotData.battlelord.duration = 0
