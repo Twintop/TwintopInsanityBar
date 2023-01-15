@@ -249,7 +249,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "mortalStrike",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				isSnowflake = true
 			},
 			improvedExecute = {
 				id = 316405,
@@ -283,7 +284,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "cleave",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				isSnowflake = true
 			},
 			suddenDeath = {
 				id = 29725,
@@ -310,6 +312,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				icon = "",
 				isTalent = true,
 				rageMod = -30
+			},
+			battlelord = {
+				id = 386631,
+				name = "",
+				icon = "",
+				rageMod = -10
 			}
 		}
 
@@ -364,6 +372,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			spellId = nil
 		}
 		specCache.arms.snapshotData.suddenDeath = {
+			endTime = nil,
+			duration = 0,
+			spellId = nil
+		}
+		specCache.arms.snapshotData.battlelord = {
 			endTime = nil,
 			duration = 0,
 			spellId = nil
@@ -1876,9 +1889,42 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
+								elseif spell.id == TRB.Data.spells.mortalStrike.id then
+									if TRB.Data.spells.battlelord.isActive then
+										rageAmount = rageAmount - TRB.Data.spells.battlelord.rageMod
+										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
+									end
+
+									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.unusable
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+									elseif currentRage >= -rageAmount then
+										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								elseif spell.id == TRB.Data.spells.cleave.id then
+									if TRB.Data.spells.battlelord.isActive then
+										rageAmount = rageAmount - TRB.Data.spells.battlelord.rageMod
+										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
+									end
+
+									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.unusable
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+									elseif currentRage >= -rageAmount then
+										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
 								elseif spell.id == TRB.Data.spells.whirlwind.id then
-									if TRB.Functions.IsTalentActive(TRB.Data.spells.stormOfSwords) and TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+									if TRB.Functions.IsTalentActive(TRB.Data.spells.stormOfSwords) then
 										rageAmount = rageAmount + TRB.Data.spells.stormOfSwords.rageMod
+									end 
+									
+									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 										showCooldown = true
 										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
@@ -2239,6 +2285,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							TRB.Data.snapshotData.suddenDeath.duration = 0
 							TRB.Data.snapshotData.suddenDeath.spellId = nil
 							TRB.Data.spells.suddenDeath.isActive = false
+						end
+					elseif spellId == TRB.Data.spells.battlelord.id then
+						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
+							_, _, _, _, TRB.Data.snapshotData.battlelord.duration, TRB.Data.snapshotData.battlelord.endTime, _, _, _, TRB.Data.snapshotData.battlelord.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.battlelord.id)
+							TRB.Data.spells.battlelord.isActive = true
+							print(proc)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.battlelord.endTime = nil
+							TRB.Data.snapshotData.battlelord.duration = 0
+							TRB.Data.snapshotData.battlelord.spellId = nil
+							TRB.Data.spells.battlelord.isActive = false
 						end
 					elseif spellId == TRB.Data.spells.rend.id then
 						if InitializeTarget(destGUID) then
