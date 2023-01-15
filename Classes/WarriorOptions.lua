@@ -1092,10 +1092,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+		function controls.dropDown.suddenDeathAudio:SetValue(newValue, newName)
 			spec.audio.suddenDeath.sound = newValue
 			spec.audio.suddenDeath.soundName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.suddenDeathAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -1849,10 +1849,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+		function controls.dropDown.suddenDeathAudio:SetValue(newValue, newName)
 			spec.audio.suddenDeath.sound = newValue
 			spec.audio.suddenDeath.soundName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.suddenDeathAudio, newName)
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
