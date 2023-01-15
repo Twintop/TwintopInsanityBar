@@ -312,23 +312,32 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					width=24,
 					height=24
 				},
-				hamstring = {
-					enabled = false -- 1
+				execute = {
+					enabled = true, -- 1
 				},
-				shieldBlock = {
-					enabled = false, -- 2
+				executeMinimum = {
+					enabled = true, -- 2
 				},
-				slam = {
+				executeMaximum = {
 					enabled = true, -- 3
 				},
+				hamstring = {
+					enabled = false -- 4
+				},
+				shieldBlock = {
+					enabled = false, -- 5
+				},
+				slam = {
+					enabled = true, -- 6
+				},
 				impendingVictory = {
-					enabled = true, -- 4
+					enabled = true, -- 7
 				},
 				thunderClap = {
-					enabled = false -- 5
+					enabled = false -- 8
 				},
 				rampage = {
-					enabled = true, -- 6
+					enabled = true, -- 9
 				},
 			},
 			displayBar = {
@@ -388,6 +397,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			audio = {
 				overcap={
 					name = "Overcap",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+				suddenDeath={
+					name = "Sudden Death Proc",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -1021,7 +1036,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
-
 		yCoord = yCoord - 60
 		controls.checkBoxes.suddenDeathAudio = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_suddenDeath_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.suddenDeathAudio
@@ -1459,6 +1473,40 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.RedrawThresholdLines(spec)
 		end)
 
+		yCoord = yCoord - 25
+		controls.checkBoxes.executeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_execute", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.executeThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Execute (without Improved Execute)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute. Only visible when the current target is in Execute health range or available from a Sudden Death proc. Will move along the bar between the current minimum and maximum Rage cost amounts."
+		f:SetChecked(spec.thresholds.execute.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.execute.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.executeMinimumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_executeMinimum", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.executeMinimumThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Execute (minimum)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute at its minimum Rage cost. Only visible when the current target is in Execute health range or available from a Sudden Death proc."
+		f:SetChecked(spec.thresholds.executeMinimum.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.executeMinimum.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.executeMaximumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_executeMaximum", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.executeMaximumThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Execute (maximum)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute at its maximum Rage cost. Only visible when the current target is in Execute health range or available from a Sudden Death proc."
+		f:SetChecked(spec.thresholds.executeMaximum.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.executeMaximum.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
 		controls.checkBoxes.hamstringThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_hamstring", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.hamstringThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -1742,6 +1790,72 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.suddenDeathAudio = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_suddenDeath_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.suddenDeathAudio
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Sudden Death proc (if talented)")
+		f.tooltip = "Play an audio cue when you get a Sudden Death proc that allows you to use Execute for 0 Rage and above normal execute range enemy health."
+		f:SetChecked(spec.audio.suddenDeath.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.audio.suddenDeath.enabled = self:GetChecked()
+
+			if spec.audio.suddenDeath.enabled then
+---@diagnostic disable-next-line: redundant-parameter
+				PlaySoundFile(spec.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.suddenDeathAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Warrior_Fury_suddenDeath_Audio", parent)
+		controls.dropDown.suddenDeathAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.suddenDeathAudio, oUi.dropdownWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.suddenDeathAudio, spec.audio.suddenDeath.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.suddenDeathAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.suddenDeathAudio, function(self, level, menuList)
+			local entries = 25
+			local info = LibDD:UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					LibDD:UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == spec.audio.suddenDeath.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						LibDD:UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
+			spec.audio.suddenDeath.sound = newValue
+			spec.audio.suddenDeath.soundName = newName
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
+			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
+			PlaySoundFile(spec.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.fury = controls
