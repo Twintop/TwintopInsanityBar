@@ -330,10 +330,21 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				isTalent = true
-			}
-			-- TODO: Add Killer Cobra?
-			-- TODO: Add Dire Pack (+Dire Command+Dire Beast)?
-			-- TODO: Add Aspect of the Wild
+			},
+			direPack = {
+				id = 378745,
+				name = "",
+				icon = "",
+				isTalent = true,
+				focusMod = 0.5
+			},
+			aspectOfTheWild = {
+				id = 193530,
+				name = "",
+				icon = "",
+				isTalent = true,
+				focusMod = -10
+			},
 		}
 
 		specCache.beastMastery.snapshotData.focusRegen = 0
@@ -394,6 +405,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			startTime = nil,
 			duration = 0,
 			enabled = false
+		}
+		specCache.beastMastery.snapshotData.direPack = {
+			endTime = nil,
+			duration = 0,
+			spellId = nil
+		}
+		specCache.beastMastery.snapshotData.aspectOfTheWild = {
+			endTime = nil,
+			duration = 0,
+			spellId = nil
 		}
 
 		specCache.beastMastery.snapshotData.frenzy = {
@@ -2819,6 +2840,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										TRB.Data.snapshotData.audio.playedKillShotCue = false
 									end
 								elseif spell.id == TRB.Data.spells.killCommand.id then
+									if TRB.Data.spells.direPack.isActive then
+										focusAmount = focusAmount * TRB.Data.spells.direPack.focusMod
+										TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.beastMastery, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.hunter.beastMastery.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
+									end
+
 									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 										thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
@@ -2829,6 +2855,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.cobraShot.id then
+									if TRB.Data.spells.aspectOfTheWild.isActive then
+										focusAmount = focusAmount - TRB.Data.spells.aspectOfTheWild.focusMod
+										TRB.Functions.RepositionThreshold(TRB.Data.settings.hunter.beastMastery, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.hunter.beastMastery.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
+									end
+
 									if TRB.Data.snapshotData.resource >= -focusAmount then
 										thresholdColor = TRB.Data.settings.hunter.beastMastery.colors.threshold.over
 									else
@@ -3524,6 +3555,24 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshotData.aMurderOfCrows.startTime = currentTime
 							TRB.Data.snapshotData.aMurderOfCrows.duration = TRB.Data.spells.aMurderOfCrows.cooldown
+						end
+					elseif spellId == TRB.Data.spells.direPack.id then
+						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
+							_, _, _, _, TRB.Data.snapshotData.direPack.duration, TRB.Data.snapshotData.direPack.endTime, _, _, _, TRB.Data.snapshotData.direPack.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.direPack.id)
+							TRB.Data.spells.direPack.isActive = true
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.direPack.endTime = nil
+							TRB.Data.snapshotData.direPack.duration = 0
+							TRB.Data.spells.direPack.isActive = false
+						end
+					elseif spellId == TRB.Data.spells.aspectOfTheWild.id then
+						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
+							_, _, _, _, TRB.Data.snapshotData.aspectOfTheWild.duration, TRB.Data.snapshotData.aspectOfTheWild.endTime, _, _, _, TRB.Data.snapshotData.aspectOfTheWild.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.aspectOfTheWild.id)
+							TRB.Data.spells.aspectOfTheWild.isActive = true
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.aspectOfTheWild.endTime = nil
+							TRB.Data.snapshotData.aspectOfTheWild.duration = 0
+							TRB.Data.spells.aspectOfTheWild.isActive = false
 						end
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "marksmanship" then --Marksmanship
