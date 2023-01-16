@@ -259,7 +259,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				isActive = false
 			},
 			cobraSting = {
-				id = 378750,
+				id = 392296,
 				name = "",
 				icon = "",
 				isActive = false,
