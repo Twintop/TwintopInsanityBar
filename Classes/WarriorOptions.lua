@@ -140,6 +140,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				},
 				cleave = {
 					enabled = true, -- 12
+				},
+				ignorePain = {
+					enabled = true, -- 13
 				}
 			},
 			displayBar = {
@@ -703,6 +706,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetChecked(spec.thresholds.hamstring.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.hamstring.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.ignorePainThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_ignorePain", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.ignorePainThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Ignore Pain")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Ignore Pain."
+		f:SetChecked(spec.thresholds.ignorePain.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.ignorePain.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
