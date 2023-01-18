@@ -3545,8 +3545,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							local thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
-							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed. TODO: add override check for certain buffs.
-								if spell.id == TRB.Data.spells.ambush.id then
+							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
+								if spell.id == TRB.Data.spells.ambush.id then		
 									if TRB.Data.spells.subterfuge.isActive or TRB.Data.spells.sepsis.isActive then
 										if TRB.Data.snapshotData.resource >= -energyAmount then
 											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
@@ -3858,8 +3858,28 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							local thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
-							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed. TODO: add override check for certain buffs.
-								showThreshold = false
+							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
+								if spell.id == TRB.Data.spells.ambush.id then
+									if TRB.Data.spells.sepsis.isActive then
+										if TRB.Data.snapshotData.resource >= -energyAmount then
+											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
+										else
+											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+										end
+									else
+										showThreshold = false
+									end
+								elseif TRB.Data.spells.sepsis.isActive then
+									if TRB.Data.snapshotData.resource >= -energyAmount then
+										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								else
+									showThreshold = false
+								end
 							else
 								if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 									if spell.id == TRB.Data.spells.shiv.id then
@@ -4532,7 +4552,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						TRB.Data.snapshotData.echoingReprimand[cpEntry].spellId = nil
 						TRB.Data.snapshotData.echoingReprimand[cpEntry].endTime = nil
 						TRB.Data.snapshotData.echoingReprimand[cpEntry].comboPoints = 0
-					end	
+					end
 				elseif spellId == TRB.Data.spells.sepsis.id then
 					if type == "SPELL_CAST_SUCCESS" then
 						TRB.Data.snapshotData.sepsis.startTime = currentTime
@@ -4547,7 +4567,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						end
 					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 						TRB.Data.spells.sepsis.isActive = false
-					end		
+					end
 				elseif spellId == TRB.Data.spells.cripplingPoison.id then
 					if InitializeTarget(destGUID) then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- CP Applied to Target
