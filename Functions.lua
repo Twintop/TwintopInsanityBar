@@ -2834,6 +2834,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 5 then -- Priests
 			if specId == 2 then -- Holy
 				configuration.passiveGeneration = settings.passiveGeneration
+				configuration.shadowfiend = settings.shadowfiend
 			elseif specId == 3 then -- Shadow
 				configuration.mindbender = settings.mindbender
 				configuration.auspiciousSpiritsTracker = settings.auspiciousSpiritsTracker

@@ -426,6 +426,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				pandemic = true,
 				pandemicTime = 18 * 0.3
 			},
+			ascendance = {
+				id = 114052,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
 
 			-- External mana
 			symbolOfHope = {
@@ -606,6 +612,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			startTime = nil,
 			duration = 0
 		}
+		specCache.restoration.snapshotData.ascendance = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0
+		}
 
 		specCache.restoration.barTextVariables = {
 			icons = {},
@@ -729,7 +741,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "#casting", icon = "", description = "The icon of the mana spending spell you are currently casting", printInSettings = true },
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
-
+			
+			{ variable = "#ascendance", icon = spells.ascendance.icon, description = spells.ascendance.name, printInSettings = true },
 			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
 			{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
 			{ variable = "#soh", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = true },
@@ -808,6 +821,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			{ variable = "$fsCount", description = "Number of Flame Shocks active on targets", printInSettings = true, color = false },
 			{ variable = "$fsTime", description = "Time remaining on Flame Shock on your current target", printInSettings = true, color = false },
+			
+			{ variable = "$ascendanceTime", description = "Duration remaining of Ascendance", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -1202,7 +1217,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					valid = true
 				end
 			elseif var == "$ascendanceTime" then
-				if TRB.Data.snapshotData.ascendance.remainingTime ~= nil and TRB.Data.snapshotData.ascendance.remainingTime > 0 then			
+				if TRB.Data.snapshotData.ascendance.remainingTime ~= nil and TRB.Data.snapshotData.ascendance.remainingTime > 0 then
 					valid = true
 				end
 			end
@@ -1274,6 +1289,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end
 			elseif var == "$potionCooldownSeconds" then
 				if TRB.Data.snapshotData.potion.onCooldown then
+					valid = true
+				end
+			elseif var == "$ascendanceTime" then
+				if TRB.Data.snapshotData.ascendance.remainingTime ~= nil and TRB.Data.snapshotData.ascendance.remainingTime > 0 then
 					valid = true
 				end
 			end
@@ -1600,7 +1619,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		else
 			flameShockTime = string.format("%.1f", _flameShockTime)
-		end
+		end		
+
+		--$ascendanceTime
+		local _ascendanceTime = TRB.Data.snapshotData.ascendance.remainingTime
+		local ascendanceTime = string.format("%.1f", _ascendanceTime)
 
 		Global_TwintopResourceBar.resource.passive = _passiveMana
 		Global_TwintopResourceBar.resource.potionOfSpiritualClarity = _channeledMana or 0
@@ -1621,6 +1644,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#ascendance"] = TRB.Data.spells.ascendance.icon
 		lookup["#flameShock"] = TRB.Data.spells.flameShock.icon
 		lookup["#innervate"] = TRB.Data.spells.innervate.icon
 		lookup["#mtt"] = TRB.Data.spells.manaTideTotem.icon
@@ -1660,6 +1684,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["$potionOfFrozenFocusTime"] = potionOfFrozenFocusTime
 		lookup["$potionCooldown"] = potionCooldown
 		lookup["$potionCooldownSeconds"] = potionCooldownSeconds
+		lookup["$ascendanceTime"] = ascendanceTime
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1691,6 +1716,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookupLogic["$potionCooldownSeconds"] = potionCooldown
 		lookupLogic["$fsCount"] = _flameShockCount
 		lookupLogic["$fsTime"] = _flameShockTime
+		lookupLogic["$ascendanceTime"] = _ascendanceTime
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -1912,14 +1938,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function UpdateSnapshot()
-		TRB.Functions.UpdateSnapshot()
-	end
-
-	local function UpdateSnapshot_Elemental()
-		UpdateSnapshot()
-
 		local currentTime = GetTime()
-		UpdateIcefury()
+		TRB.Functions.UpdateSnapshot()
 			
 		if TRB.Data.snapshotData.ascendance.startTime ~= nil and currentTime > (TRB.Data.snapshotData.ascendance.startTime + TRB.Data.snapshotData.ascendance.duration) then
             TRB.Data.snapshotData.ascendance.startTime = nil
@@ -1929,6 +1949,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			_, _, _, _, TRB.Data.snapshotData.ascendance.duration, TRB.Data.snapshotData.ascendance.endTime, _, _, _, TRB.Data.snapshotData.ascendance.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.ascendance.id)
 			TRB.Data.snapshotData.ascendance.remainingTime = GetAscendanceRemainingTime()
         end
+	end
+
+	local function UpdateSnapshot_Elemental()
+		UpdateSnapshot()
+
+		local currentTime = GetTime()
+		UpdateIcefury()
 
 		if (TRB.Functions.IsTalentActive(TRB.Data.spells.elementalBlast) and TRB.Data.spells.elementalBlast.maelstrom < TRB.Data.character.maxResource) then
 			TRB.Data.character.earthShockThreshold = -(TRB.Data.spells.elementalBlast.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].elementalBlast)
@@ -2111,10 +2138,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					if TRB.Data.snapshotData.ascendance.remainingTime > 0 then
 						local timeLeft = TRB.Data.snapshotData.ascendance.remainingTime
 						local timeThreshold = 0
-						local useEndOfascendanceColor = false
+						local useEndOfAscendanceColor = false
 
 						if TRB.Data.settings.shaman.elemental.endOfAscendance.enabled then
-							useEndOfascendanceColor = true
+							useEndOfAscendanceColor = true
 							if TRB.Data.settings.shaman.elemental.endOfAscendance.mode == "gcd" then
 								local gcd = TRB.Functions.GetCurrentGCDTime()
 								timeThreshold = gcd * TRB.Data.settings.shaman.elemental.endOfAscendance.gcdsMax
@@ -2123,7 +2150,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							end
 						end
 
-						if useEndOfascendanceColor and timeLeft <= timeThreshold then
+						if useEndOfAscendanceColor and timeLeft <= timeThreshold then
 							barColor = TRB.Data.settings.shaman.elemental.colors.bar.inAscendance1GCD
 						else
 							barColor = TRB.Data.settings.shaman.elemental.colors.bar.inAscendance
@@ -2467,6 +2494,28 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 					resourceBarColor = TRB.Data.settings.shaman.restoration.colors.bar.base
 
+					if TRB.Data.snapshotData.ascendance.remainingTime > 0 then
+						local timeLeft = TRB.Data.snapshotData.ascendance.remainingTime
+						local timeThreshold = 0
+						local useEndOfAscendanceColor = false
+
+						if TRB.Data.settings.shaman.restoration.endOfAscendance.enabled then
+							useEndOfAscendanceColor = true
+							if TRB.Data.settings.shaman.restoration.endOfAscendance.mode == "gcd" then
+								local gcd = TRB.Functions.GetCurrentGCDTime()
+								timeThreshold = gcd * TRB.Data.settings.shaman.restoration.endOfAscendance.gcdsMax
+							elseif TRB.Data.settings.shaman.restoration.endOfAscendance.mode == "time" then
+								timeThreshold = TRB.Data.settings.shaman.restoration.endOfAscendance.timeMax
+							end
+						end
+
+						if useEndOfAscendanceColor and timeLeft <= timeThreshold then
+							resourceBarColor = TRB.Data.settings.shaman.restoration.colors.bar.inAscendance1GCD
+						else
+							resourceBarColor = TRB.Data.settings.shaman.restoration.colors.bar.inAscendance
+						end
+					end
+
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(resourceBarColor, true))
 				end
 
@@ -2566,17 +2615,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			if sourceGUID == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "elemental" then
-					if spellId == TRB.Data.spells.ascendance.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.spells.ascendance.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.ascendance.duration, TRB.Data.snapshotData.ascendance.endTime, _, _, _, TRB.Data.snapshotData.ascendance.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.ascendance.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.spells.ascendance.isActive = false
-							TRB.Data.snapshotData.ascendance.spellId = nil
-							TRB.Data.snapshotData.ascendance.duration = 0
-							TRB.Data.snapshotData.ascendance.endTime = nil
-						end
-					elseif spellId == TRB.Data.spells.chainLightning.id or spellId == TRB.Data.spells.lavaBeam.id then
+					if spellId == TRB.Data.spells.chainLightning.id or spellId == TRB.Data.spells.lavaBeam.id then
 						if type == "SPELL_DAMAGE" then
 							if TRB.Data.snapshotData.chainLightning.hitTime == nil or currentTime > (TRB.Data.snapshotData.chainLightning.hitTime + 0.1) then --This is a new hit
 								TRB.Data.snapshotData.chainLightning.targetsHit = 0
@@ -2675,8 +2714,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					end
 				end
 
-				-- Spec agnostic abilities				
-				if spellId == TRB.Data.spells.flameShock.id then
+				-- Spec agnostic abilities
+				if spellId == TRB.Data.spells.ascendance.id then
+					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+						TRB.Data.spells.ascendance.isActive = true
+						_, _, _, _, TRB.Data.snapshotData.ascendance.duration, TRB.Data.snapshotData.ascendance.endTime, _, _, _, TRB.Data.snapshotData.ascendance.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.ascendance.id)
+					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						TRB.Data.spells.ascendance.isActive = false
+						TRB.Data.snapshotData.ascendance.spellId = nil
+						TRB.Data.snapshotData.ascendance.duration = 0
+						TRB.Data.snapshotData.ascendance.endTime = nil
+					end
+				elseif spellId == TRB.Data.spells.flameShock.id then
 					if InitializeTarget(destGUID) then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- FS Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].flameShock = true
