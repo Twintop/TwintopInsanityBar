@@ -398,6 +398,7 @@ local function ConstructAddonOptionsPanel()
 ---@diagnostic disable-next-line: undefined-field
     interfaceSettingsFrame.optionsPanel.parent = parent.name
     local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.optionsPanel, "Global Options")
+    --InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
 
     parent = interfaceSettingsFrame.optionsPanel
     controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Global Options", 0, yCoord)
@@ -683,13 +684,14 @@ local function ConstructImportExportPanel()
     local buttonSpacing = 5
 
 
-    interfaceSettingsFrame.optionsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_ImportExport", UIParent)
-    interfaceSettingsFrame.optionsPanel.name = "Import/Export"
+    interfaceSettingsFrame.importExportPanel = CreateFrame("Frame", "TwintopResourceBar_Options_ImportExport", UIParent)
+    interfaceSettingsFrame.importExportPanel.name = "Import/Export"
 ---@diagnostic disable-next-line: undefined-field
-    interfaceSettingsFrame.optionsPanel.parent = parent.name
-    local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.optionsPanel, "Import/Export")
+    interfaceSettingsFrame.importExportPanel.parent = parent.name
+    local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.importExportPanel, "Import/Export")
+    --InterfaceOptions_AddCategory(interfaceSettingsFrame.importExportPanel)
 
-    parent = interfaceSettingsFrame.optionsPanel
+    parent = interfaceSettingsFrame.importExportPanel
     controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Import/Export", 0, yCoord)
     controls.labels = controls.labels or {}
     controls.buttons = controls.buttons or {}
@@ -1664,8 +1666,10 @@ function TRB.Options:ConstructOptionsPanel()
     controls.checkBoxes = {}
     controls.dropDown = {}
 
-    interfaceSettingsFrame.panel = CreateFrame("Frame", "TwintopResourceBarPanel", UIParent)
+    interfaceSettingsFrame.panel = CreateFrame("Frame", "TwintopResourceBarPanel")--, UIParent)
     interfaceSettingsFrame.panel.name = "Twintop's Resource Bar"
+    interfaceSettingsFrame.panel:HookScript("OnShow", function(self)
+    end)
     local parent = interfaceSettingsFrame.panel
     local yCoord = -5
 
@@ -1684,6 +1688,7 @@ function TRB.Options:ConstructOptionsPanel()
     local layout
     TRB.Details.addonCategory, layout = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.panel, "Twintop's Resource Bar")
     Settings.RegisterAddOnCategory(TRB.Details.addonCategory)
+	--InterfaceOptions_AddCategory(interfaceSettingsFrame.panel)
 
     ConstructAddonOptionsPanel()
     ConstructImportExportPanel()

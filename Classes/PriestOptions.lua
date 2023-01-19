@@ -1563,6 +1563,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.holyDisplayPanel.parent = parent.name
 		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.holyDisplayPanel, "Holy Priest")
+		--InterfaceOptions_AddCategory(interfaceSettingsFrame.holyDisplayPanel)
 
 		parent = interfaceSettingsFrame.holyDisplayPanel
 
@@ -2672,6 +2673,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.shadowDisplayPanel.parent = parent.name
 		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.shadowDisplayPanel, "Shadow Priest")
+		--InterfaceOptions_AddCategory(interfaceSettingsFrame.shadowDisplayPanel)
 
 		parent = interfaceSettingsFrame.shadowDisplayPanel
 
