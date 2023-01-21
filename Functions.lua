@@ -1022,8 +1022,6 @@ local function AdjustThresholdDisplay(spell, threshold, showThreshold, currentFr
 			spell.thresholdUsable = false
 		end
 
-		print(spell.name, pairOffset, currentFrameLevel, TRB.Data.constants.frameLevels.thresholdOver, thresholdSettings.icons.desaturated)
-
 		if thresholdSettings.icons.desaturated == true then
 			threshold.icon.texture:SetDesaturated(not spell.thresholdUsable)
 		end
@@ -1039,6 +1037,176 @@ local function AdjustThresholdDisplay(spell, threshold, showThreshold, currentFr
 	end
 end
 TRB.Functions.AdjustThresholdDisplay = AdjustThresholdDisplay
+
+local function ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, potionSnapshot, conjuredChillglobeSnapshot, character, resourceFrame, calculateManaGainFunction)
+	local currentTime = GetTime()
+	local potionCooldownThreshold = 0
+	local potionThresholdColor = specSettings.colors.threshold.over
+	if potionSnapshot.onCooldown then
+		if specSettings.thresholds.potionCooldown.enabled then
+			if specSettings.thresholds.potionCooldown.mode == "gcd" then
+				local gcd = TRB.Functions.GetCurrentGCDTime()
+				potionCooldownThreshold = gcd * specSettings.thresholds.potionCooldown.gcdsMax
+			elseif specSettings.thresholds.potionCooldown.mode == "time" then
+				potionCooldownThreshold = specSettings.thresholds.potionCooldown.timeMax
+			end
+		end
+	end
+
+	if not potionSnapshot.onCooldown or (potionCooldownThreshold > math.abs(potionSnapshot.startTime + potionSnapshot.duration - currentTime))then
+		if potionSnapshot.onCooldown then
+			potionThresholdColor = specSettings.colors.threshold.unusable
+		end
+		local ampr1Total = calculateManaGainFunction(character.items.potions.aeratedManaPotionRank1.mana, true)
+		if specSettings.thresholds.aeratedManaPotionRank1.enabled and (castingBarValue + ampr1Total) < character.maxResource then
+			TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[1], resourceFrame, specSettings.thresholds.width, (castingBarValue + ampr1Total), character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+			resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+			resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[1]:Show()
+				
+			if specSettings.thresholds.icons.showCooldown then
+				resourceFrame.thresholds[1].icon.cooldown:SetCooldown(potionSnapshot.startTime, potionSnapshot.duration)
+			else
+				resourceFrame.thresholds[1].icon.cooldown:SetCooldown(0, 0)
+			end			
+		else
+			resourceFrame.thresholds[1]:Hide()
+		end
+		
+		local ampr2Total = calculateManaGainFunction(character.items.potions.aeratedManaPotionRank2.mana, true)
+		if specSettings.thresholds.aeratedManaPotionRank2.enabled and (castingBarValue + ampr2Total) < character.maxResource then
+			TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[2], resourceFrame, specSettings.thresholds.width, (castingBarValue + ampr2Total), character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+			resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+			resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[2]:Show()
+				
+			if specSettings.thresholds.icons.showCooldown then
+				resourceFrame.thresholds[2].icon.cooldown:SetCooldown(potionSnapshot.startTime, potionSnapshot.duration)
+			else
+				resourceFrame.thresholds[2].icon.cooldown:SetCooldown(0, 0)
+			end
+		else
+			resourceFrame.thresholds[2]:Hide()
+		end
+		
+		local ampr3Total = calculateManaGainFunction(character.items.potions.aeratedManaPotionRank3.mana, true)
+		if specSettings.thresholds.aeratedManaPotionRank3.enabled and (castingBarValue + ampr3Total) < character.maxResource then
+			TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[3], resourceFrame, specSettings.thresholds.width, (castingBarValue + ampr3Total), character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+			resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+			resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[3]:Show()
+				
+			if specSettings.thresholds.icons.showCooldown then
+				resourceFrame.thresholds[3].icon.cooldown:SetCooldown(potionSnapshot.startTime, potionSnapshot.duration)
+			else
+				resourceFrame.thresholds[3].icon.cooldown:SetCooldown(0, 0)
+			end
+		else
+			resourceFrame.thresholds[3]:Hide()
+		end
+
+		local poffr1Total = calculateManaGainFunction(character.items.potions.potionOfFrozenFocusRank1.mana, true)
+		if specSettings.thresholds.potionOfFrozenFocusRank1.enabled and (castingBarValue + poffr1Total) < character.maxResource then
+			TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[4], resourceFrame, specSettings.thresholds.width, (castingBarValue + poffr1Total), character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+			resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+			resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[4]:Show()
+				
+			if specSettings.thresholds.icons.showCooldown then
+				resourceFrame.thresholds[4].icon.cooldown:SetCooldown(potionSnapshot.startTime, potionSnapshot.duration)
+			else
+				resourceFrame.thresholds[4].icon.cooldown:SetCooldown(0, 0)
+			end
+		else
+			resourceFrame.thresholds[4]:Hide()
+		end
+
+		local poffr2Total = calculateManaGainFunction(character.items.potions.potionOfFrozenFocusRank2.mana, true)
+		if specSettings.thresholds.potionOfFrozenFocusRank2.enabled and (castingBarValue + poffr2Total) < character.maxResource then
+			TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[5], resourceFrame, specSettings.thresholds.width, (castingBarValue + poffr2Total), character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+			resourceFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+			resourceFrame.thresholds[5].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[5]:Show()
+				
+			if specSettings.thresholds.icons.showCooldown then
+				resourceFrame.thresholds[5].icon.cooldown:SetCooldown(potionSnapshot.startTime, potionSnapshot.duration)
+			else
+				resourceFrame.thresholds[5].icon.cooldown:SetCooldown(0, 0)
+			end
+		else
+			resourceFrame.thresholds[5]:Hide()
+		end
+
+		local poffr3Total = calculateManaGainFunction(character.items.potions.potionOfFrozenFocusRank3.mana, true)
+		if specSettings.thresholds.potionOfFrozenFocusRank3.enabled and (castingBarValue + poffr3Total) < character.maxResource then
+			TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[6], resourceFrame, specSettings.thresholds.width, (castingBarValue + poffr3Total), character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+			resourceFrame.thresholds[6].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+			resourceFrame.thresholds[6].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[6]:Show()
+				
+			if specSettings.thresholds.icons.showCooldown then
+				resourceFrame.thresholds[6].icon.cooldown:SetCooldown(potionSnapshot.startTime, potionSnapshot.duration)
+			else
+				resourceFrame.thresholds[6].icon.cooldown:SetCooldown(0, 0)
+			end
+		else
+			resourceFrame.thresholds[6]:Hide()
+		end
+		
+		local toggle = specSettings.thresholds.icons.desaturated and potionSnapshot.onCooldown
+		resourceFrame.thresholds[1].icon.texture:SetDesaturated(toggle)
+		resourceFrame.thresholds[2].icon.texture:SetDesaturated(toggle)
+		resourceFrame.thresholds[3].icon.texture:SetDesaturated(toggle)
+		resourceFrame.thresholds[4].icon.texture:SetDesaturated(toggle)
+		resourceFrame.thresholds[5].icon.texture:SetDesaturated(toggle)
+		resourceFrame.thresholds[6].icon.texture:SetDesaturated(toggle)
+	else
+		resourceFrame.thresholds[1]:Hide()
+		resourceFrame.thresholds[2]:Hide()
+		resourceFrame.thresholds[3]:Hide()
+		resourceFrame.thresholds[4]:Hide()
+		resourceFrame.thresholds[5]:Hide()
+		resourceFrame.thresholds[6]:Hide()
+	end
+	
+	if character.items.conjuredChillglobe.isEquipped and (currentMana / character.maxResource) < character.items.conjuredChillglobe.manaThresholdPercent then
+		local conjuredChillglobeTotal = calculateManaGainFunction(character.items.conjuredChillglobe[character.items.conjuredChillglobe.equippedVersion].mana, true)
+		if specSettings.thresholds.conjuredChillglobe.enabled and (castingBarValue + conjuredChillglobeTotal) < character.maxResource then
+			if conjuredChillglobeSnapshot.onCooldown then
+				potionThresholdColor = specSettings.colors.threshold.unusable
+			end
+			TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[7], resourceFrame, specSettings.thresholds.width, (castingBarValue + conjuredChillglobeTotal), character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+			resourceFrame.thresholds[7].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+			resourceFrame.thresholds[7].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[7]:Show()
+				
+			if specSettings.thresholds.icons.showCooldown then
+				resourceFrame.thresholds[7].icon.cooldown:SetCooldown(conjuredChillglobeSnapshot.startTime, conjuredChillglobeSnapshot.duration)
+			else
+				resourceFrame.thresholds[7].icon.cooldown:SetCooldown(0, 0)
+			end
+		else
+			resourceFrame.thresholds[7]:Hide()
+		end
+	else
+		resourceFrame.thresholds[7]:Hide()
+	end
+end
+TRB.Functions.ManageCommonHealerThresholds = ManageCommonHealerThresholds
 
 local function IsComboPointUser()
 	local _, _, classIndexId = UnitClass("player")
