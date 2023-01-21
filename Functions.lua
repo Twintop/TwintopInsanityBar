@@ -1021,7 +1021,9 @@ local function AdjustThresholdDisplay(spell, threshold, showThreshold, currentFr
 		else
 			spell.thresholdUsable = false
 		end
-		
+
+		print(spell.name, pairOffset, currentFrameLevel, TRB.Data.constants.frameLevels.thresholdOver, thresholdSettings.icons.desaturated)
+
 		if thresholdSettings.icons.desaturated == true then
 			threshold.icon.texture:SetDesaturated(not spell.thresholdUsable)
 		end

@@ -1171,24 +1171,19 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -furyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
-							local isUsable = true -- Could use it if we had enough fury, e.g. not on CD
 							local thresholdColor = specSettings.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 							if metaTime > 0 and (spell.demonForm ~= nil and spell.demonForm == false) then
 								showThreshold = false
-								isUsable = false
 							elseif metaTime == 0 and (spell.demonForm ~= nil and spell.demonForm == true) then
 								showThreshold = false
-								isUsable = false
 							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-								isUsable = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.deathSweep.id then
 									if TRB.Data.snapshotData.bladeDance.startTime ~= nil and currentTime < (TRB.Data.snapshotData.bladeDance.startTime + TRB.Data.snapshotData.bladeDance.duration) then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-										isUsable = false
 									elseif currentFury >= -furyAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
@@ -1205,7 +1200,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 									if TRB.Data.snapshotData.chaosNova.startTime ~= nil and currentTime < (TRB.Data.snapshotData.chaosNova.startTime + TRB.Data.snapshotData.chaosNova.duration) then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-										isUsable = false
 									elseif currentFury >= -furyAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
@@ -1232,7 +1226,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									isUsable = false
 								elseif currentFury >= -furyAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else

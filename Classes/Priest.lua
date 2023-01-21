@@ -724,7 +724,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				thresholdId = 1,
 				settingKey = "devouringPlague",
 				thresholdUsable = false,
-				isTalent = true
+				isTalent = true,
+				isSnowflake = true
 			},
 			shadowyApparition = {
 				id = 78203,
@@ -759,7 +760,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				thresholdId = 2,
 				settingKey = "mindSear",
 				thresholdUsable = false,
-				isTalent = true
+				isTalent = true,
+				isSnowflake = true
 			},
 			hallucinations = {
 				id = 280752,
@@ -1375,7 +1377,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.character.mindSearThreshold = -TRB.Data.spells.mindSear.insanity
 
 			-- Threshold lines
-			if TRB.Data.settings.priest.shadow.thresholds.devouringPlague.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.devouringPlague) and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
+			--[[if TRB.Data.settings.priest.shadow.thresholds.devouringPlague.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.devouringPlague) and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
 				TRB.Frames.resourceFrame.thresholds[1]:Show()
 				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholds.width, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
 			else
@@ -1387,7 +1389,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholds.width, TRB.Data.character.mindSearThreshold, TRB.Data.character.maxResource)				
 			else
 				TRB.Frames.resourceFrame.thresholds[2]:Hide()
-			end
+			end]]
 
 			TRB.Frames.resourceFrame.thresholds[3]:Hide()
 			TRB.Frames.resourceFrame.thresholds[4]:Hide()
@@ -3775,44 +3777,70 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						passiveValue = 0
 					end
 
-					if specSettings.thresholds.devouringPlague.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.devouringPlague) then
-						TRB.Frames.resourceFrame.thresholds[1]:Show()
-						TRB.Frames.resourceFrame.thresholds[1]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdUnusable-TRB.Data.constants.frameLevels.thresholdOffsetLine)
----@diagnostic disable-next-line: undefined-field
-						TRB.Frames.resourceFrame.thresholds[1].icon:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdUnusable-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
----@diagnostic disable-next-line: undefined-field
-						TRB.Frames.resourceFrame.thresholds[1].icon.cooldown:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdUnusable-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)						
-					else
-						TRB.Frames.resourceFrame.thresholds[1]:Hide()
-					end
+					local pairOffset = 0
+					for k, v in pairs(TRB.Data.spells) do
+						local spell = TRB.Data.spells[k]
+						if spell ~= nil and spell.id ~= nil and spell.insanity ~= nil and spell.insanity < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+							pairOffset = (spell.thresholdId - 1) * 3
+							local resourceAmount = spell.insanity
+							local currentResource = currentInsanity
+							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
-					if specSettings.thresholds.mindSear.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.mindSear) then
-						if TRB.Data.snapshotData.mindDevourer.spellId ~= nil or currentInsanity >= TRB.Data.character.mindSearThreshold then
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.over, true))
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.over, true))
-						else
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.under, true))
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.under, true))
+							local showThreshold = true
+							local thresholdColor = specSettings.colors.threshold.over
+							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+							
+							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+								if spell.id == TRB.Data.spells.devouringPlague.id then
+									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+										showThreshold = false
+									elseif TRB.Data.snapshotData.mindDevourer.endTime ~= nil and currentTime < TRB.Data.snapshotData.mindDevourer.endTime then
+										thresholdColor = specSettings.colors.threshold.over
+									elseif currentResource >= -resourceAmount then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								elseif spell.id == TRB.Data.spells.mindSear.id then
+									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+										showThreshold = false
+									elseif TRB.Data.snapshotData.mindDevourer.endTime ~= nil and currentTime < TRB.Data.snapshotData.mindDevourer.endTime then
+										thresholdColor = specSettings.colors.threshold.over
+									elseif currentResource >= -resourceAmount then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								end
+							--The rest isn't used. Keeping it here for consistency until I can finish abstracting this whole mess out
+							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+								showThreshold = false
+							elseif spell.hasCooldown then
+								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+									thresholdColor = specSettings.colors.threshold.unusable
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+								elseif currentResource >= -resourceAmount then
+									thresholdColor = specSettings.colors.threshold.over
+								else
+									thresholdColor = specSettings.colors.threshold.under
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
+							else -- This is an active/available/normal spell threshold
+								if currentResource >= -resourceAmount then
+									thresholdColor = specSettings.colors.threshold.over
+								else
+									thresholdColor = specSettings.colors.threshold.under
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
+							end
+
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
 						end
-						TRB.Frames.resourceFrame.thresholds[2]:Show()
-						TRB.Frames.resourceFrame.thresholds[2]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdUnusable-3-TRB.Data.constants.frameLevels.thresholdOffsetLine)
----@diagnostic disable-next-line: undefined-field
-						TRB.Frames.resourceFrame.thresholds[2].icon:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdUnusable-3-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
----@diagnostic disable-next-line: undefined-field
-						TRB.Frames.resourceFrame.thresholds[2].icon.cooldown:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdUnusable-3-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
-					else
-						TRB.Frames.resourceFrame.thresholds[2]:Hide()
 					end
 
 					if TRB.Data.snapshotData.mindDevourer.spellId ~= nil or currentInsanity >= TRB.Data.character.devouringPlagueThreshold or TRB.Data.spells.mindDevourer.isActive then
----@diagnostic disable-next-line: undefined-field
-						TRB.Frames.resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.over, true))
----@diagnostic disable-next-line: undefined-field
-						TRB.Frames.resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.over, true))
 						if specSettings.colors.bar.flashEnabled then
 							TRB.Functions.PulseFrame(barContainerFrame, specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 						else
@@ -3830,10 +3858,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							PlaySoundFile(specSettings.audio.dpReady.sound, coreSettings.audio.channel.channel)
 						end
 					else
----@diagnostic disable-next-line: undefined-field
-						TRB.Frames.resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.under, true))
----@diagnostic disable-next-line: undefined-field
-						TRB.Frames.resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.under, true))
 						barContainerFrame:SetAlpha(1.0)
 						TRB.Data.snapshotData.audio.playedDpCue = false
 						TRB.Data.snapshotData.audio.playedMdCue = false
