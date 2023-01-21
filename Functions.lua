@@ -1016,10 +1016,14 @@ local function AdjustThresholdDisplay(spell, threshold, showThreshold, currentFr
 		threshold.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 		threshold.icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
-		if frameLevel >= TRB.Data.constants.frameLevels.thresholdOver then
+		if currentFrameLevel >= TRB.Data.constants.frameLevels.thresholdOver then
 			spell.thresholdUsable = true
 		else
 			spell.thresholdUsable = false
+		end
+		
+		if thresholdSettings.icons.desaturated == true then
+			threshold.icon.texture:SetDesaturated(not spell.thresholdUsable)
 		end
 		
 		if thresholdSettings.icons.showCooldown and spell.hasCooldown and snapshotData.startTime ~= nil and currentTime < (snapshotData.startTime + snapshotData.duration) and (snapshotData.maxCharges == nil or snapshotData.charges < snapshotData.maxCharges) then
