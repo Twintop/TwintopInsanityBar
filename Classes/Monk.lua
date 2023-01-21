@@ -2100,71 +2100,74 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local currentTime = GetTime()
 		local refreshText = false
 		local specId = GetSpecialization()
+		local coreSettings = TRB.Data.settings.core
+		local classSettings = TRB.Data.settings.monk
 		
 		if specId == 2 then
+			local specSettings = classSettings.mistweaver
 			UpdateSnapshot_Mistweaver()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.monk.mistweaver, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
-				if TRB.Data.settings.monk.mistweaver.displayBar.neverShow == false then
+				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
 					local currentMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
-					local barBorderColor = TRB.Data.settings.monk.mistweaver.colors.bar.border
+					local barBorderColor = specSettings.colors.bar.border
 
 					if TRB.Data.spells.innervate.isActive then
-						if TRB.Data.settings.monk.mistweaver.colors.bar.innervateBorderChange then
-							barBorderColor = TRB.Data.settings.monk.mistweaver.colors.bar.innervate
+						if specSettings.colors.bar.innervateBorderChange then
+							barBorderColor = specSettings.colors.bar.innervate
 						end
 
-						if TRB.Data.settings.monk.mistweaver.audio.innervate.enabled and TRB.Data.snapshotData.audio.innervateCue == false then
+						if specSettings.audio.innervate.enabled and TRB.Data.snapshotData.audio.innervateCue == false then
 							TRB.Data.snapshotData.audio.innervateCue = true
 ---@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(TRB.Data.settings.monk.mistweaver.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
+							PlaySoundFile(specSettings.audio.innervate.sound, coreSettings.audio.channel.channel)
 						end
 					end
 
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
 
-					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.mistweaver, resourceFrame, currentMana)
+					TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, currentMana)
 
-					if CastingSpell() and TRB.Data.settings.monk.mistweaver.bar.showCasting  then
+					if CastingSpell() and specSettings.bar.showCasting  then
 						castingBarValue = currentMana + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = currentMana
 					end
 
-					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.mistweaver, castingFrame, castingBarValue)
+					TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
 
 					local potionCooldownThreshold = 0
-					local potionThresholdColor = TRB.Data.settings.monk.mistweaver.colors.threshold.over
+					local potionThresholdColor = specSettings.colors.threshold.over
 					if TRB.Data.snapshotData.potion.onCooldown then
-						if TRB.Data.settings.monk.mistweaver.thresholds.potionCooldown.enabled then
-							if TRB.Data.settings.monk.mistweaver.thresholds.potionCooldown.mode == "gcd" then
+						if specSettings.thresholds.potionCooldown.enabled then
+							if specSettings.thresholds.potionCooldown.mode == "gcd" then
 								local gcd = TRB.Functions.GetCurrentGCDTime()
-								potionCooldownThreshold = gcd * TRB.Data.settings.monk.mistweaver.thresholds.potionCooldown.gcdsMax
-							elseif TRB.Data.settings.monk.mistweaver.thresholds.potionCooldown.mode == "time" then
-								potionCooldownThreshold = TRB.Data.settings.monk.mistweaver.thresholds.potionCooldown.timeMax
+								potionCooldownThreshold = gcd * specSettings.thresholds.potionCooldown.gcdsMax
+							elseif specSettings.thresholds.potionCooldown.mode == "time" then
+								potionCooldownThreshold = specSettings.thresholds.potionCooldown.timeMax
 							end
 						end
 					end
 
 					if not TRB.Data.snapshotData.potion.onCooldown or (potionCooldownThreshold > math.abs(TRB.Data.snapshotData.potion.startTime + TRB.Data.snapshotData.potion.duration - currentTime))then
 						if TRB.Data.snapshotData.potion.onCooldown then
-							potionThresholdColor = TRB.Data.settings.monk.mistweaver.colors.threshold.unusable
+							potionThresholdColor = specSettings.colors.threshold.unusable
 						end
 						local ampr1Total = CalculateManaGain(TRB.Data.character.items.potions.aeratedManaPotionRank1.mana, true)
-						if TRB.Data.settings.monk.mistweaver.thresholds.aeratedManaPotionRank1.enabled and (castingBarValue + ampr1Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (castingBarValue + ampr1Total), TRB.Data.character.maxResource)
+						if specSettings.thresholds.aeratedManaPotionRank1.enabled and (castingBarValue + ampr1Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.resourceFrame.thresholds[1], resourceFrame, specSettings.thresholds.width, (castingBarValue + ampr1Total), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[1]:Show()
 								
-							if TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown then
+							if specSettings.thresholds.icons.showCooldown then
 								TRB.Frames.resourceFrame.thresholds[1].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
 							else
 								TRB.Frames.resourceFrame.thresholds[1].icon.cooldown:SetCooldown(0, 0)
@@ -2174,15 +2177,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						end
 						
 						local ampr2Total = CalculateManaGain(TRB.Data.character.items.potions.aeratedManaPotionRank2.mana, true)
-						if TRB.Data.settings.monk.mistweaver.thresholds.aeratedManaPotionRank2.enabled and (castingBarValue + ampr2Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (castingBarValue + ampr2Total), TRB.Data.character.maxResource)
+						if specSettings.thresholds.aeratedManaPotionRank2.enabled and (castingBarValue + ampr2Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.resourceFrame.thresholds[2], resourceFrame, specSettings.thresholds.width, (castingBarValue + ampr2Total), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[2]:Show()
 								
-							if TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown then
+							if specSettings.thresholds.icons.showCooldown then
 								TRB.Frames.resourceFrame.thresholds[2].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
 							else
 								TRB.Frames.resourceFrame.thresholds[2].icon.cooldown:SetCooldown(0, 0)
@@ -2192,15 +2195,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						end
 						
 						local ampr3Total = CalculateManaGain(TRB.Data.character.items.potions.aeratedManaPotionRank3.mana, true)
-						if TRB.Data.settings.monk.mistweaver.thresholds.aeratedManaPotionRank3.enabled and (castingBarValue + ampr3Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (castingBarValue + ampr3Total), TRB.Data.character.maxResource)
+						if specSettings.thresholds.aeratedManaPotionRank3.enabled and (castingBarValue + ampr3Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.resourceFrame.thresholds[3], resourceFrame, specSettings.thresholds.width, (castingBarValue + ampr3Total), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[3]:Show()
 								
-							if TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown then
+							if specSettings.thresholds.icons.showCooldown then
 								TRB.Frames.resourceFrame.thresholds[3].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
 							else
 								TRB.Frames.resourceFrame.thresholds[3].icon.cooldown:SetCooldown(0, 0)
@@ -2210,15 +2213,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						end
 
 						local poffr1Total = CalculateManaGain(TRB.Data.character.items.potions.potionOfFrozenFocusRank1.mana, true)
-						if TRB.Data.settings.monk.mistweaver.thresholds.potionOfFrozenFocusRank1.enabled and (castingBarValue + poffr1Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (castingBarValue + poffr1Total), TRB.Data.character.maxResource)
+						if specSettings.thresholds.potionOfFrozenFocusRank1.enabled and (castingBarValue + poffr1Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.resourceFrame.thresholds[4], resourceFrame, specSettings.thresholds.width, (castingBarValue + poffr1Total), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[4]:Show()
 								
-							if TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown then
+							if specSettings.thresholds.icons.showCooldown then
 								TRB.Frames.resourceFrame.thresholds[4].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
 							else
 								TRB.Frames.resourceFrame.thresholds[4].icon.cooldown:SetCooldown(0, 0)
@@ -2228,15 +2231,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						end
 
 						local poffr2Total = CalculateManaGain(TRB.Data.character.items.potions.potionOfFrozenFocusRank2.mana, true)
-						if TRB.Data.settings.monk.mistweaver.thresholds.potionOfFrozenFocusRank2.enabled and (castingBarValue + poffr2Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.resourceFrame.thresholds[5], resourceFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (castingBarValue + poffr2Total), TRB.Data.character.maxResource)
+						if specSettings.thresholds.potionOfFrozenFocusRank2.enabled and (castingBarValue + poffr2Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.resourceFrame.thresholds[5], resourceFrame, specSettings.thresholds.width, (castingBarValue + poffr2Total), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[5].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[5]:Show()
 								
-							if TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown then
+							if specSettings.thresholds.icons.showCooldown then
 								TRB.Frames.resourceFrame.thresholds[5].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
 							else
 								TRB.Frames.resourceFrame.thresholds[5].icon.cooldown:SetCooldown(0, 0)
@@ -2246,15 +2249,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						end
 
 						local poffr3Total = CalculateManaGain(TRB.Data.character.items.potions.potionOfFrozenFocusRank3.mana, true)
-						if TRB.Data.settings.monk.mistweaver.thresholds.potionOfFrozenFocusRank3.enabled and (castingBarValue + poffr3Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.resourceFrame.thresholds[6], resourceFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (castingBarValue + poffr3Total), TRB.Data.character.maxResource)
+						if specSettings.thresholds.potionOfFrozenFocusRank3.enabled and (castingBarValue + poffr3Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.resourceFrame.thresholds[6], resourceFrame, specSettings.thresholds.width, (castingBarValue + poffr3Total), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[6].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[6].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[6]:Show()
 								
-							if TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown then
+							if specSettings.thresholds.icons.showCooldown then
 								TRB.Frames.resourceFrame.thresholds[6].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
 							else
 								TRB.Frames.resourceFrame.thresholds[6].icon.cooldown:SetCooldown(0, 0)
@@ -2273,18 +2276,18 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					
 					if TRB.Data.character.items.conjuredChillglobe.isEquipped and (currentMana / TRB.Data.character.maxResource) < TRB.Data.character.items.conjuredChillglobe.manaThresholdPercent then
 						local conjuredChillglobeTotal = CalculateManaGain(TRB.Data.character.items.conjuredChillglobe[TRB.Data.character.items.conjuredChillglobe.equippedVersion].mana, true)
-						if TRB.Data.settings.monk.mistweaver.thresholds.conjuredChillglobe.enabled and (castingBarValue + conjuredChillglobeTotal) < TRB.Data.character.maxResource then
+						if specSettings.thresholds.conjuredChillglobe.enabled and (castingBarValue + conjuredChillglobeTotal) < TRB.Data.character.maxResource then
 							if TRB.Data.snapshotData.conjuredChillglobe.onCooldown then
-								potionThresholdColor = TRB.Data.settings.monk.mistweaver.colors.threshold.unusable
+								potionThresholdColor = specSettings.colors.threshold.unusable
 							end
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.resourceFrame.thresholds[7], resourceFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (castingBarValue + conjuredChillglobeTotal), TRB.Data.character.maxResource)
+							TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.resourceFrame.thresholds[7], resourceFrame, specSettings.thresholds.width, (castingBarValue + conjuredChillglobeTotal), TRB.Data.character.maxResource)
 	---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[7].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 	---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[7].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[7]:Show()
 								
-							if TRB.Data.settings.monk.mistweaver.thresholds.icons.showCooldown then
+							if specSettings.thresholds.icons.showCooldown then
 								TRB.Frames.resourceFrame.thresholds[7].icon.cooldown:SetCooldown(TRB.Data.snapshotData.conjuredChillglobe.startTime, TRB.Data.snapshotData.conjuredChillglobe.duration)
 							else
 								TRB.Frames.resourceFrame.thresholds[7].icon.cooldown:SetCooldown(0, 0)
@@ -2297,14 +2300,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					end
 
 					local passiveValue = 0
-					if TRB.Data.settings.monk.mistweaver.bar.showPassive then
+					if specSettings.bar.showPassive then
 						if TRB.Data.snapshotData.channeledManaPotion.isActive then
 							passiveValue = passiveValue + TRB.Data.snapshotData.channeledManaPotion.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[1]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[1]:Hide()
@@ -2317,9 +2320,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							passiveValue = passiveValue + TRB.Data.snapshotData.innervate.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[2]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[2]:Hide()
@@ -2332,9 +2335,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							passiveValue = passiveValue + TRB.Data.snapshotData.symbolOfHope.resourceFinal
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[3]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[3]:Hide()
@@ -2347,9 +2350,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							passiveValue = passiveValue + TRB.Data.snapshotData.manaTideTotem.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.mistweaver, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, TRB.Data.settings.monk.mistweaver.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[4]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[4]:Hide()
@@ -2368,60 +2371,61 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					passiveBarValue = castingBarValue + passiveValue
 					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.mistweaver, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.mistweaver, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.mistweaver, passiveFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.bar.spending, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.mistweaver, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.mistweaver, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.mistweaver, castingFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.bar.passive, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.mistweaver, resourceFrame, TRB.Data.snapshotData.resource)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.mistweaver, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.mistweaver, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.mistweaver.colors.bar.passive, true))
+						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
 					local resourceBarColor = nil
 
-					resourceBarColor = TRB.Data.settings.monk.mistweaver.colors.bar.base
+					resourceBarColor = specSettings.colors.bar.base
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(resourceBarColor, true))
 				end
 
-				TRB.Functions.UpdateResourceBar(TRB.Data.settings.monk.mistweaver, refreshText)
+				TRB.Functions.UpdateResourceBar(specSettings, refreshText)
 			end
 		elseif specId == 3 then
+			local specSettings = classSettings.windwalker
 			UpdateSnapshot_Windwalker()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.monk.windwalker, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
-				if TRB.Data.settings.monk.windwalker.displayBar.neverShow == false then
+				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
 					local gcd = TRB.Functions.GetCurrentGCDTime(true)
 
 					local passiveValue = 0
-					if TRB.Data.settings.monk.windwalker.bar.showPassive then
-						if TRB.Data.settings.monk.windwalker.generation.enabled then
-							if TRB.Data.settings.monk.windwalker.generation.mode == "time" then
-								passiveValue = (TRB.Data.snapshotData.energyRegen * (TRB.Data.settings.monk.windwalker.generation.time or 3.0))
+					if specSettings.bar.showPassive then
+						if specSettings.generation.enabled then
+							if specSettings.generation.mode == "time" then
+								passiveValue = (TRB.Data.snapshotData.energyRegen * (specSettings.generation.time or 3.0))
 							else
-								passiveValue = (TRB.Data.snapshotData.energyRegen * ((TRB.Data.settings.monk.windwalker.generation.gcds or 2) * gcd))
+								passiveValue = (TRB.Data.snapshotData.energyRegen * ((specSettings.generation.gcds or 2) * gcd))
 							end
 						end
 					end
 
-					if CastingSpell() and TRB.Data.settings.monk.windwalker.bar.showCasting then
+					if CastingSpell() and specSettings.bar.showCasting then
 						castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = TRB.Data.snapshotData.resource
@@ -2430,26 +2434,26 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.windwalker, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.windwalker, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.windwalker, passiveFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.spending, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.windwalker, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.windwalker, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.windwalker, castingFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.passive, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.windwalker, resourceFrame, TRB.Data.snapshotData.resource)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.windwalker, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.windwalker, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.bar.passive, true))
+						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
 					local pairOffset = 0
@@ -2457,10 +2461,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then	
 							local energyAmount = CalculateAbilityResourceValue(spell.energy, true)
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.monk.windwalker, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.monk.windwalker.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
+							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
-							local thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.over
+							local thresholdColor = specSettings.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
                             if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
@@ -2470,89 +2474,60 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
                                 showThreshold = false
                             elseif spell.hasCooldown then
                                 if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-                                    thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.unusable
+                                    thresholdColor = specSettings.colors.threshold.unusable
                                     frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
                                 elseif TRB.Data.snapshotData.resource >= -energyAmount then
-                                    thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.over
+                                    thresholdColor = specSettings.colors.threshold.over
                                 else
-                                    thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.under
+                                    thresholdColor = specSettings.colors.threshold.under
                                     frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
                                 end
                             else -- This is an active/available/normal spell threshold
                                 if TRB.Data.snapshotData.resource >= -energyAmount then
-                                    thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.over
+                                    thresholdColor = specSettings.colors.threshold.over
                                 else
-                                    thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.under
+                                    thresholdColor = specSettings.colors.threshold.under
                                     frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
                                 end
                             end
 
 							if spell.comboPoints == true and TRB.Data.snapshotData.resource2 == 0 then
-								thresholdColor = TRB.Data.settings.monk.windwalker.colors.threshold.unusable
+								thresholdColor = specSettings.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 
-							if TRB.Data.settings.monk.windwalker.thresholds[spell.settingKey].enabled and showThreshold then
-								if not spell.hasCooldown then
-									frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
-								end
-
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetLine)
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
----@diagnostic disable-next-line: undefined-field
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
----@diagnostic disable-next-line: undefined-field
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
-								if frameLevel == TRB.Data.constants.frameLevels.thresholdOver then
-									spell.thresholdUsable = true
-								else
-									spell.thresholdUsable = false
-								end
-								
-                                if TRB.Data.settings.monk.windwalker.thresholds.icons.showCooldown and spell.hasCooldown and TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) and (TRB.Data.snapshotData[spell.settingKey].maxCharges == nil or TRB.Data.snapshotData[spell.settingKey].charges < TRB.Data.snapshotData[spell.settingKey].maxCharges) then
-									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(TRB.Data.snapshotData[spell.settingKey].startTime, TRB.Data.snapshotData[spell.settingKey].duration)
-								else
-									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(0, 0)
-								end
-							else
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
-								spell.thresholdUsable = false
-							end
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
 						end
 						pairOffset = pairOffset + 3
 					end
 
-					local barColor = TRB.Data.settings.monk.windwalker.colors.bar.base
-					if TRB.Data.snapshotData.serenity.spellId and TRB.Data.settings.monk.windwalker.endOfSerenity.enabled then
+					local barColor = specSettings.colors.bar.base
+					if TRB.Data.snapshotData.serenity.spellId and specSettings.endOfSerenity.enabled then
 						local timeThreshold = 0
-						if TRB.Data.settings.monk.windwalker.endOfSerenity.mode == "gcd" then
+						if specSettings.endOfSerenity.mode == "gcd" then
 							local gcd = TRB.Functions.GetCurrentGCDTime()
-							timeThreshold = gcd * TRB.Data.settings.monk.windwalker.endOfSerenity.gcdsMax
-						elseif TRB.Data.settings.monk.windwalker.endOfSerenity.mode == "time" then
-							timeThreshold = TRB.Data.settings.monk.windwalker.endOfSerenity.timeMax
+							timeThreshold = gcd * specSettings.endOfSerenity.gcdsMax
+						elseif specSettings.endOfSerenity.mode == "time" then
+							timeThreshold = specSettings.endOfSerenity.timeMax
 						end
 						
 						if GetSerenityRemainingTime() <= timeThreshold then
-							barColor = TRB.Data.settings.monk.windwalker.colors.bar.serenityEnd
+							barColor = specSettings.colors.bar.serenityEnd
 						else
-							barColor = TRB.Data.settings.monk.windwalker.colors.bar.serenity
+							barColor = specSettings.colors.bar.serenity
 						end
 					end
 
-					local barBorderColor = TRB.Data.settings.monk.windwalker.colors.bar.border
+					local barBorderColor = specSettings.colors.bar.border
 					if GetDanceOfChiJiRemainingTime() > 0 then
-						barBorderColor = TRB.Data.settings.monk.windwalker.colors.bar.borderChiJi
-					elseif TRB.Data.settings.monk.windwalker.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-						barBorderColor = TRB.Data.settings.monk.windwalker.colors.bar.borderOvercap
+						barBorderColor = specSettings.colors.bar.borderChiJi
+					elseif specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+						barBorderColor = specSettings.colors.bar.borderOvercap
 
-						if TRB.Data.settings.monk.windwalker.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
+						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
 							---@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
 						TRB.Data.snapshotData.audio.overcapCue = false
@@ -2564,24 +2539,24 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
 					
-					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(TRB.Data.settings.monk.windwalker.colors.comboPoints.background, true)
+					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
                     for x = 1, TRB.Data.character.maxResource2 do
-						local cpBorderColor = TRB.Data.settings.monk.windwalker.colors.comboPoints.border
-						local cpColor = TRB.Data.settings.monk.windwalker.colors.comboPoints.base
+						local cpBorderColor = specSettings.colors.comboPoints.border
+						local cpColor = specSettings.colors.comboPoints.base
 						local cpBR = cpBackgroundRed
 						local cpBG = cpBackgroundGreen
 						local cpBB = cpBackgroundBlue
 
                         if TRB.Data.snapshotData.resource2 >= x then
-                            TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.windwalker, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
-							if (TRB.Data.settings.monk.windwalker.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not TRB.Data.settings.monk.windwalker.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-								cpColor = TRB.Data.settings.monk.windwalker.colors.comboPoints.penultimate
-							elseif (TRB.Data.settings.monk.windwalker.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-								cpColor = TRB.Data.settings.monk.windwalker.colors.comboPoints.final
+                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+							if (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+								cpColor = specSettings.colors.comboPoints.penultimate
+							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+								cpColor = specSettings.colors.comboPoints.final
 							end
                         else
-                            TRB.Functions.SetBarCurrentValue(TRB.Data.settings.monk.windwalker, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
                         end
 
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(cpColor, true))
@@ -2590,7 +2565,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
                     end
 				end
 			end
-			TRB.Functions.UpdateResourceBar(TRB.Data.settings.monk.windwalker, refreshText)
+			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
 		end
 	end
 

@@ -387,6 +387,7 @@ local function GetTalents(baselineTalents)
 							end
 							
 							if spellId ~= nil then
+---@diagnostic disable-next-line: cast-local-type
 								name, _, icon = GetSpellInfo(spellId)
 								iconString = string.format("|T%s:0|t", icon)
 
@@ -996,6 +997,42 @@ local function RedrawThresholdLines(settings)
 	TRB.Frames.passiveFrame = passiveFrame
 end
 TRB.Functions.RedrawThresholdLines = RedrawThresholdLines
+
+local function AdjustThresholdDisplay(spell, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshotData, thresholdSettings)
+	if thresholdSettings[spell.settingKey].enabled and showThreshold then
+		local currentTime = GetTime()
+		local frameLevel = currentFrameLevel
+		if not spell.hasCooldown then
+			frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
+		end
+
+		threshold:Show()
+		threshold:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetLine)
+---@diagnostic disable-next-line: undefined-field
+		threshold.icon:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
+---@diagnostic disable-next-line: undefined-field
+		threshold.icon.cooldown:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
+---@diagnostic disable-next-line: undefined-field
+		threshold.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+---@diagnostic disable-next-line: undefined-field
+		threshold.icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+		if frameLevel >= TRB.Data.constants.frameLevels.thresholdOver then
+			spell.thresholdUsable = true
+		else
+			spell.thresholdUsable = false
+		end
+		
+		if thresholdSettings.icons.showCooldown and spell.hasCooldown and snapshotData.startTime ~= nil and currentTime < (snapshotData.startTime + snapshotData.duration) and (snapshotData.maxCharges == nil or snapshotData.charges < snapshotData.maxCharges) then
+			threshold.icon.cooldown:SetCooldown(snapshotData.startTime, snapshotData.duration)
+		else
+			threshold.icon.cooldown:SetCooldown(0, 0)
+		end
+	else
+		threshold:Hide()
+		spell.thresholdUsable = false
+	end
+end
+TRB.Functions.AdjustThresholdDisplay = AdjustThresholdDisplay
 
 local function IsComboPointUser()
 	local _, _, classIndexId = UnitClass("player")

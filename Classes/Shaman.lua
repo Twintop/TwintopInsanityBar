@@ -2072,65 +2072,68 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local currentTime = GetTime()
 		local refreshText = false
 		local specId = GetSpecialization()
+		local coreSettings = TRB.Data.settings.core
+		local classSettings = TRB.Data.settings.shaman
 
 		if specId == 1 then
+			local specSettings = classSettings.elemental
 			UpdateSnapshot_Elemental()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.shaman.elemental, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
-				if TRB.Data.settings.shaman.elemental.displayBar.neverShow == false then
+				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
 
-					if TRB.Data.settings.shaman.elemental.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.borderOvercap, true))
+					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
 
-						if TRB.Data.settings.shaman.elemental.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
+						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
 							---@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.elemental.colors.bar.border, true))
+						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.border, true))
 						TRB.Data.snapshotData.audio.overcapCue = false
 					end
 
-					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.elemental, resourceFrame, TRB.Data.snapshotData.resource)
+					TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
 
-					if CastingSpell() and TRB.Data.settings.shaman.elemental.bar.showCasting then
+					if CastingSpell() and specSettings.bar.showCasting then
 						castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = TRB.Data.snapshotData.resource
 					end
 
-					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.elemental, castingFrame, castingBarValue)
+					TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
 
-					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.elemental, passiveFrame, passiveBarValue)
+					TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
 
-					local thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.under
+					local thresholdColor = specSettings.colors.threshold.under
 					local frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-					local barColor = TRB.Data.settings.shaman.elemental.colors.bar.base
+					local barColor = specSettings.colors.bar.base
 
 					if TRB.Data.snapshotData.resource >= TRB.Data.character.earthShockThreshold then
 						frameLevel = TRB.Data.constants.frameLevels.thresholdOver
-						barColor = TRB.Data.settings.shaman.elemental.colors.bar.earthShock
-						thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.over
-						if TRB.Data.settings.shaman.elemental.colors.bar.flashEnabled then
-							TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.shaman.elemental.colors.bar.flashAlpha, TRB.Data.settings.shaman.elemental.colors.bar.flashPeriod)
+						barColor = specSettings.colors.bar.earthShock
+						thresholdColor = specSettings.colors.threshold.over
+						if specSettings.colors.bar.flashEnabled then
+							TRB.Functions.PulseFrame(barContainerFrame, specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 						else
 							barContainerFrame:SetAlpha(1.0)
 						end
 
-						if TRB.Data.settings.shaman.elemental.audio.esReady.enabled and TRB.Data.snapshotData.audio.playedEsCue == false then
+						if specSettings.audio.esReady.enabled and TRB.Data.snapshotData.audio.playedEsCue == false then
 							TRB.Data.snapshotData.audio.playedEsCue = true
 							---@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(TRB.Data.settings.shaman.elemental.audio.esReady.sound, TRB.Data.settings.core.audio.channel.channel)
+							PlaySoundFile(specSettings.audio.esReady.sound, coreSettings.audio.channel.channel)
 						end
 					else
-						thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.under
+						thresholdColor = specSettings.colors.threshold.under
 						barContainerFrame:SetAlpha(1.0)
 						TRB.Data.snapshotData.audio.playedEsCue = false
 					end
@@ -2140,26 +2143,26 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						local timeThreshold = 0
 						local useEndOfAscendanceColor = false
 
-						if TRB.Data.settings.shaman.elemental.endOfAscendance.enabled then
+						if specSettings.endOfAscendance.enabled then
 							useEndOfAscendanceColor = true
-							if TRB.Data.settings.shaman.elemental.endOfAscendance.mode == "gcd" then
+							if specSettings.endOfAscendance.mode == "gcd" then
 								local gcd = TRB.Functions.GetCurrentGCDTime()
-								timeThreshold = gcd * TRB.Data.settings.shaman.elemental.endOfAscendance.gcdsMax
-							elseif TRB.Data.settings.shaman.elemental.endOfAscendance.mode == "time" then
-								timeThreshold = TRB.Data.settings.shaman.elemental.endOfAscendance.timeMax
+								timeThreshold = gcd * specSettings.endOfAscendance.gcdsMax
+							elseif specSettings.endOfAscendance.mode == "time" then
+								timeThreshold = specSettings.endOfAscendance.timeMax
 							end
 						end
 
 						if useEndOfAscendanceColor and timeLeft <= timeThreshold then
-							barColor = TRB.Data.settings.shaman.elemental.colors.bar.inAscendance1GCD
+							barColor = specSettings.colors.bar.inAscendance1GCD
 						else
-							barColor = TRB.Data.settings.shaman.elemental.colors.bar.inAscendance
+							barColor = specSettings.colors.bar.inAscendance
 						end
 					end
 					
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
 					
-					if TRB.Data.settings.shaman.elemental.thresholds.earthShock.enabled and (TRB.Functions.IsTalentActive(TRB.Data.spells.earthShock) or TRB.Functions.IsTalentActive(TRB.Data.spells.elementalBlast)) then
+					if specSettings.thresholds.earthShock.enabled and (TRB.Functions.IsTalentActive(TRB.Data.spells.earthShock) or TRB.Functions.IsTalentActive(TRB.Data.spells.elementalBlast)) then
 						resourceFrame.thresholds[1]:SetFrameLevel(frameLevel-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 ---@diagnostic disable-next-line: undefined-field
 						resourceFrame.thresholds[1].icon:SetFrameLevel(frameLevel-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
@@ -2174,15 +2177,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						resourceFrame.thresholds[1]:Hide()
 					end
 					
-					if TRB.Data.settings.shaman.elemental.thresholds.earthquake.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.earthquake) then
+					if specSettings.thresholds.earthquake.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.earthquake) then
 						if TRB.Data.snapshotData.echoesOfGreatSundering.isActive then
-							thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.echoesOfGreatSundering
+							thresholdColor = specSettings.colors.threshold.echoesOfGreatSundering
 							frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 						elseif TRB.Data.snapshotData.resource >= TRB.Data.character.earthquakeThreshold then
-							thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.over
+							thresholdColor = specSettings.colors.threshold.over
 							frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 						else
-							thresholdColor = TRB.Data.settings.shaman.elemental.colors.threshold.under
+							thresholdColor = specSettings.colors.threshold.under
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 						end
 
@@ -2202,71 +2205,72 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					end
 				end
 			end
-			TRB.Functions.UpdateResourceBar(TRB.Data.settings.shaman.elemental, refreshText)
+			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
 		elseif specId == 3 then
+			local specSettings = classSettings.restoration
 			UpdateSnapshot_Restoration()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.shaman.restoration, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
-				if TRB.Data.settings.shaman.restoration.displayBar.neverShow == false then
+				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
 					local currentMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
-					local barBorderColor = TRB.Data.settings.shaman.restoration.colors.bar.border
+					local barBorderColor = specSettings.colors.bar.border
 
 					if TRB.Data.spells.innervate.isActive then
-						if TRB.Data.settings.shaman.restoration.colors.bar.innervateBorderChange then
-							barBorderColor = TRB.Data.settings.shaman.restoration.colors.bar.innervate
+						if specSettings.colors.bar.innervateBorderChange then
+							barBorderColor = specSettings.colors.bar.innervate
 						end
 
-						if TRB.Data.settings.shaman.restoration.audio.innervate.enabled and TRB.Data.snapshotData.audio.innervateCue == false then
+						if specSettings.audio.innervate.enabled and TRB.Data.snapshotData.audio.innervateCue == false then
 							TRB.Data.snapshotData.audio.innervateCue = true
 ---@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(TRB.Data.settings.shaman.restoration.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
+							PlaySoundFile(specSettings.audio.innervate.sound, coreSettings.audio.channel.channel)
 						end
 					end
 
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
 
-					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.restoration, resourceFrame, currentMana)
+					TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, currentMana)
 
-					if CastingSpell() and TRB.Data.settings.shaman.restoration.bar.showCasting  then
+					if CastingSpell() and specSettings.bar.showCasting  then
 						castingBarValue = currentMana + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = currentMana
 					end
 
-					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.restoration, castingFrame, castingBarValue)
+					TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
 
 					local potionCooldownThreshold = 0
-					local potionThresholdColor = TRB.Data.settings.shaman.restoration.colors.threshold.over
+					local potionThresholdColor = specSettings.colors.threshold.over
 					if TRB.Data.snapshotData.potion.onCooldown then
-						if TRB.Data.settings.shaman.restoration.thresholds.potionCooldown.enabled then
-							if TRB.Data.settings.shaman.restoration.thresholds.potionCooldown.mode == "gcd" then
+						if specSettings.thresholds.potionCooldown.enabled then
+							if specSettings.thresholds.potionCooldown.mode == "gcd" then
 								local gcd = TRB.Functions.GetCurrentGCDTime()
-								potionCooldownThreshold = gcd * TRB.Data.settings.shaman.restoration.thresholds.potionCooldown.gcdsMax
-							elseif TRB.Data.settings.shaman.restoration.thresholds.potionCooldown.mode == "time" then
-								potionCooldownThreshold = TRB.Data.settings.shaman.restoration.thresholds.potionCooldown.timeMax
+								potionCooldownThreshold = gcd * specSettings.thresholds.potionCooldown.gcdsMax
+							elseif specSettings.thresholds.potionCooldown.mode == "time" then
+								potionCooldownThreshold = specSettings.thresholds.potionCooldown.timeMax
 							end
 						end
 					end
 
 					if not TRB.Data.snapshotData.potion.onCooldown or (potionCooldownThreshold > math.abs(TRB.Data.snapshotData.potion.startTime + TRB.Data.snapshotData.potion.duration - currentTime))then
 						if TRB.Data.snapshotData.potion.onCooldown then
-							potionThresholdColor = TRB.Data.settings.shaman.restoration.colors.threshold.unusable
+							potionThresholdColor = specSettings.colors.threshold.unusable
 						end
 						local ampr1Total = CalculateManaGain(TRB.Data.character.items.potions.aeratedManaPotionRank1.mana, true)
-						if TRB.Data.settings.shaman.restoration.thresholds.aeratedManaPotionRank1.enabled and (castingBarValue + ampr1Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.restoration, TRB.Frames.resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.shaman.restoration.thresholds.width, (castingBarValue + ampr1Total), TRB.Data.character.maxResource)
+						if specSettings.thresholds.aeratedManaPotionRank1.enabled and (castingBarValue + ampr1Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.resourceFrame.thresholds[1], resourceFrame, specSettings.thresholds.width, (castingBarValue + ampr1Total), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[1]:Show()
 								
-							if TRB.Data.settings.shaman.restoration.thresholds.icons.showCooldown then
+							if specSettings.thresholds.icons.showCooldown then
 								TRB.Frames.resourceFrame.thresholds[1].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
 							else
 								TRB.Frames.resourceFrame.thresholds[1].icon.cooldown:SetCooldown(0, 0)
@@ -2276,15 +2280,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						end
 						
 						local ampr2Total = CalculateManaGain(TRB.Data.character.items.potions.aeratedManaPotionRank2.mana, true)
-						if TRB.Data.settings.shaman.restoration.thresholds.aeratedManaPotionRank2.enabled and (castingBarValue + ampr2Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.restoration, TRB.Frames.resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.shaman.restoration.thresholds.width, (castingBarValue + ampr2Total), TRB.Data.character.maxResource)
+						if specSettings.thresholds.aeratedManaPotionRank2.enabled and (castingBarValue + ampr2Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.resourceFrame.thresholds[2], resourceFrame, specSettings.thresholds.width, (castingBarValue + ampr2Total), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[2]:Show()
 								
-							if TRB.Data.settings.shaman.restoration.thresholds.icons.showCooldown then
+							if specSettings.thresholds.icons.showCooldown then
 								TRB.Frames.resourceFrame.thresholds[2].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
 							else
 								TRB.Frames.resourceFrame.thresholds[2].icon.cooldown:SetCooldown(0, 0)
@@ -2294,15 +2298,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						end
 						
 						local ampr3Total = CalculateManaGain(TRB.Data.character.items.potions.aeratedManaPotionRank3.mana, true)
-						if TRB.Data.settings.shaman.restoration.thresholds.aeratedManaPotionRank3.enabled and (castingBarValue + ampr3Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.restoration, TRB.Frames.resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.shaman.restoration.thresholds.width, (castingBarValue + ampr3Total), TRB.Data.character.maxResource)
+						if specSettings.thresholds.aeratedManaPotionRank3.enabled and (castingBarValue + ampr3Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.resourceFrame.thresholds[3], resourceFrame, specSettings.thresholds.width, (castingBarValue + ampr3Total), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[3]:Show()
 								
-							if TRB.Data.settings.shaman.restoration.thresholds.icons.showCooldown then
+							if specSettings.thresholds.icons.showCooldown then
 								TRB.Frames.resourceFrame.thresholds[3].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
 							else
 								TRB.Frames.resourceFrame.thresholds[3].icon.cooldown:SetCooldown(0, 0)
@@ -2312,15 +2316,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						end
 
 						local poffr1Total = CalculateManaGain(TRB.Data.character.items.potions.potionOfFrozenFocusRank1.mana, true)
-						if TRB.Data.settings.shaman.restoration.thresholds.potionOfFrozenFocusRank1.enabled and (castingBarValue + poffr1Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.restoration, TRB.Frames.resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.shaman.restoration.thresholds.width, (castingBarValue + poffr1Total), TRB.Data.character.maxResource)
+						if specSettings.thresholds.potionOfFrozenFocusRank1.enabled and (castingBarValue + poffr1Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.resourceFrame.thresholds[4], resourceFrame, specSettings.thresholds.width, (castingBarValue + poffr1Total), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[4]:Show()
 								
-							if TRB.Data.settings.shaman.restoration.thresholds.icons.showCooldown then
+							if specSettings.thresholds.icons.showCooldown then
 								TRB.Frames.resourceFrame.thresholds[4].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
 							else
 								TRB.Frames.resourceFrame.thresholds[4].icon.cooldown:SetCooldown(0, 0)
@@ -2330,15 +2334,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						end
 
 						local poffr2Total = CalculateManaGain(TRB.Data.character.items.potions.potionOfFrozenFocusRank2.mana, true)
-						if TRB.Data.settings.shaman.restoration.thresholds.potionOfFrozenFocusRank2.enabled and (castingBarValue + poffr2Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.restoration, TRB.Frames.resourceFrame.thresholds[5], resourceFrame, TRB.Data.settings.shaman.restoration.thresholds.width, (castingBarValue + poffr2Total), TRB.Data.character.maxResource)
+						if specSettings.thresholds.potionOfFrozenFocusRank2.enabled and (castingBarValue + poffr2Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.resourceFrame.thresholds[5], resourceFrame, specSettings.thresholds.width, (castingBarValue + poffr2Total), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[5].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[5]:Show()
 								
-							if TRB.Data.settings.shaman.restoration.thresholds.icons.showCooldown then
+							if specSettings.thresholds.icons.showCooldown then
 								TRB.Frames.resourceFrame.thresholds[5].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
 							else
 								TRB.Frames.resourceFrame.thresholds[5].icon.cooldown:SetCooldown(0, 0)
@@ -2348,15 +2352,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						end
 
 						local poffr3Total = CalculateManaGain(TRB.Data.character.items.potions.potionOfFrozenFocusRank3.mana, true)
-						if TRB.Data.settings.shaman.restoration.thresholds.potionOfFrozenFocusRank3.enabled and (castingBarValue + poffr3Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.restoration, TRB.Frames.resourceFrame.thresholds[6], resourceFrame, TRB.Data.settings.shaman.restoration.thresholds.width, (castingBarValue + poffr3Total), TRB.Data.character.maxResource)
+						if specSettings.thresholds.potionOfFrozenFocusRank3.enabled and (castingBarValue + poffr3Total) < TRB.Data.character.maxResource then
+							TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.resourceFrame.thresholds[6], resourceFrame, specSettings.thresholds.width, (castingBarValue + poffr3Total), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[6].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[6].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[6]:Show()
 								
-							if TRB.Data.settings.shaman.restoration.thresholds.icons.showCooldown then
+							if specSettings.thresholds.icons.showCooldown then
 								TRB.Frames.resourceFrame.thresholds[6].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
 							else
 								TRB.Frames.resourceFrame.thresholds[6].icon.cooldown:SetCooldown(0, 0)
@@ -2375,18 +2379,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					
 					if TRB.Data.character.items.conjuredChillglobe.isEquipped and (currentMana / TRB.Data.character.maxResource) < TRB.Data.character.items.conjuredChillglobe.manaThresholdPercent then
 						local conjuredChillglobeTotal = CalculateManaGain(TRB.Data.character.items.conjuredChillglobe[TRB.Data.character.items.conjuredChillglobe.equippedVersion].mana, true)
-						if TRB.Data.settings.shaman.restoration.thresholds.conjuredChillglobe.enabled and (castingBarValue + conjuredChillglobeTotal) < TRB.Data.character.maxResource then
+						if specSettings.thresholds.conjuredChillglobe.enabled and (castingBarValue + conjuredChillglobeTotal) < TRB.Data.character.maxResource then
 							if TRB.Data.snapshotData.conjuredChillglobe.onCooldown then
-								potionThresholdColor = TRB.Data.settings.shaman.restoration.colors.threshold.unusable
+								potionThresholdColor = specSettings.colors.threshold.unusable
 							end
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.restoration, TRB.Frames.resourceFrame.thresholds[7], resourceFrame, TRB.Data.settings.shaman.restoration.thresholds.width, (castingBarValue + conjuredChillglobeTotal), TRB.Data.character.maxResource)
+							TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.resourceFrame.thresholds[7], resourceFrame, specSettings.thresholds.width, (castingBarValue + conjuredChillglobeTotal), TRB.Data.character.maxResource)
 	---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[7].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 	---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.resourceFrame.thresholds[7].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
 							TRB.Frames.resourceFrame.thresholds[7]:Show()
 								
-							if TRB.Data.settings.shaman.restoration.thresholds.icons.showCooldown then
+							if specSettings.thresholds.icons.showCooldown then
 								TRB.Frames.resourceFrame.thresholds[7].icon.cooldown:SetCooldown(TRB.Data.snapshotData.conjuredChillglobe.startTime, TRB.Data.snapshotData.conjuredChillglobe.duration)
 							else
 								TRB.Frames.resourceFrame.thresholds[7].icon.cooldown:SetCooldown(0, 0)
@@ -2399,14 +2403,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					end
 
 					local passiveValue = 0
-					if TRB.Data.settings.shaman.restoration.bar.showPassive then
+					if specSettings.bar.showPassive then
 						if TRB.Data.snapshotData.channeledManaPotion.isActive then
 							passiveValue = passiveValue + TRB.Data.snapshotData.channeledManaPotion.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.restoration, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, TRB.Data.settings.shaman.restoration.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[1]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[1]:Hide()
@@ -2419,9 +2423,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							passiveValue = passiveValue + TRB.Data.snapshotData.innervate.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.restoration, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, TRB.Data.settings.shaman.restoration.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[2]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[2]:Hide()
@@ -2434,9 +2438,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							passiveValue = passiveValue + TRB.Data.snapshotData.symbolOfHope.resourceFinal
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.restoration, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, TRB.Data.settings.shaman.restoration.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[3]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[3]:Hide()
@@ -2449,9 +2453,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							passiveValue = passiveValue + TRB.Data.snapshotData.manaTideTotem.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.shaman.restoration, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, TRB.Data.settings.shaman.restoration.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[4]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[4]:Hide()
@@ -2470,56 +2474,56 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					passiveBarValue = castingBarValue + passiveValue
 					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.restoration, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.restoration, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.restoration, passiveFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.bar.spending, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.restoration, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.restoration, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.restoration, castingFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.bar.passive, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.restoration, resourceFrame, TRB.Data.snapshotData.resource)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.restoration, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.shaman.restoration, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.shaman.restoration.colors.bar.passive, true))
+						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
 					local resourceBarColor = nil
 
-					resourceBarColor = TRB.Data.settings.shaman.restoration.colors.bar.base
+					resourceBarColor = specSettings.colors.bar.base
 
 					if TRB.Data.snapshotData.ascendance.remainingTime > 0 then
 						local timeLeft = TRB.Data.snapshotData.ascendance.remainingTime
 						local timeThreshold = 0
 						local useEndOfAscendanceColor = false
 
-						if TRB.Data.settings.shaman.restoration.endOfAscendance.enabled then
+						if specSettings.endOfAscendance.enabled then
 							useEndOfAscendanceColor = true
-							if TRB.Data.settings.shaman.restoration.endOfAscendance.mode == "gcd" then
+							if specSettings.endOfAscendance.mode == "gcd" then
 								local gcd = TRB.Functions.GetCurrentGCDTime()
-								timeThreshold = gcd * TRB.Data.settings.shaman.restoration.endOfAscendance.gcdsMax
-							elseif TRB.Data.settings.shaman.restoration.endOfAscendance.mode == "time" then
-								timeThreshold = TRB.Data.settings.shaman.restoration.endOfAscendance.timeMax
+								timeThreshold = gcd * specSettings.endOfAscendance.gcdsMax
+							elseif specSettings.endOfAscendance.mode == "time" then
+								timeThreshold = specSettings.endOfAscendance.timeMax
 							end
 						end
 
 						if useEndOfAscendanceColor and timeLeft <= timeThreshold then
-							resourceBarColor = TRB.Data.settings.shaman.restoration.colors.bar.inAscendance1GCD
+							resourceBarColor = specSettings.colors.bar.inAscendance1GCD
 						else
-							resourceBarColor = TRB.Data.settings.shaman.restoration.colors.bar.inAscendance
+							resourceBarColor = specSettings.colors.bar.inAscendance
 						end
 					end
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(resourceBarColor, true))
 				end
 
-				TRB.Functions.UpdateResourceBar(TRB.Data.settings.shaman.restoration, refreshText)
+				TRB.Functions.UpdateResourceBar(specSettings, refreshText)
 			end
 		end
 	end

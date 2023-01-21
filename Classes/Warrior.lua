@@ -1781,25 +1781,28 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local currentTime = GetTime()
 		local refreshText = false
 		local specId = GetSpecialization()
+		local coreSettings = TRB.Data.settings.core
+		local classSettings = TRB.Data.settings.warrior
 
 		if specId == 1 then
+			local specSettings = classSettings.arms
 			UpdateSnapshot_Arms()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.warrior.arms, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
-				if TRB.Data.settings.warrior.arms.displayBar.neverShow == false then
+				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
 					local currentRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
 					local passiveValue = 0
-					if TRB.Data.settings.warrior.arms.bar.showPassive then
+					if specSettings.bar.showPassive then
 					end
 
-					if CastingSpell() and TRB.Data.settings.warrior.arms.bar.showCasting then
+					if CastingSpell() and specSettings.bar.showCasting then
 						castingBarValue = currentRage + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = currentRage
@@ -1808,26 +1811,26 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					if castingBarValue < currentRage then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, resourceFrame, castingBarValue) 
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, passiveFrame, currentRage)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.bar.spending, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue) 
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, currentRage)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, castingFrame, currentRage)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.bar.passive, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, currentRage)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, resourceFrame, currentRage)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.arms, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.arms.colors.bar.passive, true))
+						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, currentRage)
+						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
 					local pairOffset = 0
@@ -1839,11 +1842,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
 							if not (spell.id == TRB.Data.spells.execute.id or spell.id == TRB.Data.spells.whirlwind.id) then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
+								TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 							end
 
 							local showThreshold = true
-							local thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
+							local thresholdColor = specSettings.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
 							if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
@@ -1860,9 +1863,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									local suddenDeathTime = GetSuddenDeathRemainingTime()
 
 									if suddenDeathTime > 0 then
-										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, -TRB.Data.spells.execute.rageMax, TRB.Data.character.maxResource)
+										TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -TRB.Data.spells.execute.rageMax, TRB.Data.character.maxResource)
 									else
-										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, math.min(math.max(-rageAmount, normalizedRage), -TRB.Data.spells.execute.rageMax), TRB.Data.character.maxResource)
+										TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, math.min(math.max(-rageAmount, normalizedRage), -TRB.Data.spells.execute.rageMax), TRB.Data.character.maxResource)
 									end
 
 									if UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
@@ -1874,49 +1877,49 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									elseif spell.settingKey == "execute" and (targetUnitHealth >= healthMinimum) and suddenDeathTime == 0 then
 										showThreshold = false
 									elseif currentRage >= -rageAmount then
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.impendingVictory.id then
 									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.unusable
+										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif currentRage >= -rageAmount or TRB.Data.spells.victoryRush.isActive then
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.mortalStrike.id then
 									if TRB.Data.spells.battlelord.isActive then
 										rageAmount = rageAmount - TRB.Data.spells.battlelord.rageMod
-										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
+										TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 									end
 
 									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.unusable
+										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif currentRage >= -rageAmount then
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.cleave.id then
 									if TRB.Data.spells.battlelord.isActive then
 										rageAmount = rageAmount - TRB.Data.spells.battlelord.rageMod
-										TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
+										TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 									end
 
 									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.unusable
+										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif currentRage >= -rageAmount then
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.whirlwind.id then
@@ -1926,88 +1929,61 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									
 									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
 										showCooldown = true
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.unusable
+										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif currentRage >= -rageAmount or TRB.Data.spells.victoryRush.isActive then
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 
-									TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.arms, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.arms.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
+									TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 								elseif spell.id == TRB.Data.spells.shieldBlock.id then
 									if TRB.Data.snapshotData.shieldBlock.charges == 0 then
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.unusable
+										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif currentRage >= -rageAmount then
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								end
 							elseif spell.hasCooldown then
 								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-									thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.unusable
+									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif currentRage >= -rageAmount then
-									thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
+									thresholdColor = specSettings.colors.threshold.over
 								else
-									thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
+									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
 								if currentRage >= -rageAmount then
-									thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.over
+									thresholdColor = specSettings.colors.threshold.over
 								else
-									thresholdColor = TRB.Data.settings.warrior.arms.colors.threshold.under
+									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							end
 
-							if TRB.Data.settings.warrior.arms.thresholds[spell.settingKey].enabled and showThreshold then
-								if not spell.hasCooldown then
-									frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
-								end
-
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetLine)
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
-								if frameLevel == TRB.Data.constants.frameLevels.thresholdOver then
-									spell.thresholdUsable = true
-								else
-									spell.thresholdUsable = false
-								end
-								
-                                if TRB.Data.settings.warrior.arms.thresholds.icons.showCooldown and (spell.hasCooldown or showCooldown) and TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) and (TRB.Data.snapshotData[spell.settingKey].maxCharges == nil or TRB.Data.snapshotData[spell.settingKey].charges < TRB.Data.snapshotData[spell.settingKey].maxCharges) then
-									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(TRB.Data.snapshotData[spell.settingKey].startTime, TRB.Data.snapshotData[spell.settingKey].duration)
-								end
-							else
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
-								spell.thresholdUsable = false
-							end
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
 						end
 						pairOffset = pairOffset + 3
 					end
 
-					local barColor = TRB.Data.settings.warrior.arms.colors.bar.base
-					local barBorderColor = TRB.Data.settings.warrior.arms.colors.bar.border
+					local barColor = specSettings.colors.bar.base
+					local barBorderColor = specSettings.colors.bar.border
 
-					if TRB.Data.settings.warrior.arms.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-						barBorderColor = TRB.Data.settings.warrior.arms.colors.bar.borderOvercap
+					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+						barBorderColor = specSettings.colors.bar.borderOvercap
 
-						if TRB.Data.settings.warrior.arms.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
+						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
 							---@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(TRB.Data.settings.warrior.arms.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
 						TRB.Data.snapshotData.audio.overcapCue = false
@@ -2020,28 +1996,29 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
 				end
 			end
-			TRB.Functions.UpdateResourceBar(TRB.Data.settings.warrior.arms, refreshText)
+			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
 		elseif specId == 2 then
+			local specSettings = classSettings.fury
 			UpdateSnapshot_Fury()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.warrior.fury, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
-				if TRB.Data.settings.warrior.fury.displayBar.neverShow == false then
+				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
 					local currentRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
 					local passiveValue = 0
-					if TRB.Data.settings.warrior.fury.bar.showPassive then
+					if specSettings.bar.showPassive then
 						if TRB.Data.snapshotData.ravager.rage > 0 then
 							passiveValue = passiveValue + TRB.Data.snapshotData.ravager.rage
 						end
 					end
 
-					if CastingSpell() and TRB.Data.settings.warrior.fury.bar.showCasting then
+					if CastingSpell() and specSettings.bar.showCasting then
 						castingBarValue = currentRage + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = currentRage
@@ -2050,26 +2027,26 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					if castingBarValue < currentRage then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, passiveFrame, currentRage)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.spending, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, currentRage)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, castingFrame, currentRage)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.passive, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, currentRage)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, resourceFrame, currentRage)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.warrior.fury, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.warrior.fury.colors.bar.passive, true))
+						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, currentRage)
+						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
 					local pairOffset = 0
@@ -2079,10 +2056,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							local rageAmount = CalculateAbilityResourceValue(spell.rage)
 							local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 							
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.fury, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.fury.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
+							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
-							local thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.over
+							local thresholdColor = specSettings.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 							local cooldownSettingKey = spell.settingKey
 
@@ -2112,110 +2089,81 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 											showThreshold = false
 										else
 											if spell.settingKey == "execute" then
-												TRB.Functions.RepositionThreshold(TRB.Data.settings.warrior.fury, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.warrior.fury.thresholds.width, math.min(math.max(-rageAmount, normalizedRage), -TRB.Data.spells.execute.rageMax), TRB.Data.character.maxResource)
+												TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, math.min(math.max(-rageAmount, normalizedRage), -TRB.Data.spells.execute.rageMax), TRB.Data.character.maxResource)
 											end
 											
 											cooldownSettingKey = TRB.Data.spells.execute.settingKey
 
 											if TRB.Data.snapshotData[cooldownSettingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[cooldownSettingKey].startTime + TRB.Data.snapshotData[cooldownSettingKey].duration) then
-												thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.unusable
+												thresholdColor = specSettings.colors.threshold.unusable
 											elseif currentRage >= -rageAmount then
-												thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.over
+												thresholdColor = specSettings.colors.threshold.over
 											else
-												thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.under
+												thresholdColor = specSettings.colors.threshold.under
 												frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 											end
 										end
 									end
 								elseif spell.id == TRB.Data.spells.impendingVictory.id then
 									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.unusable
+										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif currentRage >= -rageAmount or TRB.Data.spells.victoryRush.isActive then
-										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.shieldBlock.id then
 									if TRB.Data.snapshotData.shieldBlock.charges == 0 then
-										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.unusable
+										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif currentRage >= -rageAmount then
-										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								end
 							elseif spell.hasCooldown then
 								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-									thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.unusable
+									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif currentRage >= -rageAmount then
-									thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.over
+									thresholdColor = specSettings.colors.threshold.over
 								else
-									thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.under
+									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
 								if currentRage >= -rageAmount then
-									thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.over
+									thresholdColor = specSettings.colors.threshold.over
 								else
-									thresholdColor = TRB.Data.settings.warrior.fury.colors.threshold.under
+									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							end
 
-							if TRB.Data.settings.warrior.fury.thresholds[spell.settingKey].enabled and showThreshold then
-								if not spell.hasCooldown then
-									frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
-								end
-
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetLine)
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
-								if frameLevel == TRB.Data.constants.frameLevels.thresholdOver then
-									spell.thresholdUsable = true
-								else
-									spell.thresholdUsable = false
-								end
-								
-                                if TRB.Data.settings.warrior.fury.thresholds.icons.showCooldown and spell.hasCooldown and TRB.Data.snapshotData[cooldownSettingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[cooldownSettingKey].startTime + TRB.Data.snapshotData[cooldownSettingKey].duration) and (TRB.Data.snapshotData[cooldownSettingKey].maxCharges == nil or TRB.Data.snapshotData[cooldownSettingKey].charges < TRB.Data.snapshotData[cooldownSettingKey].maxCharges) then
-									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(TRB.Data.snapshotData[cooldownSettingKey].startTime, TRB.Data.snapshotData[cooldownSettingKey].duration)
-								else
-									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(0, 0)
-								end
-							else
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
-								spell.thresholdUsable = false
-							end
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
 						end
 						pairOffset = pairOffset + 3
 					end
 
-					local barColor = TRB.Data.settings.warrior.fury.colors.bar.base
+					local barColor = specSettings.colors.bar.base
 
 					if GetEnrageRemainingTime() > 0 then
-						barColor = TRB.Data.settings.warrior.fury.colors.bar.enrage
+						barColor = specSettings.colors.bar.enrage
 					end
 
-					local barBorderColor = TRB.Data.settings.warrior.fury.colors.bar.border
+					local barBorderColor = specSettings.colors.bar.border
 
-					if TRB.Data.settings.warrior.fury.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-						barBorderColor = TRB.Data.settings.warrior.fury.colors.bar.borderOvercap
+					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+						barBorderColor = specSettings.colors.bar.borderOvercap
 
-						if TRB.Data.settings.warrior.fury.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
+						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
 							---@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(TRB.Data.settings.warrior.fury.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
 						TRB.Data.snapshotData.audio.overcapCue = false
@@ -2228,7 +2176,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
 				end
 			end
-			TRB.Functions.UpdateResourceBar(TRB.Data.settings.warrior.fury, refreshText)
+			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
 		end
 	end
 
