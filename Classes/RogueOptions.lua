@@ -210,8 +210,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 relativeTo="TOP",
                 relativeToName="Above - Middle",
                 fullWidth=false,
+				consistentUnfilledColor = false,
 				spec={
-					serratedBoneSpikeColor = true,
+					serratedBoneSpikeColor = true
 				}
             },
 			colors = {
@@ -489,6 +490,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 relativeTo="TOP",
                 relativeToName="Above - Middle",
                 fullWidth=false,
+				consistentUnfilledColor = false
             },
 			colors = {
 				text = {
@@ -816,7 +818,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		yCoord = yCoord - 30
-
 		controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sameColorComboPoint
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -834,12 +835,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		yCoord = yCoord - 20
+		controls.checkBoxes.consistentUnfilledColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_comboPointsConsistentBackgroundColor", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.consistentUnfilledColorComboPoint
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Always use default unfilled background")
+		f.tooltip = "When checked, unfilled combo points will always use the 'Unfilled Combo Point background' color above for their background. Borders will still change color depending on Echoing Reprimand and Serrated Bone Spike settings."
+		f:SetChecked(spec.comboPoints.consistentUnfilledColor)
+		f:SetScript("OnClick", function(self, ...)
+			spec.comboPoints.consistentUnfilledColor = self:GetChecked()
+		end)
 
+		yCoord = yCoord - 20
 		controls.checkBoxes.serratedBoneSpikeComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_comboPointsSerratedBoneSpikeColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.serratedBoneSpikeComboPoint
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change color for Serrated Bone Spike generation?")
-		f.tooltip = "When checked, any unfilled combo points that will generate on your next use of Serrated Bone Spike will be a different color (as specified above)."
+		f.tooltip = "When checked, any unfilled combo points that will generate on your next use of Serrated Bone Spike will be a different background and border color (as specified above)."
 		f:SetChecked(spec.comboPoints.spec.serratedBoneSpikeColor)
 		f:SetScript("OnClick", function(self, ...)
 			spec.comboPoints.spec.serratedBoneSpikeColor = self:GetChecked()
@@ -1974,9 +1985,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 		end)
+		controls.colors.comboPoints.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled Combo Point background", spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
+		end)
 
 		yCoord = yCoord - 30
-
 		controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sameColorComboPoint
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -1987,12 +2002,19 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.comboPoints.sameColor = self:GetChecked()
 		end)
 
-
-		controls.colors.comboPoints.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled Combo Point background", spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.comboPoints.background
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
+		yCoord = yCoord - 20
+		controls.checkBoxes.consistentUnfilledColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_comboPointsConsistentBackgroundColor", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.consistentUnfilledColorComboPoint
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Always use default unfilled background")
+		f.tooltip = "When checked, unfilled combo points will always use the 'Unfilled Combo Point background' color above for their background. Borders will still change color depending on Echoing Reprimand settings."
+		f:SetChecked(spec.comboPoints.consistentUnfilledColor)
+		f:SetScript("OnClick", function(self, ...)
+			spec.comboPoints.consistentUnfilledColor = self:GetChecked()
 		end)
+
+
+
 
 		yCoord = yCoord - 40
 

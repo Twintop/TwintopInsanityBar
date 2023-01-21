@@ -3775,15 +3775,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 						if TRB.Data.snapshotData.echoingReprimand[x].enabled then
 							cpColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand
-							if sbsCp > 0 and x > TRB.Data.snapshotData.resource2 and x <= (TRB.Data.snapshotData.resource2 + sbsCp) then
+							
+							if sbsCp > 0 and x > TRB.Data.snapshotData.resource2 and x <= (TRB.Data.snapshotData.resource2 + sbsCp) and not TRB.Data.settings.rogue.assassination.comboPoints.consistentUnfilledColor then
 								cpBorderColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.serratedBoneSpike
 							else
 								cpBorderColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand
 							end
-							cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand, true)
+
+							if not TRB.Data.settings.rogue.assassination.comboPoints.consistentUnfilledColor then
+								cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand, true)
+							end
 						elseif sbsCp > 0 and x > TRB.Data.snapshotData.resource2 and x <= (TRB.Data.snapshotData.resource2 + sbsCp) then
 							cpBorderColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.serratedBoneSpike
-							cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.serratedBoneSpike, true)
+							
+							if not TRB.Data.settings.rogue.assassination.comboPoints.consistentUnfilledColor then
+								cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.serratedBoneSpike, true)
+							end
 						end
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(cpColor, true))
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(cpBorderColor, true))
@@ -4122,7 +4129,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						if TRB.Data.snapshotData.echoingReprimand[x].enabled then
 							cpColor = TRB.Data.settings.rogue.outlaw.colors.comboPoints.echoingReprimand
 							cpBorderColor = TRB.Data.settings.rogue.outlaw.colors.comboPoints.echoingReprimand
-							cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.comboPoints.echoingReprimand, true)
+
+							if not TRB.Data.settings.rogue.outlaw.comboPoints.consistentUnfilledColor then
+								cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.comboPoints.echoingReprimand, true)
+							end
 						end
 
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(cpColor, true))
