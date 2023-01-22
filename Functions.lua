@@ -449,7 +449,7 @@ local function FillSpellData(spells)
 				local _, name, icon
 				if spells[k]["spellId"] ~= nil and spells[k]["useSpellIcon"] == true then
 					name, _, icon = GetSpellInfo(spells[k]["spellId"])
-				else					
+				else
 					name, _, icon = GetSpellInfo(spells[k]["id"])
 				end
 				
