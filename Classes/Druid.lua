@@ -113,30 +113,39 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				texture = "",
-				astralPower = 40,
+				astralPower = -40,
 				thresholdId = 1,
 				settingKey = "starsurge",
 				thresholdUsable = false,
 				isTalent = true,
-				baseline = true
+				baseline = true,
+				isSnowflake = true
 			},
 			starsurge2 = {
 				id = 78674,
 				name = "",
 				icon = "",
 				texture = "",
+				astralPower = -80,
 				thresholdId = 2,
 				settingKey = "starsurge2",
-				thresholdUsable = false
+				thresholdUsable = false,
+				isTalent = true,
+				baseline = true,
+				isSnowflake = true
 			},
 			starsurge3 = {
 				id = 78674,
 				name = "",
 				icon = "",
 				texture = "",
+				astralPower = -120,
 				thresholdId = 3,
 				settingKey = "starsurge3",
-				thresholdUsable = false
+				thresholdUsable = false,
+				isTalent = true,
+				baseline = true,
+				isSnowflake = true
 			},
 			moonkinForm = {
 				id = 24858,
@@ -196,14 +205,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				texture = "",
-				astralPower = 50,
+				astralPower = -50,
 				thresholdId = 4,
 				settingKey = "starfall",
 				thresholdUsable = false,
 				isActive = false,
 				pandemic = true,
 				pandemicTime = 8 * 0.3,
-				isTalent = true
+				isTalent = true,
+				isSnowflake = true
 			},
 			stellarFlare = {
 				id = 202347,
@@ -2906,8 +2916,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local pulsarRemainingPercent = string.format("%.1f", TRB.Functions.RoundTo(_pulsarRemainingPercent * 100, 1))
 		--local pulsarNextStarsurge = ""
 		--local pulsarNextStarfall = ""
-		local pulsarStarsurgeCount = TRB.Functions.RoundTo(pulsarRemaining / TRB.Data.spells.starsurge.astralPower, 0, ceil)
-		local pulsarStarfallCount = TRB.Functions.RoundTo(pulsarRemaining / TRB.Data.spells.starfall.astralPower, 0, ceil)
+		local pulsarStarsurgeCount = TRB.Functions.RoundTo(pulsarRemaining / -TRB.Data.spells.starsurge.astralPower, 0, ceil)
+		local pulsarStarfallCount = TRB.Functions.RoundTo(pulsarRemaining / -TRB.Data.spells.starfall.astralPower, 0, ceil)
 		
 		----------------------------
 
@@ -4042,8 +4052,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			incarnationChosenOfEluneStarsurgeModifier = TRB.Data.spells.elunesGuidance.modifierStarsurge
 		end
 
-		TRB.Data.character.starsurgeThreshold = (TRB.Data.spells.starsurge.astralPower + incarnationChosenOfEluneStarsurgeModifier) * (1+rattleTheStarsModifier)
-		TRB.Data.character.starfallThreshold = (TRB.Data.spells.starfall.astralPower + incarnationChosenOfEluneStarfallModifier) * (1+rattleTheStarsModifier)
+		TRB.Data.character.starsurgeThreshold = (-TRB.Data.spells.starsurge.astralPower + incarnationChosenOfEluneStarsurgeModifier) * (1+rattleTheStarsModifier)
+		TRB.Data.character.starfallThreshold = (-TRB.Data.spells.starfall.astralPower + incarnationChosenOfEluneStarfallModifier) * (1+rattleTheStarsModifier)
 
 		TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))
 
@@ -4381,117 +4391,125 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 					TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
 
-					if specSettings.thresholds.starsurge.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.starsurge) and TRB.Data.character.starsurgeThreshold < TRB.Data.character.maxResource then
-						resourceFrame.thresholds[1]:Show()
-						TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[1], resourceFrame, specSettings.thresholds.width, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
+					local pairOffset = 0
+					for k, v in pairs(TRB.Data.spells) do
+						local spell = TRB.Data.spells[k]
+						if spell ~= nil and spell.id ~= nil and spell.astralPower ~= nil and spell.astralPower < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+							pairOffset = (spell.thresholdId - 1) * 3
+							local resourceAmount = spell.astralPower
+							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
-						if currentResource >= TRB.Data.character.starsurgeThreshold or TRB.Data.spells.starweaversWeft.isActive then
-		---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.over, true))
-		---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.over, true))
+							local showThreshold = true
+							local thresholdColor = specSettings.colors.threshold.over
+							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+							
+							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+								if spell.settingKey == TRB.Data.spells.starsurge.settingKey then
+									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+										showThreshold = false
+									elseif TRB.Data.spells.starweaversWeft.isActive then
+										thresholdColor = specSettings.colors.threshold.over
+									elseif currentResource >= TRB.Data.character.starsurgeThreshold then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
 
-							if TRB.Data.spells.starweaversWeft.isActive and specSettings.audio.starweaversReady.enabled and TRB.Data.snapshotData.audio.playedstarweaverCue == false then
-								TRB.Data.snapshotData.audio.playedstarweaverCue = true
-								TRB.Data.snapshotData.audio.playedSfCue = true
-		---@diagnostic disable-next-line: redundant-parameter
-								PlaySoundFile(specSettings.audio.starweaverProc.sound, coreSettings.audio.channel.channel)
-							elseif specSettings.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
-								TRB.Data.snapshotData.audio.playedSsCue = true
-		---@diagnostic disable-next-line: redundant-parameter
-								PlaySoundFile(specSettings.audio.ssReady.sound, coreSettings.audio.channel.channel)
+									if showThreshold then
+										if TRB.Data.spells.starweaversWeft.isActive and specSettings.audio.starweaversReady.enabled and TRB.Data.snapshotData.audio.playedstarweaverCue == false then
+											TRB.Data.snapshotData.audio.playedstarweaverCue = true
+											TRB.Data.snapshotData.audio.playedSfCue = true
+					---@diagnostic disable-next-line: redundant-parameter
+											PlaySoundFile(specSettings.audio.starweaverProc.sound, coreSettings.audio.channel.channel)
+										elseif specSettings.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
+											TRB.Data.snapshotData.audio.playedSsCue = true
+					---@diagnostic disable-next-line: redundant-parameter
+											PlaySoundFile(specSettings.audio.ssReady.sound, coreSettings.audio.channel.channel)
+										end
+									else
+										TRB.Data.snapshotData.audio.playedSsCue = false
+										TRB.Data.snapshotData.audio.playedstarweaverCue = false
+									end
+								elseif spell.settingKey == TRB.Data.spells.starsurge2.settingKey then
+									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+										showThreshold = false
+									elseif (TRB.Data.character.starsurgeThreshold * 2) >= TRB.Data.character.maxResource then
+										showThreshold = false
+									elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and
+										   TRB.Data.character.starsurgeThreshold > currentResource then
+										showThreshold = false
+									elseif currentResource >= TRB.Data.character.starsurgeThreshold * 2 then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								elseif spell.settingKey == TRB.Data.spells.starsurge3.settingKey then
+									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+										showThreshold = false
+									elseif (TRB.Data.character.starsurgeThreshold * 3) >= TRB.Data.character.maxResource then
+										showThreshold = false
+									elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and
+										   (TRB.Data.character.starsurgeThreshold * 2) > currentResource then
+										showThreshold = false
+									elseif currentResource >= (TRB.Data.character.starsurgeThreshold * 3) then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								elseif spell.id == TRB.Data.spells.starfall.id then
+									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+										showThreshold = false
+									elseif currentResource >= TRB.Data.character.starfallThreshold then
+										if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > (TRB.Data.character.pandemicModifier * TRB.Data.spells.starfall.pandemicTime) then
+											thresholdColor = specSettings.colors.threshold.starfallPandemic
+										else
+											thresholdColor = specSettings.colors.threshold.over
+										end
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+
+									if showThreshold then
+										if TRB.Data.spells.starweaversWarp.isActive and specSettings.audio.starweaversReady.enabled and TRB.Data.snapshotData.audio.playedstarweaverCue == false then
+											TRB.Data.snapshotData.audio.playedstarweaverCue = true
+											TRB.Data.snapshotData.audio.playedSfCue = true
+											---@diagnostic disable-next-line: redundant-parameter
+											PlaySoundFile(specSettings.audio.starweaverProc.sound, coreSettings.audio.channel.channel)
+										elseif specSettings.audio.sfReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
+											TRB.Data.snapshotData.audio.playedSfCue = true
+											---@diagnostic disable-next-line: redundant-parameter
+											PlaySoundFile(specSettings.audio.sfReady.sound, coreSettings.audio.channel.channel)
+										end
+									end
+								end
+							--The rest isn't used. Keeping it here for consistency until I can finish abstracting this whole mess out
+							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+								showThreshold = false
+							elseif spell.hasCooldown then
+								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+									thresholdColor = specSettings.colors.threshold.unusable
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+								elseif currentResource >= -resourceAmount then
+									thresholdColor = specSettings.colors.threshold.over
+								else
+									thresholdColor = specSettings.colors.threshold.under
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
+							else -- This is an active/available/normal spell threshold
+								if currentResource >= -resourceAmount then
+									thresholdColor = specSettings.colors.threshold.over
+								else
+									thresholdColor = specSettings.colors.threshold.under
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
 							end
-						else
-		---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.under, true))
-		---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.under, true))
-							TRB.Data.snapshotData.audio.playedSsCue = false
-							TRB.Data.snapshotData.audio.playedstarweaverCue = false
+
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
 						end
-					else
-						resourceFrame.thresholds[1]:Hide()
-					end
-
-					if specSettings.thresholds.starsurge2.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.starsurge) and
-						(not specSettings.thresholds.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold) and
-						(TRB.Data.character.starsurgeThreshold * 2) < TRB.Data.character.maxResource then
-						resourceFrame.thresholds[2]:Show()
-						TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[2], resourceFrame, specSettings.thresholds.width, TRB.Data.character.starsurgeThreshold*2, TRB.Data.character.maxResource)
-
-						if currentResource >= TRB.Data.character.starsurgeThreshold * 2 then
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.over, true))
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.over, true))
-						else
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.under, true))
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.under, true))
-						end
-					else
-						resourceFrame.thresholds[2]:Hide()
-					end
-
-					if specSettings.thresholds.starsurge3.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.starsurge) and 
-						(not specSettings.thresholds.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold*2) and
-						(TRB.Data.character.starsurgeThreshold * 3) < TRB.Data.character.maxResource then
-						resourceFrame.thresholds[3]:Show()
-						TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[3], resourceFrame, specSettings.thresholds.width, TRB.Data.character.starsurgeThreshold*3, TRB.Data.character.maxResource)
-
-						if currentResource >= TRB.Data.character.starsurgeThreshold * 3 then
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.over, true))
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.over, true))
-						else
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.under, true))
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.under, true))
-						end
-					else
-						resourceFrame.thresholds[3]:Hide()
-					end
-
-					if specSettings.thresholds.starfall.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.starfall) and TRB.Data.character.starfallThreshold < TRB.Data.character.maxResource then
-						resourceFrame.thresholds[4]:Show()
-						TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[4], resourceFrame, specSettings.thresholds.width, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
-
-						if currentResource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.starweaversWarp.isActive then
-							if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > (TRB.Data.character.pandemicModifier * TRB.Data.spells.starfall.pandemicTime) then
-		---@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.starfallPandemic, true))
-		---@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.starfallPandemic, true))
-							else
-		---@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.over, true))
-		---@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.over, true))
-							end
-
-							if TRB.Data.spells.starweaversWarp.isActive and specSettings.audio.starweaversReady.enabled and TRB.Data.snapshotData.audio.playedstarweaverCue == false then
-								TRB.Data.snapshotData.audio.playedstarweaverCue = true
-								TRB.Data.snapshotData.audio.playedSfCue = true
-								---@diagnostic disable-next-line: redundant-parameter
-								PlaySoundFile(specSettings.audio.starweaverProc.sound, coreSettings.audio.channel.channel)
-							elseif specSettings.audio.sfReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
-								TRB.Data.snapshotData.audio.playedSfCue = true
-								---@diagnostic disable-next-line: redundant-parameter
-								PlaySoundFile(specSettings.audio.sfReady.sound, coreSettings.audio.channel.channel)
-							end
-						else
-		---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.under, true))
-		---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.under, true))
-							TRB.Data.snapshotData.audio.playedSfCue = false
-							TRB.Data.snapshotData.audio.playedstarweaverCue = false
-						end
-					else
-						resourceFrame.thresholds[4]:Hide()
 					end
 					
 					if specSettings.colors.bar.flashSsEnabled and currentResource >= TRB.Data.character.starsurgeThreshold then
