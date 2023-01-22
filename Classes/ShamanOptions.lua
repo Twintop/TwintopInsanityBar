@@ -104,6 +104,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				earthquake = { -- 2
 					enabled = true,
 				},
+				elementalBlast = { -- 3
+					enabled = true,
+				},
 			},
 			displayBar = {
 				alwaysShow=false,
@@ -634,6 +637,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetChecked(spec.thresholds.earthShock.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.earthShock.enabled = self:GetChecked()
+			spec.thresholds.elementalBlast.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25

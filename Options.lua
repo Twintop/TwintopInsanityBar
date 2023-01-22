@@ -1949,6 +1949,22 @@ function TRB.Options:PortForwardSettings()
         TwintopInsanityBarSettings.priest.shadow.colors.bar.devouringPlagueUsable = TwintopInsanityBarSettings.priest.shadow.colors.bar.enterVoidform
         TwintopInsanityBarSettings.priest.shadow.colors.bar.enterVoidform = nil
     end
+
+    -- Elemental Elemental Blast threshold split from Earth Shock
+    if TwintopInsanityBarSettings ~= nil and
+        TwintopInsanityBarSettings.shaman ~= nil and
+        TwintopInsanityBarSettings.shaman.elemental ~= nil and
+        TwintopInsanityBarSettings.shaman.elemental.thresholds ~= nil and
+        TwintopInsanityBarSettings.shaman.elemental.thresholds.elementalBlast == nil then
+
+        TwintopInsanityBarSettings.shaman.elemental.thresholds.elementalBlast = {
+            enabled = TwintopInsanityBarSettings.shaman.elemental.thresholds.earthShock.enabled
+        }
+        
+        TwintopInsanityBarSettings.shaman.elemental.thresholdWidth = nil
+        TwintopInsanityBarSettings.shaman.elemental.earthShockThreshold = nil
+        TwintopInsanityBarSettings.shaman.elemental.thresholdsOverlapBorder = nil
+    end
 end
 
 function TRB.Options:CleanupSettings(oldSettings)
