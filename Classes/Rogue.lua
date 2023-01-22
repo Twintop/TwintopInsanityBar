@@ -1790,8 +1790,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.opportunity)
 	end
 	
-    local function CalculateAbilityResourceValue(resource, threshold, nimbleFingers, rushedSetup)
+    local function CalculateAbilityResourceValue(resource, nimbleFingers, rushedSetup, comboPoints)
         local modifier = 1.0
+
+		if comboPoints == true and TRB.Functions.IsTalentActive(TRB.Data.spells.tightSpender) then
+			modifier = modifier * TRB.Data.spells.tightSpender.energyMod
+		end
 
 		-- TODO: validate how Nimble Fingers reduces energy costs. Is it before or after percentage modifiers? Assuming before for now
 		if nimbleFingers == true and TRB.Functions.IsTalentActive(TRB.Data.spells.nimbleFingers) then
@@ -3539,7 +3543,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							local energyAmount = CalculateAbilityResourceValue(spell.energy, true, spell.nimbleFingers, spell.rushedSetup)
+							local energyAmount = CalculateAbilityResourceValue(spell.energy, spell.nimbleFingers, spell.rushedSetup, spell.comboPoints)
 							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
@@ -3824,7 +3828,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then	
-							local energyAmount = CalculateAbilityResourceValue(spell.energy, true, spell.nimbleFingers, spell.rushedSetup)
+							local energyAmount = CalculateAbilityResourceValue(spell.energy, spell.nimbleFingers, spell.rushedSetup, spell.comboPoints)
 							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
