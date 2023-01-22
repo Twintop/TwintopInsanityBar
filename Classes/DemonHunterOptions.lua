@@ -92,6 +92,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					relativeTo = "TOP",
 					relativeToName = "Above",
 					enabled=true,
+					desaturated=true,
 					xPos=0,
 					yPos=-12,
 					width=24,

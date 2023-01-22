@@ -102,6 +102,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					relativeTo = "BOTTOM",
 					relativeToName = "Below",
 					enabled=true,
+					desaturated=true,
 					xPos=0,
 					yPos=12,
 					width=24,
@@ -109,20 +110,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				},
 				starsurgeThresholdOnlyOverShow = false,
 				starsurge = { -- 1
-					enabled = true,
-					showIcon = true
+					enabled = true
 				},
 				starsurge2 = { -- 2
-					enabled = true,
-					showIcon = true
+					enabled = true
 				},
 				starsurge3 = { -- 3
-					enabled = true,
-					showIcon = true
+					enabled = true
 				},
 				starfall = { -- 4
-					enabled = true,
-					showIcon = true
+					enabled = true
 				},
 			},
 			displayBar = {
@@ -315,6 +312,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					relativeTo = "BOTTOM",
 					relativeToName = "Below",
 					enabled=true,
+					desaturated=true,
 					xPos=0,
 					yPos=12,
 					width=24,
@@ -556,6 +554,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					relativeTo = "TOP",
 					relativeToName = "Above",
 					enabled=true,
+					desaturated=true,
 					xPos=0,
 					yPos=-12,
 					width=24,

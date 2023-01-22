@@ -113,30 +113,39 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				texture = "",
-				astralPower = 40,
+				astralPower = -40,
 				thresholdId = 1,
 				settingKey = "starsurge",
 				thresholdUsable = false,
 				isTalent = true,
-				baseline = true
+				baseline = true,
+				isSnowflake = true
 			},
 			starsurge2 = {
 				id = 78674,
 				name = "",
 				icon = "",
 				texture = "",
+				astralPower = -80,
 				thresholdId = 2,
 				settingKey = "starsurge2",
-				thresholdUsable = false
+				thresholdUsable = false,
+				isTalent = true,
+				baseline = true,
+				isSnowflake = true
 			},
 			starsurge3 = {
 				id = 78674,
 				name = "",
 				icon = "",
 				texture = "",
+				astralPower = -120,
 				thresholdId = 3,
 				settingKey = "starsurge3",
-				thresholdUsable = false
+				thresholdUsable = false,
+				isTalent = true,
+				baseline = true,
+				isSnowflake = true
 			},
 			moonkinForm = {
 				id = 24858,
@@ -196,14 +205,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				texture = "",
-				astralPower = 50,
+				astralPower = -50,
 				thresholdId = 4,
 				settingKey = "starfall",
 				thresholdUsable = false,
 				isActive = false,
 				pandemic = true,
 				pandemicTime = 8 * 0.3,
-				isTalent = true
+				isTalent = true,
+				isSnowflake = true
 			},
 			stellarFlare = {
 				id = 202347,
@@ -2896,8 +2906,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local pulsarRemainingPercent = string.format("%.1f", TRB.Functions.RoundTo(_pulsarRemainingPercent * 100, 1))
 		--local pulsarNextStarsurge = ""
 		--local pulsarNextStarfall = ""
-		local pulsarStarsurgeCount = TRB.Functions.RoundTo(pulsarRemaining / TRB.Data.spells.starsurge.astralPower, 0, ceil)
-		local pulsarStarfallCount = TRB.Functions.RoundTo(pulsarRemaining / TRB.Data.spells.starfall.astralPower, 0, ceil)
+		local pulsarStarsurgeCount = TRB.Functions.RoundTo(pulsarRemaining / -TRB.Data.spells.starsurge.astralPower, 0, ceil)
+		local pulsarStarfallCount = TRB.Functions.RoundTo(pulsarRemaining / -TRB.Data.spells.starfall.astralPower, 0, ceil)
 		
 		----------------------------
 
@@ -4032,8 +4042,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			incarnationChosenOfEluneStarsurgeModifier = TRB.Data.spells.elunesGuidance.modifierStarsurge
 		end
 
-		TRB.Data.character.starsurgeThreshold = (TRB.Data.spells.starsurge.astralPower + incarnationChosenOfEluneStarsurgeModifier) * (1+rattleTheStarsModifier)
-		TRB.Data.character.starfallThreshold = (TRB.Data.spells.starfall.astralPower + incarnationChosenOfEluneStarfallModifier) * (1+rattleTheStarsModifier)
+		TRB.Data.character.starsurgeThreshold = (-TRB.Data.spells.starsurge.astralPower + incarnationChosenOfEluneStarsurgeModifier) * (1+rattleTheStarsModifier)
+		TRB.Data.character.starfallThreshold = (-TRB.Data.spells.starfall.astralPower + incarnationChosenOfEluneStarfallModifier) * (1+rattleTheStarsModifier)
 
 		TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.FindBuffById(TRB.Data.spells.moonkinForm.id))
 
@@ -4306,16 +4316,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local currentTime = GetTime()
 		local refreshText = false
 		local specId = GetSpecialization()
+		local coreSettings = TRB.Data.settings.core
+		local classSettings = TRB.Data.settings.druid
 
 		if specId == 1 then
+			local specSettings = classSettings.balance
 			UpdateSnapshot_Balance()
 
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.druid.balance, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
-				if TRB.Data.settings.druid.balance.displayBar.neverShow == false then
+				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local affectingCombat = UnitAffectingCombat("player")
 					local passiveBarValue = 0
@@ -4323,30 +4336,30 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local currentResource = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 					local flashBar = false
 
-					if TRB.Data.settings.druid.balance.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.borderOvercap, true))
+					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
 
-						if TRB.Data.settings.druid.balance.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
+						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
 							---@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(TRB.Data.settings.druid.balance.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.bar.border, true))
+						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.border, true))
 						TRB.Data.snapshotData.audio.overcapCue = false
 					end
 
-					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, resourceFrame, currentResource)
+					TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, currentResource)
 
-					if CastingSpell() and TRB.Data.settings.druid.balance.bar.showCasting then
+					if CastingSpell() and specSettings.bar.showCasting then
 						castingBarValue = currentResource + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = currentResource
 					end
 
-					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, castingFrame, castingBarValue)
+					TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
 
-					if TRB.Data.settings.druid.balance.bar.showPassive then
+					if specSettings.bar.showPassive then
 						passiveBarValue = currentResource + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.furyOfElune.astralPower + TRB.Data.snapshotData.sunderedFirmament.astralPower
 
 						if TRB.Functions.IsTalentActive(TRB.Data.spells.naturesBalance) then
@@ -4366,155 +4379,164 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						passiveBarValue = castingBarValue
 					end
 
-					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.balance, passiveFrame, passiveBarValue)
+					TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
 
-					if TRB.Data.settings.druid.balance.thresholds.starsurge.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.starsurge) and TRB.Data.character.starsurgeThreshold < TRB.Data.character.maxResource then
-						resourceFrame.thresholds[1]:Show()
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
+					local pairOffset = 0
+					for k, v in pairs(TRB.Data.spells) do
+						local spell = TRB.Data.spells[k]
+						if spell ~= nil and spell.id ~= nil and spell.astralPower ~= nil and spell.astralPower < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+							pairOffset = (spell.thresholdId - 1) * 3
+							local resourceAmount = spell.astralPower
+							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
-						if currentResource >= TRB.Data.character.starsurgeThreshold or TRB.Data.spells.starweaversWeft.isActive then
-		---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
-		---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
+							local showThreshold = true
+							local thresholdColor = specSettings.colors.threshold.over
+							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+							
+							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+								if spell.settingKey == TRB.Data.spells.starsurge.settingKey then
+									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+										showThreshold = false
+									elseif TRB.Data.spells.starweaversWeft.isActive then
+										thresholdColor = specSettings.colors.threshold.over
+									elseif currentResource >= TRB.Data.character.starsurgeThreshold then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
 
-							if TRB.Data.spells.starweaversWeft.isActive and TRB.Data.settings.druid.balance.audio.starweaversReady.enabled and TRB.Data.snapshotData.audio.playedstarweaverCue == false then
-								TRB.Data.snapshotData.audio.playedstarweaverCue = true
-								TRB.Data.snapshotData.audio.playedSfCue = true
-		---@diagnostic disable-next-line: redundant-parameter
-								PlaySoundFile(TRB.Data.settings.druid.balance.audio.starweaverProc.sound, TRB.Data.settings.core.audio.channel.channel)
-							elseif TRB.Data.settings.druid.balance.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
-								TRB.Data.snapshotData.audio.playedSsCue = true
-		---@diagnostic disable-next-line: redundant-parameter
-								PlaySoundFile(TRB.Data.settings.druid.balance.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
+									if showThreshold then
+										if TRB.Data.spells.starweaversWeft.isActive and specSettings.audio.starweaversReady.enabled and TRB.Data.snapshotData.audio.playedstarweaverCue == false then
+											TRB.Data.snapshotData.audio.playedstarweaverCue = true
+											TRB.Data.snapshotData.audio.playedSfCue = true
+					---@diagnostic disable-next-line: redundant-parameter
+											PlaySoundFile(specSettings.audio.starweaverProc.sound, coreSettings.audio.channel.channel)
+										elseif specSettings.audio.ssReady.enabled and TRB.Data.snapshotData.audio.playedSsCue == false then
+											TRB.Data.snapshotData.audio.playedSsCue = true
+					---@diagnostic disable-next-line: redundant-parameter
+											PlaySoundFile(specSettings.audio.ssReady.sound, coreSettings.audio.channel.channel)
+										end
+									else
+										TRB.Data.snapshotData.audio.playedSsCue = false
+										TRB.Data.snapshotData.audio.playedstarweaverCue = false
+									end
+								elseif spell.settingKey == TRB.Data.spells.starsurge2.settingKey then
+									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+										showThreshold = false
+									elseif (TRB.Data.character.starsurgeThreshold * 2) >= TRB.Data.character.maxResource then
+										showThreshold = false
+									elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and
+										   TRB.Data.character.starsurgeThreshold > currentResource then
+										showThreshold = false
+									elseif currentResource >= TRB.Data.character.starsurgeThreshold * 2 then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								elseif spell.settingKey == TRB.Data.spells.starsurge3.settingKey then
+									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+										showThreshold = false
+									elseif (TRB.Data.character.starsurgeThreshold * 3) >= TRB.Data.character.maxResource then
+										showThreshold = false
+									elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and
+										   (TRB.Data.character.starsurgeThreshold * 2) > currentResource then
+										showThreshold = false
+									elseif currentResource >= (TRB.Data.character.starsurgeThreshold * 3) then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								elseif spell.id == TRB.Data.spells.starfall.id then
+									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+										showThreshold = false
+									elseif currentResource >= TRB.Data.character.starfallThreshold then
+										if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > (TRB.Data.character.pandemicModifier * TRB.Data.spells.starfall.pandemicTime) then
+											thresholdColor = specSettings.colors.threshold.starfallPandemic
+										else
+											thresholdColor = specSettings.colors.threshold.over
+										end
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+
+									if showThreshold then
+										if TRB.Data.spells.starweaversWarp.isActive and specSettings.audio.starweaversReady.enabled and TRB.Data.snapshotData.audio.playedstarweaverCue == false then
+											TRB.Data.snapshotData.audio.playedstarweaverCue = true
+											TRB.Data.snapshotData.audio.playedSfCue = true
+											---@diagnostic disable-next-line: redundant-parameter
+											PlaySoundFile(specSettings.audio.starweaverProc.sound, coreSettings.audio.channel.channel)
+										elseif specSettings.audio.sfReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
+											TRB.Data.snapshotData.audio.playedSfCue = true
+											---@diagnostic disable-next-line: redundant-parameter
+											PlaySoundFile(specSettings.audio.sfReady.sound, coreSettings.audio.channel.channel)
+										end
+									end
+								end
+							--The rest isn't used. Keeping it here for consistency until I can finish abstracting this whole mess out
+							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+								showThreshold = false
+							elseif spell.hasCooldown then
+								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
+									(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
+									thresholdColor = specSettings.colors.threshold.unusable
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+								elseif currentResource >= -resourceAmount then
+									thresholdColor = specSettings.colors.threshold.over
+								else
+									thresholdColor = specSettings.colors.threshold.under
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
+							else -- This is an active/available/normal spell threshold
+								if currentResource >= -resourceAmount then
+									thresholdColor = specSettings.colors.threshold.over
+								else
+									thresholdColor = specSettings.colors.threshold.under
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
 							end
-						else
-		---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-		---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-							TRB.Data.snapshotData.audio.playedSsCue = false
-							TRB.Data.snapshotData.audio.playedstarweaverCue = false
+
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
 						end
-					else
-						resourceFrame.thresholds[1]:Hide()
-					end
-
-					if TRB.Data.settings.druid.balance.thresholds.starsurge2.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.starsurge) and
-						(not TRB.Data.settings.druid.balance.thresholds.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold) and
-						(TRB.Data.character.starsurgeThreshold * 2) < TRB.Data.character.maxResource then
-						resourceFrame.thresholds[2]:Show()
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*2, TRB.Data.character.maxResource)
-
-						if currentResource >= TRB.Data.character.starsurgeThreshold * 2 then
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
-						else
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-						end
-					else
-						resourceFrame.thresholds[2]:Hide()
-					end
-
-					if TRB.Data.settings.druid.balance.thresholds.starsurge3.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.starsurge) and 
-						(not TRB.Data.settings.druid.balance.thresholds.starsurgeThresholdOnlyOverShow or currentResource > TRB.Data.character.starsurgeThreshold*2) and
-						(TRB.Data.character.starsurgeThreshold * 3) < TRB.Data.character.maxResource then
-						resourceFrame.thresholds[3]:Show()
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starsurgeThreshold*3, TRB.Data.character.maxResource)
-
-						if currentResource >= TRB.Data.character.starsurgeThreshold * 3 then
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
-						else
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-	---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-						end
-					else
-						resourceFrame.thresholds[3]:Hide()
-					end
-
-					if TRB.Data.settings.druid.balance.thresholds.starfall.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.starfall) and TRB.Data.character.starfallThreshold < TRB.Data.character.maxResource then
-						resourceFrame.thresholds[4]:Show()
-						TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.balance, resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.balance.thresholds.width, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
-
-						if currentResource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.starweaversWarp.isActive then
-							if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > (TRB.Data.character.pandemicModifier * TRB.Data.spells.starfall.pandemicTime) then
-		---@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
-		---@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.starfallPandemic, true))
-							else
-		---@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
-		---@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.over, true))
-							end
-
-							if TRB.Data.spells.starweaversWarp.isActive and TRB.Data.settings.druid.balance.audio.starweaversReady.enabled and TRB.Data.snapshotData.audio.playedstarweaverCue == false then
-								TRB.Data.snapshotData.audio.playedstarweaverCue = true
-								TRB.Data.snapshotData.audio.playedSfCue = true
-								---@diagnostic disable-next-line: redundant-parameter
-								PlaySoundFile(TRB.Data.settings.druid.balance.audio.starweaverProc.sound, TRB.Data.settings.core.audio.channel.channel)
-							elseif TRB.Data.settings.druid.balance.audio.sfReady.enabled and TRB.Data.snapshotData.audio.playedSfCue == false then
-								TRB.Data.snapshotData.audio.playedSfCue = true
-								---@diagnostic disable-next-line: redundant-parameter
-								PlaySoundFile(TRB.Data.settings.druid.balance.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
-							end
-						else
-		---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-		---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.balance.colors.threshold.under, true))
-							TRB.Data.snapshotData.audio.playedSfCue = false
-							TRB.Data.snapshotData.audio.playedstarweaverCue = false
-						end
-					else
-						resourceFrame.thresholds[4]:Hide()
 					end
 					
-					if TRB.Data.settings.druid.balance.colors.bar.flashSsEnabled and currentResource >= TRB.Data.character.starsurgeThreshold then
+					if specSettings.colors.bar.flashSsEnabled and currentResource >= TRB.Data.character.starsurgeThreshold then
 						flashBar = true
 					end
 
-					local barColor = TRB.Data.settings.druid.balance.colors.bar.base
+					local barColor = specSettings.colors.bar.base
 
 					if not TRB.Data.spells.moonkinForm.isActive and affectingCombat then
-						barColor = TRB.Data.settings.druid.balance.colors.bar.moonkinFormMissing
-						if TRB.Data.settings.druid.balance.colors.bar.flashEnabled then
+						barColor = specSettings.colors.bar.moonkinFormMissing
+						if specSettings.colors.bar.flashEnabled then
 							flashBar = true
 						end
 					elseif TRB.Data.spells.eclipseSolar.isActive or TRB.Data.spells.eclipseLunar.isActive or TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive then
 						local timeThreshold = 0
 						local useEndOfEclipseColor = false
 
-						if TRB.Data.settings.druid.balance.endOfEclipse.enabled and (not TRB.Data.settings.druid.balance.endOfEclipse.celestialAlignmentOnly or TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive) then
+						if specSettings.endOfEclipse.enabled and (not specSettings.endOfEclipse.celestialAlignmentOnly or TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive) then
 							useEndOfEclipseColor = true
-							if TRB.Data.settings.druid.balance.endOfEclipse.mode == "gcd" then
+							if specSettings.endOfEclipse.mode == "gcd" then
 								local gcd = TRB.Functions.GetCurrentGCDTime()
-								timeThreshold = gcd * TRB.Data.settings.druid.balance.endOfEclipse.gcdsMax
-							elseif TRB.Data.settings.druid.balance.endOfEclipse.mode == "time" then
-								timeThreshold = TRB.Data.settings.druid.balance.endOfEclipse.timeMax
+								timeThreshold = gcd * specSettings.endOfEclipse.gcdsMax
+							elseif specSettings.endOfEclipse.mode == "time" then
+								timeThreshold = specSettings.endOfEclipse.timeMax
 							end
 						end
 
 						if useEndOfEclipseColor and GetEclipseRemainingTime() <= timeThreshold then
-							barColor = TRB.Data.settings.druid.balance.colors.bar.eclipse1GCD
+							barColor = specSettings.colors.bar.eclipse1GCD
 						else
 							if TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive or (TRB.Data.spells.eclipseSolar.isActive and TRB.Data.spells.eclipseLunar.isActive) then
-								barColor = TRB.Data.settings.druid.balance.colors.bar.celestial
+								barColor = specSettings.colors.bar.celestial
 							elseif TRB.Data.spells.eclipseSolar.isActive then
-								barColor = TRB.Data.settings.druid.balance.colors.bar.solar
+								barColor = specSettings.colors.bar.solar
 							else
-								barColor = TRB.Data.settings.druid.balance.colors.bar.lunar
+								barColor = specSettings.colors.bar.lunar
 							end
 						end
 					end
@@ -4523,37 +4545,38 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					barContainerFrame:SetAlpha(1.0)
 
 					if flashBar then
-						TRB.Functions.PulseFrame(barContainerFrame, TRB.Data.settings.druid.balance.colors.bar.flashAlpha, TRB.Data.settings.druid.balance.colors.bar.flashPeriod)
+						TRB.Functions.PulseFrame(barContainerFrame, specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 					end
 				end
 			end
-			TRB.Functions.UpdateResourceBar(TRB.Data.settings.druid.balance, refreshText)
+			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
 		elseif specId == 2 then
+			local specSettings = classSettings.feral
 			UpdateSnapshot_Feral()
 
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.druid.feral, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
-				if TRB.Data.settings.druid.feral.displayBar.neverShow == false then
+				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
 					local gcd = TRB.Functions.GetCurrentGCDTime(true)
 
 					local passiveValue = 0
-					if TRB.Data.settings.druid.feral.bar.showPassive then
-						if TRB.Data.settings.druid.feral.generation.enabled then
-							if TRB.Data.settings.druid.feral.generation.mode == "time" then
-								passiveValue = (TRB.Data.snapshotData.energyRegen * (TRB.Data.settings.druid.feral.generation.time or 3.0))
+					if specSettings.bar.showPassive then
+						if specSettings.generation.enabled then
+							if specSettings.generation.mode == "time" then
+								passiveValue = (TRB.Data.snapshotData.energyRegen * (specSettings.generation.time or 3.0))
 							else
-								passiveValue = (TRB.Data.snapshotData.energyRegen * ((TRB.Data.settings.druid.feral.generation.gcds or 2) * gcd))
+								passiveValue = (TRB.Data.snapshotData.energyRegen * ((specSettings.generation.gcds or 2) * gcd))
 							end
 						end
 					end
 
-					if CastingSpell() and TRB.Data.settings.druid.feral.bar.showCasting then
+					if CastingSpell() and specSettings.bar.showCasting then
 						castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = TRB.Data.snapshotData.resource
@@ -4562,26 +4585,26 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.feral, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.feral, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.feral, passiveFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.spending, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.feral, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.feral, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.feral, castingFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.passive, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.feral, resourceFrame, TRB.Data.snapshotData.resource)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.feral, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.feral, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.bar.passive, true))
+						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
 					local pairOffset = 0
@@ -4589,38 +4612,38 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local energyAmount = CalculateAbilityResourceValue(spell.energy, true, spell.relentlessPredator)
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.druid.feral.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
+							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
-							local thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+							local thresholdColor = specSettings.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 							local overrideOk = true
 
-							if spell.hasSnapshot and TRB.Data.settings.druid.feral.thresholds.bleedColors then
+							if spell.hasSnapshot and specSettings.thresholds.bleedColors then
 								showThreshold = true
 								overrideOk = false
 
 								if UnitIsDeadOrGhost("target") or not UnitCanAttack("player", "target") or TRB.Data.snapshotData.targetData.currentTargetGuid == nil then
-									thresholdColor = TRB.Data.settings.druid.feral.colors.text.dots.same
+									thresholdColor = specSettings.colors.text.dots.same
 									frameLevel = TRB.Data.constants.frameLevels.thresholdBleedSame
 								elseif TRB.Data.snapshotData.targetData.targets == nil or TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] == nil then
-									thresholdColor = TRB.Data.settings.druid.feral.colors.text.dots.down
+									thresholdColor = specSettings.colors.text.dots.down
 									frameLevel = TRB.Data.constants.frameLevels.thresholdBleedDownOrWorse
 								else
 									local snapshotValue = (TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid][spell.settingKey .. "Snapshot"] or 1) / TRB.Data.snapshotData.snapshots[spell.settingKey]
 									local bleedUp = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid][spell.settingKey]
 									
 									if not bleedUp then
-										thresholdColor = TRB.Data.settings.druid.feral.colors.text.dots.down
+										thresholdColor = specSettings.colors.text.dots.down
 										frameLevel = TRB.Data.constants.frameLevels.thresholdBleedDownOrWorse
 									elseif snapshotValue > 1 then
-										thresholdColor = TRB.Data.settings.druid.feral.colors.text.dots.better
+										thresholdColor = specSettings.colors.text.dots.better
 										frameLevel = TRB.Data.constants.frameLevels.thresholdBleedBetter
 									elseif snapshotValue < 1 then
-										thresholdColor = TRB.Data.settings.druid.feral.colors.text.dots.worse
+										thresholdColor = specSettings.colors.text.dots.worse
 										frameLevel = TRB.Data.constants.frameLevels.thresholdBleedDownOrWorse
 									else
-										thresholdColor = TRB.Data.settings.druid.feral.colors.text.dots.same
+										thresholdColor = specSettings.colors.text.dots.same
 										frameLevel = TRB.Data.constants.frameLevels.thresholdBleedSame
 									end
 								end
@@ -4633,74 +4656,74 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									if not TRB.Functions.IsTalentActive(TRB.Data.spells.brutalSlash) then
 										showThreshold = false
 									elseif TRB.Data.snapshotData.brutalSlash.charges > 0 then
-										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.unusable
+										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									end
 								elseif spell.id == TRB.Data.spells.swipe.id then
 									if TRB.Functions.IsTalentActive(TRB.Data.spells.brutalSlash) then
 										showThreshold = false
 									else
-										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									end
 								else
-									thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+									thresholdColor = specSettings.colors.threshold.over
 								end
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.ferociousBite.id and spell.settingKey == "ferociousBite" then
-									TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.druid.feral.thresholds.width, math.min(math.max(-energyAmount, TRB.Data.snapshotData.resource), -CalculateAbilityResourceValue(TRB.Data.spells.ferociousBite.energyMax, true, true)), TRB.Data.character.maxResource)
+									TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, math.min(math.max(-energyAmount, TRB.Data.snapshotData.resource), -CalculateAbilityResourceValue(TRB.Data.spells.ferociousBite.energyMax, true, true)), TRB.Data.character.maxResource)
 									
 									if TRB.Data.snapshotData.resource >= -energyAmount or TRB.Data.spells.apexPredatorsCraving.isActive == true then
-										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.ferociousBiteMinimum.id and spell.settingKey == "ferociousBiteMinimum" then
-									TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.feral, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.druid.feral.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
+									TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 									
 									if TRB.Data.snapshotData.resource >= -energyAmount or TRB.Data.spells.apexPredatorsCraving.isActive == true then
-										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.ferociousBiteMaximum.id and spell.settingKey == "ferociousBiteMaximum" then
 									if TRB.Data.snapshotData.resource >= -energyAmount or TRB.Data.spells.apexPredatorsCraving.isActive == true then
-										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.moonfire.id then
 									if not TRB.Functions.IsTalentActive(TRB.Data.spells.lunarInspiration) then
 										showThreshold = false
 									elseif TRB.Data.snapshotData.resource >= -energyAmount then
-										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.swipe.id then
 									if TRB.Functions.IsTalentActive(TRB.Data.spells.brutalSlash) then
 										showThreshold = false
 									elseif TRB.Data.snapshotData.resource >= -energyAmount then
-										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.brutalSlash.id then
 									if not TRB.Functions.IsTalentActive(TRB.Data.spells.brutalSlash) then
 										showThreshold = false
 									elseif TRB.Data.snapshotData.brutalSlash.charges == 0 then
-										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.unusable
+										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif TRB.Data.snapshotData.resource >= -energyAmount then
-										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.bloodtalons.id then
@@ -4709,90 +4732,58 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif spell.hasCooldown then
-								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-									thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.unusable
+								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
+									(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
+									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif TRB.Data.snapshotData.resource >= -energyAmount then
-									thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+									thresholdColor = specSettings.colors.threshold.over
 								else
-									thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
+									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
 								if TRB.Data.snapshotData.resource >= -energyAmount then
-									thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.over
+									thresholdColor = specSettings.colors.threshold.over
 								else
-									thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.under
+									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							end
 
 							if overrideOk == true and spell.comboPoints == true and TRB.Data.snapshotData.resource2 == 0 then
-								thresholdColor = TRB.Data.settings.druid.feral.colors.threshold.unusable
+								thresholdColor = specSettings.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 
-							if TRB.Data.settings.druid.feral.thresholds[spell.settingKey].enabled and showThreshold then
-								if not spell.hasCooldown then
-									frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
-								end
-
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetLine)
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
----@diagnostic disable-next-line: undefined-field
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
----@diagnostic disable-next-line: undefined-field
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
-								if frameLevel >= TRB.Data.constants.frameLevels.thresholdOver then
-									spell.thresholdUsable = true
-								else
-									spell.thresholdUsable = false
-								end
-								
-                                if TRB.Data.settings.druid.feral.thresholds.icons.showCooldown and spell.hasCooldown and TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) and (TRB.Data.snapshotData[spell.settingKey].maxCharges == nil or TRB.Data.snapshotData[spell.settingKey].charges < TRB.Data.snapshotData[spell.settingKey].maxCharges) then
-									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(TRB.Data.snapshotData[spell.settingKey].startTime, TRB.Data.snapshotData[spell.settingKey].duration)
-								else
-									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(0, 0)
-								end
-							else
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
-								spell.thresholdUsable = false
-							end
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
 						end
 						pairOffset = pairOffset + 3
 					end
 
-					local barColor = TRB.Data.settings.druid.feral.colors.bar.base
-
-					local latency = TRB.Functions.GetLatency()
-
-					local affectingCombat = UnitAffectingCombat("player")
+					local barColor = specSettings.colors.bar.base
 					
 					if GetClearcastingRemainingTime() > 0 then
-						barColor = TRB.Data.settings.druid.feral.colors.bar.clearcasting
+						barColor = specSettings.colors.bar.clearcasting
 					end
 
 					if (TRB.Data.snapshotData.resource2 == 5 and TRB.Data.snapshotData.resource >= -CalculateAbilityResourceValue(TRB.Data.spells.ferociousBiteMaximum.energy, true, true)) then
-						barColor = TRB.Data.settings.druid.feral.colors.bar.maxBite
+						barColor = specSettings.colors.bar.maxBite
 					end
 
 					if TRB.Data.spells.apexPredatorsCraving.isActive == true then
-						barColor = TRB.Data.settings.druid.feral.colors.bar.apexPredator
+						barColor = specSettings.colors.bar.apexPredator
 					end
 
-					local barBorderColor = TRB.Data.settings.druid.feral.colors.bar.border
+					local barBorderColor = specSettings.colors.bar.border
 
-					if TRB.Data.settings.druid.feral.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-						barBorderColor = TRB.Data.settings.druid.feral.colors.bar.borderOvercap
+					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+						barBorderColor = specSettings.colors.bar.borderOvercap
 
-						if TRB.Data.settings.druid.feral.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
+						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
 							---@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(TRB.Data.settings.druid.feral.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
 						TRB.Data.snapshotData.audio.overcapCue = false
@@ -4804,24 +4795,24 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
 					
-					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.feral.colors.comboPoints.background, true)
+					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 					
 					for x = 1, TRB.Data.character.maxResource2 do
-						local cpBorderColor = TRB.Data.settings.druid.feral.colors.comboPoints.border
-						local cpColor = TRB.Data.settings.druid.feral.colors.comboPoints.base
+						local cpBorderColor = specSettings.colors.comboPoints.border
+						local cpColor = specSettings.colors.comboPoints.base
 						local cpBR = cpBackgroundRed
 						local cpBG = cpBackgroundGreen
 						local cpBB = cpBackgroundBlue
 
 						if TRB.Data.snapshotData.resource2 >= x then
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.feral, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
-							if (TRB.Data.settings.druid.feral.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not TRB.Data.settings.druid.feral.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-								cpColor = TRB.Data.settings.druid.feral.colors.comboPoints.penultimate
-							elseif (TRB.Data.settings.druid.feral.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-								cpColor = TRB.Data.settings.druid.feral.colors.comboPoints.final
+							TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+							if (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+								cpColor = specSettings.colors.comboPoints.penultimate
+							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+								cpColor = specSettings.colors.comboPoints.final
 							end
 						else
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.feral, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+							TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 						end
 
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(cpColor, true))
@@ -4830,211 +4821,56 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end
 				end
 			end
-			TRB.Functions.UpdateResourceBar(TRB.Data.settings.druid.feral, refreshText)
+			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
 		elseif specId == 4 then
+			local specSettings = classSettings.restoration
 			UpdateSnapshot_Restoration()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.druid.restoration, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 		
-				if TRB.Data.settings.druid.restoration.displayBar.neverShow == false then
+				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
 					local currentMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
-					local barBorderColor = TRB.Data.settings.druid.restoration.colors.bar.border
+					local barBorderColor = specSettings.colors.bar.border
 		
 					if TRB.Data.spells.innervate.isActive then
-						if TRB.Data.settings.druid.restoration.colors.bar.innervateBorderChange then
-							barBorderColor = TRB.Data.settings.druid.restoration.colors.bar.innervate
+						if specSettings.colors.bar.innervateBorderChange then
+							barBorderColor = specSettings.colors.bar.innervate
 						end
 		
-						if TRB.Data.settings.druid.restoration.audio.innervate.enabled and TRB.Data.snapshotData.audio.innervateCue == false then
+						if specSettings.audio.innervate.enabled and TRB.Data.snapshotData.audio.innervateCue == false then
 							TRB.Data.snapshotData.audio.innervateCue = true
 		---@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(TRB.Data.settings.druid.restoration.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
+							PlaySoundFile(specSettings.audio.innervate.sound, coreSettings.audio.channel.channel)
 						end
 					end
 		
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
 		
-					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.restoration, resourceFrame, currentMana)
+					TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, currentMana)
 		
-					if CastingSpell() and TRB.Data.settings.druid.restoration.bar.showCasting  then
+					if CastingSpell() and specSettings.bar.showCasting  then
 						castingBarValue = currentMana + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = currentMana
 					end
 		
-					TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.restoration, castingFrame, castingBarValue)
+					TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
 		
-					local potionCooldownThreshold = 0
-					local potionThresholdColor = TRB.Data.settings.druid.restoration.colors.threshold.over
-					if TRB.Data.snapshotData.potion.onCooldown then
-						if TRB.Data.settings.druid.restoration.thresholds.potionCooldown.enabled then
-							if TRB.Data.settings.druid.restoration.thresholds.potionCooldown.mode == "gcd" then
-								local gcd = TRB.Functions.GetCurrentGCDTime()
-								potionCooldownThreshold = gcd * TRB.Data.settings.druid.restoration.thresholds.potionCooldown.gcdsMax
-							elseif TRB.Data.settings.druid.restoration.thresholds.potionCooldown.mode == "time" then
-								potionCooldownThreshold = TRB.Data.settings.druid.restoration.thresholds.potionCooldown.timeMax
-							end
-						end
-					end
-		
-					if not TRB.Data.snapshotData.potion.onCooldown or (potionCooldownThreshold > math.abs(TRB.Data.snapshotData.potion.startTime + TRB.Data.snapshotData.potion.duration - currentTime))then
-						if TRB.Data.snapshotData.potion.onCooldown then
-							potionThresholdColor = TRB.Data.settings.druid.restoration.colors.threshold.unusable
-						end
-						local ampr1Total = CalculateManaGain(TRB.Data.character.items.potions.aeratedManaPotionRank1.mana, true)
-						if TRB.Data.settings.druid.restoration.thresholds.aeratedManaPotionRank1.enabled and (castingBarValue + ampr1Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.restoration, TRB.Frames.resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.druid.restoration.thresholds.width, (castingBarValue + ampr1Total), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
-							TRB.Frames.resourceFrame.thresholds[1]:Show()
-								
-							if TRB.Data.settings.druid.restoration.thresholds.icons.showCooldown then
-								TRB.Frames.resourceFrame.thresholds[1].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
-							else
-								TRB.Frames.resourceFrame.thresholds[1].icon.cooldown:SetCooldown(0, 0)
-							end
-						else
-							TRB.Frames.resourceFrame.thresholds[1]:Hide()
-						end
-						
-						local ampr2Total = CalculateManaGain(TRB.Data.character.items.potions.aeratedManaPotionRank2.mana, true)
-						if TRB.Data.settings.druid.restoration.thresholds.aeratedManaPotionRank2.enabled and (castingBarValue + ampr2Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.restoration, TRB.Frames.resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.druid.restoration.thresholds.width, (castingBarValue + ampr2Total), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
-							TRB.Frames.resourceFrame.thresholds[2]:Show()
-								
-							if TRB.Data.settings.druid.restoration.thresholds.icons.showCooldown then
-								TRB.Frames.resourceFrame.thresholds[2].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
-							else
-								TRB.Frames.resourceFrame.thresholds[2].icon.cooldown:SetCooldown(0, 0)
-							end
-						else
-							TRB.Frames.resourceFrame.thresholds[2]:Hide()
-						end
-						
-						local ampr3Total = CalculateManaGain(TRB.Data.character.items.potions.aeratedManaPotionRank3.mana, true)
-						if TRB.Data.settings.druid.restoration.thresholds.aeratedManaPotionRank3.enabled and (castingBarValue + ampr3Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.restoration, TRB.Frames.resourceFrame.thresholds[3], resourceFrame, TRB.Data.settings.druid.restoration.thresholds.width, (castingBarValue + ampr3Total), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
-							TRB.Frames.resourceFrame.thresholds[3]:Show()
-								
-							if TRB.Data.settings.druid.restoration.thresholds.icons.showCooldown then
-								TRB.Frames.resourceFrame.thresholds[3].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
-							else
-								TRB.Frames.resourceFrame.thresholds[3].icon.cooldown:SetCooldown(0, 0)
-							end
-						else
-							TRB.Frames.resourceFrame.thresholds[3]:Hide()
-						end
-
-						local poffr1Total = CalculateManaGain(TRB.Data.character.items.potions.potionOfFrozenFocusRank1.mana, true)
-						if TRB.Data.settings.druid.restoration.thresholds.potionOfFrozenFocusRank1.enabled and (castingBarValue + poffr1Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.restoration, TRB.Frames.resourceFrame.thresholds[4], resourceFrame, TRB.Data.settings.druid.restoration.thresholds.width, (castingBarValue + poffr1Total), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
-							TRB.Frames.resourceFrame.thresholds[4]:Show()
-								
-							if TRB.Data.settings.druid.restoration.thresholds.icons.showCooldown then
-								TRB.Frames.resourceFrame.thresholds[4].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
-							else
-								TRB.Frames.resourceFrame.thresholds[4].icon.cooldown:SetCooldown(0, 0)
-							end
-						else
-							TRB.Frames.resourceFrame.thresholds[4]:Hide()
-						end
-
-						local poffr2Total = CalculateManaGain(TRB.Data.character.items.potions.potionOfFrozenFocusRank2.mana, true)
-						if TRB.Data.settings.druid.restoration.thresholds.potionOfFrozenFocusRank2.enabled and (castingBarValue + poffr2Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.restoration, TRB.Frames.resourceFrame.thresholds[5], resourceFrame, TRB.Data.settings.druid.restoration.thresholds.width, (castingBarValue + poffr2Total), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[5].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
-							TRB.Frames.resourceFrame.thresholds[5]:Show()
-								
-							if TRB.Data.settings.druid.restoration.thresholds.icons.showCooldown then
-								TRB.Frames.resourceFrame.thresholds[5].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
-							else
-								TRB.Frames.resourceFrame.thresholds[5].icon.cooldown:SetCooldown(0, 0)
-							end
-						else
-							TRB.Frames.resourceFrame.thresholds[5]:Hide()
-						end
-
-						local poffr3Total = CalculateManaGain(TRB.Data.character.items.potions.potionOfFrozenFocusRank3.mana, true)
-						if TRB.Data.settings.druid.restoration.thresholds.potionOfFrozenFocusRank3.enabled and (castingBarValue + poffr3Total) < TRB.Data.character.maxResource then
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.restoration, TRB.Frames.resourceFrame.thresholds[6], resourceFrame, TRB.Data.settings.druid.restoration.thresholds.width, (castingBarValue + poffr3Total), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[6].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
----@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[6].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
-							TRB.Frames.resourceFrame.thresholds[6]:Show()
-								
-							if TRB.Data.settings.druid.restoration.thresholds.icons.showCooldown then
-								TRB.Frames.resourceFrame.thresholds[6].icon.cooldown:SetCooldown(TRB.Data.snapshotData.potion.startTime, TRB.Data.snapshotData.potion.duration)
-							else
-								TRB.Frames.resourceFrame.thresholds[6].icon.cooldown:SetCooldown(0, 0)
-							end
-						else
-							TRB.Frames.resourceFrame.thresholds[6]:Hide()
-						end
-					else
-						TRB.Frames.resourceFrame.thresholds[1]:Hide()
-						TRB.Frames.resourceFrame.thresholds[2]:Hide()
-						TRB.Frames.resourceFrame.thresholds[3]:Hide()
-						TRB.Frames.resourceFrame.thresholds[4]:Hide()
-						TRB.Frames.resourceFrame.thresholds[5]:Hide()
-						TRB.Frames.resourceFrame.thresholds[6]:Hide()
-					end
-					
-					if TRB.Data.character.items.conjuredChillglobe.isEquipped and (currentMana / TRB.Data.character.maxResource) < TRB.Data.character.items.conjuredChillglobe.manaThresholdPercent then
-						local conjuredChillglobeTotal = CalculateManaGain(TRB.Data.character.items.conjuredChillglobe[TRB.Data.character.items.conjuredChillglobe.equippedVersion].mana, true)
-						if TRB.Data.settings.druid.restoration.thresholds.conjuredChillglobe.enabled and (castingBarValue + conjuredChillglobeTotal) < TRB.Data.character.maxResource then
-							if TRB.Data.snapshotData.conjuredChillglobe.onCooldown then
-								potionThresholdColor = TRB.Data.settings.druid.restoration.colors.threshold.unusable
-							end
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.restoration, TRB.Frames.resourceFrame.thresholds[7], resourceFrame, TRB.Data.settings.druid.restoration.thresholds.width, (castingBarValue + conjuredChillglobeTotal), TRB.Data.character.maxResource)
-	---@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[7].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
-	---@diagnostic disable-next-line: undefined-field
-							TRB.Frames.resourceFrame.thresholds[7].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
-							TRB.Frames.resourceFrame.thresholds[7]:Show()
-								
-							if TRB.Data.settings.druid.restoration.thresholds.icons.showCooldown then
-								TRB.Frames.resourceFrame.thresholds[7].icon.cooldown:SetCooldown(TRB.Data.snapshotData.conjuredChillglobe.startTime, TRB.Data.snapshotData.conjuredChillglobe.duration)
-							else
-								TRB.Frames.resourceFrame.thresholds[7].icon.cooldown:SetCooldown(0, 0)
-							end
-						else
-							TRB.Frames.resourceFrame.thresholds[7]:Hide()
-						end
-					else
-						TRB.Frames.resourceFrame.thresholds[7]:Hide()
-					end
+					TRB.Functions.ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, TRB.Data.snapshotData.potion, TRB.Data.snapshotData.conjuredChillglobe, TRB.Data.character, resourceFrame, CalculateManaGain)
 		
 					local passiveValue = 0
-					if TRB.Data.settings.druid.restoration.bar.showPassive then
+					if specSettings.bar.showPassive then
 						if TRB.Data.snapshotData.channeledManaPotion.isActive then
 							passiveValue = passiveValue + TRB.Data.snapshotData.channeledManaPotion.mana
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.restoration, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, TRB.Data.settings.druid.restoration.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 		---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[1]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[1]:Hide()
@@ -5047,9 +4883,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							passiveValue = passiveValue + TRB.Data.snapshotData.innervate.mana
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.restoration, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, TRB.Data.settings.druid.restoration.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 		---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[2]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[2]:Hide()
@@ -5062,9 +4898,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							passiveValue = passiveValue + TRB.Data.snapshotData.symbolOfHope.resourceFinal
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.restoration, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, TRB.Data.settings.druid.restoration.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 		---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[3]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[3]:Hide()
@@ -5077,9 +4913,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							passiveValue = passiveValue + TRB.Data.snapshotData.manaTideTotem.mana
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(TRB.Data.settings.druid.restoration, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, TRB.Data.settings.druid.restoration.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 		---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[4]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[4]:Hide()
@@ -5097,40 +4933,40 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					passiveBarValue = castingBarValue + passiveValue
 					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.restoration, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.restoration, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.restoration, passiveFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.bar.spending, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.restoration, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.restoration, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.restoration, castingFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.bar.passive, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.restoration, resourceFrame, TRB.Data.snapshotData.resource)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.restoration, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.druid.restoration, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.druid.restoration.colors.bar.passive, true))
+						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 		
-					local resourceBarColor = TRB.Data.settings.druid.restoration.colors.bar.base
+					local resourceBarColor = specSettings.colors.bar.base
 							
 					local affectingCombat = UnitAffectingCombat("player")
 
 					if affectingCombat and GetEfflorescenceRemainingTime() == 0 then
-						resourceBarColor = TRB.Data.settings.druid.restoration.colors.bar.noEfflorescence
+						resourceBarColor = specSettings.colors.bar.noEfflorescence
 					elseif GetClearcastingRemainingTime() > 0 then
-						resourceBarColor = TRB.Data.settings.druid.restoration.colors.bar.clearcasting
+						resourceBarColor = specSettings.colors.bar.clearcasting
 					end
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(resourceBarColor, true))
 				end
 		
-				TRB.Functions.UpdateResourceBar(TRB.Data.settings.druid.restoration, refreshText)
+				TRB.Functions.UpdateResourceBar(specSettings, refreshText)
 			end
 		end
 	end

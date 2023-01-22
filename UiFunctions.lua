@@ -1568,7 +1568,21 @@ function TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spe
         end
     end)
 
-    yCoord = yCoord - 80
+    controls.checkBoxes.thresholdIconDesaturated = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_ThresholdIconDesaturated", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.thresholdIconDesaturated
+    f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding*2, yCoord-50)
+    getglobal(f:GetName() .. 'Text'):SetText("Desaturate icons when not usable")
+    f.tooltip = "When checked, icons will be desaturated when an ability is not usable (on cooldown, below minimum resource, lacking other requirements, etc.)."
+    f:SetChecked(spec.thresholds.icons.desaturated)
+    f:SetScript("OnClick", function(self, ...)
+        spec.thresholds.icons.desaturated = self:GetChecked()
+        
+        if GetSpecialization() == specId then
+            TRB.Functions.RedrawThresholdLines(spec)
+        end
+    end)
+
+    yCoord = yCoord - 100
     title = "Threshold Icon Width"
     controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
                                 oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)

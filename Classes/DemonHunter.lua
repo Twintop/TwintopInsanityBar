@@ -1101,15 +1101,18 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local currentTime = GetTime()
 		local refreshText = false
 		local specId = GetSpecialization()
+		local coreSettings = TRB.Data.settings.core
+		local classSettings = TRB.Data.settings.demonhunter
 
 		if specId == 1 then
+			local specSettings = classSettings.havoc
 			UpdateSnapshot_Havoc()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.demonhunter.havoc, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
-				if TRB.Data.settings.demonhunter.havoc.displayBar.neverShow == false then
+				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
@@ -1117,7 +1120,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					local metaTime = GetMetamorphosisRemainingTime()
 
 					local passiveValue = 0
-					if TRB.Data.settings.demonhunter.havoc.bar.showPassive then
+					if specSettings.bar.showPassive then
 						if TRB.Data.snapshotData.immolationAura.fury > 0 then
 							passiveValue = passiveValue + TRB.Data.snapshotData.immolationAura.fury
 						end
@@ -1127,7 +1130,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 						end
 					end
 
-					if CastingSpell() and TRB.Data.settings.demonhunter.havoc.bar.showCasting then
+					if CastingSpell() and specSettings.bar.showCasting then
 						castingBarValue = currentFury + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = currentFury
@@ -1136,26 +1139,26 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					if castingBarValue < currentFury then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.demonhunter.havoc, resourceFrame, castingBarValue) 
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.demonhunter.havoc, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.demonhunter.havoc, passiveFrame, currentFury)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.demonhunter.havoc.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.demonhunter.havoc.colors.bar.spending, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue) 
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, currentFury)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.demonhunter.havoc, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.demonhunter.havoc, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.demonhunter.havoc, castingFrame, currentFury)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.demonhunter.havoc.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.demonhunter.havoc.colors.bar.passive, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, currentFury)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.demonhunter.havoc, resourceFrame, currentFury)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.demonhunter.havoc, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.demonhunter.havoc, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.demonhunter.havoc.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.demonhunter.havoc.colors.bar.passive, true))
+						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, currentFury)
+						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
 					local pairOffset = 0
@@ -1165,31 +1168,26 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							local furyAmount = CalculateAbilityResourceValue(spell.fury)
 							local normalizedFury = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.demonhunter.havoc, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.demonhunter.havoc.thresholds.width, -furyAmount, TRB.Data.character.maxResource)
+							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -furyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
-							local isUsable = true -- Could use it if we had enough fury, e.g. not on CD
-							local thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.over
+							local thresholdColor = specSettings.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 							if metaTime > 0 and (spell.demonForm ~= nil and spell.demonForm == false) then
 								showThreshold = false
-								isUsable = false
 							elseif metaTime == 0 and (spell.demonForm ~= nil and spell.demonForm == true) then
 								showThreshold = false
-								isUsable = false
 							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-								isUsable = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.deathSweep.id then
 									if TRB.Data.snapshotData.bladeDance.startTime ~= nil and currentTime < (TRB.Data.snapshotData.bladeDance.startTime + TRB.Data.snapshotData.bladeDance.duration) then
-										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
+										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-										isUsable = false
 									elseif currentFury >= -furyAmount then
-										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.chaosNova.id then
@@ -1197,28 +1195,27 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 										furyAmount = furyAmount * TRB.Data.spells.unleashedPower.furyModifier
 									end
 
-									TRB.Functions.RepositionThreshold(TRB.Data.settings.demonhunter.havoc, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.demonhunter.havoc.thresholds.width, -furyAmount, TRB.Data.character.maxResource)
+									TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -furyAmount, TRB.Data.character.maxResource)
 
 									if TRB.Data.snapshotData.chaosNova.startTime ~= nil and currentTime < (TRB.Data.snapshotData.chaosNova.startTime + TRB.Data.snapshotData.chaosNova.duration) then
-										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
+										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-										isUsable = false
 									elseif currentFury >= -furyAmount then
-										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.throwGlaive.id then
 									if TRB.Functions.IsTalentActive(TRB.Data.spells.furiousThrows) then
 										furyAmount = TRB.Data.spells.furiousThrows.fury
 										if TRB.Data.snapshotData.throwGlaive.charges == 0 then
-											thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
+											thresholdColor = specSettings.colors.threshold.unusable
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -furyAmount then
-											thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.over
+											thresholdColor = specSettings.colors.threshold.over
 										else
-											thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
+											thresholdColor = specSettings.colors.threshold.under
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									else
@@ -1226,90 +1223,61 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 									end
 								end
 							elseif spell.hasCooldown then
-								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-									thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.unusable
+								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
+									(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
+									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									isUsable = false
 								elseif currentFury >= -furyAmount then
-									thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.over
+									thresholdColor = specSettings.colors.threshold.over
 								else
-									thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
+									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
 								if currentFury >= -furyAmount then
-									thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.over
+									thresholdColor = specSettings.colors.threshold.over
 								else
-									thresholdColor = TRB.Data.settings.demonhunter.havoc.colors.threshold.under
+									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							end
 
-							if TRB.Data.settings.demonhunter.havoc.thresholds[spell.settingKey].enabled and showThreshold then
-								if not spell.hasCooldown then
-									frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
-								end
-
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetLine)
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
-								if frameLevel == TRB.Data.constants.frameLevels.thresholdOver then
-									spell.thresholdUsable = true
-								else
-									spell.thresholdUsable = false
-								end
-
-                                if TRB.Data.settings.demonhunter.havoc.thresholds.icons.showCooldown and spell.hasCooldown and TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and TRB.Data.snapshotData[spell.settingKey].duration ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(TRB.Data.snapshotData[spell.settingKey].startTime, TRB.Data.snapshotData[spell.settingKey].duration)
-								else
-									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(0, 0)
-								end
-							else
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
-								spell.thresholdUsable = false
-							end
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
 						end
 						pairOffset = pairOffset + 3
 					end
 					
-					local barColor = TRB.Data.settings.demonhunter.havoc.colors.bar.base
+					local barColor = specSettings.colors.bar.base
 					if TRB.Data.snapshotData.metamorphosis.isActive then
 						local timeThreshold = 0
 						local useEndOfMetamorphosisColor = false
 
-						if TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.enabled then
+						if specSettings.endOfMetamorphosis.enabled then
 							useEndOfMetamorphosisColor = true
-							if TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.mode == "gcd" then
+							if specSettings.endOfMetamorphosis.mode == "gcd" then
 								local gcd = TRB.Functions.GetCurrentGCDTime()
-								timeThreshold = gcd * TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.gcdsMax
-							elseif TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.mode == "time" then
-								timeThreshold = TRB.Data.settings.demonhunter.havoc.endOfMetamorphosis.timeMax
+								timeThreshold = gcd * specSettings.endOfMetamorphosis.gcdsMax
+							elseif specSettings.endOfMetamorphosis.mode == "time" then
+								timeThreshold = specSettings.endOfMetamorphosis.timeMax
 							end
 						end
 
 						if useEndOfMetamorphosisColor and metaTime <= timeThreshold then
-							barColor = TRB.Data.settings.demonhunter.havoc.colors.bar.metamorphosisEnding
+							barColor = specSettings.colors.bar.metamorphosisEnding
 						else
-							barColor = TRB.Data.settings.demonhunter.havoc.colors.bar.metamorphosis
+							barColor = specSettings.colors.bar.metamorphosis
 						end
 					end
 
-					local barBorderColor = TRB.Data.settings.demonhunter.havoc.colors.bar.border
+					local barBorderColor = specSettings.colors.bar.border
 
-					if TRB.Data.settings.demonhunter.havoc.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-						barBorderColor = TRB.Data.settings.demonhunter.havoc.colors.bar.borderOvercap
+					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+						barBorderColor = specSettings.colors.bar.borderOvercap
 
-						if TRB.Data.settings.demonhunter.havoc.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
+						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
 							---@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(TRB.Data.settings.demonhunter.havoc.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
 						TRB.Data.snapshotData.audio.overcapCue = false
@@ -1322,7 +1290,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
 				end
 			end
-			TRB.Functions.UpdateResourceBar(TRB.Data.settings.demonhunter.havoc, refreshText)
+			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
 		end
 	end
 

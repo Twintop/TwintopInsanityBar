@@ -376,7 +376,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 cooldown = 6,
 				thresholdUsable = false,
 				pandemicTime = 18 * 0.3,
-				baseline = true
+				baseline = true,
+				isSnowflake = true
 			},
 			mutilate = {
 				id = 1329,
@@ -458,6 +459,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					14 * 0.3,
 					16 * 0.3, -- Kyrian ability buff
 				},
+				isTalent = true
+			},
+			improvedGarrote = {
+				id = 381632,
+				name = "",
+				icon = "",
+				stealthBuffId = 392401,
+				buffId = 392403,
 				isTalent = true
 			},
 			exsanguinate = {
@@ -624,6 +633,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		specCache.assassination.snapshotData.gouge = {
 			startTime = nil,
 			duration = 0
+		}
+		specCache.assassination.snapshotData.improvedGarrote = {
+			spellId = nil,
+			endTime = nil,
+			isActiveStealth = false,
+			isActive = false
 		}
 
 		specCache.assassination.snapshotData.echoingReprimand = {
@@ -1792,8 +1807,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.opportunity)
 	end
 	
-    local function CalculateAbilityResourceValue(resource, threshold, nimbleFingers, rushedSetup)
+    local function CalculateAbilityResourceValue(resource, nimbleFingers, rushedSetup, comboPoints)
         local modifier = 1.0
+
+		if comboPoints == true and TRB.Functions.IsTalentActive(TRB.Data.spells.tightSpender) then
+			modifier = modifier * TRB.Data.spells.tightSpender.energyMod
+		end
 
 		-- TODO: validate how Nimble Fingers reduces energy costs. Is it before or after percentage modifiers? Assuming before for now
 		if nimbleFingers == true and TRB.Functions.IsTalentActive(TRB.Data.spells.nimbleFingers) then
@@ -3189,11 +3208,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
             TRB.Data.snapshotData.kidneyShot.startTime = nil
             TRB.Data.snapshotData.kidneyShot.duration = 0
         end
-
-        if TRB.Data.snapshotData.shiv.startTime ~= nil and currentTime > (TRB.Data.snapshotData.shiv.startTime + TRB.Data.snapshotData.shiv.duration) then
-            TRB.Data.snapshotData.shiv.startTime = nil
-            TRB.Data.snapshotData.shiv.duration = 0
-        end
+		
+---@diagnostic disable-next-line: cast-local-type
+		TRB.Data.snapshotData.shiv.charges, TRB.Data.snapshotData.shiv.maxCharges, TRB.Data.snapshotData.shiv.startTime, TRB.Data.snapshotData.shiv.duration, _ = GetSpellCharges(TRB.Data.spells.shiv.id)
+		if TRB.Data.snapshotData.shiv.charges == TRB.Data.snapshotData.shiv.maxCharges then
+			TRB.Data.snapshotData.shiv.startTime = nil
+			TRB.Data.snapshotData.shiv.duration = 0
+		end
 
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].atrophicPoison then
@@ -3254,6 +3275,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		UpdateSnapshot()
 		local currentTime = GetTime()
 		local _
+
+		if TRB.Functions.IsTalentActive(TRB.Data.spells.improvedGarrote) then
+			_, _, _, _, _, TRB.Data.snapshotData.improvedGarrote.endTime, _, _, _, TRB.Data.snapshotData.improvedGarrote.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.improvedGarrote.buffId)
+		end
 
 		if TRB.Functions.IsTalentActive(TRB.Data.spells.serratedBoneSpike) then
 ---@diagnostic disable-next-line: redundant-parameter, cast-local-type
@@ -3478,32 +3503,35 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local currentTime = GetTime()
 		local refreshText = false
 		local specId = GetSpecialization()
+		local coreSettings = TRB.Data.settings.core
+		local classSettings = TRB.Data.settings.rogue
 
 		if specId == 1 then
+			local specSettings = classSettings.assassination
 			UpdateSnapshot_Assassination()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
-				if TRB.Data.settings.rogue.assassination.displayBar.neverShow == false then
+				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
 					local gcd = TRB.Functions.GetCurrentGCDTime(true)
 
 					local passiveValue = 0
-					if TRB.Data.settings.rogue.assassination.bar.showPassive then
-						if TRB.Data.settings.rogue.assassination.generation.enabled then
-							if TRB.Data.settings.rogue.assassination.generation.mode == "time" then
-								passiveValue = (TRB.Data.snapshotData.energyRegen * (TRB.Data.settings.rogue.assassination.generation.time or 3.0))
+					if specSettings.bar.showPassive then
+						if specSettings.generation.enabled then
+							if specSettings.generation.mode == "time" then
+								passiveValue = (TRB.Data.snapshotData.energyRegen * (specSettings.generation.time or 3.0))
 							else
-								passiveValue = (TRB.Data.snapshotData.energyRegen * ((TRB.Data.settings.rogue.assassination.generation.gcds or 2) * gcd))
+								passiveValue = (TRB.Data.snapshotData.energyRegen * ((specSettings.generation.gcds or 2) * gcd))
 							end
 						end
 					end
 
-					if CastingSpell() and TRB.Data.settings.rogue.assassination.bar.showCasting then
+					if CastingSpell() and specSettings.bar.showCasting then
 						castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = TRB.Data.snapshotData.resource
@@ -3512,58 +3540,58 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, passiveFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.spending, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, castingFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.passive, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, resourceFrame, TRB.Data.snapshotData.resource)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.bar.passive, true))
+						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
 					local pairOffset = 0
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							local energyAmount = CalculateAbilityResourceValue(spell.energy, true, spell.nimbleFingers, spell.rushedSetup)
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.assassination, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.rogue.assassination.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
+							local energyAmount = CalculateAbilityResourceValue(spell.energy, spell.nimbleFingers, spell.rushedSetup, spell.comboPoints)
+							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
-							local thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+							local thresholdColor = specSettings.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
 							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
 								if spell.id == TRB.Data.spells.ambush.id then		
 									if TRB.Data.spells.subterfuge.isActive or TRB.Data.spells.sepsis.isActive then
 										if TRB.Data.snapshotData.resource >= -energyAmount then
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+											thresholdColor = specSettings.colors.threshold.over
 										else
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+											thresholdColor = specSettings.colors.threshold.under
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif TRB.Data.spells.blindside.isActive then
-										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
 										showThreshold = false
 									end
 								elseif TRB.Data.spells.subterfuge.isActive or TRB.Data.spells.sepsis.isActive then
 									if TRB.Data.snapshotData.resource >= -energyAmount then
-										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								else
@@ -3575,12 +3603,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 										if not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 											showThreshold = false
 										elseif not IsTargetBleeding(TRB.Data.snapshotData.targetData.currentTargetGuid) or (TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
+											thresholdColor = specSettings.colors.threshold.unusable
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+											thresholdColor = specSettings.colors.threshold.over
 										else
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+											thresholdColor = specSettings.colors.threshold.under
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.shiv.id then
@@ -3588,53 +3616,56 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											showThreshold = false
 										elseif TRB.Functions.IsTalentActive(TRB.Data.spells.tinyToxicBlade) then -- Don't show this threshold
 											showThreshold = false
+										elseif TRB.Data.snapshotData[spell.settingKey].charges == 0 then
+											thresholdColor = specSettings.colors.threshold.unusable
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+											thresholdColor = specSettings.colors.threshold.over
 										else
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+											thresholdColor = specSettings.colors.threshold.under
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.echoingReprimand.id then
 										if not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 											showThreshold = false
 										elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
+											thresholdColor = specSettings.colors.threshold.unusable
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+											thresholdColor = specSettings.colors.threshold.over
 										else
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+											thresholdColor = specSettings.colors.threshold.under
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.sepsis.id then
 										if not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 											showThreshold = false
 										elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
+											thresholdColor = specSettings.colors.threshold.unusable
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+											thresholdColor = specSettings.colors.threshold.over
 										else
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+											thresholdColor = specSettings.colors.threshold.under
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.serratedBoneSpike.id then
 										if not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 											showThreshold = false
 										elseif TRB.Data.snapshotData[spell.settingKey].charges == 0 then
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
+											thresholdColor = specSettings.colors.threshold.unusable
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+											thresholdColor = specSettings.colors.threshold.over
 										else
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+											thresholdColor = specSettings.colors.threshold.under
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.sliceAndDice.id then
 										if TRB.Data.snapshotData.resource >= -energyAmount then
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+											thresholdColor = specSettings.colors.threshold.over
 										else
-											thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+											thresholdColor = specSettings.colors.threshold.under
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 
@@ -3643,71 +3674,60 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 										else
 											frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 										end
+									elseif spell.id == TRB.Data.spells.garrote.id then
+										if not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+											showThreshold = false
+										else
+											if TRB.Data.snapshotData.improvedGarrote.isActiveStealth or TRB.Data.snapshotData.improvedGarrote.isActive then
+												thresholdColor = specSettings.colors.threshold.special
+												frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+											elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+												thresholdColor = specSettings.colors.threshold.unusable
+												frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+											elseif TRB.Data.snapshotData.resource >= -energyAmount then
+												thresholdColor = specSettings.colors.threshold.over
+											else
+												thresholdColor = specSettings.colors.threshold.under
+												frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+											end
+										end
 									end
 								elseif spell.isPvp and not TRB.Data.character.isPvp then
 									showThreshold = false
 								elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								elseif spell.hasCooldown then
-									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
+									if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
+										(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
+										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif TRB.Data.snapshotData.resource >= -energyAmount then
-										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								else -- This is an active/available/normal spell threshold
 									if TRB.Data.snapshotData.resource >= -energyAmount then
-										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								end
 							end
 
 							if spell.comboPoints == true and TRB.Data.snapshotData.resource2 == 0 then
-								thresholdColor = TRB.Data.settings.rogue.assassination.colors.threshold.unusable
+								thresholdColor = specSettings.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 
-							if TRB.Data.settings.rogue.assassination.thresholds[spell.settingKey].enabled and showThreshold then
-								if not spell.hasCooldown then
-									frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
-								end
-
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetLine)
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
----@diagnostic disable-next-line: undefined-field
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
----@diagnostic disable-next-line: undefined-field
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
-								if frameLevel == TRB.Data.constants.frameLevels.thresholdOver then
-									spell.thresholdUsable = true
-								else
-									spell.thresholdUsable = false
-								end
-								
-                                if TRB.Data.settings.rogue.assassination.thresholds.icons.showCooldown and spell.hasCooldown and TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) and (TRB.Data.snapshotData[spell.settingKey].maxCharges == nil or TRB.Data.snapshotData[spell.settingKey].charges < TRB.Data.snapshotData[spell.settingKey].maxCharges) then
-									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(TRB.Data.snapshotData[spell.settingKey].startTime, TRB.Data.snapshotData[spell.settingKey].duration)
-								else
-									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(0, 0)
-								end
-							else
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
-								spell.thresholdUsable = false
-							end
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
 						end
 						pairOffset = pairOffset + 3
 					end
 
-					local barColor = TRB.Data.settings.rogue.assassination.colors.bar.base
+					local barColor = specSettings.colors.bar.base
 
 					local latency = TRB.Functions.GetLatency()
 
@@ -3716,21 +3736,21 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					if affectingCombat then
 						local sadTime = GetSliceAndDiceRemainingTime()
 						if sadTime == 0 then
-							barColor = TRB.Data.settings.rogue.assassination.colors.bar.noSliceAndDice
+							barColor = specSettings.colors.bar.noSliceAndDice
 						elseif sadTime < TRB.Data.spells.sliceAndDice.pandemicTimes[TRB.Data.snapshotData.resource2 + 1] then
-							barColor = TRB.Data.settings.rogue.assassination.colors.bar.sliceAndDicePandemic
+							barColor = specSettings.colors.bar.sliceAndDicePandemic
 						end
 					end
 
-					local barBorderColor = TRB.Data.settings.rogue.assassination.colors.bar.border
+					local barBorderColor = specSettings.colors.bar.border
 
-					if TRB.Data.settings.rogue.assassination.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-						barBorderColor = TRB.Data.settings.rogue.assassination.colors.bar.borderOvercap
+					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+						barBorderColor = specSettings.colors.bar.borderOvercap
 
-						if TRB.Data.settings.rogue.assassination.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
+						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
 							---@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
 						TRB.Data.snapshotData.audio.overcapCue = false
@@ -3744,7 +3764,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					
 					local sbsCp = 0
 					
-					if TRB.Data.settings.rogue.assassination.comboPoints.spec.serratedBoneSpikeColor and TRB.Functions.IsTalentActive(TRB.Data.spells.serratedBoneSpike) and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.serratedBoneSpike.charges > 0 then
+					if specSettings.comboPoints.spec.serratedBoneSpikeColor and TRB.Functions.IsTalentActive(TRB.Data.spells.serratedBoneSpike) and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.serratedBoneSpike.charges > 0 then
 						sbsCp = 1 + TRB.Data.snapshotData.targetData.serratedBoneSpike
 
 						if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] == nil or
@@ -3753,43 +3773,43 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						end
 					end
 
-					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.background, true)
+					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
                     for x = 1, TRB.Data.character.maxResource2 do
-						local cpBorderColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.border
-						local cpColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.base
+						local cpBorderColor = specSettings.colors.comboPoints.border
+						local cpColor = specSettings.colors.comboPoints.base
 						local cpBR = cpBackgroundRed
 						local cpBG = cpBackgroundGreen
 						local cpBB = cpBackgroundBlue
 
                         if TRB.Data.snapshotData.resource2 >= x then
-                            TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
-							if (TRB.Data.settings.rogue.assassination.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not TRB.Data.settings.rogue.assassination.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-								cpColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.penultimate
-							elseif (TRB.Data.settings.rogue.assassination.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-								cpColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.final
+                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+							if (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+								cpColor = specSettings.colors.comboPoints.penultimate
+							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+								cpColor = specSettings.colors.comboPoints.final
 							end
                         else
-                            TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.assassination, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
                         end
 
 						if TRB.Data.snapshotData.echoingReprimand[x].enabled then
-							cpColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand
+							cpColor = specSettings.colors.comboPoints.echoingReprimand
 							
-							if sbsCp > 0 and x > TRB.Data.snapshotData.resource2 and x <= (TRB.Data.snapshotData.resource2 + sbsCp) and not TRB.Data.settings.rogue.assassination.comboPoints.consistentUnfilledColor then
-								cpBorderColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.serratedBoneSpike
+							if sbsCp > 0 and x > TRB.Data.snapshotData.resource2 and x <= (TRB.Data.snapshotData.resource2 + sbsCp) and not specSettings.comboPoints.consistentUnfilledColor then
+								cpBorderColor = specSettings.colors.comboPoints.serratedBoneSpike
 							else
-								cpBorderColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand
+								cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
 							end
 
-							if not TRB.Data.settings.rogue.assassination.comboPoints.consistentUnfilledColor then
-								cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.echoingReprimand, true)
+							if not specSettings.comboPoints.consistentUnfilledColor then
+								cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
 							end
 						elseif sbsCp > 0 and x > TRB.Data.snapshotData.resource2 and x <= (TRB.Data.snapshotData.resource2 + sbsCp) then
-							cpBorderColor = TRB.Data.settings.rogue.assassination.colors.comboPoints.serratedBoneSpike
+							cpBorderColor = specSettings.colors.comboPoints.serratedBoneSpike
 							
-							if not TRB.Data.settings.rogue.assassination.comboPoints.consistentUnfilledColor then
-								cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.assassination.colors.comboPoints.serratedBoneSpike, true)
+							if not specSettings.comboPoints.consistentUnfilledColor then
+								cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.serratedBoneSpike, true)
 							end
 						end
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(cpColor, true))
@@ -3798,32 +3818,33 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					end
 				end
 			end
-			TRB.Functions.UpdateResourceBar(TRB.Data.settings.rogue.assassination, refreshText)
+			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
 		elseif specId == 2 then
+			local specSettings = classSettings.outlaw
 			UpdateSnapshot_Outlaw()
-			TRB.Functions.RepositionBarForPRD(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
+			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
-				if TRB.Data.settings.rogue.outlaw.displayBar.neverShow == false then
+				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
 					local gcd = TRB.Functions.GetCurrentGCDTime(true)
 
 					local passiveValue = 0
-					if TRB.Data.settings.rogue.outlaw.bar.showPassive then
-						if TRB.Data.settings.rogue.outlaw.generation.enabled then
-							if TRB.Data.settings.rogue.outlaw.generation.mode == "time" then
-								passiveValue = (TRB.Data.snapshotData.energyRegen * (TRB.Data.settings.rogue.outlaw.generation.time or 3.0))
+					if specSettings.bar.showPassive then
+						if specSettings.generation.enabled then
+							if specSettings.generation.mode == "time" then
+								passiveValue = (TRB.Data.snapshotData.energyRegen * (specSettings.generation.time or 3.0))
 							else
-								passiveValue = (TRB.Data.snapshotData.energyRegen * ((TRB.Data.settings.rogue.outlaw.generation.gcds or 2) * gcd))
+								passiveValue = (TRB.Data.snapshotData.energyRegen * ((specSettings.generation.gcds or 2) * gcd))
 							end
 						end
 					end
 
-					if CastingSpell() and TRB.Data.settings.rogue.outlaw.bar.showCasting then
+					if CastingSpell() and specSettings.bar.showCasting then
 						castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
 					else
 						castingBarValue = TRB.Data.snapshotData.resource
@@ -3832,37 +3853,37 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.outlaw, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.outlaw, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.outlaw, passiveFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.bar.spending, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.outlaw, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.outlaw, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.outlaw, castingFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.bar.passive, true))
+							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
+							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.outlaw, resourceFrame, TRB.Data.snapshotData.resource)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.outlaw, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.outlaw, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.bar.passive, true))
+						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
 					local pairOffset = 0
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then	
-							local energyAmount = CalculateAbilityResourceValue(spell.energy, true, spell.nimbleFingers, spell.rushedSetup)
-							TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.outlaw, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.rogue.outlaw.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
+							local energyAmount = CalculateAbilityResourceValue(spell.energy, spell.nimbleFingers, spell.rushedSetup, spell.comboPoints)
+							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
-							local thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
+							local thresholdColor = specSettings.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
 							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
@@ -3891,52 +3912,52 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 									if spell.id == TRB.Data.spells.shiv.id then
 										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.unusable
+											thresholdColor = specSettings.colors.threshold.unusable
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
-											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
+											thresholdColor = specSettings.colors.threshold.over
 										else
-											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
+											thresholdColor = specSettings.colors.threshold.under
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.echoingReprimand.id then
 										if not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 											showThreshold = false
 										elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.unusable
+											thresholdColor = specSettings.colors.threshold.unusable
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
-											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
+											thresholdColor = specSettings.colors.threshold.over
 										else
-											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
+											thresholdColor = specSettings.colors.threshold.under
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.sepsis.id then
 										if not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 											showThreshold = false
 										elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.unusable
+											thresholdColor = specSettings.colors.threshold.unusable
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
-											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
+											thresholdColor = specSettings.colors.threshold.over
 										else
-											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
+											thresholdColor = specSettings.colors.threshold.under
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == TRB.Data.spells.sinisterStrike.id then
 										if TRB.Data.snapshotData.resource >= -energyAmount then
 											if TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones) > 0 then
-												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.special
+												thresholdColor = specSettings.colors.threshold.special
 												frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 											else
-												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
+												thresholdColor = specSettings.colors.threshold.over
 											end
 										else
 											if TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones) > 0 then
-												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.special
+												thresholdColor = specSettings.colors.threshold.special
 												frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 											else
-												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
+												thresholdColor = specSettings.colors.threshold.under
 												frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 											end
 										end
@@ -3945,50 +3966,50 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 										if opportunityTime > 0 then
 											energyAmount = energyAmount * TRB.Data.spells.opportunity.energyModifier
-											TRB.Functions.RepositionThreshold(TRB.Data.settings.rogue.outlaw, resourceFrame.thresholds[spell.thresholdId], resourceFrame, TRB.Data.settings.rogue.outlaw.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
+											TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 										end
 
 										if TRB.Data.snapshotData.resource >= -energyAmount then
 											if opportunityTime > 0 then
-												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.special
+												thresholdColor = specSettings.colors.threshold.special
 												frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 											else
-												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
+												thresholdColor = specSettings.colors.threshold.over
 											end
 										else
 											if opportunityTime > 0 then
-												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.special
+												thresholdColor = specSettings.colors.threshold.special
 												frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 											else
-												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
+												thresholdColor = specSettings.colors.threshold.under
 												frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 											end
 										end
 									elseif spell.id == TRB.Data.spells.betweenTheEyes.id then
 										if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.unusable
+											thresholdColor = specSettings.colors.threshold.unusable
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
 											if TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision) > 0 then
-												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.special
+												thresholdColor = specSettings.colors.threshold.special
 												frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 											else
-												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
+												thresholdColor = specSettings.colors.threshold.over
 											end
 										else
 											if TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision) > 0 then
-												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.special
+												thresholdColor = specSettings.colors.threshold.special
 												frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 											else
-												thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
+												thresholdColor = specSettings.colors.threshold.under
 												frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 											end
 										end
 									elseif spell.id == TRB.Data.spells.sliceAndDice.id then
 										if TRB.Data.snapshotData.resource >= -energyAmount then
-											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
+											thresholdColor = specSettings.colors.threshold.over
 										else
-											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
+											thresholdColor = specSettings.colors.threshold.under
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 
@@ -4003,98 +4024,62 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								elseif spell.hasCooldown then
-									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
-										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.unusable
+									if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
+										(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
+										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif TRB.Data.snapshotData.resource >= -energyAmount then
-										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								else -- This is an active/available/normal spell threshold
 									if TRB.Data.snapshotData.resource >= -energyAmount then
-										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
+										thresholdColor = specSettings.colors.threshold.over
 									else
-										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
+										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								end
 							end
 
 							if spell.comboPoints == true and TRB.Data.snapshotData.resource2 == 0 then
-								thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.unusable
+								thresholdColor = specSettings.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 
-							if TRB.Data.settings.rogue.outlaw.thresholds[spell.settingKey].enabled and showThreshold then
-								if not spell.hasCooldown then
-									frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
-								end
-
-								if spell.restlessBlades == true and TRB.Functions.IsTalentActive(TRB.Data.spells.restlessBlades) and TRB.Data.snapshotData[spell.settingKey].startTime ~= nil then
-									local cdRemaining = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData[spell.settingKey])
-									if (TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.startTime == nil and cdRemaining < TRB.Data.snapshotData.resource2) or (TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.startTime ~= nil and cdRemaining < (TRB.Data.snapshotData.resource2 * 2)) then 
-										frameLevel = TRB.Data.constants.frameLevels.thresholdOver - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown	
-										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.restlessBlades
-									end
-								end
-
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-								resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetLine)
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].icon:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
----@diagnostic disable-next-line: undefined-field
-								resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
----@diagnostic disable-next-line: undefined-field
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
----@diagnostic disable-next-line: undefined-field
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
-								if frameLevel == TRB.Data.constants.frameLevels.thresholdOver then
-									spell.thresholdUsable = true
-								else
-									spell.thresholdUsable = false
-								end
-								
-                                if TRB.Data.settings.rogue.outlaw.thresholds.icons.showCooldown and spell.hasCooldown and TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) and (TRB.Data.snapshotData[spell.settingKey].maxCharges == nil or TRB.Data.snapshotData[spell.settingKey].charges < TRB.Data.snapshotData[spell.settingKey].maxCharges) then
-									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(TRB.Data.snapshotData[spell.settingKey].startTime, TRB.Data.snapshotData[spell.settingKey].duration)
-								else
-									TRB.Frames.resourceFrame.thresholds[spell.thresholdId].icon.cooldown:SetCooldown(0, 0)
-								end
-							else
-								TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
-								spell.thresholdUsable = false
-							end
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
 						end
 						pairOffset = pairOffset + 3
 					end
 
-					local barColor = TRB.Data.settings.rogue.outlaw.colors.bar.base
+					local barColor = specSettings.colors.bar.base
 
 					local affectingCombat = UnitAffectingCombat("player")
 
 					if affectingCombat then
 						local sadTime = GetSliceAndDiceRemainingTime()
 						if sadTime == 0 then
-							barColor = TRB.Data.settings.rogue.outlaw.colors.bar.noSliceAndDice
+							barColor = specSettings.colors.bar.noSliceAndDice
 						elseif sadTime < TRB.Data.spells.sliceAndDice.pandemicTimes[TRB.Data.snapshotData.resource2 + 1] then
-							barColor = TRB.Data.settings.rogue.outlaw.colors.bar.sliceAndDicePandemic
+							barColor = specSettings.colors.bar.sliceAndDicePandemic
 						end
 					end
 
-					local barBorderColor = TRB.Data.settings.rogue.outlaw.colors.bar.border
+					local barBorderColor = specSettings.colors.bar.border
 
 					if TRB.Data.snapshotData.rollTheBones.goodBuffs == true and TRB.Data.snapshotData.rollTheBones.startTime == nil then
-						barBorderColor = TRB.Data.settings.rogue.outlaw.colors.bar.borderRtbGood
+						barBorderColor = specSettings.colors.bar.borderRtbGood
 					elseif TRB.Data.snapshotData.rollTheBones.goodBuffs == false and TRB.Data.snapshotData.rollTheBones.startTime == nil then
-						barBorderColor = TRB.Data.settings.rogue.outlaw.colors.bar.borderRtbBad
-					elseif TRB.Data.settings.rogue.outlaw.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-						barBorderColor = TRB.Data.settings.rogue.outlaw.colors.bar.borderOvercap
+						barBorderColor = specSettings.colors.bar.borderRtbBad
+					elseif specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+						barBorderColor = specSettings.colors.bar.borderOvercap
 
-						if TRB.Data.settings.rogue.outlaw.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
+						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
 							---@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(TRB.Data.settings.rogue.outlaw.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
 						TRB.Data.snapshotData.audio.overcapCue = false
@@ -4106,32 +4091,32 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
 					
-					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.comboPoints.background, true)
+					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
                     for x = 1, TRB.Data.character.maxResource2 do
-						local cpBorderColor = TRB.Data.settings.rogue.outlaw.colors.comboPoints.border
-						local cpColor = TRB.Data.settings.rogue.outlaw.colors.comboPoints.base
+						local cpBorderColor = specSettings.colors.comboPoints.border
+						local cpColor = specSettings.colors.comboPoints.base
 						local cpBR = cpBackgroundRed
 						local cpBG = cpBackgroundGreen
 						local cpBB = cpBackgroundBlue
 
                         if TRB.Data.snapshotData.resource2 >= x then
-                            TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.outlaw, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
-							if (TRB.Data.settings.rogue.outlaw.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not TRB.Data.settings.rogue.outlaw.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
-								cpColor = TRB.Data.settings.rogue.outlaw.colors.comboPoints.penultimate
-							elseif (TRB.Data.settings.rogue.outlaw.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
-								cpColor = TRB.Data.settings.rogue.outlaw.colors.comboPoints.final
+                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+							if (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+								cpColor = specSettings.colors.comboPoints.penultimate
+							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+								cpColor = specSettings.colors.comboPoints.final
 							end
                         else
-                            TRB.Functions.SetBarCurrentValue(TRB.Data.settings.rogue.outlaw, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
                         end
 
 						if TRB.Data.snapshotData.echoingReprimand[x].enabled then
-							cpColor = TRB.Data.settings.rogue.outlaw.colors.comboPoints.echoingReprimand
-							cpBorderColor = TRB.Data.settings.rogue.outlaw.colors.comboPoints.echoingReprimand
+							cpColor = specSettings.colors.comboPoints.echoingReprimand
+							cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
 
-							if not TRB.Data.settings.rogue.outlaw.comboPoints.consistentUnfilledColor then
-								cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(TRB.Data.settings.rogue.outlaw.colors.comboPoints.echoingReprimand, true)
+							if not specSettings.comboPoints.consistentUnfilledColor then
+								cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
 							end
 						end
 
@@ -4141,7 +4126,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                     end
 				end
 			end
-			TRB.Functions.UpdateResourceBar(TRB.Data.settings.rogue.outlaw, refreshText)
+			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
 		end
 	end
 
@@ -4206,6 +4191,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								if not((TRB.Functions.IsTalentActive(TRB.Data.spells.subterfuge) and IsStealthed()) or TRB.Data.spells.subterfuge.isActive) then
 									TRB.Data.snapshotData.garrote.startTime = currentTime
 									TRB.Data.snapshotData.garrote.duration = TRB.Data.spells.garrote.cooldown
+								end
+
+								if TRB.Data.snapshotData.improvedGarrote.isActiveStealth or TRB.Data.snapshotData.improvedGarrote.isActiveStealth then
+									TRB.Data.snapshotData.garrote.startTime = nil
+									TRB.Data.snapshotData.garrote.duration = 0
 								end
 							elseif type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Garrote Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].garrote = true
@@ -4322,7 +4312,27 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
-						end	
+						end
+					elseif spellId == TRB.Data.spells.crimsonVial.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.crimsonVial.startTime = currentTime
+							TRB.Data.snapshotData.crimsonVial.duration = TRB.Data.spells.crimsonVial.cooldown
+						end
+					elseif spellId == TRB.Data.spells.improvedGarrote.stealthBuffId then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
+							TRB.Data.snapshotData.improvedGarrote.isActiveStealth = true
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.improvedGarrote.isActiveStealth = false
+						end
+					elseif spellId == TRB.Data.spells.improvedGarrote.buffId then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
+							TRB.Data.snapshotData.improvedGarrote.isActive = true
+							_, _, _, _, _, TRB.Data.snapshotData.improvedGarrote.endTime, _, _, _, TRB.Data.snapshotData.improvedGarrote.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.improvedGarrote.buffId)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.improvedGarrote.isActive = false
+							TRB.Data.snapshotData.improvedGarrote.spellId = nil
+							TRB.Data.snapshotData.improvedGarrote.endTime = nil
+						end
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "outlaw" then
 					if spellId == TRB.Data.spells.betweenTheEyes.id then

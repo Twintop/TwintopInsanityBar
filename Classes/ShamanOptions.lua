@@ -92,6 +92,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					relativeTo = "TOP",
 					relativeToName = "Above",
 					enabled=true,
+					desaturated=true,
 					xPos=0,
 					yPos=-12,
 					width=24,
@@ -101,6 +102,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					enabled = true,
 				},
 				earthquake = { -- 2
+					enabled = true,
+				},
+				elementalBlast = { -- 3
 					enabled = true,
 				},
 			},
@@ -272,6 +276,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					relativeTo = "TOP",
 					relativeToName = "Above",
 					enabled=true,
+					desaturated=true,
 					xPos=0,
 					yPos=-12,
 					width=24,
@@ -632,6 +637,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetChecked(spec.thresholds.earthShock.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.earthShock.enabled = self:GetChecked()
+			spec.thresholds.elementalBlast.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
