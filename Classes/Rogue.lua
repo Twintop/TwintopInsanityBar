@@ -3206,11 +3206,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
             TRB.Data.snapshotData.kidneyShot.startTime = nil
             TRB.Data.snapshotData.kidneyShot.duration = 0
         end
-
-        if TRB.Data.snapshotData.shiv.startTime ~= nil and currentTime > (TRB.Data.snapshotData.shiv.startTime + TRB.Data.snapshotData.shiv.duration) then
-            TRB.Data.snapshotData.shiv.startTime = nil
-            TRB.Data.snapshotData.shiv.duration = 0
-        end
+		
+		TRB.Data.snapshotData.shiv.charges, TRB.Data.snapshotData.shiv.maxCharges, TRB.Data.snapshotData.shiv.startTime, TRB.Data.snapshotData.shiv.duration, _ = GetSpellCharges(TRB.Data.spells.shiv.id)
+		if TRB.Data.snapshotData.shiv.charges == TRB.Data.snapshotData.shiv.maxCharges then
+			TRB.Data.snapshotData.shiv.startTime = nil
+			TRB.Data.snapshotData.shiv.duration = 0
+		end
 
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].atrophicPoison then
@@ -3612,6 +3613,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											showThreshold = false
 										elseif TRB.Functions.IsTalentActive(TRB.Data.spells.tinyToxicBlade) then -- Don't show this threshold
 											showThreshold = false
+										elseif TRB.Data.snapshotData[spell.settingKey].charges == 0 then
+											thresholdColor = specSettings.colors.threshold.unusable
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
 											thresholdColor = specSettings.colors.threshold.over
 										else
@@ -3690,7 +3694,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								elseif spell.hasCooldown then
-									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+									if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
+										(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif TRB.Data.snapshotData.resource >= -energyAmount then
@@ -3989,7 +3994,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								elseif spell.hasCooldown then
-									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+									if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
+										(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif TRB.Data.snapshotData.resource >= -energyAmount then

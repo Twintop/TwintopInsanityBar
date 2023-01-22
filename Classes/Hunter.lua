@@ -1048,7 +1048,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				focus = -30,
 				isTalent = true,
 				hasCooldown = true,
-				--isSnowflake = true,
 				texture = "",
 				thresholdId = 12,
 				settingKey = "butchery",
@@ -2666,7 +2665,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		---@diagnostic disable-next-line: redundant-parameter
 		TRB.Data.snapshotData.butchery.charges, TRB.Data.snapshotData.butchery.maxCharges, TRB.Data.snapshotData.butchery.startTime, TRB.Data.snapshotData.butchery.duration, _ = GetSpellCharges(TRB.Data.spells.butchery.id)
-						
+		if TRB.Data.snapshotData.butchery.charges == TRB.Data.snapshotData.butchery.maxCharges then
+			TRB.Data.snapshotData.butchery.startTime = nil
+			TRB.Data.snapshotData.butchery.duration = 0
+		end
+
 		---@diagnostic disable-next-line: redundant-parameter
 		TRB.Data.snapshotData.wildfireBomb.charges, TRB.Data.snapshotData.wildfireBomb.maxCharges, TRB.Data.snapshotData.wildfireBomb.startTime, TRB.Data.snapshotData.wildfireBomb.duration, _ = GetSpellCharges(TRB.Data.spells.wildfireBomb.id)
 
@@ -2873,7 +2876,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif spell.hasCooldown then
-								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
+									(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif TRB.Data.snapshotData.resource >= -focusAmount then
@@ -3132,7 +3136,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif spell.hasCooldown then
-								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
+									(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif TRB.Data.snapshotData.resource >= -focusAmount then
@@ -3294,16 +3299,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
-								elseif spell.id == TRB.Data.spells.butchery.id then
-									if TRB.Data.snapshotData.butchery.charges == 0 then
-										thresholdColor = specSettings.colors.threshold.unusable
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif TRB.Data.snapshotData.resource >= -focusAmount then
-										thresholdColor = specSettings.colors.threshold.over
-									else
-										thresholdColor = specSettings.colors.threshold.under
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end
 								elseif spell.id == TRB.Data.spells.raptorStrike.id then
 									if TRB.Functions.IsTalentActive(TRB.Data.spells.mongooseBite) then
 										showThreshold = false
@@ -3330,7 +3325,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif spell.hasCooldown then
-								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
+									(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif TRB.Data.snapshotData.resource >= -focusAmount then

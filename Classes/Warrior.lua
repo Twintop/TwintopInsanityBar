@@ -157,8 +157,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				baseline = true,
 				hasCooldown = true,
-				thresholdUsable = false,
-				isSnowflake = true
+				thresholdUsable = false
 			},
 			slam = {
 				id = 1464,
@@ -487,8 +486,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				baseline = true,
 				hasCooldown = true,
-				thresholdUsable = false,
-				isSnowflake = true
+				thresholdUsable = false
 			},
 			slam = {
 				id = 1464,
@@ -1939,19 +1937,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									end
 
 									TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
-								elseif spell.id == TRB.Data.spells.shieldBlock.id then
-									if TRB.Data.snapshotData.shieldBlock.charges == 0 then
-										thresholdColor = specSettings.colors.threshold.unusable
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif currentRage >= -rageAmount then
-										thresholdColor = specSettings.colors.threshold.over
-									else
-										thresholdColor = specSettings.colors.threshold.under
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end
 								end
 							elseif spell.hasCooldown then
-								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
+									(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif currentRage >= -rageAmount then
@@ -2114,19 +2103,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
-								elseif spell.id == TRB.Data.spells.shieldBlock.id then
-									if TRB.Data.snapshotData.shieldBlock.charges == 0 then
-										thresholdColor = specSettings.colors.threshold.unusable
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif currentRage >= -rageAmount then
-										thresholdColor = specSettings.colors.threshold.over
-									else
-										thresholdColor = specSettings.colors.threshold.under
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end
 								end
 							elseif spell.hasCooldown then
-								if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
+									(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif currentRage >= -rageAmount then
