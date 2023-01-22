@@ -375,7 +375,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 cooldown = 6,
 				thresholdUsable = false,
 				pandemicTime = 18 * 0.3,
-				baseline = true
+				baseline = true,
+				isSnowflake = true
 			},
 			mutilate = {
 				id = 1329,
@@ -457,6 +458,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					14 * 0.3,
 					16 * 0.3, -- Kyrian ability buff
 				},
+				isTalent = true
+			},
+			improvedGarrote = {
+				id = 381632,
+				name = "",
+				icon = "",
+				stealthBuffId = 392401,
+				buffId = 392403,
 				isTalent = true
 			},
 			exsanguinate = {
@@ -623,6 +632,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		specCache.assassination.snapshotData.gouge = {
 			startTime = nil,
 			duration = 0
+		}
+		specCache.assassination.snapshotData.improvedGarrote = {
+			spellId = nil,
+			endTime = nil,
+			isActiveStealth = false,
+			isActive = false
 		}
 
 		specCache.assassination.snapshotData.echoingReprimand = {
@@ -3257,6 +3272,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local currentTime = GetTime()
 		local _
 
+		if TRB.Functions.IsTalentActive(TRB.Data.spells.improvedGarrote) then
+			_, _, _, _, _, TRB.Data.snapshotData.improvedGarrote.endTime, _, _, _, TRB.Data.snapshotData.improvedGarrote.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.improvedGarrote.buffId)
+		end
+
 		if TRB.Functions.IsTalentActive(TRB.Data.spells.serratedBoneSpike) then
 ---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 			TRB.Data.snapshotData.serratedBoneSpike.charges, TRB.Data.snapshotData.serratedBoneSpike.maxCharges, TRB.Data.snapshotData.serratedBoneSpike.startTime, TRB.Data.snapshotData.serratedBoneSpike.duration, _ = GetSpellCharges(TRB.Data.spells.serratedBoneSpike.id)
@@ -3647,6 +3666,23 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											frameLevel = TRB.Data.constants.frameLevels.thresholdBase
 										else
 											frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+										end
+									elseif spell.id == TRB.Data.spells.garrote.id then
+										if not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+											showThreshold = false
+										else
+											if TRB.Data.snapshotData.improvedGarrote.isActiveStealth or TRB.Data.snapshotData.improvedGarrote.isActive then
+												thresholdColor = specSettings.colors.threshold.special
+												frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+											elseif TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+												thresholdColor = specSettings.colors.threshold.unusable
+												frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+											elseif TRB.Data.snapshotData.resource >= -energyAmount then
+												thresholdColor = specSettings.colors.threshold.over
+											else
+												thresholdColor = specSettings.colors.threshold.under
+												frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+											end
 										end
 									end
 								elseif spell.isPvp and not TRB.Data.character.isPvp then
@@ -4117,6 +4153,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 									TRB.Data.snapshotData.garrote.startTime = currentTime
 									TRB.Data.snapshotData.garrote.duration = TRB.Data.spells.garrote.cooldown
 								end
+
+								if TRB.Data.snapshotData.improvedGarrote.isActiveStealth or TRB.Data.snapshotData.improvedGarrote.isActiveStealth then
+									TRB.Data.snapshotData.garrote.startTime = nil
+									TRB.Data.snapshotData.garrote.duration = 0
+								end
 							elseif type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Garrote Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].garrote = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -4232,7 +4273,27 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
-						end	
+						end
+					elseif spellId == TRB.Data.spells.crimsonVial.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.crimsonVial.startTime = currentTime
+							TRB.Data.snapshotData.crimsonVial.duration = TRB.Data.spells.crimsonVial.cooldown
+						end
+					elseif spellId == TRB.Data.spells.improvedGarrote.stealthBuffId then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
+							TRB.Data.snapshotData.improvedGarrote.isActiveStealth = true
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.improvedGarrote.isActiveStealth = false
+						end
+					elseif spellId == TRB.Data.spells.improvedGarrote.buffId then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
+							TRB.Data.snapshotData.improvedGarrote.isActive = true
+							_, _, _, _, _, TRB.Data.snapshotData.improvedGarrote.endTime, _, _, _, TRB.Data.snapshotData.improvedGarrote.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.improvedGarrote.buffId)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.improvedGarrote.isActive = false
+							TRB.Data.snapshotData.improvedGarrote.spellId = nil
+							TRB.Data.snapshotData.improvedGarrote.endTime = nil
+						end
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "outlaw" then
 					if spellId == TRB.Data.spells.betweenTheEyes.id then

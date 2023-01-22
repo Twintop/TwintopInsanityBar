@@ -260,7 +260,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				threshold = {
 					under="FFFFFFFF",
 					over="FF00FF00",
-					unusable="FFFF0000"
+					unusable="FFFF0000",
+					special="FFFF00FF"
 				}
 			},
 			displayText = {},
@@ -389,73 +390,73 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					height=24
 				},
 				-- Rogue
-					ambush = { --
+				ambush = { --
 					enabled = true, -- 1
 				},
-					cheapShot = { --
+				cheapShot = { --
 					enabled = false, -- 2
 				},
-					crimsonVial = { --
+				crimsonVial = { --
 					enabled = true, -- 3
 				},
-					distract = { --
+				distract = { --
 					enabled = false, -- 4
 				},
-					kidneyShot = { --
+				kidneyShot = { --
 					enabled = false, -- 5
 				},
-					sliceAndDice = { --
+				sliceAndDice = { --
 					enabled = true, -- 6
 				},
 				-- Rogue Talents
-					shiv = { --
+				shiv = { --
 					enabled = false, -- 7
 				},
-					sap = { --
+				sap = { --
 					enabled = false, -- 8
 				},
-					feint = { --
+				feint = { --
 					enabled = true, -- 9
 				},
-					gouge = { --
+				gouge = { --
 					enabled = false, -- 10
 				},
 				echoingReprimand = { --
 					enabled = true, -- 11
 				},
 				-- Outlaw
-					betweenTheEyes = {
+				betweenTheEyes = {
 					enabled = true, -- 12
 				},
-					dispatch = {
+				dispatch = {
 					enabled = true, -- 13
 				},
-					pistolShot = {
+				pistolShot = {
 					enabled = true, -- 14
 				},
-					sinisterStrike = {
+				sinisterStrike = {
 					enabled = true, -- 15
 				},
-					bladeFlurry = {
+				bladeFlurry = {
 					enabled = true, -- 16
 				},
-					rollTheBones = {
+				rollTheBones = {
 					enabled = true, -- 17
 				},
-					sepsis = { --
+				sepsis = { --
 					enabled = true, -- 18
 				},
-					ghostlyStrike = {
+				ghostlyStrike = {
 					enabled = true, -- 19
 				},
-					dreadblades = {
+				dreadblades = {
 					enabled = true, -- 20
 				},
 				-- PvP					
-					deathFromAbove = {
+				deathFromAbove = {
 					enabled = false, -- 21
 				},
-					dismantle = {
+				dismantle = {
 					enabled = false, -- 22
 				},
 			},
@@ -872,9 +873,15 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
+		controls.colors.threshold.special = TRB.UiFunctions:BuildColorPicker(parent, "Improved Garrote effect up", spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-90)
+		f = controls.colors.threshold.special
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "special")
+		end)
+
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-90)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(spec.thresholds.overlapBorder)
