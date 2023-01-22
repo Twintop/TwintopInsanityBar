@@ -3207,6 +3207,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
             TRB.Data.snapshotData.kidneyShot.duration = 0
         end
 		
+---@diagnostic disable-next-line: cast-local-type
 		TRB.Data.snapshotData.shiv.charges, TRB.Data.snapshotData.shiv.maxCharges, TRB.Data.snapshotData.shiv.startTime, TRB.Data.snapshotData.shiv.duration, _ = GetSpellCharges(TRB.Data.spells.shiv.id)
 		if TRB.Data.snapshotData.shiv.charges == TRB.Data.snapshotData.shiv.maxCharges then
 			TRB.Data.snapshotData.shiv.startTime = nil
