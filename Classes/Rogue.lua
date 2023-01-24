@@ -623,7 +623,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		specCache.assassination.snapshotData.shiv = {
 			startTime = nil,
 			duration = 0,
-			enabled = false
+			enabled = false,
+			charges = 0,
+			maxCharges = 1
 		}
 		specCache.assassination.snapshotData.feint = {
 			startTime = nil,
@@ -1276,7 +1278,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		}
 		specCache.outlaw.snapshotData.shiv = {
 			startTime = nil,
-			duration = 0
+			duration = 0,
+			charges = 0,
+			maxCharges = 1
 		}
 		specCache.outlaw.snapshotData.gouge = {
 			startTime = nil,
