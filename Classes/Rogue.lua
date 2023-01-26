@@ -218,6 +218,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				},
 				baseline = true
 			},
+			feint = {
+				id = 1966,
+				name = "",
+				icon = "",
+				energy = -35,
+                comboPointsGenerated = 0,
+				texture = "",
+				thresholdId = 7,
+				settingKey = "feint",
+                hasCooldown = true,
+                cooldown = 15,
+				nimbleFingers = true,
+				thresholdUsable = false,
+				isTalent = false,
+				baseline = true
+			},
 
 			--Rogue Talent Abilities
 			shiv = {
@@ -227,7 +243,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				energy = -20,
                 comboPointsGenerated = 1,
 				texture = "",
-				thresholdId = 7,
+				thresholdId = 8,
 				settingKey = "shiv",
                 hasCooldown = true,
 				isSnowflake = true,
@@ -244,24 +260,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 comboPointsGenerated = 0,
                 stealth = true,
 				texture = "",
-				thresholdId = 8,
+				thresholdId = 9,
 				settingKey = "sap",
 				rushedSetup = true,
-				thresholdUsable = false,
-				isTalent = true
-			},
-			feint = {
-				id = 1966,
-				name = "",
-				icon = "",
-				energy = -35,
-                comboPointsGenerated = 0,
-				texture = "",
-				thresholdId = 9,
-				settingKey = "feint",
-                hasCooldown = true,
-                cooldown = 15,
-				nimbleFingers = true,
 				thresholdUsable = false,
 				isTalent = true
 			},
@@ -622,7 +623,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		specCache.assassination.snapshotData.shiv = {
 			startTime = nil,
 			duration = 0,
-			enabled = false
+			enabled = false,
+			charges = 0,
+			maxCharges = 1
 		}
 		specCache.assassination.snapshotData.feint = {
 			startTime = nil,
@@ -863,6 +866,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				},
 				baseline = true
 			},
+			feint = {
+				id = 1966,
+				name = "",
+				icon = "",
+				energy = -35,
+                comboPointsGenerated = 0,
+				texture = "",
+				thresholdId = 7,
+				settingKey = "feint",
+                hasCooldown = true,
+                cooldown = 15,
+				nimbleFingers = true,
+				thresholdUsable = false,
+				isTalent = false,
+				baseline = true
+			},
 
 			--Rogue Talent Abilities
 			shiv = {
@@ -872,7 +891,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				energy = -20,
                 comboPointsGenerated = 1,
 				texture = "",
-				thresholdId = 7,
+				thresholdId = 8,
 				settingKey = "shiv",
                 hasCooldown = true,
 				isSnowflake = true,
@@ -889,24 +908,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                 comboPointsGenerated = 0,
                 stealth = true,
 				texture = "",
-				thresholdId = 8,
+				thresholdId = 9,
 				settingKey = "sap",
 				rushedSetup = true,
-				thresholdUsable = false,
-				isTalent = true
-			},
-			feint = {
-				id = 1966,
-				name = "",
-				icon = "",
-				energy = -35,
-                comboPointsGenerated = 0,
-				texture = "",
-				thresholdId = 9,
-				settingKey = "feint",
-                hasCooldown = true,
-                cooldown = 15,
-				nimbleFingers = true,
 				thresholdUsable = false,
 				isTalent = true
 			},
@@ -1274,7 +1278,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		}
 		specCache.outlaw.snapshotData.shiv = {
 			startTime = nil,
-			duration = 0
+			duration = 0,
+			charges = 0,
+			maxCharges = 1
 		}
 		specCache.outlaw.snapshotData.gouge = {
 			startTime = nil,
@@ -3571,8 +3577,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							local thresholdColor = specSettings.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
-							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed. TODO: add override check for certain buffs.
-								if spell.id == TRB.Data.spells.ambush.id then
+							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
+								if spell.id == TRB.Data.spells.ambush.id then		
 									if TRB.Data.spells.subterfuge.isActive or TRB.Data.spells.sepsis.isActive then
 										if TRB.Data.snapshotData.resource >= -energyAmount then
 											thresholdColor = specSettings.colors.threshold.over
@@ -3720,7 +3726,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end
@@ -3791,15 +3797,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 						if TRB.Data.snapshotData.echoingReprimand[x].enabled then
 							cpColor = specSettings.colors.comboPoints.echoingReprimand
-							if sbsCp > 0 and x > TRB.Data.snapshotData.resource2 and x <= (TRB.Data.snapshotData.resource2 + sbsCp) then
+							
+							if sbsCp > 0 and x > TRB.Data.snapshotData.resource2 and x <= (TRB.Data.snapshotData.resource2 + sbsCp) and not specSettings.comboPoints.consistentUnfilledColor then
 								cpBorderColor = specSettings.colors.comboPoints.serratedBoneSpike
 							else
 								cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
 							end
-							cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
+
+							if not specSettings.comboPoints.consistentUnfilledColor then
+								cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
+							end
 						elseif sbsCp > 0 and x > TRB.Data.snapshotData.resource2 and x <= (TRB.Data.snapshotData.resource2 + sbsCp) then
 							cpBorderColor = specSettings.colors.comboPoints.serratedBoneSpike
-							cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.serratedBoneSpike, true)
+							
+							if not specSettings.comboPoints.consistentUnfilledColor then
+								cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.serratedBoneSpike, true)
+							end
 						end
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(cpColor, true))
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(cpBorderColor, true))
@@ -3875,8 +3888,28 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							local thresholdColor = specSettings.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
-							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed. TODO: add override check for certain buffs.
-								showThreshold = false
+							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
+								if spell.id == TRB.Data.spells.ambush.id then
+									if TRB.Data.spells.sepsis.isActive then
+										if TRB.Data.snapshotData.resource >= -energyAmount then
+											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
+										else
+											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+										end
+									else
+										showThreshold = false
+									end
+								elseif TRB.Data.spells.sepsis.isActive then
+									if TRB.Data.snapshotData.resource >= -energyAmount then
+										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
+									else
+										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								else
+									showThreshold = false
+								end
 							else
 								if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 									if spell.id == TRB.Data.spells.shiv.id then
@@ -4018,7 +4051,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end
@@ -4083,7 +4116,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						if TRB.Data.snapshotData.echoingReprimand[x].enabled then
 							cpColor = specSettings.colors.comboPoints.echoingReprimand
 							cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
-							cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
+
+							if not specSettings.comboPoints.consistentUnfilledColor then
+								cpBR, cpBG, cpBB, _ = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
+							end
 						end
 
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(cpColor, true))
@@ -4538,7 +4574,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						TRB.Data.snapshotData.echoingReprimand[cpEntry].spellId = nil
 						TRB.Data.snapshotData.echoingReprimand[cpEntry].endTime = nil
 						TRB.Data.snapshotData.echoingReprimand[cpEntry].comboPoints = 0
-					end	
+					end
 				elseif spellId == TRB.Data.spells.sepsis.id then
 					if type == "SPELL_CAST_SUCCESS" then
 						TRB.Data.snapshotData.sepsis.startTime = currentTime
@@ -4553,7 +4589,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						end
 					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 						TRB.Data.spells.sepsis.isActive = false
-					end		
+					end
 				elseif spellId == TRB.Data.spells.cripplingPoison.id then
 					if InitializeTarget(destGUID) then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- CP Applied to Target

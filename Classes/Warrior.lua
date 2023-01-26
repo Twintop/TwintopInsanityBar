@@ -286,6 +286,19 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdUsable = false,
 				isSnowflake = true
 			},
+			ignorePain = {
+				id = 190456,
+				name = "",
+				icon = "",
+				rage = -40,
+				texture = "",
+				thresholdId = 13,
+				settingKey = "ignorePain",
+				isTalent = true,
+				hasCooldown = true,
+				thresholdUsable = false,
+				duration = 11
+			},
 			suddenDeath = {
 				id = 29725,
 				name = "",
@@ -310,7 +323,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				isTalent = true,
-				rageMod = -30
+				rageMod = -20
 			},
 			battlelord = {
 				id = 386631,
@@ -361,6 +374,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			enabled = false
 		}
 		specCache.arms.snapshotData.cleave = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		specCache.arms.snapshotData.ignorePain = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
@@ -612,7 +630,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 382953,
 				name = "",
 				icon = "",
-				rage = 5,
+				rage = 10,
 				charges = 2,
 				isTalent = true
 			}
@@ -1678,6 +1696,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.snapshotData.cleave.startTime, TRB.Data.snapshotData.cleave.duration, _, _ = GetSpellCooldown(TRB.Data.spells.cleave.id)
         end
 
+		if TRB.Data.snapshotData.ignorePain.startTime ~= nil and currentTime > (TRB.Data.snapshotData.ignorePain.startTime + TRB.Data.snapshotData.ignorePain.duration) then
+            TRB.Data.snapshotData.ignorePain.startTime = nil
+            TRB.Data.snapshotData.ignorePain.duration = 0
+		elseif TRB.Data.snapshotData.ignorePain.startTime ~= nil then
+			---@diagnostic disable-next-line: redundant-parameter
+			TRB.Data.snapshotData.ignorePain.startTime, TRB.Data.snapshotData.ignorePain.duration, _, _ = GetSpellCooldown(TRB.Data.spells.ignorePain.id)
+        end
+
 		if TRB.Data.snapshotData.whirlwind.startTime ~= nil and currentTime > (TRB.Data.snapshotData.whirlwind.startTime + TRB.Data.snapshotData.whirlwind.duration) then
             TRB.Data.snapshotData.whirlwind.startTime = nil
             TRB.Data.snapshotData.whirlwind.duration = 0
@@ -1958,7 +1984,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								end
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end
@@ -2124,7 +2150,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								end
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[cooldownSettingKey], specSettings.thresholds)
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[cooldownSettingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end
@@ -2198,6 +2224,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						if type == "SPELL_CAST_SUCCESS" then
 							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.cleave.startTime, TRB.Data.snapshotData.cleave.duration, _, _ = GetSpellCooldown(TRB.Data.spells.cleave.id)
+						end
+					elseif spellId == TRB.Data.spells.ignorePain.id then
+						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" then
+							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
+							-- This API call isn't working. Manual override for now.
+							--TRB.Data.snapshotData.ignorePain.startTime, TRB.Data.snapshotData.ignorePain.duration, _, _ = GetSpellCooldown(TRB.Data.spells.ignorePain.id)
+							TRB.Data.snapshotData.ignorePain.startTime = currentTime
+							TRB.Data.snapshotData.ignorePain.duration = TRB.Data.spells.ignorePain.duration
 						end
 					elseif spellId == TRB.Data.spells.suddenDeath.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then

@@ -273,13 +273,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				isTalent = true
 			},
 			-- TODO: Add Wild Mushroom + associated tracking
-			circleOfLifeAndDeath = {
-				id = 391969,
-				name = "",
-				icon = "",
-				isTalent = true,
-				modifier = 0.75
-			},
 			incarnationChosenOfElune = {
 				id = 394013,
 				name = "",
@@ -497,20 +490,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					momentOfClarity = true,
 					tigersFury = true
 				},
-				isTalent = true,
-				baseline = true
-			},
-			swipe = {
-				id = 106785,
-				name = "",
-				icon = "",
-				energy = -35,
-                comboPointsGenerated = 1,
-				thresholdId = 3,
-				texture = "",
-				settingKey = "swipe",
-				thresholdUsable = false,
-				isSnowflake = true,
 				isTalent = true
 			},
 			rip = {
@@ -536,7 +515,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					bloodtalons = true,
 					tigersFury = true
 				},
-				isTalent = true
+				isTalent = true,
+				baseline = true
 			},
 			maim = {
 				id = 22570,
@@ -621,6 +601,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				settingKey = "shred",
 				thresholdUsable = false,
 				isClearcasting = true
+			},
+			swipe = {
+				id = 106785,
+				name = "",
+				icon = "",
+				energy = -35,
+                comboPointsGenerated = 1,
+				thresholdId = 3,
+				texture = "",
+				settingKey = "swipe",
+				thresholdUsable = false,
+				isSnowflake = true,
+				isTalent = false,
+				baseline = true
 			},
 
 			-- Feral Spec Talents
@@ -767,7 +761,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				isTalent = true,
-				energyModifier = 0.8
+				energyModifier = 0.6
 			},
 			circleOfLifeAndDeath = {
 				id = 391969,
@@ -1637,10 +1631,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 ---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.LunarPower)
 			GetCurrentMoonSpell()
-
-			if TRB.Functions.IsTalentActive(TRB.Data.spells.circleOfLifeAndDeath) then
-				TRB.Data.character.pandemicModifier = TRB.Data.spells.circleOfLifeAndDeath.modifier
-			end
 		elseif specId == 2 then
 			TRB.Data.character.specName = "feral"
 ---@diagnostic disable-next-line: missing-parameter
@@ -4509,7 +4499,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								end
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 					end
 					
@@ -4766,7 +4756,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end
