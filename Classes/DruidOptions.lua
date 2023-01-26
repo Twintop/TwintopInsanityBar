@@ -2014,7 +2014,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.checkBoxes.thresholdBleedColors = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_thresholdBleedColors", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdBleedColors
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-160)
 		getglobal(f:GetName() .. 'Text'):SetText("Use different colors for Bleed snapshots?")
 		f.tooltip = "When checked, threshold lines for Rake, Rip, Thrash, and Moonfire (if Lunar Inspiration is talented) will have their threshold lines colored based on if the current buffs are better, worse, or the same damage (or the bleed is not on the target) instead of based on available Energy or Combo Points. The colors used are set in the 'Bleed Snapshotting' section under the 'Font & Text' tab."
 		f:SetChecked(spec.thresholds.bleedColors)
