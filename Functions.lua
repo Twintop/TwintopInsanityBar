@@ -1002,14 +1002,20 @@ local function AdjustThresholdDisplay(spell, threshold, showThreshold, currentFr
 	if settings.thresholds[spell.settingKey].enabled and showThreshold then
 		local currentTime = GetTime()
 		local frameLevel = currentFrameLevel
-		if not spell.hasCooldown then
-			frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
+		local outOfRange = settings.thresholds.outOfRange == true and UnitAffectingCombat("player") and IsSpellInRange(spell.name, "target") == 0
+
+		if spell.settingKey == "cobraShot" then
+			--print(spell.name, IsSpellInRange(spell.name, "target"))
 		end
 
-		local outOfRange = settings.thresholds.outOfRange == true and UnitAffectingCombat("player") and IsSpellInRange(spell.name, "target") == 0
 
 		if outOfRange then
 			thresholdColor = settings.colors.threshold.outOfRange
+			frameLevel = TRB.Data.constants.frameLevels.thresholdOutOfRange
+		end
+
+		if not spell.hasCooldown then
+			frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
 		end
 
 		threshold:Show()

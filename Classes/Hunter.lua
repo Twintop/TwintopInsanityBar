@@ -360,7 +360,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		specCache.beastMastery.snapshotData.killCommand = {
 			startTime = nil,
 			duration = 0,
-			enabled = false
+			enabled = false,
+			charges = 0,
+			maxCharges = 1
 		}
 		specCache.beastMastery.snapshotData.barrage = {
 			startTime = nil,
@@ -756,7 +758,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		specCache.marksmanship.snapshotData.killCommand = {
 			startTime = nil,
 			duration = 0,
-			enabled = false
+			enabled = false,
+			charges = 0,
+			maxCharges = 1
 		}
 		specCache.marksmanship.snapshotData.wailingArrow = {
 			startTime = nil,
@@ -1113,7 +1117,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		specCache.survival.snapshotData.killCommand = {
 			startTime = nil,
 			duration = 0,
-			enabled = false
+			enabled = false,
+			charges = 0,
+			maxCharges = 1
 		}
 		specCache.survival.snapshotData.barrage = {
 			startTime = nil,
@@ -2590,13 +2596,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             TRB.Data.snapshotData.killShot.duration = 0
         end
 
-		if TRB.Data.snapshotData.killCommand.startTime ~= nil and currentTime > (TRB.Data.snapshotData.killCommand.startTime + TRB.Data.snapshotData.killCommand.duration) then
-            TRB.Data.snapshotData.killCommand.startTime = nil
-            TRB.Data.snapshotData.killCommand.duration = 0
-		elseif TRB.Data.snapshotData.killCommand.startTime ~= nil then
-			---@diagnostic disable-next-line: redundant-parameter, cast-local-type
-			TRB.Data.snapshotData.killCommand.startTime, TRB.Data.snapshotData.killCommand.duration, _, _ = GetSpellCooldown(TRB.Data.spells.killCommand.id)
-        end
+		TRB.Data.snapshotData.killCommand.charges, TRB.Data.snapshotData.killCommand.maxCharges, TRB.Data.snapshotData.killCommand.startTime, TRB.Data.snapshotData.killCommand.duration, _ = GetSpellCharges(TRB.Data.spells.killCommand.id)
+		if TRB.Data.snapshotData.killCommand.charges == TRB.Data.snapshotData.killCommand.maxCharges then
+			TRB.Data.snapshotData.killCommand.startTime = nil
+			TRB.Data.snapshotData.killCommand.duration = 0
+		end
 	end
 
 	local function UpdateSnapshot_BeastMastery()
@@ -2851,7 +2855,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
 									end
 
-									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+									if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
+										(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif TRB.Data.snapshotData.resource >= -focusAmount or TRB.Data.spells.cobraSting.isActive then
@@ -3449,7 +3454,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					elseif spellId == TRB.Data.spells.killCommand.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
-							TRB.Data.snapshotData.killCommand.startTime, TRB.Data.snapshotData.killCommand.duration, _, _ = GetSpellCooldown(TRB.Data.spells.killCommand.id)
+							TRB.Data.snapshotData.killCommand.charges, TRB.Data.snapshotData.killCommand.maxCharges, TRB.Data.snapshotData.killCommand.startTime, TRB.Data.snapshotData.killCommand.duration, _ = GetSpellCharges(TRB.Data.spells.killCommand.id)
 						end
 					elseif spellId == TRB.Data.spells.beastialWrath.id then
 						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
