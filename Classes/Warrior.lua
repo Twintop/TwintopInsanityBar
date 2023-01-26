@@ -1984,7 +1984,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								end
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end
@@ -2150,7 +2150,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								end
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[cooldownSettingKey], specSettings.thresholds)
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[cooldownSettingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end

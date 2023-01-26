@@ -3726,7 +3726,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end
@@ -4053,7 +4053,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end

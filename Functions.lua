@@ -998,12 +998,18 @@ local function RedrawThresholdLines(settings)
 end
 TRB.Functions.RedrawThresholdLines = RedrawThresholdLines
 
-local function AdjustThresholdDisplay(spell, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshotData, thresholdSettings)
-	if thresholdSettings[spell.settingKey].enabled and showThreshold then
+local function AdjustThresholdDisplay(spell, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshotData, settings)
+	if settings.thresholds[spell.settingKey].enabled and showThreshold then
 		local currentTime = GetTime()
 		local frameLevel = currentFrameLevel
 		if not spell.hasCooldown then
 			frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
+		end
+		
+		--print(settings.thresholds.outOfRange, UnitAffectingCombat("player"), IsSpellInRange(spell.name, "target"))
+
+		if settings.thresholds.outOfRange and UnitAffectingCombat("player") and IsSpellInRange(spell.name, "target") == 0 then
+			thresholdColor = settings.colors.thresholds.outOfRange
 		end
 
 		threshold:Show()
@@ -1022,11 +1028,11 @@ local function AdjustThresholdDisplay(spell, threshold, showThreshold, currentFr
 			spell.thresholdUsable = false
 		end
 
-		if thresholdSettings.icons.desaturated == true then
+		if settings.thresholds.icons.desaturated == true then
 			threshold.icon.texture:SetDesaturated(not spell.thresholdUsable)
 		end
 		
-		if thresholdSettings.icons.showCooldown and spell.hasCooldown and snapshotData.startTime ~= nil and currentTime < (snapshotData.startTime + snapshotData.duration) and (snapshotData.maxCharges == nil or snapshotData.charges < snapshotData.maxCharges) then
+		if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshotData.startTime ~= nil and currentTime < (snapshotData.startTime + snapshotData.duration) and (snapshotData.maxCharges == nil or snapshotData.charges < snapshotData.maxCharges) then
 			threshold.icon.cooldown:SetCooldown(snapshotData.startTime, snapshotData.duration)
 		else
 			threshold.icon.cooldown:SetCooldown(0, 0)

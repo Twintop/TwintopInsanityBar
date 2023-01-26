@@ -4499,7 +4499,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								end
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 					end
 					
@@ -4756,7 +4756,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings.thresholds)
+							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end

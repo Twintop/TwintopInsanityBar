@@ -361,6 +361,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					relativeToName = "Above",
 					enabled=true,
 					desaturated=true,
+					outOfRange=true,
 					xPos=0,
 					yPos=-12,
 					width=24,
@@ -446,7 +447,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				threshold={
 					under="FFFFFFFF",
 					over="FF00FF00",
-					mindbender="FFFF11FF"
+					mindbender="FFFF11FF",
+					outOfRange="FF660000"
 				}
 			},
 			displayText={},
