@@ -94,6 +94,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
+				outOfRange=true,
 				icons = {
 					showCooldown=true,
 					border=2,
@@ -195,7 +196,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				threshold = {
 					under="FFFFFFFF",
 					over="FF00FF00",
-					unusable="FFFF0000"
+					unusable="FFFF0000",
+					outOfRange="FF440000"
 				}
 			},
 			displayText = {},
@@ -305,6 +307,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
+				outOfRange=true,
 				icons = {
 					showCooldown=true,
 					border=2,
@@ -395,7 +398,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				threshold = {
 					under="FFFFFFFF",
 					over="FF00FF00",
-					unusable="FFFF0000"
+					unusable="FFFF0000",
+					outOfRange="FF440000"
 				}
 			},
 			displayText = {},

@@ -87,6 +87,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
+				outOfRange=true,
 				icons = {
 					border=2,
 					relativeTo = "TOP",
@@ -167,7 +168,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				threshold = {
 					under="FFFFFFFF",
 					over="FF00FF00",
-					echoesOfGreatSundering="FFFF00FF"
+					echoesOfGreatSundering="FFFF00FF",
+					outOfRange="FF440000"
 				}
 			},
 			displayText = {},
@@ -270,6 +272,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
+				outOfRange=true,
 				icons = {
 					showCooldown=true,
 					border=2,
@@ -366,7 +369,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				threshold={
 					unusable="FFFF0000",
 					over="FF00FF00",
-					mindbender="FF8080FF"
+					mindbender="FF8080FF",
+					outOfRange="FF440000"
 				}
 			},
 			displayText={},

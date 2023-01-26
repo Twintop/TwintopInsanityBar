@@ -89,6 +89,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
+				outOfRange=true,
 				icons = {
 					showCooldown=true,
 					border=2,
@@ -262,7 +263,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					under="FFFFFFFF",
 					over="FF00FF00",
 					unusable="FFFF0000",
-					special="FFFF00FF"
+					special="FFFF00FF",
+					outOfRange="FF440000"
 				}
 			},
 			displayText = {},
@@ -378,6 +380,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
+				outOfRange=true,
 				icons = {
 					showCooldown=true,
 					border=2,
@@ -543,7 +546,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					over="FF00FF00",
 					unusable="FFFF0000",
 					special="FFFF00FF",
-					restlessBlades="FFFFFF00"
+					restlessBlades="FFFFFF00",
+					outOfRange="FF440000"
 				}
 			},
 			displayText = {},

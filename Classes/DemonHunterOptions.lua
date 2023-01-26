@@ -86,6 +86,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
+				outOfRange=true,
 				icons = {
 					showCooldown=true,
 					border=2,
@@ -178,7 +179,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				threshold = {
 					under="FFFFFFFF",
 					over="FF00FF00",
-					unusable="FFFF0000"
+					unusable="FFFF0000",
+					outOfRange="FF440000"
 				}
 			},
 			displayText = {},

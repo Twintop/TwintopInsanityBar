@@ -83,6 +83,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
+				outOfRange=true,
 				icons = {
 					showCooldown=true,
 					border=2,
@@ -200,7 +201,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				threshold={
 					unusable="FFFF0000",
 					over="FF00FF00",
-					mindbender="FF8080FF"
+					mindbender="FF8080FF",
+					outOfRange="FF440000"
 				}
 			},
 			displayText={},
@@ -355,13 +357,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
+				outOfRange=true,
+				outOfRange=true,
 				icons = {
 					border=2,
 					relativeTo = "TOP",
 					relativeToName = "Above",
 					enabled=true,
 					desaturated=true,
-					outOfRange=true,
 					xPos=0,
 					yPos=-12,
 					width=24,
@@ -448,7 +451,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					under="FFFFFFFF",
 					over="FF00FF00",
 					mindbender="FFFF11FF",
-					outOfRange="FF660000"
+					outOfRange="FF440000"
 				}
 			},
 			displayText={},

@@ -59,11 +59,14 @@ local function LoadDefaultSettings()
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
+				outOfRange=true,
 				icons = {
+					showCooldown=true,
 					border=2,
 					relativeTo = "TOP",
 					relativeToName = "Above",
 					enabled=true,
+					desaturated=true,
 					xPos=0,
 					yPos=-12,
 					width=24,
@@ -370,9 +373,11 @@ local function LoadDefaultSettings()
         },
         rogue = {
             assassination = {},
+            outlaw = {},
         },
         shaman = {
-            elemental = {}
+            elemental = {},
+            restoration = {}
         },
         warrior = {
             arms = {},

@@ -89,6 +89,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
+				outOfRange=true,
 				icons = {
 					showCooldown=true,
 					border=2,
@@ -204,7 +205,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					under="FFFFFFFF",
 					over="FF00FF00",
 					unusable="FFFF0000",
-					special="FFFF00FF"
+					special="FFFF00FF",
+					outOfRange="FF440000"
 				}
 			},
 			displayText = {},
@@ -309,6 +311,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
+				outOfRange=true,
 				icons = {
 					showCooldown=true,
 					border=2,
@@ -437,7 +440,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				threshold = {
 					under="FFFFFFFF",
 					over="FF00FF00",
-					unusable="FFFF0000"
+					unusable="FFFF0000",
+					outOfRange="FF440000"
 				}
 			},
 			displayText = {},
@@ -563,6 +567,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
+				outOfRange=true,
 				icons = {
 					showCooldown=true,
 					border=2,
@@ -681,7 +686,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				threshold = {
 					under="FFFFFFFF",
 					over="FF00FF00",
-					unusable="FFFF0000"
+					unusable="FFFF0000",
+					outOfRange="FF440000"
 				}
 			},
 			displayText = {},

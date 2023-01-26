@@ -1005,11 +1005,11 @@ local function AdjustThresholdDisplay(spell, threshold, showThreshold, currentFr
 		if not spell.hasCooldown then
 			frameLevel = frameLevel - TRB.Data.constants.frameLevels.thresholdOffsetNoCooldown
 		end
-		
-		--print(settings.thresholds.outOfRange, UnitAffectingCombat("player"), IsSpellInRange(spell.name, "target"))
 
-		if settings.thresholds.outOfRange and UnitAffectingCombat("player") and IsSpellInRange(spell.name, "target") == 0 then
-			thresholdColor = settings.colors.thresholds.outOfRange
+		local outOfRange = settings.thresholds.outOfRange == true and UnitAffectingCombat("player") and IsSpellInRange(spell.name, "target") == 0
+
+		if outOfRange then
+			thresholdColor = settings.colors.threshold.outOfRange
 		end
 
 		threshold:Show()
@@ -1029,7 +1029,7 @@ local function AdjustThresholdDisplay(spell, threshold, showThreshold, currentFr
 		end
 
 		if settings.thresholds.icons.desaturated == true then
-			threshold.icon.texture:SetDesaturated(not spell.thresholdUsable)
+			threshold.icon.texture:SetDesaturated(not spell.thresholdUsable or outOfRange)
 		end
 		
 		if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshotData.startTime ~= nil and currentTime < (snapshotData.startTime + snapshotData.duration) and (snapshotData.maxCharges == nil or snapshotData.charges < snapshotData.maxCharges) then

@@ -90,6 +90,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
+				outOfRange=true,
 				icons = {
 					showCooldown=true,
 					border=2,
@@ -178,7 +179,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				threshold={
 					unusable="FFFF0000",
 					over="FF00FF00",
-					mindbender="FF8080FF"
+					mindbender="FF8080FF",
+					outOfRange="FF440000"
 				}
 			},
 			displayText={},
@@ -275,6 +277,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
+				outOfRange=true,
 				icons = {
 					showCooldown=true,
 					border=2,
@@ -392,7 +395,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				threshold = {
 					under="FFFFFFFF",
 					over="FF00FF00",
-					unusable="FFFF0000"
+					unusable="FFFF0000",
+					outOfRange="FF440000"
 				}
 			},
 			displayText = {},
