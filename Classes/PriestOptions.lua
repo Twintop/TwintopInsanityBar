@@ -1906,7 +1906,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.thresholdOutOfRange
 		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
 		getglobal(f:GetName() .. 'Text'):SetText("Change threshold line color when out of range?")
-		f.tooltip = "When checked, threshold lines will change color when you are unable to use the ability due to being out of range of your current target."
+		f.tooltip = "When checked, while in combat threshold lines will change color when you are unable to use the ability due to being out of range of your current target."
 		f:SetChecked(spec.thresholds.outOfRange)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.outOfRange = self:GetChecked()
