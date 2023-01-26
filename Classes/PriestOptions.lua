@@ -1948,6 +1948,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 25
 		yCoord = yCoord - 25
 		yCoord = yCoord - 25
+		yCoord = yCoord - 50
 
 		yCoord = TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spec, 5, 3, yCoord)
 

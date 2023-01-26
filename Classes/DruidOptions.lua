@@ -1035,8 +1035,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-		yCoord = yCoord - 30
-		yCoord = yCoord - 30
+		yCoord = yCoord - 50
 
 		yCoord = TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 1, yCoord)
 

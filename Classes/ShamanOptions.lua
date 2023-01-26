@@ -672,8 +672,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		yCoord = yCoord - 25
 		yCoord = yCoord - 25
-
-		yCoord = yCoord - 40
+		yCoord = yCoord - 25
+		yCoord = yCoord - 25
+		yCoord = yCoord - 50
 
 		yCoord = TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 1, yCoord)
 
