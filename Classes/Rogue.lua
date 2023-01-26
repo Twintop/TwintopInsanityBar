@@ -3727,8 +3727,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 					local barColor = specSettings.colors.bar.base
 
-					local latency = TRB.Functions.GetLatency()
-
 					local affectingCombat = UnitAffectingCombat("player")
 
 					if affectingCombat then
