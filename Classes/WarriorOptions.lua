@@ -649,9 +649,25 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
+		controls.colors.threshold.outOfRange = TRB.UiFunctions:BuildColorPicker(parent, "Out of range of current target to use ability", spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
+		f = controls.colors.threshold.outOfRange
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
+		end)
+
+		controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdOutOfRange
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
+		getglobal(f:GetName() .. 'Text'):SetText("Change threshold line color when out of range?")
+		f.tooltip = "When checked, threshold lines will change color when you are unable to use the ability due to being out of range of your current target."
+		f:SetChecked(spec.thresholds.outOfRange)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.outOfRange = self:GetChecked()
+		end)
+
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-90)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(spec.thresholds.overlapBorder)
@@ -1480,6 +1496,22 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
+		end)
+
+		controls.colors.threshold.outOfRange = TRB.UiFunctions:BuildColorPicker(parent, "Out of range of current target to use ability", spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
+		f = controls.colors.threshold.outOfRange
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
+		end)
+
+		controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.thresholdOutOfRange
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
+		getglobal(f:GetName() .. 'Text'):SetText("Change threshold line color when out of range?")
+		f.tooltip = "When checked, threshold lines will change color when you are unable to use the ability due to being out of range of your current target."
+		f:SetChecked(spec.thresholds.outOfRange)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.outOfRange = self:GetChecked()
 		end)
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
