@@ -197,14 +197,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				--pandemic = true,
 				--pandemicTime = 18 * 0.3
 			},
-			-- TODO: Add charges support for Kill Command
 			alphaPredator = {
 				id = 269737,
 				name = "",
 				icon = "",
 				isTalent = true
 			},
-			-- TODO: Add Death Chakram?
 
 			-- Beast Mastery Spec Baseline Abilities
 
@@ -614,14 +612,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				--pandemic = true,
 				--pandemicTime = 18 * 0.3
 			},
-			-- TODO: Add charges support for Kill Command
 			alphaPredator = {
 				id = 269737,
 				name = "",
 				icon = "",
 				isTalent = true
 			},
-			-- TODO: Add Death Chakram?
 
 			-- Marksmanship Spec Baseline Abilities
 			steadyShot = {
@@ -1042,7 +1038,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				isTalent = true
 			},
-			-- TODO: Add Death Chakram?
 
 			-- Survival Spec Baseline Abilities
 
