@@ -74,8 +74,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			specGroup = GetActiveSpecGroup(),
 			petGuid = UnitGUID("pet"),
 			specId = 1,
-			maxResource = 100,
-			covenantId = 0
+			maxResource = 100
 		}
 
 		specCache.beastMastery.spells = {
@@ -345,6 +344,34 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				isTalent = true,
 				focusMod = -10
 			},
+
+			-- PvP
+			direBeastBasilisk = {
+				id = 205691,
+				name = "",
+				icon = "",
+				focus = -60,
+				texture = "",
+				thresholdId = 14,
+				settingKey = "direBeastBasilisk",
+				thresholdUsable = false,
+				hasCooldown = true,
+				cooldown = 120,
+				isPvp = true,
+			},
+			direBeastHawk = {
+				id = 208652,
+				name = "",
+				icon = "",
+				focus = -30,
+				texture = "",
+				thresholdId = 15,
+				settingKey = "direBeastHawk",
+				thresholdUsable = false,
+				hasCooldown = true,
+				cooldown = 30,
+				isPvp = true,
+			}
 		}
 
 		specCache.beastMastery.snapshotData.focusRegen = 0
@@ -425,6 +452,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			stacks = 0,
 			spellId = 0
 		}
+		specCache.beastMastery.snapshotData.direBeastBasilisk = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		specCache.beastMastery.snapshotData.direBeastHawk = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
 
 		specCache.beastMastery.barTextVariables = {
 			icons = {},
@@ -451,8 +488,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 ---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			specId = 2,
-			maxResource = 100,
-			covenantId = 0
+			maxResource = 100
 		}
 
 		specCache.marksmanship.spells = {
@@ -877,8 +913,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 ---@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			specId = 3,
-			maxResource = 100,
-			covenantId = 0
+			maxResource = 100
 		}
 
 		specCache.survival.spells = {
@@ -3519,6 +3554,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.aspectOfTheWild.endTime = nil
 							TRB.Data.snapshotData.aspectOfTheWild.duration = 0
 							TRB.Data.spells.aspectOfTheWild.isActive = false
+						end
+					elseif spellId == TRB.Data.spells.direBeastBasilisk.id then
+						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
+						TRB.Data.snapshotData.direBeastBasilisk.startTime, TRB.Data.snapshotData.direBeastBasilisk.duration, _, _ = GetSpellCooldown(TRB.Data.spells.direBeastBasilisk.id)
+					elseif spellId == TRB.Data.spells.direBeastHawk.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							TRB.Data.snapshotData.direBeastHawk.startTime = currentTime
+							TRB.Data.snapshotData.direBeastHawk.duration = TRB.Data.spells.direBeastHawk.cooldown
 						end
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "marksmanship" then --Marksmanship

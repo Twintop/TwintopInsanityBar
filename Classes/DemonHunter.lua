@@ -64,7 +64,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 120,
-			covenantId = 0,
 			effects = {
 			},
 			items = {

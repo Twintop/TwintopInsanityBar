@@ -72,7 +72,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
-			covenantId = 0,
 			effects = {
 			},
 			pandemicModifier = 0
@@ -420,7 +419,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
-			covenantId = 0,
 			effects = {
 			}
 		}
@@ -784,7 +782,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$resourceMax", description = "Maximum Rage", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Builder Rage from Hardcasting Spells", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Spender Rage from Hardcasting Spells", printInSettings = false, color = false },
-			{ variable = "$passive", description = "Rage from Passive Sources including Covenant abilities", printInSettings = true, color = false },
+			{ variable = "$passive", description = "Rage from Passive Sources", printInSettings = true, color = false },
 			{ variable = "$ragePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
 			{ variable = "$resourcePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
 			{ variable = "$ragePlusPassive", description = "Current + Passive Rage Total", printInSettings = true, color = false },
@@ -869,7 +867,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$resourceMax", description = "Maximum Rage", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Builder Rage from Hardcasting Spells", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Spender Rage from Hardcasting Spells", printInSettings = false, color = false },
-			{ variable = "$passive", description = "Rage from Passive Sources including Ravager and Covenant abilities", printInSettings = true, color = false },
+			{ variable = "$passive", description = "Rage from Passive Sources including Ravager", printInSettings = true, color = false },
 			{ variable = "$ragePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
 			{ variable = "$resourcePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
 			{ variable = "$ragePlusPassive", description = "Current + Passive Rage Total", printInSettings = true, color = false },

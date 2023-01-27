@@ -140,6 +140,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				},
 				wailingArrow = {
 					enabled = true, -- 13
+				},
+				direBeastBasilisk = {
+					enabled = true, -- 14
+				},
+				direBeastHawk = {
+					enabled = true, -- 15
 				}
 			},
 			generation = {
@@ -367,7 +373,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					enabled = true, -- 14
 				},
 				sniperShot = {
-					enabled = false, -- 15
+					enabled = true, -- 15
 				},
 			},
 			generation = {
@@ -1142,6 +1148,31 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(spec.thresholds.wingClip.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.wingClip.enabled = self:GetChecked()
+		end)
+		
+		yCoord = yCoord - 25
+		controls.labels.pvpthreshold = TRB.UiFunctions:BuildLabel(parent, "PvP Abilities", 5, yCoord, 110, 20)
+		yCoord = yCoord - 20
+
+		controls.checkBoxes.direBeastBasiliskThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_direBeastBasilisk", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.direBeastBasiliskThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Dire Beast: Basilisk")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Dire Beast: Basilisk. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(spec.thresholds.direBeastBasilisk.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.direBeastBasilisk.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.direBeastHawkThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_direBeastHawk", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.direBeastHawkThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Dire Beast: Hawk")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Dire Beast: Hawk. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(spec.thresholds.direBeastHawk.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.direBeastHawk.enabled = self:GetChecked()
 		end)
 
 
@@ -2083,12 +2114,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.wingClip.enabled = self:GetChecked()
 		end)
-		
+
 		yCoord = yCoord - 25
-		controls.labels.covenant = TRB.UiFunctions:BuildLabel(parent, "PvP Abilities", 5, yCoord, 110, 20)
+		controls.labels.pvpThreshold = TRB.UiFunctions:BuildLabel(parent, "PvP Abilities", 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
-		controls.checkBoxes.sniperShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_deathFromAbove", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.sniperShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_sniperShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sniperShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Sniper Shot")

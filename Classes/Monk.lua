@@ -348,7 +348,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			specId = 1,
 			maxResource = 100,
             maxResource2 = 5,
-			covenantId = 0,
 			effects = {
 			},
 			items = {}
