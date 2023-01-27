@@ -194,8 +194,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				isTalent = true,
 				thresholdUsable = false,
 				baseDuration = 18,
-				pandemic = true,
-				pandemicTime = 18 * 0.3
+				--pandemic = true,
+				--pandemicTime = 18 * 0.3
 			},
 			-- TODO: Add charges support for Kill Command
 			alphaPredator = {
@@ -611,8 +611,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				isTalent = true,
 				thresholdUsable = false,
 				baseDuration = 18,
-				pandemic = true,
-				pandemicTime = 18 * 0.3
+				--pandemic = true,
+				--pandemicTime = 18 * 0.3
 			},
 			-- TODO: Add charges support for Kill Command
 			alphaPredator = {
@@ -1033,10 +1033,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				isTalent = true,
 				thresholdUsable = false,
 				baseDuration = 18,
-				pandemic = true,
-				pandemicTime = 18 * 0.3
+				--pandemic = true,
+				--pandemicTime = 18 * 0.3
 			},
-			-- TODO: Add charges support for Kill Command
 			alphaPredator = {
 				id = 269737,
 				name = "",
@@ -1265,6 +1264,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#multiShot", icon = spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
 			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
 			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
+			{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = "Serpent Sting", printInSettings = true },
 			{ variable = "#wailingArrow", icon = spells.wailingArrow.icon, description = "Wailing Arrow", printInSettings = true },
         }
 		specCache.beastMastery.barTextVariables.values = {
@@ -1959,13 +1959,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		if TRB.Data.settings.hunter.beastMastery.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentSting then
-				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining > TRB.Data.spells.serpentSting.pandemicTime then
+				--if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining > TRB.Data.spells.serpentSting.pandemicTime then
 					serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.beastMastery.colors.text.dots.up, _serpentStingCount)
 					serpentStingTime = string.format("|c%s%.1f|r", TRB.Data.settings.hunter.beastMastery.colors.text.dots.up, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining)
-				else
+				--[[else
 					serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.beastMastery.colors.text.dots.pandemic, _serpentStingCount)
 					serpentStingTime = string.format("|c%s%.1f|r", TRB.Data.settings.hunter.beastMastery.colors.text.dots.pandemic, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining)
-				end
+				end]]
 			else
 				serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.beastMastery.colors.text.dots.down, _serpentStingCount)
 				serpentStingTime = string.format("|c%s%.1f|r", TRB.Data.settings.hunter.beastMastery.colors.text.dots.down, 0)
@@ -2173,13 +2173,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		if TRB.Data.settings.hunter.marksmanship.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentSting then
-				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining > TRB.Data.spells.serpentSting.pandemicTime then
+				--if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining > TRB.Data.spells.serpentSting.pandemicTime then
 					serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.marksmanship.colors.text.dots.up, _serpentStingCount)
 					serpentStingTime = string.format("|c%s%.1f|r", TRB.Data.settings.hunter.marksmanship.colors.text.dots.up, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining)
-				else
+				--[[else
 					serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.marksmanship.colors.text.dots.pandemic, _serpentStingCount)
 					serpentStingTime = string.format("|c%s%.1f|r", TRB.Data.settings.hunter.marksmanship.colors.text.dots.pandemic, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining)
-				end
+				end]]
 			else
 				serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.marksmanship.colors.text.dots.down, _serpentStingCount)
 				serpentStingTime = string.format("|c%s%.1f|r", TRB.Data.settings.hunter.marksmanship.colors.text.dots.down, 0)
@@ -2364,13 +2364,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		if TRB.Data.settings.hunter.survival.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentSting then
-				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining > TRB.Data.spells.serpentSting.pandemicTime then
+				--if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining > TRB.Data.spells.serpentSting.pandemicTime then
 					serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.survival.colors.text.dots.up, _serpentStingCount)
 					serpentStingTime = string.format("|c%s%.1f|r", TRB.Data.settings.hunter.survival.colors.text.dots.up, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining)
-				else
+				--[[else
 					serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.survival.colors.text.dots.pandemic, _serpentStingCount)
 					serpentStingTime = string.format("|c%s%.1f|r", TRB.Data.settings.hunter.survival.colors.text.dots.pandemic, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining)
-				end
+				end]]
 			else
 				serpentStingCount = string.format("|c%s%.0f|r", TRB.Data.settings.hunter.survival.colors.text.dots.down, _serpentStingCount)
 				serpentStingTime = string.format("|c%s%.1f|r", TRB.Data.settings.hunter.survival.colors.text.dots.down, 0)
