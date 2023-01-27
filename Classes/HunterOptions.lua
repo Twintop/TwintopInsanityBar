@@ -324,47 +324,50 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					width=24,
 					height=24
 				},
-					arcaneShot = {
+				arcaneShot = {
 					enabled = true, -- 1
 				},
-					revivePet = {
+				revivePet = {
 					enabled = false, -- 2
 				},
-					wingClip = {
+				wingClip = {
 					enabled = false, -- 3
 				},
 				killCommand = {
 					enabled = true, -- 4
 				},
-					killShot = {
+				killShot = {
 					enabled = true, -- 5
 				},
-					scareBeast = {
+				scareBeast = {
 					enabled = false, -- 6
 				},
-					explosiveShot = {
+				explosiveShot = {
 					enabled = true, -- 7
 				},
-					barrage = {
+				barrage = {
 					enabled = true, -- 8
 				},
-					serpentSting = {
+				serpentSting = {
 					enabled = true, -- 9
 				},
-					aimedShot = {
+				aimedShot = {
 					enabled = true, -- 10
 				},
-					chimaeraShot = {
+				chimaeraShot = {
 					enabled = true -- 11
 				},
-					multiShot = {
+				multiShot = {
 					enabled = true, -- 12
 				},
-					burstingShot = {
+				burstingShot = {
 					enabled = true, -- 13
 				},
-					wailingArrow = {
+				wailingArrow = {
 					enabled = true, -- 14
+				},
+				sniperShot = {
+					enabled = false, -- 15
 				},
 			},
 			generation = {
@@ -2079,6 +2082,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(spec.thresholds.wingClip.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.wingClip.enabled = self:GetChecked()
+		end)
+		
+		yCoord = yCoord - 25
+		controls.labels.covenant = TRB.UiFunctions:BuildLabel(parent, "PvP Abilities", 5, yCoord, 110, 20)
+		yCoord = yCoord - 20
+
+		controls.checkBoxes.sniperShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_deathFromAbove", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.sniperShotThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Sniper Shot")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Sniper Shot. If on cooldown, will be colored as 'unusable'."
+		f:SetChecked(spec.thresholds.sniperShot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.sniperShot.enabled = self:GetChecked()
 		end)
 
 

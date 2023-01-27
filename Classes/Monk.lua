@@ -885,7 +885,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end
         
         if settings ~= nil then
-			TRB.Data.character.isPvp = TRB.Functions.ArePvpTalentsActive()
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
             	TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)

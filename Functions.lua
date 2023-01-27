@@ -2616,6 +2616,7 @@ local function CheckCharacter()
 ---@diagnostic disable-next-line: missing-parameter
     TRB.Data.character.specGroup = GetActiveSpecGroup()
 	TRB.Data.character.covenantId = C_Covenants.GetActiveCovenantID()
+	TRB.Data.character.isPvp = TRB.Functions.ArePvpTalentsActive()
 
 	TRB.Data.barTextCache = {}
 	TRB.Functions.FillSpellData()
@@ -2717,6 +2718,7 @@ TRB.Functions.CheckTrinketForConjuredChillglobe = CheckTrinketForConjuredChillgl
 local function ArePvpTalentsActive()
     local inInstance, instanceType = IsInInstance()
     if inInstance and (instanceType == "pvp" or instanceType == "arena") then
+		print(instanceType)
         return true
     elseif inInstance and (instanceType == "party" or instanceType == "raid" or instanceType == "scenario") then
         return false
@@ -2726,6 +2728,7 @@ local function ArePvpTalentsActive()
 ---@diagnostic disable-next-line: missing-parameter
             local spellID = select(6, GetPvpTalentInfoByID(pvptalent))
             if IsPlayerSpell(spellID) then
+				print(spellID)
                 return true
             end
         end

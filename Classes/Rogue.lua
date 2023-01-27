@@ -1731,7 +1731,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end
         
         if settings ~= nil then
-			TRB.Data.character.isPvp = TRB.Functions.ArePvpTalentsActive()
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
             	TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)

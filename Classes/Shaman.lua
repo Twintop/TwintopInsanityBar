@@ -2156,6 +2156,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							--The rest isn't used. Keeping it here for consistency until I can finish abstracting this whole mess out
 							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
+							elseif spell.isPvp and not TRB.Data.character.isPvp then
+								showThreshold = false
 							elseif spell.hasCooldown then
 								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
 									(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then

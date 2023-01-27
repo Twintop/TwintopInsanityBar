@@ -379,7 +379,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			duration = 0,
 			enabled = false
 		}
-		specCache.marksmanship.snapshotData.targetData = {
+		specCache.beastMastery.snapshotData.targetData = {
 			ttdIsActive = false,
 			currentTargetGuid = nil,
 			serpentSting = 0,
@@ -747,6 +747,21 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				isTalent = true
 			},
 
+			-- PvP
+			sniperShot = {
+				id = 203155,
+				name = "", 
+				icon = "",
+				focus = -40,
+				texture = "",
+				thresholdId = 15,
+				settingKey = "sniperShot",
+				thresholdUsable = false,
+				hasCooldown = true,
+				cooldown = 10,
+				isPvp = true,
+			}
+
 		}
 
 		specCache.marksmanship.snapshotData.focusRegen = 0
@@ -816,7 +831,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			ticksRemaining = 0,
 			focus = 0
 		}
-		specCache.beastMastery.snapshotData.wailingArrow = {
+		specCache.marksmanship.snapshotData.wailingArrow = {
+			startTime = nil,
+			duration = 0,
+			enabled = false
+		}
+		specCache.marksmanship.snapshotData.sniperShot = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
@@ -2596,6 +2616,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             TRB.Data.snapshotData.killShot.duration = 0
         end
 
+---@diagnostic disable-next-line: cast-local-type
 		TRB.Data.snapshotData.killCommand.charges, TRB.Data.snapshotData.killCommand.maxCharges, TRB.Data.snapshotData.killCommand.startTime, TRB.Data.snapshotData.killCommand.duration, _ = GetSpellCharges(TRB.Data.spells.killCommand.id)
 		if TRB.Data.snapshotData.killCommand.charges == TRB.Data.snapshotData.killCommand.maxCharges then
 			TRB.Data.snapshotData.killCommand.startTime = nil
@@ -2878,6 +2899,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								end
+							elseif spell.isPvp and not TRB.Data.character.isPvp then
+								showThreshold = false
 							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif spell.hasCooldown then
@@ -2899,7 +2922,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							end
-							
+
 							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
@@ -3140,6 +3163,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								end
 							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
+							elseif spell.isPvp and not TRB.Data.character.isPvp then
+								showThreshold = false
 							elseif spell.hasCooldown then
 								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
 									(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
@@ -3328,6 +3353,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									end
 								end
 							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+								showThreshold = false
+							elseif spell.isPvp and not TRB.Data.character.isPvp then
 								showThreshold = false
 							elseif spell.hasCooldown then
 								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
@@ -3570,6 +3597,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshotData.wailingArrow.startTime = currentTime
 							TRB.Data.snapshotData.wailingArrow.duration = TRB.Data.spells.wailingArrow.cooldown
 						end
+					elseif spellId == TRB.Data.spells.sniperShot.id then
+						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
+						TRB.Data.snapshotData.sniperShot.startTime, TRB.Data.snapshotData.sniperShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.sniperShot.id)
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "survival" then --Survival
 					if spellId == TRB.Data.spells.carve.id then
