@@ -180,6 +180,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					under="FFFFFFFF",
 					over="FF00FF00",
 					unusable="FFFF0000",
+					special="FFFF00FF",
 					outOfRange="FF440000"
 				}
 			},
@@ -421,7 +422,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
-		controls.colors.threshold.outOfRange = TRB.UiFunctions:BuildColorPicker(parent, "Out of range of current target to use ability", spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
+		controls.colors.threshold.special = TRB.UiFunctions:BuildColorPicker(parent, "Chaos Theory effect up", spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-90)
+		f = controls.colors.threshold.special
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "special")
+		end)
+
+		controls.colors.threshold.outOfRange = TRB.UiFunctions:BuildColorPicker(parent, "Out of range of current target to use ability", spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-120)
 		f = controls.colors.threshold.outOfRange
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
@@ -429,7 +436,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOutOfRange
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-150)
 		getglobal(f:GetName() .. 'Text'):SetText("Change threshold line color when out of range?")
 		f.tooltip = "When checked, while in combat threshold lines will change color when you are unable to use the ability due to being out of range of your current target."
 		f:SetChecked(spec.thresholds.outOfRange)
@@ -439,7 +446,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-170)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(spec.thresholds.overlapBorder)

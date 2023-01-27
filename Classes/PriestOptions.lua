@@ -358,7 +358,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				width = 2,
 				overlapBorder=true,
 				outOfRange=true,
-				outOfRange=true,
 				icons = {
 					border=2,
 					relativeTo = "TOP",

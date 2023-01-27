@@ -129,6 +129,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			   settingKey = "chaosStrike",
 			   hasCooldown = false,
 			   thresholdUsable = false,
+			   isSnowflake = true,
 			   demonForm = false,
 			   isTalent = false,
 			   baseline = true
@@ -143,6 +144,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				settingKey = "annihilation",
 				hasCooldown = false,
 				thresholdUsable = false,
+				isSnowflake = true,
 				demonForm = true,
 				isTalent = false,
 				baseline = true
@@ -306,6 +308,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 206476,
 				name = "",
 				icon = "",
+			},
+			chaosTheory = {
+				id = 390195,
+				name = "",
+				icon = ""
 			}
 		}
 
@@ -380,6 +387,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			fury = 0,
 			endTime = nil,
 			lastTick = nil
+		}
+		specCache.havoc.snapshotData.chaosTheory = {
+			spellId = nil,
+			isActive = false,
+			duration = 0,
+			endTime = nil
 		}
 	end
 
@@ -1222,6 +1235,16 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 									else
 										showThreshold = false
 									end
+								elseif spell.id == TRB.Data.spells.chaosStrike.id or spell.id == TRB.Data.spells.annihilation.id then
+									if TRB.Data.snapshotData.chaosTheory.endTime ~= nil and currentTime < TRB.Data.snapshotData.chaosTheory.endTime then
+										thresholdColor = specSettings.colors.threshold.special
+										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+									elseif currentFury >= -furyAmount then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
 								end
 							elseif spell.hasCooldown then
 								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
@@ -1410,6 +1433,16 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							TRB.Data.snapshotData.unboundChaos.spellId = nil
 							TRB.Data.snapshotData.unboundChaos.duration = 0
 							TRB.Data.snapshotData.unboundChaos.endTime = nil
+						end
+					elseif spellId == TRB.Data.spells.chaosTheory.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.snapshotData.chaosTheory.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.chaosTheory.duration, TRB.Data.snapshotData.chaosTheory.endTime, _, _, _, TRB.Data.snapshotData.chaosTheory.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.chaosTheory.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.chaosTheory.isActive = false
+							TRB.Data.snapshotData.chaosTheory.spellId = nil
+							TRB.Data.snapshotData.chaosTheory.duration = 0
+							TRB.Data.snapshotData.chaosTheory.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.tacticalRetreat.id then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Tactical Retreat
