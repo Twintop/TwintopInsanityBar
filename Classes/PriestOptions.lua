@@ -181,6 +181,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					background="66000000",
 					base="FF0000FF",
 					innervate="FF00FF00",
+					potionOfChilledClarity="FF9EC51E",
 					apotheosis="FFFADA5E",
 					apotheosisEnd="FFFF0000",
 					holyWordChastise="FFAAFFAA",
@@ -197,6 +198,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					innervateBorderChange=true,
 					resonantWordsBorderChange=true,
 					lightweaverBorderChange=true,
+					potionOfChilledClarityBorderChange=true,
 				},
 				threshold={
 					unusable="FFFF0000",
@@ -743,30 +745,35 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "innervate")
 		end)
 
-		controls.colors.surgeOfLight1 = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-60)
+		controls.colors.potionOfChilledClarity = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have Potion of Chilled Clarity's effect", spec.colors.bar.potionOfChilledClarity, 300, 25, oUi.xCoord2, yCoord-60)
+		f = controls.colors.potionOfChilledClarity
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "potionOfChilledClarity")
+		end)
+
+		controls.colors.surgeOfLight1 = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.surgeOfLight1
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "surgeOfLight1")
 		end)
 						
-		controls.colors.surgeOfLight2 = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have 2 stacks of Surge of Light", spec.colors.bar.surgeOfLight2, 300, 25, oUi.xCoord2, yCoord-90)
+		controls.colors.surgeOfLight2 = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have 2 stacks of Surge of Light", spec.colors.bar.surgeOfLight2, 300, 25, oUi.xCoord2, yCoord-120)
 		f = controls.colors.surgeOfLight2
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "surgeOfLight2")
 		end)
 
-		controls.colors.resonantWords = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have Resonant Words", spec.colors.bar.resonantWords, 300, 25, oUi.xCoord2, yCoord-120)
+		controls.colors.resonantWords = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have Resonant Words", spec.colors.bar.resonantWords, 300, 25, oUi.xCoord2, yCoord-150)
 		f = controls.colors.resonantWords
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "resonantWords")
 		end)
 
-		controls.colors.lightweaver = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have any stacks of Lightweaver", spec.colors.bar.lightweaver, 300, 25, oUi.xCoord2, yCoord-150)
+		controls.colors.lightweaver = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have any stacks of Lightweaver", spec.colors.bar.lightweaver, 300, 25, oUi.xCoord2, yCoord-180)
 		f = controls.colors.lightweaver
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "lightweaver")
 		end)
-
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervateBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_innervateBorderChange", parent, "ChatConfigCheckButtonTemplate")
@@ -777,6 +784,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(spec.colors.bar.innervateBorderChange)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.innervateBorderChange = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.potionOfChilledClarityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_potionOfChilledClarityBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.potionOfChilledClarityBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Potion of Chilled Clarity")
+		f.tooltip = "This will change the bar border color when you have Potion of Chilled Clarity's effect."
+		f:SetChecked(spec.colors.bar.potionOfChilledClarityBorderChange)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.potionOfChilledClarityBorderChange = self:GetChecked()
 		end)
 		
 		yCoord = yCoord - 30
