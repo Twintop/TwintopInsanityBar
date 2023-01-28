@@ -523,6 +523,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	]]
 
+	local function ConfirmReload()
+	end
+
 	local function HolyConstructResetDefaultsPanel(parent)
 		if parent == nil then
 			return
@@ -535,14 +538,25 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local spec = TRB.Data.settings.priest.holy
 
 		local title = ""
-
+		StaticPopupDialogs["TwintopResourceBar_ConfirmReload"] = {
+			text = "Click to finish applying",
+			button1 = "Yes",
+			OnAccept = function()
+				C_UI.Reload()
+			end,
+			timeout = 0,
+			whileDead = true,
+			hideOnEscape = false,
+			preferredIndex = 3
+		}
 		StaticPopupDialogs["TwintopResourceBar_Priest_Holy_Reset"] = {
 			text = "Do you want to reset Twintop's Resource Bar back to its default configuration? Only the Holy Priest settings will be changed. This will cause your UI to be reloaded!",
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = HolyResetSettings()
-				ReloadUI()
+				TRB.Data.settings.priest.holy = nil-- HolyResetSettings()
+				C_UI.Reload()
+				--StaticPopup_Show("TwintopResourceBar_ConfirmReload")
 			end,
 			timeout = 0,
 			whileDead = true,

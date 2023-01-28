@@ -2030,7 +2030,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local coreSettings = TRB.Data.settings.core
 		local classSettings = TRB.Data.settings.evoker
 		
-		print(UnitPower("player", Enum.PowerType.Essence), UnitPartialPower("player", Enum.PowerType.Essence))
+		--print(UnitPower("player", Enum.PowerType.Essence), UnitPartialPower("player", Enum.PowerType.Essence))
 
 		if specId == 1 then
 			local specSettings = classSettings.devastation
