@@ -234,12 +234,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		return settings
     end
 
-	local function ArmsResetSettings()
-		local settings = ArmsLoadDefaultSettings()
-		return settings
-	end
-
-
 	--[[
 		Fury Defaults
 	]]
@@ -435,12 +429,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		settings.displayText = FuryLoadDefaultBarTextSimpleSettings()
 		return settings
     end
-
-	local function FuryResetSettings()
-		local settings = FuryLoadDefaultSettings()
-		return settings
-	end
-
 
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()

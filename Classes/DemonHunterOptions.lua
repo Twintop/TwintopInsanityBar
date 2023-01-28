@@ -212,11 +212,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		return settings
     end
 
-	local function HavocResetSettings()
-		local settings = HavocLoadDefaultSettings()
-		return settings
-	end
-
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 

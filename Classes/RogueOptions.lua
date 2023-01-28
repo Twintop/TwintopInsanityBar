@@ -313,12 +313,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		return settings
     end
 
-	local function AssassinationResetSettings()
-		local settings = AssassinationLoadDefaultSettings()
-		return settings
-	end
-
-
 	local function OutlawLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
@@ -595,11 +589,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		settings.displayText = OutlawLoadDefaultBarTextSimpleSettings()
 		return settings
     end
-
-	local function OutlawResetSettings()
-		local settings = OutlawLoadDefaultSettings()
-		return settings
-	end
 
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()

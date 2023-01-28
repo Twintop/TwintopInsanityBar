@@ -206,11 +206,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		return settings
     end
 
-	local function ElementalResetSettings()
-		local settings = ElementalLoadDefaultSettings()
-		return settings
-	end
-
 	-- Restoration
 	local function RestorationLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
@@ -402,12 +397,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		settings.displayText = RestorationLoadDefaultBarTextSimpleSettings()
 		return settings
 	end
-
-	local function RestorationResetSettings()
-		local settings = RestorationLoadDefaultSettings()
-		return settings
-	end
-
 
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()

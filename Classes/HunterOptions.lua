@@ -249,13 +249,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		return settings
     end
 
-	local function BeastMasteryResetSettings()
-		local settings = BeastMasteryLoadDefaultSettings()
-		return settings
-	end
-
-
-
 	local function MarksmanshipLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
@@ -508,13 +501,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		return settings
     end
 
-	local function MarksmanshipResetSettings()
-		local settings = MarksmanshipLoadDefaultSettings()
-		return settings
-	end
-
-
-
 	local function SurvivalLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
@@ -732,11 +718,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		settings.displayText = SurvivalLoadDefaultBarTextSimpleSettings()
 		return settings
     end
-
-	local function SurvivalResetSettings()
-		local settings = SurvivalLoadDefaultSettings()
-		return settings
-	end
 
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()

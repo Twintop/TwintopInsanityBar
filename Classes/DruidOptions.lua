@@ -236,12 +236,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		return settings
     end
 
-	local function BalanceResetSettings()
-		local settings = BalanceLoadDefaultSettings()
-		return settings
-	end
-
-
 	--[[ 
 		Feral Defaults
 	]]
@@ -484,12 +478,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		settings.displayText = FeralLoadDefaultBarTextSimpleSettings()
 		return settings
     end
-
-	local function FeralResetSettings()
-		local settings = FeralLoadDefaultSettings()
-		return settings
-	end
-
 	
 	-- Restoration
 	local function RestorationLoadDefaultBarTextSimpleSettings()
@@ -676,13 +664,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		settings.displayText = RestorationLoadDefaultBarTextSimpleSettings()
 		return settings
 	end
-
-	local function RestorationResetSettings()
-		local settings = RestorationLoadDefaultSettings()
-		return settings
-	end
-
-
 
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()

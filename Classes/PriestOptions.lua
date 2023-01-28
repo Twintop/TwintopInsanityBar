@@ -259,13 +259,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return settings
 	end
 
-	local function HolyResetSettings()
-		local settings = HolyLoadDefaultSettings()
-		return settings
-	end
-
-
-
 	local function ShadowLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
@@ -500,13 +493,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		settings.displayText = ShadowLoadDefaultBarTextSimpleSettings()
 		return settings
 	end
-
-	local function ShadowResetSettings()
-		local settings = ShadowLoadDefaultSettings()
-		return settings
-	end
-
-
 
 	local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()

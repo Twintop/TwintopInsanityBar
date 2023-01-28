@@ -213,11 +213,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		return settings
 	end
 
-	local function MistweaverResetSettings()
-		local settings = MistweaverLoadDefaultSettings()
-		return settings
-	end
-
 	local function WindwalkerLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
@@ -440,13 +435,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		settings.displayText = WindwalkerLoadDefaultBarTextSimpleSettings()
 		return settings
     end
-
-	local function WindwalkerResetSettings()
-		local settings = WindwalkerLoadDefaultSettings()
-		return settings
-	end
-
-
+	
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 
