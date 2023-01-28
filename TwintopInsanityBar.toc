@@ -31,6 +31,8 @@ Classes\DemonHunter.lua
 Classes\DemonHunterOptions.lua
 Classes\DruidOptions.lua
 Classes\Druid.lua
+Classes\EvokerOptions.lua
+Classes\Evoker.lua
 Classes\HunterOptions.lua
 Classes\Hunter.lua
 Classes\Monk.lua

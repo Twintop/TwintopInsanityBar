@@ -180,6 +180,26 @@ local function LoadDefaultSettings()
                         thresholds = true
                     }
                 },
+                evoker = {
+                    devastation = {
+                        specEnable = false,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    },
+                    preservation = {
+                        specEnable = false,
+                        bar = true,
+                        comboPoints = true,
+                        displayBar = true,
+                        font = true,
+                        textures = true,
+                        thresholds = true
+                    }
+                },
                 hunter = {
                     beastMastery = {
                         specEnable = false,
@@ -319,6 +339,10 @@ local function LoadDefaultSettings()
                     feral = true,
                     restoration = true
                 },
+                evoker = {
+                    devastation = true,
+                    preservation = true,                    
+                },
                 hunter = {
                     beastMastery = true,
                     marksmanship = true,
@@ -357,6 +381,10 @@ local function LoadDefaultSettings()
             balance = {},
             feral = {},
             restoration = {}
+        },
+        evoker = {
+            devastation = {},
+            preservation = {}
         },
         hunter = {
             beastMastery = {},
