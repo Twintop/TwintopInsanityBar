@@ -172,9 +172,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					background="66000000",
 					base="FF0000FF",
 					innervate="FF00FF00",
+					potionOfChilledClarity="FF9EC51E",
 					spending="FFFFFFFF",
 					passive="FF8080FF",
-					innervateBorderChange=true
+					innervateBorderChange=true,
+					potionOfChilledClarityBorderChange=true
 				},
 				threshold={
 					unusable="FFFF0000",
@@ -642,6 +644,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "innervate")
 		end)
+		
+		controls.colors.potionOfChilledClarity = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have Potion of Chilled Clarity's effect", spec.colors.bar.potionOfChilledClarity, 300, 25, oUi.xCoord2, yCoord-60)
+		f = controls.colors.potionOfChilledClarity
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "potionOfChilledClarity")
+		end)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervateBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Threshold_Option_innervateBorderChange", parent, "ChatConfigCheckButtonTemplate")
@@ -652,6 +660,17 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetChecked(spec.colors.bar.innervateBorderChange)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.innervateBorderChange = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.potionOfChilledClarityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Threshold_Option_potionOfChilledClarityBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.potionOfChilledClarityBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Potion of Chilled Clarity")
+		f.tooltip = "This will change the bar border color when you have Potion of Chilled Clarity's effect."
+		f:SetChecked(spec.colors.bar.potionOfChilledClarityBorderChange)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.potionOfChilledClarityBorderChange = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
