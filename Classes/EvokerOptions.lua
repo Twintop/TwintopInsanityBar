@@ -84,45 +84,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	local function DevastationLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			overcapThreshold=120,
-			thresholds = {
-				width = 2,
-				overlapBorder=true,
-				outOfRange=true,
-				icons = {
-					showCooldown=true,
-					border=2,
-					relativeTo = "BOTTOM",
-					relativeToName = "Below",
-					enabled=true,
-					desaturated=true,
-					xPos=0,
-					yPos=12,
-					width=24,
-					height=24
-				},
-				--[[cracklingJadeLightning = {
-					enabled = false, -- 1
-				},
-				expelHarm = {
-					enabled = true, -- 2
-				},
-				tigerPalm = {
-					enabled = true, -- 3
-				},
-				vivify = {
-					enabled = false, -- 4
-				},
-				detox = {
-					enabled = false, -- 5
-				},
-				disable = {
-					enabled = false, -- 6
-				},
-				paralysis = {
-					enabled = false, -- 7
-				},]]
-			},
 			generation = {
 				mode="gcd",
 				gcds=1,
@@ -136,25 +97,25 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			},
 			bar = {
 				width=555,
-				height=34,
+				height=11,
 				xPos=0,
-				yPos=-200,
-				border=4,
+				yPos=-215,
+				border=1,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
-				showPassive=true,
+				showPassive=false,
 				showCasting=true
 			},
             comboPoints = {
                 width=25,
-                height=13,
+                height=21,
 				xPos=0,
 				yPos=4,
-				border=1,
+				border=2,
                 spacing=14,
                 relativeTo="TOP",
                 relativeToName="Above - Middle",
-                fullWidth=false,
+                fullWidth=true,
             },
 			endOfSerenity = {
 				enabled=true,
@@ -168,31 +129,15 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					casting="FFFFFFFF",
 					spending="FFFFFFFF",
 					passive="FF8080FF",
-					overcap="FFFF0000",
-					overThreshold="FF00FF00",
-					overThresholdEnabled=false,
-					overcapEnabled=true,
 					left="FFFFFFFF",
 					middle="FFFFFFFF",
-					right="FFFFFFFF",
-					dots={
-						enabled=true,
-						up="FFFFFFFF",
-						down="FFFF0000",
-						pandemic="FFFF00FF"
-					}
+					right="FFFFFFFF"
 				},
 				bar = {
 					border="FF000099",
-					--borderOvercap="FFFF0000",
 					background="66000000",
 					base="FF0000FF",
-					casting="FFFFFFFF",
-					spending="FFFFFFFF",
 					passive="FF8080FF",
-					--serenity="FF00FF96",
-					--serenityEnd="FFFF0000",
-					overcapEnabled=true,
 				},
 				comboPoints = {
 					border="FF246759",
@@ -217,12 +162,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-				--[[danceOfEssenceJi={
-					name = "Dance of Essence-Ji",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				},]]
             },
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
@@ -605,52 +544,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
 		end)
 
-		--[[
-		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Mana gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.passive
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
-		end)
-
-		
-		controls.colors.borderEssenceJi = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border with Dance of Essence-Ji proc", spec.colors.bar.borderEssenceJi, 225, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.borderEssenceJi
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderEssenceJi")
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.serenity = TRB.UiFunctions:BuildColorPicker(parent, "Mana while Serenity is active", spec.colors.bar.serenity, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.serenity
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "serenity")
-		end)
-
-		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when you are overcapping Mana", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.borderOvercap
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.serenityEnd = TRB.UiFunctions:BuildColorPicker(parent, "Mana while you have less than 1 GCD left in Serenity", spec.colors.bar.serenityEnd, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.serenityEnd
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "serenityEnd")
-		end)]]
-
 		yCoord = yCoord - 30
 		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
-		end)
-		
-		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Mana spent from hardcasting spells", spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.casting
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 3)
 		end)
 
 		yCoord = yCoord - 40
@@ -699,237 +597,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		f:SetChecked(spec.comboPoints.sameColor)
 		f:SetScript("OnClick", function(self, ...)
 			spec.comboPoints.sameColor = self:GetChecked()
-		end)
-
-
-		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
-		
-		controls.colors.threshold = {}
-
-		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Mana threshold line", spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.threshold.under
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
-		end)
-
-		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Mana threshold line", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
-		f = controls.colors.threshold.over
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
-		end)
-
-		controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-60)
-		f = controls.colors.threshold.unusable
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
-		end)
-
-		controls.colors.threshold.outOfRange = TRB.UiFunctions:BuildColorPicker(parent, "Out of range of current target to use ability", spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-190)
-		f = controls.colors.threshold.outOfRange
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
-		end)
-
-		controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.thresholdOutOfRange
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
-		getglobal(f:GetName() .. 'Text'):SetText("Change threshold line color when out of range?")
-		f.tooltip = "When checked, while in combat threshold lines will change color when you are unable to use the ability due to being out of range of your current target."
-		f:SetChecked(spec.thresholds.outOfRange)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.outOfRange = self:GetChecked()
-		end)
-
-		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)
-		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
-		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-		f:SetChecked(spec.thresholds.overlapBorder)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.overlapBorder = self:GetChecked()
-			TRB.Functions.RedrawThresholdLines(spec)
-		end)
-		
-		controls.labels.builders = TRB.UiFunctions:BuildLabel(parent, "Builders", 5, yCoord, 110, 20)
-		yCoord = yCoord - 20
-		--[[controls.checkBoxes.expelHarmThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_Threshold_Option_expelHarm", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.expelHarmThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Expel Harm")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Mana is required to use Expel Harm. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(spec.thresholds.expelHarm.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.expelHarm.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.tigerPalmThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_Threshold_Option_tigerPalm", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.tigerPalmThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Tiger Palm")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Mana is required to use Tiger Palm."
-		f:SetChecked(spec.thresholds.tigerPalm.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.tigerPalm.enabled = self:GetChecked()
-		end)]]
-
-		yCoord = yCoord - 25
-		controls.labels.utility = TRB.UiFunctions:BuildLabel(parent, "General / Utility", 5, yCoord, 110, 20)
-		yCoord = yCoord - 20
-
-		--[[controls.checkBoxes.cracklingJadeLightningThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_Threshold_Option_cracklingJadeLightning", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.cracklingJadeLightningThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Crackling Jade Lightning")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Mana is required to use Crackling Jade Lightning."
-		f:SetChecked(spec.thresholds.cracklingJadeLightning.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.cracklingJadeLightning.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.detoxThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_Threshold_Option_detox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.detoxThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Detox")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Mana is required to use Detox. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(spec.thresholds.detox.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.detox.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.paralysisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_Threshold_Option_paralysis", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.paralysisThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Paralysis")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Mana is required to use Paralysis. If on cooldown, will be colored as 'unusable'."
-		f:SetChecked(spec.thresholds.paralysis.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.paralysis.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.vivifyThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_Threshold_Option_vivify", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.vivifyThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Vivify")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Mana is required to use Vivify."
-		f:SetChecked(spec.thresholds.vivify.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.vivify.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.disableThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_Threshold_Option_disable", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.disableThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Disable")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Mana is required to use Disable."
-		f:SetChecked(spec.thresholds.disable.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.disable.enabled = self:GetChecked()
-		end)]]
-
-		yCoord = yCoord - 30
-
-		yCoord = TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spec, 13, 1, yCoord)
-
-		--[[
-		yCoord = yCoord - 40
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "End of Serenity Configuration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.endOfSerenity = CreateFrame("CheckButton", "TRB_EOVF_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.endOfSerenity
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Serenity")
-		f.tooltip = "Changes the bar color when Serenity is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(spec.endOfSerenity.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.endOfSerenity.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 40
-		controls.checkBoxes.endOfSerenityModeGCDs = CreateFrame("CheckButton", "TRB_EOFV_M_GCD", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.endOfSerenityModeGCDs
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Serenity ends")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many GCDs remain until Serenity ends."
-		if spec.endOfSerenity.mode == "gcd" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.endOfSerenityModeGCDs:SetChecked(true)
-			controls.checkBoxes.endOfSerenityModeTime:SetChecked(false)
-			spec.endOfSerenity.mode = "gcd"
-		end)
-
-		title = "Serenity GCDs - 0.75sec Floor"
-		controls.endOfSerenityGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 10, spec.endOfSerenity.gcdsMax, 0.25, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.endOfSerenityGCDs:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			spec.endOfSerenity.gcdsMax = value
-		end)
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.endOfSerenityModeTime = CreateFrame("CheckButton", "TRB_EOFV_M_TIME", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.endOfSerenityModeTime
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time until Serenity ends")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many seconds remain until Serenity will end."
-		if spec.endOfSerenity.mode == "time" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.endOfSerenityModeGCDs:SetChecked(false)
-			controls.checkBoxes.endOfSerenityModeTime:SetChecked(true)
-			spec.endOfSerenity.mode = "time"
-		end)
-
-		title = "Serenity Time Remaining"
-		controls.endOfSerenityTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.endOfSerenity.timeMax, 0.25, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.endOfSerenityTime:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			spec.endOfSerenity.timeMax = value
-		end)
-
-
-		yCoord = yCoord - 40
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_CB1_8", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
-		f.tooltip = "This will change the bar's border color when your current mana is above the overcapping maximum Mana as configured below."
-		f:SetChecked(spec.colors.bar.overcapEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.overcapEnabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 40
-
-		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 170, spec.overcapThreshold, 1, 1,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.RoundTo(value, 1)
-			self.EditBox:SetText(value)
-			spec.overcapThreshold = value
-		end)
-		]]
+		end)		
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.devastation = controls
 	end
@@ -963,83 +631,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
-		end)
-		
-		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Mana", spec.colors.text.passive, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.text.passive
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Mana to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.text.overThreshold
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
-		end)
-
-		controls.colors.text.overcap = TRB.UiFunctions:BuildColorPicker(parent, "Current Mana is above overcap threshold", spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.text.overcap
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcap")
-		end)
-
-		yCoord = yCoord - 30
-
-		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", 0, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
-		f.tooltip = "This will change the Mana text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
-		f:SetChecked(spec.colors.text.overThresholdEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.text.overThresholdEnabled = self:GetChecked()
-		end)
-
-		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapTextEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
-		f.tooltip = "This will change the Mana text color when your current mana is above the overcapping maximum Mana value."
-		f:SetChecked(spec.colors.text.overcapEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.text.overcapEnabled = self:GetChecked()
-		end)
-		
-
-		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.UiFunctions:BuildSectionHeader(parent, "Mark of the Crane Count and Time Remaining Tracking", 0, yCoord)
-
-		yCoord = yCoord - 25
-
-		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_dotColor", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.dotColor
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change total Mark of the Crane counter and Mark of the Crane timer color based on time remaining?")
-		f.tooltip = "When checked, the color of total Mark of the Crane debuffs up counters and timers will change based on whether or not Mark of the Crane is on the current target."
-		f:SetChecked(spec.colors.text.dots.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.text.dots.enabled = self:GetChecked()
-		end)
-
-		controls.colors.dots = {}
-
-		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
-		f = controls.colors.dots.up
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
-		end)
-
-		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
-		f = controls.colors.dots.pandemic
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
-		end)
-
-		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
-		f = controls.colors.dots.down
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
 		end)
 
 		yCoord = yCoord - 130
@@ -1079,203 +670,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end)
 
 		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
-
-		yCoord = yCoord - 40
-		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapAudio
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Mana")
-		f.tooltip = "Play an audio cue when your hardcast spell will overcap Mana."
-		f:SetChecked(spec.audio.overcap.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.audio.overcap.enabled = self:GetChecked()
-
-			if spec.audio.overcap.enabled then
-				---@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Evoker_Devastation_overcapAudio", parent)
-		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
-		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.overcapAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		LibDD:UIDropDownMenu_Initialize(controls.dropDown.overcapAudio, function(self, level, menuList)
-			local entries = 25
-			local info = LibDD:UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					LibDD:UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == spec.audio.overcap.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						LibDD:UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.overcapAudio:SetValue(newValue, newName)
-			spec.audio.overcap.sound = newValue
-			spec.audio.overcap.soundName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
-			CloseDropDownMenus()
-			---@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-
---[[
-		yCoord = yCoord - 60
-		controls.checkBoxes.danceOfEssenceJiAudio = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_danceOfEssenceJi_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.danceOfEssenceJiAudio
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Dance of Essence-Ji proc")
-		f.tooltip = "Play an audio cue when you get a Dance of Essence-Ji proc that allows you to use Spinning Crane Kick for no Essence."
-		f:SetChecked(spec.audio.danceOfEssenceJi.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.audio.danceOfEssenceJi.enabled = self:GetChecked()
-
-			if spec.audio.danceOfEssenceJi.enabled then
----@diagnostic disable-next-line: redundant-parameter
-				PlaySoundFile(spec.audio.danceOfEssenceJi.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.danceOfEssenceJiAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Evoker_Devastation_danceOfEssenceJi_Audio", parent)
-		controls.dropDown.danceOfEssenceJiAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.danceOfEssenceJiAudio, oUi.dropdownWidth)
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.danceOfEssenceJiAudio, spec.audio.danceOfEssenceJi.soundName)
-		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.danceOfEssenceJiAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		LibDD:UIDropDownMenu_Initialize(controls.dropDown.danceOfEssenceJiAudio, function(self, level, menuList)
-			local entries = 25
-			local info = LibDD:UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Sounds " .. i+1
-					info.menuList = i
-					LibDD:UIDropDownMenu_AddButton(info)
-				end
-			else  
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == spec.audio.danceOfEssenceJi.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						LibDD:UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.danceOfEssenceJiAudio:SetValue(newValue, newName)
-			spec.audio.danceOfEssenceJi.sound = newValue
-			spec.audio.danceOfEssenceJi.soundName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.danceOfEssenceJiAudio, newName)
-			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(spec.audio.danceOfEssenceJi.sound, TRB.Data.settings.core.audio.channel.channel)
-		end]]
-
-
-		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Passive Mana Regeneration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.trackManaRegen = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_trackManaRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.trackManaRegen
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Track mana regen")
-		f.tooltip = "Include mana regen in the passive bar and passive variables. Unchecking this will cause the following Passive Mana Generation options to have no effect."
-		f:SetChecked(spec.generation.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.generation.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 40
-		controls.checkBoxes.manaGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_PFG_GCD", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.manaGenerationModeGCDs
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mana generation over GCDs")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Mana generation over the next X GCDs, based on player's current GCD length."
-		if spec.generation.mode == "gcd" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.manaGenerationModeGCDs:SetChecked(true)
-			controls.checkBoxes.manaGenerationModeTime:SetChecked(false)
-			spec.generation.mode = "gcd"
-		end)
-
-		title = "Mana GCDs - 0.75sec Floor"
-		controls.manaGenerationGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.manaGenerationGCDs:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			spec.generation.gcds = value
-		end)
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.manaGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_PFG_TIME", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.manaGenerationModeTime
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mana generation over time")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Mana generation over the next X seconds."
-		if spec.generation.mode == "time" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.manaGenerationModeGCDs:SetChecked(false)
-			controls.checkBoxes.manaGenerationModeTime:SetChecked(true)
-			spec.generation.mode = "time"
-		end)
-
-		title = "Mana Over Time (sec)"
-		controls.manaGenerationTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.manaGenerationTime:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.RoundTo(value, 2)
-			self.EditBox:SetText(value)
-			spec.generation.time = value
-		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.devastation = controls
 	end

@@ -382,7 +382,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				id = 117952,
 				name = "",
 				icon = "",
-				energy = -20,
+				mana = -20,
                 comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 1,
@@ -395,7 +395,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				id = 322101,
 				name = "",
 				icon = "",
-				energy = -15,
+				mana = -15,
                 comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 2,
@@ -426,7 +426,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				id = 100780,
 				name = "",
 				icon = "",
-				energy = -50,
+				mana = -50,
                 comboPointsGenerated = 2,
 				texture = "",
 				thresholdId = 3,
@@ -448,7 +448,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				id = 116670,
 				name = "",
 				icon = "",
-				energy = -30,
+				mana = -30,
                 comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 4,
@@ -473,7 +473,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				id = 218164,
 				name = "",
 				icon = "",
-				energy = -20,
+				mana = -20,
                 comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 5,
@@ -488,7 +488,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				id = 116095,
 				name = "",
 				icon = "",
-				energy = -15,
+				mana = -15,
                 comboPoints = true,
 				texture = "",
 				thresholdId = 6,
@@ -500,7 +500,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				id = 115078,
 				name = "",
 				icon = "",
-				energy = -20,
+				mana = -20,
                 comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 7,
@@ -542,7 +542,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				name = "",
 				icon = "",
 				comboPointsGenerated = 2,
-				energyPerTick = 15,
+				manaPerTick = 15,
 				ticks = 5,
 				tickRate = 1,
 				isTalent = true
@@ -561,10 +561,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			},]]
 		}
 
-		specCache.devastation.snapshotData.energyRegen = 0
+		specCache.devastation.snapshotData.manaRegen = 0
 		specCache.devastation.snapshotData.audio = {
-			overcapCue = false,
-			--playedDanceOfChiJiCue = false
 		}
 		specCache.devastation.snapshotData.targetData = {
 			ttdIsActive = false,
@@ -635,6 +633,88 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "evoker", "devastation")
 		TRB.Functions.LoadFromSpecCache(specCache.devastation)
+	end
+
+	local function FillSpellData_Devastation()
+		Setup_Devastation()
+		local spells = TRB.Functions.FillSpellData(specCache.devastation.spells)
+
+		-- This is done here so that we can get icons for the options menu!
+		specCache.devastation.barTextVariables.icons = {
+			{ variable = "#casting", icon = "", description = "The icon of the Mana generating spell you are currently hardcasting", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+
+			--[[
+			{ variable = "#blackoutKick", icon = spells.blackoutKick.icon, description = spells.blackoutKick.name, printInSettings = true },
+			{ variable = "#cracklingJadeLightning", icon = spells.cracklingJadeLightning.icon, description = spells.cracklingJadeLightning.name, printInSettings = true },
+			{ variable = "#cjl", icon = spells.cracklingJadeLightning.icon, description = spells.cracklingJadeLightning.name, printInSettings = false },
+			{ variable = "#danceOfChiJi", icon = spells.danceOfChiJi.icon, description = spells.danceOfChiJi.name, printInSettings = true },
+			{ variable = "#detox", icon = spells.detox.icon, description = spells.detox.name, printInSettings = true },
+			{ variable = "#disable", icon = spells.disable.icon, description = spells.disable.name, printInSettings = true },
+			{ variable = "#energizingElixir", icon = spells.energizingElixir.icon, description = spells.energizingElixir.name, printInSettings = true },
+			{ variable = "#expelHarm", icon = spells.expelHarm.icon, description = spells.expelHarm.name, printInSettings = true },
+			{ variable = "#fistsOfFury", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = true },
+			{ variable = "#fof", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = false },
+			{ variable = "#strikeOfTheWindlord", icon = spells.strikeOfTheWindlord.icon, description = spells.strikeOfTheWindlord.name, printInSettings = true },
+			{ variable = "#paralysis", icon = spells.paralysis.icon, description = spells.paralysis.name, printInSettings = true },
+			{ variable = "#risingSunKick", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = true },
+			{ variable = "#rsk", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = false },
+			{ variable = "#serenity", icon = spells.serenity.icon, description = spells.serenity.name, printInSettings = true },
+			{ variable = "#spinningCraneKick", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = true },
+			{ variable = "#sck", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = false },
+			{ variable = "#tigerPalm", icon = spells.tigerPalm.icon, description = spells.tigerPalm.name, printInSettings = true },
+			{ variable = "#touchOfDeath", icon = spells.touchOfDeath.icon, description = spells.touchOfDeath.name, printInSettings = true },
+			{ variable = "#vivify", icon = spells.vivify.icon, description = spells.vivify.name, printInSettings = true },
+        ]]
+		}
+		specCache.devastation.barTextVariables.values = {
+			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
+			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
+			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
+			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
+			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
+			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
+			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
+			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
+			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+
+			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
+			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
+			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
+			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
+			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
+			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
+			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
+			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+
+			{ variable = "$mana", description = "Current Mana", printInSettings = true, color = false },
+			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },
+			{ variable = "$manaMax", description = "Maximum Mana", printInSettings = true, color = false },
+			{ variable = "$resourceMax", description = "Maximum Mana", printInSettings = false, color = false },
+			
+			{ variable = "$essence", description = "Current Essence", printInSettings = true, color = false },
+			{ variable = "$comboPoints", description = "Current Essence", printInSettings = false, color = false },
+			{ variable = "$essenceMax", description = "Maximum Essence", printInSettings = true, color = false },
+			{ variable = "$comboPointsMax", description = "Maximum Essence", printInSettings = false, color = false },
+
+			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+		}
+
+		specCache.devastation.spells = spells
 	end
 
 	local function FillSpellData_Preservation()
@@ -731,111 +811,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		}
 
 		specCache.preservation.spells = spells
-	end
-
-	local function FillSpellData_Devastation()
-		Setup_Devastation()
-		local spells = TRB.Functions.FillSpellData(specCache.devastation.spells)
-
-		-- This is done here so that we can get icons for the options menu!
-		specCache.devastation.barTextVariables.icons = {
-			{ variable = "#casting", icon = "", description = "The icon of the Energy generating spell you are currently hardcasting", printInSettings = true },
-			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
-
-			--[[
-			{ variable = "#blackoutKick", icon = spells.blackoutKick.icon, description = spells.blackoutKick.name, printInSettings = true },
-			{ variable = "#cracklingJadeLightning", icon = spells.cracklingJadeLightning.icon, description = spells.cracklingJadeLightning.name, printInSettings = true },
-			{ variable = "#cjl", icon = spells.cracklingJadeLightning.icon, description = spells.cracklingJadeLightning.name, printInSettings = false },
-			{ variable = "#danceOfChiJi", icon = spells.danceOfChiJi.icon, description = spells.danceOfChiJi.name, printInSettings = true },
-			{ variable = "#detox", icon = spells.detox.icon, description = spells.detox.name, printInSettings = true },
-			{ variable = "#disable", icon = spells.disable.icon, description = spells.disable.name, printInSettings = true },
-			{ variable = "#energizingElixir", icon = spells.energizingElixir.icon, description = spells.energizingElixir.name, printInSettings = true },
-			{ variable = "#expelHarm", icon = spells.expelHarm.icon, description = spells.expelHarm.name, printInSettings = true },
-			{ variable = "#fistsOfFury", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = true },
-			{ variable = "#fof", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = false },
-			{ variable = "#strikeOfTheWindlord", icon = spells.strikeOfTheWindlord.icon, description = spells.strikeOfTheWindlord.name, printInSettings = true },
-			{ variable = "#paralysis", icon = spells.paralysis.icon, description = spells.paralysis.name, printInSettings = true },
-			{ variable = "#risingSunKick", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = true },
-			{ variable = "#rsk", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = false },
-			{ variable = "#serenity", icon = spells.serenity.icon, description = spells.serenity.name, printInSettings = true },
-			{ variable = "#spinningCraneKick", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = true },
-			{ variable = "#sck", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = false },
-			{ variable = "#tigerPalm", icon = spells.tigerPalm.icon, description = spells.tigerPalm.name, printInSettings = true },
-			{ variable = "#touchOfDeath", icon = spells.touchOfDeath.icon, description = spells.touchOfDeath.name, printInSettings = true },
-			{ variable = "#vivify", icon = spells.vivify.icon, description = spells.vivify.name, printInSettings = true },
-        ]]
-		}
-		specCache.devastation.barTextVariables.values = {
-			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
-			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
-			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
-			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
-			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
-			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
-			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
-			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
-			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
-			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
-
-			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
-			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
-			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
-			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
-			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
-			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
-			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
-			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
-			
-			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
-
-			--{ variable = "$energy", description = "Current Energy", printInSettings = true, color = false },
-			{ variable = "$resource", description = "Current Energy", printInSettings = false, color = false },
-			--{ variable = "$energyMax", description = "Maximum Energy", printInSettings = true, color = false },
-			{ variable = "$resourceMax", description = "Maximum Energy", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Builder Energy from Hardcasting Spells", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Spender Energy from Hardcasting Spells", printInSettings = false, color = false },
-			{ variable = "$passive", description = "Energy from Passive Sources including Regen and Barbed Shot buffs", printInSettings = true, color = false },
-			{ variable = "$regen", description = "Energy from Passive Regen", printInSettings = true, color = false },
-			--{ variable = "$regenEnergy", description = "Energy from Passive Regen", printInSettings = false, color = false },
-			--{ variable = "$energyRegen", description = "Energy from Passive Regen", printInSettings = false, color = false },
-			--{ variable = "$energyPlusCasting", description = "Current + Casting Energy Total", printInSettings = false, color = false },
-			{ variable = "$resourcePlusCasting", description = "Current + Casting Energy Total", printInSettings = false, color = false },
-			--{ variable = "$energyPlusPassive", description = "Current + Passive Energy Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusPassive", description = "Current + Passive Energy Total", printInSettings = false, color = false },
-			--{ variable = "$energyTotal", description = "Current + Passive + Casting Energy Total", printInSettings = true, color = false },
-			{ variable = "$resourceTotal", description = "Current + Passive + Casting Energy Total", printInSettings = false, color = false },
-			
-			--{ variable = "$chi", description = "Current Chi", printInSettings = true, color = false },
-			{ variable = "$comboPoints", description = "Current Chi", printInSettings = false, color = false },
-			--{ variable = "$chiMax", description = "Maximum Chi", printInSettings = true, color = false },
-			{ variable = "$comboPointsMax", description = "Maximum Chi", printInSettings = false, color = false },
-
-			--{ variable = "$serenityTime", description = "Time remaining on Serenity buff", printInSettings = true, color = false },
-
-			--{ variable = "$danceOfChiJiTime", description = "Time remaining on Dance of Chi-Ji proc", printInSettings = true, color = false },
-
-			--[[
-			{ variable = "$motcCount", description = "Number of unique targets contributing to Mark of the Crane", printInSettings = true, color = false },
-			{ variable = "$motcActiveCount", description = "Number of still alive unique targets contributing to Mark of the Crane", printInSettings = true, color = false },
-			{ variable = "$motcTime", description = "Time until your Mark of the Crane debuff expires on your current target", printInSettings = true, color = false },
-			{ variable = "$motcMinTime", description = "Time until your oldest Mark of the Crane debuff expires", printInSettings = true, color = false },
-			{ variable = "$motcMaxTime", description = "Time until your newest Mark of the Crane debuff expires", printInSettings = true, color = false },
-]]
-			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
-		}
-
-		specCache.devastation.spells = spells
 	end
 
 	local function CheckCharacter()
@@ -1017,7 +992,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		if specId == 1 then
 			for k, v in pairs(TRB.Data.spells) do
 				local spell = TRB.Data.spells[k]
-				if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+				if spell ~= nil and spell.id ~= nil and spell.mana ~= nil and spell.mana < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 					if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
@@ -1162,40 +1137,36 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].markOfTheCraneRemaining > 0 then
 					valid = true
 				end]]
-			elseif var == "$resource" or var == "$energy" then
+			elseif var == "$resource" or var == "$mana" then
 				if TRB.Data.snapshotData.resource > 0 then
 					valid = true
 				end
-			elseif var == "$resourceMax" or var == "$energyMax" then
+			elseif var == "$resourceMax" or var == "$manaMax" then
 				valid = true
-			elseif var == "$resourceTotal" or var == "$energyTotal" then
+			elseif var == "$resourceTotal" or var == "$manaTotal" then
 				if TRB.Data.snapshotData.resource > 0 or
 					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
 					then
 					valid = true
 				end
-			elseif var == "$resourcePlusCasting" or var == "$energyPlusCasting" then
+			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
 				if TRB.Data.snapshotData.resource > 0 or
 					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
 					valid = true
 				end
-			elseif var == "$overcap" or var == "$energyOvercap" or var == "$resourceOvercap" then
-				if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > settings.overcapThreshold then
-					valid = true
-				end
-			elseif var == "$resourcePlusPassive" or var == "$energyPlusPassive" then
+			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
 				if TRB.Data.snapshotData.resource > 0 then
 					valid = true
 				end
-			elseif var == "$regen" or var == "$regenEnergy" or var == "$energyRegen" then
+			elseif var == "$regen" or var == "$regenMana" or var == "$manaRegen" then
 				if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
 					((settings.generation.mode == "time" and settings.generation.time > 0) or
 					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 					valid = true
 				end
-			elseif var == "$comboPoints" or var == "$chi" then
+			elseif var == "$comboPoints" or var == "$essence" then
 				valid = true
-			elseif var == "$comboPointsMax"or var == "$chiMax" then
+			elseif var == "$comboPointsMax"or var == "$essenceMax" then
 				valid = true
 			end
 		elseif specId == 2 then --Preservation
@@ -1300,155 +1271,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local currentTime = GetTime()
 
 		-- This probably needs to be pulled every refresh
-		TRB.Data.snapshotData.energyRegen, _ = GetPowerRegen()
-
-		--$overcap
-		local overcap = IsValidVariableForSpec("$overcap")
-
-		local currentEnergyColor = TRB.Data.settings.evoker.devastation.colors.text.current
-		local castingEnergyColor = TRB.Data.settings.evoker.devastation.colors.text.casting
-
-		if TRB.Data.settings.evoker.devastation.colors.text.overcapEnabled and overcap then
-			currentEnergyColor = TRB.Data.settings.evoker.devastation.colors.text.overcap
-            castingEnergyColor = TRB.Data.settings.evoker.devastation.colors.text.overcap
-		elseif TRB.Data.settings.evoker.devastation.colors.text.overThresholdEnabled then
-			local _overThreshold = false
-			for k, v in pairs(TRB.Data.spells) do
-				local spell = TRB.Data.spells[k]
-				if	spell ~= nil and spell.thresholdUsable == true then
-					_overThreshold = true
-					break
-				end
-			end
-
-			if _overThreshold then
-				currentEnergyColor = TRB.Data.settings.evoker.devastation.colors.text.overThreshold
-				castingEnergyColor = TRB.Data.settings.evoker.devastation.colors.text.overThreshold
-			end
-		end
-
-		if TRB.Data.snapshotData.casting.resourceFinal < 0 then
-			castingEnergyColor = TRB.Data.settings.evoker.devastation.colors.text.spending
-		end
-
-		--$energy
-		local currentEnergy = string.format("|c%s%.0f|r", currentEnergyColor, TRB.Data.snapshotData.resource)
-		--$casting
-		local castingEnergy = string.format("|c%s%.0f|r", castingEnergyColor, TRB.Data.snapshotData.casting.resourceFinal)
-		--$passive
-		local _regenEnergy = 0
-		local _passiveEnergy
-		local _passiveEnergyMinusRegen
-
-		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
-
-		if TRB.Data.settings.evoker.devastation.generation.enabled then
-			if TRB.Data.settings.evoker.devastation.generation.mode == "time" then
-				_regenEnergy = TRB.Data.snapshotData.energyRegen * (TRB.Data.settings.evoker.devastation.generation.time or 3.0)
-			else
-				_regenEnergy = TRB.Data.snapshotData.energyRegen * ((TRB.Data.settings.evoker.devastation.generation.gcds or 2) * _gcd)
-			end
-		end
-
-		--$regenEnergy
-		local regenEnergy = string.format("|c%s%.0f|r", TRB.Data.settings.evoker.devastation.colors.text.passive, _regenEnergy)
-
-		_passiveEnergy = _regenEnergy --+ _markOfTheCraneEnergy
-		_passiveEnergyMinusRegen = _passiveEnergy - _regenEnergy
-
-		local passiveEnergy = string.format("|c%s%.0f|r", TRB.Data.settings.evoker.devastation.colors.text.passive, _passiveEnergy)
-		local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", TRB.Data.settings.evoker.devastation.colors.text.passive, _passiveEnergyMinusRegen)
-		--$energyTotal
-		local _energyTotal = math.min(_passiveEnergy + TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local energyTotal = string.format("|c%s%.0f|r", currentEnergyColor, _energyTotal)
-		--$energyPlusCasting
-		local _energyPlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local energyPlusCasting = string.format("|c%s%.0f|r", castingEnergyColor, _energyPlusCasting)
-		--$energyPlusPassive
-		local _energyPlusPassive = math.min(_passiveEnergy + TRB.Data.snapshotData.resource, TRB.Data.character.maxResource)
-		local energyPlusPassive = string.format("|c%s%.0f|r", currentEnergyColor, _energyPlusPassive)
-		
-		--[[
-		--$serenityTime
-		local _serenityTime = GetSerenityRemainingTime()
-		local serenityTime = "0.0"
-		if _serenityTime ~= nil then
-			serenityTime = string.format("%.1f", _serenityTime)
-		end
-		
-		--$danceOfChiJiTime
-		local _danceOfChiJiTime = GetDanceOfChiJiRemainingTime()
-		local danceOfChiJiTime = "0.0"
-		if _danceOfChiJiTime ~= nil then
-			danceOfChiJiTime = string.format("%.1f", _danceOfChiJiTime)
-		end
-		
-		--$motcMinTime
-		local _motcMinTime = (TRB.Data.snapshotData.markOfTheCrane.minEndTime or 0) - currentTime
-		local motcMinTime = "0.0"
-		if _motcMinTime > 0 then
-			motcMinTime = string.format("%.1f", _motcMinTime)
-		end
-		
-		--$motcMaxTime
-		local _motcMaxTime = (TRB.Data.snapshotData.markOfTheCrane.maxEndTime or 0) - currentTime
-		local motcMaxTime = "0.0"
-		if _motcMaxTime > 0 then
-			motcMaxTime = string.format("%.1f", _motcMaxTime)
-		end
-
-		
-		local targetMotcId = GetGuidPositionInMarkOfTheCraneList(TRB.Data.snapshotData.targetData.currentTargetGuid)
-		--$motcTime
-		local _motcTime = 0
-
-		if targetMotcId > 0 and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
-			_motcTime = TRB.Data.snapshotData.markOfTheCrane.list[targetMotcId].endTime - currentTime
-		end
-
-		local _motcCount = TRB.Data.snapshotData.markOfTheCrane.count or 0
-		local motcCount = tostring(_motcCount)
-		local _motcActiveCount = TRB.Data.snapshotData.markOfTheCrane.activeCount or 0
-		local motcActiveCount = tostring(_motcActiveCount)
-
-		local motcTime
-
-		if TRB.Data.settings.evoker.devastation.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-			if targetMotcId > 0 and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].markOfTheCrane then
-				if not IsTargetLowestInMarkOfTheCraneList() then
-					motcCount = string.format("|c%s%.0f|r", TRB.Data.settings.evoker.devastation.colors.text.dots.up, TRB.Data.snapshotData.markOfTheCrane.count)
-					motcActiveCount = string.format("|c%s%.0f|r", TRB.Data.settings.evoker.devastation.colors.text.dots.up, TRB.Data.snapshotData.markOfTheCrane.activeCount)
-					motcTime = string.format("|c%s%.1f|r", TRB.Data.settings.evoker.devastation.colors.text.dots.up, _motcTime)
-				else
-					motcCount = string.format("|c%s%.0f|r", TRB.Data.settings.evoker.devastation.colors.text.dots.pandemic, TRB.Data.snapshotData.markOfTheCrane.count)
-					motcActiveCount = string.format("|c%s%.0f|r", TRB.Data.settings.evoker.devastation.colors.text.dots.pandemic, TRB.Data.snapshotData.markOfTheCrane.activeCount)
-					motcTime = string.format("|c%s%.1f|r", TRB.Data.settings.evoker.devastation.colors.text.dots.pandemic, _motcTime)
-				end
-			else
-				motcCount = string.format("|c%s%.0f|r", TRB.Data.settings.evoker.devastation.colors.text.dots.down, TRB.Data.snapshotData.markOfTheCrane.count)
-				motcActiveCount = string.format("|c%s%.0f|r", TRB.Data.settings.evoker.devastation.colors.text.dots.down, TRB.Data.snapshotData.markOfTheCrane.activeCount)
-				motcTime = string.format("|c%s%.1f|r", TRB.Data.settings.evoker.devastation.colors.text.dots.down, 0)
-			end
-		else
-			motcTime = string.format("%.1f", _motcTime)
-		end
-		]]
-
+		TRB.Data.snapshotData.manaRegen, _ = GetPowerRegen()
+		local currentManaColor = TRB.Data.settings.evoker.devastation.colors.text.current
+		--$mana
+		local currentMana = string.format("|c%s%.0f|r", currentManaColor, TRB.Data.snapshotData.resource)
 		----------------------------
-
-		Global_TwintopResourceBar.resource.passive = _passiveEnergy
-		Global_TwintopResourceBar.resource.regen = _regenEnergy
-		Global_TwintopResourceBar.dots = {
-		--	motcCount = _motcCount,
-		--	motcActiveCount = _motcActiveCount
-		}
-		--[[Global_TwintopResourceBar.markOfTheCrane = {
-			count = _motcCount,
-			activeCount = _motcActiveCount,
-			targetTime = _motcTime,
-			minTime = _motcMinTime,
-			maxTime = _motcMaxTime
-		}]]
 
 		local lookup = TRB.Data.lookup or {}
 		--[[lookup["#blackoutKick"] = TRB.Data.spells.blackoutKick.icon
@@ -1472,77 +1299,26 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		lookup["#touchOfDeath"] = TRB.Data.spells.touchOfDeath.icon
 		lookup["#vivify"] = TRB.Data.spells.vivify.icon]]
 
-		lookup["$energyPlusCasting"] = energyPlusCasting
-		lookup["$energyTotal"] = energyTotal
-		lookup["$energyMax"] = TRB.Data.character.maxResource
-		lookup["$energy"] = currentEnergy
-		lookup["$resourcePlusCasting"] = energyPlusCasting
-		lookup["$resourcePlusPassive"] = energyPlusPassive
-		lookup["$resourceTotal"] = energyTotal
+		lookup["$manaMax"] = TRB.Data.character.maxResource
+		lookup["$mana"] = currentMana
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
-		lookup["$resource"] = currentEnergy
-		lookup["$casting"] = castingEnergy
-		lookup["$chi"] = TRB.Data.character.resource2
+		lookup["$resource"] = currentMana
+		lookup["$essence"] = TRB.Data.character.resource2
 		lookup["$comboPoints"] = TRB.Data.character.resource2
-		lookup["$chiMax"] = TRB.Data.character.maxResource2
+		lookup["$essenceMax"] = TRB.Data.character.maxResource2
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
-
-		if TRB.Data.character.maxResource == TRB.Data.snapshotData.resource then
-			lookup["$passive"] = passiveEnergyMinusRegen
-		else
-			lookup["$passive"] = passiveEnergy
-		end
-
-		lookup["$regen"] = regenEnergy
-		lookup["$regenEnergy"] = regenEnergy
-		lookup["$energyRegen"] = regenEnergy
-		lookup["$overcap"] = overcap
-		lookup["$resourceOvercap"] = overcap
-		lookup["$energyOvercap"] = overcap
-		--[[lookup["$serenityTime"] = serenityTime
-		lookup["$danceOfChiJiTime"] = danceOfChiJiTime
-		lookup["$motcMinTime"] = motcMinTime
-		lookup["$motcMaxTime"] = motcMaxTime
-		lookup["$motcTime"] = motcTime
-		lookup["$motcCount"] = motcCount
-		lookup["$motcActiveCount"] = motcActiveCount]]
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
-		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
-		lookupLogic["$energyTotal"] = _energyTotal
-		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
-		lookupLogic["$energy"] = TRB.Data.snapshotData.resource
-		lookupLogic["$resourcePlusCasting"] = _energyPlusCasting
-		lookupLogic["$resourcePlusPassive"] = _energyPlusPassive
-		lookupLogic["$resourceTotal"] = _energyTotal
+		lookupLogic["$manaMax"] = TRB.Data.character.maxResource
+		lookupLogic["$mana"] = TRB.Data.snapshotData.resource
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = TRB.Data.snapshotData.resource
 		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
-		lookupLogic["$chi"] = TRB.Data.character.resource2
+		lookupLogic["$essence"] = TRB.Data.character.resource2
 		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
-		lookupLogic["$chiMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
-
-		if TRB.Data.character.maxResource == TRB.Data.snapshotData.resource then
-			lookupLogic["$passive"] = _passiveEnergyMinusRegen
-		else
-			lookupLogic["$passive"] = _passiveEnergy
-		end
-
-		lookupLogic["$regen"] = _regenEnergy
-		lookupLogic["$regenEnergy"] = _regenEnergy
-		lookupLogic["$energyRegen"] = _regenEnergy
-		lookupLogic["$overcap"] = overcap
-		lookupLogic["$resourceOvercap"] = overcap
-		lookupLogic["$energyOvercap"] = overcap
-		--[[lookupLogic["$serenityTime"] = _serenityTime
-		lookupLogic["$danceOfChiJiTime"] = _danceOfChiJiTime
-		lookupLogic["$motcMinTime"] = _motcMinTime
-		lookupLogic["$motcMaxTime"] = _motcMaxTime
-		lookupLogic["$motcTime"] = _motcTime
-		lookupLogic["$motcCount"] = _motcCount
-		lookupLogic["$motcActiveCount"] = _motcActiveCount]]
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -1698,9 +1474,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		lookup["$potionOfFrozenFocusTime"] = potionOfFrozenFocusTime
 		lookup["$potionCooldown"] = potionCooldown
 		lookup["$potionCooldownSeconds"] = potionCooldownSeconds
-		lookup["$chi"] = TRB.Data.character.resource2
+		lookup["$essence"] = TRB.Data.character.resource2
 		lookup["$comboPoints"] = TRB.Data.character.resource2
-		lookup["$chiMax"] = TRB.Data.character.maxResource2
+		lookup["$essenceMax"] = TRB.Data.character.maxResource2
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 		TRB.Data.lookup = lookup
 
@@ -1733,9 +1509,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		lookupLogic["$potionOfFrozenFocusTime"] = _potionOfFrozenFocusTime
 		lookupLogic["$potionCooldown"] = potionCooldown
 		lookupLogic["$potionCooldownSeconds"] = potionCooldown
-		lookupLogic["$chi"] = TRB.Data.character.resource2
+		lookupLogic["$essence"] = TRB.Data.character.resource2
 		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
-		lookupLogic["$chiMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 		TRB.Data.lookupLogic = lookupLogic
 	end
@@ -1743,8 +1519,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
     local function FillSnapshotDataCasting(spell)
 		local currentTime = GetTime()
         TRB.Data.snapshotData.casting.startTime = currentTime
-        TRB.Data.snapshotData.casting.resourceRaw = spell.energy
-        TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.energy)
+        TRB.Data.snapshotData.casting.resourceRaw = spell.mana
+        TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.mana)
         TRB.Data.snapshotData.casting.spellId = spell.id
         TRB.Data.snapshotData.casting.icon = spell.icon
     end
@@ -2042,129 +1818,12 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
-					local passiveBarValue = 0
-					local castingBarValue = 0
-					local gcd = TRB.Functions.GetCurrentGCDTime(true)
-
-					local passiveValue = 0
-					if specSettings.bar.showPassive then
-						if specSettings.generation.enabled then
-							if specSettings.generation.mode == "time" then
-								passiveValue = (TRB.Data.snapshotData.energyRegen * (specSettings.generation.time or 3.0))
-							else
-								passiveValue = (TRB.Data.snapshotData.energyRegen * ((specSettings.generation.gcds or 2) * gcd))
-							end
-						end
-					end
-
-					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
-					else
-						castingBarValue = TRB.Data.snapshotData.resource
-					end
-
-					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
-						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
-							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
-						else
-							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
-						end
-					else
-						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
-						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
-					end
-
-					local pairOffset = 0
-					for k, v in pairs(TRB.Data.spells) do
-						local spell = TRB.Data.spells[k]
-						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then	
-							local energyAmount = CalculateAbilityResourceValue(spell.energy, true)
-							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
-
-							local showThreshold = true
-							local thresholdColor = specSettings.colors.threshold.over
-							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
-
-                            if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-                            elseif spell.isPvp and not TRB.Data.character.isPvp then
-                                showThreshold = false
-                            elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
-                                showThreshold = false
-                            elseif spell.hasCooldown then
-								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
-									(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
-                                    thresholdColor = specSettings.colors.threshold.unusable
-                                    frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-                                elseif TRB.Data.snapshotData.resource >= -energyAmount then
-                                    thresholdColor = specSettings.colors.threshold.over
-                                else
-                                    thresholdColor = specSettings.colors.threshold.under
-                                    frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-                                end
-                            else -- This is an active/available/normal spell threshold
-                                if TRB.Data.snapshotData.resource >= -energyAmount then
-                                    thresholdColor = specSettings.colors.threshold.over
-                                else
-                                    thresholdColor = specSettings.colors.threshold.under
-                                    frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-                                end
-                            end
-
-							if spell.comboPoints == true and TRB.Data.snapshotData.resource2 == 0 then
-								thresholdColor = specSettings.colors.threshold.unusable
-								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-							end
-
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
-						end
-						pairOffset = pairOffset + 3
-					end
-
 					local barColor = specSettings.colors.bar.base
-					--[[if TRB.Data.snapshotData.serenity.spellId and specSettings.endOfSerenity.enabled then
-						local timeThreshold = 0
-						if specSettings.endOfSerenity.mode == "gcd" then
-							local gcd = TRB.Functions.GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOfSerenity.gcdsMax
-						elseif specSettings.endOfSerenity.mode == "time" then
-							timeThreshold = specSettings.endOfSerenity.timeMax
-						end
-						
-						if GetSerenityRemainingTime() <= timeThreshold then
-							barColor = specSettings.colors.bar.serenityEnd
-						else
-							barColor = specSettings.colors.bar.serenity
-						end
-					end]]
-
 					local barBorderColor = specSettings.colors.bar.border
-					--[[if GetDanceOfChiJiRemainingTime() > 0 then
-						barBorderColor = specSettings.colors.bar.borderChiJi
-					elseif specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-						barBorderColor = specSettings.colors.bar.borderOvercap
 
-						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
-							TRB.Data.snapshotData.audio.overcapCue = true
-							---@diagnostic disable-next-line: redundant-parameter
-							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
-						end
-					else
-						TRB.Data.snapshotData.audio.overcapCue = false
-					end]]
+					TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+					TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, 0, 1)
+					TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, 0, 1)
 
 					barContainerFrame:SetAlpha(1.0)
 
