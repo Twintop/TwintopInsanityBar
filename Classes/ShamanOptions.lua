@@ -206,11 +206,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		return settings
     end
 
-	local function ElementalResetSettings()
-		local settings = ElementalLoadDefaultSettings()
-		return settings
-	end
-
 	-- Restoration
 	local function RestorationLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
@@ -403,12 +398,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		return settings
 	end
 
-	local function RestorationResetSettings()
-		local settings = RestorationLoadDefaultSettings()
-		return settings
-	end
-
-
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 		settings.shaman.elemental = ElementalLoadDefaultSettings()
@@ -443,8 +432,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = ElementalResetSettings()
-				ReloadUI()
+				TRB.Data.settings.shaman.elemental = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -457,7 +446,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = ElementalLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -470,7 +459,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = ElementalLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1233,8 +1222,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = RestorationResetSettings()
-				ReloadUI()
+				TRB.Data.settings.shaman.restoration = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1247,7 +1236,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = RestorationLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1260,7 +1249,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = RestorationLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1274,7 +1263,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = RestorationLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,

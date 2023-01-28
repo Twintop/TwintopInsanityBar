@@ -234,12 +234,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		return settings
     end
 
-	local function ArmsResetSettings()
-		local settings = ArmsLoadDefaultSettings()
-		return settings
-	end
-
-
 	--[[
 		Fury Defaults
 	]]
@@ -436,12 +430,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		return settings
     end
 
-	local function FuryResetSettings()
-		local settings = FuryLoadDefaultSettings()
-		return settings
-	end
-
-
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 
@@ -476,8 +464,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = ArmsResetSettings()
-				ReloadUI()
+				TRB.Data.settings.warrior.arms = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -490,7 +478,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = ArmsLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -503,7 +491,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = ArmsLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -516,7 +504,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = ArmsLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1318,8 +1306,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = FuryResetSettings()
-				ReloadUI()
+				TRB.Data.settings.warrior.fury = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1332,7 +1320,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = FuryLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1345,7 +1333,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = FuryLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1358,7 +1346,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = FuryLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,

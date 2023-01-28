@@ -236,12 +236,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		return settings
     end
 
-	local function BalanceResetSettings()
-		local settings = BalanceLoadDefaultSettings()
-		return settings
-	end
-
-
 	--[[ 
 		Feral Defaults
 	]]
@@ -484,12 +478,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		settings.displayText = FeralLoadDefaultBarTextSimpleSettings()
 		return settings
     end
-
-	local function FeralResetSettings()
-		local settings = FeralLoadDefaultSettings()
-		return settings
-	end
-
 	
 	-- Restoration
 	local function RestorationLoadDefaultBarTextSimpleSettings()
@@ -677,13 +665,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		return settings
 	end
 
-	local function RestorationResetSettings()
-		local settings = RestorationLoadDefaultSettings()
-		return settings
-	end
-
-
-
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 
@@ -718,8 +699,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = BalanceResetSettings()
-				ReloadUI()
+				TRB.Data.settings.druid.balance = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -732,7 +713,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = BalanceLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -745,7 +726,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = BalanceLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -758,7 +739,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = BalanceLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1761,8 +1742,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = FeralResetSettings()
-				ReloadUI()
+				TRB.Data.settings.druid.feral = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1775,7 +1756,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = FeralLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1788,7 +1769,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = FeralLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -2734,8 +2715,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = RestorationResetSettings()
-				ReloadUI()
+				TRB.Data.settings.druid.restoration = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -2748,7 +2729,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = RestorationLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -2761,7 +2742,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = RestorationLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -2775,7 +2756,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = RestorationLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,

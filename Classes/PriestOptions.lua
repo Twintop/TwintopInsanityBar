@@ -259,13 +259,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return settings
 	end
 
-	local function HolyResetSettings()
-		local settings = HolyLoadDefaultSettings()
-		return settings
-	end
-
-
-
 	local function ShadowLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
@@ -501,13 +494,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return settings
 	end
 
-	local function ShadowResetSettings()
-		local settings = ShadowLoadDefaultSettings()
-		return settings
-	end
-
-
-
 	local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 		settings.priest.holy = HolyLoadDefaultSettings()
@@ -554,9 +540,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.priest.holy = nil-- HolyResetSettings()
+				TRB.Data.settings.priest.holy = nil
 				C_UI.Reload()
-				--StaticPopup_Show("TwintopResourceBar_ConfirmReload")
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -569,7 +554,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = HolyLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -582,7 +567,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = HolyLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1699,8 +1684,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = ShadowResetSettings()
-				ReloadUI()
+				TRB.Data.settings.priest.shadow = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1713,7 +1698,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = ShadowLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1726,7 +1711,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = ShadowLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1739,7 +1724,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = ShadowLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,

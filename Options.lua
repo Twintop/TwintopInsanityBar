@@ -764,7 +764,7 @@ local function ConstructImportExportPanel()
             result = TRB.Functions.Import(self.editBox:GetText())
 
             if result >= 0 then
-                ReloadUI()
+                C_UI.Reload()
             else
                 if result == -3 then
                     StaticPopupDialogs["TwintopResourceBar_ImportError"].text = "Twintop's Resource Bar import failed. There were no valid classes, specs, or settings values found. Please check the settings configuration string that you entered and try again."
