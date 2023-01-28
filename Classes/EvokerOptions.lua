@@ -249,12 +249,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		return settings
     end
 
-	local function DevastationResetSettings()
-		local settings = DevastationLoadDefaultSettings()
-		return settings
-	end
-
-
 	-- Preservation
 	local function PreservationLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
@@ -464,11 +458,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		return settings
 	end
 
-	local function PreservationResetSettings()
-		local settings = PreservationLoadDefaultSettings()
-		return settings
-	end
-
     local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 
@@ -504,8 +493,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = DevastationResetSettings()
-				ReloadUI()
+				TRB.Data.settings.evoker.devastation = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1470,8 +1459,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = PreservationResetSettings()
-				ReloadUI()
+				TRB.Data.settings.evoker.preservation = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
