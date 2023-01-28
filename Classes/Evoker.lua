@@ -818,6 +818,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		TRB.Functions.CheckCharacter()
 		TRB.Data.character.className = "evoker"
 		TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
+		TRB.Data.character.maxResource2 = 1
         local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
         local settings = nil
 		if specId == 1 then
@@ -869,8 +870,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end
         
         if settings ~= nil then
-			if maxComboPoints ~= TRB.Data.character.maxResource2 then
-				TRB.Data.character.maxResource2 = maxComboPoints
+			if maxComboPoints ~= TRB.Data.character.maxResource2Raw then
+				TRB.Data.character.maxResource2Raw = maxComboPoints
             	TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
 			end
         end
@@ -1305,8 +1306,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		lookup["$resource"] = currentMana
 		lookup["$essence"] = TRB.Data.character.resource2
 		lookup["$comboPoints"] = TRB.Data.character.resource2
-		lookup["$essenceMax"] = TRB.Data.character.maxResource2
-		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+		lookup["$essenceMax"] = TRB.Data.character.maxResource2Raw
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1317,8 +1318,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
 		lookupLogic["$essence"] = TRB.Data.character.resource2
 		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
-		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2
-		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2Raw
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -1476,8 +1477,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		lookup["$potionCooldownSeconds"] = potionCooldownSeconds
 		lookup["$essence"] = TRB.Data.character.resource2
 		lookup["$comboPoints"] = TRB.Data.character.resource2
-		lookup["$essenceMax"] = TRB.Data.character.maxResource2
-		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+		lookup["$essenceMax"] = TRB.Data.character.maxResource2Raw
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1511,8 +1512,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		lookupLogic["$potionCooldownSeconds"] = potionCooldown
 		lookupLogic["$essence"] = TRB.Data.character.resource2
 		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
-		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2
-		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2Raw
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -1831,9 +1832,17 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
 					
-					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+					local partial = UnitPartialPower("player", Enum.PowerType.Essence) / 1000
+					local totalEssence = math.min(partial + TRB.Data.snapshotData.resource2, TRB.Data.character.maxResource2Raw)
+					print(partial, partial + TRB.Data.snapshotData.resource2, TRB.Data.snapshotData.resource2)
 
-                    for x = 1, TRB.Data.character.maxResource2 do
+					TRB.Frames.resource2Frames[1].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.base, true))
+					TRB.Frames.resource2Frames[1].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.border, true))
+					TRB.Frames.resource2Frames[1].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.background, true))
+					TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[1].resourceFrame, totalEssence, TRB.Data.character.maxResource2Raw)
+					--[[
+					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+					for x = 1, TRB.Data.character.maxResource2 do
 						local cpBorderColor = specSettings.colors.comboPoints.border
 						local cpColor = specSettings.colors.comboPoints.base
 						local cpBR = cpBackgroundRed
@@ -1841,7 +1850,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						local cpBB = cpBackgroundBlue
 
                         if TRB.Data.snapshotData.resource2 >= x then
-                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1000, 1000)
+                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
 							if (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = specSettings.colors.comboPoints.penultimate
 							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
@@ -1851,13 +1860,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							local partial = UnitPartialPower("player", Enum.PowerType.Essence)
                             TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
 						else
-                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1000)
+                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
                         end
 
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(cpColor, true))
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(cpBorderColor, true))
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-                    end
+                    end]]
 				end
 			end
 			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
@@ -2005,6 +2014,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 										
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
+                    for x = 2, TRB.Data.character.maxResource2 do
+						TRB.Frames.resource2Frames[x]:Hide()
+                    end
+
+					--[[
                     for x = 1, TRB.Data.character.maxResource2 do
 						local cpBorderColor = specSettings.colors.comboPoints.border
 						local cpColor = specSettings.colors.comboPoints.base
@@ -2029,7 +2043,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(cpColor, true))
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(cpBorderColor, true))
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-                    end
+                    end]]
 				end
 
 				TRB.Functions.UpdateResourceBar(specSettings, refreshText)
