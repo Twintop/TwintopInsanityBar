@@ -541,8 +541,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = HolyResetSettings()
-				ReloadUI()
+				TRB.Data.settings.priest.holy = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -555,7 +555,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = HolyLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -568,7 +568,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = HolyLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1685,8 +1685,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = ShadowResetSettings()
-				ReloadUI()
+				TRB.Data.settings.priest.shadow = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1699,7 +1699,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = ShadowLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1712,7 +1712,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = ShadowLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1725,7 +1725,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = ShadowLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,

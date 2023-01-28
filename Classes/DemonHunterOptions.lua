@@ -249,8 +249,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = HavocResetSettings()
-				ReloadUI()
+				TRB.Data.settings.demonhunter.havoc = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -263,7 +263,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = HavocLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -276,7 +276,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = HavocLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,

@@ -483,8 +483,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = MistweaverResetSettings()
-				ReloadUI()
+				TRB.Data.settings.monk.mistweaver = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -497,7 +497,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = MistweaverLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -510,7 +510,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = MistweaverLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -524,7 +524,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = MistweaverLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1092,8 +1092,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = WindwalkerResetSettings()
-				ReloadUI()
+				TRB.Data.settings.monk.windwalker = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1106,7 +1106,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = WindwalkerLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1119,7 +1119,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = WindwalkerLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,

@@ -634,8 +634,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = AssassinationResetSettings()
-				ReloadUI()
+				TRB.Data.settings.rogue.assassination = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -648,7 +648,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = AssassinationLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -661,7 +661,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = AssassinationLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1819,8 +1819,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = OutlawResetSettings()
-				ReloadUI()
+				TRB.Data.settings.rogue.outlaw = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1833,7 +1833,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = OutlawLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1846,7 +1846,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = OutlawLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,

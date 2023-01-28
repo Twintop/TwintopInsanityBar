@@ -772,8 +772,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = BeastMasteryResetSettings()
-				ReloadUI()
+				TRB.Data.settings.hunter.beastMastery = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -786,7 +786,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = BeastMasteryLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -799,7 +799,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = BeastMasteryLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -812,7 +812,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = BeastMasteryLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1733,8 +1733,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = MarksmanshipResetSettings()
-				ReloadUI()
+				TRB.Data.settings.hunter.marksmanship = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1747,7 +1747,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = MarksmanshipLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1760,7 +1760,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = MarksmanshipLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -1773,7 +1773,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = MarksmanshipLoadDefaultBarTextNarrowAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -3080,8 +3080,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec = SurvivalResetSettings()
-				ReloadUI()
+				TRB.Data.settings.hunter.survival = nil
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -3094,7 +3094,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = SurvivalLoadDefaultBarTextSimpleSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
@@ -3107,7 +3107,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button2 = "No",
 			OnAccept = function()
 				spec.displayText = SurvivalLoadDefaultBarTextAdvancedSettings()
-				ReloadUI()
+				C_UI.Reload()
 			end,
 			timeout = 0,
 			whileDead = true,
