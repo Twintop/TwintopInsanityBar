@@ -1768,7 +1768,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.evoker.devastation.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.evoker.devastation.displayBar.notZeroShow) or
-						(TRB.Data.settings.evoker.devastation.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource)
+						(TRB.Data.settings.evoker.devastation.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource and TRB.Data.snapshotData.resource2 == TRB.Data.character.maxResource2)
 					)
 				)) then
 				TRB.Frames.barContainerFrame:Hide()
@@ -1786,7 +1786,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.evoker.preservation.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.evoker.preservation.displayBar.notZeroShow) or
-						(TRB.Data.settings.evoker.preservation.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource)
+						(TRB.Data.settings.evoker.preservation.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource and TRB.Data.snapshotData.resource2 == TRB.Data.character.maxResource2)
 					)
 				)) then
 				TRB.Frames.barContainerFrame:Hide()
