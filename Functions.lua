@@ -2893,7 +2893,8 @@ local function Import(input)
 		(configuration.monk ~= nil and (configuration.monk.mistweaver ~= nil or configuration.monk.windwalker ~= nil)) or
 		(configuration.priest ~= nil and (configuration.priest.holy ~= nil or configuration.priest.shadow ~= nil)) or
 		(configuration.shaman ~= nil and (configuration.shaman.elemental ~= nil or configuration.shaman.restoration ~= nil)) or
-		(configuration.druid ~= nil and (configuration.druid.balance ~= nil or configuration.druid.feral ~= nil))) then
+		(configuration.druid ~= nil and (configuration.druid.balance ~= nil or configuration.druid.feral ~= nil)) or
+		(configuration.evoker ~= nil and (TRB.Data.settings.core.experimental.specs.evoker.devastation and configuration.evoker.devastation ~= nil) or (TRB.Data.settings.core.experimental.specs.evoker.preservation and configuration.evoker.preservation ~= nil))) then
 		return -3
 	end
 
@@ -2971,6 +2972,14 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
 			configuration.endOfMetamorphosis = settings.endOfMetamorphosis
+		elseif classId == 13 then -- Evoker
+			if specId == 1 then -- Devastation
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
+			elseif specId == 2 then -- Preservation
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
+			end
 		end
 	end
 
@@ -3032,6 +3041,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 4 then -- Restoration
 			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
+		elseif classId == 13 then -- Evoker
+			if specId == 1 then -- Devastation
+			elseif specId == 2 then -- Preservation
+			end
 		end
 	end
 
@@ -3079,6 +3092,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 4 then -- Restoration
 			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
+		elseif classId == 13 then -- Evoker
+			if specId == 1 then -- Devastation
+			elseif specId == 2 then -- Preservation
+			end
 		end
 	end
 
@@ -3204,6 +3221,20 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.demonhunter.havoc) > 0 then -- Havoc
 				configuration.demonhunter.havoc = TRB.Functions.ExportConfigurationSections(12, 1, settings.demonhunter.havoc, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
+		elseif classId == 11 and settings.evoker ~= nil then -- Evoker
+			configuration.evoker = {}
+			
+			if TRB.Data.settings.core.experimental.specs.evoker.devastation then			
+				if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.evoker.devastation) > 0 then -- Devastation
+					configuration.druid.balance = TRB.Functions.ExportConfigurationSections(13, 1, settings.evoker.devastation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+				end
+			end			
+			
+			if TRB.Data.settings.core.experimental.specs.evoker.preservation then
+				if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.evoker.preservation) > 0 then -- Preservation
+					configuration.evoker.feral = TRB.Functions.ExportConfigurationSections(13, 2, settings.evoker.preservation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+				end
+			end
 		end
 	elseif classId == nil and specId == nil then -- Everything
 		-- Instead of just dumping the whole table, let's clean it up
@@ -3257,6 +3288,17 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		-- Demon Hunter
 		-- Havoc
 		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(12, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		
+		-- Evoker
+		if TRB.Data.settings.core.experimental.specs.evoker.devastation then
+			-- Devastation
+			configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(13, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		end
+
+		if TRB.Data.settings.core.experimental.specs.evoker.preservation then
+			-- Preservation
+			configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(13, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		end
 	end
 
 	if includeCore then

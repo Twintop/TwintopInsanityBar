@@ -870,8 +870,12 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end
         
         if settings ~= nil then
-			if maxComboPoints ~= TRB.Data.character.maxResource2Raw then
+			--[[if maxComboPoints ~= TRB.Data.character.maxResource2Raw then
 				TRB.Data.character.maxResource2Raw = maxComboPoints
+            	TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+			end]]
+			if maxComboPoints ~= TRB.Data.character.maxResource2 then
+				TRB.Data.character.maxResource2 = maxComboPoints
             	TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
 			end
         end
@@ -1270,12 +1274,14 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local _
 		--Spec specific implementation
 		local currentTime = GetTime()
+		local normalizedMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
 		-- This probably needs to be pulled every refresh
 		TRB.Data.snapshotData.manaRegen, _ = GetPowerRegen()
 		local currentManaColor = TRB.Data.settings.evoker.devastation.colors.text.current
 		--$mana
-		local currentMana = string.format("|c%s%.0f|r", currentManaColor, TRB.Data.snapshotData.resource)
+		local manaPrecision = TRB.Data.settings.evoker.devastation.manaPrecision or 1
+		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 		----------------------------
 
 		local lookup = TRB.Data.lookup or {}
@@ -1831,16 +1837,18 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
-					
+
+					--[[
 					local partial = UnitPartialPower("player", Enum.PowerType.Essence) / 1000
 					local totalEssence = math.min(partial + TRB.Data.snapshotData.resource2, TRB.Data.character.maxResource2Raw)
-					print(partial, partial + TRB.Data.snapshotData.resource2, TRB.Data.snapshotData.resource2)
+					--print(partial, partial + TRB.Data.snapshotData.resource2, TRB.Data.snapshotData.resource2)
 
 					TRB.Frames.resource2Frames[1].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.base, true))
 					TRB.Frames.resource2Frames[1].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.border, true))
 					TRB.Frames.resource2Frames[1].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.background, true))
 					TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[1].resourceFrame, totalEssence, TRB.Data.character.maxResource2Raw)
-					--[[
+					]]
+					
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 					for x = 1, TRB.Data.character.maxResource2 do
 						local cpBorderColor = specSettings.colors.comboPoints.border
@@ -1866,7 +1874,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(cpColor, true))
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(cpBorderColor, true))
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-                    end]]
+                    end
 				end
 			end
 			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
@@ -2056,7 +2064,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 	local function TriggerResourceBarUpdates()
 		local specId = GetSpecialization()
-		if specId ~= 1 and specId ~= 2 then
+		if (specId ~= 1 and specId ~= 2) or
+			(specId == 1 and not TRB.Data.settings.core.experimental.specs.evoker.devastation) or
+			(specId == 2 and not TRB.Data.settings.core.experimental.specs.evoker.preservation) then
 			TRB.Functions.HideResourceBar(true)
 			return
 		end
@@ -2322,7 +2332,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
-		if specId == 1 then
+		if specId == 1 then-- and TRB.Data.settings.core.experimental.specs.evoker.devastation then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.evoker.devastation)
 			TRB.Functions.IsTtdActive(TRB.Data.settings.evoker.devastation)
 			specCache.devastation.talents = TRB.Functions.GetTalents()
@@ -2334,7 +2344,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				TRB.Data.barConstructedForSpec = "devastation"
 				ConstructResourceBar(specCache.devastation.settings)
 			end
-		elseif specId == 2 then
+		elseif specId == 2 then-- and TRB.Data.settings.core.experimental.specs.evoker.preservation then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.evoker.preservation)
 			TRB.Functions.IsTtdActive(TRB.Data.settings.evoker.preservation)
 			specCache.preservation.talents = TRB.Functions.GetTalents()
@@ -2403,19 +2413,27 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							FillSpellData_Devastation()
 							FillSpellData_Preservation()
 
-							SwitchSpec()
-							TRB.Options.Evoker.ConstructOptionsPanel(specCache)
-							-- Reconstruct just in case
-							if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
-								ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+							if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation then
+								SwitchSpec()
 							end
-							EventRegistration()
+
+							TRB.Options.Evoker.ConstructOptionsPanel(specCache)
+							
+							if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation then
+								-- Reconstruct just in case
+								if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
+									ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
+								end
+								EventRegistration()
+							end
 						end)
 					end)
 				end
 
 				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
-					SwitchSpec()
+					if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation then
+						SwitchSpec()
+					end
 				end
 			end
 		end

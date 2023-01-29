@@ -371,6 +371,10 @@ local function LoadDefaultSettings()
             },
             experimental = {
                 specs = {
+                    evoker = {
+                        devastation = false,
+                        preservation = false
+                    }
                 }
             }
         },
@@ -661,43 +665,30 @@ local function ConstructAddonOptionsPanel()
         CloseDropDownMenus()
     end
 
-    --[[
     yCoord = yCoord - 60
     controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Experimental Features", 0, yCoord)
 
     yCoord = yCoord - 30
-    controls.checkBoxes.experimentalMonkMistweaver = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Shaman_Mistweaver", parent, "ChatConfigCheckButtonTemplate")
-    f = controls.checkBoxes.experimentalMonkMistweaver
+    controls.checkBoxes.experimentalEvokerDevastation = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Evoker_Devastation", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.experimentalEvokerDevastation
     f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-    getglobal(f:GetName() .. 'Text'):SetText("Mistweaver Monk support")
-    f.tooltip = "This will enable experimental Mistweaver Monk support within the bar. If you change this setting and are currently logged in on a Monk, you'll need to reload your UI before Mistweaver Monk configuration options become available."
-    f:SetChecked(TRB.Data.settings.core.experimental.specs.monk.mistweaver)
+    getglobal(f:GetName() .. 'Text'):SetText("Devastation Evoker support")
+    f.tooltip = "This will enable experimental Devastation Evoker support within the bar. If you change this setting and are currently logged in on an Evoker, you'll need to reload your UI before Devastation Evoker configuration options become available."
+    f:SetChecked(TRB.Data.settings.core.experimental.specs.evoker.devastation)
     f:SetScript("OnClick", function(self, ...)
-        TRB.Data.settings.core.experimental.specs.monk.mistweaver = self:GetChecked()
+        TRB.Data.settings.core.experimental.specs.evoker.devastation = self:GetChecked()
     end)
 
     yCoord = yCoord - 30
-    controls.checkBoxes.experimentalShamanRestoration = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Shaman_Restoration", parent, "ChatConfigCheckButtonTemplate")
-    f = controls.checkBoxes.experimentalShamanRestoration
+    controls.checkBoxes.experimentalEvokerPreservation = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Evoker_Preservation", parent, "ChatConfigCheckButtonTemplate")
+    f = controls.checkBoxes.experimentalEvokerPreservation
     f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-    getglobal(f:GetName() .. 'Text'):SetText("Restoration Shaman support")
-    f.tooltip = "This will enable experimental Restoration Shaman support within the bar. If you change this setting and are currently logged in on a Shaman, you'll need to reload your UI before Restoration Shaman configuration options become available."
-    f:SetChecked(TRB.Data.settings.core.experimental.specs.shaman.restoration)
+    getglobal(f:GetName() .. 'Text'):SetText("Preservation Evoker support")
+    f.tooltip = "This will enable experimental Preservation Evoker support within the bar. If you change this setting and are currently logged in on an Evoker, you'll need to reload your UI before Preservation Evoker configuration options become available."
+    f:SetChecked(TRB.Data.settings.core.experimental.specs.evoker.preservation)
     f:SetScript("OnClick", function(self, ...)
-        TRB.Data.settings.core.experimental.specs.shaman.restoration = self:GetChecked()
+        TRB.Data.settings.core.experimental.specs.evoker.preservation = self:GetChecked()
     end)
-
-    yCoord = yCoord - 30
-    controls.checkBoxes.experimentalDruidRestoration = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Druid_Restoration", parent, "ChatConfigCheckButtonTemplate")
-    f = controls.checkBoxes.experimentalDruidRestoration
-    f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-    getglobal(f:GetName() .. 'Text'):SetText("Restoration Druid support")
-    f.tooltip = "This will enable experimental Restoration Druid support within the bar. If you change this setting and are currently logged in on a Druid, you'll need to reload your UI before Restoration Druid configuration options become available."
-    f:SetChecked(TRB.Data.settings.core.experimental.specs.druid.restoration)
-    f:SetScript("OnClick", function(self, ...)
-        TRB.Data.settings.core.experimental.specs.druid.restoration = self:GetChecked()
-    end)
-    ]]
 
     TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
     TRB.Frames.interfaceSettingsFrameContainer.controls = controls
@@ -1038,6 +1029,114 @@ local function ConstructImportExportPanel()
     controls.exportButton_Druid_Restoration_BarText:SetScript("OnClick", function(self, ...)
         TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Bar Text).", 11, 4, false, false, false, true, false)
     end)
+
+    if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation then
+        yCoord = yCoord - 35
+        controls.labels.druid = TRB.UiFunctions:BuildLabel(parent, "Evoker", oUi.xCoord, yCoord, 110, 20)
+        if TRB.Data.settings.core.experimental.specs.evoker.devastation and TRB.Data.settings.core.experimental.specs.evoker.preservation then
+            buttonOffset = oUi.xCoord + oUi.xPadding + 100
+            controls.buttons.exportButton_Evoker_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+            controls.buttons.exportButton_Evoker_All:SetScript("OnClick", function(self, ...)
+                TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (All).", 13, nil, true, true, true, true, false)
+            end)
+
+            buttonOffset = buttonOffset + buttonSpacing + 50
+            controls.exportButton_Evoker_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+            controls.exportButton_Evoker_BarDisplay:SetScript("OnClick", function(self, ...)
+                TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (Bar Display).", 13, nil, true, false, false, false, false)
+            end)
+
+            buttonOffset = buttonOffset + buttonSpacing + 80
+            controls.exportButton_Evoker_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+            controls.exportButton_Evoker_FontAndText:SetScript("OnClick", function(self, ...)
+                TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (Font & Text).", 13, nil, false, true, false, false, false)
+            end)
+
+            buttonOffset = buttonOffset + buttonSpacing + 90
+            controls.exportButton_Evoker_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+            controls.exportButton_Evoker_AudioAndTracking:SetScript("OnClick", function(self, ...)
+                TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (Audio & Tracking).", 13, nil, false, false, true, false, false)
+            end)
+
+            buttonOffset = buttonOffset + buttonSpacing + 120
+            controls.exportButton_Evoker_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+            controls.exportButton_Evoker_BarText:SetScript("OnClick", function(self, ...)
+                TRB.Functions.ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (Bar Text).", 13, nil, false, false, false, true, false)
+            end)
+        end
+
+        if TRB.Data.settings.core.experimental.specs.evoker.devastation then
+            yCoord = yCoord - 25
+            specName = "Devastation"
+            controls.labels.druidDevastation = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+
+            buttonOffset = oUi.xCoord + oUi.xPadding + 100
+            controls.buttons.exportButton_Evoker_Devastation_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+            controls.buttons.exportButton_Evoker_Devastation_All:SetScript("OnClick", function(self, ...)
+                TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (All).", 13, 1, true, true, true, true, false)
+            end)
+
+            buttonOffset = buttonOffset + buttonSpacing + 50
+            controls.exportButton_Evoker_Devastation_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+            controls.exportButton_Evoker_Devastation_BarDisplay:SetScript("OnClick", function(self, ...)
+                TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (Bar Display).", 13, 1, true, false, false, false, false)
+            end)
+
+            buttonOffset = buttonOffset + buttonSpacing + 80
+            controls.exportButton_Evoker_Devastation_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+            controls.exportButton_Evoker_Devastation_FontAndText:SetScript("OnClick", function(self, ...)
+                TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (Font & Text).", 13, 1, false, true, false, false, false)
+            end)
+
+            buttonOffset = buttonOffset + buttonSpacing + 90
+            controls.exportButton_Evoker_Devastation_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+            controls.exportButton_Evoker_Devastation_AudioAndTracking:SetScript("OnClick", function(self, ...)
+                TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (Audio & Tracking).", 13, 1, false, false, true, false, false)
+            end)
+
+            buttonOffset = buttonOffset + buttonSpacing + 120
+            controls.exportButton_Evoker_Devastation_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+            controls.exportButton_Evoker_Devastation_BarText:SetScript("OnClick", function(self, ...)
+                TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (Bar Text).", 13, 1, false, false, false, true, false)
+            end)
+        end
+
+        if TRB.Data.settings.core.experimental.specs.evoker.preservation then
+            yCoord = yCoord - 25
+            specName = "Preservation"
+            controls.labels.druidPreservation = TRB.UiFunctions:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+
+            buttonOffset = oUi.xCoord + oUi.xPadding + 100
+            controls.buttons.exportButton_Evoker_Preservation_All = TRB.UiFunctions:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+            controls.buttons.exportButton_Evoker_Preservation_All:SetScript("OnClick", function(self, ...)
+                TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (All).", 13, 2, true, true, true, true, false)
+            end)
+
+            buttonOffset = buttonOffset + buttonSpacing + 50
+            controls.exportButton_Evoker_Preservation_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+            controls.exportButton_Evoker_Preservation_BarDisplay:SetScript("OnClick", function(self, ...)
+                TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (Bar Display).", 13, 2, true, false, false, false, false)
+            end)
+
+            buttonOffset = buttonOffset + buttonSpacing + 80
+            controls.exportButton_Evoker_Preservation_FontAndText = TRB.UiFunctions:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+            controls.exportButton_Evoker_Preservation_FontAndText:SetScript("OnClick", function(self, ...)
+                TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (Font & Text).", 13, 2, false, true, false, false, false)
+            end)
+
+            buttonOffset = buttonOffset + buttonSpacing + 90
+            controls.exportButton_Evoker_Preservation_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+            controls.exportButton_Evoker_Preservation_AudioAndTracking:SetScript("OnClick", function(self, ...)
+                TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (Audio & Tracking).", 13, 2, false, false, true, false, false)
+            end)
+
+            buttonOffset = buttonOffset + buttonSpacing + 120
+            controls.exportButton_Evoker_Preservation_BarText = TRB.UiFunctions:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+            controls.exportButton_Evoker_Preservation_BarText:SetScript("OnClick", function(self, ...)
+                TRB.Functions.ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (Bar Text).", 13, 2, false, false, false, true, false)
+            end)
+        end
+    end
 
     yCoord = yCoord - 35
     controls.labels.hunter = TRB.UiFunctions:BuildLabel(parent, "Hunter", oUi.xCoord, yCoord, 110, 20)
