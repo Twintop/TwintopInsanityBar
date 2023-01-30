@@ -1675,9 +1675,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.shadow
 		local yCoord = 5
-		local f = nil
-
-		local title = ""
 
 		StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_Reset"] = {
 			text = "Do you want to reset Twintop's Resource Bar back to its default configuration? Only the Shadow Priest settings will be changed. This will cause your UI to be reloaded!",

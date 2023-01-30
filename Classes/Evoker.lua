@@ -53,293 +53,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	}
 
 	local function FillSpecCache()
-		-- Preservation
-		specCache.preservation.Global_TwintopResourceBar = {
-			ttd = 0,
-			resource = {
-				resource = 0,
-				casting = 0,
-				passive = 0,
-			},
-			dots = {
-			},
-		}
-
-		specCache.preservation.character = {
-			guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-			specGroup = GetActiveSpecGroup(),
-			maxResource = 100,			
-			effects = {
-			},
-			items = {
-				potions = {
-					aeratedManaPotionRank3 = {
-						id = 191386,
-						mana = 27600
-					},
-					aeratedManaPotionRank2 = {
-						id = 191385,
-						mana = 24000
-					},
-					aeratedManaPotionRank1 = {
-						id = 191384,
-						mana = 20869
-					},
-					potionOfFrozenFocusRank3 = {
-						id = 191365,
-						mana = 48300
-					},
-					potionOfFrozenFocusRank2 = {
-						id = 191364,
-						mana = 42000
-					},
-					potionOfFrozenFocusRank1 = {
-						id = 191363,
-						mana = 36521
-					},
-				},
-				conjuredChillglobe = {
-					id = 194300,
-					isEquipped = false,
-					equippedVersion = "lfr",
-					manaThresholdPercent = 0.65,
-					lfr = {
-						bonusId = 7982,
-						mana = 10877
-					},
-					normal = {
-						bonusId = 7979,
-						mana = 11735
-					},
-					heroic = {
-						bonusId = 7980,
-						mana = 14430
-					},
-					mythic = {
-						bonusId = 7981,
-						mana = 17625
-					}
-				},
-				alchemyStone = false
-			}
-		}
-
-		specCache.preservation.spells = {
-			-- Evoker Class Talents		
-			--[[soothingMist = {
-				id = 115175,
-				name = "",
-				icon = "",
-				isTalent = true,
-				baseline = true
-			},]]
-
-			-- External mana
-			symbolOfHope = {
-				id = 64901,
-				name = "",
-				icon = "",
-				duration = 4.0, --Hasted
-				manaPercent = 0.03,
-				ticks = 3,
-				tickId = 265144
-			},
-			innervate = {
-				id = 29166,
-				name = "",
-				icon = "",
-				duration = 10,
-				isActive = false
-			},
-			manaTideTotem = {
-				id = 320763,
-				name = "",
-				icon = "",
-				duration = 8,
-				isActive = false
-			},
-
-			-- Potions
-			aeratedManaPotionRank1 = {
-				itemId = 191384,
-				spellId = 370607,
-				name = "",
-				icon = "",
-				useSpellIcon = true,
-				texture = "",
-				thresholdId = 1,
-				settingKey = "aeratedManaPotionRank1",
-				thresholdUsable = false
-			},
-			aeratedManaPotionRank2 = {
-				itemId = 191385,
-				spellId = 370607,
-				name = "",
-				icon = "",
-				useSpellIcon = true,
-				texture = "",
-				thresholdId = 2,
-				settingKey = "aeratedManaPotionRank2",
-				thresholdUsable = false
-			},
-			aeratedManaPotionRank3 = {
-				itemId = 191386,
-				spellId = 370607,
-				name = "",
-				icon = "",
-				useSpellIcon = true,
-				texture = "",
-				thresholdId = 3,
-				settingKey = "aeratedManaPotionRank3",
-				thresholdUsable = false
-			},
-			potionOfFrozenFocusRank1 = {
-				itemId = 191363,
-				spellId = 371033,
-				name = "",
-				icon = "",
-				useSpellIcon = true,
-				texture = "",
-				thresholdId = 4,
-				settingKey = "potionOfFrozenFocusRank1",
-				thresholdUsable = false,
-				mana = 3652,
-				duration = 10,
-				ticks = 10
-			},
-			potionOfFrozenFocusRank2 = {
-				itemId = 191364,
-				spellId = 371033,
-				name = "",
-				icon = "",
-				useSpellIcon = true,
-				texture = "",
-				thresholdId = 5,
-				settingKey = "potionOfFrozenFocusRank2",
-				thresholdUsable = false,
-				mana = 4200,
-				duration = 10,
-				ticks = 10
-			},
-			potionOfFrozenFocusRank3 = {
-				itemId = 191365,
-				spellId = 371033,
-				name = "",
-				icon = "",
-				useSpellIcon = true,
-				texture = "",
-				thresholdId = 6,
-				settingKey = "potionOfFrozenFocusRank3",
-				thresholdUsable = false,
-				mana = 4830,
-				duration = 10,
-				ticks = 10
-			},
-			potionOfChilledClarity = {
-				id = 371052,
-				name = "",
-				icon = ""
-			},
-
-			-- Conjured Chillglobe
-			conjuredChillglobe = {
-				itemId = 194300,
-				spellId = 396391,
-				name = "",
-				icon = "",
-				useSpellIcon = true,
-				texture = "",
-				thresholdId = 7,
-				settingKey = "conjuredChillglobe",
-				thresholdUsable = false,
-				mana = 4830,
-				duration = 10,
-				ticks = 10
-			},
-
-			-- Alchemist Stone
-			alchemistStone = {
-				id = 17619,
-				name = "",
-				icon = "",
-				manaModifier = 1.4,
-				itemIds = {
-					171323,
-					175941,
-					175942,
-					175943
-				}
-			}
-		}
-
-		specCache.preservation.snapshotData.manaRegen = 0
-		specCache.preservation.snapshotData.audio = {
-			innervateCue = false
-		}
-		specCache.preservation.snapshotData.targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			targets = {}
-		}
-		specCache.preservation.snapshotData.innervate = {
-			spellId = nil,
-			duration = 0,
-			endTime = nil,
-			remainingTime = 0,
-			mana = 0,
-			modifier = 1
-		}
-		specCache.preservation.snapshotData.manaTideTotem = {
-			spellId = nil,
-			duration = 0,
-			endTime = nil,
-			remainingTime = 0,
-			mana = 0
-		}
-		specCache.preservation.snapshotData.symbolOfHope = {
-			isActive = false,
-			ticksRemaining = 0,
-			tickRate = 0,
-			tickRateFound = false,
-			previousTickTime = nil,
-			firstTickTime = nil, -- First time we saw a tick.
-			endTime = nil,
-			resourceRaw = 0,
-			resourceFinal = 0
-		}
-		specCache.preservation.snapshotData.channeledManaPotion = {
-			isActive = false,
-			ticksRemaining = 0,
-			mana = 0,
-			endTime = nil,
-			lastTick = nil
-		}
-		specCache.preservation.snapshotData.potion = {
-			onCooldown = false,
-			startTime = nil,
-			duration = 0
-		}
-		specCache.preservation.snapshotData.potionOfChilledClarity = {
-			spellId = nil,
-			duration = 0,
-			endTime = nil,
-			remainingTime = 0,
-			mana = 0,
-			modifier = 1
-		}
-		specCache.preservation.snapshotData.conjuredChillglobe = {
-			onCooldown = false,
-			startTime = nil,
-			duration = 0
-		}
-
-		specCache.preservation.barTextVariables = {
-			icons = {},
-			values = {}
-		}
-
-
 		-- Devastation
 		specCache.devastation.Global_TwintopResourceBar = {
 			ttd = 0,
@@ -615,6 +328,308 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			icons = {},
 			values = {}
 		}
+
+		-- Preservation
+		specCache.preservation.Global_TwintopResourceBar = {
+			ttd = 0,
+			resource = {
+				resource = 0,
+				casting = 0,
+				passive = 0,
+				symbolOfHope = 0,
+			},
+			dots = {
+			},
+		}
+
+		specCache.preservation.character = {
+			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
+			specGroup = GetActiveSpecGroup(),
+			maxResource = 100,			
+			effects = {
+			},
+			items = {
+				potions = {
+					aeratedManaPotionRank3 = {
+						id = 191386,
+						mana = 27600
+					},
+					aeratedManaPotionRank2 = {
+						id = 191385,
+						mana = 24000
+					},
+					aeratedManaPotionRank1 = {
+						id = 191384,
+						mana = 20869
+					},
+					potionOfFrozenFocusRank3 = {
+						id = 191365,
+						mana = 48300
+					},
+					potionOfFrozenFocusRank2 = {
+						id = 191364,
+						mana = 42000
+					},
+					potionOfFrozenFocusRank1 = {
+						id = 191363,
+						mana = 36521
+					},
+				},
+				conjuredChillglobe = {
+					id = 194300,
+					isEquipped = false,
+					equippedVersion = "lfr",
+					manaThresholdPercent = 0.65,
+					lfr = {
+						bonusId = 7982,
+						mana = 10877
+					},
+					normal = {
+						bonusId = 7979,
+						mana = 11735
+					},
+					heroic = {
+						bonusId = 7980,
+						mana = 14430
+					},
+					mythic = {
+						bonusId = 7981,
+						mana = 17625
+					}
+				},
+				alchemyStone = false
+			}
+		}
+
+		specCache.preservation.spells = {
+			-- Evoker Class Talents		
+			
+			-- Preservation Spec Talents			
+			emeraldCommunion = {
+				id = 370960,
+				name = "",
+				icon = "",
+				duration = 5.0, --Hasted
+				manaPercent = 0.02,
+				ticks = 5
+			},
+
+			-- External mana
+			symbolOfHope = {
+				id = 64901,
+				name = "",
+				icon = "",
+				duration = 4.0, --Hasted
+				manaPercent = 0.03,
+				ticks = 3,
+				tickId = 265144
+			},
+			innervate = {
+				id = 29166,
+				name = "",
+				icon = "",
+				duration = 10,
+				isActive = false
+			},
+			manaTideTotem = {
+				id = 320763,
+				name = "",
+				icon = "",
+				duration = 8,
+				isActive = false
+			},
+
+			-- Potions
+			aeratedManaPotionRank1 = {
+				itemId = 191384,
+				spellId = 370607,
+				name = "",
+				icon = "",
+				useSpellIcon = true,
+				texture = "",
+				thresholdId = 1,
+				settingKey = "aeratedManaPotionRank1",
+				thresholdUsable = false
+			},
+			aeratedManaPotionRank2 = {
+				itemId = 191385,
+				spellId = 370607,
+				name = "",
+				icon = "",
+				useSpellIcon = true,
+				texture = "",
+				thresholdId = 2,
+				settingKey = "aeratedManaPotionRank2",
+				thresholdUsable = false
+			},
+			aeratedManaPotionRank3 = {
+				itemId = 191386,
+				spellId = 370607,
+				name = "",
+				icon = "",
+				useSpellIcon = true,
+				texture = "",
+				thresholdId = 3,
+				settingKey = "aeratedManaPotionRank3",
+				thresholdUsable = false
+			},
+			potionOfFrozenFocusRank1 = {
+				itemId = 191363,
+				spellId = 371033,
+				name = "",
+				icon = "",
+				useSpellIcon = true,
+				texture = "",
+				thresholdId = 4,
+				settingKey = "potionOfFrozenFocusRank1",
+				thresholdUsable = false,
+				mana = 3652,
+				duration = 10,
+				ticks = 10
+			},
+			potionOfFrozenFocusRank2 = {
+				itemId = 191364,
+				spellId = 371033,
+				name = "",
+				icon = "",
+				useSpellIcon = true,
+				texture = "",
+				thresholdId = 5,
+				settingKey = "potionOfFrozenFocusRank2",
+				thresholdUsable = false,
+				mana = 4200,
+				duration = 10,
+				ticks = 10
+			},
+			potionOfFrozenFocusRank3 = {
+				itemId = 191365,
+				spellId = 371033,
+				name = "",
+				icon = "",
+				useSpellIcon = true,
+				texture = "",
+				thresholdId = 6,
+				settingKey = "potionOfFrozenFocusRank3",
+				thresholdUsable = false,
+				mana = 4830,
+				duration = 10,
+				ticks = 10
+			},
+			potionOfChilledClarity = {
+				id = 371052,
+				name = "",
+				icon = ""
+			},
+
+			-- Conjured Chillglobe
+			conjuredChillglobe = {
+				itemId = 194300,
+				spellId = 396391,
+				name = "",
+				icon = "",
+				useSpellIcon = true,
+				texture = "",
+				thresholdId = 7,
+				settingKey = "conjuredChillglobe",
+				thresholdUsable = false,
+				mana = 4830,
+				duration = 10,
+				ticks = 10
+			},
+
+			-- Alchemist Stone
+			alchemistStone = {
+				id = 17619,
+				name = "",
+				icon = "",
+				manaModifier = 1.4,
+				itemIds = {
+					171323,
+					175941,
+					175942,
+					175943
+				}
+			}
+		}
+
+		specCache.preservation.snapshotData.manaRegen = 0
+		specCache.preservation.snapshotData.audio = {
+			innervateCue = false
+		}
+		specCache.preservation.snapshotData.targetData = {
+			ttdIsActive = false,
+			currentTargetGuid = nil,
+			targets = {}
+		}
+		specCache.preservation.snapshotData.emeraldCommunion = {
+			isActive = false,
+			duration = 0,
+			endTime = nil,
+			spellId = nil,
+			firstTickTime = nil,
+			previousTickTime = nil,
+			ticksRemaining = 0,
+			tickRate = 0,
+			resourceRaw = 0,
+			resourceFinal = 0
+		}
+		specCache.preservation.snapshotData.innervate = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0,
+			mana = 0,
+			modifier = 1
+		}
+		specCache.preservation.snapshotData.manaTideTotem = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0,
+			mana = 0
+		}
+		specCache.preservation.snapshotData.symbolOfHope = {
+			isActive = false,
+			ticksRemaining = 0,
+			tickRate = 0,
+			tickRateFound = false,
+			previousTickTime = nil,
+			firstTickTime = nil, -- First time we saw a tick.
+			endTime = nil,
+			resourceRaw = 0,
+			resourceFinal = 0
+		}
+		specCache.preservation.snapshotData.channeledManaPotion = {
+			isActive = false,
+			ticksRemaining = 0,
+			mana = 0,
+			endTime = nil,
+			lastTick = nil
+		}
+		specCache.preservation.snapshotData.potion = {
+			onCooldown = false,
+			startTime = nil,
+			duration = 0
+		}
+		specCache.preservation.snapshotData.potionOfChilledClarity = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0,
+			mana = 0,
+			modifier = 1
+		}
+		specCache.preservation.snapshotData.conjuredChillglobe = {
+			onCooldown = false,
+			startTime = nil,
+			duration = 0
+		}
+
+		specCache.preservation.barTextVariables = {
+			icons = {},
+			values = {}
+		}
 	end
 
 	local function Setup_Preservation()
@@ -727,10 +742,15 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
-			{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
+			{ variable = "#ec", icon = spells.emeraldCommunion.icon, description = spells.emeraldCommunion.name, printInSettings = true },
+			{ variable = "#emeraldCommunion", icon = spells.emeraldCommunion.icon, description = spells.emeraldCommunion.name, printInSettings = false },
+
+
 			{ variable = "#soh", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = true },
 			{ variable = "#symbolOfHope", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = false },
+
+			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
+			{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
 
 			{ variable = "#amp", icon = spells.aeratedManaPotionRank1.icon, description = spells.aeratedManaPotionRank1.name, printInSettings = true },
 			{ variable = "#aeratedManaPotion", icon = spells.aeratedManaPotionRank1.icon, description = spells.aeratedManaPotionRank1.name, printInSettings = false },
@@ -785,6 +805,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			{ variable = "$resourcePlusPassive", description = "Current + Passive Mana Total", printInSettings = false, color = false },
 			{ variable = "$manaTotal", description = "Current + Passive + Casting Mana Total", printInSettings = true, color = false },
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Mana Total", printInSettings = false, color = false },
+
+			{ variable = "$ecMana", description = "Mana from Emerald Communion", printInSettings = true, color = false },
+			{ variable = "$ecTime", description = "Time left on Emerald Communion", printInSettings = true, color = false },
+			{ variable = "$ecTicks", description = "Number of ticks left from Emerald Communion", printInSettings = true, color = false },
 
 			{ variable = "$sohMana", description = "Mana from Symbol of Hope", printInSettings = true, color = false },
 			{ variable = "$sohTime", description = "Time left on Symbol of Hope", printInSettings = true, color = false },
@@ -1020,7 +1044,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
 
-			for x = 1, 4 do
+			for x = 1, 5 do
 				if TRB.Frames.passiveFrame.thresholds[x] == nil then
 					TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 				end
@@ -1062,6 +1086,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 	local function GetSymbolOfHopeRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.symbolOfHope)
+	end
+
+	local function GetEmeraldCommunionRemainingTime()
+		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.emeraldCommunion)
 	end
 
 	local function GetPotionOfChilledClarityRemainingTime()
@@ -1191,10 +1219,23 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				end
 			elseif var == "$passive" then
 				if IsValidVariableForSpec("$channeledMana") or
+					IsValidVariableForSpec("$ecMana") or
 					IsValidVariableForSpec("$sohMana") or
 					IsValidVariableForSpec("$innervateMana") or
 					IsValidVariableForSpec("$potionOfChilledClarityMana") or
 					IsValidVariableForSpec("$mttMana") then
+					valid = true
+				end
+			elseif var == "$ecMana" then
+				if TRB.Data.snapshotData.emeraldCommunion.resourceRaw > 0 then
+					valid = true
+				end
+			elseif var == "$ecTime" then
+				if TRB.Data.snapshotData.emeraldCommunion.isActive then
+					valid = true
+				end
+			elseif var == "$ecTicks" then
+				if TRB.Data.snapshotData.emeraldCommunion.isActive then
 					valid = true
 				end
 			elseif var == "$sohMana" then
@@ -1348,6 +1389,16 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local _castingMana = TRB.Data.snapshotData.casting.resourceFinal
 		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
+		--$ecMana
+		local _ecMana = TRB.Data.snapshotData.emeraldCommunion.resourceFinal
+		local ecMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_ecMana, manaPrecision, "floor", true))
+		--$ecTicks
+		local _ecTicks = TRB.Data.snapshotData.emeraldCommunion.ticksRemaining or 0
+		local ecTicks = string.format("%.0f", _ecTicks)
+		--$ecTime
+		local _ecTime = GetSymbolOfHopeRemainingTime()
+		local ecTime = string.format("%.1f", _ecTime)
+
 		--$sohMana
 		local _sohMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
 		local sohMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor", true))
@@ -1400,7 +1451,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local _potionOfFrozenFocusTime = GetChanneledPotionRemainingTime()
 		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
 		--$passive
-		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana
+		local _passiveMana = _ecMana + _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana
 		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.evoker.preservation.colors.text.passive, TRB.Functions.ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 		--$manaTotal
 		local _manaTotal = math.min(_passiveMana + TRB.Data.snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
@@ -1439,9 +1490,15 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			mana = _sohMana,
 			ticks = TRB.Data.snapshotData.symbolOfHope.ticksRemaining or 0
 		}
+		Global_TwintopResourceBar.emeraldCommunion = {
+			mana = _ecMana,
+			ticks = TRB.Data.snapshotData.emeraldCommunion.ticksRemaining or 0
+		}
 
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#ec"] = TRB.Data.spells.emeraldCommunion.icon
+		lookup["#emeraldCommunion"] = TRB.Data.spells.emeraldCommunion.icon
 		lookup["#innervate"] = TRB.Data.spells.innervate.icon
 		lookup["#mtt"] = TRB.Data.spells.manaTideTotem.icon
 		lookup["#manaTideTotem"] = TRB.Data.spells.manaTideTotem.icon
@@ -1467,6 +1524,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		lookup["$resource"] = currentMana
 		lookup["$casting"] = castingMana
 		lookup["$passive"] = passiveMana
+		lookup["$ecMana"] = ecMana
+		lookup["$ecTime"] = ecTime
+		lookup["$ecTicks"] = ecTicks
 		lookup["$sohMana"] = sohMana
 		lookup["$sohTime"] = sohTime
 		lookup["$sohTicks"] = sohTicks
@@ -1502,6 +1562,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		lookupLogic["$resource"] = normalizedMana
 		lookupLogic["$casting"] = _castingMana
 		lookupLogic["$passive"] = _passiveMana
+		lookupLogic["$ecMana"] = _ecMana
+		lookupLogic["$ecTime"] = _ecTime
+		lookupLogic["$ecTicks"] = _ecTicks
 		lookupLogic["$sohMana"] = _sohMana
 		lookupLogic["$sohTime"] = _sohTime
 		lookupLogic["$sohTicks"] = _sohTicks
@@ -1559,20 +1622,17 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					return false
 				--end
 			elseif specId == 2 then
-				--[[if currentSpellName == nil then
-					if currentChannelId == TRB.Data.spells.soothingMist.id then
-						local manaCost = -TRB.Functions.GetSpellManaCostPerSecond(currentChannelId)
-
-						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.soothingMist.id
-						TRB.Data.snapshotData.casting.startTime = currentTime
-						TRB.Data.snapshotData.casting.resourceRaw = manaCost
-						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.soothingMist.icon
-
-						UpdateCastingResourceFinal_Preservation()
+				if currentSpellName == nil then
+					if currentChannelId == TRB.Data.spells.emeraldCommunion.id then
+						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.emeraldCommunion.id
+						TRB.Data.snapshotData.casting.startTime = currentChannelStartTime / 1000
+						TRB.Data.snapshotData.casting.endTime = currentChannelEndTime / 1000
+						TRB.Data.snapshotData.casting.resourceRaw = 0
+						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.emeraldCommunion.icon
 					else
 						TRB.Functions.ResetCastingSnapshotData()
+						return false
 					end
-					return false
 				else
 					local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
@@ -1586,15 +1646,38 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						TRB.Data.snapshotData.casting.icon = string.format("|T%s:0|t", spellIcon)
 
 						UpdateCastingResourceFinal_Preservation()
-					else]]
+					else
 						TRB.Functions.ResetCastingSnapshotData()
 						return false
-				--	end
-				--end
-				--return true
+					end
+				end
+				return true
 			end
 			TRB.Functions.ResetCastingSnapshotData()
 			return false
+		end
+	end
+
+	local function UpdateEmeraldCommunion(forceCleanup)
+		if TRB.Data.snapshotData.emeraldCommunion.isActive or forceCleanup then
+			local currentTime = GetTime()
+			if forceCleanup or TRB.Data.snapshotData.emeraldCommunion.endTime == nil or currentTime > TRB.Data.snapshotData.channeledManaPotion.endTime then
+				TRB.Data.snapshotData.emeraldCommunion.isActive = false
+				TRB.Data.snapshotData.emeraldCommunion.duration = 0
+				TRB.Data.snapshotData.emeraldCommunion.endTime = nil
+				TRB.Data.snapshotData.emeraldCommunion.spellId = nil
+				TRB.Data.snapshotData.emeraldCommunion.firstTickTime = nil
+				TRB.Data.snapshotData.emeraldCommunion.previousTickTime = nil
+				TRB.Data.snapshotData.emeraldCommunion.ticksRemaining = 0
+				TRB.Data.snapshotData.emeraldCommunion.tickRate = 0
+				TRB.Data.snapshotData.emeraldCommunion.resourceRaw = 0
+				TRB.Data.snapshotData.emeraldCommunion.resourceFinal = 0
+			else
+				local regenRemaining = (TRB.Data.snapshotData.emeraldCommunion.endTime - currentTime) * TRB.Data.snapshotData.manaRegen
+				local incomingMana = (TRB.Data.snapshotData.emeraldCommunion.ticksRemaining * TRB.Data.spells.emeraldCommunion.manaPercent * TRB.Data.character.maxResource) + regenRemaining
+				TRB.Data.snapshotData.emeraldCommunion.resourceRaw = incomingMana
+				TRB.Data.snapshotData.emeraldCommunion.resourceFinal = CalculateManaGain(TRB.Data.snapshotData.emeraldCommunion.resourceRaw, false)
+			end
 		end
 	end
 
@@ -1983,12 +2066,27 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						else
 							TRB.Frames.passiveFrame.thresholds[4]:Hide()
 						end
+
+						if TRB.Data.snapshotData.emeraldCommunion.resourceFinal > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshotData.emeraldCommunion.resourceFinal
+
+							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
+								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.passiveFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[5]:Show()
+							else
+								TRB.Frames.passiveFrame.thresholds[5]:Hide()
+							end
+						else
+							TRB.Frames.passiveFrame.thresholds[5]:Hide()
+						end
 					else
 						TRB.Frames.passiveFrame.thresholds[1]:Hide()
 						TRB.Frames.passiveFrame.thresholds[2]:Hide()
 						TRB.Frames.passiveFrame.thresholds[3]:Hide()
 						TRB.Frames.passiveFrame.thresholds[4]:Hide()
-						--TRB.Frames.passiveFrame.thresholds[5]:Hide()
+						TRB.Frames.passiveFrame.thresholds[5]:Hide()
 					end
 
 					passiveBarValue = castingBarValue + passiveValue
@@ -2019,15 +2117,15 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					resourceBarColor = specSettings.colors.bar.base
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(resourceBarColor, true))
-										
+					
+					
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-
+--[[
                     for x = 2, TRB.Data.character.maxResource2 do
 						TRB.Frames.resource2Frames[x]:Hide()
-                    end
+                    end]]
 
-					--[[
-                    for x = 1, TRB.Data.character.maxResource2 do
+					for x = 1, TRB.Data.character.maxResource2 do
 						local cpBorderColor = specSettings.colors.comboPoints.border
 						local cpColor = specSettings.colors.comboPoints.base
 						local cpBR = cpBackgroundRed
@@ -2051,7 +2149,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(cpColor, true))
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(cpBorderColor, true))
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-                    end]]
+                    end
 				end
 
 				TRB.Functions.UpdateResourceBar(specSettings, refreshText)
@@ -2287,6 +2385,25 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							TRB.Data.snapshotData.potionOfChilledClarity.duration = 0
 							TRB.Data.snapshotData.potionOfChilledClarity.endTime = nil
 							TRB.Data.snapshotData.potionOfChilledClarity.modifier = 1
+						end
+					elseif spellId == TRB.Data.spells.emeraldCommunion.id then
+						if type == "SPELL_PERIODIC_ENERGIZE" then
+							TRB.Data.snapshotData.emeraldCommunion.isActive = true
+							if TRB.Data.snapshotData.emeraldCommunion.firstTickTime == nil then								
+								_, _, _, _, TRB.Data.snapshotData.emeraldCommunion.duration, TRB.Data.snapshotData.emeraldCommunion.endTime, _, _, _, TRB.Data.snapshotData.emeraldCommunion.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.emeraldCommunion.id)
+								TRB.Data.snapshotData.emeraldCommunion.firstTickTime = currentTime
+								TRB.Data.snapshotData.emeraldCommunion.previousTickTime = currentTime
+								TRB.Data.snapshotData.emeraldCommunion.ticksRemaining = TRB.Data.spells.emeraldCommunion.ticks
+								TRB.Data.snapshotData.emeraldCommunion.tickRate = (TRB.Data.snapshotData.emeraldCommunion.duration / TRB.Data.spells.emeraldCommunion.ticks)
+							else
+								TRB.Data.snapshotData.emeraldCommunion.previousTickTime = currentTime
+								TRB.Data.snapshotData.emeraldCommunion.ticksRemaining = TRB.Data.snapshotData.emeraldCommunion.ticksRemaining - 1
+							end
+							TRB.Data.snapshotData.emeraldCommunion.resourceRaw = TRB.Data.snapshotData.emeraldCommunion.ticksRemaining * TRB.Data.spells.emeraldCommunion.manaPercent * TRB.Data.character.maxResource
+							TRB.Data.snapshotData.emeraldCommunion.resourceFinal = CalculateManaGain(TRB.Data.snapshotData.emeraldCommunion.resourceRaw, false)
+						elseif type == "SPELL_AURA_REMOVED" then
+							-- Let UpdateEmeraldCommunion() handle this
+							UpdateEmeraldCommunion(true)
 						end
 					end
 				end

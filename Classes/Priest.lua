@@ -3101,7 +3101,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function UpdateSymbolOfHope(forceCleanup)
 		if TRB.Data.snapshotData.symbolOfHope.isActive or forceCleanup then
 			local currentTime = GetTime()
-			if forceCleanup or TRB.Data.snapshotData.symbolOfHope.endTime == nil or currentTime > TRB.Data.snapshotData.symbolOfHope.endTime or currentTime > TRB.Data.snapshotData.symbolOfHope.firstTickTime + TRB.Data.spells.symbolOfHope.duration or currentTime > TRB.Data.snapshotData.symbolOfHope.firstTickTime + (TRB.Data.spells.symbolOfHope.ticks * TRB.Data.snapshotData.symbolOfHope.tickRate) then
+			if forceCleanup or
+				TRB.Data.snapshotData.symbolOfHope.endTime == nil or
+				currentTime > TRB.Data.snapshotData.symbolOfHope.endTime or
+				currentTime > TRB.Data.snapshotData.symbolOfHope.firstTickTime + TRB.Data.spells.symbolOfHope.duration or
+				currentTime > TRB.Data.snapshotData.symbolOfHope.firstTickTime + (TRB.Data.spells.symbolOfHope.ticks * TRB.Data.snapshotData.symbolOfHope.tickRate)
+				then
 				TRB.Data.snapshotData.symbolOfHope.ticksRemaining = 0
 				TRB.Data.snapshotData.symbolOfHope.tickRate = 0
 				TRB.Data.snapshotData.symbolOfHope.previousTickTime = nil
