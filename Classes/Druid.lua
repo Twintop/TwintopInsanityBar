@@ -4428,7 +4428,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.astralPower ~= nil and spell.astralPower < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							pairOffset = (spell.thresholdId - 1) * 3
-							local resourceAmount = spell.astralPower
+							local resourceAmount = spell.astralPower * (1 + (TRB.Data.snapshotData.rattleTheStars.stacks * TRB.Data.spells.rattleTheStars.modifier))
 							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
@@ -4437,7 +4437,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.settingKey == TRB.Data.spells.starsurge.settingKey then
-									TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, TRB.Data.character.starsurgeThreshold, TRB.Data.character.maxResource)
 									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									elseif TRB.Data.spells.starweaversWeft.isActive then
@@ -4465,7 +4464,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										TRB.Data.snapshotData.audio.playedstarweaverCue = false
 									end
 								elseif spell.settingKey == TRB.Data.spells.starsurge2.settingKey then
-									TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, TRB.Data.character.starsurgeThreshold*2, TRB.Data.character.maxResource)
 									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									elseif (TRB.Data.character.starsurgeThreshold * 2) >= TRB.Data.character.maxResource then
@@ -4480,7 +4478,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.settingKey == TRB.Data.spells.starsurge3.settingKey then
-									TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, TRB.Data.character.starsurgeThreshold*3, TRB.Data.character.maxResource)
 									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									elseif (TRB.Data.character.starsurgeThreshold * 3) >= TRB.Data.character.maxResource then
@@ -4495,7 +4492,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.starfall.id then
-									TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, TRB.Data.character.starfallThreshold, TRB.Data.character.maxResource)
 									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									elseif currentResource >= TRB.Data.character.starfallThreshold then
