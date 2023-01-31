@@ -3221,18 +3221,18 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.demonhunter.havoc) > 0 then -- Havoc
 				configuration.demonhunter.havoc = TRB.Functions.ExportConfigurationSections(12, 1, settings.demonhunter.havoc, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
-		elseif classId == 11 and settings.evoker ~= nil then -- Evoker
+		elseif classId == 13 and settings.evoker ~= nil then -- Evoker
 			configuration.evoker = {}
 			
 			if TRB.Data.settings.core.experimental.specs.evoker.devastation then			
 				if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.evoker.devastation) > 0 then -- Devastation
-					configuration.druid.balance = TRB.Functions.ExportConfigurationSections(13, 1, settings.evoker.devastation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+					configuration.evoker.devastation = TRB.Functions.ExportConfigurationSections(13, 1, settings.evoker.devastation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 				end
 			end			
 			
 			if TRB.Data.settings.core.experimental.specs.evoker.preservation then
 				if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.evoker.preservation) > 0 then -- Preservation
-					configuration.evoker.feral = TRB.Functions.ExportConfigurationSections(13, 2, settings.evoker.preservation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+					configuration.evoker.preservation = TRB.Functions.ExportConfigurationSections(13, 2, settings.evoker.preservation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 				end
 			end
 		end
