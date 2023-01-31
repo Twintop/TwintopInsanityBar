@@ -117,12 +117,12 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
                 relativeToName="Above - Middle",
                 fullWidth=true,
             },
-			endOfSerenity = {
+			--[[endOfSerenity = {
 				enabled=true,
 				mode="gcd",
 				gcdsMax=2,
 				timeMax=3.0
-			},
+			},]]
 			colors = {
 				text = {
 					current="FF4D4DFF",
@@ -253,12 +253,12 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				icons = {
 					showCooldown=true,
 					border=2,
-					relativeTo = "TOP",
-					relativeToName = "Above",
+					relativeTo = "BOTTOM",
+					relativeToName = "Below",
 					enabled=true,
 					desaturated=true,
 					xPos=0,
-					yPos=-12,
+					yPos=12,
 					width=24,
 					height=24
 				},
