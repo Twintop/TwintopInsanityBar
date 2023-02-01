@@ -727,17 +727,19 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
         controls.width.MinLabel:SetText(minsliderWidth)
     end)
 
-    title = "Threshold Line Width"
-    controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
-                                oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-    controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-        spec.thresholds.width = value
+    if spec.thresholds ~= nil then
+        title = "Threshold Line Width"
+        controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
+                                    oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+        controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
+            value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+            spec.thresholds.width = value
 
-        if GetSpecialization() == specId then
-            TRB.Functions.RedrawThresholdLines(spec)
-        end
-    end)
+            if GetSpecialization() == specId then
+                TRB.Functions.RedrawThresholdLines(spec)
+            end
+        end)
+    end
 
     yCoord = yCoord - 40
 

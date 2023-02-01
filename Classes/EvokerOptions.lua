@@ -1480,11 +1480,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 	local function ConstructOptionsPanel(specCache)
 		TRB.Options:ConstructOptionsPanel()
-		if TRB.Data.settings.core.experimental.specs.evoker.devastation then
+		if TRB.Data.settings.core.experimental.specs.evoker.devastation == true then
 			DevastationConstructOptionsPanel(specCache.devastation)
 		end
 
-		if TRB.Data.settings.core.experimental.specs.evoker.preservation then
+		if TRB.Data.settings.core.experimental.specs.evoker.preservation == true then
 			PreservationConstructOptionsPanel(specCache.preservation)
 		end
 	end
