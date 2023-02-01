@@ -1968,7 +1968,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
-				print(specSettings.displayBar.neverShow)
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
