@@ -845,10 +845,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		TRB.Data.character.maxResource2 = 1
         local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
         local settings = nil
-		if specId == 1 then
+		if specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation then
 			settings = TRB.Data.settings.evoker.devastation
 			TRB.Data.character.specName = "devastation"
-		elseif specId == 2 then
+		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation then
 			settings = TRB.Data.settings.evoker.preservation
 			TRB.Data.character.specName = "preservation"
 			TRB.Functions.FillSpellDataManaCost(TRB.Data.spells)
@@ -1004,7 +1004,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		if clearAll == true then
 			local specId = GetSpecialization()
 			if specId == 1 then
-			elseif specId == 3 then
+			elseif specId == 2 then
 			end
 		end
 	end
@@ -1063,11 +1063,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[7], TRB.Data.spells.conjuredChillglobe.settingKey, TRB.Data.settings.evoker.preservation)
 		end
 
-		TRB.Frames.resource2ContainerFrame:Show()
-
-		TRB.Functions.ConstructResourceBar(settings)
-
-		if specId == 1 or specId == 2 then
+		
+		if (specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation) or
+		(specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation) then
+			TRB.Frames.resource2ContainerFrame:Show()
+			TRB.Functions.ConstructResourceBar(settings)
 			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
 		end
 	end
@@ -1968,6 +1968,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.HideResourceBar()
 
+				print(specSettings.displayBar.neverShow)
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0

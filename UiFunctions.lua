@@ -614,13 +614,16 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
         value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
         spec.bar.width = value
 
-        if GetSpecialization() == specId then
-            TRB.Functions.UpdateBarWidth(spec)
-        end
-
-        local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
+        local maxBorderSize = math.min(math.floor((spec.bar.height) / TRB.Data.constants.borderWidthFactor), math.floor((spec.bar.width) / TRB.Data.constants.borderWidthFactor))-1
+        local borderSize = math.min(maxBorderSize, spec.bar.border)
+        controls.borderWidth:SetValue(borderSize)
         controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
         controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+
+        if GetSpecialization() == specId then
+            TRB.Functions.UpdateBarWidth(spec)
+            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+        end
     end)
 
     title = "Bar Height"
@@ -630,12 +633,8 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
         value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
         spec.bar.height = value
 
-        local maxBorderSize = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
-        local borderSize = spec.bar.border
-    
-        if maxBorderSize < borderSize then
-            maxBorderSize = borderSize
-        end
+        local maxBorderSize = math.min(math.floor((spec.bar.height) / TRB.Data.constants.borderWidthFactor), math.floor((spec.bar.width) / TRB.Data.constants.borderWidthFactor))-1
+        local borderSize = math.min(maxBorderSize, spec.bar.border)
 
         controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
         controls.borderWidth.MaxLabel:SetText(maxBorderSize)
@@ -718,8 +717,8 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
             TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
         end
 
-        local minsliderWidth = math.max(spec.bar.border*2, 120)
-        local minsliderHeight = math.max(spec.bar.border*2, 1)
+        local minsliderWidth = math.max((spec.bar.border)*2+1, 120)
+        local minsliderHeight = math.max((spec.bar.border)*2+1, 1)
 
         local scValues = TRB.Functions.GetSanityCheckValues(spec)
         controls.height:SetMinMaxValues(minsliderHeight, scValues.barMaxHeight)
