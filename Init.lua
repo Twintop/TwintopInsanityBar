@@ -118,7 +118,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 			local count = 0
 
 			if TRB.Data.snapshotData.targetData.targets[guid] ~= nil then
-				count = TRB.Functions.TableLength(TRB.Data.snapshotData.targetData.targets[guid].snapshot)
+				count = TRB.Functions.Table:Length(TRB.Data.snapshotData.targetData.targets[guid].snapshot)
 				if count > 0 and TRB.Data.snapshotData.targetData.targets[guid].snapshot[1] ~= nil then
 					healthDelta = math.max(TRB.Data.snapshotData.targetData.targets[guid].snapshot[1].health - currentHealth, 0)
 					timeDelta = math.max(currentTime - TRB.Data.snapshotData.targetData.targets[guid].snapshot[1].time, 0)

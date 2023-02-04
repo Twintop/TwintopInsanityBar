@@ -1063,7 +1063,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local function ConstructResourceBar(settings)
 		local specId = GetSpecialization()
-		local entries = TRB.Functions.TableLength(resourceFrame.thresholds)
+		local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
 		if entries > 0 then
 			for x = 1, entries do
 				resourceFrame.thresholds[x]:Hide()
@@ -1269,25 +1269,25 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		--$rage
 		local ragePrecision = TRB.Data.settings.warrior.arms.ragePrecision or 0
-		local currentRage = string.format("|c%s%s|r", currentRageColor, TRB.Functions.RoundTo(normalizedRage, ragePrecision, "floor"))
+		local currentRage = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(normalizedRage, ragePrecision, "floor"))
 		--$casting
-		local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.RoundTo(TRB.Data.snapshotData.casting.resourceFinal, ragePrecision, "floor"))
+		local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.casting.resourceFinal, ragePrecision, "floor"))
 		--$passive
 		local _passiveRage = 0
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
-		local passiveRage = string.format("|c%s%s|r", TRB.Data.settings.warrior.arms.colors.text.passive, TRB.Functions.RoundTo(_passiveRage, ragePrecision, "floor"))
+		local passiveRage = string.format("|c%s%s|r", TRB.Data.settings.warrior.arms.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveRage, ragePrecision, "floor"))
 		
 		--$rageTotal
 		local _rageTotal = math.min(_passiveRage + TRB.Data.snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
-		local rageTotal = string.format("|c%s%s|r", currentRageColor, TRB.Functions.RoundTo(_rageTotal, ragePrecision, "floor"))
+		local rageTotal = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(_rageTotal, ragePrecision, "floor"))
 		--$ragePlusCasting
 		local _ragePlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
-		local ragePlusCasting = string.format("|c%s%s|r", castingRageColor, TRB.Functions.RoundTo(_ragePlusCasting, ragePrecision, "floor"))
+		local ragePlusCasting = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(_ragePlusCasting, ragePrecision, "floor"))
 		--$ragePlusPassive
 		local _ragePlusPassive = math.min(_passiveRage + normalizedRage, TRB.Data.character.maxResource)
-		local ragePlusPassive = string.format("|c%s%s|r", currentRageColor, TRB.Functions.RoundTo(_ragePlusPassive, ragePrecision, "floor"))
+		local ragePlusPassive = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(_ragePlusPassive, ragePrecision, "floor"))
 
 		
 		--$rendCount and $rendTime
@@ -1452,25 +1452,25 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		--$rage
 		local ragePrecision = TRB.Data.settings.warrior.fury.ragePrecision or 0
-		local currentRage = string.format("|c%s%s|r", currentRageColor, TRB.Functions.RoundTo(normalizedRage, ragePrecision, "floor"))
+		local currentRage = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(normalizedRage, ragePrecision, "floor"))
 		--$casting
-		local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.RoundTo(TRB.Data.snapshotData.casting.resourceFinal, ragePrecision, "floor"))
+		local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.casting.resourceFinal, ragePrecision, "floor"))
 		--$passive
 		local _passiveRage = _ravagerRage
 
 		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
 
-		local passiveRage = string.format("|c%s%s|r", TRB.Data.settings.warrior.fury.colors.text.passive, TRB.Functions.RoundTo(_passiveRage, ragePrecision, "floor"))
+		local passiveRage = string.format("|c%s%s|r", TRB.Data.settings.warrior.fury.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveRage, ragePrecision, "floor"))
 		
 		--$rageTotal
 		local _rageTotal = math.min(_passiveRage + TRB.Data.snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
-		local rageTotal = string.format("|c%s%s|r", currentRageColor, TRB.Functions.RoundTo(_rageTotal, ragePrecision, "floor"))
+		local rageTotal = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(_rageTotal, ragePrecision, "floor"))
 		--$ragePlusCasting
 		local _ragePlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
-		local ragePlusCasting = string.format("|c%s%s|r", castingRageColor, TRB.Functions.RoundTo(_ragePlusCasting, ragePrecision, "floor"))
+		local ragePlusCasting = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(_ragePlusCasting, ragePrecision, "floor"))
 		--$ragePlusPassive
 		local _ragePlusPassive = math.min(_passiveRage + normalizedRage, TRB.Data.character.maxResource)
-		local ragePlusPassive = string.format("|c%s%s|r", currentRageColor, TRB.Functions.RoundTo(_ragePlusPassive, ragePrecision, "floor"))
+		local ragePlusPassive = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(_ragePlusPassive, ragePrecision, "floor"))
 
 		--$enrageTime
 		local _enrageTime = GetEnrageRemainingTime()
@@ -1836,23 +1836,23 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue) 
 							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, currentRage)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, currentRage)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
 						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, currentRage)
 						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
 						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
 					local pairOffset = 0
@@ -2004,9 +2004,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 					barContainerFrame:SetAlpha(1.0)
 
-					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
+					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 				end
 			end
 			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
@@ -2043,23 +2043,23 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, currentRage)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, currentRage)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
 						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, currentRage)
 						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
 						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
 					local pairOffset = 0
@@ -2175,9 +2175,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 					barContainerFrame:SetAlpha(1.0)
 
-					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
+					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 				end
 			end
 			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
@@ -2497,7 +2497,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					local settings = TRB.Options.Warrior.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
 						TRB.Options:PortForwardSettings()
-						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
+						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
 						TRB.Data.settings = settings

@@ -467,25 +467,25 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			preferredIndex = 3
 		}
 
-		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
+		controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
 		controls.resetButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Shaman_Elemental_Reset")
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
+		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Shaman_Elemental_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
 
-		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
+		controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton3:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Shaman_Elemental_ResetBarTextAdvanced")
 		end)
@@ -510,112 +510,112 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
-		controls.buttons.exportButton_Shaman_Elemental_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Elemental_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Elemental_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Bar Display).", 7, 1, true, false, false, false, false)
 		end)
 
-		yCoord = TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, 7, 1, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 7, 1, yCoord)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, 7, 1, yCoord, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 1, yCoord, false)
 
 		yCoord = yCoord - 30
 		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.UiFunctions:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, "Maelstrom", "notEmpty", true, true, true, "Earth Shock/Elemental Blast", "ES/EB")
+		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, "Maelstrom", "notEmpty", true, true, true, "Earth Shock/Elemental Blast", "ES/EB")
 		
 		yCoord = yCoord - 70
-		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
+		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Maelstrom", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maelstrom", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 		end)
 
-		controls.colors.inAscendance = TRB.UiFunctions:BuildColorPicker(parent, "Maelstrom while in Ascendance", spec.colors.bar.inAscendance, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maelstrom while in Ascendance", spec.colors.bar.inAscendance, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inAscendance		
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.earthShock = TRB.UiFunctions:BuildColorPicker(parent, "Maelstrom when you can cast Earth Shock/Elemental Blast", spec.colors.bar.earthShock, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.earthShock = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maelstrom when you can cast Earth Shock/Elemental Blast", spec.colors.bar.earthShock, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.earthShock
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "earthShock")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "earthShock")
 		end)
 
-		controls.colors.inAscendance1GCD = TRB.UiFunctions:BuildColorPicker(parent, "Maestrom while you have less than 1 GCD left in Ascendance (if enabled)", spec.colors.bar.inAscendance1GCD, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maestrom while you have less than 1 GCD left in Ascendance (if enabled)", spec.colors.bar.inAscendance1GCD, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inAscendance1GCD
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.UiFunctions:BuildColorPicker(parent, "Maelstrom from hardcasting spells", spec.colors.bar.casting, 525, 25, oUi.xCoord, yCoord)
+		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maelstrom from hardcasting spells", spec.colors.bar.casting, 525, 25, oUi.xCoord, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 1)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 1)
 		end)
 
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, oUi.xCoord2, yCoord)
+		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 1)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 1)
 		end)
 
 		yCoord = yCoord - 30
 
-		controls.colors.borderOvercap = TRB.UiFunctions:BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Maelstrom", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Maelstrom", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
 		end)
 
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Maelstrom from Passive Sources", spec.colors.bar.passive, 550, 25, oUi.xCoord2, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maelstrom from Passive Sources", spec.colors.bar.passive, 550, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
 		end)
 
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
 
 		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.UiFunctions:BuildColorPicker(parent, "Under minimum required Maelstrom", spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Under minimum required Maelstrom", spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Over minimum required Maelstrom", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
+		controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Over minimum required Maelstrom", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.echoesOfGreatSundering = TRB.UiFunctions:BuildColorPicker(parent, "Echoes of Great Sundering proc is up", spec.colors.threshold.echoesOfGreatSundering, 300, 25, oUi.xCoord2, yCoord-60)
+		controls.colors.threshold.echoesOfGreatSundering = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Echoes of Great Sundering proc is up", spec.colors.threshold.echoesOfGreatSundering, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.echoesOfGreatSundering
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "echoesOfGreatSundering")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "echoesOfGreatSundering")
 		end)
 
-		controls.colors.threshold.outOfRange = TRB.UiFunctions:BuildColorPicker(parent, "Out of range of current target to use ability", spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
+		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Out of range of current target to use ability", spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.threshold.outOfRange
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
 		end)
 
 		controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
@@ -667,10 +667,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = yCoord - 25
 		yCoord = yCoord - 50
 
-		yCoord = TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 1, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 1, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "End of Ascendance Configuration", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Ascendance Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.endOfAscendance = CreateFrame("CheckButton", "TRB_EOVA_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -700,10 +700,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		title = "Ascendance GCDs - 0.75sec Floor"
-		controls.endOfAscendanceGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 10, spec.endOfAscendance.gcdsMax, 0.25, 2,
+		controls.endOfAscendanceGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfAscendance.gcdsMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfAscendanceGCDs:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			spec.endOfAscendance.gcdsMax = value
 		end)
 
@@ -725,17 +725,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		title = "Ascendance Time Remaining"
-		controls.endOfAscendanceTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.endOfAscendance.timeMax, 0.25, 2,
+		controls.endOfAscendanceTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfAscendance.timeMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfAscendanceTime:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.RoundTo(value, 2)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.endOfAscendance.timeMax = value
 		end)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_CB1_8", parent, "ChatConfigCheckButtonTemplate")
@@ -751,11 +751,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = yCoord - 40
 
 		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.UiFunctions:BuildSlider(parent, title, 0, 100, spec.overcapThreshold, 0.5, 1,
+		controls.overcapAt = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 100, spec.overcapThreshold, 0.5, 1,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.RoundTo(value, 1)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 1)
 			self.EditBox:SetText(value)
 			spec.overcapThreshold = value
 		end)
@@ -778,47 +778,47 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Elemental_FontAndText = TRB.UiFunctions:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Elemental_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Elemental_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Font & Text).", 7, 1, false, true, false, false, false)
 		end)
 
-		yCoord = TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, 7, 1, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 7, 1, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Maelstrom Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Maelstrom Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.currentMaelstrom = TRB.UiFunctions:BuildColorPicker(parent, "Current Maelstrom", spec.colors.text.currentMaelstrom, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.currentMaelstrom = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Maelstrom", spec.colors.text.currentMaelstrom, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.currentMaelstrom
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "currentMaelstrom")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "currentMaelstrom")
 		end)
 
-		controls.colors.text.castingMaelstrom = TRB.UiFunctions:BuildColorPicker(parent, "Maelstrom from hardcasting spells", spec.colors.text.castingMaelstrom, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.castingMaelstrom = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maelstrom from hardcasting spells", spec.colors.text.castingMaelstrom, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.castingMaelstrom
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "castingMaelstrom")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "castingMaelstrom")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.passiveMaelstrom = TRB.UiFunctions:BuildColorPicker(parent, "Passive Maelstrom", spec.colors.text.passiveMaelstrom, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.passiveMaelstrom = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Passive Maelstrom", spec.colors.text.passiveMaelstrom, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.passiveMaelstrom
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passiveMaelstrom")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passiveMaelstrom")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.UiFunctions:BuildColorPicker(parent, "Have enough Maelstrom to cast Earth Shock or Earthquake", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Have enough Maelstrom to cast Earth Shock or Earthquake", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.text.overcapMaelstrom = TRB.UiFunctions:BuildColorPicker(parent, "Cast will overcap Maelstrom", spec.colors.text.overcapMaelstrom, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.overcapMaelstrom = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Cast will overcap Maelstrom", spec.colors.text.overcapMaelstrom, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.overcapMaelstrom
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcapMaelstrom")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcapMaelstrom")
 		end)
 
 		yCoord = yCoord - 30
@@ -844,7 +844,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.UiFunctions:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
 
 		yCoord = yCoord - 25
 
@@ -860,22 +860,22 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		controls.colors.dots = {}
 
-		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
+		controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
 		f = controls.colors.dots.up
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
 		end)
 
-		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
+		controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
 		f = controls.colors.dots.pandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
 		end)
 
-		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
+		controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
 		f = controls.colors.dots.down
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -896,12 +896,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Elemental_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Elemental_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Elemental_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Audio & Tracking).", 7, 1, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.esReady = CreateFrame("CheckButton", "TwintopResourceBar_CB3_3", parent, "ChatConfigCheckButtonTemplate")
@@ -928,7 +928,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
@@ -995,7 +995,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
@@ -1032,15 +1032,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 
 		yCoord = yCoord - 40
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
-		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
+		controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.RoundTo(value, 0)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0)
 			self.EditBox:SetText(value)
 			spec.hastePrecision = value
 		end)
@@ -1062,17 +1062,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local f = nil
 		local namePrefix = "Shaman_Elemental"
 
-		controls.buttons.exportButton_Shaman_Elemental_BarText = TRB.UiFunctions:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Elemental_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Elemental_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Bar Text).", 7, 1, false, false, false, true, false)
 		end)
 
-		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.labels.leftText = TRB.UiFunctions:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
+		controls.labels.leftText = TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
+		controls.textbox.left = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
 														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
@@ -1084,9 +1084,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 70
-		controls.labels.middleText = TRB.UiFunctions:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
+		controls.labels.middleText = TRB.Functions.OptionsUi:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
+		controls.textbox.middle = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
 														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
@@ -1098,9 +1098,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 70
-		controls.labels.rightText = TRB.UiFunctions:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
+		controls.labels.rightText = TRB.Functions.OptionsUi:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
+		controls.textbox.right = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
 														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
@@ -1112,7 +1112,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
+		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
@@ -1133,7 +1133,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		controls.buttons = controls.buttons or {}
 
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Elemental Shaman", 0, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Elemental Shaman", 0, yCoord-5)
 	
 		controls.checkBoxes.elementalShamanEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_elementalShamanEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.elementalShamanEnabled
@@ -1144,18 +1144,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.shaman.elemental = self:GetChecked()
 			TRB.Functions.EventRegistration()
-			TRB.UiFunctions:ToggleCheckboxOnOff(controls.checkBoxes.elementalShamanEnabled, TRB.Data.settings.core.enabled.shaman.elemental, true)
+			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.elementalShamanEnabled, TRB.Data.settings.core.enabled.shaman.elemental, true)
 		end)
 
-		TRB.UiFunctions:ToggleCheckboxOnOff(controls.checkBoxes.elementalShamanEnabled, TRB.Data.settings.core.enabled.shaman.elemental, true)
+		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.elementalShamanEnabled, TRB.Data.settings.core.enabled.shaman.elemental, true)
 
-		controls.buttons.importButton = TRB.UiFunctions:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Shaman_Elemental_All = TRB.UiFunctions:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Shaman_Elemental_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Shaman_Elemental_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (All).", 7, 1, true, true, true, true, false)
 		end)
@@ -1165,12 +1165,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab1", "Bar Display", 1, parent, 85)
+		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab1", "Bar Display", 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab2", "Font & Text", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab3", "Audio & Tracking", 3, parent, 120, tabs[2])
-		tabs[4] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab4", "Bar Text", 4, parent, 60, tabs[3])
-		tabs[5] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab5", "Reset Defaults", 5, parent, 100, tabs[4])
+		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab2", "Font & Text", 2, parent, 85, tabs[1])
+		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab3", "Audio & Tracking", 3, parent, 120, tabs[2])
+		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab4", "Bar Text", 4, parent, 60, tabs[3])
+		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab5", "Reset Defaults", 5, parent, 100, tabs[4])
 
 		yCoord = yCoord - 15
 
@@ -1178,7 +1178,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			PanelTemplates_TabResize(tabs[i], 0)
 			PanelTemplates_DeselectTab(tabs[i])
 			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.UiFunctions:CreateTabFrameContainer("TwintopResourceBar_Shaman_Elemental_LayoutPanel" .. i, parent)
+			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Shaman_Elemental_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
 			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
 		end
@@ -1272,32 +1272,32 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		}
 		]]
 
-		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton = TRB.UiFunctions:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
+		controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
 		controls.resetButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Shaman_Restoration_Reset")
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.UiFunctions:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.resetButton1 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
+		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Shaman_Restoration_ResetBarTextSimple")
         end)
 		yCoord = yCoord - 40
 
 		--[[
-		controls.resetButton2 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", oUi.xCoord, yCoord, 250, 30)
+		controls.resetButton2 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton2:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Shaman_Restoration_ResetBarTextNarrowAdvanced")
 		end)
 		]]
 
-		controls.resetButton3 = TRB.UiFunctions:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
+		controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton3:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Shaman_Restoration_ResetBarTextAdvanced")
 		end)
@@ -1323,84 +1323,84 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 
-		controls.buttons.exportButton_Shaman_Restoration_BarDisplay = TRB.UiFunctions:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Restoration_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Restoration_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Shaman (Bar Display).", 7, 3, true, false, false, false, false)
 		end)
 
-		yCoord = TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, 7, 3, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 7, 3, yCoord)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, 7, 3, yCoord, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 3, yCoord, false)
 
 		yCoord = yCoord - 30
 		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.UiFunctions:GenerateBarDisplayOptions(parent, controls, spec, 7, 3, yCoord, "Mana", "notFull", true, true, false)
+		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 3, yCoord, "Mana", "notFull", true, true, false)
 
 		yCoord = yCoord - 70
-		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
+		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 40
-		controls.colors.base = TRB.UiFunctions:BuildColorPicker(parent, "Mana", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
 		end)
 
-		controls.colors.inAscendance = TRB.UiFunctions:BuildColorPicker(parent, "Mana while in Ascendance", spec.colors.bar.inAscendance, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana while in Ascendance", spec.colors.bar.inAscendance, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inAscendance		
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.spending = TRB.UiFunctions:BuildColorPicker(parent, "Mana cost of current hardcast spell", spec.colors.bar.spending, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana cost of current hardcast spell", spec.colors.bar.spending, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 3)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 3)
 		end)
 
-		controls.colors.inAscendance1GCD = TRB.UiFunctions:BuildColorPicker(parent, "Mana while you have less than 1 GCD left in Ascendance (if enabled)", spec.colors.bar.inAscendance1GCD, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana while you have less than 1 GCD left in Ascendance (if enabled)", spec.colors.bar.inAscendance1GCD, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inAscendance1GCD
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.UiFunctions:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.UiFunctions:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
 		end)
 
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
+		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
 
 		yCoord = yCoord - 25
-		controls.colors.border = TRB.UiFunctions:BuildColorPicker(parent, "Border's normal/base border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord-0)
+		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border's normal/base border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord-0)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
 		end)
 
-		controls.colors.innervate = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have Innervate", spec.colors.bar.innervate, 300, 25, oUi.xCoord2, yCoord-30)
+		controls.colors.innervate = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Innervate", spec.colors.bar.innervate, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.innervate
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "innervate")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "innervate")
 		end)
 		
-		controls.colors.potionOfChilledClarity = TRB.UiFunctions:BuildColorPicker(parent, "Border when you have Potion of Chilled Clarity's effect", spec.colors.bar.potionOfChilledClarity, 300, 25, oUi.xCoord2, yCoord-60)
+		controls.colors.potionOfChilledClarity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Potion of Chilled Clarity's effect", spec.colors.bar.potionOfChilledClarity, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.potionOfChilledClarity
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "potionOfChilledClarity")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "potionOfChilledClarity")
 		end)
 
 		yCoord = yCoord - 30
@@ -1426,17 +1426,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.UiFunctions:GenerateThresholdLinesForHealers(parent, controls, spec, 7, 3, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, 7, 3, yCoord)
 
-		yCoord = TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 3, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 3, yCoord)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.UiFunctions:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 7, 3, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 7, 3, yCoord)
 
 		
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "End of Ascendance Configuration", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Ascendance Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.endOfAscendance = CreateFrame("CheckButton", "TwintopsResourceBar_Shaman_Restoration_EndOfAscendance_Enabled", parent, "ChatConfigCheckButtonTemplate")
@@ -1466,10 +1466,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		title = "Ascendance GCDs - 0.75sec Floor"
-		controls.endOfAscendanceGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0.5, 10, spec.endOfAscendance.gcdsMax, 0.25, 2,
+		controls.endOfAscendanceGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfAscendance.gcdsMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfAscendanceGCDs:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			spec.endOfAscendance.gcdsMax = value
 		end)
 
@@ -1491,11 +1491,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		title = "Ascendance Time Remaining"
-		controls.endOfAscendanceTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 15, spec.endOfAscendance.timeMax, 0.25, 2,
+		controls.endOfAscendanceTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfAscendance.timeMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfAscendanceTime:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.RoundTo(value, 2)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 2)
 			self.EditBox:SetText(value)
 			spec.endOfAscendance.timeMax = value
 		end)
@@ -1518,38 +1518,38 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Restoration_FontAndText = TRB.UiFunctions:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Restoration_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Restoration_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Shaman (Font & Text).", 7, 3, false, true, false, false, false)
 		end)
 
-		yCoord = TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, 7, 3, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 7, 3, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Mana Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.current = TRB.UiFunctions:BuildColorPicker(parent, "Current Mana", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Mana", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		controls.colors.text.casting = TRB.UiFunctions:BuildColorPicker(parent, "Mana spent from hardcasting spells", spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana spent from hardcasting spells", spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.passive = TRB.UiFunctions:BuildColorPicker(parent, "Passive Mana", spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Passive Mana", spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 	
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.UiFunctions:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
 
 		yCoord = yCoord - 25
 
@@ -1565,34 +1565,34 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		controls.colors.dots = {}
 
-		controls.colors.dots.up = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
+		controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
 		f = controls.colors.dots.up
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
 		end)
 
-		controls.colors.dots.pandemic = TRB.UiFunctions:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
+		controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
 		f = controls.colors.dots.pandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
 		end)
 
-		controls.colors.dots.down = TRB.UiFunctions:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
+		controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
 		f = controls.colors.dots.down
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
 		end)
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
-		controls.hastePrecision = TRB.UiFunctions:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
+		controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
-			value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.RoundTo(value, 0)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0)
 			self.EditBox:SetText(value)
 			spec.hastePrecision = value
 		end)
@@ -1615,12 +1615,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Restoration_AudioAndTracking = TRB.UiFunctions:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Restoration_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Restoration_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Shaman (Audio & Tracking).", 7, 3, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervate = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_Innervate_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -1652,7 +1652,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
 			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
 			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.TableLength(sounds) / entries)
+				local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
@@ -1688,7 +1688,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 		
 		yCoord = yCoord - 60
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Passive External Mana Generation Tracking", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive External Mana Generation Tracking", 0, yCoord)
 		
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervateRegen = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_InnervatePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -1741,17 +1741,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local namePrefix = "Shaman_Restoration"
 
-		TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 		
-		controls.buttons.exportButton_Shaman_Restoration_BarText = TRB.UiFunctions:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Restoration_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Restoration_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Shaman (Bar Text).", 7, 3, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
-		TRB.UiFunctions:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.left = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
+		controls.textbox.left = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
 														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.left
 		f:SetScript("OnTextChanged", function(self, input)
@@ -1763,9 +1763,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 70
-		controls.labels.middleText = TRB.UiFunctions:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
+		controls.labels.middleText = TRB.Functions.OptionsUi:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.middle = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
+		controls.textbox.middle = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
 														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.middle
 		f:SetScript("OnTextChanged", function(self, input)
@@ -1777,9 +1777,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 70
-		TRB.UiFunctions:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
+		TRB.Functions.OptionsUi:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
 
-		controls.textbox.right = TRB.UiFunctions:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
+		controls.textbox.right = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
 														430, 60, oUi.xCoord+95, yCoord)
 		f = controls.textbox.right
 		f:SetScript("OnTextChanged", function(self, input)
@@ -1791,7 +1791,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		local variablesPanel = TRB.UiFunctions:CreateVariablesSidePanel(parent, namePrefix)
+		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
 		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
@@ -1818,7 +1818,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		parent = interfaceSettingsFrame.restorationDisplayPanel
 
-		controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Restoration Shaman", 0, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Restoration Shaman", 0, yCoord-5)
 		
 		controls.checkBoxes.restorationShamanEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_restorationShamanEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.restorationShamanEnabled
@@ -1829,18 +1829,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.shaman.restoration = self:GetChecked()
 			TRB.Functions.EventRegistration()
-			TRB.UiFunctions:ToggleCheckboxOnOff(controls.checkBoxes.restorationShamanEnabled, TRB.Data.settings.core.enabled.shaman.restoration, true)
+			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.restorationShamanEnabled, TRB.Data.settings.core.enabled.shaman.restoration, true)
 		end)
 		
-		TRB.UiFunctions:ToggleCheckboxOnOff(controls.checkBoxes.restorationShamanEnabled, TRB.Data.settings.core.enabled.shaman.restoration, true)
+		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.restorationShamanEnabled, TRB.Data.settings.core.enabled.shaman.restoration, true)
 
-		controls.buttons.importButton = TRB.UiFunctions:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Shaman_Restoration_All = TRB.UiFunctions:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Shaman_Restoration_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Shaman_Restoration_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Shaman (All).", 7, 3, true, true, true, true, false)
 		end)
@@ -1850,12 +1850,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab1", "Bar Display", 1, parent, 85)
+		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab1", "Bar Display", 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab2", "Font & Text", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab3", "Audio & Tracking", 3, parent, 120, tabs[2])
-		tabs[4] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab4", "Bar Text", 4, parent, 60, tabs[3])
-		tabs[5] = TRB.UiFunctions:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab5", "Reset Defaults", 5, parent, 100, tabs[4])
+		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab2", "Font & Text", 2, parent, 85, tabs[1])
+		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab3", "Audio & Tracking", 3, parent, 120, tabs[2])
+		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab4", "Bar Text", 4, parent, 60, tabs[3])
+		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab5", "Reset Defaults", 5, parent, 100, tabs[4])
 
 		yCoord = yCoord - 15
 
@@ -1863,7 +1863,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			PanelTemplates_TabResize(tabs[i], 0)
 			PanelTemplates_DeselectTab(tabs[i])
 			tabs[i].Text:SetPoint("TOP", 0, 0)
-			tabsheets[i] = TRB.UiFunctions:CreateTabFrameContainer("TwintopResourceBar_Shaman_Restoration_LayoutPanel" .. i, parent)
+			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Shaman_Restoration_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
 			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
 		end

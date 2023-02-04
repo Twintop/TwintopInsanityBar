@@ -1676,7 +1676,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			local conjuredChillglobeVersion = ""
 						
 			if trinket1ItemLink ~= nil then
-				for x = 1, TRB.Functions.TableLength(TRB.Data.spells.alchemistStone.itemIds) do
+				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
 						alchemyStone = TRB.Functions.DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
 					else
@@ -1690,7 +1690,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 
 			if alchemyStone == false and trinket2ItemLink ~= nil then
-				for x = 1, TRB.Functions.TableLength(TRB.Data.spells.alchemistStone.itemIds) do
+				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
 						alchemyStone = TRB.Functions.DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
 					else
@@ -1949,7 +1949,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function ConstructResourceBar(settings)
 		local specId = GetSpecialization()
-		local entries = TRB.Functions.TableLength(resourceFrame.thresholds)
+		local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
 		if entries > 0 then
 			for x = 1, entries do
 				resourceFrame.thresholds[x]:Hide()
@@ -2750,9 +2750,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		--$astralPower
 		local astralPowerPrecision = TRB.Data.settings.druid.balance.astralPowerPrecision or 0
-		local currentAstralPower = string.format("|c%s%s|r", currentAstralPowerColor, TRB.Functions.RoundTo(normalizedAstralPower, astralPowerPrecision, "floor"))
+		local currentAstralPower = string.format("|c%s%s|r", currentAstralPowerColor, TRB.Functions.Number:RoundTo(normalizedAstralPower, astralPowerPrecision, "floor"))
 		--$casting
-		local castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.RoundTo(TRB.Data.snapshotData.casting.resourceFinal, astralPowerPrecision, "floor"))
+		local castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.casting.resourceFinal, astralPowerPrecision, "floor"))
 		--$passive
         local _passiveAstralPower = TRB.Data.snapshotData.furyOfElune.astralPower + TRB.Data.snapshotData.sunderedFirmament.astralPower
 		if TRB.Functions.IsTalentActive(TRB.Data.spells.naturesBalance) then
@@ -2763,16 +2763,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		end
 
-		local passiveAstralPower = string.format("|c%s%s|r", TRB.Data.settings.druid.balance.colors.text.passive, TRB.Functions.RoundTo(_passiveAstralPower, astralPowerPrecision, "ceil"))
+		local passiveAstralPower = string.format("|c%s%s|r", TRB.Data.settings.druid.balance.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveAstralPower, astralPowerPrecision, "ceil"))
 		--$astralPowerTotal
 		local _astralPowerTotal = math.min(_passiveAstralPower + TRB.Data.snapshotData.casting.resourceFinal + normalizedAstralPower, TRB.Data.character.maxResource)
-		local astralPowerTotal = string.format("|c%s%s|r", currentAstralPowerColor, TRB.Functions.RoundTo(_astralPowerTotal, astralPowerPrecision, "floor"))
+		local astralPowerTotal = string.format("|c%s%s|r", currentAstralPowerColor, TRB.Functions.Number:RoundTo(_astralPowerTotal, astralPowerPrecision, "floor"))
 		--$astralPowerPlusCasting
 		local _astralPowerPlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + normalizedAstralPower, TRB.Data.character.maxResource)
-		local astralPowerPlusCasting = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.RoundTo(_astralPowerPlusCasting, astralPowerPrecision, "floor"))
+		local astralPowerPlusCasting = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(_astralPowerPlusCasting, astralPowerPrecision, "floor"))
 		--$astralPowerPlusPassive
 		local _astralPowerPlusPassive = math.min(_passiveAstralPower + normalizedAstralPower, TRB.Data.character.maxResource)
-		local astralPowerPlusPassive = string.format("|c%s%s|r", currentAstralPowerColor, TRB.Functions.RoundTo(_astralPowerPlusPassive, astralPowerPrecision, "floor"))
+		local astralPowerPlusPassive = string.format("|c%s%s|r", currentAstralPowerColor, TRB.Functions.Number:RoundTo(_astralPowerPlusPassive, astralPowerPrecision, "floor"))
 
 		----------
 		--$sunfireCount and $sunfireTime
@@ -2926,14 +2926,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		--$pulsar variables
 		local pulsarCollected = TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower or 0
 		local _pulsarCollectedPercent = pulsarCollected / TRB.Data.spells.primordialArcanicPulsar.maxAstralPower
-		local pulsarCollectedPercent = string.format("%.1f", TRB.Functions.RoundTo(_pulsarCollectedPercent * 100, 1))
+		local pulsarCollectedPercent = string.format("%.1f", TRB.Functions.Number:RoundTo(_pulsarCollectedPercent * 100, 1))
 		local pulsarRemaining = TRB.Data.spells.primordialArcanicPulsar.maxAstralPower - pulsarCollected
 		local _pulsarRemainingPercent = pulsarRemaining / TRB.Data.spells.primordialArcanicPulsar.maxAstralPower
-		local pulsarRemainingPercent = string.format("%.1f", TRB.Functions.RoundTo(_pulsarRemainingPercent * 100, 1))
+		local pulsarRemainingPercent = string.format("%.1f", TRB.Functions.Number:RoundTo(_pulsarRemainingPercent * 100, 1))
 		--local pulsarNextStarsurge = ""
 		--local pulsarNextStarfall = ""
-		local pulsarStarsurgeCount = TRB.Functions.RoundTo(pulsarRemaining / -TRB.Data.spells.starsurge.astralPower, 0, ceil)
-		local pulsarStarfallCount = TRB.Functions.RoundTo(pulsarRemaining / -TRB.Data.spells.starfall.astralPower, 0, ceil)
+		local pulsarStarsurgeCount = TRB.Functions.Number:RoundTo(pulsarRemaining / -TRB.Data.spells.starsurge.astralPower, 0, ceil)
+		local pulsarStarfallCount = TRB.Functions.Number:RoundTo(pulsarRemaining / -TRB.Data.spells.starfall.astralPower, 0, ceil)
 		
 		----------------------------
 
@@ -3244,14 +3244,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 
 				ripCount = string.format("|c%s%.0f|r", ripColor, _ripCount)
-				ripSnapshot = string.format("|c%s%.0f|r", ripColor, TRB.Functions.RoundTo(100 * _ripSnapshot, 0, "floor"))
-				ripCurrent = string.format("|c%s%.0f|r", ripColor, TRB.Functions.RoundTo(100 * _currentSnapshotRip, 0, "floor"))
-				ripPercent = string.format("|c%s%.0f|r", ripColor, TRB.Functions.RoundTo(100 * _ripPercent, 0, "floor"))
+				ripSnapshot = string.format("|c%s%.0f|r", ripColor, TRB.Functions.Number:RoundTo(100 * _ripSnapshot, 0, "floor"))
+				ripCurrent = string.format("|c%s%.0f|r", ripColor, TRB.Functions.Number:RoundTo(100 * _currentSnapshotRip, 0, "floor"))
+				ripPercent = string.format("|c%s%.0f|r", ripColor, TRB.Functions.Number:RoundTo(100 * _ripPercent, 0, "floor"))
 				ripTime = string.format("|c%s%.1f|r", ripColor, _ripTime)
 			else
 				ripCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, _ripCount)
 				ripSnapshot = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
-				ripCurrent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, TRB.Functions.RoundTo(100 * _currentSnapshotRip, 0, "floor"))
+				ripCurrent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotRip, 0, "floor"))
 				ripPercent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
 				ripTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
 			end
@@ -3267,14 +3267,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 
 				rakeCount = string.format("|c%s%.0f|r", rakeColor, _rakeCount)
-				rakeSnapshot = string.format("|c%s%.0f|r", rakeColor, TRB.Functions.RoundTo(100 * _rakeSnapshot, 0, "floor"))
-				rakeCurrent = string.format("|c%s%.0f|r", rakeColor, TRB.Functions.RoundTo(100 * _currentSnapshotRake, 0, "floor"))
-				rakePercent = string.format("|c%s%.0f|r", rakeColor, TRB.Functions.RoundTo(100 * _rakePercent, 0, "floor"))
+				rakeSnapshot = string.format("|c%s%.0f|r", rakeColor, TRB.Functions.Number:RoundTo(100 * _rakeSnapshot, 0, "floor"))
+				rakeCurrent = string.format("|c%s%.0f|r", rakeColor, TRB.Functions.Number:RoundTo(100 * _currentSnapshotRake, 0, "floor"))
+				rakePercent = string.format("|c%s%.0f|r", rakeColor, TRB.Functions.Number:RoundTo(100 * _rakePercent, 0, "floor"))
 				rakeTime = string.format("|c%s%.1f|r", rakeColor, _rakeTime)
 			else
 				rakeCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, _rakeCount)
 				rakeSnapshot = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
-				rakeCurrent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, TRB.Functions.RoundTo(100 * _currentSnapshotRake, 0, "floor"))
+				rakeCurrent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotRake, 0, "floor"))
 				rakePercent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
 				rakeTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
 			end
@@ -3290,14 +3290,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 
 				thrashCount = string.format("|c%s%.0f|r", thrashColor, _thrashCount)
-				thrashSnapshot = string.format("|c%s%.0f|r", thrashColor, TRB.Functions.RoundTo(100 * _thrashSnapshot, 0, "floor"))
-				thrashCurrent = string.format("|c%s%.0f|r", thrashColor, TRB.Functions.RoundTo(100 * _currentSnapshotThrash, 0, "floor"))
-				thrashPercent = string.format("|c%s%.0f|r", thrashColor, TRB.Functions.RoundTo(100 * _thrashPercent, 0, "floor"))
+				thrashSnapshot = string.format("|c%s%.0f|r", thrashColor, TRB.Functions.Number:RoundTo(100 * _thrashSnapshot, 0, "floor"))
+				thrashCurrent = string.format("|c%s%.0f|r", thrashColor, TRB.Functions.Number:RoundTo(100 * _currentSnapshotThrash, 0, "floor"))
+				thrashPercent = string.format("|c%s%.0f|r", thrashColor, TRB.Functions.Number:RoundTo(100 * _thrashPercent, 0, "floor"))
 				thrashTime = string.format("|c%s%.1f|r", thrashColor, _thrashTime)
 			else
 				thrashCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, _thrashCount)
 				thrashSnapshot = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
-				thrashCurrent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, TRB.Functions.RoundTo(100 * _currentSnapshotThrash, 0, "floor"))
+				thrashCurrent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotThrash, 0, "floor"))
 				thrashPercent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
 				thrashTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
 			end
@@ -3313,14 +3313,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 
 				moonfireCount = string.format("|c%s%.0f|r", moonfireColor, _moonfireCount)
-				moonfireSnapshot = string.format("|c%s%.0f|r", moonfireColor, TRB.Functions.RoundTo(100 * _moonfireSnapshot, 0, "floor"))
-				moonfireCurrent = string.format("|c%s%.0f|r", moonfireColor, TRB.Functions.RoundTo(100 * _currentSnapshotMoonfire, 0, "floor"))
-				moonfirePercent = string.format("|c%s%.0f|r", moonfireColor, TRB.Functions.RoundTo(100 * _moonfirePercent, 0, "floor"))
+				moonfireSnapshot = string.format("|c%s%.0f|r", moonfireColor, TRB.Functions.Number:RoundTo(100 * _moonfireSnapshot, 0, "floor"))
+				moonfireCurrent = string.format("|c%s%.0f|r", moonfireColor, TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor"))
+				moonfirePercent = string.format("|c%s%.0f|r", moonfireColor, TRB.Functions.Number:RoundTo(100 * _moonfirePercent, 0, "floor"))
 				moonfireTime = string.format("|c%s%.1f|r", moonfireColor, _moonfireTime)
 			else
 				moonfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, _moonfireCount)
 				moonfireSnapshot = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
-				moonfireCurrent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, TRB.Functions.RoundTo(100 * _currentSnapshotMoonfire, 0, "floor"))
+				moonfireCurrent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor"))
 				moonfirePercent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
 				moonfireTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
 			end
@@ -3329,27 +3329,27 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			rakeTime = string.format("%.1f", _rakeTime)
 			thrashTime = string.format("%.1f", _thrashTime)
 
-			ripSnapshot = TRB.Functions.RoundTo(100 * _ripSnapshot, 0, "floor")
-			rakeSnapshot = TRB.Functions.RoundTo(100 * _rakeSnapshot, 0, "floor")
-			thrashSnapshot = TRB.Functions.RoundTo(100 * _thrashSnapshot, 0, "floor")
+			ripSnapshot = TRB.Functions.Number:RoundTo(100 * _ripSnapshot, 0, "floor")
+			rakeSnapshot = TRB.Functions.Number:RoundTo(100 * _rakeSnapshot, 0, "floor")
+			thrashSnapshot = TRB.Functions.Number:RoundTo(100 * _thrashSnapshot, 0, "floor")
 
-			ripCurrent = TRB.Functions.RoundTo(100 * _currentSnapshotRip, 0, "floor")
-			rakeCurrent = TRB.Functions.RoundTo(100 * _currentSnapshotRake, 0, "floor")
-			thrashCurrent = TRB.Functions.RoundTo(100 * _currentSnapshotThrash, 0, "floor")
+			ripCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotRip, 0, "floor")
+			rakeCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotRake, 0, "floor")
+			thrashCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotThrash, 0, "floor")
 
-			ripPercent = TRB.Functions.RoundTo(100 * _ripPercent, 0, "floor")
-			rakePercent = TRB.Functions.RoundTo(100 * _rakePercent, 0, "floor")
-			thrashPercent = TRB.Functions.RoundTo(100 * _thrashPercent, 0, "floor")
+			ripPercent = TRB.Functions.Number:RoundTo(100 * _ripPercent, 0, "floor")
+			rakePercent = TRB.Functions.Number:RoundTo(100 * _rakePercent, 0, "floor")
+			thrashPercent = TRB.Functions.Number:RoundTo(100 * _thrashPercent, 0, "floor")
 
 			if TRB.Functions.IsTalentActive(TRB.Data.spells.lunarInspiration) == true then
 				moonfireTime = string.format("%.1f", _moonfireTime)
-				moonfireSnapshot = TRB.Functions.RoundTo(100 * _moonfireSnapshot, 0, "floor")
-				moonfireCurrent = TRB.Functions.RoundTo(100 * _currentSnapshotMoonfire, 0, "floor")
-				moonfirePercent = TRB.Functions.RoundTo(100 * _moonfirePercent, 0, "floor")
+				moonfireSnapshot = TRB.Functions.Number:RoundTo(100 * _moonfireSnapshot, 0, "floor")
+				moonfireCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor")
+				moonfirePercent = TRB.Functions.Number:RoundTo(100 * _moonfirePercent, 0, "floor")
 			else
 				moonfireTime = string.format("%.1f", 0)
 				moonfireSnapshot = 0
-				moonfireCurrent = TRB.Functions.RoundTo(100 * _currentSnapshotMoonfire, 0, "floor")
+				moonfireCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor")
 				moonfirePercent = 0
 			end
 		end
@@ -3587,14 +3587,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		--$mana
 		local manaPrecision = TRB.Data.settings.druid.restoration.manaPrecision or 1
-		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 		--$casting
 		local _castingMana = TRB.Data.snapshotData.casting.resourceFinal
-		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
+		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
 		--$sohMana
 		local _sohMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
-		local sohMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor", true))
+		local sohMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor", true))
 		--$sohTicks
 		local _sohTicks = TRB.Data.snapshotData.symbolOfHope.ticksRemaining or 0
 		local sohTicks = string.format("%.0f", _sohTicks)
@@ -3604,14 +3604,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		--$innervateMana
 		local _innervateMana = TRB.Data.snapshotData.innervate.mana
-		local innervateMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
+		local innervateMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
 		--$innervateTime
 		local _innervateTime = GetInnervateRemainingTime()
 		local innervateTime = string.format("%.1f", _innervateTime)
 
 		--$mttMana
 		local _mttMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
-		local mttMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
+		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
 		local _mttTime = GetManaTideTotemRemainingTime()
 		local mttTime = string.format("%.1f", _mttTime)
@@ -3629,14 +3629,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		--$potionOfChilledClarityMana
 		local _potionOfChilledClarityMana = TRB.Data.snapshotData.potionOfChilledClarity.mana
-		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
+		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
 		--$potionOfChilledClarityTime
 		local _potionOfChilledClarityTime = GetPotionOfChilledClarityRemainingTime()
 		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
 
 		--$channeledMana
 		local _channeledMana = CalculateManaGain(TRB.Data.snapshotData.channeledManaPotion.mana, true)
-		local channeledMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_channeledMana, manaPrecision, "floor", true))
+		local channeledMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_channeledMana, manaPrecision, "floor", true))
 		--$potionOfFrozenFocusTicks
 		local _potionOfFrozenFocusTicks = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining or 0
 		local potionOfFrozenFocusTicks = string.format("%.0f", _potionOfFrozenFocusTicks)
@@ -3645,19 +3645,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
 		--$passive
 		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana
-		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.druid.restoration.colors.text.passive, TRB.Functions.ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
+		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.druid.restoration.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 		--$manaTotal
 		local _manaTotal = math.min(_passiveMana + TRB.Data.snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
-		local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
+		local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
 		--$manaPlusCasting
 		local _manaPlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
-		local manaPlusCasting = string.format("|c%s%s|r", castingManaColor, TRB.Functions.ConvertToShortNumberNotation(_manaPlusCasting, manaPrecision, "floor", true))
+		local manaPlusCasting = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaPlusCasting, manaPrecision, "floor", true))
 		--$manaPlusPassive
 		local _manaPlusPassive = math.min(_passiveMana + normalizedMana, TRB.Data.character.maxResource)
-		local manaPlusPassive = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(_manaPlusPassive, manaPrecision, "floor", true))
+		local manaPlusPassive = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaPlusPassive, manaPrecision, "floor", true))
 
 		--$manaMax
-		local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
+		local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
 		--$manaPercent
 		local maxResource = TRB.Data.character.maxResource
@@ -3666,7 +3666,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			maxResource = 1
 		end
 		local _manaPercent = (normalizedMana/maxResource)
-		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.RoundTo(_manaPercent*100, manaPrecision, "floor"))
+		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.Number:RoundTo(_manaPercent*100, manaPrecision, "floor"))
 
 		--$efflorescenceTime
 		local _efflorescenceTime = GetEfflorescenceRemainingTime()
@@ -4379,7 +4379,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local flashBar = false
 
 					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
+						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
@@ -4387,7 +4387,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.border, true))
+						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.border, true))
 						TRB.Data.snapshotData.audio.overcapCue = false
 					end
 
@@ -4585,7 +4585,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						end
 					end
 
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
+					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 					barContainerFrame:SetAlpha(1.0)
 
 					if flashBar then
@@ -4632,23 +4632,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
 						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
 						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
 						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
 					local pairOffset = 0
@@ -4837,11 +4837,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 					barContainerFrame:SetAlpha(1.0)
 
-					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
+					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 					
-					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 					
 					for x = 1, TRB.Data.character.maxResource2 do
 						local cpBorderColor = specSettings.colors.comboPoints.border
@@ -4861,8 +4861,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 						end
 
-						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(cpColor, true))
-						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(cpBorderColor, true))
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
 					end
 				end
@@ -4898,7 +4898,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						end
 					end
 		
-					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 		
 					TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, currentMana)
 		
@@ -4920,7 +4920,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 		---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[1]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[1]:Hide()
@@ -4935,7 +4935,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 		---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[2]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[2]:Hide()
@@ -4950,7 +4950,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 		---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[3]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[3]:Hide()
@@ -4965,7 +4965,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 		---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[4]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[4]:Hide()
@@ -4986,21 +4986,21 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
 						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
 						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 		
 					local resourceBarColor = specSettings.colors.bar.base
@@ -5013,7 +5013,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						resourceBarColor = specSettings.colors.bar.clearcasting
 					end
 
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(resourceBarColor, true))
+					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(resourceBarColor, true))
 				end
 		
 				TRB.Functions.UpdateResourceBar(specSettings, refreshText)
@@ -5662,7 +5662,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local settings = TRB.Options.Druid.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
 						TRB.Options:PortForwardSettings()
-						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
+						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
 						TRB.Data.settings = settings

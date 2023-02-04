@@ -856,7 +856,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			local conjuredChillglobeVersion = ""
 						
 			if trinket1ItemLink ~= nil then
-				for x = 1, TRB.Functions.TableLength(TRB.Data.spells.alchemistStone.itemIds) do
+				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
 						alchemyStone = TRB.Functions.DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
 					else
@@ -870,7 +870,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 
 			if alchemyStone == false and trinket2ItemLink ~= nil then
-				for x = 1, TRB.Functions.TableLength(TRB.Data.spells.alchemistStone.itemIds) do
+				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
 						alchemyStone = TRB.Functions.DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
 					else
@@ -1009,7 +1009,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 	local function ConstructResourceBar(settings)
 		local specId = GetSpecialization()
-		local entries = TRB.Functions.TableLength(resourceFrame.thresholds)
+		local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
 		if entries > 0 then
 			for x = 1, entries do
 				resourceFrame.thresholds[x]:Hide()
@@ -1295,7 +1295,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
 
 	local function GetGuidPositionInMarkOfTheCraneList(guid)
-		local entries = TRB.Functions.TableLength(TRB.Data.snapshotData.markOfTheCrane.list)
+		local entries = TRB.Functions.Table:Length(TRB.Data.snapshotData.markOfTheCrane.list)
 		for x = 1, entries do
 			if TRB.Data.snapshotData.markOfTheCrane.list[x].guid == guid then
 				return x
@@ -1323,7 +1323,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 	local function GetOldestOrExpiredMarkOfTheCraneListEntry(any, aliveOnly)
 		local currentTime = GetTime()
-		local entries = TRB.Functions.TableLength(TRB.Data.snapshotData.markOfTheCrane.list)
+		local entries = TRB.Functions.Table:Length(TRB.Data.snapshotData.markOfTheCrane.list)
 		local oldestTime = currentTime
 		local oldestId = 0
 
@@ -1386,14 +1386,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		--$mana
 		local manaPrecision = TRB.Data.settings.monk.mistweaver.manaPrecision or 1
-		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 		--$casting
 		local _castingMana = TRB.Data.snapshotData.casting.resourceFinal
-		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
+		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
 		--$sohMana
 		local _sohMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
-		local sohMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor", true))
+		local sohMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor", true))
 		--$sohTicks
 		local _sohTicks = TRB.Data.snapshotData.symbolOfHope.ticksRemaining or 0
 		local sohTicks = string.format("%.0f", _sohTicks)
@@ -1403,14 +1403,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		--$innervateMana
 		local _innervateMana = TRB.Data.snapshotData.innervate.mana
-		local innervateMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
+		local innervateMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
 		--$innervateTime
 		local _innervateTime = GetInnervateRemainingTime()
 		local innervateTime = string.format("%.1f", _innervateTime)
 
 		--$mttMana
 		local _mttMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
-		local mttMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
+		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
 		local _mttTime = GetManaTideTotemRemainingTime()
 		local mttTime = string.format("%.1f", _mttTime)
@@ -1428,14 +1428,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		--$potionOfChilledClarityMana
 		local _potionOfChilledClarityMana = TRB.Data.snapshotData.potionOfChilledClarity.mana
-		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
+		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
 		--$potionOfChilledClarityTime
 		local _potionOfChilledClarityTime = GetPotionOfChilledClarityRemainingTime()
 		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
 
 		--$channeledMana
 		local _channeledMana = CalculateManaGain(TRB.Data.snapshotData.channeledManaPotion.mana, true)
-		local channeledMana = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(_channeledMana, manaPrecision, "floor", true))
+		local channeledMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_channeledMana, manaPrecision, "floor", true))
 		--$potionOfFrozenFocusTicks
 		local _potionOfFrozenFocusTicks = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining or 0
 		local potionOfFrozenFocusTicks = string.format("%.0f", _potionOfFrozenFocusTicks)
@@ -1444,19 +1444,19 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
 		--$passive
 		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana
-		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.monk.mistweaver.colors.text.passive, TRB.Functions.ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
+		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.monk.mistweaver.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 		--$manaTotal
 		local _manaTotal = math.min(_passiveMana + TRB.Data.snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
-		local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
+		local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
 		--$manaPlusCasting
 		local _manaPlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
-		local manaPlusCasting = string.format("|c%s%s|r", castingManaColor, TRB.Functions.ConvertToShortNumberNotation(_manaPlusCasting, manaPrecision, "floor", true))
+		local manaPlusCasting = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaPlusCasting, manaPrecision, "floor", true))
 		--$manaPlusPassive
 		local _manaPlusPassive = math.min(_passiveMana + normalizedMana, TRB.Data.character.maxResource)
-		local manaPlusPassive = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(_manaPlusPassive, manaPrecision, "floor", true))
+		local manaPlusPassive = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaPlusPassive, manaPrecision, "floor", true))
 
 		--$manaMax
-		local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
+		local manaMax = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.character.maxResource, manaPrecision, "floor", true))
 
 		--$manaPercent
 		local maxResource = TRB.Data.character.maxResource
@@ -1465,7 +1465,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			maxResource = 1
 		end
 		local _manaPercent = (normalizedMana/maxResource)
-		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.RoundTo(_manaPercent*100, manaPrecision, "floor"))
+		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.Number:RoundTo(_manaPercent*100, manaPrecision, "floor"))
 
 		----------
 
@@ -1892,7 +1892,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 	local function UpdateMarkOfTheCrane()
 		RemoveExcessMarkOfTheCraneEntries()
-		local entries = TRB.Functions.TableLength(TRB.Data.snapshotData.markOfTheCrane.list)
+		local entries = TRB.Functions.Table:Length(TRB.Data.snapshotData.markOfTheCrane.list)
 		local minEndTime = nil
 		local maxEndTime = nil
 		local activeCount = 0
@@ -2176,7 +2176,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						end
 					end
 
-					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
 					TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, currentMana)
 
@@ -2198,7 +2198,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[1]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[1]:Hide()
@@ -2213,7 +2213,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[2]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[2]:Hide()
@@ -2228,7 +2228,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[3]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[3]:Hide()
@@ -2243,7 +2243,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[4]:Show()
 							else
 								TRB.Frames.passiveFrame.thresholds[4]:Hide()
@@ -2265,28 +2265,28 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
 						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
 						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
 					local resourceBarColor = nil
 
 					resourceBarColor = specSettings.colors.bar.base
 
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(resourceBarColor, true))
+					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(resourceBarColor, true))
 				end
 
 				TRB.Functions.UpdateResourceBar(specSettings, refreshText)
@@ -2328,23 +2328,23 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
 						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
 						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
 						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
 					local pairOffset = 0
@@ -2427,11 +2427,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 					barContainerFrame:SetAlpha(1.0)
 
-					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
+					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 					
-					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
                     for x = 1, TRB.Data.character.maxResource2 do
 						local cpBorderColor = specSettings.colors.comboPoints.border
@@ -2451,8 +2451,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
                             TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
                         end
 
-						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(cpColor, true))
-						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(cpBorderColor, true))
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
                     end
 				end
@@ -2778,7 +2778,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					local settings = TRB.Options.Monk.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
 						TRB.Options:PortForwardSettings()
-						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
+						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
 						TRB.Data.settings = settings

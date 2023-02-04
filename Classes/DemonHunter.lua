@@ -607,7 +607,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 	local function ConstructResourceBar(settings)
 		local specId = GetSpecialization()
-		local entries = TRB.Functions.TableLength(TRB.Frames.resourceFrame.thresholds)
+		local entries = TRB.Functions.Table:Length(TRB.Frames.resourceFrame.thresholds)
 		if entries > 0 then
 			for x = 1, entries do
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
@@ -802,23 +802,23 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		--$fury
 		local furyPrecision = TRB.Data.settings.demonhunter.havoc.furyPrecision or 0
-		local currentFury = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.RoundTo(normalizedFury, furyPrecision, "floor"))
+		local currentFury = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(normalizedFury, furyPrecision, "floor"))
 		--$casting
 		local _castingFury = TRB.Data.snapshotData.casting.resourceFinal
-		local castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.RoundTo(_castingFury, furyPrecision, "floor"))
+		local castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_castingFury, furyPrecision, "floor"))
 		--$passive
 		local _passiveFury = bhFury + tacticalRetreatFury
-		local passiveFury = string.format("|c%s%s|r", TRB.Data.settings.demonhunter.havoc.colors.text.passive, TRB.Functions.RoundTo(_passiveFury, furyPrecision, "floor"))
+		local passiveFury = string.format("|c%s%s|r", TRB.Data.settings.demonhunter.havoc.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveFury, furyPrecision, "floor"))
 		
 		--$furyTotal
 		local _furyTotal = math.min(_passiveFury + TRB.Data.snapshotData.casting.resourceFinal + normalizedFury, TRB.Data.character.maxResource)
-		local furyTotal = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.RoundTo(_furyTotal, furyPrecision, "floor"))
+		local furyTotal = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(_furyTotal, furyPrecision, "floor"))
 		--$furyPlusCasting
 		local _furyPlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + normalizedFury, TRB.Data.character.maxResource)
-		local furyPlusCasting = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.RoundTo(_furyPlusCasting, furyPrecision, "floor"))
+		local furyPlusCasting = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_furyPlusCasting, furyPrecision, "floor"))
 		--$furyPlusPassive
 		local _furyPlusPassive = math.min(_passiveFury + normalizedFury, TRB.Data.character.maxResource)
-		local furyPlusPassive = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.RoundTo(_furyPlusPassive, furyPrecision, "floor"))
+		local furyPlusPassive = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(_furyPlusPassive, furyPrecision, "floor"))
 		----------------------------
 
 		Global_TwintopResourceBar.resource.resource = normalizedFury
@@ -943,7 +943,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 						TRB.Data.snapshotData.casting.endTime = currentChannelEndTime / 1000
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.eyeBeam.icon
 						local remainingTime = TRB.Data.snapshotData.casting.endTime - currentTime
-						local ticks = TRB.Functions.RoundTo(remainingTime / (TRB.Data.spells.blindFury.tickRate * (gcd / 1.5)), 0, "ceil")
+						local ticks = TRB.Functions.Number:RoundTo(remainingTime / (TRB.Data.spells.blindFury.tickRate * (gcd / 1.5)), 0, "ceil")
 						local fury = ticks * TRB.Data.spells.blindFury.fury
 						TRB.Data.snapshotData.casting.resourceRaw = fury
 						TRB.Data.snapshotData.casting.resourceFinal = fury
@@ -1154,23 +1154,23 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue) 
 							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, currentFury)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
 							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, currentFury)
-							castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.spending, true))
-							passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
 						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, currentFury)
 						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
 						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
-						castingFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.casting, true))
-						passiveFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(specSettings.colors.bar.passive, true))
+						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
 					local pairOffset = 0
@@ -1309,9 +1309,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 					barContainerFrame:SetAlpha(1.0)
 
-					barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(barBorderColor, true))
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
-					resourceFrame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(barColor, true))
+					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 				end
 			end
 			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
@@ -1544,7 +1544,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					local settings = TRB.Options.DemonHunter.LoadDefaultSettings()
 					if TwintopInsanityBarSettings then
 						TRB.Options:PortForwardSettings()
-						TRB.Data.settings = TRB.Functions.MergeSettings(settings, TwintopInsanityBarSettings)
+						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
 						TRB.Data.settings = settings

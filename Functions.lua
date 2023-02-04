@@ -2,51 +2,6 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 local EXPORT_STRING_PREFIX = "!TRB!"
 
--- Table Functions
-
-local function TableLength(T)
-	local count = 0
-	if T ~= nil then
-		local _
-		for _ in pairs(T) do
-			count = count + 1
-		end
-	end
-	return count
-end
-TRB.Functions.TableLength = TableLength
-
-local function TablePrint(T, indent)
-	if not indent then
-		indent = 0
-	end
-
-	local toprint = string.rep(" ", indent) .. "{\r\n"
-	indent = indent + 2
-	for k, v in pairs(T) do
-		toprint = toprint .. string.rep(" ", indent)
-		if (type(k) == "number") then
-			toprint = toprint .. "[" .. k .. "] = "
-		elseif (type(k) == "string") then
-			toprint = toprint  .. k ..  "= "
-		end
-
-		if (type(v) == "number") then
-			toprint = toprint .. v .. ",\r\n"
-		elseif (type(v) == "string") then
-			toprint = toprint .. "\"" .. v .. "\",\r\n"
-		elseif (type(v) == "table") then
-			toprint = toprint .. TablePrint(v, indent + 2) .. ",\r\n"
-		else
-			toprint = toprint .. "\"" .. tostring(v) .. "\",\r\n"
-		end
-	end
-
-	toprint = toprint .. string.rep(" ", indent-2) .. "}"
-	return toprint
-end
-TRB.Functions.TablePrint = TablePrint
-
 -- Generic Frame Functions
 
 local function TryUpdateText(frame, text)
@@ -54,199 +9,13 @@ local function TryUpdateText(frame, text)
 end
 TRB.Functions.TryUpdateText = TryUpdateText
 
-
--- Number Functions
-
-local function IsNumeric(data)
-    if type(data) == "number" then
-        return true
-    elseif type(data) ~= "string" then
-        return false
-    end
-    data = strtrim(data)
-    local x, y = string.find(data, "[%d+][%.?][%d*]")
-    if x and x == 1 and y == strlen(data) then
-        return true
-    end
-    return false
-end
-TRB.Functions.IsNumeric = IsNumeric
-
-local function RoundTo(num, numDecimalPlaces, mode)
-	numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
-	local newNum = tostring(tonumber(num) or 0)
-	if mode == "floor" then
-		local whole, decimal = strsplit(".", newNum, 2)
-
-		if numDecimalPlaces == 0 then
-			newNum = whole
-		elseif decimal == nil or strlen(decimal) == 0 then
-			newNum = string.format("%s.%0" .. numDecimalPlaces .. "d", whole, 0)
-		else
-			local chopped = string.sub(decimal, 1, numDecimalPlaces)
-			if strlen(chopped) < numDecimalPlaces then
-				chopped = string.format("%s%0" .. (numDecimalPlaces - strlen(chopped)) .. "d", chopped, 0)
-			end
-			newNum = string.format("%s.%s", whole, chopped)
-		end
-
-		return newNum
-	elseif mode == "ceil" then
-		local whole, decimal = strsplit(".", newNum, 2)
-
-		if numDecimalPlaces == 0 then
-			if (tonumber(whole) or 0) < num then
-				whole = (tonumber(whole) or 0) + 1
-			end
-
-			newNum = tostring(whole)
-		elseif decimal == nil or strlen(decimal) == 0 then
-			newNum = string.format("%s.%0" .. numDecimalPlaces .. "d", whole, 0)
-		else
-			local chopped = string.sub(decimal, 1, numDecimalPlaces)
-			if tonumber(string.format("0.%s", chopped)) < tonumber(string.format("0.%s", decimal)) then
-				chopped = tostring(tonumber(chopped) + 1)
-			end
-
-			if strlen(chopped) < numDecimalPlaces then
-				chopped = string.format("%s%0" .. (numDecimalPlaces - strlen(chopped)) .. "d", chopped, 0)
-			end
-			newNum = string.format("%s.%s", whole, chopped)
-		end
-
-		return newNum
-	end
-
-	return tonumber(string.format("%." .. numDecimalPlaces .. "f", newNum))
-end
-TRB.Functions.RoundTo = RoundTo
-
-local function ConvertToShortNumberNotation(num, numDecimalPlaces, mode, isInteger)
-	numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
-	isInteger = isInteger or false
-	local negative = ""
-
-	if num < 0 then
-		negative = "-"
-		num = -num
-	end
-
-	if num >= 10^9 then
-		return string.format(negative .. "%." .. numDecimalPlaces .. "fb", TRB.Functions.RoundTo(num / 10^9, numDecimalPlaces, mode))
-	elseif num >= 10^6 then
-        return string.format(negative .. "%." .. numDecimalPlaces .. "fm", TRB.Functions.RoundTo(num / 10^6, numDecimalPlaces, mode))
-    elseif num >= 10^3 then
-        return string.format(negative .. "%." .. numDecimalPlaces .. "fk", TRB.Functions.RoundTo(num / 10^3, numDecimalPlaces, mode))
-    else
-		if isInteger then
-        	return string.format(negative .. "%.0f", TRB.Functions.RoundTo(num, 0, mode))
-		else			
-			return string.format(negative .. "%." .. numDecimalPlaces .. "f", TRB.Functions.RoundTo(num, 0, mode))
-		end
-    end
-end
-TRB.Functions.ConvertToShortNumberNotation = ConvertToShortNumberNotation
-
--- Color Functions
-
-local function GetRGBAFromString(s, normalize)
-    local _a = 1
-    local _r = 0
-    local _g = 1
-    local _b = 0
-
-    if not (s == nil) then
-        _a = min(255, tonumber(string.sub(s, 1, 2), 16))
-        _r = min(255, tonumber(string.sub(s, 3, 4), 16))
-        _g = min(255, tonumber(string.sub(s, 5, 6), 16))
-        _b = min(255, tonumber(string.sub(s, 7, 8), 16))
-    end
-	if normalize then
-		return _r/255, _g/255, _b/255, _a/255
-	else
-		return _r, _g, _b, _a
-	end
-end
-TRB.Functions.GetRGBAFromString = GetRGBAFromString
-
-local function ConvertColorDecimalToHex(r, g, b, a)
-	local _r, _g, _b, _a
-
-	if r == 0 or r == nil then
-		_r = "00"
-	else
-		_r = string.format("%x", math.ceil(r * 255))
-		if string.len(_r) == 1 then
-			_r = "0" .. _r
-		end
-	end
-
-	if g == 0 or g == nil then
-		_g = "00"
-	else
-		_g = string.format("%x", math.ceil(g * 255))
-		if string.len(_g) == 1 then
-			_g = "0" .. _g
-		end
-	end
-
-	if b == 0 or b == nil then
-		_b = "00"
-	else
-		_b = string.format("%x", math.ceil(b * 255))
-		if string.len(_b) == 1 then
-			_b = "0" .. _b
-		end
-	end
-
-	if a == 0 or a == nil then
-		_a = "00"
-	else
-		_a = string.format("%x", math.ceil(a * 255))
-		if string.len(_a) == 1 then
-			_a = "0" .. _a
-		end
-	end
-
-	return _a .. _r .. _g .. _b
-end
-TRB.Functions.ConvertColorDecimalToHex = ConvertColorDecimalToHex
-
 local function PulseFrame(frame, alphaOffset, flashPeriod)
 	frame:SetAlpha(((1.0 - alphaOffset) * math.abs(math.sin(2 * (GetTime()/flashPeriod)))) + alphaOffset)
 end
 TRB.Functions.PulseFrame = PulseFrame
 
-local function SetBackdropColor(frame, rgbaString, normalize, specId)
-	if specId ~= nil and specId == GetSpecialization() then
-		frame:SetBackdropColor(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
-	end
-end
-TRB.Functions.SetBackdropColor = SetBackdropColor
+-- Color Functions
 
-local function SetBackdropBorderColor(frame, rgbaString, normalize, specId)
-	if specId ~= nil and specId == GetSpecialization() then
-		frame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
-	end
-end
-TRB.Functions.SetBackdropBorderColor = SetBackdropBorderColor
-
-local function SetStatusBarColor(frame, rgbaString, normalize, specId)
-	if specId ~= nil and specId == GetSpecialization() then
-		--frame:SetStatusBarColor(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
-	end
-end
-TRB.Functions.SetStatusBarColor = SetStatusBarColor
-
-local function SetThresholdColor(frame, rgbaString, normalize, specId)
-	if specId ~= nil and specId == GetSpecialization() then
-		frame.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
-		if frame.icon ~= nil then
-			frame.icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(rgbaString, normalize))
-		end
-	end
-end
-TRB.Functions.SetThresholdColor = SetThresholdColor
 
 -- Casting, Time, and GCD Functions
 
@@ -331,26 +100,6 @@ local function UpdateSanityCheckValues(settings)
     end
 end
 TRB.Functions.UpdateSanityCheckValues = UpdateSanityCheckValues
-
-local function MergeSettings(settings, user)
-	if settings == nil and user == nil then
-		return {}
-	elseif settings == nil then
-		return user
-	elseif user == nil then
-		return settings
-	end
-
-	for k, v in pairs(user) do
-        if (type(v) == "table") and (type(settings[k] or false) == "table") then
-            TRB.Functions.MergeSettings(settings[k], user[k])
-        else
-            settings[k] = v
-        end
-    end
-    return settings
-end
-TRB.Functions.MergeSettings = MergeSettings
 
 local function GetTalents(baselineTalents)
 	local talents = {}
@@ -476,7 +225,7 @@ TRB.Functions.FillSpellData = FillSpellData
 local function GetSpellManaCost(spellId)
 ---@diagnostic disable-next-line: redundant-parameter
 	local spc = GetSpellPowerCost(spellId)
-	local length = TRB.Functions.TableLength(spc)
+	local length = TRB.Functions.Table:Length(spc)
 
 	for x = 1, length do
 		if spc[x]["name"] == "MANA" and spc[x]["cost"] > 0 then
@@ -490,7 +239,7 @@ TRB.Functions.GetSpellManaCost = GetSpellManaCost
 local function GetSpellManaCostPerSecond(spellId)
 ---@diagnostic disable-next-line: redundant-parameter
 	local spc = GetSpellPowerCost(spellId)
-	local length = TRB.Functions.TableLength(spc)
+	local length = TRB.Functions.Table:Length(spc)
 
 	for x = 1, length do
 		if spc[x]["name"] == "MANA" and spc[x]["costPerSec"] > 0 then
@@ -563,7 +312,7 @@ local function LoadFromSpecCache(cache)
 	TRB.Data.barTextVariables.values = cache.barTextVariables.values
 
 	TRB.Functions.ResetSnapshotData()
-	TRB.Data.snapshotData = TRB.Functions.MergeSettings(TRB.Data.snapshotData, cache.snapshotData)
+	TRB.Data.snapshotData = TRB.Functions.Table:Merge(TRB.Data.snapshotData, cache.snapshotData)
 
 ---@diagnostic disable-next-line: missing-parameter
 	TRB.Data.character.specGroup = GetActiveSpecGroup()
@@ -818,7 +567,7 @@ end
 TRB.Functions.UpdateBarWidth = UpdateBarWidth
 
 local function UpdateBarPosition(xOfs, yOfs)
-	if IsNumeric(xOfs) and IsNumeric(yOfs) then
+	if TRB.Functions.Number:IsNumeric(xOfs) and TRB.Functions.Number:IsNumeric(yOfs) then
 		if xOfs < math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth/2) then
 			xOfs = math.ceil(-TRB.Data.sanityCheckValues.barMaxWidth/2)
 		elseif xOfs > math.floor(TRB.Data.sanityCheckValues.barMaxWidth/2) then
@@ -832,9 +581,9 @@ local function UpdateBarPosition(xOfs, yOfs)
 		end
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].horizontal:SetValue(xOfs)
-		TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].horizontal.EditBox:SetText(RoundTo(xOfs, 0))
+		TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].horizontal.EditBox:SetText(TRB.Functions.Number:RoundTo(xOfs, 0))
 		TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].vertical:SetValue(yOfs)
-		TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].vertical.EditBox:SetText(RoundTo(yOfs, 0))
+		TRB.Frames.interfaceSettingsFrameContainer.controls[TRB.Data.character.specName].vertical.EditBox:SetText(TRB.Functions.Number:RoundTo(yOfs, 0))
 	end
 end
 TRB.Functions.UpdateBarPosition = UpdateBarPosition
@@ -930,7 +679,7 @@ local function ResetThresholdLine(threshold, settings, hasIcon)
 	threshold:SetHeight(settings.bar.height - borderSubtraction)
 	threshold.texture = threshold.texture or threshold:CreateTexture(nil, "OVERLAY")
 	threshold.texture:SetAllPoints(threshold)
-	threshold.texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.under, true))
+	threshold.texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settings.colors.threshold.under, true))
 	threshold:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetLine)
 	threshold:Hide()
 	
@@ -978,18 +727,18 @@ local function RedrawThresholdLines(settings)
 	local resourceFrame = TRB.Frames.resourceFrame
 	local passiveFrame = TRB.Frames.passiveFrame
 
-	local entries = TRB.Functions.TableLength(resourceFrame.thresholds)
+	local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
 	if entries > 0 then
 		for x = 1, entries do
 			TRB.Functions.ResetThresholdLine(resourceFrame.thresholds[x], settings, true)
 		end
 	end
 
-	entries = TRB.Functions.TableLength(passiveFrame.thresholds)
+	entries = TRB.Functions.Table:Length(passiveFrame.thresholds)
 	if entries > 0 then
 		for x = 1, entries do
 			TRB.Functions.ResetThresholdLine(passiveFrame.thresholds[x], settings, false)
-			passiveFrame.thresholds[x].texture:SetColorTexture(GetRGBAFromString(settings.colors.threshold.mindbender, true))
+			passiveFrame.thresholds[x].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settings.colors.threshold.mindbender, true))
 		end
 	end
 
@@ -1020,9 +769,9 @@ local function AdjustThresholdDisplay(spell, threshold, showThreshold, currentFr
 ---@diagnostic disable-next-line: undefined-field
 		threshold.icon.cooldown:SetFrameLevel(frameLevel-pairOffset-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
 ---@diagnostic disable-next-line: undefined-field
-		threshold.texture:SetColorTexture(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+		threshold.texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(thresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
-		threshold.icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(thresholdColor, true))
+		threshold.icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(thresholdColor, true))
 		if currentFrameLevel >= TRB.Data.constants.frameLevels.thresholdOver then
 			spell.thresholdUsable = true
 		else
@@ -1068,9 +817,9 @@ local function ManageCommonHealerThresholds(currentMana, castingBarValue, specSe
 		if specSettings.thresholds.aeratedManaPotionRank1.enabled and (castingBarValue + ampr1Total) < character.maxResource then
 			TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[1], resourceFrame, specSettings.thresholds.width, (castingBarValue + ampr1Total), character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-			resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
-			resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 			resourceFrame.thresholds[1]:Show()
 				
 			if specSettings.thresholds.icons.showCooldown then
@@ -1086,9 +835,9 @@ local function ManageCommonHealerThresholds(currentMana, castingBarValue, specSe
 		if specSettings.thresholds.aeratedManaPotionRank2.enabled and (castingBarValue + ampr2Total) < character.maxResource then
 			TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[2], resourceFrame, specSettings.thresholds.width, (castingBarValue + ampr2Total), character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-			resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
-			resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 			resourceFrame.thresholds[2]:Show()
 				
 			if specSettings.thresholds.icons.showCooldown then
@@ -1104,9 +853,9 @@ local function ManageCommonHealerThresholds(currentMana, castingBarValue, specSe
 		if specSettings.thresholds.aeratedManaPotionRank3.enabled and (castingBarValue + ampr3Total) < character.maxResource then
 			TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[3], resourceFrame, specSettings.thresholds.width, (castingBarValue + ampr3Total), character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-			resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
-			resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 			resourceFrame.thresholds[3]:Show()
 				
 			if specSettings.thresholds.icons.showCooldown then
@@ -1122,9 +871,9 @@ local function ManageCommonHealerThresholds(currentMana, castingBarValue, specSe
 		if specSettings.thresholds.potionOfFrozenFocusRank1.enabled and (castingBarValue + poffr1Total) < character.maxResource then
 			TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[4], resourceFrame, specSettings.thresholds.width, (castingBarValue + poffr1Total), character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-			resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
-			resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 			resourceFrame.thresholds[4]:Show()
 				
 			if specSettings.thresholds.icons.showCooldown then
@@ -1140,9 +889,9 @@ local function ManageCommonHealerThresholds(currentMana, castingBarValue, specSe
 		if specSettings.thresholds.potionOfFrozenFocusRank2.enabled and (castingBarValue + poffr2Total) < character.maxResource then
 			TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[5], resourceFrame, specSettings.thresholds.width, (castingBarValue + poffr2Total), character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-			resourceFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
-			resourceFrame.thresholds[5].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[5].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 			resourceFrame.thresholds[5]:Show()
 				
 			if specSettings.thresholds.icons.showCooldown then
@@ -1158,9 +907,9 @@ local function ManageCommonHealerThresholds(currentMana, castingBarValue, specSe
 		if specSettings.thresholds.potionOfFrozenFocusRank3.enabled and (castingBarValue + poffr3Total) < character.maxResource then
 			TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[6], resourceFrame, specSettings.thresholds.width, (castingBarValue + poffr3Total), character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-			resourceFrame.thresholds[6].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[6].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
-			resourceFrame.thresholds[6].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[6].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 			resourceFrame.thresholds[6]:Show()
 				
 			if specSettings.thresholds.icons.showCooldown then
@@ -1196,9 +945,9 @@ local function ManageCommonHealerThresholds(currentMana, castingBarValue, specSe
 			end
 			TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[7], resourceFrame, specSettings.thresholds.width, (castingBarValue + conjuredChillglobeTotal), character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
-			resourceFrame.thresholds[7].texture:SetColorTexture(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[7].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
-			resourceFrame.thresholds[7].icon:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(potionThresholdColor, true))
+			resourceFrame.thresholds[7].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 			resourceFrame.thresholds[7]:Show()
 				
 			if specSettings.thresholds.icons.showCooldown then
@@ -1249,7 +998,7 @@ local function ConstructResourceBar(settings)
             edgeSize = 1,
             insets = {0, 0, 0, 0}
         })
-        barContainerFrame:SetBackdropColor(GetRGBAFromString(settings.colors.bar.background, true))
+        barContainerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.background, true))
         barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
         barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
         barContainerFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
@@ -1308,7 +1057,7 @@ local function ConstructResourceBar(settings)
         barBorderFrame:SetPoint("CENTER", barContainerFrame)
         barBorderFrame:SetPoint("CENTER", 0, 0)
         barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-        barBorderFrame:SetBackdropBorderColor(GetRGBAFromString(settings.colors.bar.border, true))
+        barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.border, true))
         barBorderFrame:SetWidth(settings.bar.width)
         barBorderFrame:SetHeight(settings.bar.height)
         barBorderFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
@@ -1320,7 +1069,7 @@ local function ConstructResourceBar(settings)
         resourceFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         resourceFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         resourceFrame:SetStatusBarTexture(settings.textures.resourceBar)
-        resourceFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.base, true))
+        resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.base, true))
         resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		resourceFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barResource)
 
@@ -1330,7 +1079,7 @@ local function ConstructResourceBar(settings)
         castingFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         castingFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         castingFrame:SetStatusBarTexture(settings.textures.castingBar)
-        castingFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.casting, true))
+        castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.casting, true))
         castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
         castingFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barCasting)
 
@@ -1340,12 +1089,12 @@ local function ConstructResourceBar(settings)
         passiveFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
         passiveFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
         passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
-        passiveFrame:SetStatusBarColor(GetRGBAFromString(settings.colors.bar.passive, true))
+        passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.passive, true))
         passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		passiveFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barPassive)
 
 		if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil and IsComboPointUser() then
-			local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 			local nodes = TRB.Data.character.maxResource2
 
 			if nodes == nil or nodes == 0 then
@@ -1368,7 +1117,7 @@ local function ConstructResourceBar(settings)
 					insets = {0, 0, 0, 0}
 				})
 				
-				container:SetBackdropColor(GetRGBAFromString(settings.colors.comboPoints.background, true))
+				container:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.comboPoints.background, true))
 				container:SetHeight(settings.comboPoints.height-(settings.comboPoints.border*2))
 				container:SetFrameStrata(TRB.Data.settings.core.strata.level)
 				container:SetFrameLevel(TRB.Data.constants.frameLevels.cpContainer)
@@ -1377,7 +1126,7 @@ local function ConstructResourceBar(settings)
 				border:SetPoint("CENTER", container)
 				border:SetPoint("CENTER", 0, 0)
 				border:SetBackdropColor(0, 0, 0, 0)
-				border:SetBackdropBorderColor(GetRGBAFromString(settings.colors.comboPoints.border, true))
+				border:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.comboPoints.border, true))
 				border:SetFrameStrata(TRB.Data.settings.core.strata.level)
 				border:SetFrameLevel(TRB.Data.constants.frameLevels.cpBorder)
 		
@@ -1386,7 +1135,7 @@ local function ConstructResourceBar(settings)
 				resource:SetPoint("LEFT", container, "LEFT", 0, 0)
 				resource:SetPoint("RIGHT", container, "RIGHT", 0, 0)
 				resource:SetStatusBarTexture(settings.textures.comboPointsBar)
-				resource:SetStatusBarColor(GetRGBAFromString(settings.colors.comboPoints.base, true))
+				resource:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.comboPoints.base, true))
 				resource:SetFrameStrata(TRB.Data.settings.core.strata.level)
 				resource:SetFrameLevel(TRB.Data.constants.frameLevels.cpContainer)
 			end
@@ -1459,7 +1208,7 @@ local function RepositionBar(settings, containerFrame)
 
 	if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil and IsComboPointUser() then
 		local containerFrame2 = TRB.Frames.resource2ContainerFrame
-		local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+		local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 		local nodes = TRB.Data.character.maxResource2
 
 		if nodes == nil or nodes == 0 then
@@ -1581,7 +1330,7 @@ local function RepositionBar(settings, containerFrame)
 					border:ApplyBackdrop()
 				end
 				border:SetBackdropColor(0, 0, 0, 0)
-				border:SetBackdropBorderColor(GetRGBAFromString(settings.colors.comboPoints.border, true))
+				border:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.comboPoints.border, true))
 
 				border:SetWidth(nodeWidth)
 				border:SetHeight(settings.comboPoints.height)
@@ -1606,10 +1355,10 @@ TRB.Functions.TriggerResourceBarUpdates = TriggerResourceBarUpdates
 
 local function AddToBarTextCache(input)
     local barTextVariables = TRB.Data.barTextVariables
-	local iconEntries = TableLength(barTextVariables.icons)
-	local valueEntries = TableLength(barTextVariables.values)
-	local pipeEntries = TableLength(barTextVariables.pipe)
-	local percentEntries = TableLength(barTextVariables.percent)
+	local iconEntries = TRB.Functions.Table:Length(barTextVariables.icons)
+	local valueEntries = TRB.Functions.Table:Length(barTextVariables.values)
+	local pipeEntries = TRB.Functions.Table:Length(barTextVariables.pipe)
+	local percentEntries = TRB.Functions.Table:Length(barTextVariables.percent)
 	local returnText = ""
 	local returnVariables = {}
 	local p = 0
@@ -1768,7 +1517,7 @@ end
 TRB.Functions.AddToBarTextCache = AddToBarTextCache
 
 local function GetFromBarTextCache(barText)
-	local entries = TableLength(TRB.Data.barTextCache)
+	local entries = TRB.Functions.Table:Length(TRB.Data.barTextCache)
 
 	if entries > 0 then
 		for x = 1, entries do
@@ -1789,7 +1538,7 @@ local function GetReturnText(inputText)
 
     local cache = TRB.Functions.GetFromBarTextCache(inputText.text)
     local mapping = {}
-    local cachedTextVariableLength = TRB.Functions.TableLength(cache.variables)
+    local cachedTextVariableLength = TRB.Functions.Table:Length(cache.variables)
 
     if cachedTextVariableLength > 0 then
         for y = 1, cachedTextVariableLength do
@@ -1797,7 +1546,7 @@ local function GetReturnText(inputText)
         end
     end
 
-    if TRB.Functions.TableLength(mapping) > 0 then
+    if TRB.Functions.Table:Length(mapping) > 0 then
 		local result
 		result, inputText.text = pcall(string.format, cache.stringFormat, unpack(mapping))
     elseif string.len(cache.stringFormat) > 0 then
@@ -1852,16 +1601,16 @@ local function RefreshLookupDataBase(settings)
 	--Spec specific implementations also needed. This is general/cross-spec data
 
 	--$crit
-	local critPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.crit, settings.hastePrecision))
+	local critPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.crit, settings.hastePrecision))
 
 	--$critRating
-	local critRating = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.critRating, settings.hastePrecision, "floor", true))
+	local critRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshotData.critRating, settings.hastePrecision, "floor", true))
 
 	--$mastery
-	local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.mastery, settings.hastePrecision))
+	local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.mastery, settings.hastePrecision))
 
 	--$masteryRating
-	local masteryRating = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.masteryRating, settings.hastePrecision, "floor", true))
+	local masteryRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshotData.masteryRating, settings.hastePrecision, "floor", true))
 
 	--$gcd
 	local _gcd = 1.5 / (1 + (TRB.Data.snapshotData.haste/100))
@@ -1873,26 +1622,26 @@ local function RefreshLookupDataBase(settings)
 	local gcd = string.format("%.2f", _gcd)
 
 	--$haste
-	local hastePercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.haste, settings.hastePrecision))
+	local hastePercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.haste, settings.hastePrecision))
 	
 	--$hasteRating
-	local hasteRating = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.hasteRating, settings.hastePrecision, "floor", true))
+	local hasteRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshotData.hasteRating, settings.hastePrecision, "floor", true))
 
 	--$vers
-	local versOff = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.versatilityOffensive, settings.hastePrecision))
-	local versDef = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.RoundTo(TRB.Data.snapshotData.versatilityDefensive, settings.hastePrecision))
+	local versOff = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.versatilityOffensive, settings.hastePrecision))
+	local versDef = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.versatilityDefensive, settings.hastePrecision))
 
 	--$versRating
-	local versRating = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.versatilityRating, settings.hastePrecision, "floor", true))
+	local versRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshotData.versatilityRating, settings.hastePrecision, "floor", true))
 	
 	--$int
-	local int = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.intellect, settings.hastePrecision, "floor", true))
+	local int = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshotData.intellect, settings.hastePrecision, "floor", true))
 	--$agi
-	local agi = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.agility, settings.hastePrecision, "floor", true))
+	local agi = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshotData.agility, settings.hastePrecision, "floor", true))
 	--$str
-	local str = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.strength, settings.hastePrecision, "floor", true))
+	local str = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshotData.strength, settings.hastePrecision, "floor", true))
 	--$stam
-	local stam = string.format("%s", TRB.Functions.ConvertToShortNumberNotation(TRB.Data.snapshotData.stamina, settings.hastePrecision, "floor", true))
+	local stam = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshotData.stamina, settings.hastePrecision, "floor", true))
 
 	--$ttd
 	local _ttd = 0
@@ -1904,7 +1653,7 @@ local function RefreshLookupDataBase(settings)
 		local ttdMinutes = math.floor(target.ttd / 60)
 		local ttdSeconds = target.ttd % 60
 		_ttd = target.ttd
-		ttdTotalSeconds = string.format("%s", TRB.Functions.RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor"))
+		ttdTotalSeconds = string.format("%s", TRB.Functions.Number:RoundTo(target.ttd, TRB.Data.settings.core.ttd.precision or 1, "floor"))
 		ttd = string.format("%d:%0.2d", ttdMinutes, ttdSeconds)
 	end
 
@@ -2273,7 +2022,7 @@ local function FindNextSymbolIndex(t, symbol, notSymbol, minIndex, maxIndex, min
 		return nil
 	end
 
-	local len = TRB.Functions.TableLength(t)
+	local len = TRB.Functions.Table:Length(t)
 	if len == 0 then
 		return nil
 	end
@@ -2321,7 +2070,7 @@ local function FindNextSymbolLevel(t, symbol, minIndex, level)
 		minIndex = 0
 	end
 
-	local len = TRB.Functions.TableLength(t)
+	local len = TRB.Functions.Table:Length(t)
 
 	if len > 0 then
 		for k, v in ipairs(t) do
@@ -2899,7 +2648,12 @@ local function Import(input)
 	end
 
 	local existingSettings = TRB.Data.settings
-	result, mergedSettings = pcall(TRB.Functions.MergeSettings, existingSettings, configuration)
+
+	local function TableMergeWrapper(existing, config)
+		TRB.Functions.Table:Merge(existing, config)
+	end
+
+	result, mergedSettings = pcall(TableMergeWrapper, existingSettings, configuration)
 
 	if not result then
 		return -4
@@ -3140,98 +2894,98 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		if classId == 1 and settings.warrior ~= nil then -- Warrior
 			configuration.warrior = {}
 
-			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.warrior.arms) > 0 then -- Arms
+			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.warrior.arms) > 0 then -- Arms
 				configuration.warrior.arms = TRB.Functions.ExportConfigurationSections(1, 1, settings.warrior.arms, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 
-			if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.warrior.fury) > 0 then -- Fury
+			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.warrior.fury) > 0 then -- Fury
 				configuration.warrior.fury = TRB.Functions.ExportConfigurationSections(1, 2, settings.warrior.fury, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 3 and settings.hunter ~= nil then -- Hunter
 			configuration.hunter = {}
 
-			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.hunter.beastMastery) > 0 then -- Beast Mastery
+			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.hunter.beastMastery) > 0 then -- Beast Mastery
 				configuration.hunter.beastMastery = TRB.Functions.ExportConfigurationSections(3, 1, settings.hunter.beastMastery, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 
-			if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.hunter.marksmanship) > 0 then -- Marksmanship
+			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.hunter.marksmanship) > 0 then -- Marksmanship
 				configuration.hunter.marksmanship = TRB.Functions.ExportConfigurationSections(3, 2, settings.hunter.marksmanship, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 
-			if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.hunter.survival) > 0 then -- Survival
+			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.hunter.survival) > 0 then -- Survival
 				configuration.hunter.survival = TRB.Functions.ExportConfigurationSections(3, 3, settings.hunter.survival, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 4 and settings.rogue ~= nil then -- Rogue
 			configuration.rogue = {}
 
-			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.rogue.assassination) > 0 then -- Assassination
+			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.rogue.assassination) > 0 then -- Assassination
 				configuration.rogue.assassination = TRB.Functions.ExportConfigurationSections(4, 1, settings.rogue.assassination, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 
-			if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.rogue.outlaw) > 0 then -- Outlaw
+			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.rogue.outlaw) > 0 then -- Outlaw
 				configuration.rogue.outlaw = TRB.Functions.ExportConfigurationSections(4, 2, settings.rogue.outlaw, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 5 and settings.priest ~= nil then -- Priest
 			configuration.priest = {}
 
-			if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.priest.holy) > 0 then -- Holy
+			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.priest.holy) > 0 then -- Holy
 				configuration.priest.holy = TRB.Functions.ExportConfigurationSections(5, 2, settings.priest.holy, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 
-			if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.priest.shadow) > 0 then -- Shadow
+			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.priest.shadow) > 0 then -- Shadow
 				configuration.priest.shadow = TRB.Functions.ExportConfigurationSections(5, 3, settings.priest.shadow, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 7 and settings.shaman ~= nil then -- Shaman
 			configuration.shaman = {}
 
-			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.shaman.elemental) > 0 then -- Elemental
+			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.shaman.elemental) > 0 then -- Elemental
 				configuration.shaman.elemental = TRB.Functions.ExportConfigurationSections(7, 1, settings.shaman.elemental, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 
-			if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.shaman.restoration) > 0 then -- Restoration
+			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.shaman.restoration) > 0 then -- Restoration
 				configuration.shaman.restoration = TRB.Functions.ExportConfigurationSections(7, 3, settings.shaman.restoration, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 10 and settings.monk ~= nil then -- Monk
 			configuration.monk = {}
 
-			if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.monk.mistweaver) > 0 then -- Mistweaver
+			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.monk.mistweaver) > 0 then -- Mistweaver
 				configuration.monk.mistweaver = TRB.Functions.ExportConfigurationSections(10, 2, settings.monk.mistweaver, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 
-			if (specId == 3 or specId == nil) and TRB.Functions.TableLength(settings.monk.windwalker) > 0 then -- Windwalker
+			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.monk.windwalker) > 0 then -- Windwalker
 				configuration.monk.windwalker = TRB.Functions.ExportConfigurationSections(10, 3, settings.monk.windwalker, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 11 and settings.druid ~= nil then -- Druid
 			configuration.druid = {}
 			
-			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.druid.balance) > 0 then -- Balance
+			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.druid.balance) > 0 then -- Balance
 				configuration.druid.balance = TRB.Functions.ExportConfigurationSections(11, 1, settings.druid.balance, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 			
-			if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.druid.feral) > 0 then -- Feral
+			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.druid.feral) > 0 then -- Feral
 				configuration.druid.feral = TRB.Functions.ExportConfigurationSections(11, 2, settings.druid.feral, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 
-			if (specId == 4 or specId == nil) and TRB.Functions.TableLength(settings.druid.restoration) > 0 then -- Restoration
+			if (specId == 4 or specId == nil) and TRB.Functions.Table:Length(settings.druid.restoration) > 0 then -- Restoration
 				configuration.druid.restoration = TRB.Functions.ExportConfigurationSections(11, 4, settings.druid.restoration, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 12 and settings.demonhunter ~= nil then -- Demon Hunter
 			configuration.demonhunter = {}
 			
-			if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.demonhunter.havoc) > 0 then -- Havoc
+			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.demonhunter.havoc) > 0 then -- Havoc
 				configuration.demonhunter.havoc = TRB.Functions.ExportConfigurationSections(12, 1, settings.demonhunter.havoc, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 13 and settings.evoker ~= nil then -- Evoker
 			configuration.evoker = {}
 			
 			if TRB.Data.settings.core.experimental.specs.evoker.devastation then			
-				if (specId == 1 or specId == nil) and TRB.Functions.TableLength(settings.evoker.devastation) > 0 then -- Devastation
+				if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.devastation) > 0 then -- Devastation
 					configuration.evoker.devastation = TRB.Functions.ExportConfigurationSections(13, 1, settings.evoker.devastation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 				end
 			end			
 			
 			if TRB.Data.settings.core.experimental.specs.evoker.preservation then
-				if (specId == 2 or specId == nil) and TRB.Functions.TableLength(settings.evoker.preservation) > 0 then -- Preservation
+				if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.preservation) > 0 then -- Preservation
 					configuration.evoker.preservation = TRB.Functions.ExportConfigurationSections(13, 2, settings.evoker.preservation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 				end
 			end
@@ -3241,63 +2995,63 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 
 		-- Warriors
 		-- Arms
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(1, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(1, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Fury
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(1, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(1, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Hunters
 		-- Beast Mastery
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(3, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Marksmanship
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(3, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Survival
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(3, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(3, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Monks
 		-- Mistweaver
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(10, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(10, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Windwalker
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(10, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(10, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Priests
 		-- Holy
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(5, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(5, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Shadow
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(5, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(5, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Rogues
 		-- Assassination
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(4, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(4, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Outlaw
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(4, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(4, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Shamans
 		-- Elemental
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Restoration
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(7, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(7, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Druids
 		-- Balance
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(11, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Feral
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(11, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Restoration
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(11, 4, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(11, 4, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Demon Hunter
 		-- Havoc
-		configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(12, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(12, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		
 		-- Evoker
 		if TRB.Data.settings.core.experimental.specs.evoker.devastation then
 			-- Devastation
-			configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(13, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+			configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(13, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		end
 
 		if TRB.Data.settings.core.experimental.specs.evoker.preservation then
 			-- Preservation
-			configuration = TRB.Functions.MergeSettings(configuration, TRB.Functions.ExportGetConfiguration(13, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+			configuration = TRB.Functions.Table:Merge(configuration, TRB.Functions.ExportGetConfiguration(13, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		end
 	end
 

@@ -21,9 +21,16 @@ Libs\base64.lua
 Libs\json.lua
 Libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
 
+Functions\Color.lua
+Functions\Number.lua
+Functions\String.lua
+Functions\Table.lua
+
 Functions.lua
+
 Init.lua
-UiFunctions.lua
+
+Functions\OptionsUi.lua
 
 Options.lua
 

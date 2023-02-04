@@ -1,11 +1,12 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
-TRB.UiFunctions = {}
+TRB.Functions = TRB.Functions or {}
+TRB.Functions.OptionsUi = {}
 local oUi = TRB.Data.constants.optionsUi
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
-function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
+function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
 	local f = CreateFrame("Slider", nil, parent, "BackdropTemplate")
     ---@diagnostic disable-next-line: param-type-mismatch
 	f.EditBox = CreateFrame("EditBox", nil, f, "BackdropTemplate")
@@ -109,7 +110,7 @@ function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultV
             elseif value > max then
                 f:SetValue(max)
             end
-			value = TRB.Functions.RoundTo(value, numDecimalPlaces)
+			value = TRB.Functions.Number:RoundTo(value, numDecimalPlaces)
             eb:SetText(value)
         else
             f:SetValue(f:GetValue())
@@ -154,7 +155,7 @@ function TRB.UiFunctions:BuildSlider(parent, title, minValue, maxValue, defaultV
 	return f
 end
 
-function TRB.UiFunctions:BuildTextBox(parent, text, maxLetters, width, height, xPos, yPos)
+function TRB.Functions.OptionsUi:BuildTextBox(parent, text, maxLetters, width, height, xPos, yPos)
 	local f = CreateFrame("EditBox", nil, parent, "BackdropTemplate")
 	f:SetPoint("TOPLEFT", xPos, yPos)
 	f:SetAutoFocus(false)
@@ -190,7 +191,7 @@ function TRB.UiFunctions:BuildTextBox(parent, text, maxLetters, width, height, x
 	return f
 end
 
-function TRB.UiFunctions:EditBoxSetTextMinMax(box, value)
+function TRB.Functions.OptionsUi:EditBoxSetTextMinMax(box, value)
     local min, max = box:GetMinMaxValues()
     if value > max then
         value = max
@@ -201,7 +202,7 @@ function TRB.UiFunctions:EditBoxSetTextMinMax(box, value)
     return value
 end
 
-function TRB.UiFunctions:ShowColorPicker(r, g, b, a, callback)
+function TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, a, callback)
 	ColorPickerFrame.func, ColorPickerFrame.opacityFunc, ColorPickerFrame.cancelFunc = 
 		callback, callback, callback
 	ColorPickerFrame:SetColorRGB(r, g, b)
@@ -211,7 +212,7 @@ function TRB.UiFunctions:ShowColorPicker(r, g, b, a, callback)
 	ColorPickerFrame:Show()
 end
 
-function TRB.UiFunctions:ExtractColorFromColorPicker(color)
+function TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
     local r, g, b, a
     if color then
 ---@diagnostic disable-next-line: deprecated
@@ -223,28 +224,28 @@ function TRB.UiFunctions:ExtractColorFromColorPicker(color)
     return r, g, b, a
 end
 
-function TRB.UiFunctions:ColorOnMouseDown(button, colorTable, colorControlsTable, key, frameType, frames, specId)
+function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorControlsTable, key, frameType, frames, specId)
     if button == "LeftButton" then
-        local r, g, b, a = TRB.Functions.GetRGBAFromString(colorTable[key], true)
-        TRB.UiFunctions:ShowColorPicker(r, g, b, 1-a, function(color)
-            local r, g, b, a = TRB.UiFunctions:ExtractColorFromColorPicker(color)
+        local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorTable[key], true)
+        TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
+            local r, g, b, a = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
             colorControlsTable[key].Texture:SetColorTexture(r, g, b, 1-a)
-            colorTable[key] = TRB.Functions.ConvertColorDecimalToHex(r, g, b, 1-a)
+            colorTable[key] = TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, 1-a)
         
             if frameType == "backdrop" then
-                TRB.Functions.SetBackdropColor(frames, colorTable[key], true, specId)
+                TRB.Functions.Color:SetBackdropColor(frames, colorTable[key], true, specId)
             elseif frameType == "border" then
-                TRB.Functions.SetBackdropBorderColor(frames, colorTable[key], true, specId)
+                TRB.Functions.Color:SetBackdropBorderColor(frames, colorTable[key], true, specId)
             elseif frameType == "bar" then
-                TRB.Functions.SetStatusBarColor(frames, colorTable[key], true, specId)
+                TRB.Functions.Color:SetStatusBarColor(frames, colorTable[key], true, specId)
             elseif frameType == "threshold" then
-                TRB.Functions.SetThresholdColor(frames, colorTable[key], true, specId)
+                TRB.Functions.Color:SetThresholdColor(frames, colorTable[key], true, specId)
             end
         end)
     end
 end
 
-function TRB.UiFunctions:BuildColorPicker(parent, description, settingsEntry, sizeTotal, sizeFrame, posX, posY)
+function TRB.Functions.OptionsUi:BuildColorPicker(parent, description, settingsEntry, sizeTotal, sizeFrame, posX, posY)
     local settings = TRB.Data.settings
 	local f = CreateFrame("Button", nil, parent, "BackdropTemplate")
 	f:SetSize(sizeFrame, sizeFrame)
@@ -259,7 +260,7 @@ function TRB.UiFunctions:BuildColorPicker(parent, description, settingsEntry, si
 	f.Texture:ClearAllPoints()
 	f.Texture:SetPoint("TOPLEFT", 4, -4)
 	f.Texture:SetPoint("BOTTOMRIGHT", -4, 4)
-	f.Texture:SetColorTexture(TRB.Functions.GetRGBAFromString(settingsEntry, true))
+	f.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settingsEntry, true))
     f:EnableMouse(true)
 	f.Font = f:CreateFontString(nil)
 ---@diagnostic disable-next-line: param-type-mismatch
@@ -273,7 +274,7 @@ function TRB.UiFunctions:BuildColorPicker(parent, description, settingsEntry, si
 	return f
 end
 
-function TRB.UiFunctions:BuildSectionHeader(parent, title, posX, posY)
+function TRB.Functions.OptionsUi:BuildSectionHeader(parent, title, posX, posY)
     local settings = TRB.Data.settings
 	local f = CreateFrame("Frame", nil, parent)
 	f:ClearAllPoints()
@@ -291,7 +292,7 @@ function TRB.UiFunctions:BuildSectionHeader(parent, title, posX, posY)
 	return f
 end
 
-function TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, width, height, height2)
+function TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, width, height, height2)
 	height = height or 20
     height2 = height2 or (height * 3)
     local f = CreateFrame("Frame", nil, parent)
@@ -330,7 +331,7 @@ function TRB.UiFunctions:BuildDisplayTextHelpEntry(parent, var, desc, posX, posY
 	return f
 end
 
-function TRB.UiFunctions:BuildButton(parent, text, posX, posY, width, height)
+function TRB.Functions.OptionsUi:BuildButton(parent, text, posX, posY, width, height)
     local f = CreateFrame("Button", nil, parent)
     f:SetPoint("TOPLEFT", parent, "TOPLEFT", posX, posY)
     f:SetWidth(width)
@@ -356,7 +357,7 @@ function TRB.UiFunctions:BuildButton(parent, text, posX, posY, width, height)
     return f
 end
 
-function TRB.UiFunctions:BuildLabel(parent, text, posX, posY, width, height, fontObject, hAlign)
+function TRB.Functions.OptionsUi:BuildLabel(parent, text, posX, posY, width, height, fontObject, hAlign)
     if fontObject == nil then
         fontObject = GameFontNormal
     end
@@ -381,7 +382,7 @@ function TRB.UiFunctions:BuildLabel(parent, text, posX, posY, width, height, fon
     return f
 end
 
-function TRB.UiFunctions:CreateScrollFrameContainer(name, parent, width, height, scrollChild)
+function TRB.Functions.OptionsUi:CreateScrollFrameContainer(name, parent, width, height, scrollChild)
     width = width or 560
     height = height or 540
 	local sf = CreateFrame("ScrollFrame", name, parent, "UIPanelScrollFrameTemplate")
@@ -398,7 +399,7 @@ function TRB.UiFunctions:CreateScrollFrameContainer(name, parent, width, height,
 	return sf
 end
 
-function TRB.UiFunctions:CreateTabFrameContainer(name, parent, width, height, isManualScrollFrame)
+function TRB.Functions.OptionsUi:CreateTabFrameContainer(name, parent, width, height, isManualScrollFrame)
     width = width or 652
     height = height or 523
     local cf = CreateFrame("Frame", name, parent, "BackdropTemplate")
@@ -421,14 +422,14 @@ function TRB.UiFunctions:CreateTabFrameContainer(name, parent, width, height, is
     cf:SetPoint("TOPLEFT", 0, 0)
 
     if not isManualScrollFrame then
-        cf.scrollFrame = TRB.UiFunctions:CreateScrollFrameContainer(name .. "ScrollFrame", cf, width - 30, height - 8)
+        cf.scrollFrame = TRB.Functions.OptionsUi:CreateScrollFrameContainer(name .. "ScrollFrame", cf, width - 30, height - 8)
 ---@diagnostic disable-next-line: param-type-mismatch
         cf.scrollFrame:SetPoint("TOPLEFT", cf, "TOPLEFT", 5, -5)
     end
     return cf
 end
 
-function TRB.UiFunctions:SwitchTab(self, tabId)
+function TRB.Functions.OptionsUi:SwitchTab(self, tabId)
     local parent = self:GetParent()
     if parent.lastTab then
         parent.lastTab:Hide()
@@ -440,14 +441,14 @@ function TRB.UiFunctions:SwitchTab(self, tabId)
     parent.lastTabId = tabId
 end
 
-function TRB.UiFunctions:CreateTab(name, displayText, id, parent, width, rightOf)
+function TRB.Functions.OptionsUi:CreateTab(name, displayText, id, parent, width, rightOf)
     width = width or 100
     local tab = CreateFrame("Button", name, parent, "PanelTopTabButtonTemplate")-- "TabButtonTemplate")
     tab.id = id
     tab:SetSize(width, 16)
     tab:SetText(displayText)
     tab:SetScript("OnClick", function(self)
-        TRB.UiFunctions:SwitchTab(self, self.id)
+        TRB.Functions.OptionsUi:SwitchTab(self, self.id)
     end)
 
     if rightOf ~= nil then
@@ -460,18 +461,18 @@ function TRB.UiFunctions:CreateTab(name, displayText, id, parent, width, rightOf
     return tab
 end
 
-function TRB.UiFunctions:CreateVariablesSidePanel(parent, name)
+function TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, name)
     local grandparent = parent:GetParent()
-    local variablesPanelParent = TRB.UiFunctions:CreateTabFrameContainer("TRB_" .. name .. "_BarTextVariables_Frame", grandparent, 300, 500)
+    local variablesPanelParent = TRB.Functions.OptionsUi:CreateTabFrameContainer("TRB_" .. name .. "_BarTextVariables_Frame", grandparent, 300, 500)
     local variablesPanel = variablesPanelParent.scrollFrame.scrollChild
     variablesPanelParent:SetBackdropColor(0, 0, 0, 0.8)
     variablesPanelParent:ClearAllPoints()
     variablesPanelParent:SetPoint("TOPLEFT", grandparent, "TOPRIGHT", 55, 5)
-    TRB.UiFunctions:BuildSectionHeader(variablesPanel, "Bar Text Variables", oUi.xCoord, 5)
+    TRB.Functions.OptionsUi:BuildSectionHeader(variablesPanel, "Bar Text Variables", oUi.xCoord, 5)
     return variablesPanel
 end
 
-function TRB.UiFunctions:CreateBarTextInputPanel(parent, name, text, width, height, xPos, yPos)
+function TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, name, text, width, height, xPos, yPos)
     local s = CreateFrame("ScrollFrame", "TRB_" .. name .. "_BarTextBox", parent, "UIPanelScrollFrameTemplate, BackdropTemplate") -- or your actual parent instead
     s:SetSize(width, height)
     s:SetPoint("TOPLEFT", parent, "TOPLEFT", xPos, yPos)
@@ -519,13 +520,13 @@ function TRB.UiFunctions:CreateBarTextInputPanel(parent, name, text, width, heig
     return e
 end
 
-function TRB.UiFunctions:CreateLsmDropdown(parent, dropDowns, section, classId, specId, xCoord, yCoord, lsmType, varName, sectionHeaderText, dropdownInfoText)
+function TRB.Functions.OptionsUi:CreateLsmDropdown(parent, dropDowns, section, classId, specId, xCoord, yCoord, lsmType, varName, sectionHeaderText, dropdownInfoText)
     local oUi = TRB.Data.constants.optionsUi
     local _, className, _ = GetClassInfo(classId)
     
     -- Create the dropdown, and configure its appearance
     dropDowns[varName] = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_"..varName.."_"..lsmType, parent)
-    dropDowns[varName].label = TRB.UiFunctions:BuildSectionHeader(parent, sectionHeaderText, xCoord, yCoord)
+    dropDowns[varName].label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, sectionHeaderText, xCoord, yCoord)
     dropDowns[varName].label.font:SetFontObject(GameFontNormal)
     dropDowns[varName]:SetPoint("TOPLEFT", xCoord, yCoord-30)
     LibDD:UIDropDownMenu_SetWidth(dropDowns[varName], oUi.dropdownWidth)
@@ -539,7 +540,7 @@ function TRB.UiFunctions:CreateLsmDropdown(parent, dropDowns, section, classId, 
         local items = TRB.Details.addonData.libs.SharedMedia:HashTable(lsmType)
         local itemsList = TRB.Details.addonData.libs.SharedMedia:List(lsmType)
         if (level or 1) == 1 or menuList == nil then
-            local menus = math.ceil(TRB.Functions.TableLength(items) / entries)
+            local menus = math.ceil(TRB.Functions.Table:Length(items) / entries)
             for i=0, menus-1 do
                 info.hasArrow = true
                 info.notCheckable = true
@@ -566,7 +567,7 @@ function TRB.UiFunctions:CreateLsmDropdown(parent, dropDowns, section, classId, 
     end)
 end
 
-function TRB.UiFunctions:ToggleCheckboxEnabled(checkbox, enable)
+function TRB.Functions.OptionsUi:ToggleCheckboxEnabled(checkbox, enable)
     if enable then
 ---@diagnostic disable-next-line: undefined-field
         checkbox:Enable()
@@ -578,7 +579,7 @@ function TRB.UiFunctions:ToggleCheckboxEnabled(checkbox, enable)
     end
 end
 
-function TRB.UiFunctions:ToggleCheckboxOnOff(checkbox, enable, changeText)
+function TRB.Functions.OptionsUi:ToggleCheckboxOnOff(checkbox, enable, changeText)
     if enable then
         getglobal(checkbox:GetName().."Text"):SetTextColor(0, 1, 0)
 
@@ -594,7 +595,7 @@ function TRB.UiFunctions:ToggleCheckboxOnOff(checkbox, enable, changeText)
     end
 end
 
-function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord)
+function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord)
     local oUi = TRB.Data.constants.optionsUi
     local _, className, _ = GetClassInfo(classId)
     local f = nil    
@@ -604,14 +605,14 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
 
     local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 
-    controls.barPositionSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Position and Size", oUi.xCoord, yCoord)
+    controls.barPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Position and Size", oUi.xCoord, yCoord)
 
     yCoord = yCoord - 40
     title = "Bar Width"
-    controls.width = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
+    controls.width = TRB.Functions.OptionsUi:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
                                 oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.width:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.bar.width = value
 
         local maxBorderSize = math.min(math.floor((spec.bar.height) / TRB.Data.constants.borderWidthFactor), math.floor((spec.bar.width) / TRB.Data.constants.borderWidthFactor))-1
@@ -627,10 +628,10 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
     end)
 
     title = "Bar Height"
-    controls.height = TRB.UiFunctions:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
+    controls.height = TRB.Functions.OptionsUi:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
                                     oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
     controls.height:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.bar.height = value
 
         local maxBorderSize = math.min(math.floor((spec.bar.height) / TRB.Data.constants.borderWidthFactor), math.floor((spec.bar.width) / TRB.Data.constants.borderWidthFactor))-1
@@ -648,10 +649,10 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
 
     title = "Bar Horizontal Position"
     yCoord = yCoord - 60
-    controls.horizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.bar.xPos, 1, 2,
+    controls.horizontal = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.bar.xPos, 1, 2,
                                 oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.horizontal:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.bar.xPos = value
 
         if GetSpecialization() == specId then
@@ -663,10 +664,10 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
     end)
 
     title = "Bar Vertical Position"
-    controls.vertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.bar.yPos, 1, 2,
+    controls.vertical = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.bar.yPos, 1, 2,
                                 oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
     controls.vertical:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.bar.yPos = value
 
         if GetSpecialization() == specId then
@@ -679,10 +680,10 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
 
     title = "Bar Border Width"
     yCoord = yCoord - 60
-    controls.borderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
+    controls.borderWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
                                 oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.borderWidth:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.bar.border = value
 
         if GetSpecialization() == specId then
@@ -710,7 +711,7 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
                 TRB.Frames.barBorderFrame:Show()
             end
             TRB.Frames.barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-            TRB.Frames.barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
+            TRB.Frames.barBorderFrame:SetBackdropBorderColor (TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.border, true))
 
             TRB.Functions.SetBarMinMaxValues(spec)
             TRB.Functions.UpdateBarHeight(spec)
@@ -729,10 +730,10 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
 
     if spec.thresholds ~= nil then
         title = "Threshold Line Width"
-        controls.thresholdWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
+        controls.thresholdWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
                                     oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
         controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
-            value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+            value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
             spec.thresholds.width = value
 
             if GetSpecialization() == specId then
@@ -757,7 +758,7 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
         TRB.Frames.barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
     end)
 
-    TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
+    TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
 
     controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
     f = controls.checkBoxes.pinToPRD
@@ -768,7 +769,7 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
     f:SetScript("OnClick", function(self, ...)
         spec.bar.pinToPersonalResourceDisplay = self:GetChecked()
 
-        TRB.UiFunctions:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
+        TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.lockPosition, not spec.bar.pinToPersonalResourceDisplay)
 
         TRB.Frames.barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
         TRB.Frames.barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
@@ -778,7 +779,7 @@ function TRB.UiFunctions:GenerateBarDimensionsOptions(parent, controls, spec, cl
     return yCoord
 end
 
-function TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, secondaryResourceString)
+function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, secondaryResourceString)
     if primaryResourceString == nil then
         primaryResourceString = "Energy"
     end
@@ -797,14 +798,14 @@ function TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, s
 
     local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 
-    controls.comboPointPositionSection = TRB.UiFunctions:BuildSectionHeader(parent, secondaryResourceString .. " Position and Size", oUi.xCoord, yCoord)
+    controls.comboPointPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, secondaryResourceString .. " Position and Size", oUi.xCoord, yCoord)
 
     yCoord = yCoord - 40
     title = secondaryResourceString .. " Width"
-    controls.comboPointWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.width, 1, 2,
+    controls.comboPointWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, TRB.Functions.Number:RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.width, 1, 2,
                                 oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.comboPointWidth:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.comboPoints.width = value
 
         local maxBorderSize = math.min(math.floor(spec.comboPoints.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.comboPoints.width / TRB.Data.constants.borderWidthFactor))
@@ -824,10 +825,10 @@ function TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, s
     end)
 
     title = secondaryResourceString .. " Height"
-    controls.comboPointHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, sanityCheckValues.barMaxHeight, spec.comboPoints.height, 1, 2,
+    controls.comboPointHeight = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, sanityCheckValues.barMaxHeight, spec.comboPoints.height, 1, 2,
                                     oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
     controls.comboPointHeight:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.comboPoints.height = value
 
         local maxBorderSize = math.min(math.floor(spec.comboPoints.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
@@ -850,10 +851,10 @@ function TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, s
 
     title = secondaryResourceString .. " Horizontal Position (Relative)"
     yCoord = yCoord - 60
-    controls.comboPointHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.comboPoints.xPos, 1, 2,
+    controls.comboPointHorizontal = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.comboPoints.xPos, 1, 2,
                                 oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.comboPointHorizontal:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.comboPoints.xPos = value
 
         if GetSpecialization() == specId then
@@ -862,10 +863,10 @@ function TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, s
     end)
 
     title = secondaryResourceString .. " Vertical Position (Relative)"
-    controls.comboPointVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.comboPoints.yPos, 1, 2,
+    controls.comboPointVertical = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.comboPoints.yPos, 1, 2,
                                 oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
     controls.comboPointVertical:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.comboPoints.yPos = value
 
         if GetSpecialization() == specId then
@@ -875,10 +876,10 @@ function TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, s
 
     title = secondaryResourceString .. " Border Width"
     yCoord = yCoord - 60
-    controls.comboPointBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxBorderHeight, spec.comboPoints.border, 1, 2,
+    controls.comboPointBorderWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, maxBorderHeight, spec.comboPoints.border, 1, 2,
                                 oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.comboPointBorderWidth:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.comboPoints.border = value
 
         if GetSpecialization() == specId then
@@ -898,10 +899,10 @@ function TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, s
     end)
 
     title = secondaryResourceString .. " Spacing"
-    controls.comboPointSpacing = TRB.UiFunctions:BuildSlider(parent, title, 0, TRB.Functions.RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.spacing, 1, 2,
+    controls.comboPointSpacing = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, TRB.Functions.Number:RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.spacing, 1, 2,
                                 oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
     controls.comboPointSpacing:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.comboPoints.spacing = value
 
         if GetSpecialization() == specId then
@@ -912,7 +913,7 @@ function TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, s
     yCoord = yCoord - 40
     -- Create the dropdown, and configure its appearance
     controls.dropDown.comboPointsRelativeTo = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_comboPointsRelativeTo", parent)
-    controls.dropDown.comboPointsRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of "..secondaryResourceString.." to "..primaryResourceString.." Bar", oUi.xCoord, yCoord)
+    controls.dropDown.comboPointsRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Relative Position of "..secondaryResourceString.." to "..primaryResourceString.." Bar", oUi.xCoord, yCoord)
     controls.dropDown.comboPointsRelativeTo.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.comboPointsRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
     LibDD:UIDropDownMenu_SetWidth(controls.dropDown.comboPointsRelativeTo, oUi.dropdownWidth)
@@ -978,7 +979,7 @@ function TRB.UiFunctions:GenerateComboPointDimensionsOptions(parent, controls, s
     return yCoord
 end
 
-function TRB.UiFunctions:UpdateTextureDropdowns(controls, textures, newValue, newName, variable, specId, includeComboPoints)
+function TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls, textures, newValue, newName, variable, specId, includeComboPoints)
     if includeComboPoints == nil then
         includeComboPoints = false
     end
@@ -1006,7 +1007,7 @@ function TRB.UiFunctions:UpdateTextureDropdowns(controls, textures, newValue, ne
 
     if GetSpecialization() == specId then
         if includeComboPoints and variable == "comboPoints" then
-            local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+            local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
             for x = 1, length do
                 TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(textures.comboPointsBar)
             end
@@ -1020,7 +1021,7 @@ function TRB.UiFunctions:UpdateTextureDropdowns(controls, textures, newValue, ne
             TRB.Frames.passiveFrame:SetStatusBarTexture(textures.passiveBar)
             
             if includeComboPoints and variable ~= "comboPoints" then
-                local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+                local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
                 for x = 1, length do
                     TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(textures.comboPointsBar)
                 end
@@ -1031,7 +1032,7 @@ function TRB.UiFunctions:UpdateTextureDropdowns(controls, textures, newValue, ne
     LibDD:CloseDropDownMenus()
 end
 
-function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, yCoord, includeComboPoints, secondaryResourceString)
+function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, classId, specId, yCoord, includeComboPoints, secondaryResourceString)
     if includeComboPoints == nil then
         includeComboPoints = false
     end
@@ -1045,38 +1046,38 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
     local f = nil
     
     if includeComboPoints then
-        controls.textBarTexturesSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar and "..secondaryResourceString.." Textures", oUi.xCoord, yCoord)
+        controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar and "..secondaryResourceString.." Textures", oUi.xCoord, yCoord)
     else
-        controls.textBarTexturesSection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Textures", oUi.xCoord, yCoord)
+        controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Textures", oUi.xCoord, yCoord)
     end
 		
     controls.dropDown.textures = {}
 
     yCoord = yCoord - 30
-    TRB.UiFunctions:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "resourceBar", "Main Bar Texture", "Status Bar Textures")
+    TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "resourceBar", "Main Bar Texture", "Status Bar Textures")
     -- Implement the function to change the texture
     function controls.dropDown.textures.resourceBar:SetValue(newValue, newName)
-        TRB.UiFunctions:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "resource", specId, includeComboPoints)
+        TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "resource", specId, includeComboPoints)
     end
 
-    TRB.UiFunctions:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "castingBar", "Casting Bar Texture", "Status Bar Textures")
+    TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "castingBar", "Casting Bar Texture", "Status Bar Textures")
     -- Implement the function to change the texture
     function controls.dropDown.textures.castingBar:SetValue(newValue, newName)
-        TRB.UiFunctions:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "casting", specId, includeComboPoints)
+        TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "casting", specId, includeComboPoints)
     end
 
     yCoord = yCoord - 60
-    TRB.UiFunctions:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "passiveBar", "Passive Bar Texture", "Status Bar Textures")
+    TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "passiveBar", "Passive Bar Texture", "Status Bar Textures")
     -- Implement the function to change the texture
     function controls.dropDown.textures.passiveBar:SetValue(newValue, newName)
-        TRB.UiFunctions:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "passive", specId, includeComboPoints)
+        TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "passive", specId, includeComboPoints)
     end
 
     if includeComboPoints then
-        TRB.UiFunctions:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "comboPointsBar", secondaryResourceString.." Bar Texture", "Status Bar Textures")
+        TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "comboPointsBar", secondaryResourceString.." Bar Texture", "Status Bar Textures")
         -- Implement the function to change the texture
         function controls.dropDown.textures.comboPointsBar:SetValue(newValue, newName)
-            TRB.UiFunctions:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "comboPoints", specId, includeComboPoints)
+            TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "comboPoints", specId, includeComboPoints)
         end
     end
     
@@ -1112,7 +1113,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
                 TRB.Frames.castingFrame:SetStatusBarTexture(spec.textures.castingBar)
 
                 if includeComboPoints then
-                    local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+                    local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
                     for x = 1, length do
                         TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarTexture(spec.textures.comboPointsBar)
                         
@@ -1123,7 +1124,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
                             edgeSize = 1,
                             insets = {0, 0, 0, 0}
                         })
-                        TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(spec.colors.comboPoints.background, true))
+                        TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.background, true))
                         
                         if spec.comboPoints.border < 1 then
                             TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
@@ -1142,7 +1143,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
     end)
 
     yCoord = yCoord - 60
-    TRB.UiFunctions:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "border", "Border Texture", "Border Textures")
+    TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "border", "Border Texture", "Border Textures")
     -- Implement the function to change the texture
     function controls.dropDown.textures.border:SetValue(newValue, newName)
         spec.textures.border = newValue
@@ -1160,7 +1161,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
                                             })
             end
             TRB.Frames.barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-            TRB.Frames.barBorderFrame:SetBackdropBorderColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
+            TRB.Frames.barBorderFrame:SetBackdropBorderColor (TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.border, true))
         end
 
         LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.border, newName)
@@ -1170,7 +1171,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
 			spec.textures.comboPointsBorderName = newName
 
 			if GetSpecialization() == specId then
-				local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+				local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 				for x = 1, length do
 					if spec.comboPoints.border < 1 then
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
@@ -1183,7 +1184,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
 													})
 					end
 					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropColor(0, 0, 0, 0)
-					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(spec.colors.comboPoints.border, true))
+					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.border, true))
 				end
 			end
 
@@ -1193,7 +1194,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
         LibDD:CloseDropDownMenus()
     end
     
-    TRB.UiFunctions:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "background", "Background (Empty Bar) Texture", "Background Textures")
+    TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "background", "Background (Empty Bar) Texture", "Background Textures")
     -- Implement the function to change the texture
     function controls.dropDown.textures.background:SetValue(newValue, newName)
         spec.textures.background = newValue
@@ -1207,7 +1208,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
                 edgeSize = 1,
                 insets = {0, 0, 0, 0}
             })
-            TRB.Frames.barContainerFrame:SetBackdropColor (TRB.Functions.GetRGBAFromString(spec.colors.bar.background, true))
+            TRB.Frames.barContainerFrame:SetBackdropColor (TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.background, true))
         end
 
         LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.background, newName)
@@ -1217,7 +1218,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
 			spec.textures.comboPointsBackgroundName = newName
 
 			if GetSpecialization() == specId then
-				local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+				local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 				for x = 1, length do
 					TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
 						bgFile = spec.textures.comboPointsBackground,
@@ -1226,7 +1227,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
 						edgeSize = 1,
 						insets = {0, 0, 0, 0}
 					})
-					TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(spec.colors.comboPoints.background, true))
+					TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.background, true))
 				end
 			end
 
@@ -1237,14 +1238,14 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
 
     if includeComboPoints then
 		yCoord = yCoord - 60
-        TRB.UiFunctions:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "comboPointsBorder", secondaryResourceString.." Border Texture", "Border Textures")
+        TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "comboPointsBorder", secondaryResourceString.." Border Texture", "Border Textures")
 		-- Implement the function to change the texture
 		function controls.dropDown.textures.comboPointsBorder:SetValue(newValue, newName)
 			spec.textures.comboPointsBorder = newValue
 			spec.textures.comboPointsBorderName = newName
 
 			if GetSpecialization() == specId then
-				local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+				local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 				for x = 1, length do
 					if spec.comboPoints.border < 1 then
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdrop({ })
@@ -1257,7 +1258,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
 													})
 					end
 					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropColor(0, 0, 0, 0)
-					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(spec.colors.comboPoints.border, true))
+					TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.border, true))
 				end
 			end
 
@@ -1279,7 +1280,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
                                                     })
                     end
 				    TRB.Frames.barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-				    TRB.Frames.barBorderFrame:SetBackdropBorderColor(TRB.Functions.GetRGBAFromString(spec.colors.bar.border, true))
+				    TRB.Frames.barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.border, true))
                 end
 
 				LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.border, newName)
@@ -1288,14 +1289,14 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
 			LibDD:CloseDropDownMenus()
 		end
 
-        TRB.UiFunctions:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "comboPointsBackground", secondaryResourceString.." Background (Empty Bar) Texture", "Background Textures")
+        TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "comboPointsBackground", secondaryResourceString.." Background (Empty Bar) Texture", "Background Textures")
 		-- Implement the function to change the texture
 		function controls.dropDown.textures.comboPointsBackground:SetValue(newValue, newName)
 			spec.textures.comboPointsBackground = newValue
 			spec.textures.comboPointsBackgroundName = newName
 
 			if GetSpecialization() == specId then
-				local length = TRB.Functions.TableLength(TRB.Frames.resource2Frames)
+				local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 				for x = 1, length do
 					TRB.Frames.resource2Frames[x].containerFrame:SetBackdrop({ 
 						bgFile = spec.textures.comboPointsBackground,
@@ -1304,7 +1305,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
 						edgeSize = 1,
 						insets = {0, 0, 0, 0}
 					})
-					TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(spec.colors.comboPoints.background, true))
+					TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.comboPoints.background, true))
 				end
 			end
 
@@ -1322,7 +1323,7 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
 						edgeSize = 1,
 						insets = {0, 0, 0, 0}
 					})
-					TRB.Frames.barContainerFrame:SetBackdropColor(TRB.Functions.GetRGBAFromString(spec.colors.bar.background, true))
+					TRB.Frames.barContainerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.background, true))
 				end
 
 				LibDD:UIDropDownMenu_SetText(controls.dropDown.textures.background, newName)
@@ -1343,32 +1344,32 @@ function TRB.UiFunctions:GenerateBarTexturesOptions(parent, controls, spec, clas
     return yCoord
 end
 
-function TRB.UiFunctions:GenerateBarDisplayOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeCastingBar, includePassiveBar, includeFlashAlpha, flashAlphaName, flashAlphaNameShort)
+function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeCastingBar, includePassiveBar, includeFlashAlpha, flashAlphaName, flashAlphaNameShort)
     local oUi = TRB.Data.constants.optionsUi
     local _, className, _ = GetClassInfo(classId)
     local f = nil
     local title = ""
 
-    controls.barDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Bar Display", oUi.xCoord, yCoord)
+    controls.barDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display", oUi.xCoord, yCoord)
 
     if includeFlashAlpha then
         yCoord = yCoord - 50
         title = flashAlphaName.." Flash Alpha"
-        controls.flashAlpha = TRB.UiFunctions:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
+        controls.flashAlpha = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
                                     oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
         controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
-            value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-            value = TRB.Functions.RoundTo(value, 2)
+            value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+            value = TRB.Functions.Number:RoundTo(value, 2)
             self.EditBox:SetText(value)
             spec.colors.bar.flashAlpha = value
         end)
 
         title = flashAlphaName.." Flash Period (sec)"
-        controls.flashPeriod = TRB.UiFunctions:BuildSlider(parent, title, 0, 2, spec.colors.bar.flashPeriod, 0.05, 2,
+        controls.flashPeriod = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, spec.colors.bar.flashPeriod, 0.05, 2,
                                         oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
         controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
-            value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-            value = TRB.Functions.RoundTo(value, 2)
+            value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+            value = TRB.Functions.Number:RoundTo(value, 2)
             self.EditBox:SetText(value)
             spec.colors.bar.flashPeriod = value
         end)
@@ -1502,7 +1503,7 @@ function TRB.UiFunctions:GenerateBarDisplayOptions(parent, controls, spec, class
     return yCoord, yCoord2+20
 end
 
-function TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spec, classId, specId, yCoord)
+function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, classId, specId, yCoord)
     local oUi = TRB.Data.constants.optionsUi
     local _, className, _ = GetClassInfo(classId)
     local f = nil
@@ -1511,7 +1512,7 @@ function TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spe
 
     -- Create the dropdown, and configure its appearance
     controls.dropDown.thresholdIconRelativeTo = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_ThresholdIconRelativeTo", parent)
-    controls.dropDown.thresholdIconRelativeTo.label = TRB.UiFunctions:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", oUi.xCoord, yCoord)
+    controls.dropDown.thresholdIconRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", oUi.xCoord, yCoord)
     controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
     LibDD:UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, oUi.dropdownWidth)
@@ -1585,10 +1586,10 @@ function TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spe
 
     yCoord = yCoord - 100
     title = "Threshold Icon Width"
-    controls.thresholdIconWidth = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
+    controls.thresholdIconWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
                                 oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.thresholds.icons.width = value
 
         local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
@@ -1608,10 +1609,10 @@ function TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spe
     end)
 
     title = "Threshold Icon Height"
-    controls.thresholdIconHeight = TRB.UiFunctions:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
+    controls.thresholdIconHeight = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
                                     oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
     controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.thresholds.icons.height = value
 
         local maxBorderSize = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
@@ -1633,10 +1634,10 @@ function TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spe
 
     title = "Threshold Icon Horizontal Position (Relative)"
     yCoord = yCoord - 60
-    controls.thresholdIconHorizontal = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
+    controls.thresholdIconHorizontal = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
                                 oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.thresholdIconHorizontal:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.thresholds.icons.xPos = value
         
         if GetSpecialization() == specId then
@@ -1646,10 +1647,10 @@ function TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spe
     end)
 
     title = "Threshold Icon Vertical Position (Relative)"
-    controls.thresholdIconVertical = TRB.UiFunctions:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
+    controls.thresholdIconVertical = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
                                 oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
     controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.thresholds.icons.yPos = value
         
         if GetSpecialization() == specId then
@@ -1661,10 +1662,10 @@ function TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spe
 
     title = "Threshold Icon Border Width"
     yCoord = yCoord - 60
-    controls.thresholdIconBorderWidth = TRB.UiFunctions:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
+    controls.thresholdIconBorderWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
                                 oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.thresholdIconBorderWidth:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.thresholds.icons.border = value
 
         local minsliderWidth = math.max(spec.thresholds.icons.border*2, 1)
@@ -1683,14 +1684,14 @@ function TRB.UiFunctions:GenerateThresholdLineIconsOptions(parent, controls, spe
     return yCoord
 end
 
-function TRB.UiFunctions:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, classId, specId, yCoord)
+function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, classId, specId, yCoord)
     local oUi = TRB.Data.constants.optionsUi
     local _, className, _ = GetClassInfo(classId)
     local f = nil
     local title = ""
 
     yCoord = yCoord - 40
-    controls.textSection = TRB.UiFunctions:BuildSectionHeader(parent, "Potion on Cooldown Configuration", oUi.xCoord, yCoord)
+    controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Potion on Cooldown Configuration", oUi.xCoord, yCoord)
 
     yCoord = yCoord - 30
     controls.checkBoxes.potionCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_PotionCooldown_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -1720,10 +1721,10 @@ function TRB.UiFunctions:GeneratePotionOnCooldownConfigurationOptions(parent, co
     end)
 
     title = "Potion Cooldown GCDs - 0.75sec Floor"
-    controls.potionCooldownGCDs = TRB.UiFunctions:BuildSlider(parent, title, 0, 400, spec.thresholds.potionCooldown.gcdsMax, 0.25, 2,
+    controls.potionCooldownGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 400, spec.thresholds.potionCooldown.gcdsMax, 0.25, 2,
                                     oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
     controls.potionCooldownGCDs:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.thresholds.potionCooldown.gcdsMax = value
     end)
 
@@ -1745,11 +1746,11 @@ function TRB.UiFunctions:GeneratePotionOnCooldownConfigurationOptions(parent, co
     end)
 
     title = "Potion Cooldown Time Remaining"
-    controls.potionCooldownTime = TRB.UiFunctions:BuildSlider(parent, title, 0, 300, spec.thresholds.potionCooldown.timeMax, 0.25, 2,
+    controls.potionCooldownTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 300, spec.thresholds.potionCooldown.timeMax, 0.25, 2,
                                     oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
     controls.potionCooldownTime:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
-        value = TRB.Functions.RoundTo(value, 2)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.Number:RoundTo(value, 2)
         self.EditBox:SetText(value)
         spec.thresholds.potionCooldown.timeMax = value
     end)
@@ -1757,32 +1758,32 @@ function TRB.UiFunctions:GeneratePotionOnCooldownConfigurationOptions(parent, co
     return yCoord
 end
 
-function TRB.UiFunctions:GenerateThresholdLinesForHealers(parent, controls, spec, classId, specId, yCoord)
+function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, classId, specId, yCoord)
     local oUi = TRB.Data.constants.optionsUi
     local _, className, _ = GetClassInfo(classId)
     local f = nil
 
-    controls.barColorsSection = TRB.UiFunctions:BuildSectionHeader(parent, "Threshold Lines", oUi.xCoord, yCoord)
+    controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Threshold Lines", oUi.xCoord, yCoord)
 
     controls.colors.threshold = {}
 
     yCoord = yCoord - 25
-    controls.colors.threshold.over = TRB.UiFunctions:BuildColorPicker(parent, "Mana gain from potions and items (when usable)", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-0)
+    controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana gain from potions and items (when usable)", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-0)
     f = controls.colors.threshold.over
     f:SetScript("OnMouseDown", function(self, button, ...)
-        TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
+        TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
     end)
 
-    controls.colors.threshold.unusable = TRB.UiFunctions:BuildColorPicker(parent, "Mana potion or item on cooldown", spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-30)
+    controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana potion or item on cooldown", spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-30)
     f = controls.colors.threshold.unusable
     f:SetScript("OnMouseDown", function(self, button, ...)
-        TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
+        TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
     end)
 
-    controls.colors.threshold.mindbender = TRB.UiFunctions:BuildColorPicker(parent, "Passive mana gain per source", spec.colors.threshold.mindbender, 300, 25, oUi.xCoord2, yCoord-60)
+    controls.colors.threshold.mindbender = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Passive mana gain per source", spec.colors.threshold.mindbender, 300, 25, oUi.xCoord2, yCoord-60)
     f = controls.colors.threshold.mindbender
     f:SetScript("OnMouseDown", function(self, button, ...)
-        TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "mindbender")
+        TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "mindbender")
     end)
 
     controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_ThresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
@@ -1796,7 +1797,7 @@ function TRB.UiFunctions:GenerateThresholdLinesForHealers(parent, controls, spec
         TRB.Functions.RedrawThresholdLines(spec)
     end)
 
-    controls.labels.builders = TRB.UiFunctions:BuildLabel(parent, "Aerated Mana Potion", 5, yCoord, 300, 20)
+    controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, "Aerated Mana Potion", 5, yCoord, 300, 20)
     yCoord = yCoord - 20
 
     controls.checkBoxes.aeratedManaPotionRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_AeratedManaPotionRank3", parent, "ChatConfigCheckButtonTemplate")
@@ -1832,7 +1833,7 @@ function TRB.UiFunctions:GenerateThresholdLinesForHealers(parent, controls, spec
     end)
     yCoord = yCoord - 25
 
-    controls.labels.builders = TRB.UiFunctions:BuildLabel(parent, "Potion of Frozen Focus", 5, yCoord, 300, 20)
+    controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, "Potion of Frozen Focus", 5, yCoord, 300, 20)
     yCoord = yCoord - 20
 
     controls.checkBoxes.potionOfFrozenFocusRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_potionOfFrozenFocusRank3", parent, "ChatConfigCheckButtonTemplate")
@@ -1868,7 +1869,7 @@ function TRB.UiFunctions:GenerateThresholdLinesForHealers(parent, controls, spec
     end)
 
     yCoord = yCoord - 25
-    controls.labels.builders = TRB.UiFunctions:BuildLabel(parent, "Items", 5, yCoord, 300, 20)
+    controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, "Items", 5, yCoord, 300, 20)
     yCoord = yCoord - 20
 
     controls.checkBoxes.snThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_conjuredChillglobe", parent, "ChatConfigCheckButtonTemplate")
@@ -1886,7 +1887,7 @@ function TRB.UiFunctions:GenerateThresholdLinesForHealers(parent, controls, spec
     return yCoord
 end
 
-function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, specId, yCoord)
+function TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, classId, specId, yCoord)
     local oUi = TRB.Data.constants.optionsUi
     local _, className, _ = GetClassInfo(classId)
     local f = nil
@@ -1894,7 +1895,7 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
     
     controls.dropDown.fonts = {}
 
-    controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Face", oUi.xCoord, yCoord)
+    controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Font Face", oUi.xCoord, yCoord)
 
     --[[
 
@@ -1905,7 +1906,7 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
 
     -- Create the dropdown, and configure its appearance
     controls.dropDown.fontLeft = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_FontLeft", parent)
-    controls.dropDown.fontLeft.label = TRB.UiFunctions:BuildSectionHeader(parent, "Left Bar Font Face", oUi.xCoord, yCoord)
+    controls.dropDown.fontLeft.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Left Bar Font Face", oUi.xCoord, yCoord)
     controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.fontLeft:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
     LibDD:UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, oUi.dropdownWidth)
@@ -1919,7 +1920,7 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
         local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
         local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
         if (level or 1) == 1 or menuList == nil then
-            local menus = math.ceil(TRB.Functions.TableLength(fonts) / entries)
+            local menus = math.ceil(TRB.Functions.Table:Length(fonts) / entries)
             for i=0, menus-1 do
                 info.hasArrow = true
                 info.notCheckable = true
@@ -1972,7 +1973,7 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
 
     -- Create the dropdown, and configure its appearance
     controls.dropDown.fontMiddle = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_FontMiddle", parent)
-    controls.dropDown.fontMiddle.label = TRB.UiFunctions:BuildSectionHeader(parent, "Middle Bar Font Face", oUi.xCoord2, yCoord)
+    controls.dropDown.fontMiddle.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Middle Bar Font Face", oUi.xCoord2, yCoord)
     controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.fontMiddle:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
     LibDD:UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, oUi.dropdownWidth)
@@ -1986,7 +1987,7 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
         local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
         local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
         if (level or 1) == 1 or menuList == nil then
-            local menus = math.ceil(TRB.Functions.TableLength(fonts) / entries)
+            local menus = math.ceil(TRB.Functions.Table:Length(fonts) / entries)
             for i=0, menus-1 do
                 info.hasArrow = true
                 info.notCheckable = true
@@ -2041,7 +2042,7 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
 
     -- Create the dropdown, and configure its appearance
     controls.dropDown.fontRight = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_FontRight", parent)
-    controls.dropDown.fontRight.label = TRB.UiFunctions:BuildSectionHeader(parent, "Right Bar Font Face", oUi.xCoord, yCoord)
+    controls.dropDown.fontRight.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Right Bar Font Face", oUi.xCoord, yCoord)
     controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
     controls.dropDown.fontRight:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
     LibDD:UIDropDownMenu_SetWidth(controls.dropDown.fontRight, oUi.dropdownWidth)
@@ -2055,7 +2056,7 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
         local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
         local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
         if (level or 1) == 1 or menuList == nil then
-            local menus = math.ceil(TRB.Functions.TableLength(fonts) / entries)
+            local menus = math.ceil(TRB.Functions.Table:Length(fonts) / entries)
             for i=0, menus-1 do
                 info.hasArrow = true
                 info.notCheckable = true
@@ -2131,14 +2132,14 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
 
 
     yCoord = yCoord - 70
-    controls.textDisplaySection = TRB.UiFunctions:BuildSectionHeader(parent, "Font Size and Colors", oUi.xCoord, yCoord)
+    controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Font Size and Colors", oUi.xCoord, yCoord)
 
     title = "Left Bar Text Font Size"
     yCoord = yCoord - 50
-    controls.fontSizeLeft = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
+    controls.fontSizeLeft = TRB.Functions.OptionsUi:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
                                 oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.displayText.left.fontSize = value
 
         if GetSpecialization() == specId then
@@ -2167,33 +2168,33 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
 
     controls.colors.text = {}
 
-    controls.colors.text.left = TRB.UiFunctions:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
+    controls.colors.text.left = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
                                                     250, 25, oUi.xCoord2, yCoord-30)
     f = controls.colors.text.left
     f:SetScript("OnMouseDown", function(self, button, ...)
-        TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
+        TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
     end)
 
-    controls.colors.text.middle = TRB.UiFunctions:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
+    controls.colors.text.middle = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
                                                     225, 25, oUi.xCoord2, yCoord-70)
     f = controls.colors.text.middle
     f:SetScript("OnMouseDown", function(self, button, ...)
-        TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
+        TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
     end)
 
-    controls.colors.text.right = TRB.UiFunctions:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
+    controls.colors.text.right = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
                                                     225, 25, oUi.xCoord2, yCoord-110)
     f = controls.colors.text.right
     f:SetScript("OnMouseDown", function(self, button, ...)
-        TRB.UiFunctions:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
+        TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
     end)
 
     title = "Middle Bar Text Font Size"
     yCoord = yCoord - 60
-    controls.fontSizeMiddle = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
+    controls.fontSizeMiddle = TRB.Functions.OptionsUi:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
                                 oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.displayText.middle.fontSize = value
 
         if GetSpecialization() == specId then
@@ -2208,10 +2209,10 @@ function TRB.UiFunctions:GenerateFontOptions(parent, controls, spec, classId, sp
 
     title = "Right Bar Text Font Size"
     yCoord = yCoord - 60
-    controls.fontSizeRight = TRB.UiFunctions:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
+    controls.fontSizeRight = TRB.Functions.OptionsUi:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
                                 oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
     controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
-        value = TRB.UiFunctions:EditBoxSetTextMinMax(self, value)
+        value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
         spec.displayText.right.fontSize = value
 
         if GetSpecialization() == specId then
