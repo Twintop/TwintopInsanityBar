@@ -24,7 +24,8 @@
 -- BEGIN TRB EDIT
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
-local function GetBase64Library()
+TRB.Functions.Libs = TRB.Functions.Libs or {}
+function TRB.Functions.Libs:GetBase64Library()
 -- END TRB EDIT
 
     local base64 = {}
@@ -164,7 +165,6 @@ local function GetBase64Library()
     return base64
 -- BEGIN TRB EDIT
 end
-TRB.Functions.GetBase64Library = GetBase64Library
 -- END TRB EDIT
 
 --[[

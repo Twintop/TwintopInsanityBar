@@ -22,6 +22,7 @@ Libs\json.lua
 Libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
 
 Functions\Color.lua
+Functions\IO.lua
 Functions\Number.lua
 Functions\String.lua
 Functions\Table.lua

@@ -575,7 +575,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.buttons.exportButton_Monk_Mistweaver_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Mistweaver_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Mistweaver Monk (Bar Display).", 10, 2, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Mistweaver Monk (Bar Display).", 10, 2, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 2, yCoord)
@@ -687,7 +687,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.buttons.exportButton_Monk_Mistweaver_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Mistweaver_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Mistweaver Monk (Font & Text).", 10, 2, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Mistweaver Monk (Font & Text).", 10, 2, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 10, 2, yCoord)
@@ -786,7 +786,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.buttons.exportButton_Monk_Mistweaver_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Mistweaver_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Mistweaver Monk (Audio & Tracking).", 10, 2, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Mistweaver Monk (Audio & Tracking).", 10, 2, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
@@ -914,7 +914,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		
 		controls.buttons.exportButton_Monk_Mistweaver_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Mistweaver_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Mistweaver Monk (Bar Text).", 10, 2, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Mistweaver Monk (Bar Text).", 10, 2, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -1012,7 +1012,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.buttons.exportButton_Monk_Mistweaver_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Monk_Mistweaver_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Mistweaver Monk (All).", 10, 2, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Mistweaver Monk (All).", 10, 2, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52
@@ -1162,7 +1162,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.buttons.exportButton_Monk_Windwalker_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Windwalker_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Windwalker Monk (Bar Display).", 10, 3, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Windwalker Monk (Bar Display).", 10, 3, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 3, yCoord)
@@ -1534,7 +1534,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.buttons.exportButton_Monk_Windwalker_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Windwalker_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Windwalker Monk (Font & Text).", 10, 3, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Windwalker Monk (Font & Text).", 10, 3, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 10, 3, yCoord)
@@ -1659,7 +1659,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.buttons.exportButton_Monk_Windwalker_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Windwalker_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Windwalker Monk (Audio & Tracking).", 10, 3, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Windwalker Monk (Audio & Tracking).", 10, 3, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
@@ -1883,7 +1883,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 		controls.buttons.exportButton_Monk_Windwalker_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Windwalker_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Windwalker Monk (Bar Text).", 10, 3, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Windwalker Monk (Bar Text).", 10, 3, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -1976,7 +1976,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.buttons.exportButton_Monk_Windwalker_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Monk_Windwalker_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Windwalker Monk (All).", 10, 3, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Windwalker Monk (All).", 10, 3, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52

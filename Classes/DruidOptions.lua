@@ -799,7 +799,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.buttons.exportButton_Druid_Balance_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Balance_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Bar Display).", 11, 1, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Bar Display).", 11, 1, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 11, 1, yCoord)
@@ -1143,7 +1143,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.buttons.exportButton_Druid_Balance_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Balance_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Font & Text).", 11, 1, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Font & Text).", 11, 1, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 11, 1, yCoord)
@@ -1286,7 +1286,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.buttons.exportButton_Druid_Balance_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Balance_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Audio & Tracking).", 11, 1, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Audio & Tracking).", 11, 1, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
@@ -1579,7 +1579,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 		controls.buttons.exportButton_Druid_Balance_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Balance_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Bar Text).", 11, 1, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Bar Text).", 11, 1, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -1673,7 +1673,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.buttons.exportButton_Druid_Balance_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Druid_Balance_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (All).", 11, 1, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (All).", 11, 1, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52
@@ -1823,7 +1823,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.buttons.exportButton_Druid_Feral_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Feral_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Feral Druid (Bar Display).", 11, 2, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Feral Druid (Bar Display).", 11, 2, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 11, 2, yCoord)
@@ -2203,7 +2203,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.buttons.exportButton_Druid_Feral_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Feral_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Feral Druid (Font & Text).", 11, 2, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Feral Druid (Font & Text).", 11, 2, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 11, 2, yCoord)
@@ -2334,7 +2334,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.buttons.exportButton_Druid_Feral_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Feral_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Feral Druid (Audio & Tracking).", 11, 2, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Feral Druid (Audio & Tracking).", 11, 2, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
@@ -2553,7 +2553,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
 		controls.buttons.exportButton_Druid_Feral_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Feral_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Feral Druid (Bar Text).", 11, 2, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Feral Druid (Bar Text).", 11, 2, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -2647,7 +2647,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.buttons.exportButton_Druid_Feral_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Druid_Feral_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Feral Druid (All).", 11, 2, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Feral Druid (All).", 11, 2, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52
@@ -2818,7 +2818,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.buttons.exportButton_Druid_Restoration_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Restoration_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Druid (Bar Display).", 11, 4, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Druid (Bar Display).", 11, 4, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 11, 4, yCoord)
@@ -2943,7 +2943,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.buttons.exportButton_Druid_Restoration_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Restoration_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Druid (Font & Text).", 11, 4, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Druid (Font & Text).", 11, 4, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 11, 4, yCoord)
@@ -3040,7 +3040,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.buttons.exportButton_Druid_Restoration_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Restoration_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Druid (Audio & Tracking).", 11, 4, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Druid (Audio & Tracking).", 11, 4, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
@@ -3168,7 +3168,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 		controls.buttons.exportButton_Druid_Restoration_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Restoration_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Druid (Bar Text).", 11, 4, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Druid (Bar Text).", 11, 4, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -3265,7 +3265,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.buttons.exportButton_Druid_Restoration_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Druid_Restoration_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Druid (All).", 11, 4, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Druid (All).", 11, 4, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52

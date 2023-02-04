@@ -564,7 +564,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.buttons.exportButton_Warrior_Arms_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Arms_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (Bar Display).", 1, 1, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (Bar Display).", 1, 1, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 1, 1, yCoord)
@@ -855,7 +855,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.buttons.exportButton_Warrior_Arms_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Arms_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (Font & Text).", 1, 1, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (Font & Text).", 1, 1, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 1, 1, yCoord)
@@ -990,7 +990,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.buttons.exportButton_Warrior_Arms_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Arms_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (Audio & Tracking).", 1, 1, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (Audio & Tracking).", 1, 1, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
@@ -1143,7 +1143,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.buttons.exportButton_Warrior_Arms_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Arms_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (Bar Text).", 1, 1, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (Bar Text).", 1, 1, false, false, false, true, false)
 		end)
 
 		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
@@ -1237,7 +1237,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.buttons.exportButton_Warrior_Arms_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Warrior_Arms_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (All).", 1, 1, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (All).", 1, 1, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52
@@ -1407,7 +1407,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.buttons.exportButton_Warrior_Fury_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Fury_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Fury Warrior (Bar Display).", 1, 2, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Fury Warrior (Bar Display).", 1, 2, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 1, 2, yCoord)
@@ -1662,7 +1662,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.buttons.exportButton_Warrior_Fury_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Fury_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Fury Warrior (Font & Text).", 1, 2, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Fury Warrior (Font & Text).", 1, 2, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 1, 2, yCoord)
@@ -1762,7 +1762,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.buttons.exportButton_Warrior_Fury_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Fury_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Fury Warrior (Audio & Tracking).", 1, 2, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Fury Warrior (Audio & Tracking).", 1, 2, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
@@ -1916,7 +1916,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.buttons.exportButton_Warrior_Fury_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Fury_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Fury Warrior (Bar Text).", 1, 2, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Fury Warrior (Bar Text).", 1, 2, false, false, false, true, false)
 		end)
 
 		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
@@ -2010,7 +2010,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		controls.buttons.exportButton_Warrior_Fury_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Warrior_Fury_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Fury Warrior (All).", 1, 2, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Fury Warrior (All).", 1, 2, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52

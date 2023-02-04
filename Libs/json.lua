@@ -25,7 +25,8 @@
 -- BEGIN TRB EDIT
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
-local function GetJsonLibrary()
+TRB.Functions.Libs = TRB.Functions.Libs or {}
+function TRB.Functions.Libs:GetJsonLibrary()
 -- END TRB EDIT
 
     local json = { _version = "0.1.2" }
@@ -395,5 +396,4 @@ local function GetJsonLibrary()
 
 -- BEGIN TRB EDIT
 end
-TRB.Functions.GetJsonLibrary = GetJsonLibrary
 -- END TRB EDIT
