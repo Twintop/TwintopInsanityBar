@@ -22,6 +22,7 @@ Libs\json.lua
 Libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
 
 Functions\Aura.lua
+Functions\Bar.lua
 Functions\BarText.lua
 Functions\Color.lua
 Functions\Item.lua

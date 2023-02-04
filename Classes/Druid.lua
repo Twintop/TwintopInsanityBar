@@ -1756,7 +1756,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			TRB.Details.addonData.registered = true
 		end
-		TRB.Functions.HideResourceBar()
+		TRB.Functions.Bar:HideResourceBar()
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 	
@@ -4351,7 +4351,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.snapshotData.isTracking = false
 		end
 	end
-	TRB.Functions.HideResourceBar = HideResourceBar
+	TRB.Functions.Bar.HideResourceBarFunction = HideResourceBar
 
 	local function UpdateResourceBar()
 		local currentTime = GetTime()
@@ -4367,7 +4367,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
-				TRB.Functions.HideResourceBar()
+				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
@@ -4588,11 +4588,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					barContainerFrame:SetAlpha(1.0)
 
 					if flashBar then
-						TRB.Functions.PulseFrame(barContainerFrame, specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
+						TRB.Functions.Bar:PulseFrame(barContainerFrame, specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 					end
 				end
 			end
-			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 		elseif specId == 2 then
 			local specSettings = classSettings.feral
 			UpdateSnapshot_Feral()
@@ -4600,7 +4600,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
-				TRB.Functions.HideResourceBar()
+				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
@@ -4866,13 +4866,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end
 				end
 			end
-			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 		elseif specId == 4 then
 			local specSettings = classSettings.restoration
 			UpdateSnapshot_Restoration()
 			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 			if TRB.Data.snapshotData.isTracking then
-				TRB.Functions.HideResourceBar()
+				TRB.Functions.Bar:HideResourceBar()
 		
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
@@ -5015,7 +5015,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(resourceBarColor, true))
 				end
 		
-				TRB.Functions.UpdateResourceBar(specSettings, refreshText)
+				TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 			end
 		end
 	end
@@ -5026,7 +5026,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function TriggerResourceBarUpdates()
 		local specId = GetSpecialization()
 		if specId ~= 1 and specId ~= 2 and specId ~= 4 then
-			TRB.Functions.HideResourceBar(true)
+			TRB.Functions.Bar:HideResourceBar(true)
 			return
 		end
 
@@ -5594,9 +5594,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	combatFrame:SetScript("OnEvent", function(self, event, ...)
 		if event =="PLAYER_REGEN_DISABLED" then
-			TRB.Functions.ShowResourceBar()
+			TRB.Functions.Bar:ShowResourceBar()
 		else
-			TRB.Functions.HideResourceBar()
+			TRB.Functions.Bar:HideResourceBar()
 		end
 	end)
 

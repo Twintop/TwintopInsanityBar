@@ -1777,7 +1777,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 			TRB.Details.addonData.registered = true
 		end
-		TRB.Functions.HideResourceBar()
+		TRB.Functions.Bar:HideResourceBar()
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 
@@ -3499,7 +3499,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.snapshotData.isTracking = false
 		end
 	end
-	TRB.Functions.HideResourceBar = HideResourceBar
+	TRB.Functions.Bar.HideResourceBarFunction = HideResourceBar
 
 	local function UpdateResourceBar()
 		local currentTime = GetTime()
@@ -3514,7 +3514,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
-				TRB.Functions.HideResourceBar()
+				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
@@ -3818,14 +3818,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					end
 				end
 			end
-			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 		elseif specId == 2 then
 			local specSettings = classSettings.outlaw
 			UpdateSnapshot_Outlaw()
 			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
-				TRB.Functions.HideResourceBar()
+				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
@@ -4126,7 +4126,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
                     end
 				end
 			end
-			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 		end
 	end
 
@@ -4136,7 +4136,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	local function TriggerResourceBarUpdates()
 		local specId = GetSpecialization()
 		if specId ~= 1 and specId ~= 2 then
-			TRB.Functions.HideResourceBar(true)
+			TRB.Functions.Bar:HideResourceBar(true)
 			return
 		end
 
@@ -4695,9 +4695,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 	combatFrame:SetScript("OnEvent", function(self, event, ...)
 		if event =="PLAYER_REGEN_DISABLED" then
-			TRB.Functions.ShowResourceBar()
+			TRB.Functions.Bar:ShowResourceBar()
 		else
-			TRB.Functions.HideResourceBar()
+			TRB.Functions.Bar:HideResourceBar()
 		end
 	end)
 

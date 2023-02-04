@@ -1392,7 +1392,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
         spec.displayBar.alwaysShow = true
         spec.displayBar.notZeroShow = false
         spec.displayBar.neverShow = false
-        TRB.Functions.HideResourceBar()
+        TRB.Functions.Bar:HideResourceBar()
     end)
 
     controls.checkBoxes.notZeroShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_NotZeroShow", parent, "UIRadioButtonTemplate")
@@ -1420,7 +1420,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
         spec.displayBar.alwaysShow = false
         spec.displayBar.notZeroShow = true
         spec.displayBar.neverShow = false
-        TRB.Functions.HideResourceBar()
+        TRB.Functions.Bar:HideResourceBar()
     end)
 
     controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_CombatShow", parent, "UIRadioButtonTemplate")
@@ -1438,7 +1438,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
         spec.displayBar.alwaysShow = false
         spec.displayBar.notZeroShow = false
         spec.displayBar.neverShow = false
-        TRB.Functions.HideResourceBar()
+        TRB.Functions.Bar:HideResourceBar()
     end)
 
     controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_NeverShow", parent, "UIRadioButtonTemplate")
@@ -1456,7 +1456,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
         spec.displayBar.alwaysShow = false
         spec.displayBar.notZeroShow = false
         spec.displayBar.neverShow = true
-        TRB.Functions.HideResourceBar()
+        TRB.Functions.Bar:HideResourceBar()
     end)
     
     local yCoord2 = yCoord

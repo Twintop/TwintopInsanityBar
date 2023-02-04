@@ -947,7 +947,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 			TRB.Details.addonData.registered = true
 		end
-		TRB.Functions.HideResourceBar()
+		TRB.Functions.Bar:HideResourceBar()
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 
@@ -1887,7 +1887,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Data.snapshotData.isTracking = false
 		end
 	end
-	TRB.Functions.HideResourceBar = HideResourceBar
+	TRB.Functions.Bar.HideResourceBarFunction = HideResourceBar
 
 	local function UpdateResourceBar()
 		local currentTime = GetTime()
@@ -1904,7 +1904,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
-				TRB.Functions.HideResourceBar()
+				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
@@ -1960,13 +1960,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
                     end
 				end
 			end
-			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 		elseif specId == 2 then
 			local specSettings = classSettings.preservation
 			UpdateSnapshot_Preservation()
 			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 			if TRB.Data.snapshotData.isTracking then
-				TRB.Functions.HideResourceBar()
+				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
@@ -2152,7 +2152,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
                     end
 				end
 
-				TRB.Functions.UpdateResourceBar(specSettings, refreshText)
+				TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 			end
 		end
 	end
@@ -2165,7 +2165,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		if (specId ~= 1 and specId ~= 2) or
 			(specId == 1 and not TRB.Data.settings.core.experimental.specs.evoker.devastation) or
 			(specId == 2 and not TRB.Data.settings.core.experimental.specs.evoker.preservation) then
-			TRB.Functions.HideResourceBar(true)
+			TRB.Functions.Bar:HideResourceBar(true)
 			return
 		end
 
@@ -2439,9 +2439,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 	combatFrame:SetScript("OnEvent", function(self, event, ...)
 		if event =="PLAYER_REGEN_DISABLED" then
-			TRB.Functions.ShowResourceBar()
+			TRB.Functions.Bar:ShowResourceBar()
 		else
-			TRB.Functions.HideResourceBar()
+			TRB.Functions.Bar:HideResourceBar()
 		end
 	end)
 

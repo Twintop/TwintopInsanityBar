@@ -950,7 +950,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 			TRB.Details.addonData.registered = true
 		end
-		TRB.Functions.HideResourceBar()
+		TRB.Functions.Bar:HideResourceBar()
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 
@@ -1776,7 +1776,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.snapshotData.isTracking = false
 		end
 	end
-	TRB.Functions.HideResourceBar = HideResourceBar
+	TRB.Functions.Bar.HideResourceBarFunction = HideResourceBar
 
 	local function UpdateResourceBar()
 		local currentTime = GetTime()
@@ -1791,7 +1791,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
-				TRB.Functions.HideResourceBar()
+				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
@@ -1988,14 +1988,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 				end
 			end
-			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 		elseif specId == 2 then
 			local specSettings = classSettings.fury
 			UpdateSnapshot_Fury()
 			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
-				TRB.Functions.HideResourceBar()
+				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
@@ -2159,7 +2159,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 				end
 			end
-			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 		end
 	end
 
@@ -2168,7 +2168,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local function TriggerResourceBarUpdates()
 		if GetSpecialization() ~= 1 and GetSpecialization() ~= 2 then
-			TRB.Functions.HideResourceBar(true)
+			TRB.Functions.Bar:HideResourceBar(true)
 			return
 		end
 
@@ -2421,9 +2421,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	combatFrame:SetScript("OnEvent", function(self, event, ...)
 		if event =="PLAYER_REGEN_DISABLED" then
-			TRB.Functions.ShowResourceBar()
+			TRB.Functions.Bar:ShowResourceBar()
 		else
-			TRB.Functions.HideResourceBar()
+			TRB.Functions.Bar:HideResourceBar()
 		end
 	end)
 

@@ -957,7 +957,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Details.addonData.registered = false
 			TRB.Frames.barContainerFrame:Hide()
 		end
-		TRB.Functions.HideResourceBar()
+		TRB.Functions.Bar:HideResourceBar()
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 
@@ -2096,7 +2096,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.snapshotData.isTracking = false
 		end
 	end
-	TRB.Functions.HideResourceBar = HideResourceBar
+	TRB.Functions.Bar.HideResourceBarFunction = HideResourceBar
 
 	local function UpdateResourceBar()
 		local currentTime = GetTime()
@@ -2111,7 +2111,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
-				TRB.Functions.HideResourceBar()
+				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
@@ -2238,7 +2238,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 					if TRB.Data.snapshotData.resource >= TRB.Data.character.earthShockThreshold then
 						if specSettings.colors.bar.flashEnabled then
-							TRB.Functions.PulseFrame(barContainerFrame, specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
+							TRB.Functions.Bar:PulseFrame(barContainerFrame, specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 						else
 							barContainerFrame:SetAlpha(1.0)
 						end
@@ -2280,13 +2280,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))					
 				end
 			end
-			TRB.Functions.UpdateResourceBar(specSettings, refreshText)
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 		elseif specId == 3 then
 			local specSettings = classSettings.restoration
 			UpdateSnapshot_Restoration()
 			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
 			if TRB.Data.snapshotData.isTracking then
-				TRB.Functions.HideResourceBar()
+				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
@@ -2461,7 +2461,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(resourceBarColor, true))
 				end
 
-				TRB.Functions.UpdateResourceBar(specSettings, refreshText)
+				TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 			end
 		end
 	end
@@ -2472,7 +2472,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function TriggerResourceBarUpdates()
 		local specId = GetSpecialization()
 		if specId ~= 1 and specId ~= 3 then
-			TRB.Functions.HideResourceBar(true)
+			TRB.Functions.Bar:HideResourceBar(true)
 			return
 		end
 
@@ -2728,9 +2728,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	combatFrame:SetScript("OnEvent", function(self, event, ...)
 		if event =="PLAYER_REGEN_DISABLED" then
-			TRB.Functions.ShowResourceBar()
+			TRB.Functions.Bar:ShowResourceBar()
 		else
-			TRB.Functions.HideResourceBar()
+			TRB.Functions.Bar:HideResourceBar()
 		end
 	end)
 

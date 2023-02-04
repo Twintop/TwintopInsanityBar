@@ -3,6 +3,9 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.BarText = {}
 
+local function TryUpdateText(frame, text)
+	frame.font:SetText(text)
+end
 
 local function ScanForLogicSymbols(input)
 	local returnTable = {
@@ -823,23 +826,29 @@ function TRB.Functions.BarText:BarText(settings)
 	end
 end
 
-function TRB.Functions.BarText:UpdateResourceBarText(settings, leftText, middleText, rightText)
+function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 	if settings ~= nil and settings.bar ~= nil then
-		local leftTextFrame = TRB.Frames.leftTextFrame
-		local middleTextFrame = TRB.Frames.middleTextFrame
-		local rightTextFrame = TRB.Frames.rightTextFrame
+        TRB.Functions.BarText:RefreshLookupDataBase(settings)
+        TRB.Functions.RefreshLookupData()
+    
+        if refreshText then
+            local leftText, middleText, rightText = TRB.Functions.BarText:BarText(settings)
+            local leftTextFrame = TRB.Frames.leftTextFrame
+            local middleTextFrame = TRB.Frames.middleTextFrame
+            local rightTextFrame = TRB.Frames.rightTextFrame
 
-		if not pcall(TRB.Functions.TryUpdateText, leftTextFrame, leftText) then
-			leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
-		end
+            if not pcall(TryUpdateText, leftTextFrame, leftText) then
+                leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
+            end
 
-		if not pcall(TRB.Functions.TryUpdateText, middleTextFrame, middleText) then
-			middleTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
-		end
+            if not pcall(TryUpdateText, middleTextFrame, middleText) then
+                middleTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
+            end
 
-		if not pcall(TRB.Functions.TryUpdateText, rightTextFrame, rightText) then
-			rightTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.right.fontSize, "OUTLINE")
-		end
+            if not pcall(TryUpdateText, rightTextFrame, rightText) then
+                rightTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.right.fontSize, "OUTLINE")
+            end
+        end
 	end
 end
 
