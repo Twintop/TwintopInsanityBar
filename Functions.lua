@@ -1,20 +1,6 @@
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 
--- Generic Frame Functions
-
-local function TryUpdateText(frame, text)
-	frame.font:SetText(text)
-end
-TRB.Functions.TryUpdateText = TryUpdateText
-
-local function PulseFrame(frame, alphaOffset, flashPeriod)
-	frame:SetAlpha(((1.0 - alphaOffset) * math.abs(math.sin(2 * (GetTime()/flashPeriod)))) + alphaOffset)
-end
-TRB.Functions.PulseFrame = PulseFrame
-
--- Color Functions
-
 
 -- Casting, Time, and GCD Functions
 
@@ -397,21 +383,6 @@ local function RepositionThreshold(settings, thresholdLine, parentFrame, thresho
 end
 TRB.Functions.RepositionThreshold = RepositionThreshold
 
-local function ShowResourceBar()
-	if TRB.Details.addonData.registered == false then
-		TRB.Functions.EventRegistration()
-	end
-
-	TRB.Data.snapshotData.isTracking = true
-	TRB.Functions.HideResourceBar()
-end
-TRB.Functions.ShowResourceBar = ShowResourceBar
-
-local function HideResourceBar()
-	TRB.Data.snapshotData.isTracking = false
-	--This is a placeholder for an implementation per class/spec
-end
-TRB.Functions.HideResourceBar = HideResourceBar
 
 local function UpdateBarHeight(settings)
 	local value = settings.bar.height
@@ -1252,6 +1223,7 @@ local function CheckCharacter()
 end
 TRB.Functions.CheckCharacter = CheckCharacter
 
+--TODO: Fix this to be consistent
 local function CheckCharacter_Class()
 	--To be implemented in each class/spec module
 end
