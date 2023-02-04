@@ -2,9 +2,9 @@
 ## Title: Twintop's Resource Bar
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 10.0.5.4
+## Version: 10.0.5.5
 ## X-ReleaseType: release
-## X-ReleaseDate: February 2, 2023
+## X-ReleaseDate: February ??, 2023
 ## SavedVariables: TwintopInsanityBarSettings
 ## DefaultState: enabled
 ## Notes: Multi-class Resource Bar, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
@@ -21,35 +21,40 @@ Libs\base64.lua
 Libs\json.lua
 Libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
 
+Functions\Aura.lua
+Functions\BarText.lua
 Functions\Color.lua
+Functions\Item.lua
 Functions\IO.lua
+Functions\LibSharedMedia.lua
 Functions\Number.lua
 Functions\String.lua
 Functions\Table.lua
+Functions\Talent.lua
+Functions\Target.lua
 
 Functions.lua
 
 Init.lua
 
-Functions\OptionsUi.lua
-
-Options.lua
-
 Classes\DemonHunter.lua
-Classes\DemonHunterOptions.lua
-Classes\DruidOptions.lua
 Classes\Druid.lua
-Classes\EvokerOptions.lua
 Classes\Evoker.lua
-Classes\HunterOptions.lua
 Classes\Hunter.lua
 Classes\Monk.lua
-Classes\MonkOptions.lua
-Classes\PriestOptions.lua
 Classes\Priest.lua
-Classes\RogueOptions.lua
 Classes\Rogue.lua
-Classes\ShamanOptions.lua
 Classes\Shaman.lua
 Classes\Warrior.lua
-Classes\WarriorOptions.lua
+
+Options\OptionsUi.lua
+Options\Options.lua
+Options\DemonHunterOptions.lua
+Options\DruidOptions.lua
+Options\EvokerOptions.lua
+Options\HunterOptions.lua
+Options\MonkOptions.lua
+Options\PriestOptions.lua
+Options\RogueOptions.lua
+Options\ShamanOptions.lua
+Options\WarriorOptions.lua

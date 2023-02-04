@@ -1079,7 +1079,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 1 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 
@@ -1093,7 +1093,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 1 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 
@@ -1107,7 +1107,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 1 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 
@@ -1758,7 +1758,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 
@@ -1772,7 +1772,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 
@@ -1786,7 +1786,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 

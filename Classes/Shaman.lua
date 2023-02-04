@@ -865,7 +865,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[TRB.Data.spells.earthShock.thresholdId], TRB.Data.spells.earthShock.settingKey, TRB.Data.settings.shaman.elemental)
 			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[TRB.Data.spells.elementalBlast.thresholdId], TRB.Data.spells.elementalBlast.settingKey, TRB.Data.settings.shaman.elemental)
 
-			if (TRB.Functions.IsTalentActive(TRB.Data.spells.elementalBlast) and TRB.Data.spells.elementalBlast.maelstrom < TRB.Data.character.maxResource) then
+			if (TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elementalBlast) and TRB.Data.spells.elementalBlast.maelstrom < TRB.Data.character.maxResource) then
 				TRB.Data.character.earthShockThreshold = -(TRB.Data.spells.elementalBlast.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].elementalBlast)
 			else
 				TRB.Data.character.earthShockThreshold = -(TRB.Data.spells.earthShock.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].earthShock)
@@ -886,21 +886,21 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			if trinket1ItemLink ~= nil then
 				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
-						alchemyStone = TRB.Functions.DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
 					else
 						break
 					end
 				end
 
 				if alchemyStone == false then
-					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.CheckTrinketForConjuredChillglobe(trinket1ItemLink)
+					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
 				end
 			end
 
 			if alchemyStone == false and trinket2ItemLink ~= nil then
 				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
-						alchemyStone = TRB.Functions.DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
 					else
 						break
 					end
@@ -908,7 +908,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 
 			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
-				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.CheckTrinketForConjuredChillglobe(trinket2ItemLink)
+				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
 			end
 
 			TRB.Data.character.items.alchemyStone = alchemyStone
@@ -921,12 +921,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 1 and TRB.Data.settings.core.enabled.shaman.elemental then
-			TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.elemental)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.elemental)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Maelstrom
 			TRB.Data.resourceFactor = 1
 		elseif specId == 3 and TRB.Data.settings.core.enabled.shaman.restoration then
-			TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.restoration)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.restoration)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
@@ -969,8 +969,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local specId = GetSpecialization()
 
 		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.CheckTargetExists(guid) then
-				TRB.Functions.InitializeTarget(guid)
+			if not TRB.Functions.Target:CheckTargetExists(guid) then
+				TRB.Functions.Target:InitializeTarget(guid)
 				if specId == 1 then -- Elemental
 					TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
 					TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
@@ -984,7 +984,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 		return false
 	end
-	TRB.Functions.InitializeTarget_Class = InitializeTarget
+	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget
 
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
@@ -1021,7 +1021,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function TargetsCleanup(clearAll)
-		TRB.Functions.TargetsCleanup(clearAll)
+		TRB.Functions.Target:TargetsCleanup(clearAll)
 		local specId = GetSpecialization()
 
 		if specId == 1 then
@@ -1156,7 +1156,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
     local function IsValidVariableForSpec(var)
-		local valid = TRB.Functions.IsValidVariableBase(var)
+		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 		if valid then
 			return valid
 		end
@@ -1826,7 +1826,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.snapshotData.casting.resourceRaw * TRB.Data.snapshotData.chainLightning.targetsHit
 						TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal * TRB.Data.snapshotData.chainLightning.targetsHit
-					elseif currentSpellId == TRB.Data.spells.hex.id and TRB.Functions.IsTalentActive(TRB.Data.spells.inundate) and affectingCombat then
+					elseif currentSpellId == TRB.Data.spells.hex.id and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.inundate) and affectingCombat then
 						FillSnapshotDataCasting(TRB.Data.spells.hex)
 					else
 						TRB.Functions.ResetCastingSnapshotData()
@@ -1876,7 +1876,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function UpdateStormkeeper()
-		_, _, TRB.Data.snapshotData.stormkeeper.stacks, _, TRB.Data.snapshotData.stormkeeper.duration, TRB.Data.snapshotData.stormkeeper.endTime, _, _, _, TRB.Data.snapshotData.stormkeeper.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.stormkeeper.id)
+		_, _, TRB.Data.snapshotData.stormkeeper.stacks, _, TRB.Data.snapshotData.stormkeeper.duration, TRB.Data.snapshotData.stormkeeper.endTime, _, _, _, TRB.Data.snapshotData.stormkeeper.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.stormkeeper.id)
 	end
 
 	local function UpdateChanneledManaPotion(forceCleanup)
@@ -1989,7 +1989,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
             TRB.Data.snapshotData.ascendance.duration = 0
 			TRB.Data.snapshotData.ascendance.remainingTime = 0
 		else
-			_, _, _, _, TRB.Data.snapshotData.ascendance.duration, TRB.Data.snapshotData.ascendance.endTime, _, _, _, TRB.Data.snapshotData.ascendance.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.ascendance.id)
+			_, _, _, _, TRB.Data.snapshotData.ascendance.duration, TRB.Data.snapshotData.ascendance.endTime, _, _, _, TRB.Data.snapshotData.ascendance.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.ascendance.id)
 			TRB.Data.snapshotData.ascendance.remainingTime = GetAscendanceRemainingTime()
         end
 	end
@@ -2005,7 +2005,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShock then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.flameShock.id, "target", "player"))
+				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.flameShock.id, "target", "player"))
 			
 				if expiration ~= nil then
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining = expiration - currentTime
@@ -2042,7 +2042,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShock then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.flameShock.id, "target", "player"))
+				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.flameShock.id, "target", "player"))
 			
 				if expiration ~= nil then
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining = expiration - currentTime
@@ -2160,9 +2160,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.earthShock.id then
-									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
-									elseif TRB.Functions.IsTalentActive(TRB.Data.spells.elementalBlast) then
+									elseif TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elementalBlast) then
 										showThreshold = false
 									else
 										resourceAmount = resourceAmount - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].earthShock
@@ -2175,7 +2175,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 										end
 									end
 								elseif spell.id == TRB.Data.spells.elementalBlast.id then
-									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									else
 										resourceAmount = resourceAmount - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].elementalBlast
@@ -2188,7 +2188,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 										end
 									end
 								elseif spell.id == TRB.Data.spells.earthquake.id then
-									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									else
 										resourceAmount = resourceAmount - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].earthquake
@@ -2206,7 +2206,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 									end
 								end
 							--The rest isn't used. Keeping it here for consistency until I can finish abstracting this whole mess out
-							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif spell.isPvp and not TRB.Data.character.isPvp then
 								showThreshold = false
@@ -2527,7 +2527,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					elseif spellId == TRB.Data.spells.innervate.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.innervate.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.innervate.duration, TRB.Data.snapshotData.innervate.endTime, _, _, _, TRB.Data.snapshotData.innervate.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.innervate.id)							
+							_, _, _, _, TRB.Data.snapshotData.innervate.duration, TRB.Data.snapshotData.innervate.endTime, _, _, _, TRB.Data.snapshotData.innervate.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.innervate.id)							
 							TRB.Data.snapshotData.innervate.modifier = 0
 							TRB.Data.snapshotData.audio.innervateCue = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
@@ -2606,7 +2606,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					elseif spellId == TRB.Data.spells.echoesOfGreatSundering.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.snapshotData.echoesOfGreatSundering.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.echoesOfGreatSundering.duration, TRB.Data.snapshotData.echoesOfGreatSundering.endTime, _, _, _, TRB.Data.snapshotData.echoesOfGreatSundering.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.echoesOfGreatSundering.id)
+							_, _, _, _, TRB.Data.snapshotData.echoesOfGreatSundering.duration, TRB.Data.snapshotData.echoesOfGreatSundering.endTime, _, _, _, TRB.Data.snapshotData.echoesOfGreatSundering.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.echoesOfGreatSundering.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.echoesOfGreatSundering.isActive = false
 							TRB.Data.snapshotData.echoesOfGreatSundering.spellId = nil
@@ -2656,7 +2656,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					elseif spellId == TRB.Data.spells.potionOfChilledClarity.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.potionOfChilledClarity.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.potionOfChilledClarity.duration, TRB.Data.snapshotData.potionOfChilledClarity.endTime, _, _, _, TRB.Data.snapshotData.potionOfChilledClarity.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.potionOfChilledClarity.id)
+							_, _, _, _, TRB.Data.snapshotData.potionOfChilledClarity.duration, TRB.Data.snapshotData.potionOfChilledClarity.endTime, _, _, _, TRB.Data.snapshotData.potionOfChilledClarity.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.potionOfChilledClarity.id)
 							TRB.Data.snapshotData.potionOfChilledClarity.modifier = 0
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.potionOfChilledClarity.isActive = false
@@ -2672,7 +2672,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				if spellId == TRB.Data.spells.ascendance.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 						TRB.Data.spells.ascendance.isActive = true
-						_, _, _, _, TRB.Data.snapshotData.ascendance.duration, TRB.Data.snapshotData.ascendance.endTime, _, _, _, TRB.Data.snapshotData.ascendance.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.ascendance.id)
+						_, _, _, _, TRB.Data.snapshotData.ascendance.duration, TRB.Data.snapshotData.ascendance.endTime, _, _, _, TRB.Data.snapshotData.ascendance.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.ascendance.id)
 					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 						TRB.Data.spells.ascendance.isActive = false
 						TRB.Data.snapshotData.ascendance.spellId = nil
@@ -2699,7 +2699,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
             end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.RemoveTarget(destGUID)
+				TRB.Functions.Target:RemoveTarget(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end
@@ -2740,8 +2740,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local specId = GetSpecialization()
 		if specId == 1 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.shaman.elemental)
-			TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.elemental)
-			specCache.elemental.talents = TRB.Functions.GetTalents()
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.elemental)
+			specCache.elemental.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Elemental()
 			TRB.Functions.LoadFromSpecCache(specCache.elemental)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Elemental
@@ -2752,8 +2752,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		elseif specId == 3 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.shaman.restoration)
-			TRB.Functions.IsTtdActive(TRB.Data.settings.shaman.restoration)
-			specCache.restoration.talents = TRB.Functions.GetTalents()
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.restoration)
+			specCache.restoration.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Restoration()
 			TRB.Functions.LoadFromSpecCache(specCache.restoration)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Restoration
@@ -2814,8 +2814,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					C_Timer.After(0, function()
 						C_Timer.After(1, function()
 							TRB.Data.barConstructedForSpec = nil
-							TRB.Data.settings.shaman.elemental = TRB.Functions.ValidateLsmValues("Elemental Shaman", TRB.Data.settings.shaman.elemental)
-							TRB.Data.settings.shaman.restoration = TRB.Functions.ValidateLsmValues("Restoration Shaman", TRB.Data.settings.shaman.restoration)
+							TRB.Data.settings.shaman.elemental = TRB.Functions.LibSharedMedia:ValidateLsmValues("Elemental Shaman", TRB.Data.settings.shaman.elemental)
+							TRB.Data.settings.shaman.restoration = TRB.Functions.LibSharedMedia:ValidateLsmValues("Restoration Shaman", TRB.Data.settings.shaman.restoration)
 							FillSpellData_Elemental()
 							FillSpellData_Restoration()
 

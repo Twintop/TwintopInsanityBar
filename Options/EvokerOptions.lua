@@ -703,7 +703,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(spec)
+			TRB.Functions.BarText:IsTtdActive(spec)
 		end)
 
 
@@ -716,7 +716,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(spec)
+			TRB.Functions.BarText:IsTtdActive(spec)
 		end)
 
 
@@ -729,7 +729,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(spec)
+			TRB.Functions.BarText:IsTtdActive(spec)
 		end)
 
 		yCoord = yCoord - 30
@@ -1348,7 +1348,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 2 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 
@@ -1362,7 +1362,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 2 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 
@@ -1376,7 +1376,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 2 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 

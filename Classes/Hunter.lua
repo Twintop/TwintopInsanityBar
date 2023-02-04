@@ -1530,7 +1530,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		elseif specId == 3 then
 			TRB.Data.character.specName = "survival"
 		
-			if TRB.Functions.IsTalentActive(TRB.Data.spells.guerrillaTactics) then
+			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.guerrillaTactics) then
 				TRB.Data.snapshotData.wildfireBomb.maxCharges = 2
 			else
 				TRB.Data.snapshotData.wildfireBomb.maxCharges = 1
@@ -1542,13 +1542,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 1 and TRB.Data.settings.core.enabled.hunter.beastMastery == true then
-			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.beastMastery)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.beastMastery)
 			TRB.Data.specSupported = true
 		elseif specId == 2 and TRB.Data.settings.core.enabled.hunter.marksmanship == true then
-			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.marksmanship)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.marksmanship)
 			TRB.Data.specSupported = true
 		elseif specId == 3 and TRB.Data.settings.core.enabled.hunter.survival == true then
-			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.survival)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.survival)
 			TRB.Data.specSupported = true
 		else
 			--TRB.Data.resource = MANA
@@ -1590,8 +1590,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local specId = GetSpecialization()
 
 		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.CheckTargetExists(guid) then
-				TRB.Functions.InitializeTarget(guid)
+			if not TRB.Functions.Target:CheckTargetExists(guid) then
+				TRB.Functions.Target:InitializeTarget(guid)
 				TRB.Data.snapshotData.targetData.targets[guid].serpentSting = false
 				TRB.Data.snapshotData.targetData.targets[guid].serpentStingRemaining = 0
 			end
@@ -1600,8 +1600,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 		return false
 	end
-	TRB.Functions.InitializeTarget_Class = InitializeTarget
-	
+	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget	
 
 	local function GetFrenzyRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.frenzy)
@@ -1673,7 +1672,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	end
 
 	local function TargetsCleanup(clearAll)
-		TRB.Functions.TargetsCleanup(clearAll)
+		TRB.Functions.Target:TargetsCleanup(clearAll)
 		if clearAll == true then
 			TRB.Data.snapshotData.targetData.serpentSting = 0
 		end
@@ -1707,7 +1706,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	end
 
     local function IsValidVariableForSpec(var)
-		local valid = TRB.Functions.IsValidVariableBase(var)
+		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 		if valid then
 			return valid
 		end
@@ -2533,7 +2532,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					if spellName == TRB.Data.spells.aimedShot.name then
 						FillSnapshotDataCasting(TRB.Data.spells.aimedShot)
 					elseif spellName == TRB.Data.spells.steadyShot.name then
-						if TRB.Functions.IsTalentActive(TRB.Data.spells.improvedSteadyShot) then
+						if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.improvedSteadyShot) then
 							FillSnapshotDataCasting(TRB.Data.spells.improvedSteadyShot)
 						else
 						FillSnapshotDataCasting(TRB.Data.spells.steadyShot)
@@ -2634,7 +2633,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local currentTime = GetTime()
 
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentSting then
-			local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.serpentSting.id, "target", "player"))
+			local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.serpentSting.id, "target", "player"))
 
 			if expiration ~= nil then
 				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining = expiration - currentTime
@@ -2675,7 +2674,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.snapshotData.wailingArrow.duration = 0
 		end
 
-		_, _, TRB.Data.snapshotData.frenzy.stacks, _, TRB.Data.snapshotData.frenzy.duration, TRB.Data.snapshotData.frenzy.endTime, _, _, _, TRB.Data.snapshotData.frenzy.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.frenzy.id, "pet")
+		_, _, TRB.Data.snapshotData.frenzy.stacks, _, TRB.Data.snapshotData.frenzy.duration, TRB.Data.snapshotData.frenzy.endTime, _, _, _, TRB.Data.snapshotData.frenzy.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.frenzy.id, "pet")
 		---@diagnostic disable-next-line: redundant-parameter
 		TRB.Data.snapshotData.beastialWrath.startTime, TRB.Data.snapshotData.beastialWrath.duration, _, _ = GetSpellCooldown(TRB.Data.spells.beastialWrath.id)
 	end
@@ -2880,7 +2879,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.killShot.id then
-									local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
+									local targetUnitHealth = TRB.Functions.Target:GetUnitHealthPercent("target")
 									if UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum then
 										showThreshold = false
 										TRB.Data.snapshotData.audio.playedKillShotCue = false
@@ -2931,7 +2930,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								end
 							elseif spell.isPvp and not TRB.Data.character.isPvp then
 								showThreshold = false
-							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif spell.hasCooldown then
 								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
@@ -2979,16 +2978,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							barColor = specSettings.colors.bar.frenzyUse
 						elseif barbedShotRechargeRemaining <= reactionTimeGcds and TRB.Data.snapshotData.barbedShot.charges == 1 then
 							barColor = specSettings.colors.bar.frenzyUse
-						elseif TRB.Functions.IsTalentActive(TRB.Data.spells.scentOfBlood) and barbedShotTotalRechargeRemaining <= reactionTimeGcds and beastialWrathCooldownRemaining < (TRB.Data.spells.barbedWrath.beastialWrathCooldownReduction + reactionTimeGcds) then
+						elseif TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.scentOfBlood) and barbedShotTotalRechargeRemaining <= reactionTimeGcds and beastialWrathCooldownRemaining < (TRB.Data.spells.barbedWrath.beastialWrathCooldownReduction + reactionTimeGcds) then
 							barColor = specSettings.colors.bar.frenzyUse
-						elseif TRB.Functions.IsTalentActive(TRB.Data.spells.scentOfBlood) and TRB.Data.snapshotData.barbedShot.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * TRB.Data.spells.barbedWrath.beastialWrathCooldownReduction) then
+						elseif TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.scentOfBlood) and TRB.Data.snapshotData.barbedShot.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * TRB.Data.spells.barbedWrath.beastialWrathCooldownReduction) then
 							barColor = specSettings.colors.bar.frenzyUse
 						end
 					else
 						if affectingCombat then
 							if TRB.Data.snapshotData.barbedShot.charges == 2 then
 								barColor = specSettings.colors.bar.frenzyUse
-							elseif TRB.Functions.IsTalentActive(TRB.Data.spells.scentOfBlood) and TRB.Data.snapshotData.barbedShot.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * TRB.Data.spells.barbedWrath.beastialWrathCooldownReduction) then
+							elseif TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.scentOfBlood) and TRB.Data.snapshotData.barbedShot.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * TRB.Data.spells.barbedWrath.beastialWrathCooldownReduction) then
 								barColor = specSettings.colors.bar.frenzyUse
 							elseif barbedShotTotalRechargeRemaining <= reactionTimeGcds then
 								barColor = specSettings.colors.bar.frenzyUse
@@ -3058,7 +3057,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						TRB.Data.snapshotData.audio.overcapCue = false
 					end
 
-					if UnitAffectingCombat("player") and specSettings.steadyFocus.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.steadyFocus) then
+					if UnitAffectingCombat("player") and specSettings.steadyFocus.enabled and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.steadyFocus) then
 						local timeThreshold = 0
 
 						if specSettings.steadyFocus.mode == "gcd" then
@@ -3130,7 +3129,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.arcaneShot.id then
-									if TRB.Functions.IsTalentActive(TRB.Data.spells.chimaeraShot) == true then
+									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.chimaeraShot) == true then
 										showThreshold = false
 									elseif TRB.Data.snapshotData.resource >= -focusAmount then
 										thresholdColor = specSettings.colors.threshold.over
@@ -3170,7 +3169,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										TRB.Data.snapshotData.audio.playedAimedShotCue = true
 									end
 								elseif spell.id == TRB.Data.spells.killShot.id then
-									local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
+									local targetUnitHealth = TRB.Functions.Target:GetUnitHealthPercent("target")
 									if UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum then
 										showThreshold = false
 										TRB.Data.snapshotData.audio.playedKillShotCue = false
@@ -3191,7 +3190,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										TRB.Data.snapshotData.audio.playedKillShotCue = false
 									end
 								end
-							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif spell.isPvp and not TRB.Data.character.isPvp then
 								showThreshold = false
@@ -3329,7 +3328,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.killShot.id then
-									local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
+									local targetUnitHealth = TRB.Functions.Target:GetUnitHealthPercent("target")
 									if UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= TRB.Data.spells.killShot.healthMinimum then
 										showThreshold = false
 										TRB.Data.snapshotData.audio.playedKillShotCue = false
@@ -3360,7 +3359,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.raptorStrike.id then
-									if TRB.Functions.IsTalentActive(TRB.Data.spells.mongooseBite) then
+									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.mongooseBite) then
 										showThreshold = false
 									else
 										if TRB.Data.snapshotData.resource >= -focusAmount then
@@ -3371,7 +3370,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										end
 									end
 								elseif spell.id == TRB.Data.spells.mongooseBite.id then
-									if not TRB.Functions.IsTalentActive(TRB.Data.spells.mongooseBite) then
+									if not TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.mongooseBite) then
 										showThreshold = false
 									else
 										if TRB.Data.snapshotData.resource >= -focusAmount then
@@ -3382,7 +3381,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										end
 									end
 								end
-							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif spell.isPvp and not TRB.Data.character.isPvp then
 								showThreshold = false
@@ -3500,7 +3499,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						end
 					elseif spellId == TRB.Data.spells.frenzy.id and destGUID == TRB.Data.character.petGuid then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, TRB.Data.snapshotData.frenzy.stacks, _, TRB.Data.snapshotData.frenzy.duration, TRB.Data.snapshotData.frenzy.endTime, _, _, _, TRB.Data.snapshotData.frenzy.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.frenzy.id, "pet")
+							_, _, TRB.Data.snapshotData.frenzy.stacks, _, TRB.Data.snapshotData.frenzy.duration, TRB.Data.snapshotData.frenzy.endTime, _, _, _, TRB.Data.snapshotData.frenzy.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.frenzy.id, "pet")
 							TRB.Data.spells.frenzy.isActive = true
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.frenzy.endTime = nil
@@ -3534,7 +3533,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						end
 					elseif spellId == TRB.Data.spells.direPack.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshotData.direPack.duration, TRB.Data.snapshotData.direPack.endTime, _, _, _, TRB.Data.snapshotData.direPack.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.direPack.id)
+							_, _, _, _, TRB.Data.snapshotData.direPack.duration, TRB.Data.snapshotData.direPack.endTime, _, _, _, TRB.Data.snapshotData.direPack.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.direPack.id)
 							TRB.Data.spells.direPack.isActive = true
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.direPack.endTime = nil
@@ -3543,7 +3542,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						end
 					elseif spellId == TRB.Data.spells.aspectOfTheWild.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshotData.aspectOfTheWild.duration, TRB.Data.snapshotData.aspectOfTheWild.endTime, _, _, _, TRB.Data.snapshotData.aspectOfTheWild.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.aspectOfTheWild.id)
+							_, _, _, _, TRB.Data.snapshotData.aspectOfTheWild.duration, TRB.Data.snapshotData.aspectOfTheWild.endTime, _, _, _, TRB.Data.snapshotData.aspectOfTheWild.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.aspectOfTheWild.id)
 							TRB.Data.spells.aspectOfTheWild.isActive = true
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.aspectOfTheWild.endTime = nil
@@ -3580,7 +3579,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					elseif spellId == TRB.Data.spells.trueshot.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.trueshot.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.trueshot.duration, TRB.Data.snapshotData.trueshot.endTime, _, _, _, TRB.Data.snapshotData.trueshot.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.trueshot.id)
+							_, _, _, _, TRB.Data.snapshotData.trueshot.duration, TRB.Data.snapshotData.trueshot.endTime, _, _, _, TRB.Data.snapshotData.trueshot.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.trueshot.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.trueshot.isActive = false
 							TRB.Data.snapshotData.trueshot.spellId = nil
@@ -3590,7 +3589,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					elseif spellId == TRB.Data.spells.steadyFocus.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.steadyFocus.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.steadyFocus.duration, TRB.Data.snapshotData.steadyFocus.endTime, _, _, _, TRB.Data.snapshotData.steadyFocus.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.steadyFocus.id)
+							_, _, _, _, TRB.Data.snapshotData.steadyFocus.duration, TRB.Data.snapshotData.steadyFocus.endTime, _, _, _, TRB.Data.snapshotData.steadyFocus.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.steadyFocus.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.steadyFocus.isActive = false
 							TRB.Data.snapshotData.steadyFocus.spellId = nil
@@ -3600,7 +3599,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					elseif spellId == TRB.Data.spells.lockAndLoad.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.lockAndLoad.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.lockAndLoad.duration, TRB.Data.snapshotData.lockAndLoad.endTime, _, _, _, TRB.Data.snapshotData.lockAndLoad.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.lockAndLoad.id)
+							_, _, _, _, TRB.Data.snapshotData.lockAndLoad.duration, TRB.Data.snapshotData.lockAndLoad.endTime, _, _, _, TRB.Data.snapshotData.lockAndLoad.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.lockAndLoad.id)
 
 							if TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.enabled then
 								---@diagnostic disable-next-line: redundant-parameter
@@ -3615,7 +3614,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					elseif spellId == TRB.Data.spells.rapidFire.id then
 						if type == "SPELL_AURA_APPLIED" then -- Gained buff
 							TRB.Data.snapshotData.rapidFire.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.rapidFire.duration, TRB.Data.snapshotData.rapidFire.endTime, _, _, _, TRB.Data.snapshotData.rapidFire.spellId = TRB.Functions.FindDebuffById(TRB.Data.spells.rapidFire.id, destGUID, TRB.Data.character.guid)
+							_, _, _, _, TRB.Data.snapshotData.rapidFire.duration, TRB.Data.snapshotData.rapidFire.endTime, _, _, _, TRB.Data.snapshotData.rapidFire.spellId = TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.rapidFire.id, destGUID, TRB.Data.character.guid)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.rapidFire.isActive = false
 							TRB.Data.snapshotData.rapidFire.spellId = nil
@@ -3672,7 +3671,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					elseif spellId == TRB.Data.spells.coordinatedAssault.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.coordinatedAssault.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.coordinatedAssault.duration, TRB.Data.snapshotData.coordinatedAssault.endTime, _, _, _, TRB.Data.snapshotData.coordinatedAssault.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.coordinatedAssault.id)
+							_, _, _, _, TRB.Data.snapshotData.coordinatedAssault.duration, TRB.Data.snapshotData.coordinatedAssault.endTime, _, _, _, TRB.Data.snapshotData.coordinatedAssault.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.coordinatedAssault.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.coordinatedAssault.isActive = false
 							TRB.Data.snapshotData.coordinatedAssault.spellId = nil
@@ -3709,7 +3708,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.RemoveTarget(destGUID)
+				TRB.Functions.Target:RemoveTarget(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end
@@ -3750,8 +3749,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local specId = GetSpecialization()
 		if specId == 1 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.hunter.beastMastery)
-			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.beastMastery)
-			specCache.beastMastery.talents = TRB.Functions.GetTalents()
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.beastMastery)
+			specCache.beastMastery.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_BeastMastery()
 			TRB.Functions.LoadFromSpecCache(specCache.beastMastery)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_BeastMastery
@@ -3762,8 +3761,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		elseif specId == 2 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.hunter.marksmanship)
-			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.marksmanship)
-			specCache.marksmanship.talents = TRB.Functions.GetTalents()
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.marksmanship)
+			specCache.marksmanship.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Marksmanship()
 			TRB.Functions.LoadFromSpecCache(specCache.marksmanship)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Marksmanship
@@ -3774,8 +3773,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		elseif specId == 3 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.hunter.survival)
-			TRB.Functions.IsTtdActive(TRB.Data.settings.hunter.survival)
-			specCache.survival.talents = TRB.Functions.GetTalents()
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.survival)
+			specCache.survival.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Survival()
 			TRB.Functions.LoadFromSpecCache(specCache.survival)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Survival
@@ -3835,9 +3834,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
 					C_Timer.After(0, function()
 						C_Timer.After(1, function()
-							TRB.Data.settings.hunter.beastMastery = TRB.Functions.ValidateLsmValues("Beast Mastery Hunter", TRB.Data.settings.hunter.beastMastery)
-							TRB.Data.settings.hunter.marksmanship = TRB.Functions.ValidateLsmValues("Marksmanship Hunter", TRB.Data.settings.hunter.marksmanship)
-							TRB.Data.settings.hunter.survival = TRB.Functions.ValidateLsmValues("Survival Hunter", TRB.Data.settings.hunter.survival)
+							TRB.Data.settings.hunter.beastMastery = TRB.Functions.LibSharedMedia:ValidateLsmValues("Beast Mastery Hunter", TRB.Data.settings.hunter.beastMastery)
+							TRB.Data.settings.hunter.marksmanship = TRB.Functions.LibSharedMedia:ValidateLsmValues("Marksmanship Hunter", TRB.Data.settings.hunter.marksmanship)
+							TRB.Data.settings.hunter.survival = TRB.Functions.LibSharedMedia:ValidateLsmValues("Survival Hunter", TRB.Data.settings.hunter.survival)
 							
 							FillSpellData_BeastMastery()
 							FillSpellData_Marksmanship()

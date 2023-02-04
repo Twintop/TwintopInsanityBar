@@ -903,7 +903,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
         if specId == 1 then		
 			TRB.Data.character.specName = "arms"
 
-			if TRB.Functions.IsTalentActive(TRB.Data.spells.bloodletting) then
+			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.bloodletting) then
 				TRB.Data.character.pandemicModifier = TRB.Data.spells.bloodletting.modifier
 			end
         elseif specId == 2 then
@@ -916,12 +916,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 1 and TRB.Data.settings.core.enabled.warrior.arms == true then
-			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.arms)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.arms)
 			TRB.Data.resource = Enum.PowerType.Rage
 			TRB.Data.resourceFactor = 10
 			TRB.Data.specSupported = true
 		elseif specId == 2 and TRB.Data.settings.core.enabled.warrior.fury == true then
-			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.fury)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.fury)
 			TRB.Data.resource = Enum.PowerType.Rage
 			TRB.Data.resourceFactor = 10
 			TRB.Data.specSupported = true
@@ -954,28 +954,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	end
 	TRB.Functions.EventRegistration = EventRegistration
 
-	local function InitializeTarget(guid, selfInitializeAllowed)
-		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
-			return false
-		end
-		
-		local specId = GetSpecialization()
-
-		if guid ~= nil then
-			if not TRB.Functions.CheckTargetExists(guid) then
-				TRB.Functions.InitializeTarget(guid)
-				if specId == 1 then
-					TRB.Data.snapshotData.targetData.targets[guid].rend = false
-				elseif specId == 2 then
-				end
-			end
-			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
-			return true
-		end
-		return false
-	end
-	TRB.Functions.InitializeTarget_Class = InitializeTarget
-
 	local function GetSuddenDeathRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.suddenDeath)
 	end
@@ -1005,13 +983,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local specId = GetSpecialization()
 
 		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.CheckTargetExists(guid) then
-				TRB.Functions.InitializeTarget(guid)
+			if not TRB.Functions.Target:CheckTargetExists(guid) then
+				TRB.Functions.Target:InitializeTarget(guid)
 				if specId == 1 then
 					TRB.Data.snapshotData.targetData.targets[guid].rend = false
 					TRB.Data.snapshotData.targetData.targets[guid].rendRemaining = 0
 					TRB.Data.snapshotData.targetData.targets[guid].deepWounds = false
 					TRB.Data.snapshotData.targetData.targets[guid].deepWoundsRemaining = 0
+				elseif specId == 2 then
 				end
 			end
 			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
@@ -1019,7 +998,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		return true
 	end
-	TRB.Functions.InitializeTarget_Class = InitializeTarget
+	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget
 
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
@@ -1050,7 +1029,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	end
 
 	local function TargetsCleanup(clearAll)
-		TRB.Functions.TargetsCleanup(clearAll)
+		TRB.Functions.Target:TargetsCleanup(clearAll)
 		local specId = GetSpecialization()
 
 		if specId == 1 then
@@ -1093,7 +1072,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	end
 
     local function IsValidVariableForSpec(var)
-		local valid = TRB.Functions.IsValidVariableBase(var)
+		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 		local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 		if valid then
 			return valid
@@ -1112,7 +1091,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					valid = true
 				end
 			elseif var == "$rend" then
-				if TRB.Functions.IsTalentActive(TRB.Data.spells.rend) then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.rend) then
 					valid = true
 				end
 			elseif var == "$rendCount" then
@@ -1363,7 +1342,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#spearOfBastion"] = TRB.Data.spells.spearOfBastion.icon
 		lookup["#victoryRush"] = TRB.Data.spells.victoryRush.icon
 		lookup["#whirlwind"] = TRB.Data.spells.whirlwind.icon
-		lookup["$rend"] = TRB.Functions.IsTalentActive(TRB.Data.spells.rend)
+		lookup["$rend"] = TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.rend)
 		lookup["$rendCount"] = rendCount
 		lookup["$rendTime"] = rendTime
 		lookup["$deepWoundsCount"] = deepWoundsCount
@@ -1386,7 +1365,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		TRB.Data.lookup = lookup
 		
 		local lookupLogic = TRB.Data.lookupLogic or {}
-		lookupLogic["$rend"] = TRB.Functions.IsTalentActive(TRB.Data.spells.rend)
+		lookupLogic["$rend"] = TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.rend)
 		lookupLogic["$rendCount"] = _rendCount
 		lookupLogic["$rendTime"] = _rendTime
 		lookupLogic["$deepWoundsCount"] = _deepWoundsCount
@@ -1638,7 +1617,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				TRB.Data.snapshotData.bladestorm.rage = 0
 				TRB.Data.snapshotData.bladestorm.isActive = false
 			elseif TRB.Data.snapshotData.bladestorm.endTime ~= nil then
-				_, _, _, _, TRB.Data.snapshotData.bladestorm.duration, TRB.Data.snapshotData.bladestorm.endTime, _, _, _, TRB.Data.snapshotData.bladestorm.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.bladestorm.id)
+				_, _, _, _, TRB.Data.snapshotData.bladestorm.duration, TRB.Data.snapshotData.bladestorm.endTime, _, _, _, TRB.Data.snapshotData.bladestorm.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.bladestorm.id)
 				TRB.Data.snapshotData.bladestorm.ticksRemaining = math.ceil((TRB.Data.snapshotData.bladestorm.endTime - currentTime) / (TRB.Data.snapshotData.bladestorm.originalDuration / TRB.Data.spells.bladestorm.ticks))
 				TRB.Data.snapshotData.bladestorm.rage = TRB.Data.snapshotData.bladestorm.ticksRemaining * TRB.Data.spells.bladestorm.rage
 				TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.snapshotData.bladestorm.rage
@@ -1710,11 +1689,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Data.snapshotData.whirlwind.startTime, TRB.Data.snapshotData.whirlwind.duration, _, _ = GetSpellCooldown(TRB.Data.spells.whirlwind.id)
         end
 
-		_, _, _, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.suddenDeath.id, "player")
+		_, _, _, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.suddenDeath.id, "player")
 		
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rend then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.rend.id, "target", "player"))
+				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.rend.id, "target", "player"))
 			
 				if expiration ~= nil then
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining = expiration - currentTime
@@ -1722,7 +1701,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWounds then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.deepWounds.id, "target", "player"))
+				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.deepWounds.id, "target", "player"))
 			
 				if expiration ~= nil then
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining = expiration - currentTime
@@ -1739,9 +1718,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local currentTime = GetTime()
 		local _
 
-		_, _, _, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.suddenDeath.id, "player")
+		_, _, _, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.suddenDeath.id, "player")
 		
-		_, _, TRB.Data.snapshotData.whirlwind.stacks, _, TRB.Data.snapshotData.whirlwind.duration, TRB.Data.snapshotData.whirlwind.endTime, _, _, _, TRB.Data.snapshotData.whirlwind.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.whirlwind.id, "player")
+		_, _, TRB.Data.snapshotData.whirlwind.stacks, _, TRB.Data.snapshotData.whirlwind.duration, TRB.Data.snapshotData.whirlwind.endTime, _, _, _, TRB.Data.snapshotData.whirlwind.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.whirlwind.id, "player")
 		
         if TRB.Data.snapshotData.execute.startTime ~= nil and currentTime > (TRB.Data.snapshotData.execute.startTime + TRB.Data.snapshotData.execute.duration) then
 			TRB.Data.snapshotData.execute.startTime = nil
@@ -1871,14 +1850,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							local thresholdColor = specSettings.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
-							if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+							if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.execute.id then
-									local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
+									local targetUnitHealth = TRB.Functions.Target:GetUnitHealthPercent("target")
 									local healthMinimum = TRB.Data.spells.execute.healthMinimum
 									
-									if TRB.Functions.IsTalentActive(TRB.Data.spells.massacre) then
+									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.massacre) then
 										healthMinimum = TRB.Data.spells.massacre.healthMinimum
 									end
 
@@ -1945,7 +1924,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.whirlwind.id then
-									if TRB.Functions.IsTalentActive(TRB.Data.spells.stormOfSwords) then
+									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.stormOfSwords) then
 										rageAmount = rageAmount + TRB.Data.spells.stormOfSwords.rageMod
 									end 
 									
@@ -2076,17 +2055,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 							local cooldownSettingKey = spell.settingKey
 
-							if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+							if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.execute.id then
-									if TRB.Functions.IsTalentActive(TRB.Data.spells.improvedExecute) then
+									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.improvedExecute) then
 										showThreshold = false
 									else
-										local targetUnitHealth = TRB.Functions.GetUnitHealthPercent("target")
+										local targetUnitHealth = TRB.Functions.Target:GetUnitHealthPercent("target")
 										local healthMinimum = TRB.Data.spells.execute.healthMinimum
 										
-										if TRB.Functions.IsTalentActive(TRB.Data.spells.massacre) then
+										if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.massacre) then
 											healthMinimum = TRB.Data.spells.massacre.healthMinimum
 										end
 
@@ -2233,7 +2212,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						end
 					elseif spellId == TRB.Data.spells.suddenDeath.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.suddenDeath.id)
+							_, _, _, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.suddenDeath.id)
 							TRB.Data.spells.suddenDeath.isActive = true
 							
 							if TRB.Data.settings.warrior.arms.audio.suddenDeath.enabled then
@@ -2248,7 +2227,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						end
 					elseif spellId == TRB.Data.spells.battlelord.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshotData.battlelord.duration, TRB.Data.snapshotData.battlelord.endTime, _, _, _, TRB.Data.snapshotData.battlelord.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.battlelord.id)
+							_, _, _, _, TRB.Data.snapshotData.battlelord.duration, TRB.Data.snapshotData.battlelord.endTime, _, _, _, TRB.Data.snapshotData.battlelord.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.battlelord.id)
 							TRB.Data.spells.battlelord.isActive = true
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.battlelord.endTime = nil
@@ -2296,7 +2275,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "fury" then
 					if spellId == TRB.Data.spells.bladestorm.id then
 						if type == "SPELL_AURA_APPLIED" then
-							_, _, _, _, TRB.Data.snapshotData.bladestorm.duration, TRB.Data.snapshotData.bladestorm.endTime, _, _, _, TRB.Data.snapshotData.bladestorm.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.bladestorm.id)
+							_, _, _, _, TRB.Data.snapshotData.bladestorm.duration, TRB.Data.snapshotData.bladestorm.endTime, _, _, _, TRB.Data.snapshotData.bladestorm.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.bladestorm.id)
 							TRB.Data.snapshotData.bladestorm.originalDuration = TRB.Data.snapshotData.bladestorm.duration
 							TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.bladestorm.id
 							TRB.Data.snapshotData.casting.icon = TRB.Data.spells.bladestorm.icon
@@ -2312,7 +2291,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						end
 					elseif spellId == TRB.Data.spells.enrage.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshotData.enrage.duration, TRB.Data.snapshotData.enrage.endTime, _, _, _, TRB.Data.snapshotData.enrage.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.enrage.id)
+							_, _, _, _, TRB.Data.snapshotData.enrage.duration, TRB.Data.snapshotData.enrage.endTime, _, _, _, TRB.Data.snapshotData.enrage.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.enrage.id)
 							TRB.Data.spells.enrage.isActive = true
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.enrage.endTime = nil
@@ -2321,11 +2300,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						end
 					elseif spellId == TRB.Data.spells.whirlwind.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							_, _, TRB.Data.snapshotData.whirlwind.stacks, _, TRB.Data.snapshotData.whirlwind.duration, TRB.Data.snapshotData.whirlwind.endTime, _, _, _, TRB.Data.snapshotData.whirlwind.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.whirlwind.id, "player")
+							_, _, TRB.Data.snapshotData.whirlwind.stacks, _, TRB.Data.snapshotData.whirlwind.duration, TRB.Data.snapshotData.whirlwind.endTime, _, _, _, TRB.Data.snapshotData.whirlwind.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.whirlwind.id, "player")
 						end
 					elseif spellId == TRB.Data.spells.suddenDeath.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.suddenDeath.id)
+							_, _, _, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.suddenDeath.id)
 							TRB.Data.spells.suddenDeath.isActive = true
 							
 							if TRB.Data.settings.warrior.fury.audio.suddenDeath.enabled then
@@ -2341,7 +2320,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					elseif spellId == TRB.Data.spells.ravager.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Ravager used
 							local ravagerRage = TRB.Data.spells.ravager.rage
-							if TRB.Functions.IsTalentActive(TRB.Data.spells.stormOfSteel) then
+							if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.stormOfSteel) then
 								ravagerRage = ravagerRage + TRB.Data.spells.stormOfSteel.rage
 							end
 							TRB.Data.snapshotData.ravager.isActive = true
@@ -2357,7 +2336,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					elseif spellId == TRB.Data.spells.ravager.energizeId then
 						if type == "SPELL_ENERGIZE" then
 							local ravagerRage = TRB.Data.spells.ravager.rage
-							if TRB.Functions.IsTalentActive(TRB.Data.spells.stormOfSteel) then
+							if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.stormOfSteel) then
 								ravagerRage = ravagerRage + TRB.Data.spells.stormOfSteel.rage
 							end
 
@@ -2390,14 +2369,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 						TRB.Data.snapshotData.thunderClap.startTime, TRB.Data.snapshotData.thunderClap.duration, _, _ = GetSpellCooldown(TRB.Data.spells.thunderClap.id)
 					end
-				elseif spellId == TRB.Data.spells.execute.id and not TRB.Functions.IsTalentActive(TRB.Data.spells.improvedExecute) then
+				elseif spellId == TRB.Data.spells.execute.id and not TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.improvedExecute) then
 					if type == "SPELL_CAST_SUCCESS" then
 						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 						TRB.Data.snapshotData.execute.startTime, TRB.Data.snapshotData.execute.duration, _, _ = GetSpellCooldown(TRB.Data.spells.execute.id)
 					end
 				elseif spellId == TRB.Data.spells.victoryRush.id then
 					if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-						_, _, _, _, TRB.Data.snapshotData.victoryRush.duration, TRB.Data.snapshotData.victoryRush.endTime, _, _, _, TRB.Data.snapshotData.victoryRush.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.victoryRush.id)
+						_, _, _, _, TRB.Data.snapshotData.victoryRush.duration, TRB.Data.snapshotData.victoryRush.endTime, _, _, _, TRB.Data.snapshotData.victoryRush.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.victoryRush.id)
 						TRB.Data.spells.victoryRush.isActive = true
 					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 						TRB.Data.snapshotData.victoryRush.endTime = nil
@@ -2413,7 +2392,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.RemoveTarget(destGUID)
+				TRB.Functions.Target:RemoveTarget(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end
@@ -2454,8 +2433,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local specId = GetSpecialization()
 		if specId == 1 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.warrior.arms)
-			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.arms)
-			specCache.arms.talents = TRB.Functions.GetTalents()
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.arms)
+			specCache.arms.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Arms()
 			TRB.Functions.LoadFromSpecCache(specCache.arms)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Arms
@@ -2466,8 +2445,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		elseif specId == 2 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.warrior.fury)
-			TRB.Functions.IsTtdActive(TRB.Data.settings.warrior.fury)
-			specCache.fury.talents = TRB.Functions.GetTalents()
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.fury)
+			specCache.fury.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Fury()
 			TRB.Functions.LoadFromSpecCache(specCache.fury)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Fury
@@ -2527,8 +2506,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
 					C_Timer.After(0, function()
 						C_Timer.After(1, function()
-							TRB.Data.settings.warrior.arms = TRB.Functions.ValidateLsmValues("Arms Warrior", TRB.Data.settings.warrior.arms)
-							TRB.Data.settings.warrior.fury = TRB.Functions.ValidateLsmValues("Fury Warrior", TRB.Data.settings.warrior.fury)
+							TRB.Data.settings.warrior.arms = TRB.Functions.LibSharedMedia:ValidateLsmValues("Arms Warrior", TRB.Data.settings.warrior.arms)
+							TRB.Data.settings.warrior.fury = TRB.Functions.LibSharedMedia:ValidateLsmValues("Fury Warrior", TRB.Data.settings.warrior.fury)
 							
 							FillSpellData_Arms()
 							FillSpellData_Fury()

@@ -1658,7 +1658,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(spec)
+			TRB.Functions.BarText:IsTtdActive(spec)
 		end)
 
 
@@ -1671,7 +1671,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(spec)
+			TRB.Functions.BarText:IsTtdActive(spec)
 		end)
 
 
@@ -1684,7 +1684,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(spec)
+			TRB.Functions.BarText:IsTtdActive(spec)
 		end)
 
 		yCoord = yCoord - 30
@@ -2822,7 +2822,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(spec)
+			TRB.Functions.BarText:IsTtdActive(spec)
 		end)
 
 
@@ -2835,7 +2835,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(spec)
+			TRB.Functions.BarText:IsTtdActive(spec)
 		end)
 
 
@@ -2848,7 +2848,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(spec)
+			TRB.Functions.BarText:IsTtdActive(spec)
 		end)
 
 		yCoord = yCoord - 30

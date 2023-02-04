@@ -858,21 +858,21 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			if trinket1ItemLink ~= nil then
 				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
-						alchemyStone = TRB.Functions.DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
 					else
 						break
 					end
 				end
 
 				if alchemyStone == false then
-					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.CheckTrinketForConjuredChillglobe(trinket1ItemLink)
+					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
 				end
 			end
 
 			if alchemyStone == false and trinket2ItemLink ~= nil then
 				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
-						alchemyStone = TRB.Functions.DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
 					else
 						break
 					end
@@ -880,7 +880,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 
 			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
-				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.CheckTrinketForConjuredChillglobe(trinket2ItemLink)
+				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
 			end
 
 			TRB.Data.character.items.alchemyStone = alchemyStone
@@ -907,12 +907,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 2 and TRB.Data.settings.core.enabled.monk.mistweaver then
-			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.mistweaver)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.monk.mistweaver)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
 		elseif specId == 3 and TRB.Data.settings.core.enabled.monk.windwalker then
-			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.windwalker)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.monk.windwalker)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Energy
 			TRB.Data.resourceFactor = 1
@@ -961,8 +961,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local specId = GetSpecialization()
 		
 		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.CheckTargetExists(guid) then
-				TRB.Functions.InitializeTarget(guid)
+			if not TRB.Functions.Target:CheckTargetExists(guid) then
+				TRB.Functions.Target:InitializeTarget(guid)
 				if specId == 2 then
 				elseif specId == 3 then
 					TRB.Data.snapshotData.targetData.targets[guid].markOfTheCrane = false
@@ -974,7 +974,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end
 		return false
 	end
-	TRB.Functions.InitializeTarget_Class = InitializeTarget
+	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget
 
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
@@ -998,7 +998,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	end
 
 	local function TargetsCleanup(clearAll)
-		TRB.Functions.TargetsCleanup(clearAll)
+		TRB.Functions.Target:TargetsCleanup(clearAll)
 		if clearAll == true then
 			local specId = GetSpecialization()
 			if specId == 2 then
@@ -1115,7 +1115,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	end
 
     local function IsValidVariableForSpec(var)
-		local valid = TRB.Functions.IsValidVariableBase(var)
+		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 		if valid then
 			return valid
 		end
@@ -2361,7 +2361,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
                             if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
                             elseif spell.isPvp and not TRB.Data.character.isPvp then
                                 showThreshold = false
-                            elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+                            elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
                                 showThreshold = false
                             elseif spell.hasCooldown then
 								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
@@ -2522,7 +2522,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					elseif spellId == TRB.Data.spells.innervate.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.innervate.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.innervate.duration, TRB.Data.snapshotData.innervate.endTime, _, _, _, TRB.Data.snapshotData.innervate.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.innervate.id)
+							_, _, _, _, TRB.Data.snapshotData.innervate.duration, TRB.Data.snapshotData.innervate.endTime, _, _, _, TRB.Data.snapshotData.innervate.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.innervate.id)
 							TRB.Data.snapshotData.innervate.modifier = 0
 							TRB.Data.snapshotData.audio.innervateCue = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
@@ -2593,7 +2593,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					elseif spellId == TRB.Data.spells.potionOfChilledClarity.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.potionOfChilledClarity.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.potionOfChilledClarity.duration, TRB.Data.snapshotData.potionOfChilledClarity.endTime, _, _, _, TRB.Data.snapshotData.potionOfChilledClarity.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.potionOfChilledClarity.id)
+							_, _, _, _, TRB.Data.snapshotData.potionOfChilledClarity.duration, TRB.Data.snapshotData.potionOfChilledClarity.endTime, _, _, _, TRB.Data.snapshotData.potionOfChilledClarity.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.potionOfChilledClarity.id)
 							TRB.Data.snapshotData.potionOfChilledClarity.modifier = 0
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.potionOfChilledClarity.isActive = false
@@ -2612,7 +2612,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					elseif spellId == TRB.Data.spells.serenity.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.snapshotData.serenity.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.serenity.duration, TRB.Data.snapshotData.serenity.endTime, _, _, _, TRB.Data.snapshotData.serenity.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.serenity.id)
+							_, _, _, _, TRB.Data.snapshotData.serenity.duration, TRB.Data.snapshotData.serenity.endTime, _, _, _, TRB.Data.snapshotData.serenity.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.serenity.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.serenity.isActive = false
 							TRB.Data.snapshotData.serenity.spellId = nil
@@ -2622,7 +2622,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					elseif spellId == TRB.Data.spells.danceOfChiJi.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.snapshotData.danceOfChiJi.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.danceOfChiJi.duration, TRB.Data.snapshotData.danceOfChiJi.endTime, _, _, _, TRB.Data.snapshotData.danceOfChiJi.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.danceOfChiJi.id)
+							_, _, _, _, TRB.Data.snapshotData.danceOfChiJi.duration, TRB.Data.snapshotData.danceOfChiJi.endTime, _, _, _, TRB.Data.snapshotData.danceOfChiJi.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.danceOfChiJi.id)
 
 							if TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.enabled and not TRB.Data.snapshotData.audio.playedDanceOfChiJiCue then
 								TRB.Data.snapshotData.audio.playedDanceOfChiJiCue = true
@@ -2684,7 +2684,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							TRB.Data.snapshotData.paralysis.startTime = currentTime
 							TRB.Data.snapshotData.paralysis.duration = TRB.Data.spells.paralysis.cooldown
 
-							if TRB.Functions.IsTalentActive(TRB.Data.spells.paralysisRank2) then
+							if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.paralysisRank2) then
 								TRB.Data.snapshotData.paralysis.duration = TRB.Data.snapshotData.paralysis.duration + TRB.Data.spells.paralysisRank2.cooldownMod
 							end
 						end
@@ -2693,7 +2693,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.RemoveTarget(destGUID)
+				TRB.Functions.Target:RemoveTarget(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end
@@ -2735,8 +2735,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		if specId == 1 then
 		elseif specId == 2 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.monk.mistweaver)
-			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.mistweaver)
-			specCache.mistweaver.talents = TRB.Functions.GetTalents()
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.monk.mistweaver)
+			specCache.mistweaver.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Mistweaver()
 			TRB.Functions.LoadFromSpecCache(specCache.mistweaver)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Mistweaver
@@ -2747,8 +2747,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 		elseif specId == 3 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.monk.windwalker)
-			TRB.Functions.IsTtdActive(TRB.Data.settings.monk.windwalker)
-			specCache.windwalker.talents = TRB.Functions.GetTalents()
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.monk.windwalker)
+			specCache.windwalker.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Windwalker()
 			TRB.Functions.LoadFromSpecCache(specCache.windwalker)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Windwalker
@@ -2809,8 +2809,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					C_Timer.After(0, function()
 						C_Timer.After(1, function()
 							TRB.Data.barConstructedForSpec = nil
-							TRB.Data.settings.monk.windwalker = TRB.Functions.ValidateLsmValues("Windwalker Monk", TRB.Data.settings.monk.windwalker)
-							TRB.Data.settings.monk.mistweaver = TRB.Functions.ValidateLsmValues("Mistweaver Monk", TRB.Data.settings.monk.mistweaver)
+							TRB.Data.settings.monk.windwalker = TRB.Functions.LibSharedMedia:ValidateLsmValues("Windwalker Monk", TRB.Data.settings.monk.windwalker)
+							TRB.Data.settings.monk.mistweaver = TRB.Functions.LibSharedMedia:ValidateLsmValues("Mistweaver Monk", TRB.Data.settings.monk.mistweaver)
 							FillSpellData_Windwalker()
 							FillSpellData_Mistweaver()
 

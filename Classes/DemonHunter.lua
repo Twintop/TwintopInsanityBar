@@ -520,7 +520,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 1 and TRB.Data.settings.core.enabled.demonhunter.havoc == true then
-			TRB.Functions.IsTtdActive(TRB.Data.settings.demonhunter.havoc)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.demonhunter.havoc)
 			TRB.Data.specSupported = true
 		else
 			--TRB.Data.resource = MANA
@@ -559,15 +559,15 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end
 
 		if guid ~= nil then
-			if not TRB.Functions.CheckTargetExists(guid) then
-				TRB.Functions.InitializeTarget(guid)
+			if not TRB.Functions.Target:CheckTargetExists(guid) then
+				TRB.Functions.Target:InitializeTarget(guid)
 			end
 			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
 			return true
 		end
 		return false
 	end
-	TRB.Functions.InitializeTarget_Class = InitializeTarget
+	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget
 
 	local function GetImmolationAuraRemainingTime()
 		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.immolationAura)
@@ -599,7 +599,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	end
 
 	local function TargetsCleanup(clearAll)
-		TRB.Functions.TargetsCleanup(clearAll)
+		TRB.Functions.Target:TargetsCleanup(clearAll)
 		if clearAll == true then
 			TRB.Data.snapshotData.targetData.rend = 0
 		end
@@ -639,7 +639,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	end
 
     local function IsValidVariableForSpec(var)
-		local valid = TRB.Functions.IsValidVariableBase(var)
+		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 		local normalizedFury = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 		if valid then
 			return valid
@@ -936,7 +936,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		else
 			if specId == 1 then
 				if currentSpellName == nil then
-					if currentChannelId == TRB.Data.spells.eyeBeam.id and TRB.Functions.IsTalentActive(TRB.Data.spells.blindFury) then
+					if currentChannelId == TRB.Data.spells.eyeBeam.id and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.blindFury) then
 						local gcd = TRB.Functions.GetCurrentGCDTime(true)
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.eyeBeam.id
 						--TRB.Data.snapshotData.casting.startTime = currentChannelStartTime / 1000
@@ -975,7 +975,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				TRB.Data.snapshotData.immolationAura.isActive = false
 			else
 				TRB.Data.snapshotData.immolationAura.ticksRemaining = math.ceil((TRB.Data.snapshotData.immolationAura.endTime - currentTime) / (TRB.Data.spells.burningHatred.duration / TRB.Data.spells.burningHatred.ticks))
-				if TRB.Functions.IsTalentActive(TRB.Data.spells.burningHatred) then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.burningHatred) then
 					TRB.Data.snapshotData.immolationAura.fury = TRB.Data.snapshotData.immolationAura.ticksRemaining * TRB.Data.spells.burningHatred.fury
 				else
 					TRB.Data.snapshotData.immolationAura.fury = 0
@@ -1007,7 +1007,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				TRB.Data.snapshotData.metamorphosis.duration = 0
 				TRB.Data.snapshotData.metamorphosis.isActive = false
 			elseif TRB.Data.snapshotData.metamorphosis.endTime ~= nil then
-				_, _, _, _, TRB.Data.snapshotData.metamorphosis.duration, TRB.Data.snapshotData.metamorphosis.endTime, _, _, _, TRB.Data.snapshotData.metamorphosis.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.metamorphosis.id)
+				_, _, _, _, TRB.Data.snapshotData.metamorphosis.duration, TRB.Data.snapshotData.metamorphosis.endTime, _, _, _, TRB.Data.snapshotData.metamorphosis.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.metamorphosis.id)
 			end
 		end
 	end
@@ -1189,7 +1189,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 								showThreshold = false
 							elseif metaTime == 0 and (spell.demonForm ~= nil and spell.demonForm == true) then
 								showThreshold = false
-							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif spell.isPvp and not TRB.Data.character.isPvp then
 								showThreshold = false
@@ -1205,7 +1205,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.chaosNova.id then
-									if TRB.Functions.IsTalentActive(TRB.Data.spells.unleashedPower) then
+									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.unleashedPower) then
 										furyAmount = furyAmount * TRB.Data.spells.unleashedPower.furyModifier
 									end
 
@@ -1221,7 +1221,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.throwGlaive.id then
-									if TRB.Functions.IsTalentActive(TRB.Data.spells.furiousThrows) then
+									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.furiousThrows) then
 										furyAmount = TRB.Data.spells.furiousThrows.fury
 										if TRB.Data.snapshotData.throwGlaive.charges == 0 then
 											thresholdColor = specSettings.colors.threshold.unusable
@@ -1385,7 +1385,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					elseif spellId == TRB.Data.spells.metamorphosis.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.snapshotData.metamorphosis.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.metamorphosis.duration, TRB.Data.snapshotData.metamorphosis.endTime, _, _, _, TRB.Data.snapshotData.metamorphosis.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.metamorphosis.id)
+							_, _, _, _, TRB.Data.snapshotData.metamorphosis.duration, TRB.Data.snapshotData.metamorphosis.endTime, _, _, _, TRB.Data.snapshotData.metamorphosis.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.metamorphosis.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.metamorphosis.isActive = false
 							TRB.Data.snapshotData.metamorphosis.spellId = nil
@@ -1397,7 +1397,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							local felfireHeartDurationMod = 0
 							local felfireHeartTicksMod = 0
 							
-							if TRB.Functions.IsTalentActive(TRB.Data.spells.felfireHeart) then
+							if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.felfireHeart) then
 								felfireHeartDurationMod = TRB.Data.spells.felfireHeart.duration * TRB.Data.talents[TRB.Data.spells.felfireHeart.id].currentRank
 								felfireHeartTicksMod = TRB.Data.spells.felfireHeart.ticks * TRB.Data.talents[TRB.Data.spells.felfireHeart.id].currentRank
 							end
@@ -1405,7 +1405,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							TRB.Data.snapshotData.immolationAura.isActive = true
 							TRB.Data.snapshotData.immolationAura.ticksRemaining = TRB.Data.spells.burningHatred.ticks + felfireHeartTicksMod
 							
-							if TRB.Functions.IsTalentActive(TRB.Data.spells.burningHatred) then
+							if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.burningHatred) then
 								TRB.Data.snapshotData.immolationAura.fury = TRB.Data.snapshotData.immolationAura.ticksRemaining * TRB.Data.spells.burningHatred.fury
 							else
 								TRB.Data.snapshotData.immolationAura.fury = 0
@@ -1427,7 +1427,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					elseif spellId == TRB.Data.spells.unboundChaos.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.unboundChaos.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.unboundChaos.duration, TRB.Data.snapshotData.unboundChaos.endTime, _, _, _, TRB.Data.snapshotData.unboundChaos.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.unboundChaos.id)
+							_, _, _, _, TRB.Data.snapshotData.unboundChaos.duration, TRB.Data.snapshotData.unboundChaos.endTime, _, _, _, TRB.Data.snapshotData.unboundChaos.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.unboundChaos.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.unboundChaos.isActive = false
 							TRB.Data.snapshotData.unboundChaos.spellId = nil
@@ -1437,7 +1437,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					elseif spellId == TRB.Data.spells.chaosTheory.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.snapshotData.chaosTheory.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.chaosTheory.duration, TRB.Data.snapshotData.chaosTheory.endTime, _, _, _, TRB.Data.snapshotData.chaosTheory.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.chaosTheory.id)
+							_, _, _, _, TRB.Data.snapshotData.chaosTheory.duration, TRB.Data.snapshotData.chaosTheory.endTime, _, _, _, TRB.Data.snapshotData.chaosTheory.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.chaosTheory.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.chaosTheory.isActive = false
 							TRB.Data.snapshotData.chaosTheory.spellId = nil
@@ -1472,7 +1472,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.RemoveTarget(destGUID)
+				TRB.Functions.Target:RemoveTarget(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end
@@ -1513,8 +1513,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local specId = GetSpecialization()
 		if specId == 1 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.demonhunter.havoc)
-			TRB.Functions.IsTtdActive(TRB.Data.settings.demonhunter.havoc)
-			specCache.havoc.talents = TRB.Functions.GetTalents()
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.demonhunter.havoc)
+			specCache.havoc.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Havoc()
 			TRB.Functions.LoadFromSpecCache(specCache.havoc)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Havoc
@@ -1575,7 +1575,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					C_Timer.After(0, function()
 						C_Timer.After(1, function()
 							TRB.Data.barConstructedForSpec = nil
-							TRB.Data.settings.demonhunter.havoc = TRB.Functions.ValidateLsmValues("Havoc Demon Hunter", TRB.Data.settings.demonhunter.havoc)
+							TRB.Data.settings.demonhunter.havoc = TRB.Functions.LibSharedMedia:ValidateLsmValues("Havoc Demon Hunter", TRB.Data.settings.demonhunter.havoc)
 							FillSpellData_Havoc()
 
 							SwitchSpec()

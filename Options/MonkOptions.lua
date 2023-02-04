@@ -927,7 +927,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 
@@ -941,7 +941,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 
@@ -955,7 +955,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 
@@ -1895,7 +1895,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(spec)
+			TRB.Functions.BarText:IsTtdActive(spec)
 		end)
 
 
@@ -1908,7 +1908,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(spec)
+			TRB.Functions.BarText:IsTtdActive(spec)
 		end)
 
 
@@ -1921,7 +1921,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetScript("OnTextChanged", function(self, input)
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			TRB.Functions.IsTtdActive(spec)
+			TRB.Functions.BarText:IsTtdActive(spec)
 		end)
 
 		yCoord = yCoord - 30

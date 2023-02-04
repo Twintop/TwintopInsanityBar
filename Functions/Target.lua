@@ -1,0 +1,51 @@
+---@diagnostic disable: undefined-field, undefined-global
+local _, TRB = ...
+TRB.Functions = TRB.Functions or {}
+TRB.Functions.Target = {}
+
+
+function TRB.Functions.Target:CheckTargetExists(guid)
+	if guid == nil or (not TRB.Data.snapshotData.targetData.targets[guid] or TRB.Data.snapshotData.targetData.targets[guid] == nil) then
+		return false
+	end
+	return true
+end
+
+function TRB.Functions.Target:RemoveTarget(guid)
+	if guid ~= nil and TRB.Functions.Target:CheckTargetExists(guid) then
+		TRB.Data.snapshotData.targetData.targets[guid] = nil
+	end
+end
+
+function TRB.Functions.Target:InitializeTarget(guid)
+	if guid ~= nil and guid ~= "" then
+		if not TRB.Functions.Target:CheckTargetExists(guid) then
+			TRB.Data.snapshotData.targetData.targets[guid] = {}
+			TRB.Data.snapshotData.targetData.targets[guid].snapshot = {}
+			TRB.Data.snapshotData.targetData.targets[guid].ttd = 0
+		end
+	end
+end
+
+function TRB.Functions.Target:TargetsCleanup(clearAll)
+	if clearAll == true then
+		TRB.Data.snapshotData.targetData.targets = {}
+	else
+		local currentTime = GetTime()
+		for tguid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
+			if (currentTime - TRB.Data.snapshotData.targetData.targets[tguid].lastUpdate) > 20 then
+				TRB.Functions.Target:RemoveTarget(tguid)
+			end
+		end
+	end
+end
+
+function TRB.Functions.Target:GetUnitHealthPercent(unit)
+	if GetUnitName(unit) then
+		local health = UnitHealth(unit)
+		local maxHealth = UnitHealthMax(unit)
+		return health / maxHealth
+	else
+		return nil
+	end
+end

@@ -1373,21 +1373,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if trinket1ItemLink ~= nil then
 				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
-						alchemyStone = TRB.Functions.DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
 					else
 						break
 					end
 				end
 
 				if alchemyStone == false then
-					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.CheckTrinketForConjuredChillglobe(trinket1ItemLink)
+					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
 				end
 			end
 
 			if alchemyStone == false and trinket2ItemLink ~= nil then
 				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
-						alchemyStone = TRB.Functions.DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
 					else
 						break
 					end
@@ -1395,7 +1395,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
-				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.CheckTrinketForConjuredChillglobe(trinket2ItemLink)
+				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
 			end
 
 			TRB.Data.character.items.alchemyStone = alchemyStone
@@ -1410,14 +1410,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.character.mindSearThreshold = -TRB.Data.spells.mindSear.insanity
 
 			-- Threshold lines
-			--[[if TRB.Data.settings.priest.shadow.thresholds.devouringPlague.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.devouringPlague) and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
+			--[[if TRB.Data.settings.priest.shadow.thresholds.devouringPlague.enabled and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.devouringPlague) and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
 				TRB.Frames.resourceFrame.thresholds[1]:Show()
 				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholds.width, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
 			else
 				TRB.Frames.resourceFrame.thresholds[1]:Hide()
 			end
 
-			if TRB.Data.settings.priest.shadow.thresholds.mindSear.enabled and TRB.Functions.IsTalentActive(TRB.Data.spells.mindSear) and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
+			if TRB.Data.settings.priest.shadow.thresholds.mindSear.enabled and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.mindSear) and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
 				TRB.Frames.resourceFrame.thresholds[2]:Show()
 				TRB.Functions.RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholds.width, TRB.Data.character.mindSearThreshold, TRB.Data.character.maxResource)				
 			else
@@ -1440,12 +1440,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 2 and TRB.Data.settings.core.enabled.priest.holy == true then
-			TRB.Functions.IsTtdActive(TRB.Data.settings.priest.holy)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.holy)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
 		elseif specId == 3 and TRB.Data.settings.core.enabled.priest.shadow == true then
-			TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.shadow)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Insanity
 			TRB.Data.resourceFactor = 100
@@ -1512,8 +1512,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local specId = GetSpecialization()
 
 		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.CheckTargetExists(guid) then
-				TRB.Functions.InitializeTarget(guid)
+			if not TRB.Functions.Target:CheckTargetExists(guid) then
+				TRB.Functions.Target:InitializeTarget(guid)
 				if specId == 2 then
 					TRB.Data.snapshotData.targetData.targets[guid].shadowWordPain = false
 					TRB.Data.snapshotData.targetData.targets[guid].shadowWordPainRemaining = 0
@@ -1532,7 +1532,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 		return false
 	end
-	TRB.Functions.InitializeTarget_Class = InitializeTarget
+	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget
 
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
@@ -1592,7 +1592,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function TargetsCleanup(clearAll)
-		TRB.Functions.TargetsCleanup(clearAll)
+		TRB.Functions.Target:TargetsCleanup(clearAll)
 		if clearAll == true then
 			local specId = GetSpecialization()
 			if specId == 2 then
@@ -1718,7 +1718,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			mod = mod * TRB.Data.spells.apotheosis.holyWordModifier
 		end
 
-		if TRB.Functions.IsTalentActive(TRB.Data.spells.lightOfTheNaaru) then
+		if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lightOfTheNaaru) then
 			mod = mod * (1 + (TRB.Data.spells.lightOfTheNaaru.holyWordModifier * TRB.Data.talents[TRB.Data.spells.lightOfTheNaaru.id].currentRank))
 		end
 
@@ -1748,7 +1748,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function IsValidVariableForSpec(var)
-		local valid = TRB.Functions.IsValidVariableBase(var)
+		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 		if valid then
 			return valid
 		end
@@ -1951,7 +1951,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$cttvEquipped" then
-				if TRB.Data.settings.priest.shadow.voidTendrilTracker and (TRB.Functions.IsTalentActive(TRB.Data.spells.idolOfCthun) or TRB.Data.character.items.callToTheVoid == true) then
+				if TRB.Data.settings.priest.shadow.voidTendrilTracker and (TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.idolOfCthun) or TRB.Data.character.items.callToTheVoid == true) then
 					valid = true
 				end
 			elseif var == "$ecttvCount" then
@@ -2407,7 +2407,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		if TRB.Data.snapshotData.mindDevourer.spellId ~= nil then
 			insanityThreshold = 0
-		elseif TRB.Data.settings.priest.shadow.mindSearThreshold and TRB.Functions.IsTalentActive(TRB.Data.spells.mindSear) then
+		elseif TRB.Data.settings.priest.shadow.mindSearThreshold and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.mindSear) then
 			insanityThreshold = TRB.Data.character.mindSearThreshold
 		end
 
@@ -2769,7 +2769,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.casting.spellKey = "renew"
 						elseif currentSpellId == TRB.Data.spells.smite.id then
 							TRB.Data.snapshotData.casting.spellKey = "smite"
-						elseif TRB.Functions.IsTalentActive(TRB.Data.spells.harmoniousApparatus) then
+						elseif TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.harmoniousApparatus) then
 							if currentSpellId == TRB.Data.spells.circleOfHealing.id then --Harmonious Apparatus / This shouldn't happen
 								TRB.Data.snapshotData.casting.spellKey = "circleOfHealing"
 							elseif currentSpellId == TRB.Data.spells.prayerOfMending.id then --Harmonious Apparatus / This shouldn't happen
@@ -2871,7 +2871,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.halo.insanity
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.halo.id
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.halo.icon
-					elseif currentSpellId == TRB.Data.spells.massDispel.id and TRB.Functions.IsTalentActive(TRB.Data.spells.hallucinations) and affectingCombat then
+					elseif currentSpellId == TRB.Data.spells.massDispel.id and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.hallucinations) and affectingCombat then
 						TRB.Data.snapshotData.casting.startTime = currentTime
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.hallucinations.insanity
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.massDispel.id
@@ -2897,7 +2897,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local settings
 		local snapshot
 
-		if specId == 2 and TRB.Functions.IsTalentActive(TRB.Data.spells.shadowfiend) then
+		if specId == 2 and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.shadowfiend) then
 			settings = TRB.Data.settings.priest.holy.shadowfiend
 			snapshot = TRB.Data.snapshotData.shadowfiend
 		elseif specId == 3 then
@@ -2970,7 +2970,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					snapshot.resourceRaw = countValue * TRB.Data.spells.shadowfiend.manaPercent * TRB.Data.character.maxResource
 					snapshot.resourceFinal = CalculateManaGain(snapshot.resourceRaw, false)
 				elseif specId == 3 then
-					if TRB.Functions.IsTalentActive(TRB.Data.spells.mindbender) then
+					if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.mindbender) then
 						snapshot.resourceRaw = countValue * TRB.Data.spells.mindbender.insanity
 						if TRB.Data.snapshotData.devouredDespair.isActive and TRB.Data.snapshotData.devouredDespair.endTime ~= nil and TRB.Data.snapshotData.devouredDespair.endTime > currentTime then
 							local ddTicks = TRB.Functions.Number:RoundTo(TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.devouredDespair), 0, "ceil")
@@ -2984,10 +2984,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		else
 ---@diagnostic disable-next-line: redundant-parameter
-			if specId == 2 and TRB.Functions.IsTalentActive(TRB.Data.spells.shadowfiend) then
+			if specId == 2 and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.shadowfiend) then
 				snapshot.onCooldown = not (GetSpellCooldown(TRB.Data.spells.shadowfiend.id) == 0)
 			elseif specId == 3 then
-				if TRB.Functions.IsTalentActive(TRB.Data.spells.mindbender) then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.mindbender) then
 					snapshot.onCooldown = not (GetSpellCooldown(TRB.Data.spells.mindbender.id) == 0)
 				else
 					snapshot.onCooldown = not (GetSpellCooldown(TRB.Data.spells.shadowfiend.id) == 0)
@@ -3239,13 +3239,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end
 
-		_, _, _, _, TRB.Data.snapshotData.resonantWords.duration, TRB.Data.snapshotData.resonantWords.endTime, _, _, _, TRB.Data.snapshotData.resonantWords.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.resonantWords.id)
+		_, _, _, _, TRB.Data.snapshotData.resonantWords.duration, TRB.Data.snapshotData.resonantWords.endTime, _, _, _, TRB.Data.snapshotData.resonantWords.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.resonantWords.id)
 		TRB.Data.snapshotData.resonantWords.remainingTime = GetResonantWordsRemainingTime()
 
-		_, _, TRB.Data.snapshotData.lightweaver.stacks, _, TRB.Data.snapshotData.lightweaver.duration, TRB.Data.snapshotData.lightweaver.endTime, _, _, _, TRB.Data.snapshotData.lightweaver.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.lightweaver.id)
+		_, _, TRB.Data.snapshotData.lightweaver.stacks, _, TRB.Data.snapshotData.lightweaver.duration, TRB.Data.snapshotData.lightweaver.endTime, _, _, _, TRB.Data.snapshotData.lightweaver.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.lightweaver.id)
 		TRB.Data.snapshotData.lightweaver.remainingTime = GetLightweaverRemainingTime()
 
-		_, _, TRB.Data.snapshotData.surgeOfLight.stacks, _, TRB.Data.snapshotData.surgeOfLight.duration, TRB.Data.snapshotData.surgeOfLight.endTime, _, _, _, TRB.Data.snapshotData.surgeOfLight.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.surgeOfLight.id)
+		_, _, TRB.Data.snapshotData.surgeOfLight.stacks, _, TRB.Data.snapshotData.surgeOfLight.duration, TRB.Data.snapshotData.surgeOfLight.endTime, _, _, _, TRB.Data.snapshotData.surgeOfLight.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.surgeOfLight.id)
 		TRB.Data.snapshotData.surgeOfLight.remainingTime = GetSurgeOfLightRemainingTime()
 
 		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
@@ -3265,7 +3265,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPain then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.shadowWordPain.id, "target", "player"))
+				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.shadowWordPain.id, "target", "player"))
 
 				if expiration ~= nil then
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining = expiration - currentTime
@@ -3289,7 +3289,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
             TRB.Data.snapshotData.voidform.duration = 0
 			TRB.Data.snapshotData.voidform.remainingTime = 0
 		else
-			_, _, _, _, TRB.Data.snapshotData.voidform.duration, TRB.Data.snapshotData.voidform.endTime, _, _, _, TRB.Data.snapshotData.voidform.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.voidform.id)
+			_, _, _, _, TRB.Data.snapshotData.voidform.duration, TRB.Data.snapshotData.voidform.endTime, _, _, _, TRB.Data.snapshotData.voidform.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.voidform.id)
 			TRB.Data.snapshotData.voidform.remainingTime = GetVoidformRemainingTime()
         end
 
@@ -3315,7 +3315,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPain then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.shadowWordPain.id, "target", "player"))
+				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.shadowWordPain.id, "target", "player"))
 
 				if expiration ~= nil then
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining = expiration - currentTime
@@ -3323,7 +3323,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouch then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.vampiricTouch.id, "target", "player"))
+				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.vampiricTouch.id, "target", "player"))
 
 				if expiration ~= nil then
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouchRemaining = expiration - currentTime
@@ -3331,7 +3331,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].devouringPlague then
-				local expiration = select(6, TRB.Functions.FindDebuffById(TRB.Data.spells.devouringPlague.id, "target", "player"))
+				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.devouringPlague.id, "target", "player"))
 
 				if expiration ~= nil then
 					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].devouringPlagueRemaining = expiration - currentTime
@@ -3607,7 +3607,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey ~= nil and
 							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction ~= nil and
 							TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordReduction >= 0 and
-							TRB.Functions.IsTalentActive(TRB.Data.spells[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey]) then
+							TRB.Functions.Talent:IsTalentActive(TRB.Data.spells[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey]) then
 
 							local castTimeRemains = TRB.Data.snapshotData.casting.endTime - currentTime
 							local holyWordCooldownRemaining = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData[TRB.Data.spells[TRB.Data.snapshotData.casting.spellKey].holyWordKey])
@@ -3688,7 +3688,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 
 					if specSettings.bar.showPassive and
-						(TRB.Functions.IsTalentActive(TRB.Data.spells.auspiciousSpirits) or
+						(TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.auspiciousSpirits) or
 						TRB.Data.snapshotData.mindbender.resourceFinal > 0 or
 						TRB.Data.snapshotData.deathAndMadness.isActive or
 						TRB.Data.snapshotData.voidTendrils.resourceFinal > 0) then
@@ -3725,7 +3725,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.devouringPlague.id then
-									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									elseif TRB.Data.snapshotData.mindDevourer.endTime ~= nil and currentTime < TRB.Data.snapshotData.mindDevourer.endTime then
 										thresholdColor = specSettings.colors.threshold.over
@@ -3736,7 +3736,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.mindSear.id then
-									if spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									elseif TRB.Data.snapshotData.mindDevourer.endTime ~= nil and currentTime < TRB.Data.snapshotData.mindDevourer.endTime then
 										thresholdColor = specSettings.colors.threshold.over
@@ -3748,7 +3748,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 									end
 								end
 							--The rest isn't used. Keeping it here for consistency until I can finish abstracting this whole mess out
-							elseif spell.isTalent and not TRB.Functions.IsTalentActive(spell) then -- Talent not selected
+							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif spell.isPvp and not TRB.Data.character.isPvp then
 								showThreshold = false
@@ -3941,7 +3941,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif spellId == TRB.Data.spells.innervate.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.innervate.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.innervate.duration, TRB.Data.snapshotData.innervate.endTime, _, _, _, TRB.Data.snapshotData.innervate.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.innervate.id)
+							_, _, _, _, TRB.Data.snapshotData.innervate.duration, TRB.Data.snapshotData.innervate.endTime, _, _, _, TRB.Data.snapshotData.innervate.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.innervate.id)
 							TRB.Data.snapshotData.innervate.modifier = 0
 							TRB.Data.snapshotData.audio.innervateCue = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
@@ -3955,7 +3955,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif spellId == TRB.Data.spells.potionOfChilledClarity.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.potionOfChilledClarity.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.potionOfChilledClarity.duration, TRB.Data.snapshotData.potionOfChilledClarity.endTime, _, _, _, TRB.Data.snapshotData.potionOfChilledClarity.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.potionOfChilledClarity.id)
+							_, _, _, _, TRB.Data.snapshotData.potionOfChilledClarity.duration, TRB.Data.snapshotData.potionOfChilledClarity.endTime, _, _, _, TRB.Data.snapshotData.potionOfChilledClarity.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.potionOfChilledClarity.id)
 							TRB.Data.snapshotData.potionOfChilledClarity.modifier = 0
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.potionOfChilledClarity.isActive = false
@@ -4032,7 +4032,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif spellId == TRB.Data.spells.apotheosis.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.apotheosis.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.apotheosis.duration, TRB.Data.snapshotData.apotheosis.endTime, _, _, _, TRB.Data.snapshotData.apotheosis.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.apotheosis.id)
+							_, _, _, _, TRB.Data.snapshotData.apotheosis.duration, TRB.Data.snapshotData.apotheosis.endTime, _, _, _, TRB.Data.snapshotData.apotheosis.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.apotheosis.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.apotheosis.isActive = false
 							TRB.Data.snapshotData.apotheosis.spellId = nil
@@ -4042,7 +4042,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif spellId == TRB.Data.spells.surgeOfLight.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.surgeOfLight.isActive = true
-							_, _, TRB.Data.snapshotData.surgeOfLight.stacks, _, TRB.Data.snapshotData.surgeOfLight.duration, TRB.Data.snapshotData.surgeOfLight.endTime, _, _, _, TRB.Data.snapshotData.surgeOfLight.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.surgeOfLight.id)
+							_, _, TRB.Data.snapshotData.surgeOfLight.stacks, _, TRB.Data.snapshotData.surgeOfLight.duration, TRB.Data.snapshotData.surgeOfLight.endTime, _, _, _, TRB.Data.snapshotData.surgeOfLight.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.surgeOfLight.id)
 						elseif type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
 							TRB.Data.snapshotData.audio.surgeOfLight2Cue = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
@@ -4086,7 +4086,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if spellId == TRB.Data.spells.voidform.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.voidform.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.voidform.duration, TRB.Data.snapshotData.voidform.endTime, _, _, _, TRB.Data.snapshotData.voidform.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.voidform.id)
+							_, _, _, _, TRB.Data.snapshotData.voidform.duration, TRB.Data.snapshotData.voidform.endTime, _, _, _, TRB.Data.snapshotData.voidform.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.voidform.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.voidform.isActive = false
 							TRB.Data.snapshotData.voidform.spellId = nil
@@ -4096,7 +4096,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif spellId == TRB.Data.spells.darkAscension.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.darkAscension.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.darkAscension.duration, TRB.Data.snapshotData.darkAscension.endTime, _, _, _, TRB.Data.snapshotData.darkAscension.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.darkAscension.id)
+							_, _, _, _, TRB.Data.snapshotData.darkAscension.duration, TRB.Data.snapshotData.darkAscension.endTime, _, _, _, TRB.Data.snapshotData.darkAscension.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.darkAscension.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.darkAscension.isActive = false
 							TRB.Data.snapshotData.darkAscension.spellId = nil
@@ -4161,13 +4161,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							end
 						end
 					--TODO: Bug #273 - Auspicious Spirits grant Insanity on spawn not on hit
-					--[[elseif settings.auspiciousSpiritsTracker and TRB.Functions.IsTalentActive(TRB.Data.spells.auspiciousSpirits) and spellId == TRB.Data.spells.auspiciousSpirits.idSpawn and type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
+					--[[elseif settings.auspiciousSpiritsTracker and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.auspiciousSpirits) and spellId == TRB.Data.spells.auspiciousSpirits.idSpawn and type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
 						InitializeTarget(destGUID)
 						TRB.Data.snapshotData.targetData.targets[destGUID].auspiciousSpirits = TRB.Data.snapshotData.targetData.targets[destGUID].auspiciousSpirits + 1
 						TRB.Data.snapshotData.targetData.auspiciousSpirits = TRB.Data.snapshotData.targetData.auspiciousSpirits + 1
 						triggerUpdate = true
-					elseif settings.auspiciousSpiritsTracker and TRB.Functions.IsTalentActive(TRB.Data.spells.auspiciousSpirits) and spellId == TRB.Data.spells.auspiciousSpirits.idImpact and (type == "SPELL_DAMAGE" or type == "SPELL_MISSED" or type == "SPELL_ABSORBED") then --Auspicious Spirit Hit
-						if TRB.Functions.CheckTargetExists(destGUID) then
+					elseif settings.auspiciousSpiritsTracker and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.auspiciousSpirits) and spellId == TRB.Data.spells.auspiciousSpirits.idImpact and (type == "SPELL_DAMAGE" or type == "SPELL_MISSED" or type == "SPELL_ABSORBED") then --Auspicious Spirit Hit
+						if TRB.Functions.Target:CheckTargetExists(destGUID) then
 							TRB.Data.snapshotData.targetData.targets[destGUID].auspiciousSpirits = TRB.Data.snapshotData.targetData.targets[destGUID].auspiciousSpirits - 1
 							TRB.Data.snapshotData.targetData.auspiciousSpirits = TRB.Data.snapshotData.targetData.auspiciousSpirits - 1
 						end
@@ -4177,7 +4177,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif spellId == TRB.Data.spells.mindDevourer.buffId then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
 							TRB.Data.spells.mindDevourer.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.mindDevourer.duration, TRB.Data.snapshotData.mindDevourer.endTime, _, _, _, TRB.Data.snapshotData.mindDevourer.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.mindDevourer.buffId)
+							_, _, _, _, TRB.Data.snapshotData.mindDevourer.duration, TRB.Data.snapshotData.mindDevourer.endTime, _, _, _, TRB.Data.snapshotData.mindDevourer.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.mindDevourer.buffId)
 						elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_DISPEL" then -- Lost buff
 							if type == "SPELL_AURA_REMOVED" and TRB.Data.snapshotData.mindDevourer.endTime ~= nil and TRB.Data.snapshotData.mindDevourer.endTime > currentTime then
 								TRB.Data.snapshotData.mindDevourer.consumedTime = currentTime
@@ -4190,7 +4190,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif spellId == TRB.Data.spells.devouredDespair.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
 							TRB.Data.snapshotData.devouredDespair.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.devouredDespair.duration, TRB.Data.snapshotData.devouredDespair.endTime, _, _, _, TRB.Data.snapshotData.devouredDespair.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.devouredDespair.id)
+							_, _, _, _, TRB.Data.snapshotData.devouredDespair.duration, TRB.Data.snapshotData.devouredDespair.endTime, _, _, _, TRB.Data.snapshotData.devouredDespair.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.devouredDespair.id)
 						elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_DISPEL" then -- Lost buff
 							TRB.Data.snapshotData.devouredDespair.isActive = false
 							TRB.Data.snapshotData.devouredDespair.spellId = nil
@@ -4200,7 +4200,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif spellId == TRB.Data.spells.mindFlayInsanity.buffId then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
 							TRB.Data.spells.mindFlayInsanity.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.duration, TRB.Data.snapshotData.mindFlayInsanity.endTime, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.mindFlayInsanity.buffId)
+							_, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.duration, TRB.Data.snapshotData.mindFlayInsanity.endTime, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.mindFlayInsanity.buffId)
 						elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_DISPEL" then -- Lost buff
 							TRB.Data.spells.mindFlayInsanity.isActive = false
 							TRB.Data.snapshotData.mindFlayInsanity.spellId = nil
@@ -4210,7 +4210,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif spellId == TRB.Data.spells.twistOfFate.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
 							TRB.Data.spells.twistOfFate.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.twistOfFate.duration, TRB.Data.snapshotData.twistOfFate.endTime, _, _, _, TRB.Data.snapshotData.twistOfFate.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.twistOfFate.id)
+							_, _, _, _, TRB.Data.snapshotData.twistOfFate.duration, TRB.Data.snapshotData.twistOfFate.endTime, _, _, _, TRB.Data.snapshotData.twistOfFate.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.twistOfFate.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.twistOfFate.isActive = false
 							TRB.Data.snapshotData.twistOfFate.spellId = nil
@@ -4266,7 +4266,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.RemoveTarget(destGUID)
+				TRB.Functions.Target:RemoveTarget(destGUID)
 				RefreshTargetTracking()
 
 				triggerUpdate = true
@@ -4309,8 +4309,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local specId = GetSpecialization()
 		if specId == 2 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.priest.holy)
-			TRB.Functions.IsTtdActive(TRB.Data.settings.priest.holy)
-			specCache.holy.talents = TRB.Functions.GetTalents()
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.holy)
+			specCache.holy.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Holy()
 			TRB.Functions.LoadFromSpecCache(specCache.holy)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Holy
@@ -4321,8 +4321,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		elseif specId == 3 then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.priest.shadow)
-			TRB.Functions.IsTtdActive(TRB.Data.settings.priest.shadow)
-			specCache.shadow.talents = TRB.Functions.GetTalents()
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.shadow)
+			specCache.shadow.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Shadow()
 			TRB.Functions.LoadFromSpecCache(specCache.shadow)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Shadow
@@ -4382,8 +4382,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					-- To prevent false positives for missing LSM values, delay creation a bit to let other addons finish loading.
 					C_Timer.After(0, function()
 						C_Timer.After(1, function()
-							TRB.Data.settings.priest.holy = TRB.Functions.ValidateLsmValues("Holy Priest", TRB.Data.settings.priest.holy)
-							TRB.Data.settings.priest.shadow = TRB.Functions.ValidateLsmValues("Shadow Priest", TRB.Data.settings.priest.shadow)
+							TRB.Data.settings.priest.holy = TRB.Functions.LibSharedMedia:ValidateLsmValues("Holy Priest", TRB.Data.settings.priest.holy)
+							TRB.Data.settings.priest.shadow = TRB.Functions.LibSharedMedia:ValidateLsmValues("Shadow Priest", TRB.Data.settings.priest.shadow)
 							
 							FillSpellData_Holy()
 							FillSpellData_Shadow()

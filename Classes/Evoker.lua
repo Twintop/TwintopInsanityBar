@@ -863,21 +863,21 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			if trinket1ItemLink ~= nil then
 				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
-						alchemyStone = TRB.Functions.DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
 					else
 						break
 					end
 				end
 
 				if alchemyStone == false then
-					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.CheckTrinketForConjuredChillglobe(trinket1ItemLink)
+					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
 				end
 			end
 
 			if alchemyStone == false and trinket2ItemLink ~= nil then
 				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
-						alchemyStone = TRB.Functions.DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
 					else
 						break
 					end
@@ -885,7 +885,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			end
 
 			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
-				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.CheckTrinketForConjuredChillglobe(trinket2ItemLink)
+				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
 			end
 
 			TRB.Data.character.items.alchemyStone = alchemyStone
@@ -909,14 +909,14 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 1 and TRB.Data.settings.core.enabled.evoker.devastation then
-			TRB.Functions.IsTtdActive(TRB.Data.settings.evoker.devastation)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.devastation)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
 			TRB.Data.resource2 = Enum.PowerType.Essence
 			TRB.Data.resource2Factor = 1
 		elseif specId == 2 and TRB.Data.settings.core.enabled.evoker.preservation then
-			TRB.Functions.IsTtdActive(TRB.Data.settings.evoker.preservation)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.preservation)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
@@ -965,8 +965,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local specId = GetSpecialization()
 		
 		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.CheckTargetExists(guid) then
-				TRB.Functions.InitializeTarget(guid)
+			if not TRB.Functions.Target:CheckTargetExists(guid) then
+				TRB.Functions.Target:InitializeTarget(guid)
 				if specId == 1 then
 				elseif specId == 2 then
 				end
@@ -976,7 +976,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end
 		return false
 	end
-	TRB.Functions.InitializeTarget_Class = InitializeTarget
+	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget
 
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
@@ -1000,7 +1000,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	end
 
 	local function TargetsCleanup(clearAll)
-		TRB.Functions.TargetsCleanup(clearAll)
+		TRB.Functions.Target:TargetsCleanup(clearAll)
 		if clearAll == true then
 			local specId = GetSpecialization()
 			if specId == 1 then
@@ -1113,7 +1113,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	end
 
     local function IsValidVariableForSpec(var)
-		local valid = TRB.Functions.IsValidVariableBase(var)
+		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 		if valid then
 			return valid
 		end
@@ -2220,7 +2220,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					elseif spellId == TRB.Data.spells.innervate.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.innervate.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.innervate.duration, TRB.Data.snapshotData.innervate.endTime, _, _, _, TRB.Data.snapshotData.innervate.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.innervate.id)
+							_, _, _, _, TRB.Data.snapshotData.innervate.duration, TRB.Data.snapshotData.innervate.endTime, _, _, _, TRB.Data.snapshotData.innervate.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.innervate.id)
 							TRB.Data.snapshotData.innervate.modifier = 0
 							TRB.Data.snapshotData.audio.innervateCue = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
@@ -2258,7 +2258,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					elseif spellId == TRB.Data.spells.serenity.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.snapshotData.serenity.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.serenity.duration, TRB.Data.snapshotData.serenity.endTime, _, _, _, TRB.Data.snapshotData.serenity.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.serenity.id)
+							_, _, _, _, TRB.Data.snapshotData.serenity.duration, TRB.Data.snapshotData.serenity.endTime, _, _, _, TRB.Data.snapshotData.serenity.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.serenity.id)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.serenity.isActive = false
 							TRB.Data.snapshotData.serenity.spellId = nil
@@ -2268,7 +2268,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					elseif spellId == TRB.Data.spells.danceOfChiJi.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.snapshotData.danceOfChiJi.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.danceOfChiJi.duration, TRB.Data.snapshotData.danceOfChiJi.endTime, _, _, _, TRB.Data.snapshotData.danceOfChiJi.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.danceOfChiJi.id)
+							_, _, _, _, TRB.Data.snapshotData.danceOfChiJi.duration, TRB.Data.snapshotData.danceOfChiJi.endTime, _, _, _, TRB.Data.snapshotData.danceOfChiJi.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.danceOfChiJi.id)
 
 							if TRB.Data.settings.evoker.devastation.audio.danceOfChiJi.enabled and not TRB.Data.snapshotData.audio.playedDanceOfChiJiCue then
 								TRB.Data.snapshotData.audio.playedDanceOfChiJiCue = true
@@ -2330,7 +2330,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							TRB.Data.snapshotData.paralysis.startTime = currentTime
 							TRB.Data.snapshotData.paralysis.duration = TRB.Data.spells.paralysis.cooldown
 
-							if TRB.Functions.IsTalentActive(TRB.Data.spells.paralysisRank2) then
+							if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.paralysisRank2) then
 								TRB.Data.snapshotData.paralysis.duration = TRB.Data.snapshotData.paralysis.duration + TRB.Data.spells.paralysisRank2.cooldownMod
 							end
 						end
@@ -2377,7 +2377,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					elseif spellId == TRB.Data.spells.potionOfChilledClarity.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.potionOfChilledClarity.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.potionOfChilledClarity.duration, TRB.Data.snapshotData.potionOfChilledClarity.endTime, _, _, _, TRB.Data.snapshotData.potionOfChilledClarity.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.potionOfChilledClarity.id)
+							_, _, _, _, TRB.Data.snapshotData.potionOfChilledClarity.duration, TRB.Data.snapshotData.potionOfChilledClarity.endTime, _, _, _, TRB.Data.snapshotData.potionOfChilledClarity.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.potionOfChilledClarity.id)
 							TRB.Data.snapshotData.potionOfChilledClarity.modifier = 0
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.potionOfChilledClarity.isActive = false
@@ -2390,7 +2390,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						if type == "SPELL_PERIODIC_ENERGIZE" then
 							TRB.Data.snapshotData.emeraldCommunion.isActive = true
 							if TRB.Data.snapshotData.emeraldCommunion.firstTickTime == nil then								
-								_, _, _, _, TRB.Data.snapshotData.emeraldCommunion.duration, TRB.Data.snapshotData.emeraldCommunion.endTime, _, _, _, TRB.Data.snapshotData.emeraldCommunion.spellId = TRB.Functions.FindBuffById(TRB.Data.spells.emeraldCommunion.id)
+								_, _, _, _, TRB.Data.snapshotData.emeraldCommunion.duration, TRB.Data.snapshotData.emeraldCommunion.endTime, _, _, _, TRB.Data.snapshotData.emeraldCommunion.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.emeraldCommunion.id)
 								TRB.Data.snapshotData.emeraldCommunion.firstTickTime = currentTime
 								TRB.Data.snapshotData.emeraldCommunion.previousTickTime = currentTime
 								TRB.Data.snapshotData.emeraldCommunion.ticksRemaining = TRB.Data.spells.emeraldCommunion.ticks
@@ -2410,7 +2410,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.RemoveTarget(destGUID)
+				TRB.Functions.Target:RemoveTarget(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end
@@ -2451,8 +2451,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local specId = GetSpecialization()
 		if specId == 1 then-- and TRB.Data.settings.core.experimental.specs.evoker.devastation then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.evoker.devastation)
-			TRB.Functions.IsTtdActive(TRB.Data.settings.evoker.devastation)
-			specCache.devastation.talents = TRB.Functions.GetTalents()
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.devastation)
+			specCache.devastation.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Devastation()
 			TRB.Functions.LoadFromSpecCache(specCache.devastation)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Devastation
@@ -2463,8 +2463,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			end
 		elseif specId == 2 then-- and TRB.Data.settings.core.experimental.specs.evoker.preservation then
 			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.evoker.preservation)
-			TRB.Functions.IsTtdActive(TRB.Data.settings.evoker.preservation)
-			specCache.preservation.talents = TRB.Functions.GetTalents()
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.preservation)
+			specCache.preservation.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Preservation()
 			TRB.Functions.LoadFromSpecCache(specCache.preservation)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Preservation
@@ -2525,8 +2525,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					C_Timer.After(0, function()
 						C_Timer.After(1, function()
 							TRB.Data.barConstructedForSpec = nil
-							TRB.Data.settings.evoker.devastation = TRB.Functions.ValidateLsmValues("Devastation Evoker", TRB.Data.settings.evoker.devastation)
-							TRB.Data.settings.evoker.preservation = TRB.Functions.ValidateLsmValues("Preservation Evoker", TRB.Data.settings.evoker.preservation)
+							TRB.Data.settings.evoker.devastation = TRB.Functions.LibSharedMedia:ValidateLsmValues("Devastation Evoker", TRB.Data.settings.evoker.devastation)
+							TRB.Data.settings.evoker.preservation = TRB.Functions.LibSharedMedia:ValidateLsmValues("Preservation Evoker", TRB.Data.settings.evoker.preservation)
 							FillSpellData_Devastation()
 							FillSpellData_Preservation()
 

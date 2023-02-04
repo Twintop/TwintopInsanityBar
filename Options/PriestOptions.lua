@@ -1528,7 +1528,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 2 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 
@@ -1542,7 +1542,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 2 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 
@@ -1556,7 +1556,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 2 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 
@@ -2497,7 +2497,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnClick", function(self, ...)
 			spec.auspiciousSpiritsTracker = self:GetChecked()
 
-			if ((spec.auspiciousSpiritsTracker and TRB.Functions.IsTalentActive(TRB.Data.spells.auspiciousSpirits)) or TRB.Functions.IsTtdActive(spec)) and GetSpecialization() == 3 then
+			if ((spec.auspiciousSpiritsTracker and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.auspiciousSpirits)) or TRB.Functions.BarText:IsTtdActive(spec)) and GetSpecialization() == 3 then
 				targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			else
 				targetsTimerFrame:SetScript("OnUpdate", nil)
@@ -2650,7 +2650,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.displayText.left.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 		f:SetCursorPosition(0)
@@ -2665,7 +2665,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.displayText.middle.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 		f:SetCursorPosition(0)
@@ -2680,7 +2680,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.displayText.right.text = self:GetText()
 			TRB.Data.barTextCache = {}
 			if GetSpecialization() == 3 then
-				TRB.Functions.IsTtdActive(spec)
+				TRB.Functions.BarText:IsTtdActive(spec)
 			end
 		end)
 		f:SetCursorPosition(0)

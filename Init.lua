@@ -106,7 +106,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 		local currentTime = GetTime()
 
 		if guid ~= nil then
-			TRB.Functions.InitializeTarget_Class(guid)
+			TRB.Functions.Target.InitializeTarget_Class(guid)
 
 			local isDead = UnitIsDeadOrGhost("target")
 			local currentHealth = UnitHealth("target")
@@ -126,7 +126,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 			end
 
 			if isDead then
-				TRB.Functions.RemoveTarget(guid)
+				TRB.Functions.Target:RemoveTarget(guid)
 			elseif currentHealth <= 0 or maxHealth <= 0 then
 				dps = 0
 				ttd = 0
