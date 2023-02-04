@@ -452,7 +452,6 @@ function TRB.Functions.IO:Import(input)
 	local existingSettings = TRB.Data.settings
 
 	local function TableMergeWrapper(existing, config)
-        print("merging")
 		return TRB.Functions.Table:Merge(existing, config)
 	end
 
