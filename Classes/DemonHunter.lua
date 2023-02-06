@@ -35,7 +35,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		}
 	}
 
-	local function FillSpecCache()
+	local function FillSpecializationCache()
 		-- Havoc
 
 		specCache.havoc.Global_TwintopResourceBar = {
@@ -401,13 +401,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			return
 		end
 
-		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "demonhunter", "havoc")
-		TRB.Functions.LoadFromSpecCache(specCache.havoc)
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "demonhunter", "havoc")
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.havoc)
 	end
 
 	local function FillSpellData_Havoc()
 		Setup_Havoc()
-		local spells = TRB.Functions.FillSpellData(specCache.havoc.spells)
+		local spells = TRB.Functions.Spell:FillSpellData(specCache.havoc.spells)
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.havoc.barTextVariables.icons = {
@@ -506,7 +506,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	end
 
 	local function CheckCharacter()
-		TRB.Functions.CheckCharacter()
+		TRB.Functions.Character:CheckCharacter()
 		TRB.Data.character.className = "demonhunter"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Fury)
@@ -570,19 +570,19 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget
 
 	local function GetImmolationAuraRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.immolationAura)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.immolationAura)
 	end
 
 	local function GetMetamorphosisRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.metamorphosis)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.metamorphosis)
 	end
 
 	local function GetTacticalRetreatRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.tacticalRetreat)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.tacticalRetreat)
 	end
 	
 	local function GetUnboundChaosRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.unboundChaos)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.unboundChaos)
 	end
 
     local function CalculateAbilityResourceValue(resource)
@@ -621,8 +621,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
-					TRB.Functions.ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-					TRB.Functions.SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+					TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
+					TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
 
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
@@ -630,11 +630,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				end
 			end
 
-			TRB.Functions.ConstructResourceBar(settings)
+			TRB.Functions.Bar:Construct(settings)
 		end
 
 		if specId == 1 then
-			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 		end
 	end
 
@@ -931,13 +931,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local specId = GetSpecialization()
 
 		if currentSpellName == nil and currentChannelName == nil then
-			TRB.Functions.ResetCastingSnapshotData()
+			TRB.Functions.Character:ResetCastingSnapshotData()
 			return false
 		else
 			if specId == 1 then
 				if currentSpellName == nil then
 					if currentChannelId == TRB.Data.spells.eyeBeam.id and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.blindFury) then
-						local gcd = TRB.Functions.GetCurrentGCDTime(true)
+						local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.eyeBeam.id
 						--TRB.Data.snapshotData.casting.startTime = currentChannelStartTime / 1000
 						TRB.Data.snapshotData.casting.endTime = currentChannelEndTime / 1000
@@ -950,17 +950,17 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 						TRB.Data.snapshotData.eyeBeam.ticksRemaining = ticks
 						TRB.Data.snapshotData.eyeBeam.fury = fury
 					else
-						TRB.Functions.ResetCastingSnapshotData()
+						TRB.Functions.Character:ResetCastingSnapshotData()
 						return false
 						--See Priest implementation for handling channeled spells
 					end
 					return true
 				else
-					TRB.Functions.ResetCastingSnapshotData()
+					TRB.Functions.Character:ResetCastingSnapshotData()
 					return false
 				end
 			end
-			TRB.Functions.ResetCastingSnapshotData()
+			TRB.Functions.Character:ResetCastingSnapshotData()
 			return false
 		end
 	end
@@ -1013,7 +1013,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	end
 
 	local function UpdateSnapshot()
-		TRB.Functions.UpdateSnapshot()
+		TRB.Functions.Character:UpdateSnapshot()
 		local currentTime = GetTime()
 	end
 
@@ -1119,7 +1119,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		if specId == 1 then
 			local specSettings = classSettings.havoc
 			UpdateSnapshot_Havoc()
-			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
@@ -1151,24 +1151,24 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					if castingBarValue < currentFury then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue) 
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, currentFury)
+							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue) 
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, currentFury)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, currentFury)
+							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, currentFury)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, currentFury)
-						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentFury)
+						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -1180,7 +1180,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							local furyAmount = CalculateAbilityResourceValue(spell.fury)
 							local normalizedFury = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 
-							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -furyAmount, TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -furyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -1209,7 +1209,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 										furyAmount = furyAmount * TRB.Data.spells.unleashedPower.furyModifier
 									end
 
-									TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -furyAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -furyAmount, TRB.Data.character.maxResource)
 
 									if TRB.Data.snapshotData.chaosNova.startTime ~= nil and currentTime < (TRB.Data.snapshotData.chaosNova.startTime + TRB.Data.snapshotData.chaosNova.duration) then
 										thresholdColor = specSettings.colors.threshold.unusable
@@ -1266,7 +1266,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 								end
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
+							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end
@@ -1279,7 +1279,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 						if specSettings.endOfMetamorphosis.enabled then
 							useEndOfMetamorphosisColor = true
 							if specSettings.endOfMetamorphosis.mode == "gcd" then
-								local gcd = TRB.Functions.GetCurrentGCDTime()
+								local gcd = TRB.Functions.Character:GetCurrentGCDTime()
 								timeThreshold = gcd * specSettings.endOfMetamorphosis.gcdsMax
 							elseif specSettings.endOfMetamorphosis.mode == "time" then
 								timeThreshold = specSettings.endOfMetamorphosis.timeMax
@@ -1512,11 +1512,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 then
-			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.demonhunter.havoc)
+			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.demonhunter.havoc)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.demonhunter.havoc)
 			specCache.havoc.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Havoc()
-			TRB.Functions.LoadFromSpecCache(specCache.havoc)
+			TRB.Functions.Character:LoadFromSpecializationCache(specCache.havoc)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Havoc
 
 			if TRB.Data.barConstructedForSpec ~= "havoc" then
@@ -1549,7 +1549,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					else
 						TRB.Data.settings = settings
 					end
-					FillSpecCache()
+					FillSpecializationCache()
 
 					SLASH_TWINTOP1 	= "/twintop"
 					SLASH_TWINTOP2 	= "/tt"

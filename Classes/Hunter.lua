@@ -53,7 +53,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		}
 	}
 
-	local function FillSpecCache()
+	local function FillSpecializationCache()
 		-- Beast Mastery
 		specCache.beastMastery.Global_TwintopResourceBar = {
 			ttd = 0,
@@ -1215,8 +1215,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "hunter", "beastMastery")
-		TRB.Functions.LoadFromSpecCache(specCache.beastMastery)
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "hunter", "beastMastery")
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.beastMastery)
 	end
 
 	local function Setup_Marksmanship()
@@ -1224,8 +1224,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "hunter", "marksmanship")
-		TRB.Functions.LoadFromSpecCache(specCache.marksmanship)
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "hunter", "marksmanship")
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.marksmanship)
 	end
 
 	local function Setup_Survival()
@@ -1233,13 +1233,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return
 		end
 
-		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "hunter", "survival")
-		TRB.Functions.LoadFromSpecCache(specCache.survival)
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "hunter", "survival")
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.survival)
 	end
 
 	local function FillSpellData_BeastMastery()
 		Setup_BeastMastery()
-		local spells = TRB.Functions.FillSpellData(specCache.beastMastery.spells)
+		local spells = TRB.Functions.Spell:FillSpellData(specCache.beastMastery.spells)
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.beastMastery.barTextVariables.icons = {
@@ -1330,7 +1330,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	local function FillSpellData_Marksmanship()
 		Setup_Marksmanship()
-		local spells = TRB.Functions.FillSpellData(specCache.marksmanship.spells)
+		local spells = TRB.Functions.Spell:FillSpellData(specCache.marksmanship.spells)
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.marksmanship.barTextVariables.icons = {
@@ -1423,7 +1423,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	local function FillSpellData_Survival()
 		Setup_Survival()
-		local spells = TRB.Functions.FillSpellData(specCache.survival.spells)
+		local spells = TRB.Functions.Spell:FillSpellData(specCache.survival.spells)
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.survival.barTextVariables.icons = {
@@ -1517,7 +1517,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	local function CheckCharacter()
 		local specId = GetSpecialization()
-		TRB.Functions.CheckCharacter()
+		TRB.Functions.Character:CheckCharacter()
 		TRB.Data.character.className = "hunter"
 		TRB.Data.character.petGuid = UnitGUID("pet")
 ---@diagnostic disable-next-line: missing-parameter
@@ -1603,12 +1603,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget	
 
 	local function GetFrenzyRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.frenzy)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.frenzy)
 	end
 
 	local function GetBeastialWrathCooldownRemainingTime()
 		local currentTime = GetTime()
-		local gcd = TRB.Functions.GetCurrentGCDTime(true)
+		local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 		local remainingTime = 0
 
 		if TRB.Data.snapshotData.beastialWrath.duration == gcd or TRB.Data.snapshotData.beastialWrath.startTime == 0 or TRB.Data.snapshotData.beastialWrath.duration == 0 then
@@ -1621,19 +1621,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	end
 
 	local function GetTrueshotRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.trueshot)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.trueshot)
 	end
 
 	local function GetSteadyFocusRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.steadyFocus)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.steadyFocus)
 	end
 
 	local function GetCoordinatedAssaultRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.coordinatedAssault)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.coordinatedAssault)
 	end
 
 	local function GetLockAndLoadRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.lockAndLoad)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.lockAndLoad)
 	end
 
     local function CalculateAbilityResourceValue(resource, threshold)
@@ -1692,8 +1692,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
-				TRB.Functions.ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-				TRB.Functions.SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
+				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
 
 				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
@@ -1701,8 +1701,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
             end
         end
 
-		TRB.Functions.ConstructResourceBar(settings)
-		TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+		TRB.Functions.Bar:Construct(settings)
+		TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 	end
 
     local function IsValidVariableForSpec(var)
@@ -1887,7 +1887,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local _passiveFocus
 		local _passiveFocusMinusRegen
 
-		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
+		local _gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 		if TRB.Data.settings.hunter.beastMastery.generation.enabled then
 			if TRB.Data.settings.hunter.beastMastery.generation.mode == "time" then
@@ -2108,7 +2108,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local _regenFocus = 0
 		local _passiveFocus
 
-		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
+		local _gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 		if TRB.Data.settings.hunter.marksmanship.generation.enabled then
 			if TRB.Data.settings.hunter.marksmanship.generation.mode == "time" then
@@ -2309,7 +2309,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local _regenFocus = 0
 		local _passiveFocus
 
-		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
+		local _gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 		if TRB.Data.settings.hunter.survival.generation.enabled then
 			if TRB.Data.settings.hunter.survival.generation.mode == "time" then
@@ -2489,7 +2489,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local currentChannel = UnitChannelInfo("player")
 
 		if currentSpell == nil and currentChannel == nil then
-			TRB.Functions.ResetCastingSnapshotData()
+			TRB.Functions.Character:ResetCastingSnapshotData()
 			return false
 		else
 			if specId == 1 then
@@ -2498,7 +2498,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					if spellName == TRB.Data.spells.barrage.name then
 						TRB.Data.spells.barrage.thresholdUsable = false
 					else
-						TRB.Functions.ResetCastingSnapshotData()
+						TRB.Functions.Character:ResetCastingSnapshotData()
 						return false
 					end
 					--See Priest implementation for handling channeled spells
@@ -2524,7 +2524,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.rapidFire.icon
 						UpdateRapidFire()
 					else
-						TRB.Functions.ResetCastingSnapshotData()
+						TRB.Functions.Character:ResetCastingSnapshotData()
 						return false
 					end
 				else
@@ -2542,7 +2542,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					elseif spellName == TRB.Data.spells.revivePet.name then
 						FillSnapshotDataCasting(TRB.Data.spells.revivePet)
 					else
-						TRB.Functions.ResetCastingSnapshotData()
+						TRB.Functions.Character:ResetCastingSnapshotData()
 						return false
 					end
 					UpdateCastingResourceFinal()
@@ -2551,7 +2551,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			elseif specId == 3 then
 				if currentSpell == nil then
 					local spellName = select(1, currentChannel)
-					TRB.Functions.ResetCastingSnapshotData()
+					TRB.Functions.Character:ResetCastingSnapshotData()
 					return false
 					--See Priest implementation for handling channeled spells
 				else
@@ -2561,12 +2561,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					elseif spellName == TRB.Data.spells.revivePet.name then
 						FillSnapshotDataCasting(TRB.Data.spells.revivePet)
 					else
-						TRB.Functions.ResetCastingSnapshotData()
+						TRB.Functions.Character:ResetCastingSnapshotData()
 						return false
 					end
 				end
 			end
-			TRB.Functions.ResetCastingSnapshotData()
+			TRB.Functions.Character:ResetCastingSnapshotData()
 			return false
 		end
 	end
@@ -2629,7 +2629,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	end
 
 	local function UpdateSnapshot()
-		TRB.Functions.UpdateSnapshot()
+		TRB.Functions.Character:UpdateSnapshot()
 		local currentTime = GetTime()
 
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentSting then
@@ -2813,7 +2813,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		if specId == 1 then
 			local specSettings = classSettings.beastMastery
 			UpdateSnapshot_BeastMastery()
-			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
@@ -2822,7 +2822,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local gcd = TRB.Functions.GetCurrentGCDTime(true)
+					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 					local passiveValue = 0
 					if specSettings.bar.showPassive then
@@ -2844,24 +2844,24 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
-						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -2871,7 +2871,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local focusAmount = CalculateAbilityResourceValue(spell.focus, true)
-							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -2902,7 +2902,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								elseif spell.id == TRB.Data.spells.killCommand.id then
 									if TRB.Data.spells.direPack.isActive then
 										focusAmount = focusAmount * TRB.Data.spells.direPack.focusMod
-										TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
+										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
 									end
 
 									if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
@@ -2918,7 +2918,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								elseif spell.id == TRB.Data.spells.cobraShot.id then
 									if TRB.Data.spells.aspectOfTheWild.isActive then
 										focusAmount = focusAmount - TRB.Data.spells.aspectOfTheWild.focusMod
-										TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
+										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
 									end
 
 									if TRB.Data.snapshotData.resource >= -focusAmount then
@@ -2952,14 +2952,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								end
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
+							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end
 
 					local barColor = specSettings.colors.bar.base
 
-					local latency = TRB.Functions.GetLatency()
+					local latency = TRB.Functions.Character:GetLatency()
 
 					local barbedShotRechargeRemaining = -(currentTime - (TRB.Data.snapshotData.barbedShot.startTime + TRB.Data.snapshotData.barbedShot.duration))
 					local barbedShotTotalRechargeRemaining = barbedShotRechargeRemaining + ((1 - TRB.Data.snapshotData.barbedShot.charges) * TRB.Data.snapshotData.barbedShot.duration)
@@ -3034,7 +3034,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		elseif specId == 2 then
 			local specSettings = classSettings.marksmanship
 			UpdateSnapshot_Marksmanship()
-			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
@@ -3043,7 +3043,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local gcd = TRB.Functions.GetCurrentGCDTime(true)
+					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 					local borderColor = specSettings.colors.bar.border
 					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
 						borderColor = specSettings.colors.bar.borderOvercap
@@ -3061,7 +3061,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						local timeThreshold = 0
 
 						if specSettings.steadyFocus.mode == "gcd" then
-							local gcd = TRB.Functions.GetCurrentGCDTime()
+							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
 							timeThreshold = gcd * specSettings.steadyFocus.gcdsMax
 						elseif specSettings.steadyFocus.mode == "time" then
 							timeThreshold = specSettings.steadyFocus.timeMax
@@ -3094,24 +3094,24 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
-						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -3121,7 +3121,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local focusAmount = CalculateAbilityResourceValue(spell.focus, true)
-							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -3214,7 +3214,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								end
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
+							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end
@@ -3228,7 +3228,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						if specSettings.endOfTrueshot.enabled then
 							useEndOfTrueshotColor = true
 							if specSettings.endOfTrueshot.mode == "gcd" then
-								local gcd = TRB.Functions.GetCurrentGCDTime()
+								local gcd = TRB.Functions.Character:GetCurrentGCDTime()
 								timeThreshold = gcd * specSettings.endOfTrueshot.gcdsMax
 							elseif specSettings.endOfTrueshot.mode == "time" then
 								timeThreshold = specSettings.endOfTrueshot.timeMax
@@ -3248,7 +3248,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		elseif specId == 3 then
 			local specSettings = classSettings.survival
 			UpdateSnapshot_Survival()
-			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
@@ -3257,7 +3257,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local gcd = TRB.Functions.GetCurrentGCDTime(true)
+					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
 						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
 
@@ -3293,24 +3293,24 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
-						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -3320,7 +3320,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local focusAmount = CalculateAbilityResourceValue(spell.focus, true)
-							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -3405,7 +3405,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								end
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
+							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end
@@ -3428,7 +3428,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						if specSettings.endOfCoordinatedAssault.enabled then
 							useEndOfCoordinatedAssaultColor = true
 							if specSettings.endOfCoordinatedAssault.mode == "gcd" then
-								local gcd = TRB.Functions.GetCurrentGCDTime()
+								local gcd = TRB.Functions.Character:GetCurrentGCDTime()
 								timeThreshold = gcd * specSettings.endOfCoordinatedAssault.gcdsMax
 							elseif specSettings.endOfCoordinatedAssault.mode == "time" then
 								timeThreshold = specSettings.endOfCoordinatedAssault.timeMax
@@ -3748,11 +3748,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 then
-			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.hunter.beastMastery)
+			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.hunter.beastMastery)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.beastMastery)
 			specCache.beastMastery.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_BeastMastery()
-			TRB.Functions.LoadFromSpecCache(specCache.beastMastery)
+			TRB.Functions.Character:LoadFromSpecializationCache(specCache.beastMastery)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_BeastMastery
 
 			if TRB.Data.barConstructedForSpec ~= "beastMastery" then
@@ -3760,11 +3760,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				ConstructResourceBar(specCache.beastMastery.settings)
 			end
 		elseif specId == 2 then
-			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.hunter.marksmanship)
+			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.hunter.marksmanship)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.marksmanship)
 			specCache.marksmanship.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Marksmanship()
-			TRB.Functions.LoadFromSpecCache(specCache.marksmanship)
+			TRB.Functions.Character:LoadFromSpecializationCache(specCache.marksmanship)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Marksmanship
 
 			if TRB.Data.barConstructedForSpec ~= "marksmanship" then
@@ -3772,11 +3772,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				ConstructResourceBar(specCache.marksmanship.settings)
 			end
 		elseif specId == 3 then
-			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.hunter.survival)
+			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.hunter.survival)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.survival)
 			specCache.survival.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Survival()
-			TRB.Functions.LoadFromSpecCache(specCache.survival)
+			TRB.Functions.Character:LoadFromSpecializationCache(specCache.survival)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Survival
 
 			if TRB.Data.barConstructedForSpec ~= "survival" then
@@ -3809,7 +3809,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					else
 						TRB.Data.settings = settings
 					end
-					FillSpecCache()
+					FillSpecializationCache()
 
 					SLASH_TWINTOP1 	= "/twintop"
 					SLASH_TWINTOP2 	= "/tt"

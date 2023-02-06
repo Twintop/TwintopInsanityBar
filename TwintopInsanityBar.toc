@@ -24,15 +24,18 @@ Libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
 Functions\Aura.lua
 Functions\Bar.lua
 Functions\BarText.lua
+Functions\Character.lua
 Functions\Color.lua
 Functions\Item.lua
 Functions\IO.lua
 Functions\LibSharedMedia.lua
 Functions\Number.lua
+Functions\Spell.lua
 Functions\String.lua
 Functions\Table.lua
 Functions\Talent.lua
 Functions\Target.lua
+Functions\Threshold.lua
 
 Functions.lua
 

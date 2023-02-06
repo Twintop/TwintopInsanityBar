@@ -274,7 +274,7 @@ TRB.Data.spells = {}
 TRB.Data.lookup = {}
 TRB.Data.lookupLogic = {}
 
-TRB.Functions.ResetSnapshotData()
+TRB.Functions.Character:ResetSnapshotData()
 
 TRB.Data.sanityCheckValues = {
 	barMaxWidth = 0,
@@ -289,15 +289,29 @@ local function IsValidVariableForSpec(input)
 end
 TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
 
+local function ParseCmdString(msg)
+	if msg then
+		while (strfind(msg,"  ") ~= nil) do
+			msg = string.gsub(msg,"  "," ")
+		end
+		local a,b,c=strfind(msg,"(%S+)")
+		if a then
+			return c,strsub(msg,b+2)
+		else
+			return "";
+		end
+	end
+end
+
 function SlashCmdList.TWINTOP(msg)
-    local cmd, subcmd = TRB.Functions.ParseCmdString(msg);
+    local cmd, subcmd = ParseCmdString(msg);
     if cmd == "reset" then
         StaticPopup_Show("TwintopResourceBar_Reset")
     elseif cmd == "fill" then
-        TRB.Functions.FillSpellData()
+        TRB.Functions.Spell:FillSpellData()
     elseif cmd == "move" then
-        local x, y = TRB.Functions.ParseCmdString(subcmd)
-        TRB.Functions.UpdateBarPosition(tonumber(x), tonumber(y))
+        local x, y = ParseCmdString(subcmd)
+        TRB.Functions.Bar:SetPositionXY(tonumber(x), tonumber(y))
     else
 		Settings.OpenToCategory(TRB.Frames.interfaceSettingsFrameContainer.panel)
         --InterfaceOptionsFrame_OpenToCategory(TRB.Frames.interfaceSettingsFrameContainer.panel)

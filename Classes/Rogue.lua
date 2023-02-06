@@ -52,7 +52,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		}
 	}
 
-	local function FillSpecCache()
+	local function FillSpecializationCache()
 		-- Assassination
 		specCache.assassination.Global_TwintopResourceBar = {
 			ttd = 0,
@@ -1404,8 +1404,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			return
 		end
 
-		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "rogue", "assassination")
-		TRB.Functions.LoadFromSpecCache(specCache.assassination)
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "rogue", "assassination")
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.assassination)
 	end
 
 	local function Setup_Outlaw()
@@ -1413,13 +1413,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			return
 		end
 
-		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "rogue", "outlaw")
-		TRB.Functions.LoadFromSpecCache(specCache.outlaw)
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "rogue", "outlaw")
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.outlaw)
 	end
 
 	local function FillSpellData_Assassination()
 		Setup_Assassination()
-		local spells = TRB.Functions.FillSpellData(specCache.assassination.spells)
+		local spells = TRB.Functions.Spell:FillSpellData(specCache.assassination.spells)
 		
 		-- This is done here so that we can get icons for the options menu!
 		specCache.assassination.barTextVariables.icons = {
@@ -1570,7 +1570,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 	local function FillSpellData_Outlaw()
 		Setup_Outlaw()
-		local spells = TRB.Functions.FillSpellData(specCache.outlaw.spells)
+		local spells = TRB.Functions.Spell:FillSpellData(specCache.outlaw.spells)
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.outlaw.barTextVariables.icons = {
@@ -1718,7 +1718,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	local function CheckCharacter()
 		local specId = GetSpecialization()
 ---@diagnostic disable-next-line: missing-parameter
-		TRB.Functions.CheckCharacter()
+		TRB.Functions.Character:CheckCharacter()
 		TRB.Data.character.className = "rogue"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Energy)
         local maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
@@ -1733,7 +1733,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
         if settings ~= nil then
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
-            	TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+            	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 			end
         end
 	end
@@ -1799,15 +1799,15 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	end
 	
 	local function GetSliceAndDiceRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.sliceAndDice)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.sliceAndDice)
 	end
 
 	local function GetBlindsideRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.blindside)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.blindside)
 	end
 
 	local function GetOpportunityRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.opportunity)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.opportunity)
 	end
 	
     local function CalculateAbilityResourceValue(resource, nimbleFingers, rushedSetup, comboPoints)
@@ -2055,8 +2055,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
-				TRB.Functions.ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-				TRB.Functions.SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
+				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
 
 				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
@@ -2065,10 +2065,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
         end
 		TRB.Frames.resource2ContainerFrame:Show()
 
-		TRB.Functions.ConstructResourceBar(settings)
+		TRB.Functions.Bar:Construct(settings)
 		
 		if specId == 1 or specId == 2 then
-			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 		end
 	end
 
@@ -2390,7 +2390,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local _passiveEnergy
 		local _passiveEnergyMinusRegen
 
-		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
+		local _gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 		if TRB.Data.settings.rogue.assassination.generation.enabled then
 			if TRB.Data.settings.rogue.assassination.generation.mode == "time" then
@@ -2862,7 +2862,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local _passiveEnergy
 		local _passiveEnergyMinusRegen
 
-		local _gcd = TRB.Functions.GetCurrentGCDTime(true)
+		local _gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 		if TRB.Data.settings.rogue.outlaw.generation.enabled then
 			if TRB.Data.settings.rogue.outlaw.generation.mode == "time" then
@@ -2972,27 +2972,27 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local rtbBuffTime = string.format("%.1f", _rtbBuffTime)
 
 		--$broadsideTime
-		local _broadsideTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.broadside)
+		local _broadsideTime = TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.broadside)
 		local broadsideTime = string.format("%.1f", _broadsideTime)
 
 		--$buriedTreasureTime
-		local _buriedTreasureTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure)
+		local _buriedTreasureTime = TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure)
 		local buriedTreasureTime = string.format("%.1f", _buriedTreasureTime)
 
 		--$grandMeleeTime
-		local _grandMeleeTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.grandMelee)
+		local _grandMeleeTime = TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.grandMelee)
 		local grandMeleeTime = string.format("%.1f", _grandMeleeTime)
 
 		--$ruthlessPrecisionTime
-		local _ruthlessPrecisionTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision)
+		local _ruthlessPrecisionTime = TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision)
 		local ruthlessPrecisionTime = string.format("%.1f", _ruthlessPrecisionTime)
 
 		--$skullAndCrossbonesTime
-		local _skullAndCrossbonesTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones)
+		local _skullAndCrossbonesTime = TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones)
 		local skullAndCrossbonesTime = string.format("%.1f", _skullAndCrossbonesTime)
 
 		--$trueBearingTime
-		local _trueBearingTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.trueBearing)
+		local _trueBearingTime = TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.trueBearing)
 		local trueBearingTime = string.format("%.1f", _trueBearingTime)
 		
 		--$opportunityTime
@@ -3171,13 +3171,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local currentChannel = UnitChannelInfo("player")
 
 		if currentSpell == nil and currentChannel == nil then
-			TRB.Functions.ResetCastingSnapshotData()
+			TRB.Functions.Character:ResetCastingSnapshotData()
 			return false
 		else
 			if specId == 1 or specId == 2 then
 				if currentSpell == nil then
 					local spellName = select(1, currentChannel)
-						TRB.Functions.ResetCastingSnapshotData()
+						TRB.Functions.Character:ResetCastingSnapshotData()
 						return false
 					--See Priest implementation for handling channeled spells
 				else
@@ -3185,13 +3185,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					return false
 				end
 			end
-			TRB.Functions.ResetCastingSnapshotData()
+			TRB.Functions.Character:ResetCastingSnapshotData()
 			return false
 		end
 	end
 
 	local function UpdateSnapshot()
-		TRB.Functions.UpdateSnapshot()
+		TRB.Functions.Character:UpdateSnapshot()
 		local currentTime = GetTime()
 
 		_, _, _, _, _, TRB.Data.snapshotData.sliceAndDice.endTime, _, _, _, TRB.Data.snapshotData.sliceAndDice.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.sliceAndDice.id)
@@ -3426,7 +3426,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local rollTheBonesTemporaryCount = 0
 		local highestRemaining = 0
 		for _, v in pairs(TRB.Data.snapshotData.rollTheBones.buffs) do
-			local remaining = TRB.Functions.GetSpellRemainingTime(v)
+			local remaining = TRB.Functions.Spell:GetRemainingTime(v)
 			if remaining > 0 then
 				if v.fromCountTheOdds then
 					rollTheBonesTemporaryCount = rollTheBonesTemporaryCount + 1
@@ -3511,7 +3511,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		if specId == 1 then
 			local specSettings = classSettings.assassination
 			UpdateSnapshot_Assassination()
-			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
@@ -3520,7 +3520,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local gcd = TRB.Functions.GetCurrentGCDTime(true)
+					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 					local passiveValue = 0
 					if specSettings.bar.showPassive then
@@ -3542,24 +3542,24 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
-						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -3569,7 +3569,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local energyAmount = CalculateAbilityResourceValue(spell.energy, spell.nimbleFingers, spell.rushedSetup, spell.comboPoints)
-							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -3724,7 +3724,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
+							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end
@@ -3783,14 +3783,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						local cpBB = cpBackgroundBlue
 
                         if TRB.Data.snapshotData.resource2 >= x then
-                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
 							if (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = specSettings.colors.comboPoints.penultimate
 							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = specSettings.colors.comboPoints.final
 							end
                         else
-                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
                         end
 
 						if TRB.Data.snapshotData.echoingReprimand[x].enabled then
@@ -3822,7 +3822,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		elseif specId == 2 then
 			local specSettings = classSettings.outlaw
 			UpdateSnapshot_Outlaw()
-			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
@@ -3831,7 +3831,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local gcd = TRB.Functions.GetCurrentGCDTime(true)
+					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 					local passiveValue = 0
 					if specSettings.bar.showPassive then
@@ -3853,24 +3853,24 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
-						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -3880,7 +3880,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then	
 							local energyAmount = CalculateAbilityResourceValue(spell.energy, spell.nimbleFingers, spell.rushedSetup, spell.comboPoints)
-							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -3946,14 +3946,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 										end
 									elseif spell.id == TRB.Data.spells.sinisterStrike.id then
 										if TRB.Data.snapshotData.resource >= -energyAmount then
-											if TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones) > 0 then
+											if TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones) > 0 then
 												thresholdColor = specSettings.colors.threshold.special
 												frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 											else
 												thresholdColor = specSettings.colors.threshold.over
 											end
 										else
-											if TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones) > 0 then
+											if TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones) > 0 then
 												thresholdColor = specSettings.colors.threshold.special
 												frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 											else
@@ -3962,11 +3962,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											end
 										end
 									elseif spell.id == TRB.Data.spells.pistolShot.id then
-										local opportunityTime = TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.opportunity)
+										local opportunityTime = TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.opportunity)
 
 										if opportunityTime > 0 then
 											energyAmount = energyAmount * TRB.Data.spells.opportunity.energyModifier
-											TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
+											TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 										end
 
 										if TRB.Data.snapshotData.resource >= -energyAmount then
@@ -3990,14 +3990,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											thresholdColor = specSettings.colors.threshold.unusable
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										elseif TRB.Data.snapshotData.resource >= -energyAmount then
-											if TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision) > 0 then
+											if TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision) > 0 then
 												thresholdColor = specSettings.colors.threshold.special
 												frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 											else
 												thresholdColor = specSettings.colors.threshold.over
 											end
 										else
-											if TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision) > 0 then
+											if TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision) > 0 then
 												thresholdColor = specSettings.colors.threshold.special
 												frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 											else
@@ -4049,7 +4049,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
+							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end
@@ -4101,14 +4101,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						local cpBB = cpBackgroundBlue
 
                         if TRB.Data.snapshotData.resource2 >= x then
-                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
 							if (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = specSettings.colors.comboPoints.penultimate
 							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = specSettings.colors.comboPoints.final
 							end
                         else
-                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
                         end
 
 						if TRB.Data.snapshotData.echoingReprimand[x].enabled then
@@ -4706,32 +4706,32 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 then
-			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.rogue.assassination)
+			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.rogue.assassination)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.assassination)
 			specCache.assassination.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Assassination()
-			TRB.Functions.LoadFromSpecCache(specCache.assassination)
+			TRB.Functions.Character:LoadFromSpecializationCache(specCache.assassination)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Assassination
 
 			if TRB.Data.barConstructedForSpec ~= "assassination" then
 				TRB.Data.barConstructedForSpec = "assassination"
 				ConstructResourceBar(specCache.assassination.settings)
 			else
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
+				TRB.Functions.Bar:SetPosition(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
 			end
 		elseif specId == 2 then
-			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.rogue.outlaw)
+			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.rogue.outlaw)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.outlaw)
 			specCache.outlaw.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Outlaw()
-			TRB.Functions.LoadFromSpecCache(specCache.outlaw)
+			TRB.Functions.Character:LoadFromSpecializationCache(specCache.outlaw)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Outlaw
 
 			if TRB.Data.barConstructedForSpec ~= "outlaw" then
 				TRB.Data.barConstructedForSpec = "outlaw"
 				ConstructResourceBar(specCache.outlaw.settings)
 			else
-				TRB.Functions.RepositionBar(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
+				TRB.Functions.Bar:SetPosition(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
 			end
 		else
 			TRB.Data.barConstructedForSpec = nil
@@ -4759,7 +4759,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					else
 						TRB.Data.settings = settings
 					end
-					FillSpecCache()
+					FillSpecializationCache()
 
 					SLASH_TWINTOP1 	= "/twintop"
 					SLASH_TWINTOP2 	= "/tt"

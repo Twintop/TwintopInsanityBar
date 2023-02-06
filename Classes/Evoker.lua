@@ -52,7 +52,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		}
 	}
 
-	local function FillSpecCache()
+	local function FillSpecializationCache()
 		-- Devastation
 		specCache.devastation.Global_TwintopResourceBar = {
 			ttd = 0,
@@ -637,8 +637,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			return
 		end
 
-		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "evoker", "preservation")
-		TRB.Functions.LoadFromSpecCache(specCache.preservation)
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "evoker", "preservation")
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)
 	end
 
 	local function Setup_Devastation()
@@ -646,13 +646,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			return
 		end
 
-		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "evoker", "devastation")
-		TRB.Functions.LoadFromSpecCache(specCache.devastation)
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "evoker", "devastation")
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.devastation)
 	end
 
 	local function FillSpellData_Devastation()
 		Setup_Devastation()
-		local spells = TRB.Functions.FillSpellData(specCache.devastation.spells)
+		local spells = TRB.Functions.Spell:FillSpellData(specCache.devastation.spells)
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.devastation.barTextVariables.icons = {
@@ -734,7 +734,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 	local function FillSpellData_Preservation()
 		Setup_Preservation()
-		local spells = TRB.Functions.FillSpellData(specCache.preservation.spells)
+		local spells = TRB.Functions.Spell:FillSpellData(specCache.preservation.spells)
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.preservation.barTextVariables.icons = {
@@ -839,7 +839,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 	local function CheckCharacter()
 		local specId = GetSpecialization()
-		TRB.Functions.CheckCharacter()
+		TRB.Functions.Character:CheckCharacter()
 		TRB.Data.character.className = "evoker"
 		TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
 		TRB.Data.character.maxResource2 = 1
@@ -851,7 +851,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation then
 			settings = TRB.Data.settings.evoker.preservation
 			TRB.Data.character.specName = "preservation"
-			TRB.Functions.FillSpellDataManaCost(TRB.Data.spells)
+			TRB.Functions.Spell:FillSpellDataManaCost(TRB.Data.spells)
 
 			local trinket1ItemLink = GetInventoryItemLink("player", 13)
 			local trinket2ItemLink = GetInventoryItemLink("player", 14)
@@ -896,11 +896,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
         if settings ~= nil then
 			--[[if maxComboPoints ~= TRB.Data.character.maxResource2Raw then
 				TRB.Data.character.maxResource2Raw = maxComboPoints
-            	TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+            	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 			end]]
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
-            	TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+            	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 			end
         end
 	end
@@ -1025,8 +1025,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
-					TRB.Functions.ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-					TRB.Functions.SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+					TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
+					TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
 
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
@@ -1054,46 +1054,46 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				TRB.Frames.passiveFrame.thresholds[x]:Hide()
 			end
 			
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.aeratedManaPotionRank1.settingKey, TRB.Data.settings.evoker.preservation)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.aeratedManaPotionRank2.settingKey, TRB.Data.settings.evoker.preservation)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.aeratedManaPotionRank3.settingKey, TRB.Data.settings.evoker.preservation)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.potionOfFrozenFocusRank1.settingKey, TRB.Data.settings.evoker.preservation)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[5], TRB.Data.spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.evoker.preservation)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[6], TRB.Data.spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.evoker.preservation)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[7], TRB.Data.spells.conjuredChillglobe.settingKey, TRB.Data.settings.evoker.preservation)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.aeratedManaPotionRank1.settingKey, TRB.Data.settings.evoker.preservation)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.aeratedManaPotionRank2.settingKey, TRB.Data.settings.evoker.preservation)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.aeratedManaPotionRank3.settingKey, TRB.Data.settings.evoker.preservation)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.potionOfFrozenFocusRank1.settingKey, TRB.Data.settings.evoker.preservation)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], TRB.Data.spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.evoker.preservation)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], TRB.Data.spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.evoker.preservation)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], TRB.Data.spells.conjuredChillglobe.settingKey, TRB.Data.settings.evoker.preservation)
 		end
 
 		
 		if (specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation) or
 		(specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation) then
 			TRB.Frames.resource2ContainerFrame:Show()
-			TRB.Functions.ConstructResourceBar(settings)
-			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:Construct(settings)
+			TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 		end
 	end
 	
 	local function GetChanneledPotionRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.channeledManaPotion)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.channeledManaPotion)
 	end
 
 	local function GetInnervateRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.innervate)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.innervate)
 	end
 
 	local function GetManaTideTotemRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.manaTideTotem)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.manaTideTotem)
 	end
 
 	local function GetSymbolOfHopeRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.symbolOfHope)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.symbolOfHope)
 	end
 
 	local function GetEmeraldCommunionRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.emeraldCommunion)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.emeraldCommunion)
 	end
 
 	local function GetPotionOfChilledClarityRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.potionOfChilledClarity)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.potionOfChilledClarity)
 	end
 
 	local function CalculateManaGain(mana, isPotion)
@@ -1611,14 +1611,14 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local specId = GetSpecialization()
 
 		if currentSpellName == nil and currentChannelName == nil then
-			TRB.Functions.ResetCastingSnapshotData()
+			TRB.Functions.Character:ResetCastingSnapshotData()
 			return false
 		else
 			if specId == 1 then
 				--[[if currentSpellName == nil then
 					return true
 				else]]
-					TRB.Functions.ResetCastingSnapshotData()
+					TRB.Functions.Character:ResetCastingSnapshotData()
 					return false
 				--end
 			elseif specId == 2 then
@@ -1630,14 +1630,14 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						TRB.Data.snapshotData.casting.resourceRaw = 0
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.emeraldCommunion.icon
 					else
-						TRB.Functions.ResetCastingSnapshotData()
+						TRB.Functions.Character:ResetCastingSnapshotData()
 						return false
 					end
 				else
 					local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 					if spellId then
-						local manaCost = -TRB.Functions.GetSpellManaCost(spellId)
+						local manaCost = -TRB.Functions.Spell:GetSpellManaCost(spellId)
 
 						TRB.Data.snapshotData.casting.startTime = currentSpellStartTime / 1000
 						TRB.Data.snapshotData.casting.endTime = currentSpellEndTime / 1000
@@ -1647,13 +1647,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 						UpdateCastingResourceFinal_Preservation()
 					else
-						TRB.Functions.ResetCastingSnapshotData()
+						TRB.Functions.Character:ResetCastingSnapshotData()
 						return false
 					end
 				end
 				return true
 			end
-			TRB.Functions.ResetCastingSnapshotData()
+			TRB.Functions.Character:ResetCastingSnapshotData()
 			return false
 		end
 	end
@@ -1783,7 +1783,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	end
 
 	local function UpdateSnapshot()
-		TRB.Functions.UpdateSnapshot()
+		TRB.Functions.Character:UpdateSnapshot()
 		local currentTime = GetTime()
 	end
 
@@ -1901,7 +1901,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		if specId == 1 then
 			local specSettings = classSettings.devastation
 			UpdateSnapshot_Devastation()
-			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
@@ -1911,9 +1911,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border
 
-					TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
-					TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, 0, 1)
-					TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, 0, 1)
+					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+					TRB.Functions.Bar:SetValue(specSettings, castingFrame, 0, 1)
+					TRB.Functions.Bar:SetValue(specSettings, passiveFrame, 0, 1)
 
 					barContainerFrame:SetAlpha(1.0)
 
@@ -1929,7 +1929,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					TRB.Frames.resource2Frames[1].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.base, true))
 					TRB.Frames.resource2Frames[1].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.border, true))
 					TRB.Frames.resource2Frames[1].containerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true))
-					TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[1].resourceFrame, totalEssence, TRB.Data.character.maxResource2Raw)
+					TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[1].resourceFrame, totalEssence, TRB.Data.character.maxResource2Raw)
 					]]
 					
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
@@ -1941,7 +1941,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						local cpBB = cpBackgroundBlue
 
                         if TRB.Data.snapshotData.resource2 >= x then
-                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
 							if (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = specSettings.colors.comboPoints.penultimate
 							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
@@ -1949,9 +1949,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							end
                         elseif TRB.Data.snapshotData.resource2+1 == x then
 							local partial = UnitPartialPower("player", Enum.PowerType.Essence)
-                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
+                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
 						else
-                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
                         end
 
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
@@ -1964,7 +1964,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		elseif specId == 2 then
 			local specSettings = classSettings.preservation
 			UpdateSnapshot_Preservation()
-			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
 
@@ -1993,7 +1993,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
-					TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, currentMana)
+					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentMana)
 
 					if CastingSpell() and specSettings.bar.showCasting  then
 						castingBarValue = currentMana + TRB.Data.snapshotData.casting.resourceFinal
@@ -2001,9 +2001,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						castingBarValue = currentMana
 					end
 
-					TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+					TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 
-					TRB.Functions.ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, TRB.Data.snapshotData.potion, TRB.Data.snapshotData.conjuredChillglobe, TRB.Data.character, resourceFrame, CalculateManaGain)
+					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, TRB.Data.snapshotData.potion, TRB.Data.snapshotData.conjuredChillglobe, TRB.Data.character, resourceFrame, CalculateManaGain)
 
 					local passiveValue = 0
 					if specSettings.bar.showPassive then
@@ -2011,7 +2011,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							passiveValue = passiveValue + TRB.Data.snapshotData.channeledManaPotion.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[1]:Show()
@@ -2026,7 +2026,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							passiveValue = passiveValue + math.max(TRB.Data.snapshotData.innervate.mana, TRB.Data.snapshotData.potionOfChilledClarity.mana)
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[2]:Show()
@@ -2041,7 +2041,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							passiveValue = passiveValue + TRB.Data.snapshotData.symbolOfHope.resourceFinal
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[3]:Show()
@@ -2056,7 +2056,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							passiveValue = passiveValue + TRB.Data.snapshotData.manaTideTotem.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[4]:Show()
@@ -2071,7 +2071,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							passiveValue = passiveValue + TRB.Data.snapshotData.emeraldCommunion.resourceFinal
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[5]:Show()
@@ -2092,22 +2092,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					passiveBarValue = castingBarValue + passiveValue
 					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
-						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
-						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -2133,7 +2133,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						local cpBB = cpBackgroundBlue
 
                         if TRB.Data.snapshotData.resource2 >= x then
-                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
 							if (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = specSettings.colors.comboPoints.penultimate
 							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
@@ -2141,9 +2141,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							end
                         elseif TRB.Data.snapshotData.resource2+1 == x then
 							local partial = UnitPartialPower("player", Enum.PowerType.Essence)
-                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
+                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
 						else
-                            TRB.Functions.SetBarCurrentValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
                         end
 
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
@@ -2450,11 +2450,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 then-- and TRB.Data.settings.core.experimental.specs.evoker.devastation then
-			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.evoker.devastation)
+			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.evoker.devastation)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.devastation)
 			specCache.devastation.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Devastation()
-			TRB.Functions.LoadFromSpecCache(specCache.devastation)
+			TRB.Functions.Character:LoadFromSpecializationCache(specCache.devastation)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Devastation
 
 			if TRB.Data.barConstructedForSpec ~= "devastation" then
@@ -2462,11 +2462,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				ConstructResourceBar(specCache.devastation.settings)
 			end
 		elseif specId == 2 then-- and TRB.Data.settings.core.experimental.specs.evoker.preservation then
-			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.evoker.preservation)
+			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.evoker.preservation)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.preservation)
 			specCache.preservation.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Preservation()
-			TRB.Functions.LoadFromSpecCache(specCache.preservation)
+			TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Preservation
 
 			if TRB.Data.barConstructedForSpec ~= "preservation" then
@@ -2499,7 +2499,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					else
 						TRB.Data.settings = settings
 					end
-					FillSpecCache()
+					FillSpecializationCache()
 
 					SLASH_TWINTOP1 	= "/twintop"
 					SLASH_TWINTOP2 	= "/tt"

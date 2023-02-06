@@ -794,9 +794,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local title = ""
 
-		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
-		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
-
 		controls.buttons.exportButton_Druid_Balance_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Balance_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Bar Display).", 11, 1, true, false, false, false, false)
@@ -948,7 +945,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
-			TRB.Functions.RedrawThresholdLines(spec)
+			TRB.Functions.Threshold:RedrawThresholdLines(spec)
 		end)
 
 
@@ -1817,10 +1814,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local title = ""
 
-		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
-
-		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
-
 		controls.buttons.exportButton_Druid_Feral_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Feral_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Feral Druid (Bar Display).", 11, 2, true, false, false, false, false)
@@ -1991,7 +1984,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
-			TRB.Functions.RedrawThresholdLines(spec)
+			TRB.Functions.Threshold:RedrawThresholdLines(spec)
 		end)
 
 		controls.checkBoxes.thresholdBleedColors = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_thresholdBleedColors", parent, "ChatConfigCheckButtonTemplate")
@@ -2002,7 +1995,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetChecked(spec.thresholds.bleedColors)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.bleedColors = self:GetChecked()
-			TRB.Functions.RedrawThresholdLines(spec)
+			TRB.Functions.Threshold:RedrawThresholdLines(spec)
 		end)
 		
 		controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, "Builders", 5, yCoord, 110, 20)
@@ -2811,10 +2804,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local f = nil
 
 		local title = ""
-
-		local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
-
-		local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
 
 		controls.buttons.exportButton_Druid_Restoration_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Restoration_BarDisplay:SetScript("OnClick", function(self, ...)

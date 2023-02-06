@@ -603,7 +603,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 
     local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
-    local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
+    local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
 
     controls.barPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Position and Size", oUi.xCoord, yCoord)
 
@@ -622,8 +622,8 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
         controls.borderWidth.MaxLabel:SetText(maxBorderSize)
 
         if GetSpecialization() == specId then
-            TRB.Functions.UpdateBarWidth(spec)
-            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+            TRB.Functions.Bar:SetWidth(spec)
+            TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
         end
     end)
 
@@ -642,8 +642,8 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
         controls.borderWidth.EditBox:SetText(borderSize)
 
         if GetSpecialization() == specId then
-            TRB.Functions.UpdateBarHeight(spec)
-            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+            TRB.Functions.Bar:SetHeight(spec)
+            TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
         end
     end)
 
@@ -659,7 +659,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
             TRB.Frames.barContainerFrame:ClearAllPoints()
             TRB.Frames.barContainerFrame:SetPoint("CENTER", UIParent)
             TRB.Frames.barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
-            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+            TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
         end
     end)
 
@@ -674,7 +674,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
             TRB.Frames.barContainerFrame:ClearAllPoints()
             TRB.Frames.barContainerFrame:SetPoint("CENTER", UIParent)
             TRB.Frames.barContainerFrame:SetPoint("CENTER", spec.bar.xPos, spec.bar.yPos)
-            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+            TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
         end
     end)
 
@@ -713,15 +713,15 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
             TRB.Frames.barBorderFrame:SetBackdropColor(0, 0, 0, 0)
             TRB.Frames.barBorderFrame:SetBackdropBorderColor (TRB.Functions.Color:GetRGBAFromString(spec.colors.bar.border, true))
 
-            TRB.Functions.SetBarMinMaxValues(spec)
-            TRB.Functions.UpdateBarHeight(spec)
-            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+            TRB.Functions.Bar:SetMinMax(spec)
+            TRB.Functions.Bar:SetHeight(spec)
+            TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
         end
 
         local minsliderWidth = math.max((spec.bar.border)*2+1, 120)
         local minsliderHeight = math.max((spec.bar.border)*2+1, 1)
 
-        local scValues = TRB.Functions.GetSanityCheckValues(spec)
+        local scValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
         controls.height:SetMinMaxValues(minsliderHeight, scValues.barMaxHeight)
         controls.height.MinLabel:SetText(minsliderHeight)
         controls.width:SetMinMaxValues(minsliderWidth, scValues.barMaxWidth)
@@ -737,7 +737,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
             spec.thresholds.width = value
 
             if GetSpecialization() == specId then
-                TRB.Functions.RedrawThresholdLines(spec)
+                TRB.Functions.Threshold:RedrawThresholdLines(spec)
             end
         end)
     end
@@ -773,7 +773,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 
         TRB.Frames.barContainerFrame:SetMovable((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
         TRB.Frames.barContainerFrame:EnableMouse((not spec.bar.pinToPersonalResourceDisplay) and spec.bar.dragAndDrop)
-        TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+        TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
     end)
 
     return yCoord
@@ -796,7 +796,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 
     local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
 
-    local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
+    local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
 
     controls.comboPointPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, secondaryResourceString .. " Position and Size", oUi.xCoord, yCoord)
 
@@ -820,7 +820,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
         controls.comboPointBorderWidth.EditBox:SetText(borderSize)
 
         if GetSpecialization() == specId then
-            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+            TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
         end
     end)
 
@@ -843,7 +843,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
         controls.comboPointBorderWidth.EditBox:SetText(borderSize)
 
         if GetSpecialization() == specId then
-            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+            TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
         end
     end)
 
@@ -858,7 +858,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
         spec.comboPoints.xPos = value
 
         if GetSpecialization() == specId then
-            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+            TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
         end
     end)
 
@@ -870,7 +870,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
         spec.comboPoints.yPos = value
 
         if GetSpecialization() == specId then
-            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+            TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
         end
     end)
 
@@ -883,15 +883,15 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
         spec.comboPoints.border = value
 
         if GetSpecialization() == specId then
-            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+            TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
 
-            --TRB.Functions.SetBarMinMaxValues(spec)
+            --TRB.Functions.Bar:SetMinMax(spec)
         end
 
         local minsliderWidth = math.max(spec.comboPoints.border*2, 1)
         local minsliderHeight = math.max(spec.comboPoints.border*2, 1)
 
-        local scValues = TRB.Functions.GetSanityCheckValues(spec)
+        local scValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
         controls.comboPointHeight:SetMinMaxValues(minsliderHeight, scValues.comboPointsMaxHeight)
         controls.comboPointHeight.MinLabel:SetText(minsliderHeight)
         controls.comboPointWidth:SetMinMaxValues(minsliderWidth, scValues.comboPointsMaxWidth)
@@ -906,7 +906,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
         spec.comboPoints.spacing = value
 
         if GetSpecialization() == specId then
-            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+            TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
         end
     end)
 
@@ -958,7 +958,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
         LibDD:CloseDropDownMenus()
 
         if GetSpecialization() == specId then
-            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+            TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
         end
     end
 
@@ -972,7 +972,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
         spec.comboPoints.fullWidth = self:GetChecked()
         
         if GetSpecialization() == specId then
-            TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+            TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
         end
     end)
 
@@ -1508,7 +1508,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
     local _, className, _ = GetClassInfo(classId)
     local f = nil
     local title = ""
-    local sanityCheckValues = TRB.Functions.GetSanityCheckValues(spec)
+    local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
 
     -- Create the dropdown, and configure its appearance
     controls.dropDown.thresholdIconRelativeTo = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_ThresholdIconRelativeTo", parent)
@@ -1549,7 +1549,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
         spec.thresholds.icons.relativeToName = newName
         
         if GetSpecialization() == specId then
-            TRB.Functions.RedrawThresholdLines(spec)
+            TRB.Functions.Threshold:RedrawThresholdLines(spec)
         end
 
         LibDD:UIDropDownMenu_SetText(controls.dropDown.thresholdIconRelativeTo, newName)
@@ -1566,7 +1566,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
         spec.thresholds.icons.enabled = self:GetChecked()
         
         if GetSpecialization() == specId then
-            TRB.Functions.RedrawThresholdLines(spec)
+            TRB.Functions.Threshold:RedrawThresholdLines(spec)
         end
     end)
 
@@ -1580,7 +1580,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
         spec.thresholds.icons.desaturated = self:GetChecked()
         
         if GetSpecialization() == specId then
-            TRB.Functions.RedrawThresholdLines(spec)
+            TRB.Functions.Threshold:RedrawThresholdLines(spec)
         end
     end)
 
@@ -1604,7 +1604,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
         controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
         
         if GetSpecialization() == specId then
-            TRB.Functions.RedrawThresholdLines(spec)
+            TRB.Functions.Threshold:RedrawThresholdLines(spec)
         end
     end)
 
@@ -1627,7 +1627,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
         controls.thresholdIconBorderWidth.EditBox:SetText(borderSize)
         
         if GetSpecialization() == specId then
-            TRB.Functions.RedrawThresholdLines(spec)
+            TRB.Functions.Threshold:RedrawThresholdLines(spec)
         end
     end)
 
@@ -1641,8 +1641,8 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
         spec.thresholds.icons.xPos = value
         
         if GetSpecialization() == specId then
-            TRB.Functions.RedrawThresholdLines(spec)
-            --TRB.Functions.RepositionBar(spec, TRB.Frames.barContainerFrame)
+            TRB.Functions.Threshold:RedrawThresholdLines(spec)
+            --TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
         end
     end)
 
@@ -1654,7 +1654,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
         spec.thresholds.icons.yPos = value
         
         if GetSpecialization() == specId then
-            TRB.Functions.RedrawThresholdLines(spec)
+            TRB.Functions.Threshold:RedrawThresholdLines(spec)
         end
     end)
 
@@ -1677,7 +1677,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
         controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
 
         if GetSpecialization() == specId then
-            TRB.Functions.RedrawThresholdLines(spec)
+            TRB.Functions.Threshold:RedrawThresholdLines(spec)
         end
     end)
 
@@ -1794,7 +1794,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
     f:SetChecked(spec.thresholds.overlapBorder)
     f:SetScript("OnClick", function(self, ...)
         spec.thresholds.overlapBorder = self:GetChecked()
-        TRB.Functions.RedrawThresholdLines(spec)
+        TRB.Functions.Threshold:RedrawThresholdLines(spec)
     end)
 
     controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, "Aerated Mana Potion", 5, yCoord, 300, 20)

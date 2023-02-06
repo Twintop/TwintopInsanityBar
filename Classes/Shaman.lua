@@ -52,7 +52,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		}
 	}
 
-	local function FillSpecCache()
+	local function FillSpecializationCache()
 		-- Elemental
 		Global_TwintopResourceBar = {
 			ttd = 0,
@@ -646,8 +646,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			return
 		end
 
-		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "shaman", "elemental")
-		TRB.Functions.LoadFromSpecCache(specCache.elemental)
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "shaman", "elemental")
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.elemental)
 	end
 
 	local function Setup_Restoration()
@@ -655,13 +655,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			return
 		end
 
-		TRB.Functions.FillSpecCacheSettings(TRB.Data.settings, specCache, "shaman", "restoration")
-		TRB.Functions.LoadFromSpecCache(specCache.restoration)
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "shaman", "restoration")
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.restoration)
 	end
 
 	local function FillSpellData_Elemental()
 		Setup_Elemental()
-		local spells = TRB.Functions.FillSpellData(specCache.elemental.spells)
+		local spells = TRB.Functions.Spell:FillSpellData(specCache.elemental.spells)
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.elemental.barTextVariables.icons = {
@@ -750,7 +750,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local function FillSpellData_Restoration()
 		Setup_Restoration()
-		local spells = TRB.Functions.FillSpellData(specCache.restoration.spells)
+		local spells = TRB.Functions.Spell:FillSpellData(specCache.restoration.spells)
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.restoration.barTextVariables.icons = {
@@ -854,7 +854,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local function CheckCharacter()
 		local specId = GetSpecialization()
-		TRB.Functions.CheckCharacter()
+		TRB.Functions.Character:CheckCharacter()
 		TRB.Data.character.className = "shaman"
 		
 		if specId == 1 then
@@ -862,8 +862,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 ---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Maelstrom)
 
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[TRB.Data.spells.earthShock.thresholdId], TRB.Data.spells.earthShock.settingKey, TRB.Data.settings.shaman.elemental)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[TRB.Data.spells.elementalBlast.thresholdId], TRB.Data.spells.elementalBlast.settingKey, TRB.Data.settings.shaman.elemental)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[TRB.Data.spells.earthShock.thresholdId], TRB.Data.spells.earthShock.settingKey, TRB.Data.settings.shaman.elemental)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[TRB.Data.spells.elementalBlast.thresholdId], TRB.Data.spells.elementalBlast.settingKey, TRB.Data.settings.shaman.elemental)
 
 			if (TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elementalBlast) and TRB.Data.spells.elementalBlast.maelstrom < TRB.Data.character.maxResource) then
 				TRB.Data.character.earthShockThreshold = -(TRB.Data.spells.elementalBlast.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].elementalBlast)
@@ -874,7 +874,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.character.specName = "restoration"
 ---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
-			TRB.Functions.FillSpellDataManaCost(TRB.Data.spells)
+			TRB.Functions.Spell:FillSpellDataManaCost(TRB.Data.spells)
 
 			local trinket1ItemLink = GetInventoryItemLink("player", 13)
 			local trinket2ItemLink = GetInventoryItemLink("player", 14)
@@ -1058,8 +1058,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
-					TRB.Functions.ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-					TRB.Functions.SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+					TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
+					TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
 	
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
@@ -1087,56 +1087,56 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.Frames.passiveFrame.thresholds[x]:Hide()
 			end
 			
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.aeratedManaPotionRank1.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.aeratedManaPotionRank2.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.aeratedManaPotionRank3.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.potionOfFrozenFocusRank1.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[5], TRB.Data.spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[6], TRB.Data.spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.SetThresholdIcon(resourceFrame.thresholds[7], TRB.Data.spells.conjuredChillglobe.settingKey, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.aeratedManaPotionRank1.settingKey, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.aeratedManaPotionRank2.settingKey, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.aeratedManaPotionRank3.settingKey, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.potionOfFrozenFocusRank1.settingKey, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], TRB.Data.spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], TRB.Data.spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], TRB.Data.spells.conjuredChillglobe.settingKey, TRB.Data.settings.shaman.restoration)
 		end
 
-		TRB.Functions.ConstructResourceBar(settings)
+		TRB.Functions.Bar:Construct(settings)
 
 		if specId == 1 or specId == 3 then
-			TRB.Functions.RepositionBar(settings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 		end
 	end
 	
 	local function GetAscendanceRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.ascendance)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.ascendance)
 	end
 
 	local function GetStormkeeperRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.stormkeeper)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.stormkeeper)
 	end
 	
 	local function GetEchoesOfGreatSunderingRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.echoesOfGreatSundering)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.echoesOfGreatSundering)
 	end
 		
 	local function GetIcefuryRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.icefury)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.icefury)
 	end
 
 	local function GetChanneledPotionRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.channeledManaPotion)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.channeledManaPotion)
 	end
 
 	local function GetInnervateRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.innervate)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.innervate)
 	end
 
 	local function GetPotionOfChilledClarityRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.potionOfChilledClarity)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.potionOfChilledClarity)
 	end
 
 	local function GetManaTideTotemRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.manaTideTotem)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.manaTideTotem)
 	end
 
 	local function GetSymbolOfHopeRemainingTime()
-		return TRB.Functions.GetSpellRemainingTime(TRB.Data.snapshotData.symbolOfHope)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.symbolOfHope)
 	end
 
 	local function CalculateManaGain(mana, isPotion)
@@ -1771,12 +1771,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
 
 		if currentSpellName == nil and currentChannelName == nil then
-			TRB.Functions.ResetCastingSnapshotData()
+			TRB.Functions.Character:ResetCastingSnapshotData()
 			return false
 		else
 			if specId == 1 then
 				if currentSpellName == nil then
-					TRB.Functions.ResetCastingSnapshotData()
+					TRB.Functions.Character:ResetCastingSnapshotData()
 					return false
 					--See shaman implementation for handling channeled spells
 				else
@@ -1815,7 +1815,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Data.snapshotData.chainLightning.targetsHit = 1
 							TRB.Data.snapshotData.chainLightning.hitTime = currentTime
 							TRB.Data.snapshotData.chainLightning.hasStruckTargets = false
-						elseif currentTime > (TRB.Data.snapshotData.chainLightning.hitTime + (TRB.Functions.GetCurrentGCDTime(true) * 4) + latency) then
+						elseif currentTime > (TRB.Data.snapshotData.chainLightning.hitTime + (TRB.Functions.Character:GetCurrentGCDTime(true) * 4) + latency) then
 							TRB.Data.snapshotData.chainLightning.targetsHit = 1
 						end
 
@@ -1829,20 +1829,20 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					elseif currentSpellId == TRB.Data.spells.hex.id and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.inundate) and affectingCombat then
 						FillSnapshotDataCasting(TRB.Data.spells.hex)
 					else
-						TRB.Functions.ResetCastingSnapshotData()
+						TRB.Functions.Character:ResetCastingSnapshotData()
 						return false
 					end
 				end
 				return true
 			elseif specId == 3 then	
 				if currentSpellName == nil then
-					TRB.Functions.ResetCastingSnapshotData()
+					TRB.Functions.Character:ResetCastingSnapshotData()
 					return false
 				else
 					local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 					if spellId then
-						local manaCost = -TRB.Functions.GetSpellManaCost(spellId)
+						local manaCost = -TRB.Functions.Spell:GetSpellManaCost(spellId)
 
 						TRB.Data.snapshotData.casting.startTime = currentSpellStartTime / 1000
 						TRB.Data.snapshotData.casting.endTime = currentSpellEndTime / 1000
@@ -1852,13 +1852,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 						UpdateCastingResourceFinal_Restoration()
 					else
-						TRB.Functions.ResetCastingSnapshotData()
+						TRB.Functions.Character:ResetCastingSnapshotData()
 						return false
 					end
 				end
 				return true
 			end
-			TRB.Functions.ResetCastingSnapshotData()
+			TRB.Functions.Character:ResetCastingSnapshotData()
 			return false
 		end
 	end
@@ -1982,7 +1982,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local function UpdateSnapshot()
 		local currentTime = GetTime()
-		TRB.Functions.UpdateSnapshot()
+		TRB.Functions.Character:UpdateSnapshot()
 			
 		if TRB.Data.snapshotData.ascendance.startTime ~= nil and currentTime > (TRB.Data.snapshotData.ascendance.startTime + TRB.Data.snapshotData.ascendance.duration) then
             TRB.Data.snapshotData.ascendance.startTime = nil
@@ -2108,7 +2108,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		if specId == 1 then
 			local specSettings = classSettings.elemental
 			UpdateSnapshot_Elemental()
-			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
@@ -2131,7 +2131,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						TRB.Data.snapshotData.audio.overcapCue = false
 					end
 
-					TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
 
 					if CastingSpell() and specSettings.bar.showCasting then
 						castingBarValue = TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal
@@ -2139,9 +2139,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						castingBarValue = TRB.Data.snapshotData.resource
 					end
 
-					TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+					TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 
-					TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
+					TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
 
 					local barColor = specSettings.colors.bar.base
 
@@ -2152,7 +2152,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							pairOffset = (spell.thresholdId - 1) * 3
 							local resourceAmount = spell.maelstrom
 							local currentResource = TRB.Data.snapshotData.resource
-							--TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+							--TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -2230,9 +2230,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 								end
 							end
 							
-							TRB.Functions.RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
-							TRB.Functions.AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
+							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
 						end
 					end
 
@@ -2263,7 +2263,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						if specSettings.endOfAscendance.enabled then
 							useEndOfAscendanceColor = true
 							if specSettings.endOfAscendance.mode == "gcd" then
-								local gcd = TRB.Functions.GetCurrentGCDTime()
+								local gcd = TRB.Functions.Character:GetCurrentGCDTime()
 								timeThreshold = gcd * specSettings.endOfAscendance.gcdsMax
 							elseif specSettings.endOfAscendance.mode == "time" then
 								timeThreshold = specSettings.endOfAscendance.timeMax
@@ -2284,7 +2284,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		elseif specId == 3 then
 			local specSettings = classSettings.restoration
 			UpdateSnapshot_Restoration()
-			TRB.Functions.RepositionBarForPRD(specSettings, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 			if TRB.Data.snapshotData.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
 
@@ -2313,7 +2313,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
-					TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, currentMana)
+					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentMana)
 
 					if CastingSpell() and specSettings.bar.showCasting  then
 						castingBarValue = currentMana + TRB.Data.snapshotData.casting.resourceFinal
@@ -2321,9 +2321,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						castingBarValue = currentMana
 					end
 
-					TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+					TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 
-					TRB.Functions.ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, TRB.Data.snapshotData.potion, TRB.Data.snapshotData.conjuredChillglobe, TRB.Data.character, resourceFrame, CalculateManaGain)
+					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, TRB.Data.snapshotData.potion, TRB.Data.snapshotData.conjuredChillglobe, TRB.Data.character, resourceFrame, CalculateManaGain)
 
 					local passiveValue = 0
 					if specSettings.bar.showPassive then
@@ -2331,7 +2331,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							passiveValue = passiveValue + TRB.Data.snapshotData.channeledManaPotion.mana
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 		---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[1]:Show()
@@ -2346,7 +2346,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							passiveValue = passiveValue + math.max(TRB.Data.snapshotData.innervate.mana, TRB.Data.snapshotData.potionOfChilledClarity.mana)
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[1]:Show()
@@ -2361,7 +2361,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							passiveValue = passiveValue + TRB.Data.snapshotData.innervate.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[2]:Show()
@@ -2376,7 +2376,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							passiveValue = passiveValue + TRB.Data.snapshotData.symbolOfHope.resourceFinal
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[3]:Show()
@@ -2391,7 +2391,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							passiveValue = passiveValue + TRB.Data.snapshotData.manaTideTotem.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[4]:Show()
@@ -2412,22 +2412,22 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					passiveBarValue = castingBarValue + passiveValue
 					if castingBarValue < TRB.Data.snapshotData.resource then --Using a spender
 						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, TRB.Data.snapshotData.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
-							TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
+							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, TRB.Data.snapshotData.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
-						TRB.Functions.SetBarCurrentValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
-						TRB.Functions.SetBarCurrentValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.SetBarCurrentValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -2444,7 +2444,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						if specSettings.endOfAscendance.enabled then
 							useEndOfAscendanceColor = true
 							if specSettings.endOfAscendance.mode == "gcd" then
-								local gcd = TRB.Functions.GetCurrentGCDTime()
+								local gcd = TRB.Functions.Character:GetCurrentGCDTime()
 								timeThreshold = gcd * specSettings.endOfAscendance.gcdsMax
 							elseif specSettings.endOfAscendance.mode == "time" then
 								timeThreshold = specSettings.endOfAscendance.timeMax
@@ -2739,11 +2739,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 then
-			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.shaman.elemental)
+			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.shaman.elemental)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.elemental)
 			specCache.elemental.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Elemental()
-			TRB.Functions.LoadFromSpecCache(specCache.elemental)
+			TRB.Functions.Character:LoadFromSpecializationCache(specCache.elemental)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Elemental
 
 			if TRB.Data.barConstructedForSpec ~= "elemental" then
@@ -2751,11 +2751,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				ConstructResourceBar(specCache.elemental.settings)
 			end
 		elseif specId == 3 then
-			TRB.Functions.UpdateSanityCheckValues(TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.shaman.restoration)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.restoration)
 			specCache.restoration.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Restoration()
-			TRB.Functions.LoadFromSpecCache(specCache.restoration)
+			TRB.Functions.Character:LoadFromSpecializationCache(specCache.restoration)
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Restoration
 
 			if TRB.Data.barConstructedForSpec ~= "restoration" then
@@ -2788,7 +2788,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					else
 						TRB.Data.settings = settings
 					end
-					FillSpecCache()
+					FillSpecializationCache()
 
 					SLASH_TWINTOP1 	= "/twintop"
 					SLASH_TWINTOP2 	= "/tt"
