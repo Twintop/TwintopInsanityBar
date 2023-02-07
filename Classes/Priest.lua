@@ -1437,49 +1437,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 	TRB.Functions.CheckCharacter_Class = CheckCharacter
 
-	local function EventRegistration()
-		local specId = GetSpecialization()
-		if specId == 2 and TRB.Data.settings.core.enabled.priest.holy == true then
-			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.holy)
-			TRB.Data.specSupported = true
-			TRB.Data.resource = Enum.PowerType.Mana
-			TRB.Data.resourceFactor = 1
-		elseif specId == 3 and TRB.Data.settings.core.enabled.priest.shadow == true then
-			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.shadow)
-			TRB.Data.specSupported = true
-			TRB.Data.resource = Enum.PowerType.Insanity
-			TRB.Data.resourceFactor = 100
-		else
-			TRB.Data.specSupported = false
-		end
-
-		if TRB.Data.specSupported then
-            CheckCharacter()
-
-			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-			TRB.Frames.barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-			TRB.Frames.barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-
-			TRB.Details.addonData.registered = true
-		else
-			--TRB.Data.resource = MANA
-			TRB.Data.specSupported = false
-			targetsTimerFrame:SetScript("OnUpdate", nil)
-			timerFrame:SetScript("OnUpdate", nil)
-			TRB.Frames.barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
-			TRB.Frames.barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-			TRB.Details.addonData.registered = false
-			TRB.Frames.barContainerFrame:Hide()
-		end
-		TRB.Functions.Bar:HideResourceBar()
-	end
-	TRB.Functions.EventRegistration = EventRegistration
-
 	local function CheckVoidTendrilExists(guid)
 		if guid == nil or (not TRB.Data.snapshotData.voidTendrils.activeList[guid] or TRB.Data.snapshotData.voidTendrils.activeList[guid] == nil) then
 			return false
@@ -3884,6 +3841,51 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 	end
 	TRB.Functions.TriggerResourceBarUpdates = TriggerResourceBarUpdates
+
+	local function EventRegistration()
+		local specId = GetSpecialization()
+		if specId == 2 and TRB.Data.settings.core.enabled.priest.holy == true then
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.holy)
+			TRB.Data.specSupported = true
+			TRB.Data.resource = Enum.PowerType.Mana
+			TRB.Data.resourceFactor = 1
+		elseif specId == 3 and TRB.Data.settings.core.enabled.priest.shadow == true then
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.shadow)
+			TRB.Data.specSupported = true
+			TRB.Data.resource = Enum.PowerType.Insanity
+			TRB.Data.resourceFactor = 100
+		else
+			TRB.Data.specSupported = false
+		end
+
+		if TRB.Data.specSupported then
+            CheckCharacter()
+
+			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
+			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
+			TRB.Frames.barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
+			TRB.Frames.barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			--EventRegistry:RegisterCallback("TwintopResourceBar.Update", TriggerResourceBarUpdates, "TwintopResourceBar")
+			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+
+			TRB.Details.addonData.registered = true
+		else
+			--TRB.Data.resource = MANA
+			TRB.Data.specSupported = false
+			targetsTimerFrame:SetScript("OnUpdate", nil)
+			timerFrame:SetScript("OnUpdate", nil)
+			TRB.Frames.barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+			TRB.Frames.barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			--EventRegistry:UnregisterCallback("TwintopResourceBar.Update", "TwintopResourceBar")
+			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
+			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+			TRB.Details.addonData.registered = false
+			TRB.Frames.barContainerFrame:Hide()
+		end
+		TRB.Functions.Bar:HideResourceBar()
+	end
+	TRB.Functions.EventRegistration = EventRegistration
 
 	barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local currentTime = GetTime()

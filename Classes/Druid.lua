@@ -1819,6 +1819,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 		return false
 	end
+	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget
 
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
