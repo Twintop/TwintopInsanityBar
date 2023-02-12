@@ -832,78 +832,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		specCache.windwalker.spells = spells
 	end
-
-	local function CheckCharacter()
-		local specId = GetSpecialization()
-		TRB.Functions.Character:CheckCharacter()
-		TRB.Data.character.className = "monk"
----@diagnostic disable-next-line: missing-parameter
-		TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
-        local maxComboPoints = 0
-        local settings = nil
-		
-		if specId == 2 then
-			TRB.Data.character.specName = "mistweaver"
----@diagnostic disable-next-line: missing-parameter
-			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
-			TRB.Functions.Spell:FillSpellDataManaCost(TRB.Data.spells)
-
-			local trinket1ItemLink = GetInventoryItemLink("player", 13)
-			local trinket2ItemLink = GetInventoryItemLink("player", 14)
-
-			local alchemyStone = false
-			local conjuredChillglobe = false
-			local conjuredChillglobeVersion = ""
-						
-			if trinket1ItemLink ~= nil then
-				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
-					if alchemyStone == false then
-						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
-					else
-						break
-					end
-				end
-
-				if alchemyStone == false then
-					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
-				end
-			end
-
-			if alchemyStone == false and trinket2ItemLink ~= nil then
-				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
-					if alchemyStone == false then
-						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
-					else
-						break
-					end
-				end
-			end
-
-			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
-				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
-			end
-
-			TRB.Data.character.items.alchemyStone = alchemyStone
-			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
-			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
-		elseif specId == 3 then
----@diagnostic disable-next-line: missing-parameter, missing-parameter
-			TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
----@diagnostic disable-next-line: missing-parameter, missing-parameter
-			maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
-            settings = TRB.Data.settings.monk.windwalker
-			TRB.Data.character.specName = "windwalker"
-		end
-        
-        if settings ~= nil then
-			if maxComboPoints ~= TRB.Data.character.maxResource2 then
-				TRB.Data.character.maxResource2 = maxComboPoints
-            	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
-			end
-        end
-	end
-	TRB.Functions.CheckCharacter_Class = CheckCharacter
-
+	
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 2 and TRB.Data.settings.core.enabled.monk.mistweaver then
@@ -932,7 +861,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end
 
 		if TRB.Data.specSupported then
-            CheckCharacter()
+            TRB.Functions.Class:CheckCharacter()
 
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
@@ -2831,4 +2760,74 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			end
 		end
 	end)
+
+	function TRB.Functions.Class:CheckCharacter()
+		local specId = GetSpecialization()
+		TRB.Functions.Character:CheckCharacter()
+		TRB.Data.character.className = "monk"
+---@diagnostic disable-next-line: missing-parameter
+		TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
+        local maxComboPoints = 0
+        local settings = nil
+		
+		if specId == 2 then
+			TRB.Data.character.specName = "mistweaver"
+---@diagnostic disable-next-line: missing-parameter
+			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
+			TRB.Functions.Spell:FillSpellDataManaCost(TRB.Data.spells)
+
+			local trinket1ItemLink = GetInventoryItemLink("player", 13)
+			local trinket2ItemLink = GetInventoryItemLink("player", 14)
+
+			local alchemyStone = false
+			local conjuredChillglobe = false
+			local conjuredChillglobeVersion = ""
+						
+			if trinket1ItemLink ~= nil then
+				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
+					if alchemyStone == false then
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+					else
+						break
+					end
+				end
+
+				if alchemyStone == false then
+					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
+				end
+			end
+
+			if alchemyStone == false and trinket2ItemLink ~= nil then
+				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
+					if alchemyStone == false then
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+					else
+						break
+					end
+				end
+			end
+
+			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
+				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
+			end
+
+			TRB.Data.character.items.alchemyStone = alchemyStone
+			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
+			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
+		elseif specId == 3 then
+---@diagnostic disable-next-line: missing-parameter, missing-parameter
+			TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
+---@diagnostic disable-next-line: missing-parameter, missing-parameter
+			maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
+            settings = TRB.Data.settings.monk.windwalker
+			TRB.Data.character.specName = "windwalker"
+		end
+        
+        if settings ~= nil then
+			if maxComboPoints ~= TRB.Data.character.maxResource2 then
+				TRB.Data.character.maxResource2 = maxComboPoints
+            	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
+			end
+        end
+	end
 end

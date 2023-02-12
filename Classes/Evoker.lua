@@ -837,75 +837,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		specCache.preservation.spells = spells
 	end
 
-	local function CheckCharacter()
-		local specId = GetSpecialization()
-		TRB.Functions.Character:CheckCharacter()
-		TRB.Data.character.className = "evoker"
-		TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
-		TRB.Data.character.maxResource2 = 1
-        local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
-        local settings = nil
-		if specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation then
-			settings = TRB.Data.settings.evoker.devastation
-			TRB.Data.character.specName = "devastation"
-		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation then
-			settings = TRB.Data.settings.evoker.preservation
-			TRB.Data.character.specName = "preservation"
-			TRB.Functions.Spell:FillSpellDataManaCost(TRB.Data.spells)
-
-			local trinket1ItemLink = GetInventoryItemLink("player", 13)
-			local trinket2ItemLink = GetInventoryItemLink("player", 14)
-
-			local alchemyStone = false
-			local conjuredChillglobe = false
-			local conjuredChillglobeVersion = ""
-			
-			if trinket1ItemLink ~= nil then
-				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
-					if alchemyStone == false then
-						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
-					else
-						break
-					end
-				end
-
-				if alchemyStone == false then
-					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
-				end
-			end
-
-			if alchemyStone == false and trinket2ItemLink ~= nil then
-				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
-					if alchemyStone == false then
-						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
-					else
-						break
-					end
-				end
-			end
-
-			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
-				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
-			end
-
-			TRB.Data.character.items.alchemyStone = alchemyStone
-			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
-			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
-		end
-        
-        if settings ~= nil then
-			--[[if maxComboPoints ~= TRB.Data.character.maxResource2Raw then
-				TRB.Data.character.maxResource2Raw = maxComboPoints
-            	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
-			end]]
-			if maxComboPoints ~= TRB.Data.character.maxResource2 then
-				TRB.Data.character.maxResource2 = maxComboPoints
-            	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
-			end
-        end
-	end
-	TRB.Functions.CheckCharacter_Class = CheckCharacter
-
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 1 and TRB.Data.settings.core.enabled.evoker.devastation then
@@ -936,7 +867,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end
 
 		if TRB.Data.specSupported then
-            CheckCharacter()
+            TRB.Functions.Class:CheckCharacter()
 
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
@@ -2555,4 +2486,72 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			end
 		end
 	end)
+	
+	function TRB.Functions.Class:CheckCharacter()
+		local specId = GetSpecialization()
+		TRB.Functions.Character:CheckCharacter()
+		TRB.Data.character.className = "evoker"
+		TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
+		TRB.Data.character.maxResource2 = 1
+        local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
+        local settings = nil
+		if specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation then
+			settings = TRB.Data.settings.evoker.devastation
+			TRB.Data.character.specName = "devastation"
+		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation then
+			settings = TRB.Data.settings.evoker.preservation
+			TRB.Data.character.specName = "preservation"
+			TRB.Functions.Spell:FillSpellDataManaCost(TRB.Data.spells)
+
+			local trinket1ItemLink = GetInventoryItemLink("player", 13)
+			local trinket2ItemLink = GetInventoryItemLink("player", 14)
+
+			local alchemyStone = false
+			local conjuredChillglobe = false
+			local conjuredChillglobeVersion = ""
+			
+			if trinket1ItemLink ~= nil then
+				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
+					if alchemyStone == false then
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+					else
+						break
+					end
+				end
+
+				if alchemyStone == false then
+					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
+				end
+			end
+
+			if alchemyStone == false and trinket2ItemLink ~= nil then
+				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
+					if alchemyStone == false then
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+					else
+						break
+					end
+				end
+			end
+
+			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
+				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
+			end
+
+			TRB.Data.character.items.alchemyStone = alchemyStone
+			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
+			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
+		end
+        
+        if settings ~= nil then
+			--[[if maxComboPoints ~= TRB.Data.character.maxResource2Raw then
+				TRB.Data.character.maxResource2Raw = maxComboPoints
+            	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
+			end]]
+			if maxComboPoints ~= TRB.Data.character.maxResource2 then
+				TRB.Data.character.maxResource2 = maxComboPoints
+            	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
+			end
+        end
+	end
 end

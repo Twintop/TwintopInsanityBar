@@ -1715,30 +1715,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		specCache.outlaw.spells = spells
 	end
 
-	local function CheckCharacter()
-		local specId = GetSpecialization()
----@diagnostic disable-next-line: missing-parameter
-		TRB.Functions.Character:CheckCharacter()
-		TRB.Data.character.className = "rogue"
-		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Energy)
-        local maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
-        local settings = nil
-
-		if specId == 1 then
-            settings = TRB.Data.settings.rogue.assassination
-		elseif specId == 2 then
-            settings = TRB.Data.settings.rogue.outlaw
-		end
-        
-        if settings ~= nil then
-			if maxComboPoints ~= TRB.Data.character.maxResource2 then
-				TRB.Data.character.maxResource2 = maxComboPoints
-            	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
-			end
-        end
-	end
-	TRB.Functions.CheckCharacter_Class = CheckCharacter
-
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 1 and TRB.Data.settings.core.enabled.rogue.assassination == true then
@@ -1766,7 +1742,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.resource2 = Enum.PowerType.ComboPoints
 			TRB.Data.resource2Factor = 1
 
-            CheckCharacter()
+            TRB.Functions.Class:CheckCharacter()
 
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
@@ -4543,7 +4519,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					end
 				elseif spellId == TRB.Data.spells.adrenalineRush.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REMOVED" then -- For right now, just redo the CheckCharacter() to get update Energy values
-						CheckCharacter()
+						TRB.Functions.Class:CheckCharacter()
 					end
 				elseif spellId == TRB.Data.spells.echoingReprimand.id then
 					if type == "SPELL_CAST_SUCCESS" then
@@ -4809,4 +4785,27 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end
 	end)
+
+	function TRB.Functions.Class:CheckCharacter()
+		local specId = GetSpecialization()
+---@diagnostic disable-next-line: missing-parameter
+		TRB.Functions.Character:CheckCharacter()
+		TRB.Data.character.className = "rogue"
+		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Energy)
+        local maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
+        local settings = nil
+
+		if specId == 1 then
+            settings = TRB.Data.settings.rogue.assassination
+		elseif specId == 2 then
+            settings = TRB.Data.settings.rogue.outlaw
+		end
+        
+        if settings ~= nil then
+			if maxComboPoints ~= TRB.Data.character.maxResource2 then
+				TRB.Data.character.maxResource2 = maxComboPoints
+            	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
+			end
+        end
+	end
 end

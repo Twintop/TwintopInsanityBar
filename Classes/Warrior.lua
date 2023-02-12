@@ -892,27 +892,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		specCache.fury.spells = spells
 	end
 
-
-	local function CheckCharacter()
-		local specId = GetSpecialization()
-		TRB.Functions.Character:CheckCharacter()
-		TRB.Data.character.className = "warrior"
----@diagnostic disable-next-line: missing-parameter
-		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Rage)
-
-        if specId == 1 then		
-			TRB.Data.character.specName = "arms"
-
-			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.bloodletting) then
-				TRB.Data.character.pandemicModifier = TRB.Data.spells.bloodletting.modifier
-			end
-        elseif specId == 2 then
-			TRB.Data.character.specName = "fury"
-		elseif specId == 3 then
-		end
-	end
-	TRB.Functions.CheckCharacter_Class = CheckCharacter
-
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 1 and TRB.Data.settings.core.enabled.warrior.arms == true then
@@ -939,7 +918,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 
 		if TRB.Data.specSupported then
-            CheckCharacter()
+            TRB.Functions.Class:CheckCharacter()
             
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
@@ -2529,4 +2508,23 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		end
 	end)
+
+	function TRB.Functions.Class:CheckCharacter()
+		local specId = GetSpecialization()
+		TRB.Functions.Character:CheckCharacter()
+		TRB.Data.character.className = "warrior"
+---@diagnostic disable-next-line: missing-parameter
+		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Rage)
+
+        if specId == 1 then		
+			TRB.Data.character.specName = "arms"
+
+			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.bloodletting) then
+				TRB.Data.character.pandemicModifier = TRB.Data.spells.bloodletting.modifier
+			end
+        elseif specId == 2 then
+			TRB.Data.character.specName = "fury"
+		elseif specId == 3 then
+		end
+	end
 end

@@ -1515,30 +1515,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		specCache.survival.spells = spells
 	end
 
-	local function CheckCharacter()
-		local specId = GetSpecialization()
-		TRB.Functions.Character:CheckCharacter()
-		TRB.Data.character.className = "hunter"
-		TRB.Data.character.petGuid = UnitGUID("pet")
----@diagnostic disable-next-line: missing-parameter
-		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Focus)
-
-		if specId == 1 then
-			TRB.Data.character.specName = "beastMastery"
-		elseif specId == 2 then
-			TRB.Data.character.specName = "marksmanship"
-		elseif specId == 3 then
-			TRB.Data.character.specName = "survival"
-		
-			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.guerrillaTactics) then
-				TRB.Data.snapshotData.wildfireBomb.maxCharges = 2
-			else
-				TRB.Data.snapshotData.wildfireBomb.maxCharges = 1
-			end
-		end
-	end
-	TRB.Functions.CheckCharacter_Class = CheckCharacter
-
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 1 and TRB.Data.settings.core.enabled.hunter.beastMastery == true then
@@ -1567,7 +1543,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.resource = Enum.PowerType.Focus
 			TRB.Data.resourceFactor = 1
 
-            CheckCharacter()
+            TRB.Functions.Class:CheckCharacter()
 
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
@@ -3859,4 +3835,27 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end
 	end)
+
+	function TRB.Functions.Class:CheckCharacter()
+		local specId = GetSpecialization()
+		TRB.Functions.Character:CheckCharacter()
+		TRB.Data.character.className = "hunter"
+		TRB.Data.character.petGuid = UnitGUID("pet")
+---@diagnostic disable-next-line: missing-parameter
+		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Focus)
+
+		if specId == 1 then
+			TRB.Data.character.specName = "beastMastery"
+		elseif specId == 2 then
+			TRB.Data.character.specName = "marksmanship"
+		elseif specId == 3 then
+			TRB.Data.character.specName = "survival"
+		
+			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.guerrillaTactics) then
+				TRB.Data.snapshotData.wildfireBomb.maxCharges = 2
+			else
+				TRB.Data.snapshotData.wildfireBomb.maxCharges = 1
+			end
+		end
+	end
 end

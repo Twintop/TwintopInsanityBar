@@ -94,7 +94,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 	end
 
 	if self.characterCheckSinceLastUpdate >= TRB.Data.settings.core.dataRefreshRate then -- in seconds
-		TRB.Functions.CheckCharacter_Class()
+		TRB.Functions.Class:CheckCharacter()
 		self.characterCheckSinceLastUpdate  = 0
 	end
 
@@ -170,8 +170,12 @@ end
 
 TRB.Frames.combatFrame = CreateFrame("Frame")
 
+-- Settings placeholders
 TRB.Frames.interfaceSettingsFrameContainer = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls = {}
+
+-- Some class functions get referenced by other methods. These live in a consistent location but are actually created in the class modules.
+TRB.Functions.Class = {}
 
 -- Working data
 TRB.Data = {}

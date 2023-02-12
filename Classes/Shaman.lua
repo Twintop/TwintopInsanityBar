@@ -852,72 +852,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		specCache.restoration.spells = spells
 	end
 
-	local function CheckCharacter()
-		local specId = GetSpecialization()
-		TRB.Functions.Character:CheckCharacter()
-		TRB.Data.character.className = "shaman"
-		
-		if specId == 1 then
-			TRB.Data.character.specName = "elemental"
----@diagnostic disable-next-line: missing-parameter
-			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Maelstrom)
-
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[TRB.Data.spells.earthShock.thresholdId], TRB.Data.spells.earthShock.settingKey, TRB.Data.settings.shaman.elemental)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[TRB.Data.spells.elementalBlast.thresholdId], TRB.Data.spells.elementalBlast.settingKey, TRB.Data.settings.shaman.elemental)
-
-			if (TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elementalBlast) and TRB.Data.spells.elementalBlast.maelstrom < TRB.Data.character.maxResource) then
-				TRB.Data.character.earthShockThreshold = -(TRB.Data.spells.elementalBlast.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].elementalBlast)
-			else
-				TRB.Data.character.earthShockThreshold = -(TRB.Data.spells.earthShock.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].earthShock)
-			end
-		elseif specId == 3 then
-			TRB.Data.character.specName = "restoration"
----@diagnostic disable-next-line: missing-parameter
-			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
-			TRB.Functions.Spell:FillSpellDataManaCost(TRB.Data.spells)
-
-			local trinket1ItemLink = GetInventoryItemLink("player", 13)
-			local trinket2ItemLink = GetInventoryItemLink("player", 14)
-
-			local alchemyStone = false
-			local conjuredChillglobe = false
-			local conjuredChillglobeVersion = ""
-						
-			if trinket1ItemLink ~= nil then
-				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
-					if alchemyStone == false then
-						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
-					else
-						break
-					end
-				end
-
-				if alchemyStone == false then
-					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
-				end
-			end
-
-			if alchemyStone == false and trinket2ItemLink ~= nil then
-				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
-					if alchemyStone == false then
-						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
-					else
-						break
-					end
-				end
-			end
-
-			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
-				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
-			end
-
-			TRB.Data.character.items.alchemyStone = alchemyStone
-			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
-			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
-		end
-	end
-	TRB.Functions.CheckCharacter_Class = CheckCharacter
-
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 1 and TRB.Data.settings.core.enabled.shaman.elemental then
@@ -935,7 +869,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		if TRB.Data.specSupported then
-            CheckCharacter()
+            TRB.Functions.Class:CheckCharacter()
 
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
@@ -2836,4 +2770,69 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end
 	end)
+
+	function TRB.Functions.Class:CheckCharacter()
+		local specId = GetSpecialization()
+		TRB.Functions.Character:CheckCharacter()
+		TRB.Data.character.className = "shaman"
+		
+		if specId == 1 then
+			TRB.Data.character.specName = "elemental"
+---@diagnostic disable-next-line: missing-parameter
+			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Maelstrom)
+
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[TRB.Data.spells.earthShock.thresholdId], TRB.Data.spells.earthShock.settingKey, TRB.Data.settings.shaman.elemental)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[TRB.Data.spells.elementalBlast.thresholdId], TRB.Data.spells.elementalBlast.settingKey, TRB.Data.settings.shaman.elemental)
+
+			if (TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elementalBlast) and TRB.Data.spells.elementalBlast.maelstrom < TRB.Data.character.maxResource) then
+				TRB.Data.character.earthShockThreshold = -(TRB.Data.spells.elementalBlast.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].elementalBlast)
+			else
+				TRB.Data.character.earthShockThreshold = -(TRB.Data.spells.earthShock.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].earthShock)
+			end
+		elseif specId == 3 then
+			TRB.Data.character.specName = "restoration"
+---@diagnostic disable-next-line: missing-parameter
+			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
+			TRB.Functions.Spell:FillSpellDataManaCost(TRB.Data.spells)
+
+			local trinket1ItemLink = GetInventoryItemLink("player", 13)
+			local trinket2ItemLink = GetInventoryItemLink("player", 14)
+
+			local alchemyStone = false
+			local conjuredChillglobe = false
+			local conjuredChillglobeVersion = ""
+						
+			if trinket1ItemLink ~= nil then
+				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
+					if alchemyStone == false then
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+					else
+						break
+					end
+				end
+
+				if alchemyStone == false then
+					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
+				end
+			end
+
+			if alchemyStone == false and trinket2ItemLink ~= nil then
+				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
+					if alchemyStone == false then
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+					else
+						break
+					end
+				end
+			end
+
+			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
+				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
+			end
+
+			TRB.Data.character.items.alchemyStone = alchemyStone
+			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
+			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
+		end
+	end
 end

@@ -1351,92 +1351,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.shadow.spells = spells
 	end
 
-	local function CheckCharacter()
-		TRB.Functions.Character:CheckCharacter()
-		TRB.Data.character.className = "priest"
-		local specId = GetSpecialization()
-
-		if specId == 1 then
-		elseif specId == 2 then
-			TRB.Data.character.specName = "holy"
----@diagnostic disable-next-line: missing-parameter
-			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
-			TRB.Functions.Spell:FillSpellDataManaCost(TRB.Data.spells)
-
-			local trinket1ItemLink = GetInventoryItemLink("player", 13)
-			local trinket2ItemLink = GetInventoryItemLink("player", 14)
-
-			local alchemyStone = false
-			local conjuredChillglobe = false
-			local conjuredChillglobeVersion = ""
-						
-			if trinket1ItemLink ~= nil then
-				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
-					if alchemyStone == false then
-						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
-					else
-						break
-					end
-				end
-
-				if alchemyStone == false then
-					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
-				end
-			end
-
-			if alchemyStone == false and trinket2ItemLink ~= nil then
-				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
-					if alchemyStone == false then
-						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
-					else
-						break
-					end
-				end
-			end
-
-			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
-				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
-			end
-
-			TRB.Data.character.items.alchemyStone = alchemyStone
-			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
-			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
-		elseif specId == 3 then
-			TRB.Data.character.specName = "shadow"
----@diagnostic disable-next-line: missing-parameter
-			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Insanity)
-
-			TRB.Data.character.devouringPlagueThreshold = -TRB.Data.spells.devouringPlague.insanity
-			TRB.Data.character.mindSearThreshold = -TRB.Data.spells.mindSear.insanity
-
-			-- Threshold lines
-			--[[if TRB.Data.settings.priest.shadow.thresholds.devouringPlague.enabled and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.devouringPlague) and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
-				TRB.Frames.resourceFrame.thresholds[1]:Show()
-				TRB.Functions.Threshold:RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[1], resourceFrame, TRB.Data.settings.priest.shadow.thresholds.width, TRB.Data.character.devouringPlagueThreshold, TRB.Data.character.maxResource)
-			else
-				TRB.Frames.resourceFrame.thresholds[1]:Hide()
-			end
-
-			if TRB.Data.settings.priest.shadow.thresholds.mindSear.enabled and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.mindSear) and TRB.Data.character.devouringPlagueThreshold < TRB.Data.character.maxResource then
-				TRB.Frames.resourceFrame.thresholds[2]:Show()
-				TRB.Functions.Threshold:RepositionThreshold(TRB.Data.settings.priest.shadow, resourceFrame.thresholds[2], resourceFrame, TRB.Data.settings.priest.shadow.thresholds.width, TRB.Data.character.mindSearThreshold, TRB.Data.character.maxResource)				
-			else
-				TRB.Frames.resourceFrame.thresholds[2]:Hide()
-			end]]
-
-			TRB.Frames.resourceFrame.thresholds[3]:Hide()
-			TRB.Frames.resourceFrame.thresholds[4]:Hide()
-			TRB.Frames.resourceFrame.thresholds[5]:Hide()
-			TRB.Frames.resourceFrame.thresholds[6]:Hide()
-			TRB.Frames.resourceFrame.thresholds[7]:Hide()
-			TRB.Frames.passiveFrame.thresholds[3]:Hide()
-			TRB.Frames.passiveFrame.thresholds[4]:Hide()
-			TRB.Frames.passiveFrame.thresholds[5]:Hide()
-			TRB.Frames.passiveFrame.thresholds[6]:Hide()
-		end
-	end
-	TRB.Functions.CheckCharacter_Class = CheckCharacter
-
 	local function CheckVoidTendrilExists(guid)
 		if guid == nil or (not TRB.Data.snapshotData.voidTendrils.activeList[guid] or TRB.Data.snapshotData.voidTendrils.activeList[guid] == nil) then
 			return false
@@ -3859,7 +3773,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		if TRB.Data.specSupported then
-            CheckCharacter()
+            TRB.Functions.Class:CheckCharacter()
 
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
@@ -4407,5 +4321,75 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end
 	end)
+
+	function TRB.Functions.Class:CheckCharacter()
+		TRB.Functions.Character:CheckCharacter()
+		TRB.Data.character.className = "priest"
+		local specId = GetSpecialization()
+
+		if specId == 1 then
+		elseif specId == 2 then
+			TRB.Data.character.specName = "holy"
+---@diagnostic disable-next-line: missing-parameter
+			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
+			TRB.Functions.Spell:FillSpellDataManaCost(TRB.Data.spells)
+
+			local trinket1ItemLink = GetInventoryItemLink("player", 13)
+			local trinket2ItemLink = GetInventoryItemLink("player", 14)
+
+			local alchemyStone = false
+			local conjuredChillglobe = false
+			local conjuredChillglobeVersion = ""
+						
+			if trinket1ItemLink ~= nil then
+				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
+					if alchemyStone == false then
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+					else
+						break
+					end
+				end
+
+				if alchemyStone == false then
+					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
+				end
+			end
+
+			if alchemyStone == false and trinket2ItemLink ~= nil then
+				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
+					if alchemyStone == false then
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+					else
+						break
+					end
+				end
+			end
+
+			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
+				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
+			end
+
+			TRB.Data.character.items.alchemyStone = alchemyStone
+			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
+			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
+		elseif specId == 3 then
+			TRB.Data.character.specName = "shadow"
+---@diagnostic disable-next-line: missing-parameter
+			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Insanity)
+
+			TRB.Data.character.devouringPlagueThreshold = -TRB.Data.spells.devouringPlague.insanity
+			TRB.Data.character.mindSearThreshold = -TRB.Data.spells.mindSear.insanity
+
+			TRB.Frames.resourceFrame.thresholds[3]:Hide()
+			TRB.Frames.resourceFrame.thresholds[4]:Hide()
+			TRB.Frames.resourceFrame.thresholds[5]:Hide()
+			TRB.Frames.resourceFrame.thresholds[6]:Hide()
+			TRB.Frames.resourceFrame.thresholds[7]:Hide()
+			TRB.Frames.passiveFrame.thresholds[3]:Hide()
+			TRB.Frames.passiveFrame.thresholds[4]:Hide()
+			TRB.Frames.passiveFrame.thresholds[5]:Hide()
+			TRB.Frames.passiveFrame.thresholds[6]:Hide()
+		end
+	end
 end
 

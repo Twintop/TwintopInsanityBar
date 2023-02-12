@@ -1634,82 +1634,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 	end
 
-	local function CheckCharacter()
-		local specId = GetSpecialization()
-		TRB.Functions.Character:CheckCharacter()
-		TRB.Data.character.className = "druid"
-
-		if specId == 1 then
-			TRB.Data.character.specName = "balance"
----@diagnostic disable-next-line: missing-parameter
-			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.LunarPower)
-			GetCurrentMoonSpell()
-		elseif specId == 2 then
-			TRB.Data.character.specName = "feral"
----@diagnostic disable-next-line: missing-parameter
-			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Energy)
----@diagnostic disable-next-line: missing-parameter
-			local maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
-			local settings = TRB.Data.settings.druid.feral
-
-			if settings ~= nil then
-				if maxComboPoints ~= TRB.Data.character.maxResource2 then
-					TRB.Data.character.maxResource2 = maxComboPoints
-					TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
-				end
-			end
-
-			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.circleOfLifeAndDeath) then
-				TRB.Data.character.pandemicModifier = TRB.Data.spells.circleOfLifeAndDeath.modifier
-			end
-		elseif specId == 4 then
-			TRB.Data.character.specName = "restoration"
----@diagnostic disable-next-line: missing-parameter
-			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
-			TRB.Functions.Spell:FillSpellDataManaCost(TRB.Data.spells)
-
-			local trinket1ItemLink = GetInventoryItemLink("player", 13)
-			local trinket2ItemLink = GetInventoryItemLink("player", 14)
-
-			local alchemyStone = false
-			local conjuredChillglobe = false
-			local conjuredChillglobeVersion = ""
-						
-			if trinket1ItemLink ~= nil then
-				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
-					if alchemyStone == false then
-						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
-					else
-						break
-					end
-				end
-
-				if alchemyStone == false then
-					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
-				end
-			end
-
-			if alchemyStone == false and trinket2ItemLink ~= nil then
-				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
-					if alchemyStone == false then
-						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
-					else
-						break
-					end
-				end
-			end
-
-			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
-				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
-			end
-
-			TRB.Data.character.items.alchemyStone = alchemyStone
-			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
-			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
-		end
-	end
-	TRB.Functions.CheckCharacter_Class = CheckCharacter
-
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 1 and TRB.Data.settings.core.enabled.druid.balance == true then
@@ -1745,7 +1669,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		if TRB.Data.specSupported then
-            CheckCharacter()
+            TRB.Functions.Class:CheckCharacter()
             
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
@@ -5268,7 +5192,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Data.snapshotData.rattleTheStars.endTime = nil
 							TRB.Data.snapshotData.rattleTheStars.stacks = 0
 						end
-						CheckCharacter()
+						TRB.Functions.Class:CheckCharacter()
 						triggerUpdate = true
 					elseif spellId == TRB.Data.spells.newMoon.id then
 						if type == "SPELL_CAST_SUCCESS" then
@@ -5718,4 +5642,79 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		end
 	end)
+
+	function TRB.Functions.Class:CheckCharacter()
+		local specId = GetSpecialization()
+		TRB.Functions.Character:CheckCharacter()
+		TRB.Data.character.className = "druid"
+
+		if specId == 1 then
+			TRB.Data.character.specName = "balance"
+---@diagnostic disable-next-line: missing-parameter
+			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.LunarPower)
+			GetCurrentMoonSpell()
+		elseif specId == 2 then
+			TRB.Data.character.specName = "feral"
+---@diagnostic disable-next-line: missing-parameter
+			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Energy)
+---@diagnostic disable-next-line: missing-parameter
+			local maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
+			local settings = TRB.Data.settings.druid.feral
+
+			if settings ~= nil then
+				if maxComboPoints ~= TRB.Data.character.maxResource2 then
+					TRB.Data.character.maxResource2 = maxComboPoints
+					TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
+				end
+			end
+
+			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.circleOfLifeAndDeath) then
+				TRB.Data.character.pandemicModifier = TRB.Data.spells.circleOfLifeAndDeath.modifier
+			end
+		elseif specId == 4 then
+			TRB.Data.character.specName = "restoration"
+---@diagnostic disable-next-line: missing-parameter
+			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
+			TRB.Functions.Spell:FillSpellDataManaCost(TRB.Data.spells)
+
+			local trinket1ItemLink = GetInventoryItemLink("player", 13)
+			local trinket2ItemLink = GetInventoryItemLink("player", 14)
+
+			local alchemyStone = false
+			local conjuredChillglobe = false
+			local conjuredChillglobeVersion = ""
+						
+			if trinket1ItemLink ~= nil then
+				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
+					if alchemyStone == false then
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+					else
+						break
+					end
+				end
+
+				if alchemyStone == false then
+					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
+				end
+			end
+
+			if alchemyStone == false and trinket2ItemLink ~= nil then
+				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
+					if alchemyStone == false then
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+					else
+						break
+					end
+				end
+			end
+
+			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
+				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
+			end
+
+			TRB.Data.character.items.alchemyStone = alchemyStone
+			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
+			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
+		end
+	end
 end

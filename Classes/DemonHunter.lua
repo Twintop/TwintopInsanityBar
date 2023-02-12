@@ -505,18 +505,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		specCache.havoc.spells = spells
 	end
 
-	local function CheckCharacter()
-		TRB.Functions.Character:CheckCharacter()
-		TRB.Data.character.className = "demonhunter"
----@diagnostic disable-next-line: missing-parameter
-		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Fury)
-
-        if GetSpecialization() == 1 then
-			TRB.Data.character.specName = "havoc"
-		end
-	end
-	TRB.Functions.CheckCharacter_Class = CheckCharacter
-
 	local function EventRegistration()
 		local specId = GetSpecialization()
 		if specId == 1 and TRB.Data.settings.core.enabled.demonhunter.havoc == true then
@@ -538,7 +526,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		if TRB.Data.specSupported then
 			TRB.Data.resource = Enum.PowerType.Fury
 			TRB.Data.resourceFactor = 1
-            CheckCharacter()
+            TRB.Functions.Class:CheckCharacter()
             
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
@@ -1595,4 +1583,15 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			end
 		end
 	end)
+
+	function TRB.Functions.Class:CheckCharacter()
+		TRB.Functions.Character:CheckCharacter()
+		TRB.Data.character.className = "demonhunter"
+---@diagnostic disable-next-line: missing-parameter
+		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Fury)
+
+        if GetSpecialization() == 1 then
+			TRB.Data.character.specName = "havoc"
+		end
+	end
 end
