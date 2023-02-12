@@ -1220,7 +1220,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetChecked(TRB.Data.settings.core.enabled.warrior.arms)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.warrior.arms = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.armsWarriorEnabled, TRB.Data.settings.core.enabled.warrior.arms, true)
 		end)
 
@@ -1989,7 +1989,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f:SetChecked(TRB.Data.settings.core.enabled.warrior.fury)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.warrior.fury = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.furyWarriorEnabled, TRB.Data.settings.core.enabled.warrior.fury, true)
 		end)
 

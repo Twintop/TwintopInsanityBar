@@ -1140,7 +1140,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetChecked(TRB.Data.settings.core.enabled.shaman.elemental)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.shaman.elemental = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.elementalShamanEnabled, TRB.Data.settings.core.enabled.shaman.elemental, true)
 		end)
 
@@ -1821,7 +1821,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f:SetChecked(TRB.Data.settings.core.enabled.shaman.restoration)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.shaman.restoration = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.restorationShamanEnabled, TRB.Data.settings.core.enabled.shaman.restoration, true)
 		end)
 		

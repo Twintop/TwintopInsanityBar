@@ -37,8 +37,6 @@ Functions\Talent.lua
 Functions\Target.lua
 Functions\Threshold.lua
 
-Functions.lua
-
 Init.lua
 
 Classes\DemonHunter.lua

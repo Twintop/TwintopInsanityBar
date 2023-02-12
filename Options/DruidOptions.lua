@@ -1656,7 +1656,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetChecked(TRB.Data.settings.core.enabled.druid.balance)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.druid.balance = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.balanceDruidEnabled, TRB.Data.settings.core.enabled.druid.balance, true)
 		end)
 
@@ -2626,7 +2626,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetChecked(TRB.Data.settings.core.enabled.druid.feral)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.druid.feral = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.feralDruidEnabled, TRB.Data.settings.core.enabled.druid.feral, true)
 		end)
 
@@ -3240,7 +3240,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetChecked(TRB.Data.settings.core.enabled.druid.restoration)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.druid.restoration = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.restorationDruidEnabled, TRB.Data.settings.core.enabled.druid.restoration, true)
 		end)
 		

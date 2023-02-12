@@ -1,6 +1,9 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 1 then --Only do this if we're on a Warrior!
+	TRB.Functions.Class = TRB.Functions.Class or {}
+	
+	TRB.Functions.Class = TRB.Functions.Class or {}
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
@@ -892,47 +895,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		specCache.fury.spells = spells
 	end
 
-	local function EventRegistration()
-		local specId = GetSpecialization()
-		if specId == 1 and TRB.Data.settings.core.enabled.warrior.arms == true then
-			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.arms)
-			TRB.Data.resource = Enum.PowerType.Rage
-			TRB.Data.resourceFactor = 10
-			TRB.Data.specSupported = true
-		elseif specId == 2 and TRB.Data.settings.core.enabled.warrior.fury == true then
-			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.fury)
-			TRB.Data.resource = Enum.PowerType.Rage
-			TRB.Data.resourceFactor = 10
-			TRB.Data.specSupported = true
-		else
-			--TRB.Data.resource = MANA
-			TRB.Data.specSupported = false
-			targetsTimerFrame:SetScript("OnUpdate", nil)
-			timerFrame:SetScript("OnUpdate", nil)
-			barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
-			barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-			TRB.Details.addonData.registered = false
-			barContainerFrame:Hide()
-		end
-
-		if TRB.Data.specSupported then
-            TRB.Functions.Class:CheckCharacter()
-            
-			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-			barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-			barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-
-			TRB.Details.addonData.registered = true
-		end
-		TRB.Functions.Bar:HideResourceBar()
-	end
-	TRB.Functions.EventRegistration = EventRegistration
-
 	local function GetSuddenDeathRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.suddenDeath)
 	end
@@ -1710,53 +1672,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
         end
 	end
 
-	local function HideResourceBar(force)
-		local affectingCombat = UnitAffectingCombat("player")
-		local specId = GetSpecialization()
-
-		if specId == 1 then
-			if not TRB.Data.specSupported or force or ((not affectingCombat) and
-				(not UnitInVehicle("player")) and (
-					(not TRB.Data.settings.warrior.arms.displayBar.alwaysShow) and (
-						(not TRB.Data.settings.warrior.arms.displayBar.notZeroShow) or
-						(TRB.Data.settings.warrior.arms.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0)
-					)
-				)) then
-				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshotData.isTracking = false
-			else
-				TRB.Data.snapshotData.isTracking = true
-				if TRB.Data.settings.warrior.arms.displayBar.neverShow == true then
-					TRB.Frames.barContainerFrame:Hide()
-				else
-					TRB.Frames.barContainerFrame:Show()
-				end
-			end
-		elseif specId == 2 then
-			if not TRB.Data.specSupported or force or ((not affectingCombat) and
-				(not UnitInVehicle("player")) and (
-					(not TRB.Data.settings.warrior.fury.displayBar.alwaysShow) and (
-						(not TRB.Data.settings.warrior.fury.displayBar.notZeroShow) or
-						(TRB.Data.settings.warrior.fury.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0)
-					)
-				)) then
-				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshotData.isTracking = false
-			else
-				TRB.Data.snapshotData.isTracking = true
-				if TRB.Data.settings.warrior.fury.displayBar.neverShow == true then
-					TRB.Frames.barContainerFrame:Hide()
-				else
-					TRB.Frames.barContainerFrame:Show()
-				end
-			end
-		else
-			TRB.Frames.barContainerFrame:Hide()
-			TRB.Data.snapshotData.isTracking = false
-		end
-	end
-	TRB.Functions.Bar.HideResourceBarFunction = HideResourceBar
-
 	local function UpdateResourceBar()
 		local currentTime = GetTime()
 		local refreshText = false
@@ -2141,24 +2056,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 		end
 	end
-
-	--HACK to fix FPS
-	local updateRateLimit = 0
-
-	local function TriggerResourceBarUpdates()
-		if GetSpecialization() ~= 1 and GetSpecialization() ~= 2 then
-			TRB.Functions.Bar:HideResourceBar(true)
-			return
-		end
-
-		local currentTime = GetTime()
-
-		if updateRateLimit + 0.05 < currentTime then
-			updateRateLimit = currentTime
-			UpdateResourceBar()
-		end
-	end
-	TRB.Functions.TriggerResourceBarUpdates = TriggerResourceBarUpdates
     
 	barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local currentTime = GetTime()
@@ -2383,7 +2280,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 
 		if triggerUpdate then
-			TriggerResourceBarUpdates()
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)
 
@@ -2393,7 +2290,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		if self.sinceLastUpdate >= 1 then -- in seconds
 			TargetsCleanup()
 			RefreshTargetTracking()
-			TriggerResourceBarUpdates()
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 			self.sinceLastUpdate = 0
 		end
 	end
@@ -2437,7 +2334,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		else
 			TRB.Data.barConstructedForSpec = nil
 		end
-		EventRegistration()
+		TRB.Functions.Class:EventRegistration()
 	end
 
 	resourceFrame:RegisterEvent("ADDON_LOADED")
@@ -2497,7 +2394,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
 								ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 							end
-							EventRegistration()
+							TRB.Functions.Class:EventRegistration()
 						end)
 					end)
 				end
@@ -2525,6 +2422,109 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
         elseif specId == 2 then
 			TRB.Data.character.specName = "fury"
 		elseif specId == 3 then
+		end
+	end
+
+	function TRB.Functions.Class:EventRegistration()
+		local specId = GetSpecialization()
+		if specId == 1 and TRB.Data.settings.core.enabled.warrior.arms == true then
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.arms)
+			TRB.Data.resource = Enum.PowerType.Rage
+			TRB.Data.resourceFactor = 10
+			TRB.Data.specSupported = true
+		elseif specId == 2 and TRB.Data.settings.core.enabled.warrior.fury == true then
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.fury)
+			TRB.Data.resource = Enum.PowerType.Rage
+			TRB.Data.resourceFactor = 10
+			TRB.Data.specSupported = true
+		else
+			--TRB.Data.resource = MANA
+			TRB.Data.specSupported = false
+			targetsTimerFrame:SetScript("OnUpdate", nil)
+			timerFrame:SetScript("OnUpdate", nil)
+			barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+			barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
+			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+			TRB.Details.addonData.registered = false
+			barContainerFrame:Hide()
+		end
+
+		if TRB.Data.specSupported then
+            TRB.Functions.Class:CheckCharacter()
+            
+			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
+			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
+			barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
+			barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+
+			TRB.Details.addonData.registered = true
+		end
+		TRB.Functions.Bar:HideResourceBar()
+	end
+
+	function TRB.Functions.Class:HideResourceBar(force)
+		local affectingCombat = UnitAffectingCombat("player")
+		local specId = GetSpecialization()
+
+		if specId == 1 then
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
+				(not UnitInVehicle("player")) and (
+					(not TRB.Data.settings.warrior.arms.displayBar.alwaysShow) and (
+						(not TRB.Data.settings.warrior.arms.displayBar.notZeroShow) or
+						(TRB.Data.settings.warrior.arms.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0)
+					)
+				)) then
+				TRB.Frames.barContainerFrame:Hide()
+				TRB.Data.snapshotData.isTracking = false
+			else
+				TRB.Data.snapshotData.isTracking = true
+				if TRB.Data.settings.warrior.arms.displayBar.neverShow == true then
+					TRB.Frames.barContainerFrame:Hide()
+				else
+					TRB.Frames.barContainerFrame:Show()
+				end
+			end
+		elseif specId == 2 then
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
+				(not UnitInVehicle("player")) and (
+					(not TRB.Data.settings.warrior.fury.displayBar.alwaysShow) and (
+						(not TRB.Data.settings.warrior.fury.displayBar.notZeroShow) or
+						(TRB.Data.settings.warrior.fury.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0)
+					)
+				)) then
+				TRB.Frames.barContainerFrame:Hide()
+				TRB.Data.snapshotData.isTracking = false
+			else
+				TRB.Data.snapshotData.isTracking = true
+				if TRB.Data.settings.warrior.fury.displayBar.neverShow == true then
+					TRB.Frames.barContainerFrame:Hide()
+				else
+					TRB.Frames.barContainerFrame:Show()
+				end
+			end
+		else
+			TRB.Frames.barContainerFrame:Hide()
+			TRB.Data.snapshotData.isTracking = false
+		end
+	end
+
+	--HACK to fix FPS
+	local updateRateLimit = 0
+
+	function TRB.Functions.Class:TriggerResourceBarUpdates()
+		if GetSpecialization() ~= 1 and GetSpecialization() ~= 2 then
+			TRB.Functions.Bar:HideResourceBar(true)
+			return
+		end
+
+		local currentTime = GetTime()
+
+		if updateRateLimit + 0.05 < currentTime then
+			updateRateLimit = currentTime
+			UpdateResourceBar()
 		end
 	end
 end

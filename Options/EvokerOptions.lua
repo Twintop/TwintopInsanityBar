@@ -766,7 +766,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		f:SetChecked(TRB.Data.settings.core.enabled.evoker.devastation)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.evoker.devastation = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.devastationEvokerEnabled, TRB.Data.settings.core.enabled.evoker.devastation, true)
 		end)
 
@@ -1411,7 +1411,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		f:SetChecked(TRB.Data.settings.core.enabled.evoker.preservation)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.evoker.preservation = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.preservationEvokerEnabled, TRB.Data.settings.core.enabled.evoker.preservation, true)
 		end)
 		

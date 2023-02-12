@@ -1,6 +1,8 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 11 then --Only do this if we're on a Druid!
+	TRB.Functions.Class = TRB.Functions.Class or {}
+	
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
@@ -1633,56 +1635,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.snapshotData.newMoon.checkAfter = nil
 		end
 	end
-
-	local function EventRegistration()
-		local specId = GetSpecialization()
-		if specId == 1 and TRB.Data.settings.core.enabled.druid.balance == true then
-			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.balance)
-			TRB.Data.specSupported = true
-			TRB.Data.resource = Enum.PowerType.LunarPower
-			TRB.Data.resourceFactor = 10
-			TRB.Data.resource2 = nil
-			TRB.Data.resource2Factor = nil
-		elseif specId == 2 and TRB.Data.settings.core.enabled.druid.feral == true then
-			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.feral)
-			TRB.Data.specSupported = true
-			TRB.Data.resource = Enum.PowerType.Energy
-			TRB.Data.resourceFactor = 1
-			TRB.Data.resource2 = Enum.PowerType.ComboPoints
-			TRB.Data.resource2Factor = 1
-		elseif specId == 4 and TRB.Data.settings.core.enabled.druid.restoration then
-			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.restoration)
-			TRB.Data.specSupported = true
-			TRB.Data.resource = Enum.PowerType.Mana
-			TRB.Data.resourceFactor = 1
-		else
-			--TRB.Data.resource = MANA
-			TRB.Data.specSupported = false
-			targetsTimerFrame:SetScript("OnUpdate", nil)
-			timerFrame:SetScript("OnUpdate", nil)
-			barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
-			barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-			TRB.Details.addonData.registered = false
-			barContainerFrame:Hide()
-		end
-
-		if TRB.Data.specSupported then
-            TRB.Functions.Class:CheckCharacter()
-            
-			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-			barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-			barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-
-			TRB.Details.addonData.registered = true
-		end
-		TRB.Functions.Bar:HideResourceBar()
-	end
-	TRB.Functions.EventRegistration = EventRegistration
 	
     local function CalculateAbilityResourceValue(resource, threshold, relentlessPredator)
         local modifier = 1.0
@@ -4210,74 +4162,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Data.snapshotData.clearcasting.remainingTime = GetClearcastingRemainingTime()
 	end
 
-	local function HideResourceBar(force)
-		local affectingCombat = UnitAffectingCombat("player")
-		local specId = GetSpecialization()
-
-		if specId == 1 then
-			if not TRB.Data.specSupported or force or GetSpecialization() ~= 1 or (not affectingCombat) and
-				(not UnitInVehicle("player")) and (
-					(not TRB.Data.settings.druid.balance.displayBar.alwaysShow) and (
-						(not TRB.Data.settings.druid.balance.displayBar.notZeroShow) or
-						(TRB.Data.settings.druid.balance.displayBar.notZeroShow and
-							((not TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.naturesBalance) and TRB.Data.snapshotData.resource == 0) or
-							(TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.naturesBalance) and (TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) >= 50))
-						)
-					)
-				) then
-				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshotData.isTracking = false
-			else
-				TRB.Data.snapshotData.isTracking = true
-				if TRB.Data.settings.druid.balance.displayBar.neverShow == true then
-					TRB.Frames.barContainerFrame:Hide()
-				else
-					TRB.Frames.barContainerFrame:Show()
-				end
-			end
-		elseif specId == 2 then
-			if not TRB.Data.specSupported or force or ((not affectingCombat) and
-				(not UnitInVehicle("player")) and (
-					(not TRB.Data.settings.druid.feral.displayBar.alwaysShow) and (
-						(not TRB.Data.settings.druid.feral.displayBar.notZeroShow) or
-						(TRB.Data.settings.druid.feral.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource)
-					)
-				)) then
-				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshotData.isTracking = false
-			else
-				TRB.Data.snapshotData.isTracking = true
-				if TRB.Data.settings.druid.feral.displayBar.neverShow == true then
-					TRB.Frames.barContainerFrame:Hide()
-				else
-					TRB.Frames.barContainerFrame:Show()
-				end
-			end
-		elseif specId == 4 then
-			if not TRB.Data.specSupported or force or ((not affectingCombat) and
-				(not UnitInVehicle("player")) and (
-					(not TRB.Data.settings.druid.restoration.displayBar.alwaysShow) and (
-						(not TRB.Data.settings.druid.restoration.displayBar.notZeroShow) or
-						(TRB.Data.settings.druid.restoration.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource)
-					)
-				)) then
-				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshotData.isTracking = false
-			else
-				TRB.Data.snapshotData.isTracking = true
-				if TRB.Data.settings.druid.restoration.displayBar.neverShow == true then
-					TRB.Frames.barContainerFrame:Hide()
-				else
-					TRB.Frames.barContainerFrame:Show()
-				end
-			end
-		else
-			TRB.Frames.barContainerFrame:Hide()
-			TRB.Data.snapshotData.isTracking = false
-		end
-	end
-	TRB.Functions.Bar.HideResourceBarFunction = HideResourceBar
-
 	local function UpdateResourceBar()
 		local currentTime = GetTime()
 		local refreshText = false
@@ -4945,25 +4829,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 	end
 
-	--HACK to fix FPS
-	local updateRateLimit = 0
-
-	local function TriggerResourceBarUpdates()
-		local specId = GetSpecialization()
-		if specId ~= 1 and specId ~= 2 and specId ~= 4 then
-			TRB.Functions.Bar:HideResourceBar(true)
-			return
-		end
-
-		local currentTime = GetTime()
-
-		if updateRateLimit + 0.05 < currentTime then
-			updateRateLimit = currentTime
-			UpdateResourceBar()
-		end
-	end
-	TRB.Functions.TriggerResourceBarUpdates = TriggerResourceBarUpdates
-
 	barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local currentTime = GetTime()
 		local triggerUpdate = false
@@ -5502,7 +5367,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		if triggerUpdate then
-			TriggerResourceBarUpdates()
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)
 
@@ -5512,7 +5377,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if self.sinceLastUpdate >= 1 then -- in seconds
 			TargetsCleanup()
 			RefreshTargetTracking()
-			TriggerResourceBarUpdates()
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 			self.sinceLastUpdate = 0
 		end
 	end
@@ -5568,7 +5433,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		else
 			TRB.Data.barConstructedForSpec = nil
 		end
-		EventRegistration()
+		TRB.Functions.Class:EventRegistration()
 	end
 
 	resourceFrame:RegisterEvent("ADDON_LOADED")
@@ -5631,7 +5496,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
 								ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 							end
-							EventRegistration()
+							TRB.Functions.Class:EventRegistration()
 						end)
 					end)
 				end
@@ -5715,6 +5580,140 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.character.items.alchemyStone = alchemyStone
 			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
 			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
+		end
+	end
+
+	function TRB.Functions.Class:EventRegistration()
+		local specId = GetSpecialization()
+		if specId == 1 and TRB.Data.settings.core.enabled.druid.balance == true then
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.balance)
+			TRB.Data.specSupported = true
+			TRB.Data.resource = Enum.PowerType.LunarPower
+			TRB.Data.resourceFactor = 10
+			TRB.Data.resource2 = nil
+			TRB.Data.resource2Factor = nil
+		elseif specId == 2 and TRB.Data.settings.core.enabled.druid.feral == true then
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.feral)
+			TRB.Data.specSupported = true
+			TRB.Data.resource = Enum.PowerType.Energy
+			TRB.Data.resourceFactor = 1
+			TRB.Data.resource2 = Enum.PowerType.ComboPoints
+			TRB.Data.resource2Factor = 1
+		elseif specId == 4 and TRB.Data.settings.core.enabled.druid.restoration then
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.restoration)
+			TRB.Data.specSupported = true
+			TRB.Data.resource = Enum.PowerType.Mana
+			TRB.Data.resourceFactor = 1
+		else
+			--TRB.Data.resource = MANA
+			TRB.Data.specSupported = false
+			targetsTimerFrame:SetScript("OnUpdate", nil)
+			timerFrame:SetScript("OnUpdate", nil)
+			barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+			barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
+			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+			TRB.Details.addonData.registered = false
+			barContainerFrame:Hide()
+		end
+
+		if TRB.Data.specSupported then
+            TRB.Functions.Class:CheckCharacter()
+            
+			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
+			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
+			barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
+			barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+
+			TRB.Details.addonData.registered = true
+		end
+		TRB.Functions.Bar:HideResourceBar()
+	end
+
+	function TRB.Functions.Class:HideResourceBar(force)
+		local affectingCombat = UnitAffectingCombat("player")
+		local specId = GetSpecialization()
+
+		if specId == 1 then
+			if not TRB.Data.specSupported or force or GetSpecialization() ~= 1 or (not affectingCombat) and
+				(not UnitInVehicle("player")) and (
+					(not TRB.Data.settings.druid.balance.displayBar.alwaysShow) and (
+						(not TRB.Data.settings.druid.balance.displayBar.notZeroShow) or
+						(TRB.Data.settings.druid.balance.displayBar.notZeroShow and
+							((not TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.naturesBalance) and TRB.Data.snapshotData.resource == 0) or
+							(TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.naturesBalance) and (TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) >= 50))
+						)
+					)
+				) then
+				TRB.Frames.barContainerFrame:Hide()
+				TRB.Data.snapshotData.isTracking = false
+			else
+				TRB.Data.snapshotData.isTracking = true
+				if TRB.Data.settings.druid.balance.displayBar.neverShow == true then
+					TRB.Frames.barContainerFrame:Hide()
+				else
+					TRB.Frames.barContainerFrame:Show()
+				end
+			end
+		elseif specId == 2 then
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
+				(not UnitInVehicle("player")) and (
+					(not TRB.Data.settings.druid.feral.displayBar.alwaysShow) and (
+						(not TRB.Data.settings.druid.feral.displayBar.notZeroShow) or
+						(TRB.Data.settings.druid.feral.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource)
+					)
+				)) then
+				TRB.Frames.barContainerFrame:Hide()
+				TRB.Data.snapshotData.isTracking = false
+			else
+				TRB.Data.snapshotData.isTracking = true
+				if TRB.Data.settings.druid.feral.displayBar.neverShow == true then
+					TRB.Frames.barContainerFrame:Hide()
+				else
+					TRB.Frames.barContainerFrame:Show()
+				end
+			end
+		elseif specId == 4 then
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
+				(not UnitInVehicle("player")) and (
+					(not TRB.Data.settings.druid.restoration.displayBar.alwaysShow) and (
+						(not TRB.Data.settings.druid.restoration.displayBar.notZeroShow) or
+						(TRB.Data.settings.druid.restoration.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource)
+					)
+				)) then
+				TRB.Frames.barContainerFrame:Hide()
+				TRB.Data.snapshotData.isTracking = false
+			else
+				TRB.Data.snapshotData.isTracking = true
+				if TRB.Data.settings.druid.restoration.displayBar.neverShow == true then
+					TRB.Frames.barContainerFrame:Hide()
+				else
+					TRB.Frames.barContainerFrame:Show()
+				end
+			end
+		else
+			TRB.Frames.barContainerFrame:Hide()
+			TRB.Data.snapshotData.isTracking = false
+		end
+	end
+
+	--HACK to fix FPS
+	local updateRateLimit = 0
+
+	function TRB.Functions.Class:TriggerResourceBarUpdates()
+		local specId = GetSpecialization()
+		if specId ~= 1 and specId ~= 2 and specId ~= 4 then
+			TRB.Functions.Bar:HideResourceBar(true)
+			return
+		end
+
+		local currentTime = GetTime()
+
+		if updateRateLimit + 0.05 < currentTime then
+			updateRateLimit = currentTime
+			UpdateResourceBar()
 		end
 	end
 end

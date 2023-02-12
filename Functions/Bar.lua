@@ -36,7 +36,7 @@ end
 
 function TRB.Functions.Bar:ShowResourceBar()
 	if TRB.Details.addonData.registered == false then
-		TRB.Functions.EventRegistration()
+		TRB.Functions.Class:EventRegistration()
 	end
 
 	TRB.Data.snapshotData.isTracking = true
@@ -45,7 +45,7 @@ end
 
 function TRB.Functions.Bar:HideResourceBar(force)
     force = force or false
-    TRB.Functions.Bar.HideResourceBarFunction(force)
+    TRB.Functions.Class:HideResourceBar(force)
 end
 
 function TRB.Functions.Bar:PulseFrame(frame, alphaOffset, flashPeriod)

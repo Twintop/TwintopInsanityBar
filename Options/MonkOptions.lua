@@ -994,7 +994,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetChecked(TRB.Data.settings.core.enabled.monk.mistweaver)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.monk.mistweaver = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.mistweaverMonkEnabled, TRB.Data.settings.core.enabled.monk.mistweaver, true)
 		end)
 		
@@ -1954,7 +1954,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetChecked(TRB.Data.settings.core.enabled.monk.windwalker)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.monk.windwalker = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.windwalkerMonkEnabled, TRB.Data.settings.core.enabled.monk.windwalker, true)
 		end)
 

@@ -1596,7 +1596,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(TRB.Data.settings.core.enabled.priest.holy)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.priest.holy = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.holyPriestEnabled, TRB.Data.settings.core.enabled.priest.holy, true)
 		end)
 		
@@ -2720,7 +2720,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(TRB.Data.settings.core.enabled.priest.shadow)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.priest.shadow = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.shadowPriestEnabled, TRB.Data.settings.core.enabled.priest.shadow, true)
 		end)
 

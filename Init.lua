@@ -88,7 +88,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 	self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate
 	self.characterCheckSinceLastUpdate  = self.characterCheckSinceLastUpdate  + sinceLastUpdate
 	if self.sinceLastUpdate >= 0.05 then -- in seconds
-		TRB.Functions.TriggerResourceBarUpdates()
+		TRB.Functions.Class:TriggerResourceBarUpdates()
 		--EventRegistry.TriggerEvent("TwintopResourceBar.Update", "trigger")
 		self.sinceLastUpdate = 0
 	end

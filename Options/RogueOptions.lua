@@ -1721,7 +1721,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetChecked(TRB.Data.settings.core.enabled.rogue.assassination)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.rogue.assassination = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.assassinationRogueEnabled, TRB.Data.settings.core.enabled.rogue.assassination, true)
 		end)
 
@@ -2881,7 +2881,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetChecked(TRB.Data.settings.core.enabled.rogue.outlaw)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.rogue.outlaw = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.outlawRogueEnabled, TRB.Data.settings.core.enabled.rogue.outlaw, true)
 		end)
 

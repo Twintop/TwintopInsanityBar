@@ -1,6 +1,8 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 7 then --Only do this if we're on a Shaman!
+	TRB.Functions.Class = TRB.Functions.Class or {}
+	
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
@@ -851,49 +853,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		specCache.restoration.spells = spells
 	end
-
-	local function EventRegistration()
-		local specId = GetSpecialization()
-		if specId == 1 and TRB.Data.settings.core.enabled.shaman.elemental then
-			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.elemental)
-			TRB.Data.specSupported = true
-			TRB.Data.resource = Enum.PowerType.Maelstrom
-			TRB.Data.resourceFactor = 1
-		elseif specId == 3 and TRB.Data.settings.core.enabled.shaman.restoration then
-			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.restoration)
-			TRB.Data.specSupported = true
-			TRB.Data.resource = Enum.PowerType.Mana
-			TRB.Data.resourceFactor = 1
-		else
-			TRB.Data.specSupported = false
-		end
-
-		if TRB.Data.specSupported then
-            TRB.Functions.Class:CheckCharacter()
-
-			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-			TRB.Frames.barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-			TRB.Frames.barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-
-			TRB.Details.addonData.registered = true
-		else
-			--TRB.Data.resource = MANA
-			TRB.Data.specSupported = false
-			targetsTimerFrame:SetScript("OnUpdate", nil)
-			timerFrame:SetScript("OnUpdate", nil)
-			TRB.Frames.barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
-			TRB.Frames.barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-			TRB.Details.addonData.registered = false
-			TRB.Frames.barContainerFrame:Hide()
-		end
-		TRB.Functions.Bar:HideResourceBar()
-	end
-	TRB.Functions.EventRegistration = EventRegistration
 
 	local function InitializeTarget(guid, selfInitializeAllowed)
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
@@ -1985,53 +1944,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 	end
 
-	local function HideResourceBar(force)
-		local affectingCombat = UnitAffectingCombat("player")
-		local specId = GetSpecialization()
-
-		if specId == 1 then
-			if not TRB.Data.specSupported or force or GetSpecialization() ~= 1 or ((not affectingCombat) and
-				(not UnitInVehicle("player")) and (
-					(not TRB.Data.settings.shaman.elemental.displayBar.alwaysShow) and (
-						(not TRB.Data.settings.shaman.elemental.displayBar.notZeroShow) or
-						(TRB.Data.settings.shaman.elemental.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0)
-					)
-				)) then
-				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshotData.isTracking = false
-			else
-				TRB.Data.snapshotData.isTracking = true
-				if TRB.Data.settings.shaman.elemental.displayBar.neverShow == true then
-					TRB.Frames.barContainerFrame:Hide()
-				else
-					TRB.Frames.barContainerFrame:Show()
-				end
-			end
-		elseif specId == 3 then
-			if not TRB.Data.specSupported or force or ((not affectingCombat) and
-				(not UnitInVehicle("player")) and (
-					(not TRB.Data.settings.shaman.restoration.displayBar.alwaysShow) and (
-						(not TRB.Data.settings.shaman.restoration.displayBar.notZeroShow) or
-						(TRB.Data.settings.shaman.restoration.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource)
-					)
-				)) then
-				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshotData.isTracking = false
-			else
-				TRB.Data.snapshotData.isTracking = true
-				if TRB.Data.settings.shaman.restoration.displayBar.neverShow == true then
-					TRB.Frames.barContainerFrame:Hide()
-				else
-					TRB.Frames.barContainerFrame:Show()
-				end
-			end
-		else
-			TRB.Frames.barContainerFrame:Hide()
-			TRB.Data.snapshotData.isTracking = false
-		end
-	end
-	TRB.Functions.Bar.HideResourceBarFunction = HideResourceBar
-
 	local function UpdateResourceBar()
 		local currentTime = GetTime()
 		local refreshText = false
@@ -2400,25 +2312,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 	end
 
-	--HACK to fix FPS
-	local updateRateLimit = 0
-
-	local function TriggerResourceBarUpdates()
-		local specId = GetSpecialization()
-		if specId ~= 1 and specId ~= 3 then
-			TRB.Functions.Bar:HideResourceBar(true)
-			return
-		end
-
-		local currentTime = GetTime()
-
-		if updateRateLimit + 0.05 < currentTime then
-			updateRateLimit = currentTime
-			UpdateResourceBar()
-		end
-	end
-	TRB.Functions.TriggerResourceBarUpdates = TriggerResourceBarUpdates
-
 	barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local currentTime = GetTime()
 		local triggerUpdate = false
@@ -2645,7 +2538,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		if triggerUpdate then
-			TriggerResourceBarUpdates()
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)
 
@@ -2655,7 +2548,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		if self.sinceLastUpdate >= 1 then -- in seconds
 			TargetsCleanup()
 			RefreshTargetTracking()
-			TriggerResourceBarUpdates()
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 			self.sinceLastUpdate = 0
 		end
 	end
@@ -2699,7 +2592,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		else
 			TRB.Data.barConstructedForSpec = nil
 		end
-		EventRegistration()
+		TRB.Functions.Class:EventRegistration()
 	end
 
 	resourceFrame:RegisterEvent("ADDON_LOADED")
@@ -2759,7 +2652,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
 								ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 							end
-							EventRegistration()
+							TRB.Functions.Class:EventRegistration()
 						end)
 					end)
 				end
@@ -2833,6 +2726,112 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.character.items.alchemyStone = alchemyStone
 			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
 			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
+		end
+	end
+
+	function TRB.Functions.Class:EventRegistration()
+		local specId = GetSpecialization()
+		if specId == 1 and TRB.Data.settings.core.enabled.shaman.elemental then
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.elemental)
+			TRB.Data.specSupported = true
+			TRB.Data.resource = Enum.PowerType.Maelstrom
+			TRB.Data.resourceFactor = 1
+		elseif specId == 3 and TRB.Data.settings.core.enabled.shaman.restoration then
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.restoration)
+			TRB.Data.specSupported = true
+			TRB.Data.resource = Enum.PowerType.Mana
+			TRB.Data.resourceFactor = 1
+		else
+			TRB.Data.specSupported = false
+		end
+
+		if TRB.Data.specSupported then
+            TRB.Functions.Class:CheckCharacter()
+
+			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
+			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
+			TRB.Frames.barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
+			TRB.Frames.barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+
+			TRB.Details.addonData.registered = true
+		else
+			--TRB.Data.resource = MANA
+			TRB.Data.specSupported = false
+			targetsTimerFrame:SetScript("OnUpdate", nil)
+			timerFrame:SetScript("OnUpdate", nil)
+			TRB.Frames.barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+			TRB.Frames.barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
+			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+			TRB.Details.addonData.registered = false
+			TRB.Frames.barContainerFrame:Hide()
+		end
+		TRB.Functions.Bar:HideResourceBar()
+	end
+
+	function TRB.Functions.Class:HideResourceBar(force)
+		local affectingCombat = UnitAffectingCombat("player")
+		local specId = GetSpecialization()
+
+		if specId == 1 then
+			if not TRB.Data.specSupported or force or GetSpecialization() ~= 1 or ((not affectingCombat) and
+				(not UnitInVehicle("player")) and (
+					(not TRB.Data.settings.shaman.elemental.displayBar.alwaysShow) and (
+						(not TRB.Data.settings.shaman.elemental.displayBar.notZeroShow) or
+						(TRB.Data.settings.shaman.elemental.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0)
+					)
+				)) then
+				TRB.Frames.barContainerFrame:Hide()
+				TRB.Data.snapshotData.isTracking = false
+			else
+				TRB.Data.snapshotData.isTracking = true
+				if TRB.Data.settings.shaman.elemental.displayBar.neverShow == true then
+					TRB.Frames.barContainerFrame:Hide()
+				else
+					TRB.Frames.barContainerFrame:Show()
+				end
+			end
+		elseif specId == 3 then
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
+				(not UnitInVehicle("player")) and (
+					(not TRB.Data.settings.shaman.restoration.displayBar.alwaysShow) and (
+						(not TRB.Data.settings.shaman.restoration.displayBar.notZeroShow) or
+						(TRB.Data.settings.shaman.restoration.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource)
+					)
+				)) then
+				TRB.Frames.barContainerFrame:Hide()
+				TRB.Data.snapshotData.isTracking = false
+			else
+				TRB.Data.snapshotData.isTracking = true
+				if TRB.Data.settings.shaman.restoration.displayBar.neverShow == true then
+					TRB.Frames.barContainerFrame:Hide()
+				else
+					TRB.Frames.barContainerFrame:Show()
+				end
+			end
+		else
+			TRB.Frames.barContainerFrame:Hide()
+			TRB.Data.snapshotData.isTracking = false
+		end
+	end
+
+	--HACK to fix FPS
+	local updateRateLimit = 0
+
+	function TRB.Functions.Class:TriggerResourceBarUpdates()
+		local specId = GetSpecialization()
+		if specId ~= 1 and specId ~= 3 then
+			TRB.Functions.Bar:HideResourceBar(true)
+			return
+		end
+
+		local currentTime = GetTime()
+
+		if updateRateLimit + 0.05 < currentTime then
+			updateRateLimit = currentTime
+			UpdateResourceBar()
 		end
 	end
 end

@@ -900,7 +900,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		f:SetChecked(TRB.Data.settings.core.enabled.demonhunter.havoc)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.demonhunter.havoc = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.havocDemonHunterEnabled, TRB.Data.settings.core.enabled.demonhunter.havoc, true)
 		end)
 

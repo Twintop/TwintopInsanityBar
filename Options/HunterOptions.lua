@@ -1628,7 +1628,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.core.enabled.hunter.beastMastery)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.hunter.beastMastery = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.beastMasteryHunterEnabled, TRB.Data.settings.core.enabled.hunter.beastMastery, true)
 		end)
 
@@ -2970,7 +2970,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.core.enabled.hunter.marksmanship)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.hunter.marksmanship = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.marksmanshipHunterEnabled, TRB.Data.settings.core.enabled.hunter.marksmanship, true)
 		end)
 
@@ -3916,7 +3916,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f:SetChecked(TRB.Data.settings.core.enabled.hunter.survival)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.hunter.survival = self:GetChecked()
-			TRB.Functions.EventRegistration()
+			TRB.Functions.Class:EventRegistration()
 			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.survivalHunterEnabled, TRB.Data.settings.core.enabled.hunter.survival, true)
 		end)
 

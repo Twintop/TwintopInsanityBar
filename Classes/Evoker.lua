@@ -1,6 +1,8 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 13 then --Only do this if we're on a Evoker!
+	TRB.Functions.Class = TRB.Functions.Class or {}
+	
 	local barContainerFrame = TRB.Frames.barContainerFrame
     local resource2Frame = TRB.Frames.resource2Frame
 	local resourceFrame = TRB.Frames.resourceFrame
@@ -836,51 +838,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		specCache.preservation.spells = spells
 	end
-
-	local function EventRegistration()
-		local specId = GetSpecialization()
-		if specId == 1 and TRB.Data.settings.core.enabled.evoker.devastation then
-			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.devastation)
-			TRB.Data.specSupported = true
-			TRB.Data.resource = Enum.PowerType.Mana
-			TRB.Data.resourceFactor = 1
-			TRB.Data.resource2 = Enum.PowerType.Essence
-			TRB.Data.resource2Factor = 1
-		elseif specId == 2 and TRB.Data.settings.core.enabled.evoker.preservation then
-			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.preservation)
-			TRB.Data.specSupported = true
-			TRB.Data.resource = Enum.PowerType.Mana
-			TRB.Data.resourceFactor = 1
-			TRB.Data.resource2 = Enum.PowerType.Essence
-			TRB.Data.resourceFactor = 1
-		else -- This should never happen
-			--TRB.Data.resource = MANA
-			TRB.Data.specSupported = false
-			targetsTimerFrame:SetScript("OnUpdate", nil)
-			timerFrame:SetScript("OnUpdate", nil)
-			barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
-			barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-			TRB.Details.addonData.registered = false
-			barContainerFrame:Hide()
-		end
-
-		if TRB.Data.specSupported then
-            TRB.Functions.Class:CheckCharacter()
-
-			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
-			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
-			barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
-			barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-
-			TRB.Details.addonData.registered = true
-		end
-		TRB.Functions.Bar:HideResourceBar()
-	end
-	TRB.Functions.EventRegistration = EventRegistration
 
 	local function CalculateAbilityResourceValue(resource, threshold)
         local modifier = 1.0
@@ -1773,53 +1730,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
         end]]
 	end
 
-	local function HideResourceBar(force)
-		local affectingCombat = UnitAffectingCombat("player")
-		local specId = GetSpecialization()
-
-		if specId == 1 then
-			if not TRB.Data.specSupported or force or ((not affectingCombat) and
-				(not UnitInVehicle("player")) and (
-					(not TRB.Data.settings.evoker.devastation.displayBar.alwaysShow) and (
-						(not TRB.Data.settings.evoker.devastation.displayBar.notZeroShow) or
-						(TRB.Data.settings.evoker.devastation.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource and TRB.Data.snapshotData.resource2 == TRB.Data.character.maxResource2)
-					)
-				)) then
-				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshotData.isTracking = false
-			else
-				TRB.Data.snapshotData.isTracking = true
-				if TRB.Data.settings.evoker.devastation.displayBar.neverShow == true then
-					TRB.Frames.barContainerFrame:Hide()
-				else
-					TRB.Frames.barContainerFrame:Show()
-				end
-			end
-		elseif specId == 2 then
-			if not TRB.Data.specSupported or force or ((not affectingCombat) and
-				(not UnitInVehicle("player")) and (
-					(not TRB.Data.settings.evoker.preservation.displayBar.alwaysShow) and (
-						(not TRB.Data.settings.evoker.preservation.displayBar.notZeroShow) or
-						(TRB.Data.settings.evoker.preservation.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource and TRB.Data.snapshotData.resource2 == TRB.Data.character.maxResource2)
-					)
-				)) then
-				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshotData.isTracking = false
-			else
-				TRB.Data.snapshotData.isTracking = true
-				if TRB.Data.settings.evoker.preservation.displayBar.neverShow == true then
-					TRB.Frames.barContainerFrame:Hide()
-				else
-					TRB.Frames.barContainerFrame:Show()
-				end
-			end
-		else
-			TRB.Frames.barContainerFrame:Hide()
-			TRB.Data.snapshotData.isTracking = false
-		end
-	end
-	TRB.Functions.Bar.HideResourceBarFunction = HideResourceBar
-
 	local function UpdateResourceBar()
 		local currentTime = GetTime()
 		local refreshText = false
@@ -2088,27 +1998,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end
 	end
 
-	--HACK to fix FPS
-	local updateRateLimit = 0
-
-	local function TriggerResourceBarUpdates()
-		local specId = GetSpecialization()
-		if (specId ~= 1 and specId ~= 2) or
-			(specId == 1 and not TRB.Data.settings.core.experimental.specs.evoker.devastation) or
-			(specId == 2 and not TRB.Data.settings.core.experimental.specs.evoker.preservation) then
-			TRB.Functions.Bar:HideResourceBar(true)
-			return
-		end
-
-		local currentTime = GetTime()
-
-		if updateRateLimit + 0.05 < currentTime then
-			updateRateLimit = currentTime
-			UpdateResourceBar()
-		end
-	end
-	TRB.Functions.TriggerResourceBarUpdates = TriggerResourceBarUpdates
-
 	barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local currentTime = GetTime()
 		local triggerUpdate = false
@@ -2353,7 +2242,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end
 
 		if triggerUpdate then
-			TriggerResourceBarUpdates()
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)
 
@@ -2363,7 +2252,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		if self.sinceLastUpdate >= 1 then -- in seconds
 			TargetsCleanup()
 			RefreshTargetTracking()
-			TriggerResourceBarUpdates()
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 			self.sinceLastUpdate = 0
 		end
 	end
@@ -2407,7 +2296,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		else
 			TRB.Data.barConstructedForSpec = nil
 		end
-		EventRegistration()
+		TRB.Functions.Class:EventRegistration()
 	end
 
 	resourceFrame:RegisterEvent("ADDON_LOADED")
@@ -2472,7 +2361,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 								if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
 									ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 								end
-								EventRegistration()
+								TRB.Functions.Class:EventRegistration()
 							end
 						end)
 					end)
@@ -2553,5 +2442,115 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
             	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 			end
         end
+	end
+
+	function TRB.Functions.Class:EventRegistration()
+		local specId = GetSpecialization()
+		if specId == 1 and TRB.Data.settings.core.enabled.evoker.devastation then
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.devastation)
+			TRB.Data.specSupported = true
+			TRB.Data.resource = Enum.PowerType.Mana
+			TRB.Data.resourceFactor = 1
+			TRB.Data.resource2 = Enum.PowerType.Essence
+			TRB.Data.resource2Factor = 1
+		elseif specId == 2 and TRB.Data.settings.core.enabled.evoker.preservation then
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.preservation)
+			TRB.Data.specSupported = true
+			TRB.Data.resource = Enum.PowerType.Mana
+			TRB.Data.resourceFactor = 1
+			TRB.Data.resource2 = Enum.PowerType.Essence
+			TRB.Data.resourceFactor = 1
+		else -- This should never happen
+			--TRB.Data.resource = MANA
+			TRB.Data.specSupported = false
+			targetsTimerFrame:SetScript("OnUpdate", nil)
+			timerFrame:SetScript("OnUpdate", nil)
+			barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+			barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
+			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+			TRB.Details.addonData.registered = false
+			barContainerFrame:Hide()
+		end
+
+		if TRB.Data.specSupported then
+            TRB.Functions.Class:CheckCharacter()
+
+			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
+			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
+			barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
+			barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+
+			TRB.Details.addonData.registered = true
+		end
+		TRB.Functions.Bar:HideResourceBar()
+	end
+
+	function TRB.Functions.Class:HideResourceBar(force)
+		local affectingCombat = UnitAffectingCombat("player")
+		local specId = GetSpecialization()
+
+		if specId == 1 then
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
+				(not UnitInVehicle("player")) and (
+					(not TRB.Data.settings.evoker.devastation.displayBar.alwaysShow) and (
+						(not TRB.Data.settings.evoker.devastation.displayBar.notZeroShow) or
+						(TRB.Data.settings.evoker.devastation.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource and TRB.Data.snapshotData.resource2 == TRB.Data.character.maxResource2)
+					)
+				)) then
+				TRB.Frames.barContainerFrame:Hide()
+				TRB.Data.snapshotData.isTracking = false
+			else
+				TRB.Data.snapshotData.isTracking = true
+				if TRB.Data.settings.evoker.devastation.displayBar.neverShow == true then
+					TRB.Frames.barContainerFrame:Hide()
+				else
+					TRB.Frames.barContainerFrame:Show()
+				end
+			end
+		elseif specId == 2 then
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
+				(not UnitInVehicle("player")) and (
+					(not TRB.Data.settings.evoker.preservation.displayBar.alwaysShow) and (
+						(not TRB.Data.settings.evoker.preservation.displayBar.notZeroShow) or
+						(TRB.Data.settings.evoker.preservation.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource and TRB.Data.snapshotData.resource2 == TRB.Data.character.maxResource2)
+					)
+				)) then
+				TRB.Frames.barContainerFrame:Hide()
+				TRB.Data.snapshotData.isTracking = false
+			else
+				TRB.Data.snapshotData.isTracking = true
+				if TRB.Data.settings.evoker.preservation.displayBar.neverShow == true then
+					TRB.Frames.barContainerFrame:Hide()
+				else
+					TRB.Frames.barContainerFrame:Show()
+				end
+			end
+		else
+			TRB.Frames.barContainerFrame:Hide()
+			TRB.Data.snapshotData.isTracking = false
+		end
+	end
+
+	--HACK to fix FPS
+	local updateRateLimit = 0
+
+	function TRB.Functions.Class:TriggerResourceBarUpdates()
+		local specId = GetSpecialization()
+		if (specId ~= 1 and specId ~= 2) or
+			(specId == 1 and not TRB.Data.settings.core.experimental.specs.evoker.devastation) or
+			(specId == 2 and not TRB.Data.settings.core.experimental.specs.evoker.preservation) then
+			TRB.Functions.Bar:HideResourceBar(true)
+			return
+		end
+
+		local currentTime = GetTime()
+
+		if updateRateLimit + 0.05 < currentTime then
+			updateRateLimit = currentTime
+			UpdateResourceBar()
+		end
 	end
 end
