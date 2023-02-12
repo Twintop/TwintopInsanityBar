@@ -54,11 +54,11 @@ function TRB.Functions.Table:Merge(original, incoming)
 	end
 
 	for k, v in pairs(incoming) do
-        if (type(v) == "table") and (type(original[k] or false) == "table") then
-            TRB.Functions.Table:Merge(original[k], incoming[k])
-        else
-            original[k] = v
-        end
-    end
-    return original
+		if (type(v) == "table") and (type(original[k] or false) == "table") then
+			TRB.Functions.Table:Merge(original[k], incoming[k])
+		else
+			original[k] = v
+		end
+	end
+	return original
 end

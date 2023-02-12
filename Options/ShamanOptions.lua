@@ -23,7 +23,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	TRB.Options.Shaman = {}
 	TRB.Options.Shaman.Elemental = {}
 	TRB.Options.Shaman.Enhancement = {}
-    TRB.Options.Shaman.Restoration = {}
+	TRB.Options.Shaman.Restoration = {}
 
 
 	local function ElementalLoadDefaultBarTextSimpleSettings()
@@ -53,12 +53,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		return textSettings
 	end
 
-    local function ElementalLoadDefaultBarTextAdvancedSettings()
+	local function ElementalLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "#flameShock $fsCount    $haste% ($gcd)||n{$ifStacks}[#frostShock $ifStacks][       ]    {$ttd}[TTD: $ttd]",
+				text = "#flameShock $fsCount	$haste% ($gcd)||n{$ifStacks}[#frostShock $ifStacks][	   ]	{$ttd}[TTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -186,7 +186,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				}
-            },
+			},
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
 				backgroundName="Blizzard Tooltip",
@@ -204,7 +204,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		settings.displayText = ElementalLoadDefaultBarTextSimpleSettings()
 		return settings
-    end
+	end
 
 	-- Restoration
 	local function RestorationLoadDefaultBarTextSimpleSettings()
@@ -398,14 +398,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		return settings
 	end
 
-    local function LoadDefaultSettings()
+	local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 		settings.shaman.elemental = ElementalLoadDefaultSettings()
 		settings.shaman.restoration = RestorationLoadDefaultSettings()
 
 		return settings
 	end
-    TRB.Options.Shaman.LoadDefaultSettings = LoadDefaultSettings
+	TRB.Options.Shaman.LoadDefaultSettings = LoadDefaultSettings
 
 	--[[
 
@@ -482,7 +482,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Shaman_Elemental_ResetBarTextSimple")
-        end)
+		end)
 		yCoord = yCoord - 40
 
 		controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
@@ -1284,7 +1284,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Shaman_Restoration_ResetBarTextSimple")
-        end)
+		end)
 		yCoord = yCoord - 40
 
 		--[[

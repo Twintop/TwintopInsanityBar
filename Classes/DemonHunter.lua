@@ -11,8 +11,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
-    local combatFrame = TRB.Frames.combatFrame
-    
+	local combatFrame = TRB.Frames.combatFrame
+	
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
@@ -79,7 +79,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				name = "",
 				icon = "",
 				fury = 20,
-                cooldown = 30,
+				cooldown = 30,
 				isTalent = false,
 				baseline = true
 			},
@@ -111,7 +111,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				name = "",
 				icon = "",
 				fury = -35,
-                cooldown = 9,
+				cooldown = 9,
 				texture = "",
 				thresholdId = 2,
 				settingKey = "bladeDance",
@@ -121,11 +121,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				isTalent = false,
 				baseline = true
 			},
-            chaosStrike = {
-               id = 162794,
-               name = "",
-               icon = "",
-               fury = -40,
+			chaosStrike = {
+			   id = 162794,
+			   name = "",
+			   icon = "",
+			   fury = -40,
 			   texture = "",
 			   thresholdId = 4,
 			   settingKey = "chaosStrike",
@@ -135,8 +135,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			   demonForm = false,
 			   isTalent = false,
 			   baseline = true
-            },
-            annihilation = {
+			},
+			annihilation = {
 				id = 201427,
 				name = "",
 				icon = "",
@@ -156,7 +156,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				name = "",
 				icon = "",
 				fury = -35,
-                cooldown = 9,
+				cooldown = 9,
 				texture = "",
 				thresholdId = 5,
 				settingKey = "deathSweep",
@@ -169,11 +169,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			},
 
 			-- Demon Hunter Talent Abilities
-            chaosNova = {
-               id = 179057,
-               name = "",
-               icon = "",
-               fury = -30,
+			chaosNova = {
+			   id = 179057,
+			   name = "",
+			   icon = "",
+			   fury = -30,
 			   texture = "",
 			   thresholdId = 3,
 			   settingKey = "chaosNova",
@@ -181,12 +181,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			   isSnowflake = true,
 			   thresholdUsable = false,
 			   isTalent = true
-            },
+			},
 			unleashedPower = {
 				id = 206477,
 				name = "",
 				icon = "",
-                furyModifier = 0.5,
+				furyModifier = 0.5,
 				isTalent = true
 			},
 
@@ -209,9 +209,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				talentId = 320374,
 				name = "",
 				icon = "",
-                fury = 5,
-                ticks = 12,
-                duration = 12,
+				fury = 5,
+				ticks = 12,
+				duration = 12,
 				isTalent = true
 			},
 			furiousThrows = {
@@ -225,7 +225,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 388109,
 				name = "",
 				icon = "",
-                duration = 4, -- These don't match what's seen on the PTR, should be 2,
+				duration = 4, -- These don't match what's seen on the PTR, should be 2,
 				ticks = 4, --2,
 				isTalent = true
 			},
@@ -246,18 +246,18 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 203550,
 				name = "",
 				icon = "",
-                durationModifier = 1.5,
-                tickRate = 0.1,
-                fury = 4,
-                isHasted = true,
+				durationModifier = 1.5,
+				tickRate = 0.1,
+				fury = 4,
+				isHasted = true,
 				isTalent = true
 			},
 			glaiveTempest = {
 				id = 342817,
 				name = "",
 				icon = "",
-                fury = -30,
-                cooldown = 20,
+				fury = -30,
+				cooldown = 20,
 				texture = "",
 				thresholdId = 7,
 				settingKey = "glaiveTempest",
@@ -266,7 +266,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				isTalent = true
 			},
 
-            demonsBite = {
+			demonsBite = {
 				id = 162243,
 				name = "",
 				icon = "",
@@ -289,13 +289,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 347462,
 				name = "",
 				icon = "",
-                duration = 20
+				duration = 20
 			},
 			firstBlood = {
 				id = 206416,
 				name = "",
 				icon = "",
-                furyAdjustment = -20
+				furyAdjustment = -20
 			},
 			tacticalRetreat = {
 				id = 389890,
@@ -423,23 +423,23 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "#bh", icon = spells.burningHatred.icon, description = spells.burningHatred.name, printInSettings = false },
 			{ variable = "#burningHatred", icon = spells.burningHatred.icon, description = spells.burningHatred.name, printInSettings = true },
 			{ variable = "#chaosNova", icon = spells.chaosNova.icon, description = spells.chaosNova.name, printInSettings = true },
-            { variable = "#chaosStrike", icon = spells.chaosStrike.icon, description = spells.chaosStrike.name, printInSettings = true },
-            { variable = "#deathSweep", icon = spells.deathSweep.icon, description = spells.deathSweep.name, printInSettings = true },
+			{ variable = "#chaosStrike", icon = spells.chaosStrike.icon, description = spells.chaosStrike.name, printInSettings = true },
+			{ variable = "#deathSweep", icon = spells.deathSweep.icon, description = spells.deathSweep.name, printInSettings = true },
 			{ variable = "#demonicAppetite", icon = spells.demonicAppetite.icon, description = spells.demonicAppetite.name, printInSettings = true },
-            { variable = "#demonsBite", icon = spells.demonsBite.icon, description = spells.demonsBite.name, printInSettings = true },
+			{ variable = "#demonsBite", icon = spells.demonsBite.icon, description = spells.demonsBite.name, printInSettings = true },
 			{ variable = "#eyeBeam", icon = spells.eyeBeam.icon, description = spells.eyeBeam.name, printInSettings = true },
 			{ variable = "#felBlade", icon = spells.felBlade.icon, description = spells.felBlade.name, printInSettings = true },
 			{ variable = "#felEruption", icon = spells.felEruption.icon, description = spells.felEruption.name, printInSettings = true },
 			{ variable = "#firstBlood", icon = spells.firstBlood.icon, description = spells.firstBlood.name, printInSettings = true },
 			{ variable = "#glaiveTempest", icon = spells.glaiveTempest.icon, description = spells.glaiveTempest.name, printInSettings = true },
-            { variable = "#immolationAura", icon = spells.immolationAura.icon, description = spells.immolationAura.name, printInSettings = true },
+			{ variable = "#immolationAura", icon = spells.immolationAura.icon, description = spells.immolationAura.name, printInSettings = true },
 			{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
 			{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 			{ variable = "#momentum", icon = spells.momentum.icon, description = spells.momentum.name, printInSettings = true },
 			{ variable = "#tacticalRetreat", icon = spells.tacticalRetreat.icon, description = spells.tacticalRetreat.name, printInSettings = true },
 			{ variable = "#unboundChaos", icon = spells.unboundChaos.icon, description = spells.unboundChaos.name, printInSettings = true },
 			{ variable = "#unleashedPower", icon = spells.unleashedPower.icon, description = spells.unleashedPower.name, printInSettings = true },
-        }
+		}
 		specCache.havoc.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
 			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
@@ -473,7 +473,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 			
 			{ variable = "$fury", description = "Current Fury", printInSettings = true, color = false },
-            { variable = "$resource", description = "Current Fury", printInSettings = false, color = false },
+			{ variable = "$resource", description = "Current Fury", printInSettings = false, color = false },
 			{ variable = "$furyMax", description = "Maximum Fury", printInSettings = true, color = false },
 			{ variable = "$resourceMax", description = "Maximum Fury", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Builder Fury from Hardcasting Spells", printInSettings = true, color = false },
@@ -484,7 +484,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "$resourcePlusPassive", description = "Current + Passive Fury Total", printInSettings = false, color = false },
 			{ variable = "$furyTotal", description = "Current + Passive + Casting Fury Total", printInSettings = true, color = false },   
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Fury Total", printInSettings = false, color = false },   
-           
+		   
 			{ variable = "$metaTime", description = "Time remaining on Metamorphosis buff", printInSettings = true, color = false },
 			{ variable = "$metamorphosisTime", description = "Time remaining on Metamorphosis buff", printInSettings = false, color = false },
 
@@ -501,7 +501,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "$tacticalRetreatTime", description = "Time remaining on Tactical Retreat (if talented)", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-            { variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
 
 		specCache.havoc.spells = spells
@@ -539,11 +539,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.unboundChaos)
 	end
 
-    local function CalculateAbilityResourceValue(resource)
+	local function CalculateAbilityResourceValue(resource)
 		local modifier = 1.0
 
-        return resource * modifier
-    end
+		return resource * modifier
+	end
 
 	local function UpdateCastingResourceFinal()
 		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
@@ -592,7 +592,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end
 	end
 
-    local function IsValidVariableForSpec(var)
+	local function IsValidVariableForSpec(var)
 		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 		local normalizedFury = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 		if valid then
@@ -604,8 +604,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			settings = TRB.Data.settings.demonhunter.havoc
 		end
 
-        
-        if specId == 1 then --Havoc
+		
+		if specId == 1 then --Havoc
 			if var == "$metamorphosisTime" then
 				if GetMetamorphosisRemainingTime() > 0 then
 					valid = true
@@ -638,7 +638,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				if GetTacticalRetreatRemainingTime() > 0 then
 					valid = true
 				end
-            end
+			end
 		end
 
 		if var == "$resource" or var == "$fury" then
@@ -791,11 +791,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		}
 
 		local lookup = TRB.Data.lookup or {}
-        lookup["#annihilation"] = TRB.Data.spells.annihilation.icon
-        lookup["#bladeDance"] = TRB.Data.spells.bladeDance.icon
+		lookup["#annihilation"] = TRB.Data.spells.annihilation.icon
+		lookup["#bladeDance"] = TRB.Data.spells.bladeDance.icon
 		lookup["#blindFury"] = TRB.Data.spells.blindFury.icon
-        lookup["#bh"] = TRB.Data.spells.burningHatred.icon
-        lookup["#burningHatred"] = TRB.Data.spells.burningHatred.icon
+		lookup["#bh"] = TRB.Data.spells.burningHatred.icon
+		lookup["#burningHatred"] = TRB.Data.spells.burningHatred.icon
 		lookup["#chaosNova"] = TRB.Data.spells.chaosNova.icon
 		lookup["#chaosStrike"] = TRB.Data.spells.chaosStrike.icon
 		lookup["#deathSweep"] = TRB.Data.spells.deathSweep.icon
@@ -807,8 +807,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookup["#firstBlood"] = TRB.Data.spells.firstBlood.icon
 		lookup["#glaiveTempest"] = TRB.Data.spells.glaiveTempest.icon
 		lookup["#immolationAura"] = TRB.Data.spells.immolationAura.icon
-        lookup["#meta"] = TRB.Data.spells.metamorphosis.icon
-        lookup["#metamorphosis"] = TRB.Data.spells.metamorphosis.icon
+		lookup["#meta"] = TRB.Data.spells.metamorphosis.icon
+		lookup["#metamorphosis"] = TRB.Data.spells.metamorphosis.icon
 		lookup["#momentum"] = TRB.Data.spells.momentum.icon
 		lookup["#tacticalRetreat"] = TRB.Data.spells.tacticalRetreat.icon
 		lookup["#unboundChaos"] = TRB.Data.spells.unboundChaos.icon
@@ -869,14 +869,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
-    local function FillSnapshotDataCasting(spell)
+	local function FillSnapshotDataCasting(spell)
 		local currentTime = GetTime()
-        TRB.Data.snapshotData.casting.startTime = currentTime
-        TRB.Data.snapshotData.casting.resourceRaw = spell.fury
-        TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.fury)
-        TRB.Data.snapshotData.casting.spellId = spell.id
-        TRB.Data.snapshotData.casting.icon = spell.icon
-    end
+		TRB.Data.snapshotData.casting.startTime = currentTime
+		TRB.Data.snapshotData.casting.resourceRaw = spell.fury
+		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.fury)
+		TRB.Data.snapshotData.casting.spellId = spell.id
+		TRB.Data.snapshotData.casting.icon = spell.icon
+	end
 
 	local function CastingSpell()
 		local currentTime = GetTime()
@@ -980,9 +980,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local currentTime = GetTime()
 		local _
 
-        if TRB.Data.snapshotData.bladeDance.startTime ~= nil and currentTime > (TRB.Data.snapshotData.bladeDance.startTime + TRB.Data.snapshotData.bladeDance.duration) then
+		if TRB.Data.snapshotData.bladeDance.startTime ~= nil and currentTime > (TRB.Data.snapshotData.bladeDance.startTime + TRB.Data.snapshotData.bladeDance.duration) then
 			TRB.Data.snapshotData.bladeDance.startTime = nil
-            TRB.Data.snapshotData.bladeDance.duration = 0
+			TRB.Data.snapshotData.bladeDance.duration = 0
 		elseif TRB.Data.snapshotData.bladeDance.startTime ~= nil then
 			if GetMetamorphosisRemainingTime() > 0 then
 				---@diagnostic disable-next-line: redundant-parameter
@@ -993,39 +993,39 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				TRB.Data.snapshotData.bladeDance.startTime, TRB.Data.snapshotData.bladeDance.duration, _, _ = GetSpellCooldown(TRB.Data.spells.bladeDance.id)
 				TRB.Data.snapshotData.deathSweep.startTime, TRB.Data.snapshotData.deathSweep.duration, _, _ = GetSpellCooldown(TRB.Data.spells.bladeDance.id)
 			end
-        end
+		end
 
-        if TRB.Data.snapshotData.chaosNova.startTime ~= nil and currentTime > (TRB.Data.snapshotData.chaosNova.startTime + TRB.Data.snapshotData.chaosNova.duration) then
+		if TRB.Data.snapshotData.chaosNova.startTime ~= nil and currentTime > (TRB.Data.snapshotData.chaosNova.startTime + TRB.Data.snapshotData.chaosNova.duration) then
 			TRB.Data.snapshotData.chaosNova.startTime = nil
-            TRB.Data.snapshotData.chaosNova.duration = 0
+			TRB.Data.snapshotData.chaosNova.duration = 0
 		elseif TRB.Data.snapshotData.chaosNova.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.chaosNova.startTime, TRB.Data.snapshotData.chaosNova.duration, _, _ = GetSpellCooldown(TRB.Data.spells.chaosNova.id)
-        end
+		end
 
 		if TRB.Data.snapshotData.eyeBeam.startTime ~= nil and currentTime > (TRB.Data.snapshotData.eyeBeam.startTime + TRB.Data.snapshotData.eyeBeam.duration) then
-            TRB.Data.snapshotData.eyeBeam.startTime = nil
-            TRB.Data.snapshotData.eyeBeam.duration = 0
+			TRB.Data.snapshotData.eyeBeam.startTime = nil
+			TRB.Data.snapshotData.eyeBeam.duration = 0
 		elseif TRB.Data.snapshotData.eyeBeam.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.eyeBeam.startTime, TRB.Data.snapshotData.eyeBeam.duration, _, _ = GetSpellCooldown(TRB.Data.spells.eyeBeam.id)
-        end
+		end
 
 		if TRB.Data.snapshotData.glaiveTempest.startTime ~= nil and currentTime > (TRB.Data.snapshotData.glaiveTempest.startTime + TRB.Data.snapshotData.glaiveTempest.duration) then
-            TRB.Data.snapshotData.glaiveTempest.startTime = nil
-            TRB.Data.snapshotData.glaiveTempest.duration = 0
+			TRB.Data.snapshotData.glaiveTempest.startTime = nil
+			TRB.Data.snapshotData.glaiveTempest.duration = 0
 		elseif TRB.Data.snapshotData.glaiveTempest.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.glaiveTempest.startTime, TRB.Data.snapshotData.glaiveTempest.duration, _, _ = GetSpellCooldown(TRB.Data.spells.glaiveTempest.id)
-        end
+		end
 
 		if TRB.Data.snapshotData.felEruption.startTime ~= nil and currentTime > (TRB.Data.snapshotData.felEruption.startTime + TRB.Data.snapshotData.felEruption.duration) then
-            TRB.Data.snapshotData.felEruption.startTime = nil
-            TRB.Data.snapshotData.felEruption.duration = 0
+			TRB.Data.snapshotData.felEruption.startTime = nil
+			TRB.Data.snapshotData.felEruption.duration = 0
 		elseif TRB.Data.snapshotData.felEruption.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.felEruption.startTime, TRB.Data.snapshotData.felEruption.duration, _, _ = GetSpellCooldown(TRB.Data.spells.felEruption.id)
-        end
+		end
 
 		TRB.Data.snapshotData.throwGlaive.charges, TRB.Data.snapshotData.throwGlaive.maxCharges, TRB.Data.snapshotData.throwGlaive.startTime, TRB.Data.snapshotData.throwGlaive.duration, _ = GetSpellCharges(TRB.Data.spells.throwGlaive.id)
 		if TRB.Data.snapshotData.throwGlaive.charges == TRB.Data.snapshotData.throwGlaive.maxCharges then
@@ -1242,7 +1242,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 		end
 	end
-    
+	
 	barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local currentTime = GetTime()
 		local triggerUpdate = false
@@ -1254,7 +1254,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 			if sourceGUID == TRB.Data.character.guid then 
 				if specId == 1 and TRB.Data.barConstructedForSpec == "havoc" then --Havoc
-                    if spellId == TRB.Data.spells.bladeDance.id then
+					if spellId == TRB.Data.spells.bladeDance.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							TRB.Data.snapshotData.bladeDance.startTime, TRB.Data.snapshotData.bladeDance.duration, _, _ = GetSpellCooldown(TRB.Data.spells.bladeDance.id)
@@ -1509,7 +1509,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Fury)
 
-        if GetSpecialization() == 1 then
+		if GetSpecialization() == 1 then
 			TRB.Data.character.specName = "havoc"
 		end
 	end
@@ -1535,8 +1535,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		if TRB.Data.specSupported then
 			TRB.Data.resource = Enum.PowerType.Fury
 			TRB.Data.resourceFactor = 1
-            TRB.Functions.Class:CheckCharacter()
-            
+			TRB.Functions.Class:CheckCharacter()
+			
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 			barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")

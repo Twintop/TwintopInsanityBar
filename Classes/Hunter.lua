@@ -11,7 +11,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
-    local combatFrame = TRB.Frames.combatFrame
+	local combatFrame = TRB.Frames.combatFrame
 
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
@@ -1263,7 +1263,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
 			{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = "Serpent Sting", printInSettings = true },
 			{ variable = "#wailingArrow", icon = spells.wailingArrow.icon, description = "Wailing Arrow", printInSettings = true },
-        }
+		}
 		specCache.beastMastery.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
 			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
@@ -1358,7 +1358,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#trickShots", icon = spells.trickShots.icon, description = "Trick Shots", printInSettings = true },
 			{ variable = "#trueshot", icon = spells.trueshot.icon, description = "Trueshot", printInSettings = true },
 			{ variable = "#wailingArrow", icon = spells.wailingArrow.icon, description = "Wailing Arrow", printInSettings = true }
-        }
+		}
 		specCache.marksmanship.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
 			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
@@ -1450,7 +1450,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#termsOfEngagement", icon = spells.termsOfEngagement.icon, description = "Terms of Engagement", printInSettings = true },
 			{ variable = "#wildfireBomb", icon = spells.wildfireBomb.icon, description = "Wildfire Bomb", printInSettings = true },
 			{ variable = "#wingClip", icon = spells.wingClip.icon, description = "Wing Clip", printInSettings = true },
-        }
+		}
 		specCache.survival.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
 			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
@@ -1571,8 +1571,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.lockAndLoad)
 	end
 
-    local function CalculateAbilityResourceValue(resource, threshold)
-        local modifier = 1.0
+	local function CalculateAbilityResourceValue(resource, threshold)
+		local modifier = 1.0
 		if GetSpecialization() == 2 then
 			if resource > 0 then
 				if TRB.Data.spells.trueshot.isActive and not threshold then
@@ -1581,8 +1581,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end
 
-        return resource * modifier
-    end
+		return resource * modifier
+	end
 
 	local function UpdateCastingResourceFinal()
 		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
@@ -1621,9 +1621,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end
 
-        for k, v in pairs(TRB.Data.spells) do
-            local spell = TRB.Data.spells[k]
-            if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+		for k, v in pairs(TRB.Data.spells) do
+			local spell = TRB.Data.spells[k]
+			if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
@@ -1633,14 +1633,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
-            end
-        end
+			end
+		end
 
 		TRB.Functions.Bar:Construct(settings)
 		TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 	end
 
-    local function IsValidVariableForSpec(var)
+	local function IsValidVariableForSpec(var)
 		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 		if valid then
 			return valid
@@ -1792,7 +1792,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		if TRB.Data.settings.hunter.beastMastery.colors.text.overcapEnabled and overcap then
 			currentFocusColor = TRB.Data.settings.hunter.beastMastery.colors.text.overcap
-            castingFocusColor = TRB.Data.settings.hunter.beastMastery.colors.text.overcap
+			castingFocusColor = TRB.Data.settings.hunter.beastMastery.colors.text.overcap
 		elseif TRB.Data.settings.hunter.beastMastery.colors.text.overThresholdEnabled then
 			local _overThreshold = false
 			for k, v in pairs(TRB.Data.spells) do
@@ -2014,7 +2014,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		if TRB.Data.settings.hunter.marksmanship.colors.text.overcapEnabled and overcap then
 			currentFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.overcap
-            castingFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.overcap
+			castingFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.overcap
 		elseif TRB.Data.settings.hunter.marksmanship.colors.text.overThresholdEnabled then
 			local _overThreshold = false
 			for k, v in pairs(TRB.Data.spells) do
@@ -2209,7 +2209,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		if TRB.Data.settings.hunter.survival.colors.text.overcapEnabled and overcap then
 			currentFocusColor = TRB.Data.settings.hunter.survival.colors.text.overcap
-            castingFocusColor = TRB.Data.settings.hunter.survival.colors.text.overcap
+			castingFocusColor = TRB.Data.settings.hunter.survival.colors.text.overcap
 		elseif TRB.Data.settings.hunter.survival.colors.text.overThresholdEnabled then
 			local _overThreshold = false
 			for k, v in pairs(TRB.Data.spells) do
@@ -2409,14 +2409,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 	end
 
-    local function FillSnapshotDataCasting(spell)
+	local function FillSnapshotDataCasting(spell)
 		local currentTime = GetTime()
-        TRB.Data.snapshotData.casting.startTime = currentTime
-        TRB.Data.snapshotData.casting.resourceRaw = spell.focus
-        TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.focus)
-        TRB.Data.snapshotData.casting.spellId = spell.id
-        TRB.Data.snapshotData.casting.icon = spell.icon
-    end
+		TRB.Data.snapshotData.casting.startTime = currentTime
+		TRB.Data.snapshotData.casting.resourceRaw = spell.focus
+		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.focus)
+		TRB.Data.snapshotData.casting.spellId = spell.id
+		TRB.Data.snapshotData.casting.icon = spell.icon
+	end
 
 	local function CastingSpell()
 		local specId = GetSpecialization()
@@ -2576,9 +2576,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 		if TRB.Data.snapshotData.killShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.killShot.startTime + TRB.Data.snapshotData.killShot.duration) then
-            TRB.Data.snapshotData.killShot.startTime = nil
-            TRB.Data.snapshotData.killShot.duration = 0
-        end
+			TRB.Data.snapshotData.killShot.startTime = nil
+			TRB.Data.snapshotData.killShot.duration = 0
+		end
 
 ---@diagnostic disable-next-line: cast-local-type
 		TRB.Data.snapshotData.killCommand.charges, TRB.Data.snapshotData.killCommand.maxCharges, TRB.Data.snapshotData.killCommand.startTime, TRB.Data.snapshotData.killCommand.duration, _ = GetSpellCharges(TRB.Data.spells.killCommand.id)
@@ -2594,14 +2594,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local currentTime = GetTime()
 		local _
 
-        if TRB.Data.snapshotData.aMurderOfCrows.startTime ~= nil and currentTime > (TRB.Data.snapshotData.aMurderOfCrows.startTime + TRB.Data.snapshotData.aMurderOfCrows.duration) then
-            TRB.Data.snapshotData.aMurderOfCrows.startTime = nil
-            TRB.Data.snapshotData.aMurderOfCrows.duration = 0
-        end
+		if TRB.Data.snapshotData.aMurderOfCrows.startTime ~= nil and currentTime > (TRB.Data.snapshotData.aMurderOfCrows.startTime + TRB.Data.snapshotData.aMurderOfCrows.duration) then
+			TRB.Data.snapshotData.aMurderOfCrows.startTime = nil
+			TRB.Data.snapshotData.aMurderOfCrows.duration = 0
+		end
 
-        if TRB.Data.snapshotData.barrage.startTime ~= nil and currentTime > (TRB.Data.snapshotData.barrage.startTime + TRB.Data.snapshotData.barrage.duration) then
+		if TRB.Data.snapshotData.barrage.startTime ~= nil and currentTime > (TRB.Data.snapshotData.barrage.startTime + TRB.Data.snapshotData.barrage.duration) then
 			TRB.Data.snapshotData.barrage.startTime = nil
-            TRB.Data.snapshotData.barrage.duration = 0
+			TRB.Data.snapshotData.barrage.duration = 0
 		end
 
 		if TRB.Data.snapshotData.wailingArrow.startTime ~= nil and currentTime > (TRB.Data.snapshotData.wailingArrow.startTime + TRB.Data.snapshotData.wailingArrow.duration) then
@@ -2621,36 +2621,36 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local _
 
 ---@diagnostic disable-next-line: redundant-parameter
-        TRB.Data.snapshotData.aimedShot.charges, TRB.Data.snapshotData.aimedShot.maxCharges, TRB.Data.snapshotData.aimedShot.startTime, TRB.Data.snapshotData.aimedShot.duration, _ = GetSpellCharges(TRB.Data.spells.aimedShot.id)
+		TRB.Data.snapshotData.aimedShot.charges, TRB.Data.snapshotData.aimedShot.maxCharges, TRB.Data.snapshotData.aimedShot.startTime, TRB.Data.snapshotData.aimedShot.duration, _ = GetSpellCharges(TRB.Data.spells.aimedShot.id)
 		---@diagnostic disable-next-line: redundant-parameter
-        TRB.Data.snapshotData.killShot.charges, TRB.Data.snapshotData.killShot.maxCharges, TRB.Data.snapshotData.killShot.startTime, TRB.Data.snapshotData.killShot.duration, _ = GetSpellCharges(TRB.Data.spells.killShot.id)
+		TRB.Data.snapshotData.killShot.charges, TRB.Data.snapshotData.killShot.maxCharges, TRB.Data.snapshotData.killShot.startTime, TRB.Data.snapshotData.killShot.duration, _ = GetSpellCharges(TRB.Data.spells.killShot.id)
 
-        if TRB.Data.snapshotData.burstingShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.burstingShot.startTime + TRB.Data.snapshotData.burstingShot.duration) then
-            TRB.Data.snapshotData.burstingShot.startTime = nil
-            TRB.Data.snapshotData.burstingShot.duration = 0
-        end
+		if TRB.Data.snapshotData.burstingShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.burstingShot.startTime + TRB.Data.snapshotData.burstingShot.duration) then
+			TRB.Data.snapshotData.burstingShot.startTime = nil
+			TRB.Data.snapshotData.burstingShot.duration = 0
+		end
 
-        if TRB.Data.snapshotData.barrage.startTime ~= nil and currentTime > (TRB.Data.snapshotData.barrage.startTime + TRB.Data.snapshotData.barrage.duration) then
-            TRB.Data.snapshotData.barrage.startTime = nil
-            TRB.Data.snapshotData.barrage.duration = 0
-        end
+		if TRB.Data.snapshotData.barrage.startTime ~= nil and currentTime > (TRB.Data.snapshotData.barrage.startTime + TRB.Data.snapshotData.barrage.duration) then
+			TRB.Data.snapshotData.barrage.startTime = nil
+			TRB.Data.snapshotData.barrage.duration = 0
+		end
 
 		if TRB.Data.snapshotData.wailingArrow.startTime ~= nil and currentTime > (TRB.Data.snapshotData.wailingArrow.startTime + TRB.Data.snapshotData.wailingArrow.duration) then
 			TRB.Data.snapshotData.wailingArrow.startTime = nil
 			TRB.Data.snapshotData.wailingArrow.duration = 0
 		end
 
-        if TRB.Data.snapshotData.explosiveShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.explosiveShot.startTime + TRB.Data.snapshotData.explosiveShot.duration) then
-            TRB.Data.snapshotData.explosiveShot.startTime = nil
-            TRB.Data.snapshotData.explosiveShot.duration = 0
-        end
+		if TRB.Data.snapshotData.explosiveShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.explosiveShot.startTime + TRB.Data.snapshotData.explosiveShot.duration) then
+			TRB.Data.snapshotData.explosiveShot.startTime = nil
+			TRB.Data.snapshotData.explosiveShot.duration = 0
+		end
 	end
 
 	local function UpdateSnapshot_Survival()
 		UpdateSnapshot()
 		UpdateTermsOfEngagement()
 		local currentTime = GetTime()
-        local _
+		local _
 
 		---@diagnostic disable-next-line: redundant-parameter
 		TRB.Data.snapshotData.butchery.charges, TRB.Data.snapshotData.butchery.maxCharges, TRB.Data.snapshotData.butchery.startTime, TRB.Data.snapshotData.butchery.duration, _ = GetSpellCharges(TRB.Data.spells.butchery.id)
@@ -2663,14 +2663,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Data.snapshotData.wildfireBomb.charges, TRB.Data.snapshotData.wildfireBomb.maxCharges, TRB.Data.snapshotData.wildfireBomb.startTime, TRB.Data.snapshotData.wildfireBomb.duration, _ = GetSpellCharges(TRB.Data.spells.wildfireBomb.id)
 
 		if TRB.Data.snapshotData.carve.startTime ~= nil and currentTime > (TRB.Data.snapshotData.carve.startTime + TRB.Data.snapshotData.carve.duration) then
-            TRB.Data.snapshotData.carve.startTime = nil
-            TRB.Data.snapshotData.carve.duration = 0
-        end
+			TRB.Data.snapshotData.carve.startTime = nil
+			TRB.Data.snapshotData.carve.duration = 0
+		end
 
 		if TRB.Data.snapshotData.flankingStrike.startTime ~= nil and currentTime > (TRB.Data.snapshotData.flankingStrike.startTime + TRB.Data.snapshotData.flankingStrike.duration) then
-            TRB.Data.snapshotData.flankingStrike.startTime = nil
-            TRB.Data.snapshotData.flankingStrike.duration = 0
-        end
+			TRB.Data.snapshotData.flankingStrike.startTime = nil
+			TRB.Data.snapshotData.flankingStrike.duration = 0
+		end
 	end
 
 	local function UpdateResourceBar()
@@ -3762,7 +3762,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Data.resource = Enum.PowerType.Focus
 			TRB.Data.resourceFactor = 1
 
-            TRB.Functions.Class:CheckCharacter()
+			TRB.Functions.Class:CheckCharacter()
 
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)

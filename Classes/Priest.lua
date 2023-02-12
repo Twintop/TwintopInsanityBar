@@ -3019,45 +3019,45 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local currentTime = GetTime()
 
 		if TRB.Data.snapshotData.innervate.endTime ~= nil and currentTime > TRB.Data.snapshotData.innervate.endTime then
-            TRB.Data.snapshotData.innervate.endTime = nil
-            TRB.Data.snapshotData.innervate.duration = 0
+			TRB.Data.snapshotData.innervate.endTime = nil
+			TRB.Data.snapshotData.innervate.duration = 0
 			TRB.Data.snapshotData.innervate.remainingTime = 0
 			TRB.Data.snapshotData.innervate.mana = 0
 			TRB.Data.snapshotData.audio.innervateCue = false
 		else
 			TRB.Data.snapshotData.innervate.remainingTime = GetInnervateRemainingTime()
 			TRB.Data.snapshotData.innervate.mana = TRB.Data.snapshotData.innervate.remainingTime * TRB.Data.snapshotData.manaRegen
-        end
+		end
 	end
 
 	local function UpdatePotionOfChilledClarity()
 		local currentTime = GetTime()
 
 		if TRB.Data.snapshotData.potionOfChilledClarity.endTime ~= nil and currentTime > TRB.Data.snapshotData.potionOfChilledClarity.endTime then
-            TRB.Data.snapshotData.potionOfChilledClarity.endTime = nil
-            TRB.Data.snapshotData.potionOfChilledClarity.duration = 0
+			TRB.Data.snapshotData.potionOfChilledClarity.endTime = nil
+			TRB.Data.snapshotData.potionOfChilledClarity.duration = 0
 			TRB.Data.snapshotData.potionOfChilledClarity.remainingTime = 0
 			TRB.Data.snapshotData.potionOfChilledClarity.mana = 0
 			TRB.Data.snapshotData.audio.potionOfChilledClarityCue = false
 		else
 			TRB.Data.snapshotData.potionOfChilledClarity.remainingTime = GetPotionOfChilledClarityRemainingTime()
 			TRB.Data.snapshotData.potionOfChilledClarity.mana = TRB.Data.snapshotData.potionOfChilledClarity.remainingTime * TRB.Data.snapshotData.manaRegen
-        end
+		end
 	end
 
 	local function UpdateManaTideTotem(forceCleanup)
 		local currentTime = GetTime()
 
 		if forceCleanup or (TRB.Data.snapshotData.manaTideTotem.endTime ~= nil and currentTime > TRB.Data.snapshotData.manaTideTotem.endTime) then
-            TRB.Data.snapshotData.manaTideTotem.endTime = nil
-            TRB.Data.snapshotData.manaTideTotem.duration = 0
+			TRB.Data.snapshotData.manaTideTotem.endTime = nil
+			TRB.Data.snapshotData.manaTideTotem.duration = 0
 			TRB.Data.snapshotData.manaTideTotem.remainingTime = 0
 			TRB.Data.snapshotData.manaTideTotem.mana = 0
 			TRB.Data.snapshotData.audio.manaTideTotemCue = false
 		else
 			TRB.Data.snapshotData.manaTideTotem.remainingTime = GetManaTideTotemRemainingTime()
 			TRB.Data.snapshotData.manaTideTotem.mana = TRB.Data.snapshotData.manaTideTotem.remainingTime * (TRB.Data.snapshotData.manaRegen / 2) --Only half of this is considered bonus
-        end
+		end
 	end
 
 	local function UpdateSnapshot()
@@ -3078,12 +3078,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _
 
 		if TRB.Data.snapshotData.apotheosis.startTime ~= nil and currentTime > (TRB.Data.snapshotData.apotheosis.startTime + TRB.Data.snapshotData.apotheosis.duration) then
-            TRB.Data.snapshotData.apotheosis.startTime = nil
-            TRB.Data.snapshotData.apotheosis.duration = 0
+			TRB.Data.snapshotData.apotheosis.startTime = nil
+			TRB.Data.snapshotData.apotheosis.duration = 0
 			TRB.Data.snapshotData.apotheosis.remainingTime = 0
 		else
 			TRB.Data.snapshotData.apotheosis.remainingTime = GetApotheosisRemainingTime()
-        end
+		end
 
 		if TRB.Data.snapshotData.holyWordSerenity.startTime ~= nil then
 ---@diagnostic disable-next-line: redundant-parameter
@@ -3158,31 +3158,31 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		
 		if TRB.Data.snapshotData.voidform.startTime ~= nil and currentTime > (TRB.Data.snapshotData.voidform.startTime + TRB.Data.snapshotData.voidform.duration) then
-            TRB.Data.snapshotData.voidform.startTime = nil
-            TRB.Data.snapshotData.voidform.duration = 0
+			TRB.Data.snapshotData.voidform.startTime = nil
+			TRB.Data.snapshotData.voidform.duration = 0
 			TRB.Data.snapshotData.voidform.remainingTime = 0
 		else
 			_, _, _, _, TRB.Data.snapshotData.voidform.duration, TRB.Data.snapshotData.voidform.endTime, _, _, _, TRB.Data.snapshotData.voidform.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.voidform.id)
 			TRB.Data.snapshotData.voidform.remainingTime = GetVoidformRemainingTime()
-        end
+		end
 
 		if TRB.Data.snapshotData.darkAscension.startTime ~= nil and currentTime > (TRB.Data.snapshotData.darkAscension.startTime + TRB.Data.snapshotData.darkAscension.duration) then
-            TRB.Data.snapshotData.darkAscension.startTime = nil
-            TRB.Data.snapshotData.darkAscension.duration = 0
+			TRB.Data.snapshotData.darkAscension.startTime = nil
+			TRB.Data.snapshotData.darkAscension.duration = 0
 			TRB.Data.snapshotData.darkAscension.remainingTime = 0
 		else
 			TRB.Data.snapshotData.darkAscension.remainingTime = GetDarkAscensionRemainingTime()
-        end
+		end
 
 		if TRB.Data.snapshotData.mindFlayInsanity.endTime ~= nil and currentTime > (TRB.Data.snapshotData.mindFlayInsanity.endTime) then
-            TRB.Data.snapshotData.mindFlayInsanity.endTime = nil
-            TRB.Data.snapshotData.mindFlayInsanity.duration = 0
+			TRB.Data.snapshotData.mindFlayInsanity.endTime = nil
+			TRB.Data.snapshotData.mindFlayInsanity.duration = 0
 			TRB.Data.snapshotData.mindFlayInsanity.spellId = nil
 		end
 
 		if TRB.Data.snapshotData.mindDevourer.endTime ~= nil and currentTime > (TRB.Data.snapshotData.mindDevourer.endTime) then
-            TRB.Data.snapshotData.mindDevourer.endTime = nil
-            TRB.Data.snapshotData.mindDevourer.duration = 0
+			TRB.Data.snapshotData.mindDevourer.endTime = nil
+			TRB.Data.snapshotData.mindDevourer.duration = 0
 			TRB.Data.snapshotData.mindDevourer.spellId = nil
 		end
 
@@ -4300,7 +4300,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		if TRB.Data.specSupported then
-            TRB.Functions.Class:CheckCharacter()
+			TRB.Functions.Class:CheckCharacter()
 
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)

@@ -4,7 +4,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	TRB.Functions.Class = TRB.Functions.Class or {}
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
-    local resource2Frame = TRB.Frames.resource2Frame
+	local resource2Frame = TRB.Frames.resource2Frame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
 	local passiveFrame = TRB.Frames.passiveFrame
@@ -12,7 +12,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
-    local combatFrame = TRB.Frames.combatFrame
+	local combatFrame = TRB.Frames.combatFrame
 
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
@@ -362,7 +362,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
-            maxResource2 = 5,
+			maxResource2 = 5,
 			effects = {
 			},
 			items = {}
@@ -370,11 +370,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		specCache.windwalker.spells = {
 			-- Monk Class Baseline Abilities
-            blackoutKick = {
+			blackoutKick = {
 				id = 100784,
 				name = "",
 				icon = "",
-                comboPoints = 1,
+				comboPoints = 1,
 				isTalent = false,
 				baseline = true
 			},
@@ -383,7 +383,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				name = "",
 				icon = "",
 				energy = -20,
-                comboPointsGenerated = 0,
+				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 1,
 				settingKey = "cracklingJadeLightning",
@@ -396,12 +396,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				name = "",
 				icon = "",
 				energy = -15,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 2,
 				settingKey = "expelHarm",
 				hasCooldown = true,
-                cooldown = 15,
+				cooldown = 15,
 				thresholdUsable = false,
 				isTalent = false,
 				baseline = true
@@ -418,7 +418,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				id = 101546,
 				name = "",
 				icon = "",
-                comboPoints = 2,
+				comboPoints = 2,
 				isTalent = false,
 				baseline = true
 			},
@@ -427,7 +427,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				name = "",
 				icon = "",
 				energy = -50,
-                comboPointsGenerated = 2,
+				comboPointsGenerated = 2,
 				texture = "",
 				thresholdId = 3,
 				settingKey = "tigerPalm",
@@ -449,7 +449,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				name = "",
 				icon = "",
 				energy = -30,
-                comboPointsGenerated = 0,
+				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 4,
 				settingKey = "vivify",
@@ -458,14 +458,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				baseline = true
 			},
 
-            -- Windwalker Spec Baseline Abilities
+			-- Windwalker Spec Baseline Abilities
 
 			-- Monk Class Talents
 			risingSunKick = {
 				id = 107428,
 				name = "",
 				icon = "",
-                comboPoints = 2,
+				comboPoints = 2,
 				isTalent = true,
 				baseline = true
 			},
@@ -474,7 +474,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				name = "",
 				icon = "",
 				energy = -20,
-                comboPointsGenerated = 0,
+				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 5,
 				settingKey = "detox",
@@ -489,11 +489,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				name = "",
 				icon = "",
 				energy = -15,
-                comboPoints = true,
+				comboPoints = true,
 				texture = "",
 				thresholdId = 6,
 				settingKey = "disable",
-                hasCooldown = false,
+				hasCooldown = false,
 				thresholdUsable = false
 			},
 			paralysis = {
@@ -501,12 +501,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				name = "",
 				icon = "",
 				energy = -20,
-                comboPointsGenerated = 0,
+				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 7,
 				settingKey = "paralysis",
 				hasCooldown = true,
-                cooldown = 45,
+				cooldown = 45,
 				thresholdUsable = false,
 				isTalent = true,
 			},
@@ -514,7 +514,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				id = 344359,
 				name = "",
 				icon = "",
-                cooldownMod = -15,
+				cooldownMod = -15,
 				isTalent = true,
 			},
 			
@@ -524,7 +524,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				id = 113656,
 				name = "",
 				icon = "",
-                comboPoints = 3,
+				comboPoints = 3,
 				isTalent = true
 			},
 
@@ -763,7 +763,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "#tigerPalm", icon = spells.tigerPalm.icon, description = spells.tigerPalm.name, printInSettings = true },
 			{ variable = "#touchOfDeath", icon = spells.touchOfDeath.icon, description = spells.touchOfDeath.name, printInSettings = true },
 			{ variable = "#vivify", icon = spells.vivify.icon, description = spells.vivify.name, printInSettings = true },
-        }
+		}
 		specCache.windwalker.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
 			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
@@ -836,10 +836,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	end
 
 	local function CalculateAbilityResourceValue(resource, threshold)
-        local modifier = 1.0
+		local modifier = 1.0
 
-        return resource * modifier
-    end
+		return resource * modifier
+	end
 	
 	local function InitializeTarget(guid, selfInitializeAllowed)
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
@@ -867,7 +867,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
 		local specId = GetSpecialization()
-        
+		
 		if specId == 2 then -- Mistweaver
 		elseif specId == 3 then -- Windwalker
 			local motcTotal = 0
@@ -1002,7 +1002,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		return mana * modifier
 	end
 
-    local function IsValidVariableForSpec(var)
+	local function IsValidVariableForSpec(var)
 		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 		if valid then
 			return valid
@@ -1462,7 +1462,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		if TRB.Data.settings.monk.windwalker.colors.text.overcapEnabled and overcap then
 			currentEnergyColor = TRB.Data.settings.monk.windwalker.colors.text.overcap
-            castingEnergyColor = TRB.Data.settings.monk.windwalker.colors.text.overcap
+			castingEnergyColor = TRB.Data.settings.monk.windwalker.colors.text.overcap
 		elseif TRB.Data.settings.monk.windwalker.colors.text.overThresholdEnabled then
 			local _overThreshold = false
 			for k, v in pairs(TRB.Data.spells) do
@@ -1696,14 +1696,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
-    local function FillSnapshotDataCasting(spell)
+	local function FillSnapshotDataCasting(spell)
 		local currentTime = GetTime()
-        TRB.Data.snapshotData.casting.startTime = currentTime
-        TRB.Data.snapshotData.casting.resourceRaw = spell.energy
-        TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.energy)
-        TRB.Data.snapshotData.casting.spellId = spell.id
-        TRB.Data.snapshotData.casting.icon = spell.icon
-    end
+		TRB.Data.snapshotData.casting.startTime = currentTime
+		TRB.Data.snapshotData.casting.resourceRaw = spell.energy
+		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.energy)
+		TRB.Data.snapshotData.casting.spellId = spell.id
+		TRB.Data.snapshotData.casting.icon = spell.icon
+	end
 
 	local function UpdateCastingResourceFinal()
 		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
@@ -1879,45 +1879,45 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local currentTime = GetTime()
 
 		if TRB.Data.snapshotData.innervate.endTime ~= nil and currentTime > TRB.Data.snapshotData.innervate.endTime then
-            TRB.Data.snapshotData.innervate.endTime = nil
-            TRB.Data.snapshotData.innervate.duration = 0
+			TRB.Data.snapshotData.innervate.endTime = nil
+			TRB.Data.snapshotData.innervate.duration = 0
 			TRB.Data.snapshotData.innervate.remainingTime = 0
 			TRB.Data.snapshotData.innervate.mana = 0
 			TRB.Data.snapshotData.audio.innervateCue = false
 		else
 			TRB.Data.snapshotData.innervate.remainingTime = GetInnervateRemainingTime()
 			TRB.Data.snapshotData.innervate.mana = TRB.Data.snapshotData.innervate.remainingTime * TRB.Data.snapshotData.manaRegen
-        end
+		end
 	end
 	
 	local function UpdatePotionOfChilledClarity()
 		local currentTime = GetTime()
 
 		if TRB.Data.snapshotData.potionOfChilledClarity.endTime ~= nil and currentTime > TRB.Data.snapshotData.potionOfChilledClarity.endTime then
-            TRB.Data.snapshotData.potionOfChilledClarity.endTime = nil
-            TRB.Data.snapshotData.potionOfChilledClarity.duration = 0
+			TRB.Data.snapshotData.potionOfChilledClarity.endTime = nil
+			TRB.Data.snapshotData.potionOfChilledClarity.duration = 0
 			TRB.Data.snapshotData.potionOfChilledClarity.remainingTime = 0
 			TRB.Data.snapshotData.potionOfChilledClarity.mana = 0
 			TRB.Data.snapshotData.audio.potionOfChilledClarityCue = false
 		else
 			TRB.Data.snapshotData.potionOfChilledClarity.remainingTime = GetPotionOfChilledClarityRemainingTime()
 			TRB.Data.snapshotData.potionOfChilledClarity.mana = TRB.Data.snapshotData.potionOfChilledClarity.remainingTime * TRB.Data.snapshotData.manaRegen
-        end
+		end
 	end
 
 	local function UpdateManaTideTotem(forceCleanup)
 		local currentTime = GetTime()
 
 		if forceCleanup or (TRB.Data.snapshotData.manaTideTotem.endTime ~= nil and currentTime > TRB.Data.snapshotData.manaTideTotem.endTime) then
-            TRB.Data.snapshotData.manaTideTotem.endTime = nil
-            TRB.Data.snapshotData.manaTideTotem.duration = 0
+			TRB.Data.snapshotData.manaTideTotem.endTime = nil
+			TRB.Data.snapshotData.manaTideTotem.duration = 0
 			TRB.Data.snapshotData.manaTideTotem.remainingTime = 0
 			TRB.Data.snapshotData.manaTideTotem.mana = 0
 			TRB.Data.snapshotData.audio.manaTideTotemCue = false
 		else
 			TRB.Data.snapshotData.manaTideTotem.remainingTime = GetManaTideTotemRemainingTime()
 			TRB.Data.snapshotData.manaTideTotem.mana = TRB.Data.snapshotData.manaTideTotem.remainingTime * (TRB.Data.snapshotData.manaRegen / 2) --Only half of this is considered bonus
-        end
+		end
 	end
 
 	local function UpdateSnapshot()
@@ -1959,25 +1959,25 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local currentTime = GetTime()
 		local _
 
-        if TRB.Data.snapshotData.strikeOfTheWindlord.startTime ~= nil and currentTime > (TRB.Data.snapshotData.strikeOfTheWindlord.startTime + TRB.Data.snapshotData.strikeOfTheWindlord.duration) then
-            TRB.Data.snapshotData.strikeOfTheWindlord.startTime = nil
-            TRB.Data.snapshotData.strikeOfTheWindlord.duration = 0
-        end
+		if TRB.Data.snapshotData.strikeOfTheWindlord.startTime ~= nil and currentTime > (TRB.Data.snapshotData.strikeOfTheWindlord.startTime + TRB.Data.snapshotData.strikeOfTheWindlord.duration) then
+			TRB.Data.snapshotData.strikeOfTheWindlord.startTime = nil
+			TRB.Data.snapshotData.strikeOfTheWindlord.duration = 0
+		end
 		
-        if TRB.Data.snapshotData.detox.startTime ~= nil and currentTime > (TRB.Data.snapshotData.detox.startTime + TRB.Data.snapshotData.detox.duration) then
-            TRB.Data.snapshotData.detox.startTime = nil
-            TRB.Data.snapshotData.detox.duration = 0
-        end
+		if TRB.Data.snapshotData.detox.startTime ~= nil and currentTime > (TRB.Data.snapshotData.detox.startTime + TRB.Data.snapshotData.detox.duration) then
+			TRB.Data.snapshotData.detox.startTime = nil
+			TRB.Data.snapshotData.detox.duration = 0
+		end
 
-        if TRB.Data.snapshotData.expelHarm.startTime ~= nil and currentTime > (TRB.Data.snapshotData.expelHarm.startTime + TRB.Data.snapshotData.expelHarm.duration) then
-            TRB.Data.snapshotData.expelHarm.startTime = nil
-            TRB.Data.snapshotData.expelHarm.duration = 0
-        end
+		if TRB.Data.snapshotData.expelHarm.startTime ~= nil and currentTime > (TRB.Data.snapshotData.expelHarm.startTime + TRB.Data.snapshotData.expelHarm.duration) then
+			TRB.Data.snapshotData.expelHarm.startTime = nil
+			TRB.Data.snapshotData.expelHarm.duration = 0
+		end
 
-        if TRB.Data.snapshotData.paralysis.startTime ~= nil and currentTime > (TRB.Data.snapshotData.paralysis.startTime + TRB.Data.snapshotData.paralysis.duration) then
-            TRB.Data.snapshotData.paralysis.startTime = nil
-            TRB.Data.snapshotData.paralysis.duration = 0
-        end
+		if TRB.Data.snapshotData.paralysis.startTime ~= nil and currentTime > (TRB.Data.snapshotData.paralysis.startTime + TRB.Data.snapshotData.paralysis.duration) then
+			TRB.Data.snapshotData.paralysis.startTime = nil
+			TRB.Data.snapshotData.paralysis.duration = 0
+		end
 	end
 
 	local function UpdateResourceBar()
@@ -2199,30 +2199,30 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							local thresholdColor = specSettings.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
-                            if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-                            elseif spell.isPvp and not TRB.Data.character.isPvp then
-                                showThreshold = false
-                            elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
-                                showThreshold = false
-                            elseif spell.hasCooldown then
+							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+							elseif spell.isPvp and not TRB.Data.character.isPvp then
+								showThreshold = false
+							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+								showThreshold = false
+							elseif spell.hasCooldown then
 								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
 									(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
-                                    thresholdColor = specSettings.colors.threshold.unusable
-                                    frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-                                elseif TRB.Data.snapshotData.resource >= -energyAmount then
-                                    thresholdColor = specSettings.colors.threshold.over
-                                else
-                                    thresholdColor = specSettings.colors.threshold.under
-                                    frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-                                end
-                            else -- This is an active/available/normal spell threshold
-                                if TRB.Data.snapshotData.resource >= -energyAmount then
-                                    thresholdColor = specSettings.colors.threshold.over
-                                else
-                                    thresholdColor = specSettings.colors.threshold.under
-                                    frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-                                end
-                            end
+									thresholdColor = specSettings.colors.threshold.unusable
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+								elseif TRB.Data.snapshotData.resource >= -energyAmount then
+									thresholdColor = specSettings.colors.threshold.over
+								else
+									thresholdColor = specSettings.colors.threshold.under
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
+							else -- This is an active/available/normal spell threshold
+								if TRB.Data.snapshotData.resource >= -energyAmount then
+									thresholdColor = specSettings.colors.threshold.over
+								else
+									thresholdColor = specSettings.colors.threshold.under
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+								end
+							end
 
 							if spell.comboPoints == true and TRB.Data.snapshotData.resource2 == 0 then
 								thresholdColor = specSettings.colors.threshold.unusable
@@ -2274,28 +2274,28 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
-                    for x = 1, TRB.Data.character.maxResource2 do
+					for x = 1, TRB.Data.character.maxResource2 do
 						local cpBorderColor = specSettings.colors.comboPoints.border
 						local cpColor = specSettings.colors.comboPoints.base
 						local cpBR = cpBackgroundRed
 						local cpBG = cpBackgroundGreen
 						local cpBB = cpBackgroundBlue
 
-                        if TRB.Data.snapshotData.resource2 >= x then
-                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+						if TRB.Data.snapshotData.resource2 >= x then
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
 							if (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = specSettings.colors.comboPoints.penultimate
 							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = specSettings.colors.comboPoints.final
 							end
-                        else
-                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
-                        end
+						else
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+						end
 
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-                    end
+					end
 				end
 			end
 			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
@@ -2660,8 +2660,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		TRB.Data.character.className = "monk"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
-        local maxComboPoints = 0
-        local settings = nil
+		local maxComboPoints = 0
+		local settings = nil
 		
 		if specId == 2 then
 			TRB.Data.character.specName = "mistweaver"
@@ -2712,16 +2712,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
 ---@diagnostic disable-next-line: missing-parameter, missing-parameter
 			maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
-            settings = TRB.Data.settings.monk.windwalker
+			settings = TRB.Data.settings.monk.windwalker
 			TRB.Data.character.specName = "windwalker"
 		end
-        
-        if settings ~= nil then
+		
+		if settings ~= nil then
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
-            	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
+				TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 			end
-        end
+		end
 	end
 	
 	function TRB.Functions.Class:EventRegistration()
@@ -2752,7 +2752,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end
 
 		if TRB.Data.specSupported then
-            TRB.Functions.Class:CheckCharacter()
+			TRB.Functions.Class:CheckCharacter()
 
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)

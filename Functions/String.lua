@@ -15,14 +15,14 @@ function TRB.Functions.String:ConvertToShortNumberNotation(num, numDecimalPlaces
 	if num >= 10^9 then
 		return string.format(negative .. "%." .. numDecimalPlaces .. "fb", TRB.Functions.Number:RoundTo(num / 10^9, numDecimalPlaces, mode))
 	elseif num >= 10^6 then
-        return string.format(negative .. "%." .. numDecimalPlaces .. "fm", TRB.Functions.Number:RoundTo(num / 10^6, numDecimalPlaces, mode))
-    elseif num >= 10^3 then
-        return string.format(negative .. "%." .. numDecimalPlaces .. "fk", TRB.Functions.Number:RoundTo(num / 10^3, numDecimalPlaces, mode))
-    else
+		return string.format(negative .. "%." .. numDecimalPlaces .. "fm", TRB.Functions.Number:RoundTo(num / 10^6, numDecimalPlaces, mode))
+	elseif num >= 10^3 then
+		return string.format(negative .. "%." .. numDecimalPlaces .. "fk", TRB.Functions.Number:RoundTo(num / 10^3, numDecimalPlaces, mode))
+	else
 		if isInteger then
-        	return string.format(negative .. "%.0f", TRB.Functions.Number:RoundTo(num, 0, mode))
+			return string.format(negative .. "%.0f", TRB.Functions.Number:RoundTo(num, 0, mode))
 		else			
 			return string.format(negative .. "%." .. numDecimalPlaces .. "f", TRB.Functions.Number:RoundTo(num, 0, mode))
 		end
-    end
+	end
 end

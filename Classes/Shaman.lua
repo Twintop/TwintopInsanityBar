@@ -11,12 +11,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
-    local combatFrame = TRB.Frames.combatFrame
-    
-    local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
-    Global_TwintopResourceBar = {}
+	local combatFrame = TRB.Frames.combatFrame
+	
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
-    
+	
 	local specCache = {
 		elemental = {
 			snapshotData = {},
@@ -1048,7 +1048,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		return mana * modifier
 	end
 
-    local function IsValidVariableForSpec(var)
+	local function IsValidVariableForSpec(var)
 		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 		if valid then
 			return valid
@@ -1641,15 +1641,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
-    local function FillSnapshotDataCasting(spell, maelstromMod)
+	local function FillSnapshotDataCasting(spell, maelstromMod)
 		maelstromMod = maelstromMod or 0
 		local currentTime = GetTime()
-        TRB.Data.snapshotData.casting.startTime = currentTime
-        TRB.Data.snapshotData.casting.resourceRaw = spell.maelstrom + maelstromMod
-        TRB.Data.snapshotData.casting.resourceFinal = spell.maelstrom + maelstromMod
-        TRB.Data.snapshotData.casting.spellId = spell.id
-        TRB.Data.snapshotData.casting.icon = spell.icon
-    end
+		TRB.Data.snapshotData.casting.startTime = currentTime
+		TRB.Data.snapshotData.casting.resourceRaw = spell.maelstrom + maelstromMod
+		TRB.Data.snapshotData.casting.resourceFinal = spell.maelstrom + maelstromMod
+		TRB.Data.snapshotData.casting.spellId = spell.id
+		TRB.Data.snapshotData.casting.icon = spell.icon
+	end
 
 
 	local function UpdateCastingResourceFinal_Restoration()
@@ -1832,45 +1832,45 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local currentTime = GetTime()
 
 		if TRB.Data.snapshotData.innervate.endTime ~= nil and currentTime > TRB.Data.snapshotData.innervate.endTime then
-            TRB.Data.snapshotData.innervate.endTime = nil
-            TRB.Data.snapshotData.innervate.duration = 0
+			TRB.Data.snapshotData.innervate.endTime = nil
+			TRB.Data.snapshotData.innervate.duration = 0
 			TRB.Data.snapshotData.innervate.remainingTime = 0
 			TRB.Data.snapshotData.innervate.mana = 0
 			TRB.Data.snapshotData.audio.innervateCue = false
 		else
 			TRB.Data.snapshotData.innervate.remainingTime = GetInnervateRemainingTime()
 			TRB.Data.snapshotData.innervate.mana = TRB.Data.snapshotData.innervate.remainingTime * TRB.Data.snapshotData.manaRegen
-        end
+		end
 	end
 	
 	local function UpdatePotionOfChilledClarity()
 		local currentTime = GetTime()
 
 		if TRB.Data.snapshotData.potionOfChilledClarity.endTime ~= nil and currentTime > TRB.Data.snapshotData.potionOfChilledClarity.endTime then
-            TRB.Data.snapshotData.potionOfChilledClarity.endTime = nil
-            TRB.Data.snapshotData.potionOfChilledClarity.duration = 0
+			TRB.Data.snapshotData.potionOfChilledClarity.endTime = nil
+			TRB.Data.snapshotData.potionOfChilledClarity.duration = 0
 			TRB.Data.snapshotData.potionOfChilledClarity.remainingTime = 0
 			TRB.Data.snapshotData.potionOfChilledClarity.mana = 0
 			TRB.Data.snapshotData.audio.potionOfChilledClarityCue = false
 		else
 			TRB.Data.snapshotData.potionOfChilledClarity.remainingTime = GetPotionOfChilledClarityRemainingTime()
 			TRB.Data.snapshotData.potionOfChilledClarity.mana = TRB.Data.snapshotData.potionOfChilledClarity.remainingTime * TRB.Data.snapshotData.manaRegen
-        end
+		end
 	end
 
 	local function UpdateManaTideTotem(forceCleanup)
 		local currentTime = GetTime()
 
 		if forceCleanup or (TRB.Data.snapshotData.manaTideTotem.endTime ~= nil and currentTime > TRB.Data.snapshotData.manaTideTotem.endTime) then
-            TRB.Data.snapshotData.manaTideTotem.endTime = nil
-            TRB.Data.snapshotData.manaTideTotem.duration = 0
+			TRB.Data.snapshotData.manaTideTotem.endTime = nil
+			TRB.Data.snapshotData.manaTideTotem.duration = 0
 			TRB.Data.snapshotData.manaTideTotem.remainingTime = 0
 			TRB.Data.snapshotData.manaTideTotem.mana = 0
 			TRB.Data.snapshotData.audio.manaTideTotemCue = false
 		else
 			TRB.Data.snapshotData.manaTideTotem.remainingTime = GetManaTideTotemRemainingTime()
 			TRB.Data.snapshotData.manaTideTotem.mana = TRB.Data.snapshotData.manaTideTotem.remainingTime * (TRB.Data.snapshotData.manaRegen / 2) --Only half of this is considered bonus
-        end
+		end
 	end
 
 	local function UpdateSnapshot()
@@ -1878,13 +1878,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Functions.Character:UpdateSnapshot()
 			
 		if TRB.Data.snapshotData.ascendance.startTime ~= nil and currentTime > (TRB.Data.snapshotData.ascendance.startTime + TRB.Data.snapshotData.ascendance.duration) then
-            TRB.Data.snapshotData.ascendance.startTime = nil
-            TRB.Data.snapshotData.ascendance.duration = 0
+			TRB.Data.snapshotData.ascendance.startTime = nil
+			TRB.Data.snapshotData.ascendance.duration = 0
 			TRB.Data.snapshotData.ascendance.remainingTime = 0
 		else
 			_, _, _, _, TRB.Data.snapshotData.ascendance.duration, TRB.Data.snapshotData.ascendance.endTime, _, _, _, TRB.Data.snapshotData.ascendance.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.ascendance.id)
 			TRB.Data.snapshotData.ascendance.remainingTime = GetAscendanceRemainingTime()
-        end
+		end
 	end
 
 	local function UpdateSnapshot_Elemental()
@@ -2523,7 +2523,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						end
 					end
 				end
-            end
+			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
 				TRB.Functions.Target:RemoveTarget(destGUID)
@@ -2746,7 +2746,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		if TRB.Data.specSupported then
-            TRB.Functions.Class:CheckCharacter()
+			TRB.Functions.Class:CheckCharacter()
 
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)

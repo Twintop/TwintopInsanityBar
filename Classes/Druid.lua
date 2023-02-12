@@ -11,12 +11,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
-    local combatFrame = TRB.Frames.combatFrame
-    
-    local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+	local combatFrame = TRB.Frames.combatFrame
+	
+	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
-    
+	
 	local specCache = {
 		balance = {
 			snapshotData = {},
@@ -432,7 +432,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
-            maxResource2 = 5,
+			maxResource2 = 5,
 			pandemicModifier = 1.0,
 			effects = {
 			}
@@ -447,7 +447,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			},
 
 			-- Druid Class Baseline Abilities
-            catForm = {
+			catForm = {
 				id = 768,
 				name = "",
 				icon = "",
@@ -460,7 +460,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				energy = -35,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 1,
 				settingKey = "rake",
@@ -480,7 +480,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				energy = -40,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				thresholdId = 2,
 				texture = "",
 				settingKey = "thrash",
@@ -499,7 +499,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				energy = -20,
-                comboPoints = true,
+				comboPoints = true,
 				thresholdId = 4,
 				texture = "",
 				settingKey = "rip",
@@ -525,12 +525,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				energy = -30,
-                comboPoints = true,
+				comboPoints = true,
 				texture = "",
 				thresholdId = 5,
 				settingKey = "maim",
-                hasCooldown = true,
-                cooldown = 20,
+				hasCooldown = true,
+				cooldown = 20,
 				thresholdUsable = false,
 				isTalent = true
 			},
@@ -597,7 +597,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				energy = -40,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 9,
 				settingKey = "shred",
@@ -609,7 +609,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				energy = -35,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				thresholdId = 3,
 				texture = "",
 				settingKey = "swipe",
@@ -652,11 +652,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				energy = -20,
-                comboPoints = true,
+				comboPoints = true,
 				thresholdId = 10,
 				texture = "",
 				settingKey = "primalWrath",
-                isTalent = true,
+				isTalent = true,
 				thresholdUsable = false
 			},
 			lunarInspiration = {
@@ -670,7 +670,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				energy = -30,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				thresholdId = 11,
 				texture = "",
 				settingKey = "moonfire",
@@ -708,12 +708,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				cooldown = 8,
 				isHasted = true,
 				energy = -25,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				thresholdId = 12,
 				texture = "",
 				settingKey = "brutalSlash",
 				isSnowflake = true,
-                isTalent = true,
+				isTalent = true,
 				hasCooldown = true,
 				thresholdUsable = false,
 				isClearcasting = true
@@ -734,7 +734,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				thresholdId = 13,
 				texture = "",
 				settingKey = "bloodtalons",
-                isTalent = true,
+				isTalent = true,
 				--isSnowflake = true,
 				thresholdUsable = false,
 				modifier = 1.25
@@ -744,11 +744,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				energy = -25,
-                comboPointsGenerated = 5,
+				comboPointsGenerated = 5,
 				thresholdId = 14,
 				texture = "",
 				settingKey = "feralFrenzy",
-                isTalent = true,
+				isTalent = true,
 				hasCooldown = true,
 				thresholdUsable = false
 			},
@@ -1224,10 +1224,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			{ variable = "#wrath", icon = spells.wrath.icon, description = "Wrath", printInSettings = true },
 			{ variable = "#starfire", icon = spells.starfire.icon, description = "Starfire", printInSettings = true },
-            
-            { variable = "#sunfire", icon = spells.sunfire.icon, description = "Sunfire", printInSettings = true },
-            { variable = "#moonfire", icon = spells.moonfire.icon, description = "Moonfire", printInSettings = true },
-            
+			
+			{ variable = "#sunfire", icon = spells.sunfire.icon, description = "Sunfire", printInSettings = true },
+			{ variable = "#moonfire", icon = spells.moonfire.icon, description = "Moonfire", printInSettings = true },
+			
 			{ variable = "#starsurge", icon = spells.starsurge.icon, description = "Starsurge", printInSettings = true },
 			{ variable = "#starfall", icon = spells.fullMoon.icon, description = "Starfall", printInSettings = true },
 			{ variable = "#starweaver", icon = spells.starweaversWarp.icon .. " or " .. spells.starweaversWeft.icon, description = "Starweaver's Warp or Weft, whichever is active", printInSettings = true },
@@ -1239,23 +1239,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "#primordialArcanicPulsar", icon = spells.primordialArcanicPulsar.icon, description = "Primordial Arcanic Pulsar", printInSettings = false },
 
 			{ variable = "#eclipse", icon = spells.incarnationChosenOfElune.icon .. spells.celestialAlignment.icon .. spells.eclipseSolar.icon .. " or " .. spells.eclipseLunar.icon, description = "Current active Eclipse", printInSettings = true },
-			{ variable = "#celestialAlignment", icon = spells.celestialAlignment.icon, description = "Celestial Alignment", printInSettings = true },            
-			{ variable = "#icoe", icon = spells.incarnationChosenOfElune.icon, description = "Incarnation: Chosen of Elune", printInSettings = true },            
-			{ variable = "#coe", icon = spells.incarnationChosenOfElune.icon, description = "Incarnation: Chosen of Elune", printInSettings = false },            
-			{ variable = "#incarnation", icon = spells.incarnationChosenOfElune.icon, description = "Incarnation: Chosen of Elune", printInSettings = false },            
-			{ variable = "#incarnationChosenOfElune", icon = spells.incarnationChosenOfElune.icon, description = "Incarnation: Chosen of Elune", printInSettings = false },            
+			{ variable = "#celestialAlignment", icon = spells.celestialAlignment.icon, description = "Celestial Alignment", printInSettings = true },			
+			{ variable = "#icoe", icon = spells.incarnationChosenOfElune.icon, description = "Incarnation: Chosen of Elune", printInSettings = true },			
+			{ variable = "#coe", icon = spells.incarnationChosenOfElune.icon, description = "Incarnation: Chosen of Elune", printInSettings = false },			
+			{ variable = "#incarnation", icon = spells.incarnationChosenOfElune.icon, description = "Incarnation: Chosen of Elune", printInSettings = false },			
+			{ variable = "#incarnationChosenOfElune", icon = spells.incarnationChosenOfElune.icon, description = "Incarnation: Chosen of Elune", printInSettings = false },			
 			{ variable = "#solar", icon = spells.eclipseSolar.icon, description = "Eclipse (Solar)", printInSettings = true },
-            { variable = "#eclipseSolar", icon = spells.eclipseSolar.icon, description = "Eclipse (Solar)", printInSettings = false },
-            { variable = "#solarEclipse", icon = spells.eclipseSolar.icon, description = "Eclipse (Solar)", printInSettings = false },
-            { variable = "#lunar", icon = spells.eclipseLunar.icon, description = "Eclipse (Lunar)", printInSettings = true },
-            { variable = "#eclipseLunar", icon = spells.eclipseLunar.icon, description = "Eclipse (Lunar)", printInSettings = false },
-            { variable = "#lunarEclipse", icon = spells.eclipseLunar.icon, description = "Eclipse (Lunar)", printInSettings = false },
-            
+			{ variable = "#eclipseSolar", icon = spells.eclipseSolar.icon, description = "Eclipse (Solar)", printInSettings = false },
+			{ variable = "#solarEclipse", icon = spells.eclipseSolar.icon, description = "Eclipse (Solar)", printInSettings = false },
+			{ variable = "#lunar", icon = spells.eclipseLunar.icon, description = "Eclipse (Lunar)", printInSettings = true },
+			{ variable = "#eclipseLunar", icon = spells.eclipseLunar.icon, description = "Eclipse (Lunar)", printInSettings = false },
+			{ variable = "#lunarEclipse", icon = spells.eclipseLunar.icon, description = "Eclipse (Lunar)", printInSettings = false },
+			
 			{ variable = "#naturesBalance", icon = spells.naturesBalance.icon, description = "Nature's Balance", printInSettings = true },
-            
-            { variable = "#soulOfTheForest", icon = spells.soulOfTheForest.icon, description = "Soul of the Forest", printInSettings = true },
-            
-            { variable = "#stellarFlare", icon = spells.stellarFlare.icon, description = "Stellar Flare", printInSettings = true },
+			
+			{ variable = "#soulOfTheForest", icon = spells.soulOfTheForest.icon, description = "Soul of the Forest", printInSettings = true },
+			
+			{ variable = "#stellarFlare", icon = spells.stellarFlare.icon, description = "Stellar Flare", printInSettings = true },
 
 			{ variable = "#foe", icon = spells.furyOfElune.icon, description = "Fury Of Elune", printInSettings = false },
 			{ variable = "#furyOfElune", icon = spells.furyOfElune.icon, description = "Fury Of Elune", printInSettings = true },
@@ -1330,10 +1330,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$astralPowerPlusPassive", description = "Current + Passive Astral Power Total", printInSettings = true, color = false },
 			{ variable = "$resourcePlusPassive", description = "Current + Passive Astral Power Total", printInSettings = false, color = false },
 			{ variable = "$astralPowerTotal", description = "Current + Passive + Casting Astral Power Total", printInSettings = true, color = false },   
-			{ variable = "$resourceTotal", description = "Current + Passive + Casting Astral Power Total", printInSettings = false, color = false },     
+			{ variable = "$resourceTotal", description = "Current + Passive + Casting Astral Power Total", printInSettings = false, color = false },	 
 			{ variable = "$foeAstralPower", description = "Passive Astral Power incoming from Fury of Elune", printInSettings = true, color = false },   
 			{ variable = "$foeTicks", description = "Number of ticks of Fury of Elune remaining", printInSettings = true, color = false },   
-			{ variable = "$foeTime", description = "Amount of time remaining on Fury of Elune's effect", printInSettings = true, color = false },        
+			{ variable = "$foeTime", description = "Amount of time remaining on Fury of Elune's effect", printInSettings = true, color = false },		
 			{ variable = "$sunderedFirmamentAstralPower", description = "Passive Astral Power incoming from Sundered Firmament", printInSettings = true, color = false },   
 			{ variable = "$sunderedFirmamentTicks", description = "Number of ticks of Sundered Firmament remaining", printInSettings = true, color = false },   
 			{ variable = "$sunderedFirmamentTime", description = "Amount of time remaining on Sundered Firmament's effect", printInSettings = true, color = false },   
@@ -1373,31 +1373,31 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-            { variable = "#apexPredatorsCraving", icon = spells.apexPredatorsCraving.icon, description = spells.apexPredatorsCraving.name, printInSettings = true },
-            { variable = "#berserk", icon = spells.berserk.icon, description = spells.berserk.name, printInSettings = true },
-            { variable = "#bloodtalons", icon = spells.bloodtalons.icon, description = spells.bloodtalons.name, printInSettings = true },
-            { variable = "#brutalSlash", icon = spells.brutalSlash.icon, description = spells.brutalSlash.name, printInSettings = true },
-            { variable = "#carnivorousInstinct", icon = spells.carnivorousInstinct.icon, description = spells.carnivorousInstinct.name, printInSettings = true },
-            { variable = "#catForm", icon = spells.catForm.icon, description = spells.catForm.name, printInSettings = true },
-            { variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
-            { variable = "#feralFrenzy", icon = spells.feralFrenzy.icon, description = spells.feralFrenzy.name, printInSettings = true },
-            { variable = "#ferociousBite", icon = spells.ferociousBite.icon, description = spells.ferociousBite.name, printInSettings = true },
-            { variable = "#incarnation", icon = spells.incarnationAvatarOfAshamane.icon, description = spells.incarnationAvatarOfAshamane.name, printInSettings = true },
-            { variable = "#incarnationAvatarOfAshamane", icon = spells.incarnationAvatarOfAshamane.icon, description = spells.incarnationAvatarOfAshamane.name, printInSettings = false },
-            { variable = "#lunarInspiration", icon = spells.lunarInspiration.icon, description = spells.lunarInspiration.name, printInSettings = true },
-            { variable = "#maim", icon = spells.maim.icon, description = spells.maim.name, printInSettings = true },
-            { variable = "#moonfire", icon = spells.moonfire.icon, description = spells.moonfire.name, printInSettings = true },
-            { variable = "#predatorySwiftness", icon = spells.predatorySwiftness.icon, description = spells.predatorySwiftness.name, printInSettings = true },
-            { variable = "#primalWrath", icon = spells.primalWrath.icon, description = spells.primalWrath.name, printInSettings = true },
-            { variable = "#prowl", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = true },
-            { variable = "#rake", icon = spells.rake.icon, description = spells.rake.name, printInSettings = true },
-            { variable = "#rip", icon = spells.rip.icon, description = spells.rip.name, printInSettings = true },
-            { variable = "#shadowmeld", icon = spells.shadowmeld.icon, description = spells.shadowmeld.name, printInSettings = true },
-            { variable = "#shred", icon = spells.shred.icon, description = spells.shred.name, printInSettings = true },
-            { variable = "#suddenAmbush", icon = spells.suddenAmbush.icon, description = spells.suddenAmbush.name, printInSettings = true },
-            { variable = "#swipe", icon = spells.swipe.icon, description = spells.swipe.name, printInSettings = true },
-            { variable = "#thrash", icon = spells.thrash.icon, description = spells.thrash.name, printInSettings = true },
-            { variable = "#tigersFury", icon = spells.tigersFury.icon, description = spells.tigersFury.name, printInSettings = true },
+			{ variable = "#apexPredatorsCraving", icon = spells.apexPredatorsCraving.icon, description = spells.apexPredatorsCraving.name, printInSettings = true },
+			{ variable = "#berserk", icon = spells.berserk.icon, description = spells.berserk.name, printInSettings = true },
+			{ variable = "#bloodtalons", icon = spells.bloodtalons.icon, description = spells.bloodtalons.name, printInSettings = true },
+			{ variable = "#brutalSlash", icon = spells.brutalSlash.icon, description = spells.brutalSlash.name, printInSettings = true },
+			{ variable = "#carnivorousInstinct", icon = spells.carnivorousInstinct.icon, description = spells.carnivorousInstinct.name, printInSettings = true },
+			{ variable = "#catForm", icon = spells.catForm.icon, description = spells.catForm.name, printInSettings = true },
+			{ variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
+			{ variable = "#feralFrenzy", icon = spells.feralFrenzy.icon, description = spells.feralFrenzy.name, printInSettings = true },
+			{ variable = "#ferociousBite", icon = spells.ferociousBite.icon, description = spells.ferociousBite.name, printInSettings = true },
+			{ variable = "#incarnation", icon = spells.incarnationAvatarOfAshamane.icon, description = spells.incarnationAvatarOfAshamane.name, printInSettings = true },
+			{ variable = "#incarnationAvatarOfAshamane", icon = spells.incarnationAvatarOfAshamane.icon, description = spells.incarnationAvatarOfAshamane.name, printInSettings = false },
+			{ variable = "#lunarInspiration", icon = spells.lunarInspiration.icon, description = spells.lunarInspiration.name, printInSettings = true },
+			{ variable = "#maim", icon = spells.maim.icon, description = spells.maim.name, printInSettings = true },
+			{ variable = "#moonfire", icon = spells.moonfire.icon, description = spells.moonfire.name, printInSettings = true },
+			{ variable = "#predatorySwiftness", icon = spells.predatorySwiftness.icon, description = spells.predatorySwiftness.name, printInSettings = true },
+			{ variable = "#primalWrath", icon = spells.primalWrath.icon, description = spells.primalWrath.name, printInSettings = true },
+			{ variable = "#prowl", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = true },
+			{ variable = "#rake", icon = spells.rake.icon, description = spells.rake.name, printInSettings = true },
+			{ variable = "#rip", icon = spells.rip.icon, description = spells.rip.name, printInSettings = true },
+			{ variable = "#shadowmeld", icon = spells.shadowmeld.icon, description = spells.shadowmeld.name, printInSettings = true },
+			{ variable = "#shred", icon = spells.shred.icon, description = spells.shred.name, printInSettings = true },
+			{ variable = "#suddenAmbush", icon = spells.suddenAmbush.icon, description = spells.suddenAmbush.name, printInSettings = true },
+			{ variable = "#swipe", icon = spells.swipe.icon, description = spells.swipe.name, printInSettings = true },
+			{ variable = "#thrash", icon = spells.thrash.icon, description = spells.thrash.name, printInSettings = true },
+			{ variable = "#tigersFury", icon = spells.tigersFury.icon, description = spells.tigersFury.name, printInSettings = true },
 		}
 		specCache.feral.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -1442,7 +1442,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$energyPlusPassive", description = "Current + Passive Energy Total", printInSettings = true, color = false },
 			{ variable = "$resourcePlusPassive", description = "Current + Passive Energy Total", printInSettings = false, color = false },
 			{ variable = "$energyTotal", description = "Current + Passive + Casting Energy Total", printInSettings = true, color = false },   
-			{ variable = "$resourceTotal", description = "Current + Passive + Casting Energy Total", printInSettings = false, color = false },     
+			{ variable = "$resourceTotal", description = "Current + Passive + Casting Energy Total", printInSettings = false, color = false },	 
 			
 			{ variable = "$comboPoints", description = "Current Combo Points", printInSettings = true, color = false },
 			{ variable = "$comboPointsMax", description = "Maximum Combo Points", printInSettings = true, color = false },
@@ -1511,11 +1511,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
 			{ variable = "#efflorescence", icon = spells.efflorescence.icon, description = spells.efflorescence.name, printInSettings = true },
-            { variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
-            
-            { variable = "#moonfire", icon = spells.moonfire.icon, description = "Moonfire", printInSettings = true },
+			{ variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
+			
+			{ variable = "#moonfire", icon = spells.moonfire.icon, description = "Moonfire", printInSettings = true },
 			{ variable = "#sunfire", icon = spells.sunfire.icon, description = "Sunfire", printInSettings = true },
-            
+			
 			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
 			{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
 			{ variable = "#soh", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = true },
@@ -1636,8 +1636,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 	end
 	
-    local function CalculateAbilityResourceValue(resource, threshold, relentlessPredator)
-        local modifier = 1.0
+	local function CalculateAbilityResourceValue(resource, threshold, relentlessPredator)
+		local modifier = 1.0
 		local specId = GetSpecialization()
 
 		if specId == 2 then
@@ -1650,8 +1650,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		end
 
-        return resource * modifier
-    end
+		return resource * modifier
+	end
 
 	local function InitializeTarget(guid, selfInitializeAllowed)
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
@@ -2045,7 +2045,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		return snapshot
 	end
 
-    local function IsValidVariableForSpec(var)
+	local function IsValidVariableForSpec(var)
 		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 		if valid then
 			return valid
@@ -2060,7 +2060,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			settings = TRB.Data.settings.druid.restoration
 		end
 
-        local affectingCombat = UnitAffectingCombat("player")
+		local affectingCombat = UnitAffectingCombat("player")
 
 		if specId == 1 then -- Balance
 			if var == "$moonkinForm" then
@@ -2630,7 +2630,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		--$casting
 		local castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.casting.resourceFinal, astralPowerPrecision, "floor"))
 		--$passive
-        local _passiveAstralPower = TRB.Data.snapshotData.furyOfElune.astralPower + TRB.Data.snapshotData.sunderedFirmament.astralPower
+		local _passiveAstralPower = TRB.Data.snapshotData.furyOfElune.astralPower + TRB.Data.snapshotData.sunderedFirmament.astralPower
 		if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.naturesBalance) then
 			if UnitAffectingCombat("player") then
 				_passiveAstralPower = _passiveAstralPower + TRB.Data.spells.naturesBalance.astralPower
@@ -2652,7 +2652,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		----------
 		--$sunfireCount and $sunfireTime
-        local _sunfireCount = TRB.Data.snapshotData.targetData.sunfire or 0
+		local _sunfireCount = TRB.Data.snapshotData.targetData.sunfire or 0
 		local sunfireCount = tostring(_sunfireCount)
 		local _sunfireTime = 0
 		
@@ -2662,8 +2662,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local sunfireTime
 
-        --$moonfireCount and $moonfireTime
-        local _moonfireCount = TRB.Data.snapshotData.targetData.moonfire or 0
+		--$moonfireCount and $moonfireTime
+		local _moonfireCount = TRB.Data.snapshotData.targetData.moonfire or 0
 		local moonfireCount = tostring(_moonfireCount)
 		local _moonfireTime = 0
 		
@@ -2673,7 +2673,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local moonfireTime
 
-        --$stellarFlareCount and $stellarFlareTime
+		--$stellarFlareCount and $stellarFlareTime
 		local _stellarFlareCount = TRB.Data.snapshotData.targetData.stellarFlare or 0
 		local stellarFlareCount = tostring(_stellarFlareCount)
 		local _stellarFlareTime = 0
@@ -2739,10 +2739,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 		local starweaverTime = string.format("%.1f", _starweaverTime)
 
-        ----------
-        --$foeAstralPower
-        local foeAstralPower = TRB.Data.snapshotData.furyOfElune.astralPower or 0
-        --$foeTicks
+		----------
+		--$foeAstralPower
+		local foeAstralPower = TRB.Data.snapshotData.furyOfElune.astralPower or 0
+		--$foeTicks
 		local foeTicks = TRB.Data.snapshotData.furyOfElune.ticksRemaining or 0
 		--$foeTime
 		local _foeTime = GetFuryOfEluneRemainingTime()
@@ -2751,10 +2751,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			foeTime = string.format("%.1f", _foeTime)
 		end
 		
-        ----------
-        --$foeAstralPower
-        local sunderedFirmamentAstralPower = TRB.Data.snapshotData.sunderedFirmament.astralPower or 0
-        --$foeTicks
+		----------
+		--$foeAstralPower
+		local sunderedFirmamentAstralPower = TRB.Data.snapshotData.sunderedFirmament.astralPower or 0
+		--$foeTicks
 		local sunderedFirmamentTicks = TRB.Data.snapshotData.sunderedFirmament.ticksRemaining or 0
 		--$foeTime
 		local _sunderedFirmamentTime = GetSunderedFirmamentRemainingTime()
@@ -2989,7 +2989,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		if TRB.Data.settings.druid.feral.colors.text.overcapEnabled and overcap then
 			currentEnergyColor = TRB.Data.settings.druid.feral.colors.text.overcap
-            castingEnergyColor = TRB.Data.settings.druid.feral.colors.text.overcap
+			castingEnergyColor = TRB.Data.settings.druid.feral.colors.text.overcap
 		elseif TRB.Data.settings.druid.feral.colors.text.overThresholdEnabled then
 			local _overThreshold = false
 			for k, v in pairs(TRB.Data.spells) do
@@ -3050,7 +3050,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 		----------
 		--$ripCount and $ripTime
-        local _ripCount = TRB.Data.snapshotData.targetData.rip or 0
+		local _ripCount = TRB.Data.snapshotData.targetData.rip or 0
 		local ripCount = tostring(_ripCount)
 		local _ripTime = 0
 		local ripTime
@@ -3061,7 +3061,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local ripCurrent
 
 		--$rakeCount and $rakeTime
-        local _rakeCount = TRB.Data.snapshotData.targetData.rake or 0
+		local _rakeCount = TRB.Data.snapshotData.targetData.rake or 0
 		local rakeCount = tostring(_rakeCount)
 		local _rakeTime = 0
 		local rakeTime
@@ -3072,7 +3072,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local rakeCurrent
 
 		--$thrashCount and $thrashTime
-        local _thrashCount = TRB.Data.snapshotData.targetData.thrash or 0
+		local _thrashCount = TRB.Data.snapshotData.targetData.thrash or 0
 		local thrashCount = tostring(_thrashCount)
 		local _thrashTime = 0
 		local thrashTime
@@ -3082,8 +3082,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local thrashPercent
 		local thrashCurrent
 
-        --$moonfireCount and $moonfireTime
-        local _moonfireCount = TRB.Data.snapshotData.targetData.moonfire or 0
+		--$moonfireCount and $moonfireTime
+		local _moonfireCount = TRB.Data.snapshotData.targetData.moonfire or 0
 		local moonfireCount = tostring(_moonfireCount)
 		local _moonfireTime = 0
 		local moonfireTime
@@ -3554,7 +3554,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		----------
 		--$sunfireCount and $sunfireTime
-        local _sunfireCount = TRB.Data.snapshotData.targetData.sunfire or 0
+		local _sunfireCount = TRB.Data.snapshotData.targetData.sunfire or 0
 		local sunfireCount = tostring(_sunfireCount)
 		local _sunfireTime = 0
 		
@@ -3564,8 +3564,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local sunfireTime
 
-        --$moonfireCount and $moonfireTime
-        local _moonfireCount = TRB.Data.snapshotData.targetData.moonfire or 0
+		--$moonfireCount and $moonfireTime
+		local _moonfireCount = TRB.Data.snapshotData.targetData.moonfire or 0
 		local moonfireCount = tostring(_moonfireCount)
 		local _moonfireTime = 0
 		
@@ -3719,14 +3719,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
-    local function FillSnapshotDataCasting_Balance(spell)
+	local function FillSnapshotDataCasting_Balance(spell)
 		local currentTime = GetTime()
-        TRB.Data.snapshotData.casting.startTime = currentTime
-        TRB.Data.snapshotData.casting.resourceRaw = spell.astralPower
-        TRB.Data.snapshotData.casting.resourceFinal = spell.astralPower
-        TRB.Data.snapshotData.casting.spellId = spell.id
-        TRB.Data.snapshotData.casting.icon = spell.icon
-    end	
+		TRB.Data.snapshotData.casting.startTime = currentTime
+		TRB.Data.snapshotData.casting.resourceRaw = spell.astralPower
+		TRB.Data.snapshotData.casting.resourceFinal = spell.astralPower
+		TRB.Data.snapshotData.casting.spellId = spell.id
+		TRB.Data.snapshotData.casting.icon = spell.icon
+	end	
 
 	local function UpdateCastingResourceFinal()
 		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
@@ -3861,15 +3861,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local currentTime = GetTime()
 
 		if TRB.Data.snapshotData.potionOfChilledClarity.endTime ~= nil and currentTime > TRB.Data.snapshotData.potionOfChilledClarity.endTime then
-            TRB.Data.snapshotData.potionOfChilledClarity.endTime = nil
-            TRB.Data.snapshotData.potionOfChilledClarity.duration = 0
+			TRB.Data.snapshotData.potionOfChilledClarity.endTime = nil
+			TRB.Data.snapshotData.potionOfChilledClarity.duration = 0
 			TRB.Data.snapshotData.potionOfChilledClarity.remainingTime = 0
 			TRB.Data.snapshotData.potionOfChilledClarity.mana = 0
 			TRB.Data.snapshotData.audio.potionOfChilledClarityCue = false
 		else
 			TRB.Data.snapshotData.potionOfChilledClarity.remainingTime = GetPotionOfChilledClarityRemainingTime()
 			TRB.Data.snapshotData.potionOfChilledClarity.mana = TRB.Data.snapshotData.potionOfChilledClarity.remainingTime * TRB.Data.snapshotData.manaRegen
-        end
+		end
 	end
 
 	local function UpdateSymbolOfHope(forceCleanup)
@@ -3915,38 +3915,38 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local currentTime = GetTime()
 
 		if TRB.Data.snapshotData.innervate.endTime ~= nil and currentTime > TRB.Data.snapshotData.innervate.endTime then
-            TRB.Data.snapshotData.innervate.endTime = nil
-            TRB.Data.snapshotData.innervate.duration = 0
+			TRB.Data.snapshotData.innervate.endTime = nil
+			TRB.Data.snapshotData.innervate.duration = 0
 			TRB.Data.snapshotData.innervate.remainingTime = 0
 			TRB.Data.snapshotData.innervate.mana = 0
 			TRB.Data.snapshotData.audio.innervateCue = false
 		else
 			TRB.Data.snapshotData.innervate.remainingTime = GetInnervateRemainingTime()
 			TRB.Data.snapshotData.innervate.mana = TRB.Data.snapshotData.innervate.remainingTime * TRB.Data.snapshotData.manaRegen * (1-TRB.Data.snapshotData.innervate.modifier)
-        end
+		end
 		
 		if TRB.Data.snapshotData.innervate.startTime ~= nil and currentTime > (TRB.Data.snapshotData.innervate.startTime + TRB.Data.snapshotData.innervate.duration) then
-            TRB.Data.snapshotData.innervate.startTime = nil
-            TRB.Data.snapshotData.innervate.duration = 0
+			TRB.Data.snapshotData.innervate.startTime = nil
+			TRB.Data.snapshotData.innervate.duration = 0
 			TRB.Data.snapshotData.innervate.remainingTime = 0
 		else
 			TRB.Data.snapshotData.innervate.remainingTime = GetInnervateRemainingTime()
-        end
+		end
 	end
 
 	local function UpdateManaTideTotem(forceCleanup)
 		local currentTime = GetTime()
 
 		if forceCleanup or (TRB.Data.snapshotData.manaTideTotem.endTime ~= nil and currentTime > TRB.Data.snapshotData.manaTideTotem.endTime) then
-            TRB.Data.snapshotData.manaTideTotem.endTime = nil
-            TRB.Data.snapshotData.manaTideTotem.duration = 0
+			TRB.Data.snapshotData.manaTideTotem.endTime = nil
+			TRB.Data.snapshotData.manaTideTotem.duration = 0
 			TRB.Data.snapshotData.manaTideTotem.remainingTime = 0
 			TRB.Data.snapshotData.manaTideTotem.mana = 0
 			TRB.Data.snapshotData.audio.manaTideTotemCue = false
 		else
 			TRB.Data.snapshotData.manaTideTotem.remainingTime = GetManaTideTotemRemainingTime()
 			TRB.Data.snapshotData.manaTideTotem.mana = TRB.Data.snapshotData.manaTideTotem.remainingTime * (TRB.Data.snapshotData.manaRegen / 2) --Only half of this is considered bonus
-        end
+		end
 	end
 
 	local function UpdateSnapshot()
@@ -3972,8 +3972,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		TRB.Data.spells.moonkinForm.isActive = select(10, TRB.Functions.Aura:FindBuffById(TRB.Data.spells.moonkinForm.id))
 
-        UpdateFuryOfElune()
-        UpdateSunderedFirmament()
+		UpdateFuryOfElune()
+		UpdateSunderedFirmament()
 		GetCurrentMoonSpell()
 
 		_, _, _, _, _, TRB.Data.snapshotData.celestialAlignment.endTime, _, _, _, TRB.Data.snapshotData.celestialAlignment.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.celestialAlignment.id)
@@ -4040,15 +4040,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Data.snapshotData.snapshots.thrash = GetCurrentSnapshot(TRB.Data.spells.thrash.bonuses)
 		TRB.Data.snapshotData.snapshots.moonfire = GetCurrentSnapshot(TRB.Data.spells.moonfire.bonuses)
 
-        if TRB.Data.snapshotData.maim.startTime ~= nil and currentTime > (TRB.Data.snapshotData.maim.startTime + TRB.Data.snapshotData.maim.duration) then
-            TRB.Data.snapshotData.maim.startTime = nil
-            TRB.Data.snapshotData.maim.duration = 0
-        end
+		if TRB.Data.snapshotData.maim.startTime ~= nil and currentTime > (TRB.Data.snapshotData.maim.startTime + TRB.Data.snapshotData.maim.duration) then
+			TRB.Data.snapshotData.maim.startTime = nil
+			TRB.Data.snapshotData.maim.duration = 0
+		end
 
-        if TRB.Data.snapshotData.feralFrenzy.startTime ~= nil and currentTime > (TRB.Data.snapshotData.feralFrenzy.startTime + TRB.Data.snapshotData.feralFrenzy.duration) then
-            TRB.Data.snapshotData.feralFrenzy.startTime = nil
-            TRB.Data.snapshotData.feralFrenzy.duration = 0
-        end
+		if TRB.Data.snapshotData.feralFrenzy.startTime ~= nil and currentTime > (TRB.Data.snapshotData.feralFrenzy.startTime + TRB.Data.snapshotData.feralFrenzy.duration) then
+			TRB.Data.snapshotData.feralFrenzy.startTime = nil
+			TRB.Data.snapshotData.feralFrenzy.duration = 0
+		end
 
 ---@diagnostic disable-next-line: redundant-parameter
 		_, _, TRB.Data.snapshotData.clearcasting.stacks, _, TRB.Data.snapshotData.clearcasting.duration, TRB.Data.snapshotData.clearcasting.endTime, _, _, _, TRB.Data.snapshotData.clearcasting.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.clearcasting.id)
@@ -5352,7 +5352,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						end
 					end
 				end
-            end
+			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
 				TRB.Functions.Target:RemoveTarget(destGUID)
@@ -5618,8 +5618,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		if TRB.Data.specSupported then
-            TRB.Functions.Class:CheckCharacter()
-            
+			TRB.Functions.Class:CheckCharacter()
+			
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 			barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")

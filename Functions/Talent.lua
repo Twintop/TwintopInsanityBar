@@ -74,20 +74,20 @@ end
 
 -- Source: https://www.wowinterface.com/forums/showpost.php?p=338665&postcount=5
 function TRB.Functions.Talent:ArePvpTalentsActive()
-    local inInstance, instanceType = IsInInstance()
-    if inInstance and (instanceType == "pvp" or instanceType == "arena") then
-        return true
-    elseif inInstance and (instanceType == "party" or instanceType == "raid" or instanceType == "scenario") then
-        return false
-    else
-        local talents = C_SpecializationInfo.GetAllSelectedPvpTalentIDs()
-        for _, pvptalent in pairs(talents) do
+	local inInstance, instanceType = IsInInstance()
+	if inInstance and (instanceType == "pvp" or instanceType == "arena") then
+		return true
+	elseif inInstance and (instanceType == "party" or instanceType == "raid" or instanceType == "scenario") then
+		return false
+	else
+		local talents = C_SpecializationInfo.GetAllSelectedPvpTalentIDs()
+		for _, pvptalent in pairs(talents) do
 ---@diagnostic disable-next-line: missing-parameter
-            local spellID = select(6, GetPvpTalentInfoByID(pvptalent))
-            if IsPlayerSpell(spellID) then
-                return true
-            end
-        end
-    end
+			local spellID = select(6, GetPvpTalentInfoByID(pvptalent))
+			if IsPlayerSpell(spellID) then
+				return true
+			end
+		end
+	end
 	return false
 end

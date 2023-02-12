@@ -55,7 +55,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "{$hwSanctifyTime}[#hwSanctify $hwSanctifyTime][          ]    {$potionCooldown}[#potionOfFrozenFocus $potionCooldown]||n{$hwSerenityTime}[#hwSerenity $hwSerenityTime] ",
+				text = "{$hwSanctifyTime}[#hwSanctify $hwSanctifyTime][		  ]	{$potionCooldown}[#potionOfFrozenFocus $potionCooldown]||n{$hwSerenityTime}[#hwSerenity $hwSerenityTime] ",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -291,7 +291,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text="#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount][       ]   {$ttd}[TTD: $ttd]",
+				text="#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount][	   ]   {$ttd}[TTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -590,7 +590,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Priest_Holy_ResetBarTextSimple")
-        end)
+		end)
 		yCoord = yCoord - 40
 
 		controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
@@ -1740,7 +1740,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Priest_Shadow_ResetBarTextSimple")
-        end)
+		end)
 
 		yCoord = yCoord - 40
 		controls.resetButton2 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Narrow Advanced)", oUi.xCoord, yCoord, 250, 30)

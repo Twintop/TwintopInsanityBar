@@ -7,7 +7,7 @@ TRB.Functions.Character = {}
 function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.guid = UnitGUID("player")
 ---@diagnostic disable-next-line: missing-parameter
-    TRB.Data.character.specGroup = GetActiveSpecGroup()
+	TRB.Data.character.specGroup = GetActiveSpecGroup()
 	TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
 
 	TRB.Data.barTextCache = {}
@@ -159,39 +159,39 @@ end
 
 function TRB.Functions.Character:GetCurrentGCDLockRemaining()
 ---@diagnostic disable-next-line: redundant-parameter
-    local startTime, duration, _ = GetSpellCooldown(61304);
-    return (startTime + duration - GetTime())
+	local startTime, duration, _ = GetSpellCooldown(61304);
+	return (startTime + duration - GetTime())
 end
 
 function TRB.Functions.Character:GetCurrentGCDTime(floor)
-    if floor == nil then
-        floor = false
-    end
+	if floor == nil then
+		floor = false
+	end
 
-    local haste = UnitSpellHaste("player") / 100
+	local haste = UnitSpellHaste("player") / 100
 
-    local gcd = 1.5 / (1 + haste)
+	local gcd = 1.5 / (1 + haste)
 
-    if not floor and gcd < 0.75 then
-        gcd = 0.75
-    end
+	if not floor and gcd < 0.75 then
+		gcd = 0.75
+	end
 
-    return gcd
+	return gcd
 end
 
 function TRB.Functions.Character:ResetCastingSnapshotData()
-    TRB.Data.snapshotData.casting.spellId = nil
-    TRB.Data.snapshotData.casting.startTime = nil
-    TRB.Data.snapshotData.casting.endTime = nil
-    TRB.Data.snapshotData.casting.resourceRaw = 0
-    TRB.Data.snapshotData.casting.resourceFinal = 0
-    TRB.Data.snapshotData.casting.icon = ""
-    TRB.Data.snapshotData.casting.spellKey = nil
+	TRB.Data.snapshotData.casting.spellId = nil
+	TRB.Data.snapshotData.casting.startTime = nil
+	TRB.Data.snapshotData.casting.endTime = nil
+	TRB.Data.snapshotData.casting.resourceRaw = 0
+	TRB.Data.snapshotData.casting.resourceFinal = 0
+	TRB.Data.snapshotData.casting.icon = ""
+	TRB.Data.snapshotData.casting.spellKey = nil
 end
 
 function TRB.Functions.Character:GetLatency()
-    --local down, up, lagHome, lagWorld = GetNetStats()
-    local _, _, _, lagWorld = GetNetStats()
-    local latency = lagWorld / 1000
-    return latency
+	--local down, up, lagHome, lagWorld = GetNetStats()
+	local _, _, _, lagWorld = GetNetStats()
+	local latency = lagWorld / 1000
+	return latency
 end

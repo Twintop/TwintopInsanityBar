@@ -24,9 +24,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	TRB.Options.Hunter.BeastMastery = {}
 	TRB.Options.Hunter.Marksmanship = {}
 	TRB.Options.Hunter.Survival = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.survival = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.survival = {}
 
 	local function BeastMasteryLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
@@ -54,8 +54,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		return textSettings
 	end
-    
-    local function BeastMasteryLoadDefaultBarTextAdvancedSettings()
+	
+	local function BeastMasteryLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
 			fontFaceLock = true,
@@ -229,7 +229,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				}
-            },
+			},
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
 				backgroundName="Blizzard Tooltip",
@@ -247,7 +247,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		settings.displayText = BeastMasteryLoadDefaultBarTextSimpleSettings()
 		return settings
-    end
+	end
 
 	local function MarksmanshipLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
@@ -275,13 +275,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		return textSettings
 	end
-    
-    local function MarksmanshipLoadDefaultBarTextAdvancedSettings()
+	
+	local function MarksmanshipLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "{$serpentSting}[#serpentSting $ssCount   ]$haste% ($gcd)||n{$serpentSting}[          ]{$ttd}[TTD: $ttd][ ]",
+				text = "{$serpentSting}[#serpentSting $ssCount   ]$haste% ($gcd)||n{$serpentSting}[		  ]{$ttd}[TTD: $ttd][ ]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -481,7 +481,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				}
-            },
+			},
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
 				backgroundName="Blizzard Tooltip",
@@ -499,7 +499,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		settings.displayText = MarksmanshipLoadDefaultBarTextSimpleSettings()
 		return settings
-    end
+	end
 
 	local function SurvivalLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
@@ -527,13 +527,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		return textSettings
 	end
-    
-    local function SurvivalLoadDefaultBarTextAdvancedSettings()
+	
+	local function SurvivalLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "#serpentSting $ssCount   $haste% ($gcd)||n          {$ttd}[TTD: $ttd][ ]",
+				text = "#serpentSting $ssCount   $haste% ($gcd)||n		  {$ttd}[TTD: $ttd][ ]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -699,7 +699,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				}
-            },
+			},
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
 				backgroundName="Blizzard Tooltip",
@@ -717,9 +717,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		settings.displayText = SurvivalLoadDefaultBarTextSimpleSettings()
 		return settings
-    end
+	end
 
-    local function LoadDefaultSettings()
+	local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 
 		settings.hunter.beastMastery = BeastMasteryLoadDefaultSettings()
@@ -727,7 +727,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		settings.hunter.survival = SurvivalLoadDefaultSettings()
 		return settings
 	end
-    TRB.Options.Hunter.LoadDefaultSettings = LoadDefaultSettings
+	TRB.Options.Hunter.LoadDefaultSettings = LoadDefaultSettings
 
 	--[[
 
@@ -816,7 +816,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_BeastMastery_ResetBarTextSimple")
-        end)
+		end)
 		yCoord = yCoord - 40
 
 		--[[
@@ -1531,7 +1531,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = controls
 	end
-    
+	
 	local function BeastMasteryConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
@@ -1636,7 +1636,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
-		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
@@ -1773,7 +1773,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_Marksmanship_ResetBarTextSimple")
-        end)
+		end)
 		yCoord = yCoord - 40
 
 		--[[
@@ -2874,7 +2874,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
 	end
-    
+	
 	local function MarksmanshipConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
@@ -2978,7 +2978,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
-		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
@@ -3034,7 +3034,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	]]
 
-    
+	
 	local function SurvivalConstructResetDefaultsPanel(parent)
 		if parent == nil then
 			return
@@ -3103,7 +3103,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Hunter_Survival_ResetBarTextSimple")
-        end)
+		end)
 		yCoord = yCoord - 40
 
 		controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
@@ -3822,7 +3822,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
 	end
-    
+	
 	local function SurvivalConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
@@ -3924,7 +3924,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
-		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 

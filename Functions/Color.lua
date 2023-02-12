@@ -4,17 +4,17 @@ TRB.Functions.Color = {}
 
 
 function TRB.Functions.Color:GetRGBAFromString(s, normalize)
-    local _a = 1
-    local _r = 0
-    local _g = 1
-    local _b = 0
+	local _a = 1
+	local _r = 0
+	local _g = 1
+	local _b = 0
 
-    if not (s == nil) then
-        _a = min(255, tonumber(string.sub(s, 1, 2), 16))
-        _r = min(255, tonumber(string.sub(s, 3, 4), 16))
-        _g = min(255, tonumber(string.sub(s, 5, 6), 16))
-        _b = min(255, tonumber(string.sub(s, 7, 8), 16))
-    end
+	if not (s == nil) then
+		_a = min(255, tonumber(string.sub(s, 1, 2), 16))
+		_r = min(255, tonumber(string.sub(s, 3, 4), 16))
+		_g = min(255, tonumber(string.sub(s, 5, 6), 16))
+		_b = min(255, tonumber(string.sub(s, 7, 8), 16))
+	end
 	if normalize then
 		return _r/255, _g/255, _b/255, _a/255
 	else

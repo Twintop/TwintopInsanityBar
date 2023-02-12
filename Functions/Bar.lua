@@ -6,19 +6,19 @@ TRB.Functions.Bar = {}
 
 function TRB.Functions.Bar:GetSanityCheckValues(settings)
 	local sc = {}
-    if settings ~= nil then
+	if settings ~= nil then
 		if settings.bar ~= nil then
-        	sc.barMaxWidth = math.floor(GetScreenWidth())
-        	sc.barMinWidth = math.max(math.ceil(settings.bar.border * 2), 120)
-    	    sc.barMaxHeight = math.floor(GetScreenHeight())
-	        sc.barMinHeight = math.max(math.ceil(settings.bar.border * 2), 1)
+			sc.barMaxWidth = math.floor(GetScreenWidth())
+			sc.barMinWidth = math.max(math.ceil(settings.bar.border * 2), 120)
+			sc.barMaxHeight = math.floor(GetScreenHeight())
+			sc.barMinHeight = math.max(math.ceil(settings.bar.border * 2), 1)
 		end
 
 		if settings.comboPoints ~= nil then
-        	sc.comboPointsMaxWidth = math.floor(GetScreenWidth() / 6)
-        	sc.comboPointsMinWidth = math.max(math.ceil(settings.comboPoints.border * 2), 1)
-    	    sc.comboPointsMaxHeight = math.floor(GetScreenHeight())
-	        sc.comboPointsMinHeight = math.max(math.ceil(settings.comboPoints.border * 2), 1)
+			sc.comboPointsMaxWidth = math.floor(GetScreenWidth() / 6)
+			sc.comboPointsMinWidth = math.max(math.ceil(settings.comboPoints.border * 2), 1)
+			sc.comboPointsMaxHeight = math.floor(GetScreenHeight())
+			sc.comboPointsMinHeight = math.max(math.ceil(settings.comboPoints.border * 2), 1)
 		end
 	end
 	return sc
@@ -26,12 +26,12 @@ end
 
 function TRB.Functions.Bar:UpdateSanityCheckValues(settings)
 	local sc = TRB.Functions.Bar:GetSanityCheckValues(settings)
-    if settings ~= nil and settings.bar ~= nil then
-        TRB.Data.sanityCheckValues.barMaxWidth = sc.barMaxWidth
-        TRB.Data.sanityCheckValues.barMinWidth = sc.barMinWidth
-        TRB.Data.sanityCheckValues.barMaxHeight = sc.barMaxHeight
-        TRB.Data.sanityCheckValues.barMinHeight = sc.barMinHeight
-    end
+	if settings ~= nil and settings.bar ~= nil then
+		TRB.Data.sanityCheckValues.barMaxWidth = sc.barMaxWidth
+		TRB.Data.sanityCheckValues.barMinWidth = sc.barMinWidth
+		TRB.Data.sanityCheckValues.barMaxHeight = sc.barMaxHeight
+		TRB.Data.sanityCheckValues.barMinHeight = sc.barMinHeight
+	end
 end
 
 function TRB.Functions.Bar:ShowResourceBar()
@@ -44,8 +44,8 @@ function TRB.Functions.Bar:ShowResourceBar()
 end
 
 function TRB.Functions.Bar:HideResourceBar(force)
-    force = force or false
-    TRB.Functions.Class:HideResourceBar(force)
+	force = force or false
+	TRB.Functions.Class:HideResourceBar(force)
 end
 
 function TRB.Functions.Bar:PulseFrame(frame, alphaOffset, flashPeriod)
@@ -244,10 +244,10 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 		end
 
 		containerFrame2:Show()
-        containerFrame2:SetWidth(totalWidth)
-        containerFrame2:SetHeight(settings.comboPoints.height)
-        containerFrame2:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        containerFrame2:SetFrameLevel(TRB.Data.constants.frameLevels.cpContainer)
+		containerFrame2:SetWidth(totalWidth)
+		containerFrame2:SetHeight(settings.comboPoints.height)
+		containerFrame2:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		containerFrame2:SetFrameLevel(TRB.Data.constants.frameLevels.cpContainer)
 		containerFrame2:ClearAllPoints()
 		containerFrame2:SetPoint(setPoint, containerFrame, setPointRelativeTo, xPos, yPos)
 
@@ -307,117 +307,117 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 end
 
 function TRB.Functions.Bar:Construct(settings)
-    if settings ~= nil and settings.bar ~= nil then
-        local barContainerFrame = TRB.Frames.barContainerFrame
-        local resourceFrame = TRB.Frames.resourceFrame
-        local castingFrame = TRB.Frames.castingFrame
-        local passiveFrame = TRB.Frames.passiveFrame
-        local barBorderFrame = TRB.Frames.barBorderFrame
-        local leftTextFrame = TRB.Frames.leftTextFrame
-        local middleTextFrame = TRB.Frames.middleTextFrame
-        local rightTextFrame = TRB.Frames.rightTextFrame
+	if settings ~= nil and settings.bar ~= nil then
+		local barContainerFrame = TRB.Frames.barContainerFrame
+		local resourceFrame = TRB.Frames.resourceFrame
+		local castingFrame = TRB.Frames.castingFrame
+		local passiveFrame = TRB.Frames.passiveFrame
+		local barBorderFrame = TRB.Frames.barBorderFrame
+		local leftTextFrame = TRB.Frames.leftTextFrame
+		local middleTextFrame = TRB.Frames.middleTextFrame
+		local rightTextFrame = TRB.Frames.rightTextFrame
 
-        barContainerFrame:Show()
-        barContainerFrame:SetBackdrop({
-            bgFile = settings.textures.background,
-            tile = true,
-            tileSize = settings.bar.width,
-            edgeSize = 1,
-            insets = {0, 0, 0, 0}
-        })
-        barContainerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.background, true))
-        barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
-        barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-        barContainerFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        barContainerFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barContainer)
+		barContainerFrame:Show()
+		barContainerFrame:SetBackdrop({
+			bgFile = settings.textures.background,
+			tile = true,
+			tileSize = settings.bar.width,
+			edgeSize = 1,
+			insets = {0, 0, 0, 0}
+		})
+		barContainerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.background, true))
+		barContainerFrame:SetWidth(settings.bar.width-(settings.bar.border*2))
+		barContainerFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
+		barContainerFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		barContainerFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barContainer)
 
-        barContainerFrame:SetScript("OnMouseDown", function(self, button)
-            if button == "LeftButton" and not self.isMoving and settings.bar.dragAndDrop then
-                self:StartMoving()
-                self.isMoving = true
-            end
-        end)
+		barContainerFrame:SetScript("OnMouseDown", function(self, button)
+			if button == "LeftButton" and not self.isMoving and settings.bar.dragAndDrop then
+				self:StartMoving()
+				self.isMoving = true
+			end
+		end)
 
-        barContainerFrame:SetScript("OnMouseUp", function(self, button)
-            if button == "LeftButton" and self.isMoving and settings.bar.dragAndDrop then
-                self:StopMovingOrSizing()
-                TRB.Functions.Bar:GetPosition(settings)
-                self.isMoving = false
-            end
-        end)
+		barContainerFrame:SetScript("OnMouseUp", function(self, button)
+			if button == "LeftButton" and self.isMoving and settings.bar.dragAndDrop then
+				self:StopMovingOrSizing()
+				TRB.Functions.Bar:GetPosition(settings)
+				self.isMoving = false
+			end
+		end)
 
-        barContainerFrame:SetMovable(settings.bar.dragAndDrop)
-        barContainerFrame:EnableMouse(settings.bar.dragAndDrop)
+		barContainerFrame:SetMovable(settings.bar.dragAndDrop)
+		barContainerFrame:EnableMouse(settings.bar.dragAndDrop)
 
-        barContainerFrame:SetScript("OnHide", function(self)
-            if self.isMoving then
-                self:StopMovingOrSizing()
-                TRB.Functions.Bar:GetPosition(settings)
-                self.isMoving = false
-            end
-        end)
+		barContainerFrame:SetScript("OnHide", function(self)
+			if self.isMoving then
+				self:StopMovingOrSizing()
+				TRB.Functions.Bar:GetPosition(settings)
+				self.isMoving = false
+			end
+		end)
 
-        if settings.bar.border < 1 then
-            barBorderFrame:Show()
-            barBorderFrame.backdropInfo = {
-                edgeFile = settings.textures.border,
-                tile = true,
-                tileSize=4,
-                edgeSize = 1,
-                insets = {0, 0, 0, 0}
-            }
-            barBorderFrame:ApplyBackdrop()
-            barBorderFrame:Hide()
-        else
-            barBorderFrame:Show()
-            barBorderFrame.backdropInfo = {
-                edgeFile = settings.textures.border,
-                tile = true,
-                tileSize = 4,
-                edgeSize = settings.bar.border,
-                insets = {0, 0, 0, 0}
-            }
-            barBorderFrame:ApplyBackdrop()
-        end
+		if settings.bar.border < 1 then
+			barBorderFrame:Show()
+			barBorderFrame.backdropInfo = {
+				edgeFile = settings.textures.border,
+				tile = true,
+				tileSize=4,
+				edgeSize = 1,
+				insets = {0, 0, 0, 0}
+			}
+			barBorderFrame:ApplyBackdrop()
+			barBorderFrame:Hide()
+		else
+			barBorderFrame:Show()
+			barBorderFrame.backdropInfo = {
+				edgeFile = settings.textures.border,
+				tile = true,
+				tileSize = 4,
+				edgeSize = settings.bar.border,
+				insets = {0, 0, 0, 0}
+			}
+			barBorderFrame:ApplyBackdrop()
+		end
 
-        barBorderFrame:ClearAllPoints()
-        barBorderFrame:SetPoint("CENTER", barContainerFrame)
-        barBorderFrame:SetPoint("CENTER", 0, 0)
-        barBorderFrame:SetBackdropColor(0, 0, 0, 0)
-        barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.border, true))
-        barBorderFrame:SetWidth(settings.bar.width)
-        barBorderFrame:SetHeight(settings.bar.height)
-        barBorderFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        barBorderFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barBorder)
+		barBorderFrame:ClearAllPoints()
+		barBorderFrame:SetPoint("CENTER", barContainerFrame)
+		barBorderFrame:SetPoint("CENTER", 0, 0)
+		barBorderFrame:SetBackdropColor(0, 0, 0, 0)
+		barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.border, true))
+		barBorderFrame:SetWidth(settings.bar.width)
+		barBorderFrame:SetHeight(settings.bar.height)
+		barBorderFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		barBorderFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barBorder)
 
-        resourceFrame:Show()
-        resourceFrame:SetMinMaxValues(0, settings.bar.width)
-        resourceFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-        resourceFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
-        resourceFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
-        resourceFrame:SetStatusBarTexture(settings.textures.resourceBar)
-        resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.base, true))
-        resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		resourceFrame:Show()
+		resourceFrame:SetMinMaxValues(0, settings.bar.width)
+		resourceFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
+		resourceFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
+		resourceFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
+		resourceFrame:SetStatusBarTexture(settings.textures.resourceBar)
+		resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.base, true))
+		resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		resourceFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barResource)
 
-        castingFrame:Show()
-        castingFrame:SetMinMaxValues(0, settings.bar.width)
-        castingFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-        castingFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
-        castingFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
-        castingFrame:SetStatusBarTexture(settings.textures.castingBar)
-        castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.casting, true))
-        castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        castingFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barCasting)
+		castingFrame:Show()
+		castingFrame:SetMinMaxValues(0, settings.bar.width)
+		castingFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
+		castingFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
+		castingFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
+		castingFrame:SetStatusBarTexture(settings.textures.castingBar)
+		castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.casting, true))
+		castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		castingFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barCasting)
 
-        passiveFrame:Show()
-        passiveFrame:SetMinMaxValues(0, settings.bar.width)
-        passiveFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
-        passiveFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
-        passiveFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
-        passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
-        passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.passive, true))
-        passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		passiveFrame:Show()
+		passiveFrame:SetMinMaxValues(0, settings.bar.width)
+		passiveFrame:SetHeight(settings.bar.height-(settings.bar.border*2))
+		passiveFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 0, 0)
+		passiveFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
+		passiveFrame:SetStatusBarTexture(settings.textures.passiveBar)
+		passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.bar.passive, true))
+		passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		passiveFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barPassive)
 
 		if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil and TRB.Functions.Character:IsComboPointUser() then
@@ -468,45 +468,45 @@ function TRB.Functions.Bar:Construct(settings)
 			end
 		end
 
-        TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
+		TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 		TRB.Functions.Threshold:RedrawThresholdLines(settings)
 
 		TRB.Functions.Bar:SetMinMax(settings)
 
-        leftTextFrame:Show()
-        leftTextFrame:SetWidth(settings.bar.width)
-        leftTextFrame:SetHeight(settings.bar.height * 3.5)
-        leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 2, 0)
-        leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        leftTextFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
-        leftTextFrame.font:SetPoint("LEFT", 0, 0)
-        leftTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
-        leftTextFrame.font:SetJustifyH("LEFT")
-        leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
-        leftTextFrame.font:Show()
+		leftTextFrame:Show()
+		leftTextFrame:SetWidth(settings.bar.width)
+		leftTextFrame:SetHeight(settings.bar.height * 3.5)
+		leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 2, 0)
+		leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		leftTextFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+		leftTextFrame.font:SetPoint("LEFT", 0, 0)
+		leftTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
+		leftTextFrame.font:SetJustifyH("LEFT")
+		leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
+		leftTextFrame.font:Show()
 
-        middleTextFrame:Show()
-        middleTextFrame:SetWidth(settings.bar.width)
-        middleTextFrame:SetHeight(settings.bar.height * 3.5)
-        middleTextFrame:SetPoint("CENTER", barContainerFrame, "CENTER", 0, 0)
-        middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        middleTextFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
-        middleTextFrame.font:SetPoint("CENTER", 0, 0)
-        middleTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
-        middleTextFrame.font:SetJustifyH("CENTER")
-        middleTextFrame.font:SetFont(settings.displayText.middle.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
-        middleTextFrame.font:Show()
+		middleTextFrame:Show()
+		middleTextFrame:SetWidth(settings.bar.width)
+		middleTextFrame:SetHeight(settings.bar.height * 3.5)
+		middleTextFrame:SetPoint("CENTER", barContainerFrame, "CENTER", 0, 0)
+		middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		middleTextFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+		middleTextFrame.font:SetPoint("CENTER", 0, 0)
+		middleTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
+		middleTextFrame.font:SetJustifyH("CENTER")
+		middleTextFrame.font:SetFont(settings.displayText.middle.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
+		middleTextFrame.font:Show()
 
-        rightTextFrame:Show()
-        rightTextFrame:SetWidth(settings.bar.width)
-        rightTextFrame:SetHeight(settings.bar.height * 3.5)
-        rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
-        rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-        rightTextFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
-        rightTextFrame.font:SetPoint("RIGHT", 0, 0)
-        rightTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
-        rightTextFrame.font:SetJustifyH("RIGHT")
-        rightTextFrame.font:SetFont(settings.displayText.right.fontFace, settings.displayText.right.fontSize, "OUTLINE")
-        rightTextFrame.font:Show()
-    end
+		rightTextFrame:Show()
+		rightTextFrame:SetWidth(settings.bar.width)
+		rightTextFrame:SetHeight(settings.bar.height * 3.5)
+		rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
+		rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		rightTextFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+		rightTextFrame.font:SetPoint("RIGHT", 0, 0)
+		rightTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
+		rightTextFrame.font:SetJustifyH("RIGHT")
+		rightTextFrame.font:SetFont(settings.displayText.right.fontFace, settings.displayText.right.fontSize, "OUTLINE")
+		rightTextFrame.font:Show()
+	end
 end

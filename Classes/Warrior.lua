@@ -12,8 +12,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
-    local combatFrame = TRB.Frames.combatFrame
-    
+	local combatFrame = TRB.Frames.combatFrame
+	
 	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
@@ -743,10 +743,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "#rend", icon = spells.rend.icon, description = "Rend", printInSettings = true },
 			{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = "Shield Block", printInSettings = true },
 			{ variable = "#slam", icon = spells.slam.icon, description = "Slam", printInSettings = true },
-            { variable = "#spearOfBastion", icon = spells.spearOfBastion.icon, description = "Spear of Bastion", printInSettings = true },
+			{ variable = "#spearOfBastion", icon = spells.spearOfBastion.icon, description = "Spear of Bastion", printInSettings = true },
 			{ variable = "#victoryRush", icon = spells.victoryRush.icon, description = "Victory Rush", printInSettings = true },
 			{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = "Whirlwind", printInSettings = true },			
-        }
+		}
 		specCache.arms.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
 			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
@@ -780,7 +780,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 
 			{ variable = "$rage", description = "Current Rage", printInSettings = true, color = false },
-            { variable = "$resource", description = "Current Rage", printInSettings = false, color = false },
+			{ variable = "$resource", description = "Current Rage", printInSettings = false, color = false },
 			{ variable = "$rageMax", description = "Maximum Rage", printInSettings = true, color = false },
 			{ variable = "$resourceMax", description = "Maximum Rage", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Builder Rage from Hardcasting Spells", printInSettings = false, color = false },
@@ -803,7 +803,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$suddenDeathTime", description = "Time remaining on Sudden Death proc", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-            { variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
 
 		specCache.arms.spells = spells
@@ -826,11 +826,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = "Impending Victory", printInSettings = true },
 			{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = "Shield Block", printInSettings = true },
 			{ variable = "#slam", icon = spells.slam.icon, description = "Slam", printInSettings = true },
-            { variable = "#spearOfBastion", icon = spells.spearOfBastion.icon, description = "Spear of Bastion", printInSettings = true },
+			{ variable = "#spearOfBastion", icon = spells.spearOfBastion.icon, description = "Spear of Bastion", printInSettings = true },
 			{ variable = "#ravager", icon = spells.ravager.icon, description = "Ravager", printInSettings = true },
 			{ variable = "#victoryRush", icon = spells.victoryRush.icon, description = "Victory Rush", printInSettings = true },
 			{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = "Whirlwind", printInSettings = true }
-        }
+		}
 
 		specCache.fury.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -865,7 +865,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 
 			{ variable = "$rage", description = "Current Rage", printInSettings = true, color = false },
-            { variable = "$resource", description = "Current Rage", printInSettings = false, color = false },
+			{ variable = "$resource", description = "Current Rage", printInSettings = false, color = false },
 			{ variable = "$rageMax", description = "Maximum Rage", printInSettings = true, color = false },
 			{ variable = "$resourceMax", description = "Maximum Rage", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Builder Rage from Hardcasting Spells", printInSettings = false, color = false },
@@ -889,7 +889,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$whirlwindStacks", description = "Number of stacks remaining on Whirlwind buff", printInSettings = true, color = false },
 			
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-            { variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
 
 		specCache.fury.spells = spells
@@ -907,10 +907,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.whirlwind)
 	end
 
-    local function CalculateAbilityResourceValue(resource)
+	local function CalculateAbilityResourceValue(resource)
 		local modifier = 1.0
-        return resource * modifier
-    end
+		return resource * modifier
+	end
 
 	local function UpdateCastingResourceFinal()
 		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
@@ -990,9 +990,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		end
 
-        for k, v in pairs(TRB.Data.spells) do
-            local spell = TRB.Data.spells[k]
-            if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+		for k, v in pairs(TRB.Data.spells) do
+			local spell = TRB.Data.spells[k]
+			if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
@@ -1002,8 +1002,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
-            end
-        end
+			end
+		end
 
 		TRB.Functions.Bar:Construct(settings)
 
@@ -1012,7 +1012,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 	end
 
-    local function IsValidVariableForSpec(var)
+	local function IsValidVariableForSpec(var)
 		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 		local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 		if valid then
@@ -1026,7 +1026,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			settings = TRB.Data.settings.warrior.fury
 		end
 
-        if specId == 1 then --Arms
+		if specId == 1 then --Arms
 			if var == "$suddenDeathTime" then
 				if TRB.Data.snapshotData.suddenDeath.isActive then
 					valid = true
@@ -1073,7 +1073,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				if normalizedRage > 0 then
 					valid = true
 				end
-            end
+			end
 		elseif specId == 2 then --Fury
 			if var == "$suddenDeathTime" then
 				if TRB.Data.snapshotData.suddenDeath.isActive then
@@ -1159,7 +1159,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		if TRB.Data.settings.warrior.arms.colors.text.overcapEnabled and overcap then
 			currentRageColor = TRB.Data.settings.warrior.arms.colors.text.overcap
-            castingRageColor = TRB.Data.settings.warrior.arms.colors.text.overcap
+			castingRageColor = TRB.Data.settings.warrior.arms.colors.text.overcap
 		elseif TRB.Data.settings.warrior.arms.colors.text.overThresholdEnabled then
 			local _overThreshold = false
 			for k, v in pairs(TRB.Data.spells) do
@@ -1343,7 +1343,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		if TRB.Data.settings.warrior.fury.colors.text.overcapEnabled and overcap then
 			currentRageColor = TRB.Data.settings.warrior.fury.colors.text.overcap
-            castingRageColor = TRB.Data.settings.warrior.fury.colors.text.overcap
+			castingRageColor = TRB.Data.settings.warrior.fury.colors.text.overcap
 		elseif TRB.Data.settings.warrior.fury.colors.text.overThresholdEnabled then
 			local _overThreshold = false
 			for k, v in pairs(TRB.Data.spells) do
@@ -1478,14 +1478,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
-    local function FillSnapshotDataCasting(spell)
+	local function FillSnapshotDataCasting(spell)
 		local currentTime = GetTime()
-        TRB.Data.snapshotData.casting.startTime = currentTime
-        TRB.Data.snapshotData.casting.resourceRaw = spell.rage
-        TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.rage)
-        TRB.Data.snapshotData.casting.spellId = spell.id
-        TRB.Data.snapshotData.casting.icon = spell.icon
-    end
+		TRB.Data.snapshotData.casting.startTime = currentTime
+		TRB.Data.snapshotData.casting.resourceRaw = spell.rage
+		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.rage)
+		TRB.Data.snapshotData.casting.spellId = spell.id
+		TRB.Data.snapshotData.casting.icon = spell.icon
+	end
 
 	local function CastingSpell()
 		local currentTime = GetTime()
@@ -1573,20 +1573,20 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		if TRB.Data.snapshotData.impendingVictory.startTime ~= nil and currentTime > (TRB.Data.snapshotData.impendingVictory.startTime + TRB.Data.snapshotData.impendingVictory.duration) then
 			TRB.Data.snapshotData.impendingVictory.startTime = nil
-            TRB.Data.snapshotData.impendingVictory.duration = 0
+			TRB.Data.snapshotData.impendingVictory.duration = 0
 		elseif TRB.Data.snapshotData.impendingVictory.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 			TRB.Data.snapshotData.impendingVictory.startTime, TRB.Data.snapshotData.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
-        end
+		end
 
 
 		if TRB.Data.snapshotData.thunderClap.startTime ~= nil and currentTime > (TRB.Data.snapshotData.thunderClap.startTime + TRB.Data.snapshotData.thunderClap.duration) then
-            TRB.Data.snapshotData.thunderClap.startTime = nil
-            TRB.Data.snapshotData.thunderClap.duration = 0
+			TRB.Data.snapshotData.thunderClap.startTime = nil
+			TRB.Data.snapshotData.thunderClap.duration = 0
 		elseif TRB.Data.snapshotData.thunderClap.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 			TRB.Data.snapshotData.thunderClap.startTime, TRB.Data.snapshotData.thunderClap.duration, _, _ = GetSpellCooldown(TRB.Data.spells.thunderClap.id)
-        end
+		end
 
 ---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 		TRB.Data.snapshotData.shieldBlock.charges, TRB.Data.snapshotData.shieldBlock.maxCharges, TRB.Data.snapshotData.shieldBlock.startTime, TRB.Data.snapshotData.shieldBlock.duration, _ = GetSpellCharges(TRB.Data.spells.shieldBlock.id)
@@ -1598,37 +1598,37 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local currentTime = GetTime()
 		local _
 
-        if TRB.Data.snapshotData.mortalStrike.startTime ~= nil and currentTime > (TRB.Data.snapshotData.mortalStrike.startTime + TRB.Data.snapshotData.mortalStrike.duration) then
+		if TRB.Data.snapshotData.mortalStrike.startTime ~= nil and currentTime > (TRB.Data.snapshotData.mortalStrike.startTime + TRB.Data.snapshotData.mortalStrike.duration) then
 			TRB.Data.snapshotData.mortalStrike.startTime = nil
-            TRB.Data.snapshotData.mortalStrike.duration = 0
+			TRB.Data.snapshotData.mortalStrike.duration = 0
 		elseif TRB.Data.snapshotData.mortalStrike.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.mortalStrike.startTime, TRB.Data.snapshotData.mortalStrike.duration, _, _ = GetSpellCooldown(TRB.Data.spells.mortalStrike.id)
-        end
+		end
 
 		if TRB.Data.snapshotData.cleave.startTime ~= nil and currentTime > (TRB.Data.snapshotData.cleave.startTime + TRB.Data.snapshotData.cleave.duration) then
-            TRB.Data.snapshotData.cleave.startTime = nil
-            TRB.Data.snapshotData.cleave.duration = 0
+			TRB.Data.snapshotData.cleave.startTime = nil
+			TRB.Data.snapshotData.cleave.duration = 0
 		elseif TRB.Data.snapshotData.cleave.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.cleave.startTime, TRB.Data.snapshotData.cleave.duration, _, _ = GetSpellCooldown(TRB.Data.spells.cleave.id)
-        end
+		end
 
 		if TRB.Data.snapshotData.ignorePain.startTime ~= nil and currentTime > (TRB.Data.snapshotData.ignorePain.startTime + TRB.Data.snapshotData.ignorePain.duration) then
-            TRB.Data.snapshotData.ignorePain.startTime = nil
-            TRB.Data.snapshotData.ignorePain.duration = 0
+			TRB.Data.snapshotData.ignorePain.startTime = nil
+			TRB.Data.snapshotData.ignorePain.duration = 0
 		elseif TRB.Data.snapshotData.ignorePain.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.ignorePain.startTime, TRB.Data.snapshotData.ignorePain.duration, _, _ = GetSpellCooldown(TRB.Data.spells.ignorePain.id)
-        end
+		end
 
 		if TRB.Data.snapshotData.whirlwind.startTime ~= nil and currentTime > (TRB.Data.snapshotData.whirlwind.startTime + TRB.Data.snapshotData.whirlwind.duration) then
-            TRB.Data.snapshotData.whirlwind.startTime = nil
-            TRB.Data.snapshotData.whirlwind.duration = 0
+			TRB.Data.snapshotData.whirlwind.startTime = nil
+			TRB.Data.snapshotData.whirlwind.duration = 0
 		elseif TRB.Data.snapshotData.whirlwind.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.whirlwind.startTime, TRB.Data.snapshotData.whirlwind.duration, _, _ = GetSpellCooldown(TRB.Data.spells.whirlwind.id)
-        end
+		end
 
 		_, _, _, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.suddenDeath.id, "player")
 		
@@ -1663,13 +1663,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		
 		_, _, TRB.Data.snapshotData.whirlwind.stacks, _, TRB.Data.snapshotData.whirlwind.duration, TRB.Data.snapshotData.whirlwind.endTime, _, _, _, TRB.Data.snapshotData.whirlwind.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.whirlwind.id, "player")
 		
-        if TRB.Data.snapshotData.execute.startTime ~= nil and currentTime > (TRB.Data.snapshotData.execute.startTime + TRB.Data.snapshotData.execute.duration) then
+		if TRB.Data.snapshotData.execute.startTime ~= nil and currentTime > (TRB.Data.snapshotData.execute.startTime + TRB.Data.snapshotData.execute.duration) then
 			TRB.Data.snapshotData.execute.startTime = nil
-            TRB.Data.snapshotData.execute.duration = 0
+			TRB.Data.snapshotData.execute.duration = 0
 		elseif TRB.Data.snapshotData.execute.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter
 			TRB.Data.snapshotData.execute.startTime, TRB.Data.snapshotData.execute.duration, _, _ = GetSpellCooldown(TRB.Data.spells.execute.id)
-        end
+		end
 	end
 
 	local function UpdateResourceBar()
@@ -2056,7 +2056,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 		end
 	end
-    
+	
 	barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		local currentTime = GetTime()
 		local triggerUpdate = false
@@ -2413,13 +2413,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Rage)
 
-        if specId == 1 then		
+		if specId == 1 then		
 			TRB.Data.character.specName = "arms"
 
 			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.bloodletting) then
 				TRB.Data.character.pandemicModifier = TRB.Data.spells.bloodletting.modifier
 			end
-        elseif specId == 2 then
+		elseif specId == 2 then
 			TRB.Data.character.specName = "fury"
 		elseif specId == 3 then
 		end
@@ -2451,8 +2451,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 
 		if TRB.Data.specSupported then
-            TRB.Functions.Class:CheckCharacter()
-            
+			TRB.Functions.Class:CheckCharacter()
+			
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 			barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")

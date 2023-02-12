@@ -23,8 +23,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	TRB.Options.Evoker = {}
 	TRB.Options.Evoker.Devastation = {}
 	TRB.Options.Evoker.Preservation = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.devastation = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.preservation = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.devastation = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.preservation = {}
 
 	-- Devastation
 	local function DevastationLoadDefaultBarTextSimpleSettings()
@@ -53,8 +53,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		return textSettings
 	end
-    
-    local function DevastationLoadDefaultBarTextAdvancedSettings()
+	
+	local function DevastationLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
 			fontFaceLock = true,
@@ -106,17 +106,17 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				showPassive=false,
 				showCasting=true
 			},
-            comboPoints = {
-                width=25,
-                height=21,
+			comboPoints = {
+				width=25,
+				height=21,
 				xPos=0,
 				yPos=4,
 				border=2,
-                spacing=14,
-                relativeTo="TOP",
-                relativeToName="Above - Middle",
-                fullWidth=true,
-            },
+				spacing=14,
+				relativeTo="TOP",
+				relativeToName="Above - Middle",
+				fullWidth=true,
+			},
 			--[[endOfSerenity = {
 				enabled=true,
 				mode="gcd",
@@ -162,7 +162,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-            },
+			},
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
 				backgroundName="Blizzard Tooltip",
@@ -186,7 +186,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		settings.displayText = DevastationLoadDefaultBarTextSimpleSettings()
 		return settings
-    end
+	end
 
 	-- Preservation
 	local function PreservationLoadDefaultBarTextSimpleSettings()
@@ -306,17 +306,17 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				showPassive=true,
 				showCasting=true
 			},
-            comboPoints = {
-                width=25,
-                height=13,
+			comboPoints = {
+				width=25,
+				height=13,
 				xPos=0,
 				yPos=4,
 				border=1,
-                spacing=14,
-                relativeTo="TOP",
-                relativeToName="Above - Middle",
-                fullWidth=false,
-            },
+				spacing=14,
+				relativeTo="TOP",
+				relativeToName="Above - Middle",
+				fullWidth=false,
+			},
 			passiveGeneration = {
 				innervate = true,
 				manaTideTotem = true,
@@ -397,7 +397,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		return settings
 	end
 
-    local function LoadDefaultSettings()
+	local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 
 		settings.evoker.devastation = DevastationLoadDefaultSettings()
@@ -405,7 +405,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		return settings
 	end
-    TRB.Options.Evoker.LoadDefaultSettings = LoadDefaultSettings
+	TRB.Options.Evoker.LoadDefaultSettings = LoadDefaultSettings
 
 	--[[
 
@@ -482,7 +482,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Evoker_Devastation_ResetBarTextSimple")
-        end)
+		end)
 		yCoord = yCoord - 40
 
 		controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
@@ -669,7 +669,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.devastation = controls
 	end
-    
+	
 	local function DevastationConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
@@ -774,7 +774,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
-		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
@@ -914,7 +914,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Evoker_Preservation_ResetBarTextSimple")
-        end)
+		end)
 		yCoord = yCoord - 40
 
 		--[[

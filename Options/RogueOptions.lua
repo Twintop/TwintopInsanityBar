@@ -24,9 +24,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	TRB.Options.Rogue.Assassination = {}
 	TRB.Options.Rogue.Outlaw = {}
 	TRB.Options.Rogue.Subtlety = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.subtlety = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.subtlety = {}
 
 	local function AssassinationLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
@@ -54,13 +54,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		return textSettings
 	end
-    
-    local function AssassinationLoadDefaultBarTextAdvancedSettings()
+	
+	local function AssassinationLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "#garrote $garroteCount {$garroteTime}[ $garroteTime]{$isNecrolord}[{!$garroteTime}[       ]  #serratedBoneSpike $sbsCount]||n#rupture $ruptureCount {$ruptureTime}[ $ruptureTime] {$ttd}[{!$ruptureTime}[      ]  TTD: $ttd]",
+				text = "#garrote $garroteCount {$garroteTime}[ $garroteTime]{$isNecrolord}[{!$garroteTime}[	   ]  #serratedBoneSpike $sbsCount]||n#rupture $ruptureCount {$ruptureTime}[ $ruptureTime] {$ttd}[{!$ruptureTime}[	  ]  TTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -202,21 +202,21 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				showPassive=true,
 				showCasting=true
 			},
-            comboPoints = {
-                width=25,
-                height=13,
+			comboPoints = {
+				width=25,
+				height=13,
 				xPos=0,
 				yPos=4,
 				border=1,
-                spacing=14,
-                relativeTo="TOP",
-                relativeToName="Above - Middle",
-                fullWidth=false,
+				spacing=14,
+				relativeTo="TOP",
+				relativeToName="Above - Middle",
+				fullWidth=false,
 				consistentUnfilledColor = false,
 				spec={
 					serratedBoneSpikeColor = true
 				}
-            },
+			},
 			colors = {
 				text = {
 					current="FFFFFF00",
@@ -287,7 +287,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-            },
+			},
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
 				backgroundName="Blizzard Tooltip",
@@ -311,7 +311,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		settings.displayText = AssassinationLoadDefaultBarTextSimpleSettings()
 		return settings
-    end
+	end
 
 	local function OutlawLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
@@ -339,8 +339,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		return textSettings
 	end
-    
-    local function OutlawLoadDefaultBarTextAdvancedSettings()
+	
+	local function OutlawLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
 			fontFaceLock = true,
@@ -480,18 +480,18 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				showPassive=true,
 				showCasting=true
 			},
-            comboPoints = {
-                width=25,
-                height=13,
+			comboPoints = {
+				width=25,
+				height=13,
 				xPos=0,
 				yPos=4,
 				border=1,
-                spacing=14,
-                relativeTo="TOP",
-                relativeToName="Above - Middle",
-                fullWidth=false,
+				spacing=14,
+				relativeTo="TOP",
+				relativeToName="Above - Middle",
+				fullWidth=false,
 				consistentUnfilledColor = false
-            },
+			},
 			colors = {
 				text = {
 					current="FFFFFF00",
@@ -564,7 +564,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-            },
+			},
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
 				backgroundName="Blizzard Tooltip",
@@ -588,16 +588,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		settings.displayText = OutlawLoadDefaultBarTextSimpleSettings()
 		return settings
-    end
+	end
 
-    local function LoadDefaultSettings()
+	local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 
 		settings.rogue.assassination = AssassinationLoadDefaultSettings()
 		settings.rogue.outlaw = OutlawLoadDefaultSettings()
 		return settings
 	end
-    TRB.Options.Rogue.LoadDefaultSettings = LoadDefaultSettings
+	TRB.Options.Rogue.LoadDefaultSettings = LoadDefaultSettings
 
 	--[[
 
@@ -673,7 +673,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Rogue_Assassination_ResetBarTextSimple")
-        end)
+		end)
 		yCoord = yCoord - 40
 
 		controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
@@ -1625,7 +1625,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = controls
 	end
-    
+	
 	local function AssassinationConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
@@ -1729,7 +1729,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
-		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
@@ -1854,7 +1854,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Rogue_Outlaw_ResetBarTextSimple")
-        end)
+		end)
 
 		yCoord = yCoord - 40
 		controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
@@ -2785,7 +2785,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = controls
 	end
-    
+	
 	local function OutlawConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
@@ -2889,7 +2889,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
-		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 

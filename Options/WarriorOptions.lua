@@ -24,9 +24,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	TRB.Options.Warrior.Arms = {}
 	TRB.Options.Warrior.Fury = {}
 	TRB.Options.Warrior.Protection = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.arms = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.fury = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.protection = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.arms = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.fury = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.protection = {}
 
 	--[[
 		Arms Defaults
@@ -59,12 +59,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		return textSettings
 	end
 
-    local function ArmsLoadDefaultBarTextAdvancedSettings()
+	local function ArmsLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "#deepWounds $deepWoundsCount   $haste% ($gcd)||n{$rend}[#rend $rendCount   ][          ]{$ttd}[TTD: $ttd][ ]",
+				text = "#deepWounds $deepWoundsCount   $haste% ($gcd)||n{$rend}[#rend $rendCount   ][		  ]{$ttd}[TTD: $ttd][ ]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -214,7 +214,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-            },
+			},
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
 				backgroundName="Blizzard Tooltip",
@@ -232,7 +232,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		settings.displayText = ArmsLoadDefaultBarTextSimpleSettings()
 		return settings
-    end
+	end
 
 	--[[
 		Fury Defaults
@@ -266,7 +266,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		return textSettings
 	end
 
-    local function FuryLoadDefaultBarTextAdvancedSettings()
+	local function FuryLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
 			fontFaceLock = true,
@@ -410,7 +410,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-            },
+			},
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
 				backgroundName="Blizzard Tooltip",
@@ -428,16 +428,16 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		settings.displayText = FuryLoadDefaultBarTextSimpleSettings()
 		return settings
-    end
+	end
 
-    local function LoadDefaultSettings()
+	local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 
 		settings.warrior.arms = ArmsLoadDefaultSettings()
 		settings.warrior.fury = FuryLoadDefaultSettings()
 		return settings
 	end
-    TRB.Options.Warrior.LoadDefaultSettings = LoadDefaultSettings
+	TRB.Options.Warrior.LoadDefaultSettings = LoadDefaultSettings
 
 
 	--[[
@@ -527,7 +527,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Arms_ResetBarTextSimple")
-        end)
+		end)
 		yCoord = yCoord - 40
 
 		--[[
@@ -1366,7 +1366,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Warrior_Fury_ResetBarTextSimple")
-        end)
+		end)
 		yCoord = yCoord - 40
 
 		--[[

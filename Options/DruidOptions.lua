@@ -25,10 +25,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	TRB.Options.Druid.Feral = {}
 	TRB.Options.Druid.Guardian = {}
 	TRB.Options.Druid.Restoration = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.balance = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.feral = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.guardian = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.balance = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.feral = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.guardian = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = {}
 
 	--[[ 
 		Balance Defaults
@@ -61,12 +61,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		return textSettings
 	end
 
-    local function BalanceLoadDefaultBarTextAdvancedSettings()
+	local function BalanceLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "#sunfire $sunfireCount    {$talentStellarFlare}[#stellarFlare $stellarFlareCount    ]$haste% ($gcd)||n#moonfire $moonfireCount     {$talentStellarFlare}[          ]{$ttd}[TTD: $ttd]",
+				text = "#sunfire $sunfireCount	{$talentStellarFlare}[#stellarFlare $stellarFlareCount	]$haste% ($gcd)||n#moonfire $moonfireCount	 {$talentStellarFlare}[		  ]{$ttd}[TTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -216,7 +216,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				}
-            },
+			},
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
 				backgroundName="Blizzard Tooltip",
@@ -234,7 +234,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		settings.displayText = BalanceLoadDefaultBarTextSimpleSettings()
 		return settings
-    end
+	end
 
 	--[[ 
 		Feral Defaults
@@ -267,12 +267,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		return textSettings
 	end
 
-    local function FeralLoadDefaultBarTextAdvancedSettings()
+	local function FeralLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "#rake $rakeCount    #thrash $thrashCount||n#rip $ripCount    {$lunarInspiration}[#moonfire $moonfireCount]",
+				text = "#rake $rakeCount	#thrash $thrashCount||n#rip $ripCount	{$lunarInspiration}[#moonfire $moonfireCount]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -380,17 +380,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				showPassive=true,
 				showCasting=true
 			},
-            comboPoints = {
-                width=25,
-                height=13,
+			comboPoints = {
+				width=25,
+				height=13,
 				xPos=0,
 				yPos=4,
 				border=1,
-                spacing=14,
-                relativeTo="TOP",
-                relativeToName="Above - Middle",
-                fullWidth=false
-            },
+				spacing=14,
+				relativeTo="TOP",
+				relativeToName="Above - Middle",
+				fullWidth=false
+			},
 			colors = {
 				text = {
 					current="FFFFFF00",
@@ -454,7 +454,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				}
-            },
+			},
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
 				backgroundName="Blizzard Tooltip",
@@ -477,7 +477,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		}
 		settings.displayText = FeralLoadDefaultBarTextSimpleSettings()
 		return settings
-    end
+	end
 	
 	-- Restoration
 	local function RestorationLoadDefaultBarTextSimpleSettings()
@@ -665,7 +665,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		return settings
 	end
 
-    local function LoadDefaultSettings()
+	local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 
 		settings.druid.balance = BalanceLoadDefaultSettings()
@@ -673,7 +673,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		settings.druid.restoration = RestorationLoadDefaultSettings()
 		return settings
 	end
-    TRB.Options.Druid.LoadDefaultSettings = LoadDefaultSettings
+	TRB.Options.Druid.LoadDefaultSettings = LoadDefaultSettings
 
 	--[[
 
@@ -762,7 +762,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Druid_Balance_ResetBarTextSimple")
-        end)
+		end)
 		yCoord = yCoord - 40
 
 		--[[
@@ -1664,7 +1664,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
-		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
@@ -1789,7 +1789,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Druid_Feral_ResetBarTextSimple")
-        end)
+		end)
 		yCoord = yCoord - 40
 
 		controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
@@ -2529,7 +2529,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.feral = controls
 	end
-    
+	
 	local function FeralConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
@@ -2634,7 +2634,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
-		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
@@ -2773,7 +2773,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Druid_Restoration_ResetBarTextSimple")
-        end)
+		end)
 		yCoord = yCoord - 40
 
 		--[[

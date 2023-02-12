@@ -4,7 +4,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	TRB.Functions.Class = TRB.Functions.Class or {}
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
-    local resource2Frame = TRB.Frames.resource2Frame
+	local resource2Frame = TRB.Frames.resource2Frame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
 	local passiveFrame = TRB.Frames.passiveFrame
@@ -12,7 +12,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
-    local combatFrame = TRB.Frames.combatFrame
+	local combatFrame = TRB.Frames.combatFrame
 
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
@@ -75,7 +75,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
-            maxResource2 = 5,
+			maxResource2 = 5,
 			effects = {
 			}
 		}
@@ -122,17 +122,17 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			},
 
 			-- Rogue Class Baseline Abilities
-            ambush = {
+			ambush = {
 				id = 8676,
 				name = "",
 				icon = "",
 				energy = -50,
-                comboPointsGenerated = 2,
-                stealth = true,
+				comboPointsGenerated = 2,
+				stealth = true,
 				texture = "",
 				thresholdId = 1,
 				settingKey = "ambush",
-                --isSnowflake = true,
+				--isSnowflake = true,
 				thresholdUsable = false,
 				baseline = true
 			},
@@ -141,8 +141,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -40,
-                comboPointsGenerated = 1,
-                stealth = true,
+				comboPointsGenerated = 1,
+				stealth = true,
 				texture = "",
 				thresholdId = 2,
 				settingKey = "cheapShot",
@@ -156,12 +156,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -20,
-                comboPointsGenerated = 0,
+				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 3,
 				settingKey = "crimsonVial",
 				hasCooldown = true,
-                cooldown = 30,
+				cooldown = 30,
 				nimbleFingers = true,
 				thresholdUsable = false,
 				baseline = true
@@ -171,12 +171,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -30,
-                comboPointsGenerated = 0,
+				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 4,
 				settingKey = "distract",
 				hasCooldown = true,
-                cooldown = 30,
+				cooldown = 30,
 				rushedSetup = true,
 				thresholdUsable = false,
 				baseline = true
@@ -186,12 +186,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -25,
-                comboPoints = true,
+				comboPoints = true,
 				texture = "",
 				thresholdId = 5,
 				settingKey = "kidneyShot",
-                hasCooldown = true,
-                cooldown = 20,
+				hasCooldown = true,
+				cooldown = 20,
 				rushedSetup = true,
 				thresholdUsable = false,
 				baseline = true
@@ -201,11 +201,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -25,
-                comboPoints = true,
+				comboPoints = true,
 				texture = "",
 				thresholdId = 6,
 				settingKey = "sliceAndDice",
-                hasCooldown = false,
+				hasCooldown = false,
 				thresholdUsable = false,
 				isSnowflake = true,
 				pandemicTimes = {
@@ -225,12 +225,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -35,
-                comboPointsGenerated = 0,
+				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 7,
 				settingKey = "feint",
-                hasCooldown = true,
-                cooldown = 15,
+				hasCooldown = true,
+				cooldown = 15,
 				nimbleFingers = true,
 				thresholdUsable = false,
 				isTalent = false,
@@ -243,13 +243,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -20,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 8,
 				settingKey = "shiv",
-                hasCooldown = true,
+				hasCooldown = true,
 				isSnowflake = true,
-                cooldown = 25,
+				cooldown = 25,
 				thresholdUsable = false,
 				isTalent = true,
 				baseline = true
@@ -259,8 +259,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -35,
-                comboPointsGenerated = 0,
-                stealth = true,
+				comboPointsGenerated = 0,
+				stealth = true,
 				texture = "",
 				thresholdId = 9,
 				settingKey = "sap",
@@ -280,11 +280,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -25,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 10,
 				settingKey = "gouge",
-                hasCooldown = true,
+				hasCooldown = true,
 				thresholdUsable = false,
 				cooldown = 15,
 				isTalent = true
@@ -346,7 +346,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -35,
-                comboPoints = true,
+				comboPoints = true,
 				texture = "",
 				thresholdId = 12,
 				settingKey = "envenom",
@@ -358,7 +358,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -35,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 13,
 				settingKey = "fanOfKnives",
@@ -370,12 +370,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -45,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 14,
 				settingKey = "garrote",
-                hasCooldown = true,
-                cooldown = 6,
+				hasCooldown = true,
+				cooldown = 6,
 				thresholdUsable = false,
 				pandemicTime = 18 * 0.3,
 				baseline = true,
@@ -386,7 +386,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -50,
-                comboPointsGenerated = 2,
+				comboPointsGenerated = 2,
 				texture = "",
 				thresholdId = 15,
 				settingKey = "mutilate",
@@ -398,7 +398,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -40,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 16,
 				settingKey = "poisonedKnife",
@@ -410,7 +410,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -25,
-                comboPoints = true,
+				comboPoints = true,
 				texture = "",
 				thresholdId = 17,
 				settingKey = "rupture",
@@ -428,7 +428,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				baseline = true
 			},
 
-            -- Assassination Spec Abilities
+			-- Assassination Spec Abilities
 			internalBleeding = {
 				id = 381627,
 				name = "",
@@ -735,7 +735,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
-            maxResource2 = 5,
+			maxResource2 = 5,
 			effects = {
 			}
 		}
@@ -770,17 +770,17 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			-- Outlaw Poisons
 			
 			-- Rogue Class Baseline Abilities
-            ambush = {
+			ambush = {
 				id = 8676,
 				name = "",
 				icon = "",
 				energy = -50,
-                comboPointsGenerated = 2,
-                stealth = true,
+				comboPointsGenerated = 2,
+				stealth = true,
 				texture = "",
 				thresholdId = 1,
 				settingKey = "ambush",
-                --isSnowflake = true,
+				--isSnowflake = true,
 				thresholdUsable = false,
 				baseline = true
 			},
@@ -789,8 +789,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -40,
-                comboPointsGenerated = 1,
-                stealth = true,
+				comboPointsGenerated = 1,
+				stealth = true,
 				texture = "",
 				thresholdId = 2,
 				settingKey = "cheapShot",
@@ -804,12 +804,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -20,
-                comboPointsGenerated = 0,
+				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 3,
 				settingKey = "crimsonVial",
 				hasCooldown = true,
-                cooldown = 30,
+				cooldown = 30,
 				nimbleFingers = true,
 				thresholdUsable = false,
 				baseline = true
@@ -819,12 +819,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -30,
-                comboPointsGenerated = 0,
+				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 4,
 				settingKey = "distract",
 				hasCooldown = true,
-                cooldown = 30,
+				cooldown = 30,
 				rushedSetup = true,
 				thresholdUsable = false,
 				baseline = true
@@ -834,12 +834,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -25,
-                comboPoints = true,
+				comboPoints = true,
 				texture = "",
 				thresholdId = 5,
 				settingKey = "kidneyShot",
-                hasCooldown = true,
-                cooldown = 20,
+				hasCooldown = true,
+				cooldown = 20,
 				rushedSetup = true,
 				thresholdUsable = false,
 				baseline = true
@@ -849,11 +849,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -25,
-                comboPoints = true,
+				comboPoints = true,
 				texture = "",
 				thresholdId = 6,
 				settingKey = "sliceAndDice",
-                hasCooldown = false,
+				hasCooldown = false,
 				thresholdUsable = false,
 				isSnowflake = true,
 				pandemicTimes = {
@@ -873,12 +873,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -35,
-                comboPointsGenerated = 0,
+				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 7,
 				settingKey = "feint",
-                hasCooldown = true,
-                cooldown = 15,
+				hasCooldown = true,
+				cooldown = 15,
 				nimbleFingers = true,
 				thresholdUsable = false,
 				isTalent = false,
@@ -891,13 +891,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -20,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 8,
 				settingKey = "shiv",
-                hasCooldown = true,
+				hasCooldown = true,
 				isSnowflake = true,
-                cooldown = 25,
+				cooldown = 25,
 				thresholdUsable = false,
 				isTalent = true,
 				baseline = true
@@ -907,8 +907,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -35,
-                comboPointsGenerated = 0,
-                stealth = true,
+				comboPointsGenerated = 0,
+				stealth = true,
 				texture = "",
 				thresholdId = 9,
 				settingKey = "sap",
@@ -928,11 +928,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -25,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 10,
 				settingKey = "gouge",
-                hasCooldown = true,
+				hasCooldown = true,
 				thresholdUsable = false,
 				cooldown = 15,
 				dirtyTricks = true,
@@ -989,17 +989,17 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				isTalent = true
 			},
 
-            -- Outlaw Baseline Abilities
+			-- Outlaw Baseline Abilities
 			betweenTheEyes = {
 				id = 315341,
 				name = "",
 				icon = "",
 				energy = -25,
-                comboPoints = true,
+				comboPoints = true,
 				texture = "",
 				thresholdId = 12,
 				settingKey = "betweenTheEyes",
-                hasCooldown = true,
+				hasCooldown = true,
 				isSnowflake = true,
 				thresholdUsable = false,
 				cooldown = 45,
@@ -1023,11 +1023,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -40,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 14,
 				settingKey = "pistolShot",
-                hasCooldown = false,
+				hasCooldown = false,
 				isSnowflake = true,
 				thresholdUsable = false,
 				baseline = true
@@ -1037,11 +1037,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -45,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 15,
 				settingKey = "sinisterStrike",
-                hasCooldown = false,
+				hasCooldown = false,
 				isSnowflake = true,
 				thresholdUsable = false,
 				baseline = true
@@ -1063,7 +1063,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 16,
 				settingKey = "bladeFlurry",
-                hasCooldown = true,
+				hasCooldown = true,
 				thresholdUsable = false,
 				cooldown = 30,
 				restlessBlades = true,
@@ -1100,7 +1100,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 17,
 				settingKey = "rollTheBones",
-                hasCooldown = true,
+				hasCooldown = true,
 				thresholdUsable = false,
 				cooldown = 45,
 				restlessBlades = true
@@ -1166,11 +1166,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = "",
 				energy = -30,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 19,
 				settingKey = "ghostlyStrike",
-                hasCooldown = true,
+				hasCooldown = true,
 				thresholdUsable = false,
 				isTalent = true,
 				cooldown = 35,
@@ -1182,7 +1182,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				isTalent = true,
 				energy = 25,
-                duration = 5,
+				duration = 5,
 				cooldown = 45,
 				restlessBlades = true
 			},
@@ -1453,7 +1453,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "#serratedBoneSpike", icon = spells.serratedBoneSpike.icon, description = spells.serratedBoneSpike.name, printInSettings = true },
 			{ variable = "#woundPoison", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = true },
 			{ variable = "#wp", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = false },
-        }
+		}
 		specCache.assassination.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
 			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
@@ -1611,7 +1611,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "#trueBearing", icon = spells.trueBearing.icon, description = spells.trueBearing.name, printInSettings = true },
 			{ variable = "#woundPoison", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = true },
 			{ variable = "#wp", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = false },
-        }
+		}
 		specCache.outlaw.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
 			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
@@ -1746,8 +1746,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.opportunity)
 	end
 	
-    local function CalculateAbilityResourceValue(resource, nimbleFingers, rushedSetup, comboPoints)
-        local modifier = 1.0
+	local function CalculateAbilityResourceValue(resource, nimbleFingers, rushedSetup, comboPoints)
+		local modifier = 1.0
 
 		if comboPoints == true and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.tightSpender) then
 			modifier = modifier * TRB.Data.spells.tightSpender.energyMod
@@ -1762,8 +1762,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			modifier = modifier * TRB.Data.spells.rushedSetup.energyMod
 		end
 
-        return resource * modifier
-    end
+		return resource * modifier
+	end
 	
 	local function InitializeTarget(guid, selfInitializeAllowed)
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
@@ -1823,7 +1823,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
 		local specId = GetSpecialization()
-        
+		
 		if specId == 1 then -- Assassination
 			-- Bleeds
 			local crimsonTempestTotal = 0
@@ -1985,9 +1985,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end
 
-        for k, v in pairs(TRB.Data.spells) do
-            local spell = TRB.Data.spells[k]
-            if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+		for k, v in pairs(TRB.Data.spells) do
+			local spell = TRB.Data.spells[k]
+			if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
@@ -1997,8 +1997,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
-            end
-        end
+			end
+		end
 		TRB.Frames.resource2ContainerFrame:Show()
 
 		TRB.Functions.Bar:Construct(settings)
@@ -2008,7 +2008,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end
 	end
 
-    local function IsValidVariableForSpec(var)
+	local function IsValidVariableForSpec(var)
 		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 		if valid then
 			return valid
@@ -2296,7 +2296,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		if TRB.Data.settings.rogue.assassination.colors.text.overcapEnabled and overcap then
 			currentEnergyColor = TRB.Data.settings.rogue.assassination.colors.text.overcap
-            castingEnergyColor = TRB.Data.settings.rogue.assassination.colors.text.overcap
+			castingEnergyColor = TRB.Data.settings.rogue.assassination.colors.text.overcap
 		elseif TRB.Data.settings.rogue.assassination.colors.text.overThresholdEnabled then
 			local _overThreshold = false
 			for k, v in pairs(TRB.Data.spells) do
@@ -2768,7 +2768,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		if TRB.Data.settings.rogue.outlaw.colors.text.overcapEnabled and overcap then
 			currentEnergyColor = TRB.Data.settings.rogue.outlaw.colors.text.overcap
-            castingEnergyColor = TRB.Data.settings.rogue.outlaw.colors.text.overcap
+			castingEnergyColor = TRB.Data.settings.rogue.outlaw.colors.text.overcap
 		elseif TRB.Data.settings.rogue.outlaw.colors.text.overThresholdEnabled then
 			local _overThreshold = false
 			for k, v in pairs(TRB.Data.spells) do
@@ -3092,14 +3092,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
-    local function FillSnapshotDataCasting(spell)
+	local function FillSnapshotDataCasting(spell)
 		local currentTime = GetTime()
-        TRB.Data.snapshotData.casting.startTime = currentTime
-        TRB.Data.snapshotData.casting.resourceRaw = spell.energy
-        TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.energy)
-        TRB.Data.snapshotData.casting.spellId = spell.id
-        TRB.Data.snapshotData.casting.icon = spell.icon
-    end
+		TRB.Data.snapshotData.casting.startTime = currentTime
+		TRB.Data.snapshotData.casting.resourceRaw = spell.energy
+		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.energy)
+		TRB.Data.snapshotData.casting.spellId = spell.id
+		TRB.Data.snapshotData.casting.icon = spell.icon
+	end
 
 	local function CastingSpell()
 		local specId = GetSpecialization()
@@ -3132,20 +3132,20 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		_, _, _, _, _, TRB.Data.snapshotData.sliceAndDice.endTime, _, _, _, TRB.Data.snapshotData.sliceAndDice.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.sliceAndDice.id)
 
-        if TRB.Data.snapshotData.distract.startTime ~= nil and currentTime > (TRB.Data.snapshotData.distract.startTime + TRB.Data.snapshotData.distract.duration) then
-            TRB.Data.snapshotData.distract.startTime = nil
-            TRB.Data.snapshotData.distract.duration = 0
-        end
+		if TRB.Data.snapshotData.distract.startTime ~= nil and currentTime > (TRB.Data.snapshotData.distract.startTime + TRB.Data.snapshotData.distract.duration) then
+			TRB.Data.snapshotData.distract.startTime = nil
+			TRB.Data.snapshotData.distract.duration = 0
+		end
 
-        if TRB.Data.snapshotData.feint.startTime ~= nil and currentTime > (TRB.Data.snapshotData.feint.startTime + TRB.Data.snapshotData.feint.duration) then
-            TRB.Data.snapshotData.feint.startTime = nil
-            TRB.Data.snapshotData.feint.duration = 0
-        end
+		if TRB.Data.snapshotData.feint.startTime ~= nil and currentTime > (TRB.Data.snapshotData.feint.startTime + TRB.Data.snapshotData.feint.duration) then
+			TRB.Data.snapshotData.feint.startTime = nil
+			TRB.Data.snapshotData.feint.duration = 0
+		end
 
-        if TRB.Data.snapshotData.kidneyShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.kidneyShot.startTime + TRB.Data.snapshotData.kidneyShot.duration) then
-            TRB.Data.snapshotData.kidneyShot.startTime = nil
-            TRB.Data.snapshotData.kidneyShot.duration = 0
-        end
+		if TRB.Data.snapshotData.kidneyShot.startTime ~= nil and currentTime > (TRB.Data.snapshotData.kidneyShot.startTime + TRB.Data.snapshotData.kidneyShot.duration) then
+			TRB.Data.snapshotData.kidneyShot.startTime = nil
+			TRB.Data.snapshotData.kidneyShot.duration = 0
+		end
 		
 ---@diagnostic disable-next-line: cast-local-type
 		TRB.Data.snapshotData.shiv.charges, TRB.Data.snapshotData.shiv.maxCharges, TRB.Data.snapshotData.shiv.startTime, TRB.Data.snapshotData.shiv.duration, _ = GetSpellCharges(TRB.Data.spells.shiv.id)
@@ -3188,25 +3188,25 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end
 
-        if TRB.Data.snapshotData.echoingReprimand.startTime ~= nil and currentTime > (TRB.Data.snapshotData.echoingReprimand.startTime + TRB.Data.snapshotData.echoingReprimand.duration) then
-            TRB.Data.snapshotData.echoingReprimand.startTime = nil
-            TRB.Data.snapshotData.echoingReprimand.duration = 0
-        end
+		if TRB.Data.snapshotData.echoingReprimand.startTime ~= nil and currentTime > (TRB.Data.snapshotData.echoingReprimand.startTime + TRB.Data.snapshotData.echoingReprimand.duration) then
+			TRB.Data.snapshotData.echoingReprimand.startTime = nil
+			TRB.Data.snapshotData.echoingReprimand.duration = 0
+		end
 	
-        if TRB.Data.snapshotData.deathFromAbove.startTime ~= nil and currentTime > (TRB.Data.snapshotData.deathFromAbove.startTime + TRB.Data.snapshotData.deathFromAbove.duration) then
-            TRB.Data.snapshotData.deathFromAbove.startTime = nil
-            TRB.Data.snapshotData.deathFromAbove.duration = 0
-        end
+		if TRB.Data.snapshotData.deathFromAbove.startTime ~= nil and currentTime > (TRB.Data.snapshotData.deathFromAbove.startTime + TRB.Data.snapshotData.deathFromAbove.duration) then
+			TRB.Data.snapshotData.deathFromAbove.startTime = nil
+			TRB.Data.snapshotData.deathFromAbove.duration = 0
+		end
 
-        if TRB.Data.snapshotData.dismantle.startTime ~= nil and currentTime > (TRB.Data.snapshotData.dismantle.startTime + TRB.Data.snapshotData.dismantle.duration) then
-            TRB.Data.snapshotData.dismantle.startTime = nil
-            TRB.Data.snapshotData.dismantle.duration = 0
-        end
+		if TRB.Data.snapshotData.dismantle.startTime ~= nil and currentTime > (TRB.Data.snapshotData.dismantle.startTime + TRB.Data.snapshotData.dismantle.duration) then
+			TRB.Data.snapshotData.dismantle.startTime = nil
+			TRB.Data.snapshotData.dismantle.duration = 0
+		end
 
-        if TRB.Data.snapshotData.crimsonVial.startTime ~= nil and currentTime > (TRB.Data.snapshotData.crimsonVial.startTime + TRB.Data.snapshotData.crimsonVial.duration) then
-            TRB.Data.snapshotData.crimsonVial.startTime = nil
-            TRB.Data.snapshotData.crimsonVial.duration = 0
-        end
+		if TRB.Data.snapshotData.crimsonVial.startTime ~= nil and currentTime > (TRB.Data.snapshotData.crimsonVial.startTime + TRB.Data.snapshotData.crimsonVial.duration) then
+			TRB.Data.snapshotData.crimsonVial.startTime = nil
+			TRB.Data.snapshotData.crimsonVial.duration = 0
+		end
 	end
 
 	local function UpdateSnapshot_Assassination()
@@ -3227,20 +3227,20 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.snapshotData.serratedBoneSpike.duration = 0
 		end
 
-        if TRB.Data.snapshotData.exsanguinate.startTime ~= nil and currentTime > (TRB.Data.snapshotData.exsanguinate.startTime + TRB.Data.snapshotData.exsanguinate.duration) then
-            TRB.Data.snapshotData.exsanguinate.startTime = nil
-            TRB.Data.snapshotData.exsanguinate.duration = 0
-        end
+		if TRB.Data.snapshotData.exsanguinate.startTime ~= nil and currentTime > (TRB.Data.snapshotData.exsanguinate.startTime + TRB.Data.snapshotData.exsanguinate.duration) then
+			TRB.Data.snapshotData.exsanguinate.startTime = nil
+			TRB.Data.snapshotData.exsanguinate.duration = 0
+		end
 
-        if TRB.Data.snapshotData.garrote.startTime ~= nil and currentTime > (TRB.Data.snapshotData.garrote.startTime + TRB.Data.snapshotData.garrote.duration) then
-            TRB.Data.snapshotData.garrote.startTime = nil
-            TRB.Data.snapshotData.garrote.duration = 0
-        end
+		if TRB.Data.snapshotData.garrote.startTime ~= nil and currentTime > (TRB.Data.snapshotData.garrote.startTime + TRB.Data.snapshotData.garrote.duration) then
+			TRB.Data.snapshotData.garrote.startTime = nil
+			TRB.Data.snapshotData.garrote.duration = 0
+		end
 
-        if TRB.Data.snapshotData.kingsbane.startTime ~= nil and currentTime > (TRB.Data.snapshotData.kingsbane.startTime + TRB.Data.snapshotData.kingsbane.duration) then
-            TRB.Data.snapshotData.kingsbane.startTime = nil
-            TRB.Data.snapshotData.kingsbane.duration = 0
-        end
+		if TRB.Data.snapshotData.kingsbane.startTime ~= nil and currentTime > (TRB.Data.snapshotData.kingsbane.startTime + TRB.Data.snapshotData.kingsbane.duration) then
+			TRB.Data.snapshotData.kingsbane.startTime = nil
+			TRB.Data.snapshotData.kingsbane.duration = 0
+		end
 
 		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
 			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].amplifyingPoison then
@@ -3343,10 +3343,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end
 
-        if TRB.Data.snapshotData.gouge.startTime ~= nil and currentTime > (TRB.Data.snapshotData.gouge.startTime + TRB.Data.snapshotData.gouge.duration) then
-            TRB.Data.snapshotData.gouge.startTime = nil
-            TRB.Data.snapshotData.gouge.duration = 0
-        end
+		if TRB.Data.snapshotData.gouge.startTime ~= nil and currentTime > (TRB.Data.snapshotData.gouge.startTime + TRB.Data.snapshotData.gouge.duration) then
+			TRB.Data.snapshotData.gouge.startTime = nil
+			TRB.Data.snapshotData.gouge.duration = 0
+		end
 
 		if TRB.Data.snapshotData.rollTheBones.startTime ~= nil then	
 			---@diagnostic disable-next-line: redundant-parameter
@@ -3664,23 +3664,23 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
-                    for x = 1, TRB.Data.character.maxResource2 do
+					for x = 1, TRB.Data.character.maxResource2 do
 						local cpBorderColor = specSettings.colors.comboPoints.border
 						local cpColor = specSettings.colors.comboPoints.base
 						local cpBR = cpBackgroundRed
 						local cpBG = cpBackgroundGreen
 						local cpBB = cpBackgroundBlue
 
-                        if TRB.Data.snapshotData.resource2 >= x then
-                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+						if TRB.Data.snapshotData.resource2 >= x then
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
 							if (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = specSettings.colors.comboPoints.penultimate
 							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = specSettings.colors.comboPoints.final
 							end
-                        else
-                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
-                        end
+						else
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+						end
 
 						if TRB.Data.snapshotData.echoingReprimand[x].enabled then
 							cpColor = specSettings.colors.comboPoints.echoingReprimand
@@ -3982,23 +3982,23 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
-                    for x = 1, TRB.Data.character.maxResource2 do
+					for x = 1, TRB.Data.character.maxResource2 do
 						local cpBorderColor = specSettings.colors.comboPoints.border
 						local cpColor = specSettings.colors.comboPoints.base
 						local cpBR = cpBackgroundRed
 						local cpBG = cpBackgroundGreen
 						local cpBB = cpBackgroundBlue
 
-                        if TRB.Data.snapshotData.resource2 >= x then
-                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+						if TRB.Data.snapshotData.resource2 >= x then
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
 							if (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = specSettings.colors.comboPoints.penultimate
 							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = specSettings.colors.comboPoints.final
 							end
-                        else
-                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
-                        end
+						else
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+						end
 
 						if TRB.Data.snapshotData.echoingReprimand[x].enabled then
 							cpColor = specSettings.colors.comboPoints.echoingReprimand
@@ -4012,7 +4012,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-                    end
+					end
 				end
 			end
 			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
@@ -4686,21 +4686,21 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Functions.Character:CheckCharacter()
 		TRB.Data.character.className = "rogue"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Energy)
-        local maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
-        local settings = nil
+		local maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
+		local settings = nil
 
 		if specId == 1 then
-            settings = TRB.Data.settings.rogue.assassination
+			settings = TRB.Data.settings.rogue.assassination
 		elseif specId == 2 then
-            settings = TRB.Data.settings.rogue.outlaw
+			settings = TRB.Data.settings.rogue.outlaw
 		end
-        
-        if settings ~= nil then
+		
+		if settings ~= nil then
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
-            	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
+				TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 			end
-        end
+		end
 	end
 
 	function TRB.Functions.Class:EventRegistration()
@@ -4730,7 +4730,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.resource2 = Enum.PowerType.ComboPoints
 			TRB.Data.resource2Factor = 1
 
-            TRB.Functions.Class:CheckCharacter()
+			TRB.Functions.Class:CheckCharacter()
 
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)

@@ -3,17 +3,17 @@ TRB.Functions = TRB.Functions or {}
 TRB.Functions.Number = {}
 
 function TRB.Functions.Number:IsNumeric(data)
-    if type(data) == "number" then
-        return true
-    elseif type(data) ~= "string" then
-        return false
-    end
-    data = strtrim(data)
-    local x, y = string.find(data, "[%d+][%.?][%d*]")
-    if x and x == 1 and y == strlen(data) then
-        return true
-    end
-    return false
+	if type(data) == "number" then
+		return true
+	elseif type(data) ~= "string" then
+		return false
+	end
+	data = strtrim(data)
+	local x, y = string.find(data, "[%d+][%.?][%d*]")
+	if x and x == 1 and y == strlen(data) then
+		return true
+	end
+	return false
 end
 
 function TRB.Functions.Number:RoundTo(num, numDecimalPlaces, mode)

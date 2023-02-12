@@ -248,8 +248,8 @@ TRB.Data.resourceFactor = 1
 TRB.Data.barConstructedForSpec = nil
 
 TRB.Data.barTextVariables = {
-    icons = {},
-    values = {},
+	icons = {},
+	values = {},
 	pipe = {
 		{ variable = "||n", description = "Insert a Newline. Alternative to pressing Enter.", printInSettings = true },
 		{ variable = "||c", description = "", printInSettings = false },
@@ -269,9 +269,9 @@ TRB.Data.character = {
 	specName = "",
 ---@diagnostic disable-next-line: missing-parameter
 	specGroup = GetActiveSpecGroup(),
-    maxResource = 100,
-    talents = {},
-    items = {}
+	maxResource = 100,
+	talents = {},
+	items = {}
 }
 
 TRB.Data.spells = {}
@@ -290,7 +290,7 @@ TRB.Data.sanityCheckValues = {
 
 -- This gets overwritten with a spec/class specific version of the function
 local function IsValidVariableForSpec(input)
-    return true
+	return true
 end
 TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
 
@@ -309,16 +309,16 @@ local function ParseCmdString(msg)
 end
 
 function SlashCmdList.TWINTOP(msg)
-    local cmd, subcmd = ParseCmdString(msg);
-    if cmd == "reset" then
-        StaticPopup_Show("TwintopResourceBar_Reset")
-    elseif cmd == "fill" then
-        TRB.Functions.Spell:FillSpellData()
-    elseif cmd == "move" then
-        local x, y = ParseCmdString(subcmd)
-        TRB.Functions.Bar:SetPositionXY(tonumber(x), tonumber(y))
-    else
+	local cmd, subcmd = ParseCmdString(msg);
+	if cmd == "reset" then
+		StaticPopup_Show("TwintopResourceBar_Reset")
+	elseif cmd == "fill" then
+		TRB.Functions.Spell:FillSpellData()
+	elseif cmd == "move" then
+		local x, y = ParseCmdString(subcmd)
+		TRB.Functions.Bar:SetPositionXY(tonumber(x), tonumber(y))
+	else
 		Settings.OpenToCategory(TRB.Frames.interfaceSettingsFrameContainer.panel)
-        --InterfaceOptionsFrame_OpenToCategory(TRB.Frames.interfaceSettingsFrameContainer.panel)
-    end
+		--InterfaceOptionsFrame_OpenToCategory(TRB.Frames.interfaceSettingsFrameContainer.panel)
+	end
 end

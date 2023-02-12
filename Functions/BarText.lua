@@ -28,11 +28,11 @@ local function ScanForLogicSymbols(input)
 	local endLength = (string.len(input) + 1)
 
 	local currentPosition = 0
-    while currentPosition <= string.len(input) do
-        a, _ = string.find(input, "{", currentPosition)
-        b, _ = string.find(input, "}", currentPosition)
-        c, _ = string.find(input, "%[", currentPosition) --Escape because this isn't regex
-        d, _ = string.find(input, "]", currentPosition)
+	while currentPosition <= string.len(input) do
+		a, _ = string.find(input, "{", currentPosition)
+		b, _ = string.find(input, "}", currentPosition)
+		c, _ = string.find(input, "%[", currentPosition) --Escape because this isn't regex
+		d, _ = string.find(input, "]", currentPosition)
 		e, _ = string.find(input, "||", currentPosition)
 		e_1, _ = string.find(input, "|n", currentPosition)
 		e_2, _ = string.find(input, "|c", currentPosition)
@@ -260,7 +260,7 @@ end
 local function RemoveInvalidVariablesFromBarText(inputString)
 	local scan = ScanForLogicSymbols(inputString)
 
-    local function RemoveInvalidVariablesFromBarText_Inner(input, indexOffset, maxIndex, positionOffset, maxPosition)
+	local function RemoveInvalidVariablesFromBarText_Inner(input, indexOffset, maxIndex, positionOffset, maxPosition)
 		local returnText = ""
 
 ---@diagnostic disable-next-line: undefined-field
@@ -435,7 +435,7 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 end
 
 local function AddToBarTextCache(input)
-    local barTextVariables = TRB.Data.barTextVariables
+	local barTextVariables = TRB.Data.barTextVariables
 	local iconEntries = TRB.Functions.Table:Length(barTextVariables.icons)
 	local valueEntries = TRB.Functions.Table:Length(barTextVariables.values)
 	local pipeEntries = TRB.Functions.Table:Length(barTextVariables.pipe)
@@ -611,30 +611,30 @@ local function GetFromBarTextCache(barText)
 end
 
 local function GetReturnText(inputText)
-    local lookup = TRB.Data.lookup
-    lookup["color"] = inputText.color
+	local lookup = TRB.Data.lookup
+	lookup["color"] = inputText.color
 	inputText.text = RemoveInvalidVariablesFromBarText(inputText.text)
 
-    local cache = GetFromBarTextCache(inputText.text)
-    local mapping = {}
-    local cachedTextVariableLength = TRB.Functions.Table:Length(cache.variables)
+	local cache = GetFromBarTextCache(inputText.text)
+	local mapping = {}
+	local cachedTextVariableLength = TRB.Functions.Table:Length(cache.variables)
 
-    if cachedTextVariableLength > 0 then
-        for y = 1, cachedTextVariableLength do
-            table.insert(mapping, lookup[cache.variables[y]])
-        end
-    end
+	if cachedTextVariableLength > 0 then
+		for y = 1, cachedTextVariableLength do
+			table.insert(mapping, lookup[cache.variables[y]])
+		end
+	end
 
-    if TRB.Functions.Table:Length(mapping) > 0 then
+	if TRB.Functions.Table:Length(mapping) > 0 then
 		local result
 		result, inputText.text = pcall(string.format, cache.stringFormat, unpack(mapping))
-    elseif string.len(cache.stringFormat) > 0 then
-        inputText.text = cache.stringFormat
-    else
-        inputText.text = ""
-    end
+	elseif string.len(cache.stringFormat) > 0 then
+		inputText.text = cache.stringFormat
+	else
+		inputText.text = ""
+	end
 
-    return string.format("%s%s", inputText.color, inputText.text)
+	return string.format("%s%s", inputText.color, inputText.text)
 end
 
 function TRB.Functions.BarText:RefreshLookupDataBase(settings)
@@ -828,27 +828,27 @@ end
 
 function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 	if settings ~= nil and settings.bar ~= nil then
-        TRB.Functions.BarText:RefreshLookupDataBase(settings)
-        TRB.Functions.RefreshLookupData()
-    
-        if refreshText then
-            local leftText, middleText, rightText = TRB.Functions.BarText:BarText(settings)
-            local leftTextFrame = TRB.Frames.leftTextFrame
-            local middleTextFrame = TRB.Frames.middleTextFrame
-            local rightTextFrame = TRB.Frames.rightTextFrame
+		TRB.Functions.BarText:RefreshLookupDataBase(settings)
+		TRB.Functions.RefreshLookupData()
+	
+		if refreshText then
+			local leftText, middleText, rightText = TRB.Functions.BarText:BarText(settings)
+			local leftTextFrame = TRB.Frames.leftTextFrame
+			local middleTextFrame = TRB.Frames.middleTextFrame
+			local rightTextFrame = TRB.Frames.rightTextFrame
 
-            if not pcall(TryUpdateText, leftTextFrame, leftText) then
-                leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
-            end
+			if not pcall(TryUpdateText, leftTextFrame, leftText) then
+				leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
+			end
 
-            if not pcall(TryUpdateText, middleTextFrame, middleText) then
-                middleTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
-            end
+			if not pcall(TryUpdateText, middleTextFrame, middleText) then
+				middleTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
+			end
 
-            if not pcall(TryUpdateText, rightTextFrame, rightText) then
-                rightTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.right.fontSize, "OUTLINE")
-            end
-        end
+			if not pcall(TryUpdateText, rightTextFrame, rightText) then
+				rightTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.right.fontSize, "OUTLINE")
+			end
+		end
 	end
 end
 

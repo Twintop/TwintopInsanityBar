@@ -33,11 +33,11 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, thresholdLine, pa
 	end
 
 	if resourceMax == nil or resourceMax == 0 then
-        resourceMax = TRB.Data.character.maxResource		
+		resourceMax = TRB.Data.character.maxResource		
 		if resourceMax == 0 then
 			resourceMax = 100
 		end
-    end
+	end
 
 	local min, max = parentFrame:GetMinMaxValues()
 	local factor = (max - (settings.bar.border * 2)) / resourceMax

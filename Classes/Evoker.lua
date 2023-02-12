@@ -4,7 +4,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	TRB.Functions.Class = TRB.Functions.Class or {}
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
-    local resource2Frame = TRB.Frames.resource2Frame
+	local resource2Frame = TRB.Frames.resource2Frame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
 	local passiveFrame = TRB.Frames.passiveFrame
@@ -12,7 +12,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
-    local combatFrame = TRB.Frames.combatFrame
+	local combatFrame = TRB.Frames.combatFrame
 
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
@@ -75,7 +75,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 10000,
-            maxResource2 = 5,
+			maxResource2 = 5,
 			maxResource2Resource = 0,
 			maxResource2ResourceMax = 1000,
 			effects = {
@@ -85,11 +85,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		specCache.devastation.spells = {
 			-- Evoker Class Baseline Abilities
-            --[[blackoutKick = {
+			--[[blackoutKick = {
 				id = 100784,
 				name = "",
 				icon = "",
-                comboPoints = 1,
+				comboPoints = 1,
 				isTalent = false,
 				baseline = true
 			},
@@ -98,7 +98,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				name = "",
 				icon = "",
 				mana = -20,
-                comboPointsGenerated = 0,
+				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 1,
 				settingKey = "cracklingJadeLightning",
@@ -111,12 +111,12 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				name = "",
 				icon = "",
 				mana = -15,
-                comboPointsGenerated = 1,
+				comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 2,
 				settingKey = "expelHarm",
 				hasCooldown = true,
-                cooldown = 15,
+				cooldown = 15,
 				thresholdUsable = false,
 				isTalent = false,
 				baseline = true
@@ -133,7 +133,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				id = 101546,
 				name = "",
 				icon = "",
-                comboPoints = 2,
+				comboPoints = 2,
 				isTalent = false,
 				baseline = true
 			},
@@ -142,7 +142,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				name = "",
 				icon = "",
 				mana = -50,
-                comboPointsGenerated = 2,
+				comboPointsGenerated = 2,
 				texture = "",
 				thresholdId = 3,
 				settingKey = "tigerPalm",
@@ -164,7 +164,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				name = "",
 				icon = "",
 				mana = -30,
-                comboPointsGenerated = 0,
+				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 4,
 				settingKey = "vivify",
@@ -173,14 +173,14 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				baseline = true
 			},]]
 
-            -- Devastation Spec Baseline Abilities
+			-- Devastation Spec Baseline Abilities
 
 			-- Evoker Class Talents
 			--[[risingSunKick = {
 				id = 107428,
 				name = "",
 				icon = "",
-                comboPoints = 2,
+				comboPoints = 2,
 				isTalent = true,
 				baseline = true
 			},
@@ -189,7 +189,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				name = "",
 				icon = "",
 				mana = -20,
-                comboPointsGenerated = 0,
+				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 5,
 				settingKey = "detox",
@@ -204,11 +204,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				name = "",
 				icon = "",
 				mana = -15,
-                comboPoints = true,
+				comboPoints = true,
 				texture = "",
 				thresholdId = 6,
 				settingKey = "disable",
-                hasCooldown = false,
+				hasCooldown = false,
 				thresholdUsable = false
 			},
 			paralysis = {
@@ -216,12 +216,12 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				name = "",
 				icon = "",
 				mana = -20,
-                comboPointsGenerated = 0,
+				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 7,
 				settingKey = "paralysis",
 				hasCooldown = true,
-                cooldown = 45,
+				cooldown = 45,
 				thresholdUsable = false,
 				isTalent = true,
 			},
@@ -229,7 +229,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				id = 344359,
 				name = "",
 				icon = "",
-                cooldownMod = -15,
+				cooldownMod = -15,
 				isTalent = true,
 			},]]
 			
@@ -239,7 +239,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				id = 113656,
 				name = "",
 				icon = "",
-                comboPoints = 3,
+				comboPoints = 3,
 				isTalent = true
 			},]]
 
@@ -683,7 +683,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			{ variable = "#tigerPalm", icon = spells.tigerPalm.icon, description = spells.tigerPalm.name, printInSettings = true },
 			{ variable = "#touchOfDeath", icon = spells.touchOfDeath.icon, description = spells.touchOfDeath.name, printInSettings = true },
 			{ variable = "#vivify", icon = spells.vivify.icon, description = spells.vivify.name, printInSettings = true },
-        ]]
+		]]
 		}
 		specCache.devastation.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -840,10 +840,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	end
 
 	local function CalculateAbilityResourceValue(resource, threshold)
-        local modifier = 1.0
+		local modifier = 1.0
 
-        return resource * modifier
-    end
+		return resource * modifier
+	end
 	
 	local function InitializeTarget(guid, selfInitializeAllowed)
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
@@ -869,7 +869,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
 		local specId = GetSpecialization()
-        
+		
 		if specId == 1 then -- Devastation
 		elseif specId == 2 then -- Preservation
 			--[[local motcTotal = 0
@@ -1000,7 +1000,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		return mana * modifier
 	end
 
-    local function IsValidVariableForSpec(var)
+	local function IsValidVariableForSpec(var)
 		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 		if valid then
 			return valid
@@ -1474,14 +1474,14 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
-    local function FillSnapshotDataCasting(spell)
+	local function FillSnapshotDataCasting(spell)
 		local currentTime = GetTime()
-        TRB.Data.snapshotData.casting.startTime = currentTime
-        TRB.Data.snapshotData.casting.resourceRaw = spell.mana
-        TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.mana)
-        TRB.Data.snapshotData.casting.spellId = spell.id
-        TRB.Data.snapshotData.casting.icon = spell.icon
-    end
+		TRB.Data.snapshotData.casting.startTime = currentTime
+		TRB.Data.snapshotData.casting.resourceRaw = spell.mana
+		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.mana)
+		TRB.Data.snapshotData.casting.spellId = spell.id
+		TRB.Data.snapshotData.casting.icon = spell.icon
+	end
 
 	local function UpdateCastingResourceFinal()
 		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
@@ -1629,45 +1629,45 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local currentTime = GetTime()
 
 		if TRB.Data.snapshotData.innervate.endTime ~= nil and currentTime > TRB.Data.snapshotData.innervate.endTime then
-            TRB.Data.snapshotData.innervate.endTime = nil
-            TRB.Data.snapshotData.innervate.duration = 0
+			TRB.Data.snapshotData.innervate.endTime = nil
+			TRB.Data.snapshotData.innervate.duration = 0
 			TRB.Data.snapshotData.innervate.remainingTime = 0
 			TRB.Data.snapshotData.innervate.mana = 0
 			TRB.Data.snapshotData.audio.innervateCue = false
 		else
 			TRB.Data.snapshotData.innervate.remainingTime = GetInnervateRemainingTime()
 			TRB.Data.snapshotData.innervate.mana = TRB.Data.snapshotData.innervate.remainingTime * TRB.Data.snapshotData.manaRegen
-        end
+		end
 	end
 	
 	local function UpdatePotionOfChilledClarity()
 		local currentTime = GetTime()
 
 		if TRB.Data.snapshotData.potionOfChilledClarity.endTime ~= nil and currentTime > TRB.Data.snapshotData.potionOfChilledClarity.endTime then
-            TRB.Data.snapshotData.potionOfChilledClarity.endTime = nil
-            TRB.Data.snapshotData.potionOfChilledClarity.duration = 0
+			TRB.Data.snapshotData.potionOfChilledClarity.endTime = nil
+			TRB.Data.snapshotData.potionOfChilledClarity.duration = 0
 			TRB.Data.snapshotData.potionOfChilledClarity.remainingTime = 0
 			TRB.Data.snapshotData.potionOfChilledClarity.mana = 0
 			TRB.Data.snapshotData.audio.potionOfChilledClarityCue = false
 		else
 			TRB.Data.snapshotData.potionOfChilledClarity.remainingTime = GetPotionOfChilledClarityRemainingTime()
 			TRB.Data.snapshotData.potionOfChilledClarity.mana = TRB.Data.snapshotData.potionOfChilledClarity.remainingTime * TRB.Data.snapshotData.manaRegen
-        end
+		end
 	end
 
 	local function UpdateManaTideTotem(forceCleanup)
 		local currentTime = GetTime()
 
 		if forceCleanup or (TRB.Data.snapshotData.manaTideTotem.endTime ~= nil and currentTime > TRB.Data.snapshotData.manaTideTotem.endTime) then
-            TRB.Data.snapshotData.manaTideTotem.endTime = nil
-            TRB.Data.snapshotData.manaTideTotem.duration = 0
+			TRB.Data.snapshotData.manaTideTotem.endTime = nil
+			TRB.Data.snapshotData.manaTideTotem.duration = 0
 			TRB.Data.snapshotData.manaTideTotem.remainingTime = 0
 			TRB.Data.snapshotData.manaTideTotem.mana = 0
 			TRB.Data.snapshotData.audio.manaTideTotemCue = false
 		else
 			TRB.Data.snapshotData.manaTideTotem.remainingTime = GetManaTideTotemRemainingTime()
 			TRB.Data.snapshotData.manaTideTotem.mana = TRB.Data.snapshotData.manaTideTotem.remainingTime * (TRB.Data.snapshotData.manaRegen / 2) --Only half of this is considered bonus
-        end
+		end
 	end
 
 	local function UpdateSnapshot()
@@ -1709,25 +1709,25 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local _
 
 		--[[
-        if TRB.Data.snapshotData.strikeOfTheWindlord.startTime ~= nil and currentTime > (TRB.Data.snapshotData.strikeOfTheWindlord.startTime + TRB.Data.snapshotData.strikeOfTheWindlord.duration) then
-            TRB.Data.snapshotData.strikeOfTheWindlord.startTime = nil
-            TRB.Data.snapshotData.strikeOfTheWindlord.duration = 0
-        end
+		if TRB.Data.snapshotData.strikeOfTheWindlord.startTime ~= nil and currentTime > (TRB.Data.snapshotData.strikeOfTheWindlord.startTime + TRB.Data.snapshotData.strikeOfTheWindlord.duration) then
+			TRB.Data.snapshotData.strikeOfTheWindlord.startTime = nil
+			TRB.Data.snapshotData.strikeOfTheWindlord.duration = 0
+		end
 		
-        if TRB.Data.snapshotData.detox.startTime ~= nil and currentTime > (TRB.Data.snapshotData.detox.startTime + TRB.Data.snapshotData.detox.duration) then
-            TRB.Data.snapshotData.detox.startTime = nil
-            TRB.Data.snapshotData.detox.duration = 0
-        end
+		if TRB.Data.snapshotData.detox.startTime ~= nil and currentTime > (TRB.Data.snapshotData.detox.startTime + TRB.Data.snapshotData.detox.duration) then
+			TRB.Data.snapshotData.detox.startTime = nil
+			TRB.Data.snapshotData.detox.duration = 0
+		end
 
-        if TRB.Data.snapshotData.expelHarm.startTime ~= nil and currentTime > (TRB.Data.snapshotData.expelHarm.startTime + TRB.Data.snapshotData.expelHarm.duration) then
-            TRB.Data.snapshotData.expelHarm.startTime = nil
-            TRB.Data.snapshotData.expelHarm.duration = 0
-        end
+		if TRB.Data.snapshotData.expelHarm.startTime ~= nil and currentTime > (TRB.Data.snapshotData.expelHarm.startTime + TRB.Data.snapshotData.expelHarm.duration) then
+			TRB.Data.snapshotData.expelHarm.startTime = nil
+			TRB.Data.snapshotData.expelHarm.duration = 0
+		end
 
-        if TRB.Data.snapshotData.paralysis.startTime ~= nil and currentTime > (TRB.Data.snapshotData.paralysis.startTime + TRB.Data.snapshotData.paralysis.duration) then
-            TRB.Data.snapshotData.paralysis.startTime = nil
-            TRB.Data.snapshotData.paralysis.duration = 0
-        end]]
+		if TRB.Data.snapshotData.paralysis.startTime ~= nil and currentTime > (TRB.Data.snapshotData.paralysis.startTime + TRB.Data.snapshotData.paralysis.duration) then
+			TRB.Data.snapshotData.paralysis.startTime = nil
+			TRB.Data.snapshotData.paralysis.duration = 0
+		end]]
 	end
 
 	local function UpdateResourceBar()
@@ -1781,24 +1781,24 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						local cpBG = cpBackgroundGreen
 						local cpBB = cpBackgroundBlue
 
-                        if TRB.Data.snapshotData.resource2 >= x then
-                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+						if TRB.Data.snapshotData.resource2 >= x then
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
 							if (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = specSettings.colors.comboPoints.penultimate
 							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = specSettings.colors.comboPoints.final
 							end
-                        elseif TRB.Data.snapshotData.resource2+1 == x then
+						elseif TRB.Data.snapshotData.resource2+1 == x then
 							local partial = UnitPartialPower("player", Enum.PowerType.Essence)
-                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
 						else
-                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
-                        end
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+						end
 
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-                    end
+					end
 				end
 			end
 			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
@@ -1962,9 +1962,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 --[[
-                    for x = 2, TRB.Data.character.maxResource2 do
+					for x = 2, TRB.Data.character.maxResource2 do
 						TRB.Frames.resource2Frames[x]:Hide()
-                    end]]
+					end]]
 
 					for x = 1, TRB.Data.character.maxResource2 do
 						local cpBorderColor = specSettings.colors.comboPoints.border
@@ -1973,24 +1973,24 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						local cpBG = cpBackgroundGreen
 						local cpBB = cpBackgroundBlue
 
-                        if TRB.Data.snapshotData.resource2 >= x then
-                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+						if TRB.Data.snapshotData.resource2 >= x then
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
 							if (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = specSettings.colors.comboPoints.penultimate
 							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = specSettings.colors.comboPoints.final
 							end
-                        elseif TRB.Data.snapshotData.resource2+1 == x then
+						elseif TRB.Data.snapshotData.resource2+1 == x then
 							local partial = UnitPartialPower("player", Enum.PowerType.Essence)
-                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
 						else
-                            TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
-                        end
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+						end
 
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-                    end
+					end
 				end
 
 				TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
@@ -2382,8 +2382,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		TRB.Data.character.className = "evoker"
 		TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
 		TRB.Data.character.maxResource2 = 1
-        local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
-        local settings = nil
+		local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
+		local settings = nil
 		if specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation then
 			settings = TRB.Data.settings.evoker.devastation
 			TRB.Data.character.specName = "devastation"
@@ -2431,17 +2431,17 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
 			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
 		end
-        
-        if settings ~= nil then
+		
+		if settings ~= nil then
 			--[[if maxComboPoints ~= TRB.Data.character.maxResource2Raw then
 				TRB.Data.character.maxResource2Raw = maxComboPoints
-            	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
+				TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 			end]]
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
-            	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
+				TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 			end
-        end
+		end
 	end
 
 	function TRB.Functions.Class:EventRegistration()
@@ -2474,7 +2474,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end
 
 		if TRB.Data.specSupported then
-            TRB.Functions.Class:CheckCharacter()
+			TRB.Functions.Class:CheckCharacter()
 
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)

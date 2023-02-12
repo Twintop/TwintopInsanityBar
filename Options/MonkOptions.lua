@@ -24,9 +24,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	TRB.Options.Monk.Brewmaster = {}
 	TRB.Options.Monk.Mistweaver = {}
 	TRB.Options.Monk.Windwalker = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.brewmaster = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.mistweaver = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.brewmaster = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.mistweaver = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = {}
 
 
 	-- Mistweaver
@@ -239,8 +239,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		return textSettings
 	end
-    
-    local function WindwalkerLoadDefaultBarTextAdvancedSettings()
+	
+	local function WindwalkerLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
 			fontFaceLock = true,
@@ -331,17 +331,17 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				showPassive=true,
 				showCasting=true
 			},
-            comboPoints = {
-                width=25,
-                height=13,
+			comboPoints = {
+				width=25,
+				height=13,
 				xPos=0,
 				yPos=4,
 				border=1,
-                spacing=14,
-                relativeTo="TOP",
-                relativeToName="Above - Middle",
-                fullWidth=false,
-            },
+				spacing=14,
+				relativeTo="TOP",
+				relativeToName="Above - Middle",
+				fullWidth=false,
+			},
 			endOfSerenity = {
 				enabled=true,
 				mode="gcd",
@@ -410,7 +410,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				},
-            },
+			},
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
 				backgroundName="Blizzard Tooltip",
@@ -434,9 +434,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		settings.displayText = WindwalkerLoadDefaultBarTextSimpleSettings()
 		return settings
-    end
+	end
 	
-    local function LoadDefaultSettings()
+	local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 
 		settings.monk.mistweaver = MistweaverLoadDefaultSettings()
@@ -444,7 +444,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		return settings
 	end
-    TRB.Options.Monk.LoadDefaultSettings = LoadDefaultSettings
+	TRB.Options.Monk.LoadDefaultSettings = LoadDefaultSettings
 	
 
 
@@ -537,7 +537,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Monk_Mistweaver_ResetBarTextSimple")
-        end)
+		end)
 		yCoord = yCoord - 40
 
 		--[[
@@ -1127,7 +1127,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Monk_Windwalker_ResetBarTextSimple")
-        end)
+		end)
 		yCoord = yCoord - 40
 
 		controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
@@ -1857,7 +1857,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = controls
 	end
-    
+	
 	local function WindwalkerConstructBarTextDisplayPanel(parent, cache)
 		if parent == nil then
 			return
@@ -1962,7 +1962,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
-		controls.buttons.importButton:SetScript("OnClick", function(self, ...)        
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 

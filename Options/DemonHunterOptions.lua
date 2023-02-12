@@ -22,7 +22,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 	TRB.Options.DemonHunter = {}
 	TRB.Options.DemonHunter.Havoc = {}
-    TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = {}
 
 	local function HavocLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
@@ -51,7 +51,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		return textSettings
 	end
 
-    local function HavocLoadDefaultBarTextAdvancedSettings()
+	local function HavocLoadDefaultBarTextAdvancedSettings()
 		local textSettings = {
 			fontSizeLock = false,
 			fontFaceLock = true,
@@ -192,7 +192,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
 				}
-            },
+			},
 			textures = {
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
 				backgroundName="Blizzard Tooltip",
@@ -210,15 +210,15 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		settings.displayText = HavocLoadDefaultBarTextSimpleSettings()
 		return settings
-    end
+	end
 
-    local function LoadDefaultSettings()
+	local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 
 		settings.demonhunter.havoc = HavocLoadDefaultSettings()
 		return settings
 	end
-    TRB.Options.DemonHunter.LoadDefaultSettings = LoadDefaultSettings
+	TRB.Options.DemonHunter.LoadDefaultSettings = LoadDefaultSettings
 
 	--[[
 
@@ -294,7 +294,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
 		controls.resetButton1:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_DemonHunter_Havoc_ResetBarTextSimple")
-        end)
+		end)
 		yCoord = yCoord - 40
 
 		controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
