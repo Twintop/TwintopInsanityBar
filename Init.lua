@@ -107,7 +107,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 		local currentTime = GetTime()
 
 		if guid ~= nil then
-			TRB.Functions.Target.InitializeTarget_Class(guid)
+			TRB.Functions.Class:InitializeTarget(guid)
 
 			local isDead = UnitIsDeadOrGhost("target")
 			local currentHealth = UnitHealth("target")

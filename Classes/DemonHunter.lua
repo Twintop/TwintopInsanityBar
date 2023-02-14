@@ -507,22 +507,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		specCache.havoc.spells = spells
 	end
 
-	local function InitializeTarget(guid, selfInitializeAllowed)
-		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
-			return false
-		end
-
-		if guid ~= nil then
-			if not TRB.Functions.Target:CheckTargetExists(guid) then
-				TRB.Functions.Target:InitializeTarget(guid)
-			end
-			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
-			return true
-		end
-		return false
-	end
-	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget
-
 	local function GetImmolationAuraRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.immolationAura)
 	end
@@ -1575,6 +1559,21 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Frames.barContainerFrame:Hide()
 			TRB.Data.snapshotData.isTracking = false
 		end
+	end
+
+	function TRB.Functions.Class:InitializeTarget(guid, selfInitializeAllowed)
+		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
+			return false
+		end
+
+		if guid ~= nil then
+			if not TRB.Functions.Target:CheckTargetExists(guid) then
+				TRB.Functions.Target:InitializeTarget(guid)
+			end
+			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+			return true
+		end
+		return false
 	end
 
 	--HACK to fix FPS

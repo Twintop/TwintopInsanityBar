@@ -916,31 +916,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
 	end
 
-	local function InitializeTarget(guid, selfInitializeAllowed)
-		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
-			return false
-		end
-
-		local specId = GetSpecialization()
-
-		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.Target:CheckTargetExists(guid) then
-				TRB.Functions.Target:InitializeTarget(guid)
-				if specId == 1 then
-					TRB.Data.snapshotData.targetData.targets[guid].rend = false
-					TRB.Data.snapshotData.targetData.targets[guid].rendRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].deepWounds = false
-					TRB.Data.snapshotData.targetData.targets[guid].deepWoundsRemaining = 0
-				elseif specId == 2 then
-				end
-			end
-			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
-		end
-
-		return true
-	end
-	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget
-
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
 		
@@ -2112,7 +2087,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							TRB.Data.spells.battlelord.isActive = false
 						end
 					elseif spellId == TRB.Data.spells.rend.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rend Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].rend = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -2128,7 +2103,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							end
 						end
 					elseif spellId == TRB.Data.spells.deepWounds.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Deep Wounds Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].deepWounds = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -2509,6 +2484,30 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Frames.barContainerFrame:Hide()
 			TRB.Data.snapshotData.isTracking = false
 		end
+	end
+
+	function TRB.Functions.Class:InitializeTarget(guid, selfInitializeAllowed)
+		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
+			return false
+		end
+
+		local specId = GetSpecialization()
+
+		if guid ~= nil and guid ~= "" then
+			if not TRB.Functions.Target:CheckTargetExists(guid) then
+				TRB.Functions.Target:InitializeTarget(guid)
+				if specId == 1 then
+					TRB.Data.snapshotData.targetData.targets[guid].rend = false
+					TRB.Data.snapshotData.targetData.targets[guid].rendRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].deepWounds = false
+					TRB.Data.snapshotData.targetData.targets[guid].deepWoundsRemaining = 0
+				elseif specId == 2 then
+				end
+			end
+			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+		end
+
+		return true
 	end
 
 	--HACK to fix FPS

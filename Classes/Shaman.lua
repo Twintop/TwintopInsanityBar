@@ -854,31 +854,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		specCache.restoration.spells = spells
 	end
 
-	local function InitializeTarget(guid, selfInitializeAllowed)
-		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
-			return false
-		end
-
-		local specId = GetSpecialization()
-
-		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.Target:CheckTargetExists(guid) then
-				TRB.Functions.Target:InitializeTarget(guid)
-				if specId == 1 then -- Elemental
-					TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
-					TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
-				elseif specId == 3 then -- Restoration
-					TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
-					TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
-				end
-			end
-			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
-			return true
-		end
-		return false
-	end
-	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget
-
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
 		local specId = GetSpecialization()
@@ -2507,7 +2482,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						TRB.Data.snapshotData.ascendance.endTime = nil
 					end
 				elseif spellId == TRB.Data.spells.flameShock.id then
-					if InitializeTarget(destGUID) then
+					if TRB.Functions.Class:InitializeTarget(destGUID) then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- FS Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].flameShock = true
 							if type == "SPELL_AURA_APPLIED" then
@@ -2815,6 +2790,30 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Frames.barContainerFrame:Hide()
 			TRB.Data.snapshotData.isTracking = false
 		end
+	end
+
+	function TRB.Functions.Class:InitializeTarget(guid, selfInitializeAllowed)
+		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
+			return false
+		end
+
+		local specId = GetSpecialization()
+
+		if guid ~= nil and guid ~= "" then
+			if not TRB.Functions.Target:CheckTargetExists(guid) then
+				TRB.Functions.Target:InitializeTarget(guid)
+				if specId == 1 then -- Elemental
+					TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
+					TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
+				elseif specId == 3 then -- Restoration
+					TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
+					TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
+				end
+			end
+			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+			return true
+		end
+		return false
 	end
 
 	--HACK to fix FPS

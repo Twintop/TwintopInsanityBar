@@ -1377,36 +1377,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 	end
 
-	local function InitializeTarget(guid, selfInitializeAllowed)
-		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
-			return false
-		end
-
-		local specId = GetSpecialization()
-
-		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.Target:CheckTargetExists(guid) then
-				TRB.Functions.Target:InitializeTarget(guid)
-				if specId == 2 then
-					TRB.Data.snapshotData.targetData.targets[guid].shadowWordPain = false
-					TRB.Data.snapshotData.targetData.targets[guid].shadowWordPainRemaining = 0
-				elseif specId == 3 then
-					TRB.Data.snapshotData.targetData.targets[guid].auspiciousSpirits = 0
-					TRB.Data.snapshotData.targetData.targets[guid].shadowWordPain = false
-					TRB.Data.snapshotData.targetData.targets[guid].shadowWordPainRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].vampiricTouch = false
-					TRB.Data.snapshotData.targetData.targets[guid].vampiricTouchRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].devouringPlague = false
-					TRB.Data.snapshotData.targetData.targets[guid].devouringPlagueRemaining = 0
-				end
-			end
-			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
-			return true
-		end
-		return false
-	end
-	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget
-
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
 		local specId = GetSpecialization()
@@ -3938,7 +3908,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.casting.mindSearWithMindDevourer = false
 						end
 					elseif spellId == TRB.Data.spells.vampiricTouch.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- VT Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].vampiricTouch = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -3953,7 +3923,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							end
 						end
 					elseif spellId == TRB.Data.spells.devouringPlague.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- DP Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].devouringPlague = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -4043,7 +4013,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 				-- Spec agnostic
 				if spellId == TRB.Data.spells.shadowWordPain.id then
-					if InitializeTarget(destGUID) then
+					if TRB.Functions.Class:InitializeTarget(destGUID) then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SWP Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].shadowWordPain = true
 							if type == "SPELL_AURA_APPLIED" then
@@ -4371,6 +4341,35 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Frames.barContainerFrame:Hide()
 			TRB.Data.snapshotData.isTracking = false
 		end
+	end
+
+	function TRB.Functions.Class:InitializeTarget(guid, selfInitializeAllowed)
+		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
+			return false
+		end
+
+		local specId = GetSpecialization()
+
+		if guid ~= nil and guid ~= "" then
+			if not TRB.Functions.Target:CheckTargetExists(guid) then
+				TRB.Functions.Target:InitializeTarget(guid)
+				if specId == 2 then
+					TRB.Data.snapshotData.targetData.targets[guid].shadowWordPain = false
+					TRB.Data.snapshotData.targetData.targets[guid].shadowWordPainRemaining = 0
+				elseif specId == 3 then
+					TRB.Data.snapshotData.targetData.targets[guid].auspiciousSpirits = 0
+					TRB.Data.snapshotData.targetData.targets[guid].shadowWordPain = false
+					TRB.Data.snapshotData.targetData.targets[guid].shadowWordPainRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].vampiricTouch = false
+					TRB.Data.snapshotData.targetData.targets[guid].vampiricTouchRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].devouringPlague = false
+					TRB.Data.snapshotData.targetData.targets[guid].devouringPlagueRemaining = 0
+				end
+			end
+			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+			return true
+		end
+		return false
 	end
 
 	--HACK to fix FPS

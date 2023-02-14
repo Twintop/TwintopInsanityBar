@@ -1517,26 +1517,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		specCache.survival.spells = spells
 	end
 
-	local function InitializeTarget(guid, selfInitializeAllowed)
-		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
-			return false
-		end
-
-		local specId = GetSpecialization()
-
-		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.Target:CheckTargetExists(guid) then
-				TRB.Functions.Target:InitializeTarget(guid)
-				TRB.Data.snapshotData.targetData.targets[guid].serpentSting = false
-				TRB.Data.snapshotData.targetData.targets[guid].serpentStingRemaining = 0
-			end
-			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
-			return true
-		end
-		return false
-	end
-	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget	
-
 	local function GetFrenzyRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.frenzy)
 	end
@@ -3540,7 +3520,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				if spellId == TRB.Data.spells.killShot.id then
 					TRB.Data.snapshotData.audio.playedKillShotCue = false
 				elseif spellId == TRB.Data.spells.serpentSting.id then
-					if InitializeTarget(destGUID) then
+					if TRB.Functions.Class:InitializeTarget(destGUID) then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SS Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].serpentSting = true
 							if type == "SPELL_AURA_APPLIED" then
@@ -3838,6 +3818,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Frames.barContainerFrame:Hide()
 			TRB.Data.snapshotData.isTracking = false
 		end
+	end
+
+	function TRB.Functions.Class:InitializeTarget(guid, selfInitializeAllowed)
+		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
+			return false
+		end
+
+		local specId = GetSpecialization()
+
+		if guid ~= nil and guid ~= "" then
+			if not TRB.Functions.Target:CheckTargetExists(guid) then
+				TRB.Functions.Target:InitializeTarget(guid)
+				TRB.Data.snapshotData.targetData.targets[guid].serpentSting = false
+				TRB.Data.snapshotData.targetData.targets[guid].serpentStingRemaining = 0
+			end
+			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+			return true
+		end
+		return false
 	end
 
 	--HACK to fix FPS

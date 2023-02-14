@@ -1653,50 +1653,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		return resource * modifier
 	end
 
-	local function InitializeTarget(guid, selfInitializeAllowed)
-		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
-			return false
-		end
-
-		local specId = GetSpecialization()
-
-		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.Target:CheckTargetExists(guid) then
-				TRB.Functions.Target:InitializeTarget(guid)
-				if specId == 1 then -- Balance
-					TRB.Data.snapshotData.targetData.targets[guid].sunfire = false
-					TRB.Data.snapshotData.targetData.targets[guid].sunfireRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].moonfire = false
-					TRB.Data.snapshotData.targetData.targets[guid].moonfireRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].stellarFlare = false
-					TRB.Data.snapshotData.targetData.targets[guid].stellarFlareRemaining = 0
-				elseif specId == 2 then -- Feral
-					TRB.Data.snapshotData.targetData.targets[guid].rake = false
-					TRB.Data.snapshotData.targetData.targets[guid].rakeRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].rakeSnapshot = 0
-					TRB.Data.snapshotData.targetData.targets[guid].rip = false
-					TRB.Data.snapshotData.targetData.targets[guid].ripRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].ripSnapshot = 0
-					TRB.Data.snapshotData.targetData.targets[guid].thrash = false
-					TRB.Data.snapshotData.targetData.targets[guid].thrashRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].thrashSnapshot = 0
-					TRB.Data.snapshotData.targetData.targets[guid].moonfire = false
-					TRB.Data.snapshotData.targetData.targets[guid].moonfireRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].moonfireSnapshot = 0
-				elseif specId == 4 then -- Restoration
-					TRB.Data.snapshotData.targetData.targets[guid].sunfire = false
-					TRB.Data.snapshotData.targetData.targets[guid].sunfireRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].moonfire = false
-					TRB.Data.snapshotData.targetData.targets[guid].moonfireRemaining = 0
-				end
-			end
-			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
-			return true
-		end
-		return false
-	end
-	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget
-
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
 		local specId = GetSpecialization()
@@ -4903,7 +4859,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			if sourceGUID == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "balance" then
 					if spellId == TRB.Data.spells.sunfire.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Sunfire Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].sunfire = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -4919,7 +4875,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							end
 						end
 					elseif spellId == TRB.Data.spells.moonfire.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Moonfire Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].moonfire = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -4935,7 +4891,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							end
 						end
 					elseif spellId == TRB.Data.spells.stellarFlare.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Stellar Flare Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].stellarFlare = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -5084,7 +5040,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "feral" then
 					if spellId == TRB.Data.spells.rip.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rip Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].rip = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -5106,7 +5062,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							end
 						end
 					elseif spellId == TRB.Data.spells.rake.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rake Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].rake = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -5125,7 +5081,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							end
 						end
 					elseif spellId == TRB.Data.spells.thrash.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Thrash Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].thrash = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -5144,7 +5100,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							end
 						end
 					elseif spellId == TRB.Data.spells.moonfire.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Moonfire Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].moonfire = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -5309,7 +5265,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Data.snapshotData.efflorescence.endTime = currentTime + TRB.Data.spells.efflorescence.duration
 						end
 					elseif spellId == TRB.Data.spells.sunfire.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Sunfire Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].sunfire = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -5325,7 +5281,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							end
 						end
 					elseif spellId == TRB.Data.spells.moonfire.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Moonfire Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].moonfire = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -5697,6 +5653,49 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Frames.barContainerFrame:Hide()
 			TRB.Data.snapshotData.isTracking = false
 		end
+	end
+
+	function TRB.Functions.Class:InitializeTarget(guid, selfInitializeAllowed)
+		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
+			return false
+		end
+
+		local specId = GetSpecialization()
+
+		if guid ~= nil and guid ~= "" then
+			if not TRB.Functions.Target:CheckTargetExists(guid) then
+				TRB.Functions.Target:InitializeTarget(guid)
+				if specId == 1 then -- Balance
+					TRB.Data.snapshotData.targetData.targets[guid].sunfire = false
+					TRB.Data.snapshotData.targetData.targets[guid].sunfireRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].moonfire = false
+					TRB.Data.snapshotData.targetData.targets[guid].moonfireRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].stellarFlare = false
+					TRB.Data.snapshotData.targetData.targets[guid].stellarFlareRemaining = 0
+				elseif specId == 2 then -- Feral
+					TRB.Data.snapshotData.targetData.targets[guid].rake = false
+					TRB.Data.snapshotData.targetData.targets[guid].rakeRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].rakeSnapshot = 0
+					TRB.Data.snapshotData.targetData.targets[guid].rip = false
+					TRB.Data.snapshotData.targetData.targets[guid].ripRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].ripSnapshot = 0
+					TRB.Data.snapshotData.targetData.targets[guid].thrash = false
+					TRB.Data.snapshotData.targetData.targets[guid].thrashRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].thrashSnapshot = 0
+					TRB.Data.snapshotData.targetData.targets[guid].moonfire = false
+					TRB.Data.snapshotData.targetData.targets[guid].moonfireRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].moonfireSnapshot = 0
+				elseif specId == 4 then -- Restoration
+					TRB.Data.snapshotData.targetData.targets[guid].sunfire = false
+					TRB.Data.snapshotData.targetData.targets[guid].sunfireRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].moonfire = false
+					TRB.Data.snapshotData.targetData.targets[guid].moonfireRemaining = 0
+				end
+			end
+			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+			return true
+		end
+		return false
 	end
 
 	--HACK to fix FPS

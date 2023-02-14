@@ -1764,57 +1764,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		return resource * modifier
 	end
-	
-	local function InitializeTarget(guid, selfInitializeAllowed)
-		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
-			return false
-		end
-
-		local specId = GetSpecialization()
-		
-		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.Target:CheckTargetExists(guid) then
-				TRB.Functions.Target:InitializeTarget(guid)
-				if specId == 1 then
-					--Bleeds
-					TRB.Data.snapshotData.targetData.targets[guid].garrote = false
-					TRB.Data.snapshotData.targetData.targets[guid].garroteRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].rupture = false
-					TRB.Data.snapshotData.targetData.targets[guid].ruptureRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].internalBleeding = false
-					TRB.Data.snapshotData.targetData.targets[guid].internalBleedingRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].crimsonTempest = false
-					TRB.Data.snapshotData.targetData.targets[guid].crimsonTempestRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpike = false
-					--Poisons
-					TRB.Data.snapshotData.targetData.targets[guid].amplifyingPoison = false
-					TRB.Data.snapshotData.targetData.targets[guid].amplifyingPoisonRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].atrophicPoison = false
-					TRB.Data.snapshotData.targetData.targets[guid].atrophicPoisonRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].deadlyPoison = false
-					TRB.Data.snapshotData.targetData.targets[guid].deadlyPoisonRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoison = false
-					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoisonRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].woundPoison = false
-					TRB.Data.snapshotData.targetData.targets[guid].woundPoisonRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].numbingPoison = false
-					TRB.Data.snapshotData.targetData.targets[guid].numbingPoisonRemaining = 0
-				elseif specId == 2 then
-					--Poisons
-					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoison = false
-					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoisonRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].woundPoison = false
-					TRB.Data.snapshotData.targetData.targets[guid].woundPoisonRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].numbingPoison = false
-					TRB.Data.snapshotData.targetData.targets[guid].numbingPoisonRemaining = 0
-				end
-			end
-			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
-			return true
-		end
-		return false
-	end
-	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget
 
 	local function UpdateCastingResourceFinal()
 		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
@@ -4056,7 +4005,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							TRB.Data.spells.subterfuge.isActive = false
 						end
 					elseif spellId == TRB.Data.spells.garrote.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_CAST_SUCCESS" then
 								if not((TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.subterfuge) and IsStealthed()) or TRB.Data.spells.subterfuge.isActive) then
 									TRB.Data.snapshotData.garrote.startTime = currentTime
@@ -4082,7 +4031,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							end
 						end
 					elseif spellId == TRB.Data.spells.rupture.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rupture Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].rupture = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -4098,7 +4047,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							end
 						end
 					elseif spellId == TRB.Data.spells.internalBleeding.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- IB Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].internalBleeding = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -4114,7 +4063,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							end
 						end
 					elseif spellId == TRB.Data.spells.crimsonTempest.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- CT Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].crimsonTempest = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -4130,7 +4079,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							end
 						end
 					elseif spellId == TRB.Data.spells.deadlyPoison.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- DP Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].deadlyPoison = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -4146,7 +4095,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							end
 						end
 					elseif spellId == TRB.Data.spells.amplifyingPoison.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Amplifying Poison Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].amplifyingPoison = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -4172,7 +4121,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							TRB.Data.snapshotData.serratedBoneSpike.charges, TRB.Data.snapshotData.serratedBoneSpike.maxCharges, TRB.Data.snapshotData.serratedBoneSpike.startTime, TRB.Data.snapshotData.serratedBoneSpike.duration, _ = GetSpellCharges(TRB.Data.spells.serratedBoneSpike.id)
 						end
 					elseif spellId == TRB.Data.spells.serratedBoneSpike.debuffId then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].serratedBoneSpike = true
 								triggerUpdate = true
@@ -4459,7 +4408,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						TRB.Data.spells.sepsis.isActive = false
 					end
 				elseif spellId == TRB.Data.spells.cripplingPoison.id then
-					if InitializeTarget(destGUID) then
+					if TRB.Functions.Class:InitializeTarget(destGUID) then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- CP Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].cripplingPoison = true
 							if type == "SPELL_AURA_APPLIED" then
@@ -4475,7 +4424,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						end
 					end
 				elseif spellId == TRB.Data.spells.woundPoison.id then
-					if InitializeTarget(destGUID) then
+					if TRB.Functions.Class:InitializeTarget(destGUID) then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- WP Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].woundPoison = true
 							if type == "SPELL_AURA_APPLIED" then
@@ -4491,7 +4440,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						end
 					end
 				elseif spellId == TRB.Data.spells.numbingPoison.id then
-					if InitializeTarget(destGUID) then
+					if TRB.Functions.Class:InitializeTarget(destGUID) then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- NP Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].numbingPoison = true
 							if type == "SPELL_AURA_APPLIED" then
@@ -4507,7 +4456,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						end
 					end
 				elseif spellId == TRB.Data.spells.atrophicPoison.id then
-					if InitializeTarget(destGUID) then
+					if TRB.Functions.Class:InitializeTarget(destGUID) then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Atrophic Poison Applied to Target
 							TRB.Data.snapshotData.targetData.targets[destGUID].atrophicPoison = true
 							if type == "SPELL_AURA_APPLIED" then
@@ -4788,6 +4737,56 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Frames.barContainerFrame:Hide()
 			TRB.Data.snapshotData.isTracking = false
 		end
+	end
+	
+	function TRB.Functions.Class:InitializeTarget(guid, selfInitializeAllowed)
+		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
+			return false
+		end
+
+		local specId = GetSpecialization()
+		
+		if guid ~= nil and guid ~= "" then
+			if not TRB.Functions.Target:CheckTargetExists(guid) then
+				TRB.Functions.Target:InitializeTarget(guid)
+				if specId == 1 then
+					--Bleeds
+					TRB.Data.snapshotData.targetData.targets[guid].garrote = false
+					TRB.Data.snapshotData.targetData.targets[guid].garroteRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].rupture = false
+					TRB.Data.snapshotData.targetData.targets[guid].ruptureRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].internalBleeding = false
+					TRB.Data.snapshotData.targetData.targets[guid].internalBleedingRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].crimsonTempest = false
+					TRB.Data.snapshotData.targetData.targets[guid].crimsonTempestRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].serratedBoneSpike = false
+					--Poisons
+					TRB.Data.snapshotData.targetData.targets[guid].amplifyingPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].amplifyingPoisonRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].atrophicPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].atrophicPoisonRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].deadlyPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].deadlyPoisonRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoisonRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].woundPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].woundPoisonRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].numbingPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].numbingPoisonRemaining = 0
+				elseif specId == 2 then
+					--Poisons
+					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].cripplingPoisonRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].woundPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].woundPoisonRemaining = 0
+					TRB.Data.snapshotData.targetData.targets[guid].numbingPoison = false
+					TRB.Data.snapshotData.targetData.targets[guid].numbingPoisonRemaining = 0
+				end
+			end
+			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+			return true
+		end
+		return false
 	end
 
 	--HACK to fix FPS

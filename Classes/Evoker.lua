@@ -844,27 +844,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		return resource * modifier
 	end
-	
-	local function InitializeTarget(guid, selfInitializeAllowed)
-		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
-			return false
-		end
-
-		local specId = GetSpecialization()
-		
-		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.Target:CheckTargetExists(guid) then
-				TRB.Functions.Target:InitializeTarget(guid)
-				if specId == 1 then
-				elseif specId == 2 then
-				end
-			end
-			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
-			return true
-		end
-		return false
-	end
-	TRB.Functions.Target.InitializeTarget_Class = InitializeTarget
 
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
@@ -2103,7 +2082,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							TRB.Data.snapshotData.audio.playedDanceOfChiJiCue = false
 						end
 					elseif spellId == TRB.Data.spells.markOfTheCrane.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 								ApplyMarkOfTheCrane(destGUID)
 								triggerUpdate = true
@@ -2115,21 +2094,21 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							end
 						end
 					elseif spellId == TRB.Data.spells.tigerPalm.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_CAST_SUCCESS" then
 								ApplyMarkOfTheCrane(destGUID)
 								triggerUpdate = true
 							end
 						end
 					elseif spellId == TRB.Data.spells.blackoutKick.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_CAST_SUCCESS" then
 								ApplyMarkOfTheCrane(destGUID)
 								triggerUpdate = true
 							end
 						end
 					elseif spellId == TRB.Data.spells.risingSunKick.id then
-						if InitializeTarget(destGUID) then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_CAST_SUCCESS" then
 								ApplyMarkOfTheCrane(destGUID)
 								triggerUpdate = true
@@ -2532,6 +2511,26 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Frames.barContainerFrame:Hide()
 			TRB.Data.snapshotData.isTracking = false
 		end
+	end
+	
+	function TRB.Functions.Class:InitializeTarget(guid, selfInitializeAllowed)
+		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
+			return false
+		end
+
+		local specId = GetSpecialization()
+		
+		if guid ~= nil and guid ~= "" then
+			if not TRB.Functions.Target:CheckTargetExists(guid) then
+				TRB.Functions.Target:InitializeTarget(guid)
+				if specId == 1 then
+				elseif specId == 2 then
+				end
+			end
+			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+			return true
+		end
+		return false
 	end
 
 	--HACK to fix FPS
