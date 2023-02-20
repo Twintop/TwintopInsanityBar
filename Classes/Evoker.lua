@@ -634,15 +634,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		}
 	end
 
-	local function Setup_Preservation()
-		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-			return
-		end
-
-		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "evoker", "preservation")
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)
-	end
-
 	local function Setup_Devastation()
 		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
 			return
@@ -650,6 +641,15 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "evoker", "devastation")
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.devastation)
+	end
+
+	local function Setup_Preservation()
+		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
+			return
+		end
+
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "evoker", "preservation")
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)
 	end
 
 	local function FillSpellData_Devastation()
@@ -851,18 +851,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		
 		if specId == 1 then -- Devastation
 		elseif specId == 2 then -- Preservation
-			--[[local motcTotal = 0
-			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
-				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 20 then
-					TRB.Data.snapshotData.targetData.targets[guid].markOfTheCrane = false
-					TRB.Data.snapshotData.targetData.targets[guid].markOfTheCraneRemaining = 0
-				else
-					if TRB.Data.snapshotData.targetData.targets[guid].serpentSting == true then
-						motcTotal = motcTotal + 1
-					end
-				end
-			end
-			TRB.Data.snapshotData.targetData.markOfTheCrane = motcTotal]]
 		end
 	end
 
@@ -1004,39 +992,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 					valid = true
 				end
-			--[[elseif var == "$serenityTime" then
-				if GetSerenityRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$danceOfChiJiTime" then
-				if GetDanceOfChiJiRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$motcCount" then
-				if TRB.Data.snapshotData.markOfTheCrane.count > 0 then
-					valid = true
-				end
-			elseif var == "$motcActiveCount" then
-				if TRB.Data.snapshotData.markOfTheCrane.activeCount > 0 then
-					valid = true
-				end
-			elseif var == "$motcMinTime" then
-				if TRB.Data.snapshotData.markOfTheCrane.minEndTime ~= nil then
-					valid = true
-				end
-			elseif var == "$motcMaxTime" then
-				if TRB.Data.snapshotData.markOfTheCrane.maxEndTime ~= nil then
-					valid = true
-				end
-			elseif var == "$motcTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].markOfTheCraneRemaining > 0 then
-					valid = true
-				end]]
 			elseif var == "$resource" or var == "$mana" then
 				if TRB.Data.snapshotData.resource > 0 then
 					valid = true
@@ -1193,27 +1148,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		----------------------------
 
 		local lookup = TRB.Data.lookup or {}
-		--[[lookup["#blackoutKick"] = TRB.Data.spells.blackoutKick.icon
-		lookup["#cracklingJadeLightning"] = TRB.Data.spells.cracklingJadeLightning.icon
-		lookup["#cjl"] = TRB.Data.spells.cracklingJadeLightning.icon
-		lookup["#danceOfChiJi"] = TRB.Data.spells.danceOfChiJi.icon
-		lookup["#detox"] = TRB.Data.spells.detox.icon
-		lookup["#disable"] = TRB.Data.spells.disable.icon
-		lookup["#energizingElixir"] = TRB.Data.spells.energizingElixir.icon
-		lookup["#expelHarm"] = TRB.Data.spells.expelHarm.icon
-		lookup["#fistsOfFury"] = TRB.Data.spells.fistsOfFury.icon
-		lookup["#fof"] = TRB.Data.spells.fistsOfFury.icon
-		lookup["#strikeOfTheWindlord"] = TRB.Data.spells.strikeOfTheWindlord.icon
-		lookup["#paralysis"] = TRB.Data.spells.paralysis.icon
-		lookup["#risingSunKick"] = TRB.Data.spells.risingSunKick.icon
-		lookup["#rsk"] = TRB.Data.spells.risingSunKick.icon
-		lookup["#serenity"] = TRB.Data.spells.serenity.icon
-		lookup["#spinningCraneKick"] = TRB.Data.spells.spinningCraneKick.icon
-		lookup["#sck"] = TRB.Data.spells.spinningCraneKick.icon
-		lookup["#tigerPalm"] = TRB.Data.spells.tigerPalm.icon
-		lookup["#touchOfDeath"] = TRB.Data.spells.touchOfDeath.icon
-		lookup["#vivify"] = TRB.Data.spells.vivify.icon]]
-
 		lookup["$manaMax"] = TRB.Data.character.maxResource
 		lookup["$mana"] = currentMana
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
@@ -1654,6 +1588,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local currentTime = GetTime()
 	end
 
+	local function UpdateSnapshot_Devastation()
+		UpdateSnapshot()
+		
+		local currentTime = GetTime()
+		local _
+	end
+
 	local function UpdateSnapshot_Preservation()
 		UpdateSnapshot()
 		UpdateSymbolOfHope()
@@ -1679,34 +1620,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		else
 			TRB.Data.snapshotData.conjuredChillglobe.onCooldown = false
 		end
-	end
-
-	local function UpdateSnapshot_Devastation()
-		UpdateSnapshot()
-		
-		local currentTime = GetTime()
-		local _
-
-		--[[
-		if TRB.Data.snapshotData.strikeOfTheWindlord.startTime ~= nil and currentTime > (TRB.Data.snapshotData.strikeOfTheWindlord.startTime + TRB.Data.snapshotData.strikeOfTheWindlord.duration) then
-			TRB.Data.snapshotData.strikeOfTheWindlord.startTime = nil
-			TRB.Data.snapshotData.strikeOfTheWindlord.duration = 0
-		end
-		
-		if TRB.Data.snapshotData.detox.startTime ~= nil and currentTime > (TRB.Data.snapshotData.detox.startTime + TRB.Data.snapshotData.detox.duration) then
-			TRB.Data.snapshotData.detox.startTime = nil
-			TRB.Data.snapshotData.detox.duration = 0
-		end
-
-		if TRB.Data.snapshotData.expelHarm.startTime ~= nil and currentTime > (TRB.Data.snapshotData.expelHarm.startTime + TRB.Data.snapshotData.expelHarm.duration) then
-			TRB.Data.snapshotData.expelHarm.startTime = nil
-			TRB.Data.snapshotData.expelHarm.duration = 0
-		end
-
-		if TRB.Data.snapshotData.paralysis.startTime ~= nil and currentTime > (TRB.Data.snapshotData.paralysis.startTime + TRB.Data.snapshotData.paralysis.duration) then
-			TRB.Data.snapshotData.paralysis.startTime = nil
-			TRB.Data.snapshotData.paralysis.duration = 0
-		end]]
 	end
 
 	local function UpdateResourceBar()
@@ -2048,92 +1961,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			end
 
 			if sourceGUID == TRB.Data.character.guid then
-				if specId == 1 and TRB.Data.barConstructedForSpec == "devastation" then --Devastation
-					--[[if spellId == TRB.Data.spells.strikeOfTheWindlord.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.strikeOfTheWindlord.startTime = currentTime
-							TRB.Data.snapshotData.strikeOfTheWindlord.duration = TRB.Data.spells.strikeOfTheWindlord.cooldown
-						end
-					elseif spellId == TRB.Data.spells.serenity.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshotData.serenity.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.serenity.duration, TRB.Data.snapshotData.serenity.endTime, _, _, _, TRB.Data.snapshotData.serenity.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.serenity.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshotData.serenity.isActive = false
-							TRB.Data.snapshotData.serenity.spellId = nil
-							TRB.Data.snapshotData.serenity.duration = 0
-							TRB.Data.snapshotData.serenity.endTime = nil
-						end
-					elseif spellId == TRB.Data.spells.danceOfChiJi.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshotData.danceOfChiJi.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.danceOfChiJi.duration, TRB.Data.snapshotData.danceOfChiJi.endTime, _, _, _, TRB.Data.snapshotData.danceOfChiJi.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.danceOfChiJi.id)
-
-							if TRB.Data.settings.evoker.devastation.audio.danceOfChiJi.enabled and not TRB.Data.snapshotData.audio.playedDanceOfChiJiCue then
-								TRB.Data.snapshotData.audio.playedDanceOfChiJiCue = true
-								---@diagnostic disable-next-line: redundant-parameter
-								PlaySoundFile(TRB.Data.settings.evoker.devastation.audio.danceOfChiJi.sound, TRB.Data.settings.core.audio.channel.channel)
-							end
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshotData.danceOfChiJi.isActive = false
-							TRB.Data.snapshotData.danceOfChiJi.spellId = nil
-							TRB.Data.snapshotData.danceOfChiJi.duration = 0
-							TRB.Data.snapshotData.danceOfChiJi.endTime = nil
-							TRB.Data.snapshotData.audio.playedDanceOfChiJiCue = false
-						end
-					elseif spellId == TRB.Data.spells.markOfTheCrane.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-								ApplyMarkOfTheCrane(destGUID)
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshotData.targetData.targets[destGUID].markOfTheCrane = false
-								TRB.Data.snapshotData.targetData.targets[destGUID].markOfTheCraneRemaining = 0
-								TRB.Data.snapshotData.targetData.markOfTheCrane = TRB.Data.snapshotData.targetData.markOfTheCrane - 1
-								triggerUpdate = true
-							end
-						end
-					elseif spellId == TRB.Data.spells.tigerPalm.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_CAST_SUCCESS" then
-								ApplyMarkOfTheCrane(destGUID)
-								triggerUpdate = true
-							end
-						end
-					elseif spellId == TRB.Data.spells.blackoutKick.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_CAST_SUCCESS" then
-								ApplyMarkOfTheCrane(destGUID)
-								triggerUpdate = true
-							end
-						end
-					elseif spellId == TRB.Data.spells.risingSunKick.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_CAST_SUCCESS" then
-								ApplyMarkOfTheCrane(destGUID)
-								triggerUpdate = true
-							end
-						end
-					elseif spellId == TRB.Data.spells.detox.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.detox.startTime = currentTime
-							TRB.Data.snapshotData.detox.duration = TRB.Data.spells.detox.cooldown
-						end
-					elseif spellId == TRB.Data.spells.expelHarm.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.expelHarm.startTime = currentTime
-							TRB.Data.snapshotData.expelHarm.duration = TRB.Data.spells.expelHarm.cooldown
-						end
-					elseif spellId == TRB.Data.spells.paralysis.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.paralysis.startTime = currentTime
-							TRB.Data.snapshotData.paralysis.duration = TRB.Data.spells.paralysis.cooldown
-
-							if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.paralysisRank2) then
-								TRB.Data.snapshotData.paralysis.duration = TRB.Data.snapshotData.paralysis.duration + TRB.Data.spells.paralysisRank2.cooldownMod
-							end
-						end
-					end]]
+				if specId == 1 and TRB.Data.barConstructedForSpec == "devastation" then --Devastation					
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "preservation" then
 					if spellId == TRB.Data.spells.symbolOfHope.id then
 						if type == "SPELL_AURA_REMOVED" then -- Lost Symbol of Hope

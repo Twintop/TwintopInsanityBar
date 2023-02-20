@@ -51,7 +51,11 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
 				configuration.endOfAscendance = settings.endOfAscendance
+			elseif specId == 2 then -- Enhancement
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
 			elseif specId == 3 then -- Restoration
+				configuration.endOfAscendance = settings.endOfAscendance
 			end
 		elseif classId == 10 then -- Monk
 			if specId == 2 then -- Mistweaver
@@ -124,6 +128,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
+			elseif specId == 2 then -- Enhancement
 			elseif specId == 3 then -- Restoration
 			end
 		elseif classId == 10 then -- Monk
@@ -176,6 +181,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
+			elseif specId == 2 then -- Enhancement
 			elseif specId == 3 then -- Restoration
 			end
 		elseif classId == 10 then -- Monk
@@ -282,6 +288,12 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.shaman.elemental) > 0 then -- Elemental
 				configuration.shaman.elemental = ExportConfigurationSections(7, 1, settings.shaman.elemental, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
+			
+			if TRB.Data.settings.core.experimental.specs.shaman.enhancement then
+				if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.shaman.enhancement) > 0 then -- Enhancement
+					configuration.shaman.enhancement = ExportConfigurationSections(7, 2, settings.shaman.enhancement, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+				end
+			end		
 
 			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.shaman.restoration) > 0 then -- Restoration
 				configuration.shaman.restoration = ExportConfigurationSections(7, 3, settings.shaman.restoration, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
@@ -319,7 +331,7 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		elseif classId == 13 and settings.evoker ~= nil then -- Evoker
 			configuration.evoker = {}
 			
-			if TRB.Data.settings.core.experimental.specs.evoker.devastation then			
+			if TRB.Data.settings.core.experimental.specs.evoker.devastation then
 				if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.devastation) > 0 then -- Devastation
 					configuration.evoker.devastation = ExportConfigurationSections(13, 1, settings.evoker.devastation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 				end
@@ -369,6 +381,10 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		-- Shamans
 		-- Elemental
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		if TRB.Data.settings.core.experimental.specs.shaman.enhancement then
+			-- Enhancement
+			configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		end
 		-- Restoration
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
@@ -443,7 +459,10 @@ function TRB.Functions.IO:Import(input)
 		(configuration.hunter ~= nil and (configuration.hunter.beastMastery ~= nil or configuration.hunter.marksmanship ~= nil or configuration.hunter.survival ~= nil)) or
 		(configuration.monk ~= nil and (configuration.monk.mistweaver ~= nil or configuration.monk.windwalker ~= nil)) or
 		(configuration.priest ~= nil and (configuration.priest.holy ~= nil or configuration.priest.shadow ~= nil)) or
-		(configuration.shaman ~= nil and (configuration.shaman.elemental ~= nil or configuration.shaman.restoration ~= nil)) or
+		(configuration.shaman ~= nil and
+			(configuration.shaman.elemental ~= nil or
+			configuration.shaman.restoration ~= nil or
+			(TRB.Data.settings.core.experimental.specs.shaman.enhancement and configuration.shaman.enhancement ~= nil))) or
 		(configuration.druid ~= nil and (configuration.druid.balance ~= nil or configuration.druid.feral ~= nil)) or
 		(configuration.evoker ~= nil and (TRB.Data.settings.core.experimental.specs.evoker.devastation and configuration.evoker.devastation ~= nil) or (TRB.Data.settings.core.experimental.specs.evoker.preservation and configuration.evoker.preservation ~= nil))) then
 		return -3

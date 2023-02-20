@@ -71,7 +71,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				fontSize = 13
 			},
 			right = {
-				text = "{$casting}[#casting$casting+]{$regen}[$regen+]",
+				text = "$mana",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 22
@@ -399,7 +399,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 	local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
-
 		settings.evoker.devastation = DevastationLoadDefaultSettings()
 		settings.evoker.preservation = PreservationLoadDefaultSettings()
 

@@ -25,6 +25,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	TRB.Options.Shaman.Enhancement = {}
 	TRB.Options.Shaman.Restoration = {}
 
+	TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.enhancement = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.restoration = {}
+
+	-- Elemental
 
 	local function ElementalLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
@@ -205,6 +210,169 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		settings.displayText = ElementalLoadDefaultBarTextSimpleSettings()
 		return settings
 	end
+
+	-- Enhancement
+	local function EnhancementLoadDefaultBarTextSimpleSettings()
+		local textSettings = {
+			fontSizeLock=true,
+			fontFaceLock=true,
+			left={
+				text="",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
+			},
+			middle={
+				text="",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
+			},
+			right={
+				text="$mana",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
+			}
+		}
+
+		return textSettings
+	end
+	
+	local function EnhancementLoadDefaultBarTextAdvancedSettings()
+		local textSettings = {
+			fontSizeLock = false,
+			fontFaceLock = true,
+			left = {
+				text = "{$ttd}[||nTTD: $ttd]",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 13
+			},
+			middle = {
+				text="",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 13
+			},
+			right = {
+				text = "$mana",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 22
+			}
+		}
+
+		return textSettings
+	end
+
+	local function EnhancementLoadDefaultSettings()
+		local settings = {
+			hastePrecision=2,
+			generation = {
+				mode="gcd",
+				gcds=1,
+				time=1.5,
+				enabled=true
+			},
+			displayBar = {
+				alwaysShow=false,
+				notZeroShow=true,
+				neverShow=false
+			},
+			bar = {
+				width=555,
+				height=11,
+				xPos=0,
+				yPos=-215,
+				border=1,
+				dragAndDrop=false,
+				pinToPersonalResourceDisplay=false,
+				showPassive=false,
+				showCasting=true
+			},
+			comboPoints = {
+				width=25,
+				height=21,
+				xPos=0,
+				yPos=4,
+				border=2,
+				spacing=14,
+				relativeTo="TOP",
+				relativeToName="Above - Middle",
+				fullWidth=true,
+			},
+			colors = {
+				text = {
+					current="FF4D4DFF",
+					casting="FFFFFFFF",
+					spending="FFFFFFFF",
+					passive="FF8080FF",
+					left="FFFFFFFF",
+					middle="FFFFFFFF",
+					right="FFFFFFFF",
+					dots={
+						enabled=true,
+						up="FFFFFFFF",
+						down="FFFF0000",
+						pandemic="FFFFFF00"
+					}
+				},
+				bar = {
+					border="FF000099",
+					background="66000000",
+					base="FF0000FF",
+					passive="FF8080FF",
+				},
+				comboPoints = {
+					border="FF246759",
+					background="66000000",
+					base="FF33937F",
+					penultimate="FFFF9900",
+					final="FFFF0000",
+					sameColor=false
+				},
+				threshold = {
+					under="FFFFFFFF",
+					over="FF00FF00",
+					unusable="FFFF0000",
+					outOfRange="FF440000"
+				}
+			},
+			displayText = {},
+			audio = {
+				overcap={
+					name = "Overcap",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+			},
+			textures = {
+				background="Interface\\Tooltips\\UI-Tooltip-Background",
+				backgroundName="Blizzard Tooltip",
+				border="Interface\\Buttons\\WHITE8X8",
+				borderName="1 Pixel",
+				resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
+				resourceBarName="Blizzard",
+				passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
+				passiveBarName="Blizzard",
+				castingBar="Interface\\TargetingFrame\\UI-StatusBar",
+				castingBarName="Blizzard",
+				textureLock=true,
+				comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+				comboPointsBackgroundName="Blizzard Tooltip",
+				comboPointsBorder="Interface\\Buttons\\WHITE8X8",
+				comboPointsBorderName="1 Pixel",
+				comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
+				comboPointsBarName="Blizzard",
+			}
+		}
+
+		settings.displayText = EnhancementLoadDefaultBarTextSimpleSettings()
+		return settings
+	end
+
 
 	-- Restoration
 	local function RestorationLoadDefaultBarTextSimpleSettings()
@@ -401,6 +569,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 		settings.shaman.elemental = ElementalLoadDefaultSettings()
+		settings.shaman.enhancement = EnhancementLoadDefaultSettings()
 		settings.shaman.restoration = RestorationLoadDefaultSettings()
 
 		return settings
@@ -1198,6 +1367,458 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		ElementalConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
 	end
 
+	
+	--[[
+
+	Enhancement Option Menus
+
+	]]
+
+	
+	local function EnhancementConstructResetDefaultsPanel(parent)
+		if parent == nil then
+			return
+		end
+
+		local spec = TRB.Data.settings.shaman.enhancement
+
+		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.enhancement
+		local yCoord = 5
+		local f = nil
+
+		local title = ""
+
+		StaticPopupDialogs["TwintopResourceBar_Shaman_Enhancement_Reset"] = {
+			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Enhancement Shaman settings will be changed. This will cause your UI to be reloaded!",
+			button1 = "Yes",
+			button2 = "No",
+			OnAccept = function()
+				TRB.Data.settings.shaman.enhancement = nil
+				C_UI.Reload()
+			end,
+			timeout = 0,
+			whileDead = true,
+			hideOnEscape = true,
+			preferredIndex = 3
+		}
+		StaticPopupDialogs["TwintopResourceBar_Shaman_Enhancement_ResetBarTextSimple"] = {
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Enhancement Shaman settings will be changed. This will cause your UI to be reloaded!",
+			button1 = "Yes",
+			button2 = "No",
+			OnAccept = function()
+				spec.displayText = EnhancementLoadDefaultBarTextSimpleSettings()
+				ReloadUI()
+			end,
+			timeout = 0,
+			whileDead = true,
+			hideOnEscape = true,
+			preferredIndex = 3
+		}
+		StaticPopupDialogs["TwintopResourceBar_Shaman_Enhancement_ResetBarTextAdvanced"] = {
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Enhancement Shaman settings will be changed. This will cause your UI to be reloaded!",
+			button1 = "Yes",
+			button2 = "No",
+			OnAccept = function()
+				spec.displayText = EnhancementLoadDefaultBarTextAdvancedSettings()
+				ReloadUI()
+			end,
+			timeout = 0,
+			whileDead = true,
+			hideOnEscape = true,
+			preferredIndex = 3
+		}
+
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
+		controls.resetButton:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Shaman_Enhancement_Reset")
+		end)
+
+		yCoord = yCoord - 40
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
+		controls.resetButton1:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Shaman_Enhancement_ResetBarTextSimple")
+		end)
+		yCoord = yCoord - 40
+
+		controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
+		controls.resetButton3:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Shaman_Enhancement_ResetBarTextAdvanced")
+		end)
+
+		TRB.Frames.interfaceSettingsFrameContainer.controls.enhancement = controls
+	end
+
+	local function EnhancementConstructBarColorsAndBehaviorPanel(parent)
+		if parent == nil then
+			return
+		end
+
+		local spec = TRB.Data.settings.shaman.enhancement
+
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local controls = interfaceSettingsFrame.controls.enhancement
+		local yCoord = 5
+		local f = nil
+
+		local title = ""
+
+		controls.buttons.exportButton_Shaman_Enhancement_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Enhancement_BarDisplay:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Enhancement Shaman (Bar Display).", 7, 2, true, false, false, false, false)
+		end)
+
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 7, 2, yCoord)
+
+		yCoord = yCoord - 30
+		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 7, 2, yCoord, "Mana", "Maelstrom Weapon")
+
+		yCoord = yCoord - 60
+		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 2, yCoord, true, "Maelstrom Weapon")
+
+		yCoord = yCoord - 30
+		local yCoord2 = yCoord
+		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 2, yCoord, "Mana", "notFull", true, true, false)
+
+		yCoord = yCoord - 70
+		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
+		f = controls.colors.base
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
+		end)
+
+		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 225, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.border
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 2)
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord, yCoord)
+		f = controls.colors.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
+		end)
+
+		yCoord = yCoord - 40
+		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Maelstrom Weapon Colors", 0, yCoord)
+		controls.colors.comboPoints = {}
+
+		yCoord = yCoord - 30
+		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maelstrom Weapon", spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+		f = controls.colors.comboPoints.base
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		end)
+
+		controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maelstrom Weapon's border", spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.border
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		end)
+
+		yCoord = yCoord - 30		
+		controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Penultimate Maelstrom Weapon", spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
+		f = controls.colors.comboPoints.penultimate
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+		end)
+
+		controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled Maelstrom Weapon background", spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
+		end)
+
+		yCoord = yCoord - 30		
+		controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Final Maelstrom Weapon", spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
+		f = controls.colors.comboPoints.final
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.sameColorComboPoint
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Use highest Maelstrom Weapon color for all?")
+		f.tooltip = "When checked, the highest Maelstrom Weapon's color will be used for all Maelstrom Weapon. E.g., if you have maximum 10 Maelstrom Weapon stacks and currently have 9, the Penultimate color will be used for all Maelstrom Weapon instead of just the second to last."
+		f:SetChecked(spec.comboPoints.sameColor)
+		f:SetScript("OnClick", function(self, ...)
+			spec.comboPoints.sameColor = self:GetChecked()
+		end)		
+
+		TRB.Frames.interfaceSettingsFrameContainer.controls.enhancement = controls
+	end
+
+	local function EnhancementConstructFontAndTextPanel(parent)
+		if parent == nil then
+			return
+		end
+
+		local spec = TRB.Data.settings.shaman.enhancement
+
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local controls = interfaceSettingsFrame.controls.enhancement
+		local yCoord = 5
+		local f = nil
+
+		local title = ""
+
+		controls.buttons.exportButton_Shaman_Enhancement_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Enhancement_FontAndText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Enhancement Shaman (Font & Text).", 7, 2, false, true, false, false, false)
+		end)
+
+		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 7, 2, yCoord)
+
+		yCoord = yCoord - 40
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Mana", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+		f = controls.colors.text.current
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+		end)
+
+		yCoord = yCoord - 130
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+
+		yCoord = yCoord - 50
+		title = "Haste / Crit / Mastery / Vers Decimal Precision"
+		controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0)
+			self.EditBox:SetText(value)
+			spec.hastePrecision = value
+		end)
+
+		yCoord = yCoord - 30
+		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+		
+		yCoord = yCoord - 25
+		
+		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_dotColor", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.dotColor
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter and DoT timer color based on DoT status?")
+		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers ($fsCount) will change based on whether or not the DoT is on the current target."
+		f:SetChecked(spec.colors.text.dots.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.text.dots.enabled = self:GetChecked()
+		end)
+		
+		controls.colors.dots = {}
+		
+		controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
+		f = controls.colors.dots.up
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
+		end)
+		
+		controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
+		f = controls.colors.dots.pandemic
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
+		end)
+		
+		controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
+		f = controls.colors.dots.down
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
+		end)
+
+		TRB.Frames.interfaceSettingsFrameContainer.controls.enhancement = controls
+	end
+
+	local function EnhancementConstructAudioAndTrackingPanel(parent)
+		if parent == nil then
+			return
+		end
+
+		local spec = TRB.Data.settings.shaman.enhancement
+
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local controls = interfaceSettingsFrame.controls.enhancement
+		local yCoord = 5
+		local f = nil
+
+		local title = ""
+
+		controls.buttons.exportButton_Shaman_Enhancement_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Enhancement_AudioAndTracking:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Enhancement Shaman (Audio & Tracking).", 7, 2, false, false, true, false, false)
+		end)
+
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+
+		TRB.Frames.interfaceSettingsFrameContainer.controls.enhancement = controls
+	end
+
+	local function EnhancementConstructBarTextDisplayPanel(parent, cache)
+		if parent == nil then
+			return
+		end
+
+		local spec = TRB.Data.settings.shaman.enhancement
+
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local controls = interfaceSettingsFrame.controls.enhancement
+		local yCoord = 5
+		local f = nil
+
+		local namePrefix = "Shaman_Enhancement"
+
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		controls.buttons.exportButton_Shaman_Enhancement_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Enhancement_BarText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Enhancement Shaman (Bar Text).", 7, 2, false, false, false, true, false)
+		end)
+
+		yCoord = yCoord - 30
+		TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
+
+		controls.textbox.left = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
+														430, 60, oUi.xCoord+95, yCoord)
+		f = controls.textbox.left
+		f:SetScript("OnTextChanged", function(self, input)
+			spec.displayText.left.text = self:GetText()
+			TRB.Data.barTextCache = {}
+			TRB.Functions.BarText:IsTtdActive(spec)
+		end)
+
+
+		yCoord = yCoord - 70
+		TRB.Functions.OptionsUi:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
+
+		controls.textbox.middle = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
+														430, 60, oUi.xCoord+95, yCoord)
+		f = controls.textbox.middle
+		f:SetScript("OnTextChanged", function(self, input)
+			spec.displayText.middle.text = self:GetText()
+			TRB.Data.barTextCache = {}
+			TRB.Functions.BarText:IsTtdActive(spec)
+		end)
+
+
+		yCoord = yCoord - 70
+		TRB.Functions.OptionsUi:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
+
+		controls.textbox.right = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
+														430, 60, oUi.xCoord+95, yCoord)
+		f = controls.textbox.right
+		f:SetScript("OnTextChanged", function(self, input)
+			spec.displayText.right.text = self:GetText()
+			TRB.Data.barTextCache = {}
+			TRB.Functions.BarText:IsTtdActive(spec)
+		end)
+
+		yCoord = yCoord - 30
+		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
+		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
+		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
+	end
+
+	local function EnhancementConstructOptionsPanel(cache)
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local parent = interfaceSettingsFrame.panel
+		local controls = interfaceSettingsFrame.controls.enhancement or {}
+		local yCoord = 0
+		local f = nil
+
+		controls.colors = {}
+		controls.labels = {}
+		controls.textbox = {}
+		controls.checkBoxes = {}
+		controls.dropDown = {}
+		controls.buttons = controls.buttons or {}
+
+		interfaceSettingsFrame.enhancementDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Enhancement", UIParent)
+		interfaceSettingsFrame.enhancementDisplayPanel.name = "Enhancement Shaman"
+	---@diagnostic disable-next-line: undefined-field
+		interfaceSettingsFrame.enhancementDisplayPanel.parent = parent.name
+		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.enhancementDisplayPanel, "Enhancement Shaman")
+
+		parent = interfaceSettingsFrame.enhancementDisplayPanel
+
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Enhancement Shaman", 0, yCoord-5)
+
+		controls.checkBoxes.enhancementShamanEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_enhancementShamanEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.enhancementShamanEnabled
+		f:SetPoint("TOPLEFT", 320, yCoord-10)		
+		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
+		f.tooltip = "Is Twintop's Resource Bar enabled for the Enhancement Shaman specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		f:SetChecked(TRB.Data.settings.core.enabled.shaman.enhancement)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.enabled.shaman.enhancement = self:GetChecked()
+			TRB.Functions.Class:EventRegistration()
+			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.enhancementShamanEnabled, TRB.Data.settings.core.enabled.shaman.enhancement, true)
+		end)
+
+		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.enhancementShamanEnabled, TRB.Data.settings.core.enabled.shaman.enhancement, true)
+
+		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
+		controls.buttons.importButton:SetFrameLevel(10000)
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
+			StaticPopup_Show("TwintopResourceBar_Import")
+		end)
+
+		controls.buttons.exportButton_Shaman_Enhancement_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Shaman_Enhancement_All:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Enhancement Shaman (All).", 7, 2, true, true, true, true, false)
+		end)
+
+		yCoord = yCoord - 52
+
+		local tabs = {}
+		local tabsheets = {}
+
+		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Enhancement_Tab2", "Bar Display", 1, parent, 85)
+		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
+		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Enhancement_Tab3", "Font & Text", 2, parent, 85, tabs[1])
+		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Enhancement_Tab4", "Audio & Tracking", 3, parent, 120, tabs[2])
+		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Enhancement_Tab5", "Bar Text", 4, parent, 60, tabs[3])
+		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Enhancement_Tab1", "Reset Defaults", 5, parent, 100, tabs[4])
+
+		yCoord = yCoord - 15
+
+		for i = 1, 5 do 
+			PanelTemplates_TabResize(tabs[i], 0)
+			PanelTemplates_DeselectTab(tabs[i])
+			tabs[i].Text:SetPoint("TOP", 0, 0)
+			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Shaman_Enhancement_LayoutPanel" .. i, parent)
+			tabsheets[i]:Hide()
+			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
+		end
+
+		tabsheets[1]:Show()
+		tabsheets[1].selected = true
+		tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+		parent.tabs = tabs
+		parent.tabsheets = tabsheets
+		parent.lastTab = tabsheets[1]
+		parent.lastTabId = 1
+
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.enhancement = controls
+
+		EnhancementConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
+		EnhancementConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
+		EnhancementConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
+		EnhancementConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
+		EnhancementConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
+	end
 
 	--	Restoration Option Menus
 
@@ -1882,6 +2503,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function ConstructOptionsPanel(specCache)
 		TRB.Options:ConstructOptionsPanel()
 		ElementalConstructOptionsPanel(specCache.elemental)
+		
+		if TRB.Data.settings.core.experimental.specs.shaman.enhancement then
+			EnhancementConstructOptionsPanel(specCache.enhancement)
+		end
+
 		RestorationConstructOptionsPanel(specCache.restoration)
 	end
 	TRB.Options.Shaman.ConstructOptionsPanel = ConstructOptionsPanel

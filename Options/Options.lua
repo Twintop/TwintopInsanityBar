@@ -299,6 +299,15 @@ local function LoadDefaultSettings()
 						textures = true,
 						thresholds = true
 					},
+					enhancement = {
+						specEnable = false,
+						bar = true,
+						comboPoints = true,
+						displayBar = true,
+						font = true,
+						textures = true,
+						thresholds = true
+					},
 					restoration = {
 						specEnable = false,
 						bar = true,
@@ -341,7 +350,7 @@ local function LoadDefaultSettings()
 				},
 				evoker = {
 					devastation = true,
-					preservation = true,					
+					preservation = true,
 				},
 				hunter = {
 					beastMastery = true,
@@ -362,6 +371,7 @@ local function LoadDefaultSettings()
 				},
 				shaman = {
 					elemental = true,
+					enhancement = true,
 					restoration = true
 				},
 				warrior = {
@@ -374,6 +384,9 @@ local function LoadDefaultSettings()
 					evoker = {
 						devastation = false,
 						preservation = false
+					},
+					shaman = {
+						enhancement = false
 					}
 				}
 			}
@@ -409,6 +422,7 @@ local function LoadDefaultSettings()
 		},
 		shaman = {
 			elemental = {},
+			enhancement = {},
 			restoration = {}
 		},
 		warrior = {
@@ -688,6 +702,17 @@ local function ConstructAddonOptionsPanel()
 	f:SetChecked(TRB.Data.settings.core.experimental.specs.evoker.preservation)
 	f:SetScript("OnClick", function(self, ...)
 		TRB.Data.settings.core.experimental.specs.evoker.preservation = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.experimentalShamanEnhancement = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Shaman_Enhancement", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.experimentalShamanEnhancement
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Enhancement Shaman support")
+	f.tooltip = "This will enable experimental Enhancement Shaman support within the bar. If you change this setting and are currently logged in on a Shaman, you'll need to reload your UI before Enhancement Shaman configuration options become available."
+	f:SetChecked(TRB.Data.settings.core.experimental.specs.shaman.enhancement)
+	f:SetScript("OnClick", function(self, ...)
+		TRB.Data.settings.core.experimental.specs.shaman.enhancement = self:GetChecked()
 	end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -1044,7 +1069,7 @@ local function ConstructImportExportPanel()
 
 	if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation then
 		yCoord = yCoord - 35
-		controls.labels.druid = TRB.Functions.OptionsUi:BuildLabel(parent, "Evoker", oUi.xCoord, yCoord, 110, 20)
+		controls.labels.evoker = TRB.Functions.OptionsUi:BuildLabel(parent, "Evoker", oUi.xCoord, yCoord, 110, 20)
 		if TRB.Data.settings.core.experimental.specs.evoker.devastation and TRB.Data.settings.core.experimental.specs.evoker.preservation then
 			buttonOffset = oUi.xCoord + oUi.xPadding + 100
 			controls.buttons.exportButton_Evoker_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
@@ -1658,6 +1683,42 @@ local function ConstructImportExportPanel()
 	controls.exportButton_Shaman_Elemental_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Elemental Shaman (Bar Text).", 7, 1, false, false, false, true, false)
 	end)
+
+	if TRB.Data.settings.core.experimental.specs.shaman.enhancement then
+		yCoord = yCoord - 25
+		specName = "Enhancement"
+		controls.labels.shamanEnhancement = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+		
+		buttonOffset = oUi.xCoord + oUi.xPadding + 100
+		controls.buttons.exportButton_Shaman_Enhancement_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+		controls.buttons.exportButton_Shaman_Enhancement_All:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Enhancement Shaman (All).", 7, 2, true, true, true, true, false)
+		end)
+		
+		buttonOffset = buttonOffset + buttonSpacing + 50
+		controls.exportButton_Shaman_Enhancement_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+		controls.exportButton_Shaman_Enhancement_BarDisplay:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Enhancement Shaman (Bar Display).", 7, 2, true, false, false, false, false)
+		end)
+		
+		buttonOffset = buttonOffset + buttonSpacing + 80
+		controls.exportButton_Shaman_Enhancement_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+		controls.exportButton_Shaman_Enhancement_FontAndText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Enhancement Shaman (Font & Text).", 7, 2, false, true, false, false, false)
+		end)
+		
+		buttonOffset = buttonOffset + buttonSpacing + 90
+		controls.exportButton_Shaman_Enhancement_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+		controls.exportButton_Shaman_Enhancement_AudioAndTracking:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Enhancement Shaman (Audio & Tracking).", 7, 2, false, false, true, false, false)
+		end)
+		
+		buttonOffset = buttonOffset + buttonSpacing + 120
+		controls.exportButton_Shaman_Enhancement_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+		controls.exportButton_Shaman_Enhancement_BarText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Enhancement Shaman (Bar Text).", 7, 2, false, false, false, true, false)
+		end)
+	end
 
 	yCoord = yCoord - 25
 	specName = "Restoration"

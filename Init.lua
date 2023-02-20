@@ -8,7 +8,7 @@ TRB.Details.addonAuthor = GetAddOnMetadata(addonName, "Author")
 TRB.Details.addonAuthorServer = GetAddOnMetadata(addonName, "X-AuthorServer")
 TRB.Details.addonTitle = GetAddOnMetadata(addonName, "Title")
 TRB.Details.addonReleaseDate = GetAddOnMetadata(addonName, "X-ReleaseDate")
-TRB.Details.supportedSpecs = "|cFFA330C9Demon Hunter|r - Havoc\n|cFFFF7C0ADruid|r - Balance, Feral, Restoration\n|cFF33937FEvoker|r - Devastation (Experimental/Minimal), Preservation (Experimental)\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFF00FF98Monk|r - Mistweaver, Windwalker\n|cFFFFFFFFPriest|r - Holy, Shadow\n|cFFFFF468Rogue|r - Assassination, Outlaw\n|cFF0070DDShaman|r - Elemental, Restoration\n|cFFC69B6DWarrior|r - Arms, Fury"
+TRB.Details.supportedSpecs = "|cFFA330C9Demon Hunter|r - Havoc\n|cFFFF7C0ADruid|r - Balance, Feral, Restoration\n|cFF33937FEvoker|r - Devastation (Experimental/Minimal), Preservation (Experimental)\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFF00FF98Monk|r - Mistweaver, Windwalker\n|cFFFFFFFFPriest|r - Holy, Shadow\n|cFFFFF468Rogue|r - Assassination, Outlaw\n|cFF0070DDShaman|r - Elemental, Enhancement (Experimental/Minimal), Restoration\n|cFFC69B6DWarrior|r - Arms, Fury"
 
 local addonData = {
 	loaded = false,
@@ -68,12 +68,12 @@ TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 
 -- For the following specs, we need to have a secondary bar/bars created
 -- We're going to make these as StatusBars so we can use them for Death Knight runes and Warlock soulshards in the future
-if classIndexId == 4 or classIndexId == 10 or classIndexId == 11 or classIndexId == 13 then
+if classIndexId == 4 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 13 then
 	TRB.Frames.resource2Frames = {}
 	---@diagnostic disable-next-line: param-type-mismatch
 	TRB.Frames.resource2ContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame2", TRB.Frames.barContainerFrame, "BackdropTemplate")
 	
-	for x = 1, 7 do
+	for x = 1, 10 do
 		TRB.Frames.resource2Frames[x] = {}
 		---@diagnostic disable-next-line: param-type-mismatch
 		TRB.Frames.resource2Frames[x].containerFrame = CreateFrame("Frame", nil, TRB.Frames.resource2ContainerFrame, "BackdropTemplate")
@@ -170,7 +170,7 @@ end
 
 TRB.Frames.combatFrame = CreateFrame("Frame")
 
--- Settings placeholders
+-- Settings placeholders1
 TRB.Frames.interfaceSettingsFrameContainer = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls = {}
 

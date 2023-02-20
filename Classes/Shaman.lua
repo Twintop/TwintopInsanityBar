@@ -35,6 +35,23 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				thresholds = nil
 			}
 		},
+		enhancement = {
+			snapshotData = {},
+			barTextVariables = {
+				icons = {},
+				values = {}
+			},
+			spells = {},
+			talents = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
+			}
+		},
 		restoration = {
 			snapshotData = {},
 			barTextVariables = {
@@ -339,6 +356,76 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			targets = {}
 		}
 
+		-- Enhancement
+		specCache.enhancement.Global_TwintopResourceBar = {
+			ttd = 0,
+			resource = {
+				resource = 0,
+				casting = 0,
+				passive = 0,
+				regen = 0
+			},
+			dots = {
+			},
+			isPvp = false
+		}
+
+		specCache.enhancement.character = {
+			guid = UnitGUID("player"),
+		---@diagnostic disable-next-line: missing-parameter
+			specGroup = GetActiveSpecGroup(),
+			specId = 1,
+			maxResource = 10000,
+			maxResource2 = 10,
+			effects = {
+			},
+			items = {}
+		}
+
+		specCache.enhancement.spells = {
+			-- Shaman Class Baseline Abilities
+			flameShock = {
+				id = 188389,
+				name = "",
+				icon = "",
+				baseDuration = 18,
+				pandemic = true,
+				pandemicTime = 18 * 0.3
+			},
+
+			-- Enhancement Spec Baseline Abilities
+
+			-- Shaman Class Talents
+			
+			-- Enhancement Spec Talent Abilities
+			ascendance = {
+				id = 114052,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+
+		}
+
+		specCache.enhancement.snapshotData.manaRegen = 0
+		specCache.enhancement.snapshotData.audio = {
+		}
+		specCache.enhancement.snapshotData.targetData = {
+			ttdIsActive = false,
+			currentTargetGuid = nil,
+			targets = {},
+		}
+		specCache.enhancement.snapshotData.ascendance = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0
+		}
+
+		specCache.enhancement.barTextVariables = {
+			icons = {},
+			values = {}
+		}
 
 		
 		-- Restoration
@@ -652,6 +739,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.elemental)
 	end
 
+	local function Setup_Enhancement()
+		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
+			return
+		end
+
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "shaman", "enhancement")
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.enhancement)
+	end
+
 	local function Setup_Restoration()
 		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
 			return
@@ -748,6 +844,73 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		}
 		
 		specCache.elemental.spells = spells
+	end
+
+	local function FillSpellData_Enhancement()
+		Setup_Enhancement()
+		local spells = TRB.Functions.Spell:FillSpellData(specCache.enhancement.spells)
+
+		-- This is done here so that we can get icons for the options menu!
+		specCache.enhancement.barTextVariables.icons = {
+			{ variable = "#casting", icon = "", description = "The icon of the Mana generating spell you are currently hardcasting", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+			
+			{ variable = "#ascendance", icon = spells.ascendance.icon, description = spells.ascendance.name, printInSettings = true },
+			{ variable = "#flameShock", icon = spells.flameShock.icon, description = spells.flameShock.name, printInSettings = true },
+		}
+		specCache.enhancement.barTextVariables.values = {
+			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
+			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
+			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
+			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
+			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
+			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
+			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
+			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
+			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+
+			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
+			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
+			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
+			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
+			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
+			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
+			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
+			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+
+			{ variable = "$mana", description = "Current Mana", printInSettings = true, color = false },
+			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },
+			{ variable = "$manaMax", description = "Maximum Mana", printInSettings = true, color = false },
+			{ variable = "$resourceMax", description = "Maximum Mana", printInSettings = false, color = false },
+			
+			{ variable = "$maelstromWeapon", description = "Current Maelstrom Weapon", printInSettings = true, color = false },
+			{ variable = "$comboPoints", description = "Current Maelstrom Weapon", printInSettings = false, color = false },
+			{ variable = "$maelstromWeaponMax", description = "Maximum Maelstrom Weapon", printInSettings = true, color = false },
+			{ variable = "$comboPointsMax", description = "Maximum Maelstrom Weapon", printInSettings = false, color = false },
+
+			{ variable = "$ascendanceTime", description = "Duration remaining of Ascendance", printInSettings = true, color = false },
+
+			{ variable = "$fsCount", description = "Number of Flame Shocks active on targets", printInSettings = true, color = false },
+			{ variable = "$fsTime", description = "Time remaining on Flame Shock on your current target", printInSettings = true, color = false },
+			
+			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+		}
+
+		specCache.enhancement.spells = spells
 	end
 
 	local function FillSpellData_Restoration()
@@ -871,6 +1034,20 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end
 			end
 			TRB.Data.snapshotData.targetData.flameShock = fsTotal
+		elseif specId == 2 then -- Enhancement
+			local fsTotal = 0
+			for tguid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
+				if (currentTime - TRB.Data.snapshotData.targetData.targets[tguid].lastUpdate) > 10 then
+					TRB.Data.snapshotData.targetData.targets[tguid].flameShock = false
+					TRB.Data.snapshotData.targetData.targets[tguid].flameShockRemaining = 0
+				else
+					if TRB.Data.snapshotData.targetData.targets[tguid].flameShock == true then
+						fsTotal = fsTotal + 1
+					end
+				end
+			end
+
+			TRB.Data.snapshotData.targetData.flameShock = fsTotal
 		elseif specId == 3 then -- Restoration
 			local fsTotal = 0
 			for tguid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
@@ -896,6 +1073,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			if clearAll == true then
 				TRB.Data.snapshotData.targetData.flameShock = 0
 			end
+		elseif specId == 2 then
 		elseif specId == 3 then
 			if clearAll == true then
 				TRB.Data.snapshotData.targetData.flameShock = 0
@@ -920,6 +1098,21 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		if specId == 1 then
+			for k, v in pairs(TRB.Data.spells) do
+				local spell = TRB.Data.spells[k]
+				if spell ~= nil and spell.id ~= nil and spell.maelstrom ~= nil and spell.maelstrom < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+					if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
+						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+					end
+					TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
+					TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+	
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
+				end
+			end
+		elseif specId == 2 then
 			for k, v in pairs(TRB.Data.spells) do
 				local spell = TRB.Data.spells[k]
 				if spell ~= nil and spell.id ~= nil and spell.maelstrom ~= nil and spell.maelstrom < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
@@ -966,7 +1159,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		TRB.Functions.Bar:Construct(settings)
 
-		if specId == 1 or specId == 3 then
+		if specId == 1 or
+		(specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement) or
+		specId == 3 then
 			TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 		end
 	end
@@ -1033,6 +1228,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		if specId == 1 then
 			settings = TRB.Data.settings.shaman.elemental
 		elseif specId == 2 then
+			settings = TRB.Data.settings.shaman.enhancement
+		elseif specId == 3 then
 			settings = TRB.Data.settings.shaman.restoration
 		end
 
@@ -1090,10 +1287,50 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				if GetEchoesOfGreatSunderingRemainingTime() > 0 then
 					valid = true
 				end
-			elseif var == "$ascendanceTime" then
-				if TRB.Data.snapshotData.ascendance.remainingTime ~= nil and TRB.Data.snapshotData.ascendance.remainingTime > 0 then
+			end
+		elseif specId == 2 then --Enhancement
+			if var == "$casting" then
+				if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0 then
 					valid = true
 				end
+			elseif var == "$passive" then
+				if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
+					settings.generation.enabled and
+					((settings.generation.mode == "time" and settings.generation.time > 0) or
+					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+					valid = true
+				end
+			elseif var == "$resource" or var == "$mana" then
+				if TRB.Data.snapshotData.resource > 0 then
+					valid = true
+				end
+			elseif var == "$resourceMax" or var == "$manaMax" then
+				valid = true
+			elseif var == "$resourceTotal" or var == "$manaTotal" then
+				if TRB.Data.snapshotData.resource > 0 or
+					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
+					then
+					valid = true
+				end
+			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
+				if TRB.Data.snapshotData.resource > 0 or
+					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
+					valid = true
+				end
+			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
+				if TRB.Data.snapshotData.resource > 0 then
+					valid = true
+				end
+			elseif var == "$regen" or var == "$regenMana" or var == "$manaRegen" then
+				if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
+					((settings.generation.mode == "time" and settings.generation.time > 0) or
+					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+					valid = true
+				end
+			elseif var == "$comboPoints" or var == "$maelstromWeapon" then
+				valid = true
+			elseif var == "$comboPointsMax"or var == "$maelstromWeaponMax" then
+				valid = true
 			end
 		elseif specId == 3 then
 			if var == "$resource" or var == "$mana" then
@@ -1174,10 +1411,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				if TRB.Data.snapshotData.potion.onCooldown then
 					valid = true
 				end
-			elseif var == "$ascendanceTime" then
-				if TRB.Data.snapshotData.ascendance.remainingTime ~= nil and TRB.Data.snapshotData.ascendance.remainingTime > 0 then
-					valid = true
-				end
 			end
 		else
 			valid = false
@@ -1195,6 +1428,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.Data.snapshotData.targetData.targets ~= nil and
 				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
 				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining > 0 then
+				valid = true
+			end
+		elseif var == "$ascendanceTime" then
+			if TRB.Data.snapshotData.ascendance.remainingTime ~= nil and TRB.Data.snapshotData.ascendance.remainingTime > 0 then
 				valid = true
 			end
 		end
@@ -1300,7 +1537,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			eogsTime = string.format("%.1f", _eogsTime)
 		end
 
-
 		--$ascendanceTime
 		local _ascendanceTime = TRB.Data.snapshotData.ascendance.remainingTime
 		local ascendanceTime = string.format("%.1f", _ascendanceTime)
@@ -1334,8 +1570,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["#lightningBolt"] = TRB.Data.spells.lightningBolt.icon
 		lookup["#lightningShield"] = TRB.Data.spells.lightningShield.icon
 		lookup["#stormkeeper"] = TRB.Data.spells.stormkeeper.icon
-		lookup["$fsCount"] = flameShockCount
-		lookup["$fsTime"] = flameShockTime
 		lookup["$maelstromPlusCasting"] = maelstromPlusCasting
 		lookup["$maelstromPlusPassive"] = maelstromPlusPassive
 		lookup["$maelstromTotal"] = maelstromTotal
@@ -1357,12 +1591,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["$skStacks"] = stormkeeperStacks
 		lookup["$skTime"] = stormkeeperTime
 		lookup["$eogsTime"] = eogsTime
+		lookup["$fsCount"] = flameShockCount
+		lookup["$fsTime"] = flameShockTime
 		lookup["$ascendanceTime"] = ascendanceTime
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
-		lookupLogic["$fsCount"] = _flameShockCount
-		lookupLogic["$fsTime"] = _flameShockTime
 		lookupLogic["$maelstromPlusCasting"] = _maelstromPlusCasting
 		lookupLogic["$maelstromPlusPassive"] = _maelstromPlusPassive
 		lookupLogic["$maelstromTotal"] = _maelstromTotal
@@ -1384,7 +1618,92 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookupLogic["$skStacks"] = stormkeeperStacks
 		lookupLogic["$skTime"] = _stormkeeperTime
 		lookupLogic["$eogsTime"] = _eogsTime
+		lookupLogic["$fsCount"] = _flameShockCount
+		lookupLogic["$fsTime"] = _flameShockTime
 		lookupLogic["$ascendanceTime"] = _ascendanceTime
+		TRB.Data.lookupLogic = lookupLogic
+	end
+
+	local function RefreshLookupData_Enhancement()
+		local _
+		--Spec specific implementation
+		local currentTime = GetTime()
+		local normalizedMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
+
+		-- This probably needs to be pulled every refresh
+		TRB.Data.snapshotData.manaRegen, _ = GetPowerRegen()
+		local currentManaColor = TRB.Data.settings.shaman.enhancement.colors.text.current
+		--$mana
+		local manaPrecision = TRB.Data.settings.shaman.enhancement.manaPrecision or 1
+		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+
+		----------
+		--$fsCount and $fsTime
+		local _flameShockCount = TRB.Data.snapshotData.targetData.flameShock or 0
+		local flameShockCount = tostring(_flameShockCount)
+		local _flameShockTime = 0
+		
+		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
+			_flameShockTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining or 0
+		end
+
+		local flameShockTime
+
+		if TRB.Data.settings.shaman.enhancement.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShock then
+				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining > TRB.Data.spells.flameShock.pandemicTime then
+					flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.enhancement.colors.text.dots.up, _flameShockCount)
+					flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.enhancement.colors.text.dots.up, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining)
+				else
+					flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.enhancement.colors.text.dots.pandemic, _flameShockCount)
+					flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.enhancement.colors.text.dots.pandemic, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining)
+				end
+			else
+				flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.enhancement.colors.text.dots.down, _flameShockCount)
+				flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.enhancement.colors.text.dots.down, 0)
+			end
+		else
+			flameShockTime = string.format("%.1f", _flameShockTime)
+		end
+
+		--$ascendanceTime
+		local _ascendanceTime = TRB.Data.snapshotData.ascendance.remainingTime
+		local ascendanceTime = string.format("%.1f", _ascendanceTime)
+
+		----------------------------
+		Global_TwintopResourceBar.dots = {
+			fsCount = flameShockCount or 0,
+		}
+
+		local lookup = TRB.Data.lookup or {}
+		lookup["#ascendance"] = TRB.Data.spells.ascendance.icon
+		lookup["#flameShock"] = TRB.Data.spells.flameShock.icon
+		lookup["$manaMax"] = TRB.Data.character.maxResource
+		lookup["$mana"] = currentMana
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$resource"] = currentMana
+		lookup["$maelstromWeapon"] = TRB.Data.character.resource2
+		lookup["$comboPoints"] = TRB.Data.character.resource2
+		lookup["$maelstromWeaponMax"] = TRB.Data.character.maxResource2Raw
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
+		lookup["$ascendanceTime"] = ascendanceTime
+		lookup["$fsCount"] = flameShockCount
+		lookup["$fsTime"] = flameShockTime
+		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$manaMax"] = TRB.Data.character.maxResource
+		lookupLogic["$mana"] = TRB.Data.snapshotData.resource
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = TRB.Data.snapshotData.resource
+		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
+		lookupLogic["$essence"] = TRB.Data.character.resource2
+		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
+		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2Raw
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
+		lookupLogic["$ascendanceTime"] = _ascendanceTime
+		lookupLogic["$fsCount"] = _flameShockCount
+		lookupLogic["$fsTime"] = _flameShockTime
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -1702,6 +2021,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					end
 				end
 				return true
+			elseif specId == 2 then
+				--[[if currentSpellName == nil then
+					return true
+				else]]
+					TRB.Functions.Character:ResetCastingSnapshotData()
+					return false
+				--end
 			elseif specId == 3 then	
 				if currentSpellName == nil then
 					TRB.Functions.Character:ResetCastingSnapshotData()
@@ -1880,6 +2206,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end
 			end
 		end
+	end
+
+	local function UpdateSnapshot_Enhancement()
+		UpdateSnapshot()
+		
+		local currentTime = GetTime()
+		local _
 	end
 
 	local function UpdateSnapshot_Restoration()
@@ -2099,6 +2432,69 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					end
 					
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))					
+				end
+			end
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+		elseif specId == 2 then
+			local specSettings = classSettings.enhancement
+			UpdateSnapshot_Enhancement()
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
+
+			if TRB.Data.snapshotData.isTracking then
+				TRB.Functions.Bar:HideResourceBar()
+
+				if specSettings.displayBar.neverShow == false then
+					refreshText = true
+					local barColor = specSettings.colors.bar.base
+					local barBorderColor = specSettings.colors.bar.border
+
+					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
+					TRB.Functions.Bar:SetValue(specSettings, castingFrame, 0, 1)
+					TRB.Functions.Bar:SetValue(specSettings, passiveFrame, 0, 1)
+
+					barContainerFrame:SetAlpha(1.0)
+
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
+
+					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
+
+					--[[
+					local partial = UnitPartialPower("player", Enum.PowerType.Essence) / 1000
+					local totalEssence = math.min(partial + TRB.Data.snapshotData.resource2, TRB.Data.character.maxResource2Raw)
+					--print(partial, partial + TRB.Data.snapshotData.resource2, TRB.Data.snapshotData.resource2)
+
+					TRB.Frames.resource2Frames[1].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.base, true))
+					TRB.Frames.resource2Frames[1].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.border, true))
+					TRB.Frames.resource2Frames[1].containerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true))
+					TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[1].resourceFrame, totalEssence, TRB.Data.character.maxResource2Raw)
+					]]
+					
+					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+					for x = 1, TRB.Data.character.maxResource2 do
+						local cpBorderColor = specSettings.colors.comboPoints.border
+						local cpColor = specSettings.colors.comboPoints.base
+						local cpBR = cpBackgroundRed
+						local cpBG = cpBackgroundGreen
+						local cpBB = cpBackgroundBlue
+
+						if TRB.Data.snapshotData.resource2 >= x then
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+							if (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+								cpColor = specSettings.colors.comboPoints.penultimate
+							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+								cpColor = specSettings.colors.comboPoints.final
+							end
+						elseif TRB.Data.snapshotData.resource2+1 == x then
+							local partial = UnitPartialPower("player", Enum.PowerType.Essence)
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
+						else
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+						end
+
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+					end
 				end
 			end
 			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
@@ -2416,6 +2812,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Data.snapshotData.echoesOfGreatSundering.endTime = nil
 						end
 					end
+				elseif specId == 2 and TRB.Data.barConstructedForSpec == "enhancement" then
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "restoration" then
 					if spellId == TRB.Data.spells.symbolOfHope.id then
 						if type == "SPELL_AURA_REMOVED" then -- Lost Symbol of Hope
@@ -2552,6 +2949,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.Data.barConstructedForSpec = "elemental"
 				ConstructResourceBar(specCache.elemental.settings)
 			end
+		elseif specId == 2 then-- and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
+			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.shaman.enhancement)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.enhancement)
+			specCache.enhancement.talents = TRB.Functions.Talent:GetTalents()
+			FillSpellData_Enhancement()
+			TRB.Functions.Character:LoadFromSpecializationCache(specCache.enhancement)
+			TRB.Functions.RefreshLookupData = RefreshLookupData_Enhancement
+
+			if TRB.Data.barConstructedForSpec ~= "enhancement" then
+				TRB.Data.barConstructedForSpec = "enhancement"
+				ConstructResourceBar(specCache.enhancement.settings)
+			end
 		elseif specId == 3 then
 			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.shaman.restoration)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.restoration)
@@ -2617,8 +3026,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						C_Timer.After(1, function()
 							TRB.Data.barConstructedForSpec = nil
 							TRB.Data.settings.shaman.elemental = TRB.Functions.LibSharedMedia:ValidateLsmValues("Elemental Shaman", TRB.Data.settings.shaman.elemental)
+							TRB.Data.settings.shaman.enhancement = TRB.Functions.LibSharedMedia:ValidateLsmValues("Elemental Shaman", TRB.Data.settings.shaman.enhancement)
 							TRB.Data.settings.shaman.restoration = TRB.Functions.LibSharedMedia:ValidateLsmValues("Restoration Shaman", TRB.Data.settings.shaman.restoration)
 							FillSpellData_Elemental()
+							FillSpellData_Enhancement()
 							FillSpellData_Restoration()
 
 							SwitchSpec()
@@ -2656,6 +3067,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.Data.character.earthShockThreshold = -(TRB.Data.spells.elementalBlast.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].elementalBlast)
 			else
 				TRB.Data.character.earthShockThreshold = -(TRB.Data.spells.earthShock.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].earthShock)
+			end
+		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
+			TRB.Data.character.specName = "enhancement"
+			local maxComboPoints = 10
+			if maxComboPoints ~= TRB.Data.character.maxResource2 then
+				TRB.Data.character.maxResource2 = maxComboPoints
+				TRB.Functions.Bar:SetPosition(TRB.Data.settings.shaman.enhancement, TRB.Frames.barContainerFrame)
 			end
 		elseif specId == 3 then
 			TRB.Data.character.specName = "restoration"
@@ -2711,11 +3129,23 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Maelstrom
 			TRB.Data.resourceFactor = 1
+			TRB.Data.resource2 = nil
+			TRB.Data.resource2Id = nil
+		elseif specId == 2 and TRB.Data.settings.core.enabled.shaman.enhancement then
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.enhancement)
+			TRB.Data.specSupported = true
+			TRB.Data.resource = Enum.PowerType.Mana
+			TRB.Data.resourceFactor = 1
+			TRB.Data.resource2 = "CUSTOM"
+			TRB.Data.resource2Id = 344179
+			TRB.Data.resource2Factor = 1
 		elseif specId == 3 and TRB.Data.settings.core.enabled.shaman.restoration then
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.restoration)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
+			TRB.Data.resource2 = nil
+			TRB.Data.resource2Id = nil
 		else
 			TRB.Data.specSupported = false
 		end
@@ -2768,6 +3198,24 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					TRB.Frames.barContainerFrame:Show()
 				end
 			end
+		elseif specId == 2 then
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
+				(not UnitInVehicle("player")) and (
+					(not TRB.Data.settings.shaman.enhancement.displayBar.alwaysShow) and (
+						(not TRB.Data.settings.shaman.enhancement.displayBar.notZeroShow) or
+						(TRB.Data.settings.shaman.enhancement.displayBar.notZeroShow and TRB.Data.snapshotData.resource == TRB.Data.character.maxResource and TRB.Data.snapshotData.resource2 == 0)
+					)
+				)) then
+				TRB.Frames.barContainerFrame:Hide()
+				TRB.Data.snapshotData.isTracking = false
+			else
+				TRB.Data.snapshotData.isTracking = true
+				if TRB.Data.settings.shaman.enhancement.displayBar.neverShow == true then
+					TRB.Frames.barContainerFrame:Hide()
+				else
+					TRB.Frames.barContainerFrame:Show()
+				end
+			end
 		elseif specId == 3 then
 			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
@@ -2805,6 +3253,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				if specId == 1 then -- Elemental
 					TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
 					TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
+				elseif specId == 2 then -- Enhancement
+					TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
+					TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
 				elseif specId == 3 then -- Restoration
 					TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
 					TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
@@ -2821,7 +3272,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	function TRB.Functions.Class:TriggerResourceBarUpdates()
 		local specId = GetSpecialization()
-		if specId ~= 1 and specId ~= 3 then
+		if (specId ~= 1 and specId ~= 2 and specId ~= 3) or
+			(specId == 2 and not TRB.Data.settings.core.experimental.specs.shaman.enhancement) then
 			TRB.Functions.Bar:HideResourceBar(true)
 			return
 		end
