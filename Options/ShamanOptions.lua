@@ -325,9 +325,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					passive="FF8080FF",
 				},
 				comboPoints = {
-					border="FF246759",
+					border="ff0071df",
 					background="66000000",
-					base="FF33937F",
+					base="ff55e2ff",
 					penultimate="FFFF9900",
 					final="FFFF0000",
 					sameColor=false
