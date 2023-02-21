@@ -399,7 +399,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			
 			-- Enhancement Spec Talent Abilities
 			ascendance = {
-				id = 114052,
+				id = 114051,
 				name = "",
 				icon = "",
 				isTalent = true
@@ -2455,6 +2455,28 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					barContainerFrame:SetAlpha(1.0)
 
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
+					
+					if TRB.Data.snapshotData.ascendance.remainingTime > 0 then
+						local timeLeft = TRB.Data.snapshotData.ascendance.remainingTime
+						local timeThreshold = 0
+						local useEndOfAscendanceColor = false
+
+						if specSettings.endOfAscendance.enabled then
+							useEndOfAscendanceColor = true
+							if specSettings.endOfAscendance.mode == "gcd" then
+								local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+								timeThreshold = gcd * specSettings.endOfAscendance.gcdsMax
+							elseif specSettings.endOfAscendance.mode == "time" then
+								timeThreshold = specSettings.endOfAscendance.timeMax
+							end
+						end
+
+						if useEndOfAscendanceColor and timeLeft <= timeThreshold then
+							barColor = specSettings.colors.bar.inAscendance1GCD
+						else
+							barColor = specSettings.colors.bar.inAscendance
+						end
+					end
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 

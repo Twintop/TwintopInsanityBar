@@ -54,6 +54,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Enhancement
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
+				configuration.endOfAscendance = settings.endOfAscendance
 			elseif specId == 3 then -- Restoration
 				configuration.endOfAscendance = settings.endOfAscendance
 			end
