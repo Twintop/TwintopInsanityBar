@@ -29,7 +29,7 @@ Currently supported specs:
 - Monk - Mistweaver, Windwalker
 - Priest - Holy, Shadow
 - Rogue - Assassination, Outlaw
-- Shaman - Elemental, Restoration
+- Shaman - Elemental, Enhancement (Experimental/Minimal), Restoration
 - Warrior - Arms, Fury
 
 This is a fully customizable resource bar for multiple classes and specs to use to track their primary resource while in combat. Features include:
