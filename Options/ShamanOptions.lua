@@ -1674,7 +1674,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		yCoord = yCoord - 130
+		yCoord = yCoord - 30
 		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
 
 		yCoord = yCoord - 50
