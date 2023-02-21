@@ -1036,12 +1036,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.snapshotData.targetData.flameShock = fsTotal
 		elseif specId == 2 then -- Enhancement
 			local fsTotal = 0
-			for tguid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
-				if (currentTime - TRB.Data.snapshotData.targetData.targets[tguid].lastUpdate) > 10 then
-					TRB.Data.snapshotData.targetData.targets[tguid].flameShock = false
-					TRB.Data.snapshotData.targetData.targets[tguid].flameShockRemaining = 0
+			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
+				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
+					TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
+					TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
 				else
-					if TRB.Data.snapshotData.targetData.targets[tguid].flameShock == true then
+					if TRB.Data.snapshotData.targetData.targets[guid].flameShock == true then
 						fsTotal = fsTotal + 1
 					end
 				end
@@ -1050,12 +1050,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.snapshotData.targetData.flameShock = fsTotal
 		elseif specId == 3 then -- Restoration
 			local fsTotal = 0
-			for tguid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
-				if (currentTime - TRB.Data.snapshotData.targetData.targets[tguid].lastUpdate) > 10 then
-					TRB.Data.snapshotData.targetData.targets[tguid].flameShock = false
-					TRB.Data.snapshotData.targetData.targets[tguid].flameShockRemaining = 0
+			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
+				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
+					TRB.Data.snapshotData.targetData.targets[guid].flameShock = false
+					TRB.Data.snapshotData.targetData.targets[guid].flameShockRemaining = 0
 				else
-					if TRB.Data.snapshotData.targetData.targets[tguid].flameShock == true then
+					if TRB.Data.snapshotData.targetData.targets[guid].flameShock == true then
 						fsTotal = fsTotal + 1
 					end
 				end
@@ -2177,7 +2177,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function UpdateSnapshot()
 		local currentTime = GetTime()
 		TRB.Functions.Character:UpdateSnapshot()
+		
+		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
+			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShock then
+				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.flameShock.id, "target", "player"))
 			
+				if expiration ~= nil then
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining = expiration - currentTime
+				end
+			end
+		end
+
 		if TRB.Data.snapshotData.ascendance.startTime ~= nil and currentTime > (TRB.Data.snapshotData.ascendance.startTime + TRB.Data.snapshotData.ascendance.duration) then
 			TRB.Data.snapshotData.ascendance.startTime = nil
 			TRB.Data.snapshotData.ascendance.duration = 0
@@ -2196,16 +2206,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		TRB.Data.character.earthShockThreshold = TRB.Data.character.earthShockThreshold
 		TRB.Data.character.earthquakeThreshold = -(TRB.Data.spells.earthquake.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].earthquake)
-
-		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShock then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.flameShock.id, "target", "player"))
-			
-				if expiration ~= nil then
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining = expiration - currentTime
-				end
-			end
-		end
 	end
 
 	local function UpdateSnapshot_Enhancement()

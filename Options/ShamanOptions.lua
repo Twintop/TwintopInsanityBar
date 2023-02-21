@@ -223,7 +223,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				fontSize=13
 			},
 			middle={
-				text="",
+				text="{$ascendanceTime}[#ascendance $ascendanceTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontSize=13
@@ -244,13 +244,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "{$ttd}[TTD: $ttd]",
+				text = "#flameShock $fsCount {$ttd}[   TTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
 			},
 			middle = {
-				text="",
+				text="{$ascendanceTime}[#ascendance $ascendanceTime #ascendance]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
