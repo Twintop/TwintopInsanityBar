@@ -2401,8 +2401,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Data.snapshotData.audio.playedEsCue = true
 							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.esReady.sound, coreSettings.audio.channel.channel)
-						else
-							TRB.Data.snapshotData.audio.playedEsCue = false
 						end
 					else
 						barContainerFrame:SetAlpha(1.0)

@@ -1081,8 +1081,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.esReady = CreateFrame("CheckButton", "TwintopResourceBar_CB3_3", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.esReady
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Earth Shock/EQ is usable")
-		f.tooltip = "Play an audio cue when Earth Shock or Earthquake can be cast."
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Earth Shock is usable")
+		f.tooltip = "Play an audio cue when Earth Shock can be cast."
 		f:SetChecked(spec.audio.esReady.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.esReady.enabled = self:GetChecked()
