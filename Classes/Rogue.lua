@@ -122,6 +122,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			},
 
 			-- Rogue Class Baseline Abilities
+			stealth = {
+				id = 1784,
+				name = "",
+				icon = ""
+			},
 			ambush = {
 				id = 8676,
 				name = "",
@@ -770,6 +775,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			-- Outlaw Poisons
 			
 			-- Rogue Class Baseline Abilities
+			stealth = {
+				id = 1784,
+				name = "",
+				icon = ""
+			},
 			ambush = {
 				id = 8676,
 				name = "",
@@ -1451,6 +1461,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
 			{ variable = "#sepsis", icon = spells.sepsis.icon, description = spells.sepsis.name, printInSettings = true },
 			{ variable = "#serratedBoneSpike", icon = spells.serratedBoneSpike.icon, description = spells.serratedBoneSpike.name, printInSettings = true },
+			{ variable = "#stealth", icon = spells.stealth.icon, description = spells.stealth.name, printInSettings = true },
 			{ variable = "#woundPoison", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = true },
 			{ variable = "#wp", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = false },
 		}
@@ -1485,6 +1496,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
 			
 			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+			{ variable = "$inStealth", description = "Are you currently considered to be in stealth? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 
 
 			{ variable = "$energy", description = "Current Energy", printInSettings = true, color = false },
@@ -1608,6 +1620,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "#sepsis", icon = spells.sepsis.icon, description = spells.sepsis.name, printInSettings = true },
 			{ variable = "#sinisterStrike", icon = spells.sinisterStrike.icon, description = spells.sinisterStrike.name, printInSettings = true },
 			{ variable = "#skullAndCrossbones", icon = spells.skullAndCrossbones.icon, description = spells.skullAndCrossbones.name, printInSettings = true },
+			{ variable = "#stealth", icon = spells.stealth.icon, description = spells.stealth.name, printInSettings = true },
 			{ variable = "#trueBearing", icon = spells.trueBearing.icon, description = spells.trueBearing.name, printInSettings = true },
 			{ variable = "#woundPoison", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = true },
 			{ variable = "#wp", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = false },
@@ -1643,6 +1656,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
 			
 			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+			{ variable = "$inStealth", description = "Are you currently considered to be in stealth? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 
 
 			{ variable = "$energy", description = "Current Energy", printInSettings = true, color = false },
@@ -2223,6 +2237,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].woundPoisonRemaining > 0 then
 				valid = true
 			end
+		elseif var == "$inStealth" then
+			if IsStealthed() then
+				valid = true
+			end
 		end
 
 		return valid
@@ -2566,6 +2584,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["#sliceAndDice"] = TRB.Data.spells.sliceAndDice.icon
 		lookup["#sepsis"] = TRB.Data.spells.sepsis.icon
 		lookup["#serratedBoneSpike"] = TRB.Data.spells.serratedBoneSpike.icon
+		lookup["#stealth"] = TRB.Data.spells.stealth.icon
 		lookup["#woundPoison"] = TRB.Data.spells.woundPoison.icon
 		lookup["#wp"] = TRB.Data.spells.woundPoison.icon
 
@@ -2619,6 +2638,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$sliceAndDiceTime"] = sadTime
 		lookup["$blindsideTime"] = blindsideTime
 		lookup["$isBleeding"] = ""
+		lookup["$inStealth"] = ""
 
 		if TRB.Data.character.maxResource == TRB.Data.snapshotData.resource then
 			lookup["$passive"] = passiveEnergyMinusRegen
@@ -2685,6 +2705,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookupLogic["$sliceAndDiceTime"] = _sadTime
 		lookupLogic["$blindsideTime"] = _blindsideTime
 		lookupLogic["$isBleeding"] = ""
+		lookupLogic["$inStealth"] = ""
 
 		if TRB.Data.character.maxResource == TRB.Data.snapshotData.resource then
 			lookupLogic["$passive"] = _passiveEnergyMinusRegen
@@ -2923,6 +2944,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["#sepsis"] = TRB.Data.spells.sepsis.icon
 		lookup["#sinisterStrike"] = TRB.Data.spells.sinisterStrike.icon
 		lookup["#skullAndCrossbones"] = TRB.Data.spells.skullAndCrossbones.icon
+		lookup["#stealth"] = TRB.Data.spells.stealth.icon
 		lookup["#trueBearing"] = TRB.Data.spells.trueBearing.icon
 		lookup["#woundPoison"] = TRB.Data.spells.woundPoison.icon
 		lookup["#wp"] = TRB.Data.spells.woundPoison.icon
@@ -2981,6 +3003,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$overcap"] = overcap
 		lookup["$resourceOvercap"] = overcap
 		lookup["$energyOvercap"] = overcap
+		lookup["$inStealth"] = ""
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
@@ -3038,6 +3061,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookupLogic["$overcap"] = overcap
 		lookupLogic["$resourceOvercap"] = overcap
 		lookupLogic["$energyOvercap"] = overcap
+		lookupLogic["$inStealth"] = ""
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -3581,8 +3605,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					end
 
 					local barBorderColor = specSettings.colors.bar.border
-
-					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					if IsStealthed() or TRB.Data.spells.subterfuge.isActive or TRB.Data.spells.sepsis.isActive then
+						barBorderColor = specSettings.colors.bar.borderStealth
+					elseif specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -3907,7 +3932,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 					local barBorderColor = specSettings.colors.bar.border
 
-					if TRB.Data.snapshotData.rollTheBones.goodBuffs == true and TRB.Data.snapshotData.rollTheBones.startTime == nil then
+					if IsStealthed() or TRB.Data.spells.sepsis.isActive then
+						barBorderColor = specSettings.colors.bar.borderStealth
+					elseif TRB.Data.snapshotData.rollTheBones.goodBuffs == true and TRB.Data.snapshotData.rollTheBones.startTime == nil then
 						barBorderColor = specSettings.colors.bar.borderRtbGood
 					elseif TRB.Data.snapshotData.rollTheBones.goodBuffs == false and TRB.Data.snapshotData.rollTheBones.startTime == nil then
 						barBorderColor = specSettings.colors.bar.borderRtbBad

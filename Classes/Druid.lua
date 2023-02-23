@@ -1390,6 +1390,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "#predatorySwiftness", icon = spells.predatorySwiftness.icon, description = spells.predatorySwiftness.name, printInSettings = true },
 			{ variable = "#primalWrath", icon = spells.primalWrath.icon, description = spells.primalWrath.name, printInSettings = true },
 			{ variable = "#prowl", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = true },
+			{ variable = "#stealth", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = false },
 			{ variable = "#rake", icon = spells.rake.icon, description = spells.rake.name, printInSettings = true },
 			{ variable = "#rip", icon = spells.rip.icon, description = spells.rip.name, printInSettings = true },
 			{ variable = "#shadowmeld", icon = spells.shadowmeld.icon, description = spells.shadowmeld.name, printInSettings = true },
@@ -1430,6 +1431,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
 			
 			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+			{ variable = "$inStealth", description = "Are you currently considered to be in stealth? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 
 			{ variable = "$energy", description = "Current Energy", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Energy", printInSettings = false, color = false },
@@ -2435,6 +2437,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				if TRB.Data.snapshotData.tigersFury.cooldown.duration > 0 then
 					valid = true
 				end
+			elseif var == "$inStealth" then
+				if IsStealthed() then
+					valid = true
+				end
 			end
 		elseif specId == 4 then --Restoration
 			if var == "$resource" or var == "$mana" then
@@ -3286,6 +3292,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#predatorySwiftness"] = TRB.Data.spells.predatorySwiftness.icon
 		lookup["#primalWrath"] = TRB.Data.spells.primalWrath.icon
 		lookup["#prowl"] = TRB.Data.spells.prowl.icon
+		lookup["#stealth"] = TRB.Data.spells.prowl.icon
 		lookup["#rake"] = TRB.Data.spells.rake.icon
 		lookup["#rip"] = TRB.Data.spells.rip.icon
 		lookup["#shadowmeld"] = TRB.Data.spells.shadowmeld.icon
@@ -3348,6 +3355,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$energyOvercap"] = overcap
 		lookup["$comboPoints"] = TRB.Data.character.resource2
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+		lookup["$inStealth"] = ""
 		TRB.Data.lookup = lookup
 		
 
@@ -3403,6 +3411,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookupLogic["$energyOvercap"] = overcap
 		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$inStealth"] = ""
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -4586,8 +4595,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end
 
 					local barBorderColor = specSettings.colors.bar.border
-
-					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					if IsStealthed() then
+						barBorderColor = specSettings.colors.bar.borderStealth
+					elseif specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
