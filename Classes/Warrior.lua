@@ -343,6 +343,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			currentTargetGuid = nil,
 			targets = {},
 			rend = 0,
+			deepWounds = 0
 		}
 		specCache.arms.snapshotData.execute = {
 			startTime = nil,
@@ -2091,13 +2092,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rend Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].rend = true
 								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshotData.targetData.rend = TRB.Data.snapshotData.targetData.rend + 1
+									TRB.Data.snapshotData.targetData.rend = (TRB.Data.snapshotData.targetData.rend or 0) + 1
 								end
 								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
 								TRB.Data.snapshotData.targetData.targets[destGUID].rend = false
 								TRB.Data.snapshotData.targetData.targets[destGUID].rendRemaining = 0
-								TRB.Data.snapshotData.targetData.rend = TRB.Data.snapshotData.targetData.rend - 1
+								TRB.Data.snapshotData.targetData.rend = (TRB.Data.snapshotData.targetData.rend or 0) - 1
 								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
@@ -2107,13 +2108,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Deep Wounds Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].deepWounds = true
 								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshotData.targetData.deepWounds = TRB.Data.snapshotData.targetData.deepWounds + 1
+									TRB.Data.snapshotData.targetData.deepWounds = (TRB.Data.snapshotData.targetData.deepWounds or 0) + 1
 								end
 								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
 								TRB.Data.snapshotData.targetData.targets[destGUID].deepWounds = false
 								TRB.Data.snapshotData.targetData.targets[destGUID].deepWoundsRemaining = 0
-								TRB.Data.snapshotData.targetData.deepWounds = TRB.Data.snapshotData.targetData.deepWounds - 1
+								TRB.Data.snapshotData.targetData.deepWounds = (TRB.Data.snapshotData.targetData.deepWounds or 0) - 1
 								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
