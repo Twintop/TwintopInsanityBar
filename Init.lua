@@ -146,7 +146,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 				else
 					local deathPercent = TRB.Functions.TimeToDie:GetUnitDeathHealthPercentage("target")
 					local deathHealth = maxHealth * deathPercent
-					ttd = (currentHealth - deathHealth) / dps
+					ttd = math.max(math.max(currentHealth - deathHealth, 0) / dps, 0)
 				end
 			end
 

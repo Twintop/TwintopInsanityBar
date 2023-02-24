@@ -21,20 +21,29 @@ local function SanctumOfDomination_SylvanasWindrunner()
 end
 
 local unitDeathHealthPercentageList = {
+    ---- Wrath of the Lich King ----
+    --- Icecrown Citadel
+    ["36597"] = 0.1, -- The Lich King
+
+    ---- Warlords of Draenor ----
     -- Shadowmoon Burial Grounds
     ["76057"] = 0.2, -- Carrion Worm (pre-Bonemaw)
 
+    ---- Legion ----
     -- Court of Stars
     ["104215"] = CourtOfStars_PatrolCaptainGerdo(),
-
     -- Halls of Valor
     ["94960"] = 0.1, -- Hymdall
     ["95674"] = 0.6, -- Fenryr (p1)
-    ["95676"] = 0.8, -- Odyn
-    
+    ["95676"] = 0.8, -- Odyn    
     -- Trial of Valor
     ["114263"] = 0.1, -- Odyn
     
+    ---- Battle for Azeroth ----
+    -- Battle of Dazar'alor
+    ["165396"] = 0.055, -- Lady Jaina Proudmoore
+
+    ---- Shadowlands ----
     -- Sanctum of Domination
     ["175732"] = SanctumOfDomination_SylvanasWindrunner()
 }
