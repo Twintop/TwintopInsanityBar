@@ -144,7 +144,9 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 				if dps == nil or dps == 0 then
 					ttd = 0
 				else
-					ttd = currentHealth / dps
+					local deathPercent = TRB.Functions.TimeToDie:GetUnitDeathHealthPercentage("target")
+					local deathHealth = maxHealth * deathPercent
+					ttd = (currentHealth - deathHealth) / dps
 				end
 			end
 
