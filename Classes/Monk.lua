@@ -2,6 +2,7 @@ local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 10 then --Only do this if we're on a Monk!
 	TRB.Functions.Class = TRB.Functions.Class or {}
+	TRB.Functions.Character:ResetSnapshotData()
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resource2Frame = TRB.Frames.resource2Frame

@@ -2,6 +2,7 @@ local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 5 then --Only do this if we're on a Priest!
 	TRB.Functions.Class = TRB.Functions.Class or {}
+	TRB.Functions.Character:ResetSnapshotData()
 	
 	TRB.Frames.passiveFrame.thresholds[1] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 	TRB.Frames.passiveFrame.thresholds[2] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
@@ -861,6 +862,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				insanity = 15,
+				isTalent = true
+			},
+			shadowyInsight = {
+				id = 375981,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+			mindMelt = {
+				id = 391092,
+				name = "",
+				icon = "",
 				isTalent = true
 			},
 			maddeningTouch = {
@@ -4276,10 +4289,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 			TRB.Frames.barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
 			TRB.Frames.barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-			--EventRegistry:RegisterCallback("TwintopResourceBar.Update", TriggerResourceBarUpdates, "TwintopResourceBar")
 			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-
 			TRB.Details.addonData.registered = true
 		else
 			--TRB.Data.resource = MANA
@@ -4288,7 +4299,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			timerFrame:SetScript("OnUpdate", nil)
 			TRB.Frames.barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 			TRB.Frames.barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-			--EventRegistry:UnregisterCallback("TwintopResourceBar.Update", "TwintopResourceBar")
 			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
 			TRB.Details.addonData.registered = false

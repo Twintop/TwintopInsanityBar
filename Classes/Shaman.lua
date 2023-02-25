@@ -2,6 +2,7 @@ local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 7 then --Only do this if we're on a Shaman!
 	TRB.Functions.Class = TRB.Functions.Class or {}
+	TRB.Functions.Character:ResetSnapshotData()
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
