@@ -89,7 +89,6 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 	self.characterCheckSinceLastUpdate  = self.characterCheckSinceLastUpdate  + sinceLastUpdate
 	if self.sinceLastUpdate >= 0.05 then -- in seconds
 		TRB.Functions.Class:TriggerResourceBarUpdates()
-		--EventRegistry.TriggerEvent("TwintopResourceBar.Update", "trigger")
 		self.sinceLastUpdate = 0
 	end
 
@@ -170,9 +169,9 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 	end
 end
 
-TRB.Frames.combatFrame = CreateFrame("Frame")
+TRB.Frames.combatFrame = CreateFrame("Frame", "TwintopResourceBarFrame_CombatFrame", TRB.Frames.barContainerFrame)
 
--- Settings placeholders1
+-- Settings placeholders
 TRB.Frames.interfaceSettingsFrameContainer = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls = {}
 
@@ -280,8 +279,6 @@ TRB.Data.spells = {}
 
 TRB.Data.lookup = {}
 TRB.Data.lookupLogic = {}
-
-TRB.Functions.Character:ResetSnapshotData()
 
 TRB.Data.sanityCheckValues = {
 	barMaxWidth = 0,

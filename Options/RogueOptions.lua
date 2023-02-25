@@ -1,6 +1,7 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
-if classIndexId == 4 then --Only do this if we're on a Rogue!
+if classIndexId == 4 then --Only do this if we're on a Rogue!	
+	TRB.Functions.Character:ResetSnapshotData()
 	local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 	local oUi = TRB.Data.constants.optionsUi
 	

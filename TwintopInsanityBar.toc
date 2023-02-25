@@ -21,6 +21,8 @@ Libs\base64.lua
 Libs\json.lua
 Libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
 
+Init.lua
+
 Functions\Aura.lua
 Functions\Bar.lua
 Functions\BarText.lua
@@ -38,7 +40,6 @@ Functions\Target.lua
 Functions\Threshold.lua
 Functions\TimeToDie.lua
 
-Init.lua
 
 Classes\DemonHunter.lua
 Classes\Druid.lua
