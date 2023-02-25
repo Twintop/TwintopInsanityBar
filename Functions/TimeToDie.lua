@@ -4,6 +4,7 @@ TRB.Functions = TRB.Functions or {}
 TRB.Functions.TimeToDie = {}
 
 local triggeredCourtOfStars_PatrolCaptainGerdo_FlaskOfSolemnNight = false
+local instanceDifficulty = 0
 
 local ttdEventFrame = CreateFrame("Frame", "TwintopResourceBar_TtdEventFrame", TRB.Frames.barContainerFrame)
 ttdEventFrame:SetScript("OnEvent", function(self, event, arg1, arg2, arg3, ...)
@@ -20,6 +21,7 @@ ttdPlayerEnteringWorldFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 ttdPlayerEnteringWorldFrame:SetScript("OnEvent", function(self, event, ...)
     if event == "PLAYER_ENTERING_WORLD" then
         local instanceId = select(8, GetInstanceInfo())
+        instanceDifficulty = select(3, GetInstanceInfo())
 
         if instanceId == 1571 then -- Court of Stars
             ttdEventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
@@ -37,10 +39,7 @@ local function CourtOfStars_PatrolCaptainGerdo()
 end
 
 local function SanctumOfDomination_SylvanasWindrunner()
-    --local name, instanceType, difficultyID, difficultyName, maxPlayers, dynamicDifficulty, isDynamic, instanceID, instanceGroupSize, LfgDungeonID = GetInstanceInfo()
-    local difficultyID = select(3, GetInstanceInfo())
-
-    if difficultyID == 16 then -- Mythic
+    if instanceDifficulty == 16 then -- Mythic
         return 0.45
     else
         return 0.5
