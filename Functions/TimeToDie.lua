@@ -47,31 +47,59 @@ local function SanctumOfDomination_SylvanasWindrunner()
 end
 
 local unitDeathHealthPercentageList = {
+    ---- Vanilla ----
+
+    ---- Burning Crusade ----
+    --- Hyjal Summit ---
+    ["17968"] = 0.1, -- Archimonde
+
     ---- Wrath of the Lich King ----
-    --- Icecrown Citadel
+    --- Ulduar ---
+    ["32871"] = 0.03, -- Algalon the Observer
+    --- Icecrown Citadel ---
     ["36597"] = 0.1, -- The Lich King
 
+    ---- Cataclysm ----
+    --- Grim Batol ---
+    ["40320"] = 0.2, -- Valiona
+
+    ---- Mists of Pandaria ----
+
     ---- Warlords of Draenor ----
-    -- Shadowmoon Burial Grounds
-    ["76057"] = 0.2, -- Carrion Worm (pre-Bonemaw)
+    --- Shadowmoon Burial Grounds ---
+    ["76057"] = 0.2, -- Carrion Worm (trash/pre-Bonemaw)
 
     ---- Legion ----
-    -- Court of Stars
+    --- Court of Stars ---
     ["104215"] = CourtOfStars_PatrolCaptainGerdo,
-    -- Halls of Valor
+    --- Halls of Valor ---
     ["94960"] = 0.1, -- Hymdall
     ["95674"] = 0.6, -- Fenryr (p1)
-    ["95676"] = 0.8, -- Odyn    
-    -- Trial of Valor
+    ["95676"] = 0.8, -- Odyn
+    --- Maw of Souls ---
+    ["96759"] = 0.7, -- Helya
+    --- Trial of Valor ---
     ["114263"] = 0.1, -- Odyn
-    
+
     ---- Battle for Azeroth ----
-    -- Battle of Dazar'alor
+    --- Uldir ---
+    ["135452"] = 0.1, -- MOTHER
+    -- Battle of Dazar'alor ---
     ["165396"] = 0.055, -- Lady Jaina Proudmoore
 
     ---- Shadowlands ----
-    -- Sanctum of Domination
-    ["175732"] = SanctumOfDomination_SylvanasWindrunner
+    --- De Other Side ---
+    ["164555"] = 0.105, -- Millificent Manastorm
+    ["164556"] = 0.105, -- Millhouse Manastorm
+    ["166608"] = 0.105, -- Mueh'zala
+    --- Sanguine Depths ---
+    ["162099"] = 0.6, -- General Kaal
+    --- Sanctum of Domination ---
+    ["175732"] = SanctumOfDomination_SylvanasWindrunner,
+
+    ---- Dragonflight ----
+    --- Brackenhide Hollow ---
+    ["186121"] = 0.045, -- Decatriarch Wratheye TODO: verify 5% vs 4.5%
 }
 
 function TRB.Functions.TimeToDie:GetUnitDeathHealthPercentage(unit)
