@@ -93,7 +93,8 @@ local unitDeathHealthPercentageList = {
     ["164556"] = 0.105, -- Millhouse Manastorm
     ["166608"] = 0.105, -- Mueh'zala
     --- Sanguine Depths ---
-    ["162099"] = 0.6, -- General Kaal
+    ["162133"] = 0.7, -- General Kaal (gauntlet)
+    ["162099"] = 0.505, -- General Kaal
     --- Sanctum of Domination ---
     ["175732"] = SanctumOfDomination_SylvanasWindrunner,
 
