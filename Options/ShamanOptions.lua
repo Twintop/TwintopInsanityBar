@@ -476,6 +476,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				},
 				conjuredChillglobe = {
 					enabled = true, -- 7
+					cooldown = true
 				},
 				potionCooldown = {
 					enabled=true,

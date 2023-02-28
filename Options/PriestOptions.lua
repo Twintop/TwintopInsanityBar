@@ -116,6 +116,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				},
 				conjuredChillglobe = {
 					enabled = true, -- 7
+					cooldown = true
+				},
+				shadowfiend = {
+					enabled = true, -- 8
+					cooldown = false
 				},
 				potionCooldown = {
 					enabled=true,

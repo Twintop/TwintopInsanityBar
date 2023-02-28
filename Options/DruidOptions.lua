@@ -574,6 +574,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				},
 				conjuredChillglobe = {
 					enabled = true, -- 7
+					cooldown = true
 				},
 				potionCooldown = {
 					enabled=true,

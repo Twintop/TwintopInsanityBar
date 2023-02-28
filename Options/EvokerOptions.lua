@@ -282,6 +282,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				},
 				conjuredChillglobe = {
 					enabled = true, -- 7
+					cooldown = true
 				},
 				potionCooldown = {
 					enabled=true,

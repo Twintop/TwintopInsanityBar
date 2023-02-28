@@ -123,6 +123,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				},
 				conjuredChillglobe = {
 					enabled = true, -- 7
+					cooldown = true
 				},
 				potionCooldown = {
 					enabled=true,

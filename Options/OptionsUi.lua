@@ -1797,7 +1797,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		TRB.Functions.Threshold:RedrawThresholdLines(spec)
 	end)
 
-	controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, "Aerated Mana Potion", 5, yCoord, 300, 20)
+	controls.labels.thresholdPotions = TRB.Functions.OptionsUi:BuildLabel(parent, "Aerated Mana Potion", 5, yCoord, 300, 20)
 	yCoord = yCoord - 20
 
 	controls.checkBoxes.aeratedManaPotionRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_AeratedManaPotionRank3", parent, "ChatConfigCheckButtonTemplate")
@@ -1868,19 +1868,65 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		spec.thresholds.potionOfFrozenFocusRank1.enabled = self:GetChecked()
 	end)
 
-	yCoord = yCoord - 25
-	controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, "Items", 5, yCoord, 300, 20)
-	yCoord = yCoord - 20
+	if classId == 5 then
+		yCoord = yCoord - 25
+		controls.labels.thresholdAbilities = TRB.Functions.OptionsUi:BuildLabel(parent, "Abilities", 5, yCoord, 300, 20)
+		
+		--NOTE: the order of these checkboxes is reversed!
+		yCoord = yCoord - 20
+		controls.checkBoxes.shadowfiendThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_shadowfiend_cooldown", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.shadowfiendThresholdShowCooldown
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
+		getglobal(f:GetName() .. 'Text'):SetText("Show while on cooldown?")
+		f.tooltip = "Show the Shadowfiend threshold line when the ability is on cooldown."
+		f:SetChecked(spec.thresholds.shadowfiend.cooldown)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.shadowfiend.cooldown = self:GetChecked()
+		end)
+		
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.shadowfiend.enabled)
+		
+		controls.checkBoxes.shadowfiendThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_shadowfiend", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.shadowfiendThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Shadowfiend")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use Shadowfiend."
+		f:SetChecked(spec.thresholds.shadowfiend.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.shadowfiend.enabled = self:GetChecked()
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.shadowfiend.enabled)
+		end)
+		yCoord = yCoord - 20
+	end
 
-	controls.checkBoxes.snThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_conjuredChillglobe", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.snThresholdShow
+	yCoord = yCoord - 25
+	controls.labels.thresholdItems = TRB.Functions.OptionsUi:BuildLabel(parent, "Items", 5, yCoord, 300, 20)
+	
+	--NOTE: the order of these checkboxes is reversed!
+	yCoord = yCoord - 20
+	controls.checkBoxes.conjuredChillglobeThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_conjuredChillglobe_cooldown", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.conjuredChillglobeThresholdShowCooldown
+	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
+	getglobal(f:GetName() .. 'Text'):SetText("Show while on cooldown?")
+	f.tooltip = "Show the Conjured Chillglobe threshold line when the item is on cooldown."
+	f:SetChecked(spec.thresholds.conjuredChillglobe.cooldown)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.conjuredChillglobe.cooldown = self:GetChecked()
+	end)
+
+	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.conjuredChillglobeThresholdShowCooldown, spec.thresholds.conjuredChillglobe.enabled)
+	
+	controls.checkBoxes.conjuredChillglobeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_conjuredChillglobe", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.conjuredChillglobeThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Conjured Chillglobe")
 	f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use the Conjured Chillglobe trinket. Only shown below 65% mana."
 	f:SetChecked(spec.thresholds.conjuredChillglobe.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.conjuredChillglobe.enabled = self:GetChecked()
+	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.conjuredChillglobeThresholdShowCooldown, spec.thresholds.conjuredChillglobe.enabled)
 	end)
+	yCoord = yCoord - 20
 
 	yCoord = yCoord - 40
 
