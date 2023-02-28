@@ -146,7 +146,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				id = 196840,
 				name = "",
 				icon = "",
-				maelstrom = 8,
+				maelstrom = 14,
 				isTalent = true
 			},
 			hex = {
