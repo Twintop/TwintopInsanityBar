@@ -5,12 +5,30 @@ TRB.Functions.TimeToDie = {}
 
 local triggeredCourtOfStars_PatrolCaptainGerdo_FlaskOfSolemnNight = false
 local instanceDifficulty = 0
+local instanceId = 0
+local locale = "enUS"
 
 local ttdEventFrame = CreateFrame("Frame", "TwintopResourceBar_TtdEventFrame", TRB.Frames.barContainerFrame)
 ttdEventFrame:SetScript("OnEvent", function(self, event, arg1, arg2, arg3, ...)
     if event == "UNIT_SPELLCAST_SUCCEEDED" then
         if arg3 == 210385 then
             triggeredCourtOfStars_PatrolCaptainGerdo_FlaskOfSolemnNight = true
+        end
+    elseif event == "CHAT_MSG_MONSTER_EMOTE" then
+        if instanceId == 1571 then
+            if ((locale == "enUS" or locale == "enGB" or locale == "enTW" or locale == "enCN") and string.find(arg1, "sneakily adds poison to the Flask of the Solemn Night.")) or
+                ((locale == "esMX") and string.find(arg1, "agrega sigilosamente veneno al frasco de la noche solemne.")) or
+                ((locale == "esES") and string.find(arg1, "añade veneno al frasco de la noche solemne!")) or
+                ((locale == "ptBR" or locale == "ptPT") and string.find(arg1, "sorrateiramente põe veneno no Frasco da Noite Solene.")) or
+                ((locale == "frFR") and string.find(arg1, "ajoute discrètement du poison dans le flacon de la nuit solennelle.")) or
+                ((locale == "deDE") and string.find(arg1, "fügt dem Fläschchen der ehrwürdigen Nacht heimlich Gift hinzu.")) or
+                ((locale == "itIT") and string.find(arg1, "versa furtivamente del veleno nel Tonico della Notte Solenne.")) or
+                ((locale == "ruRU") and string.find(arg1, "незаметно добавляет яд в настой священной ночи.")) or
+                ((locale == "koKR") and string.find(arg1, "엄숙한 밤의 영약에 몰래 독을 더합니다.")) or
+                ((locale == "zhCN") and string.find(arg1, "偷偷在庄严静夜合剂中下了毒。")) or
+                ((locale == "zhTW") and string.find(arg1, "偷偷地在莊嚴之夜藥劑裡面加入毒藥。")) then
+                triggeredCourtOfStars_PatrolCaptainGerdo_FlaskOfSolemnNight = true
+            end
         end
     end
 end)
@@ -20,11 +38,16 @@ local ttdPlayerEnteringWorldFrame = CreateFrame("Frame", "TwintopResourceBar_Ttd
 ttdPlayerEnteringWorldFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 ttdPlayerEnteringWorldFrame:SetScript("OnEvent", function(self, event, ...)
     if event == "PLAYER_ENTERING_WORLD" then
-        local instanceId = select(8, GetInstanceInfo())
+        ttdEventFrame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+        ttdEventFrame:UnregisterEvent("CHAT_MSG_MONSTER_EMOTE")
+        
+        locale = GetLocale()
+        instanceId = select(8, GetInstanceInfo())
         instanceDifficulty = select(3, GetInstanceInfo())
 
         if instanceId == 1571 then -- Court of Stars
             ttdEventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+            ttdEventFrame:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
             triggeredCourtOfStars_PatrolCaptainGerdo_FlaskOfSolemnNight = false
         end
     end
