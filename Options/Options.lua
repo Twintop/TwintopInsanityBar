@@ -448,8 +448,8 @@ local function ConstructAddonOptionsPanel()
 	interfaceSettingsFrame.optionsPanel.name = "Global Options"
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.optionsPanel.parent = parent.name
-	local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.optionsPanel, "Global Options")
-	--InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.optionsPanel, "Global Options")
+	InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
 
 	parent = interfaceSettingsFrame.optionsPanel
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Global Options", 0, yCoord)
@@ -737,8 +737,8 @@ local function ConstructImportExportPanel()
 	interfaceSettingsFrame.importExportPanel.name = "Import/Export"
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.importExportPanel.parent = parent.name
-	local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.importExportPanel, "Import/Export")
-	--InterfaceOptions_AddCategory(interfaceSettingsFrame.importExportPanel)
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.importExportPanel, "Import/Export")
+	InterfaceOptions_AddCategory(interfaceSettingsFrame.importExportPanel)
 
 	parent = interfaceSettingsFrame.importExportPanel
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Import/Export", 0, yCoord)
@@ -1892,8 +1892,8 @@ function TRB.Options:ConstructOptionsPanel()
 	interfaceSettingsFrame.panel.yCoord = yCoord
 	local layout
 	TRB.Details.addonCategory, layout = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.panel, "Twintop's Resource Bar")
-	Settings.RegisterAddOnCategory(TRB.Details.addonCategory)
-	--InterfaceOptions_AddCategory(interfaceSettingsFrame.panel)
+	--Settings.RegisterAddOnCategory(TRB.Details.addonCategory)
+	InterfaceOptions_AddCategory(interfaceSettingsFrame.panel)
 
 	ConstructAddonOptionsPanel()
 	ConstructImportExportPanel()

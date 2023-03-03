@@ -1614,7 +1614,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		interfaceSettingsFrame.beastMasteryDisplayPanel.name = "Beast Mastery Hunter"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.beastMasteryDisplayPanel.parent = parent.name
-		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.beastMasteryDisplayPanel, "Beast Mastery Hunter")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.beastMasteryDisplayPanel, "Beast Mastery Hunter")
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.beastMasteryDisplayPanel)
 
 		parent = interfaceSettingsFrame.beastMasteryDisplayPanel
 
@@ -2956,7 +2957,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		interfaceSettingsFrame.marksmanshipDisplayPanel.name = "Marksmanship Hunter"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.marksmanshipDisplayPanel.parent = parent.name
-		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.marksmanshipDisplayPanel, "Marksmanship Hunter")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.marksmanshipDisplayPanel, "Marksmanship Hunter")
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.marksmanshipDisplayPanel)
 
 		parent = interfaceSettingsFrame.marksmanshipDisplayPanel
 
@@ -3902,7 +3904,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		interfaceSettingsFrame.survivalDisplayPanel.name = "Survival Hunter"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.survivalDisplayPanel.parent = parent.name
-		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.survivalDisplayPanel, "Survival Hunter")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.survivalDisplayPanel, "Survival Hunter")
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.survivalDisplayPanel)
 
 		parent = interfaceSettingsFrame.survivalDisplayPanel
 

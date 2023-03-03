@@ -752,7 +752,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		interfaceSettingsFrame.devastationDisplayPanel.name = "Devastation Evoker"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.devastationDisplayPanel.parent = parent.name
-		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.devastationDisplayPanel, "Devastation Evoker")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.devastationDisplayPanel, "Devastation Evoker")
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.devastationDisplayPanel)
 
 		parent = interfaceSettingsFrame.devastationDisplayPanel
 
@@ -1397,7 +1398,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		interfaceSettingsFrame.preservationDisplayPanel.name = "Preservation Evoker"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.preservationDisplayPanel.parent = parent.name
-		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.preservationDisplayPanel, "Preservation Evoker")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.preservationDisplayPanel, "Preservation Evoker")
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.preservationDisplayPanel)
 
 		parent = interfaceSettingsFrame.preservationDisplayPanel
 

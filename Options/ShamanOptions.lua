@@ -1302,7 +1302,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		interfaceSettingsFrame.elementalDisplayPanel.name = "Elemental Shaman"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.elementalDisplayPanel.parent = parent.name
-		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.elementalDisplayPanel, "Elemental Shaman")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.elementalDisplayPanel, "Elemental Shaman")
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.elementalDisplayPanel)
 
 		parent = interfaceSettingsFrame.elementalDisplayPanel
 
@@ -1833,7 +1834,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		interfaceSettingsFrame.enhancementDisplayPanel.name = "Enhancement Shaman"
 	---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.enhancementDisplayPanel.parent = parent.name
-		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.enhancementDisplayPanel, "Enhancement Shaman")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.enhancementDisplayPanel, "Enhancement Shaman")
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.enhancementDisplayPanel)
 
 		parent = interfaceSettingsFrame.enhancementDisplayPanel
 
@@ -2513,7 +2515,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		interfaceSettingsFrame.restorationDisplayPanel.name = "Restoration Shaman"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.restorationDisplayPanel.parent = parent.name
-		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.restorationDisplayPanel, "Restoration Shaman")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.restorationDisplayPanel, "Restoration Shaman")
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.restorationDisplayPanel)
 
 		parent = interfaceSettingsFrame.restorationDisplayPanel
 

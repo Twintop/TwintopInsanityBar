@@ -1644,7 +1644,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		interfaceSettingsFrame.balanceDisplayPanel.name = "Balance Druid"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.balanceDisplayPanel.parent = parent.name
-		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.balanceDisplayPanel, "Balance Druid")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.balanceDisplayPanel, "Balance Druid")
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.balanceDisplayPanel)
 
 		parent = interfaceSettingsFrame.balanceDisplayPanel
 
@@ -2621,7 +2622,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		interfaceSettingsFrame.feralDisplayPanel.name = "Feral Druid"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.feralDisplayPanel.parent = parent.name
-		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.feralDisplayPanel, "Feral Druid")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.feralDisplayPanel, "Feral Druid")
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.feralDisplayPanel)
 
 		parent = interfaceSettingsFrame.feralDisplayPanel
 
@@ -3235,7 +3237,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		interfaceSettingsFrame.restorationDisplayPanel.name = "Restoration Druid"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.restorationDisplayPanel.parent = parent.name
-		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.restorationDisplayPanel, "Restoration Druid")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.restorationDisplayPanel, "Restoration Druid")
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.restorationDisplayPanel)
 
 		parent = interfaceSettingsFrame.restorationDisplayPanel
 
