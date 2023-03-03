@@ -1219,234 +1219,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		return mana * modifier
 	end
 
-	local function IsValidVariableForSpec(var)
-		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-		if valid then
-			return valid
-		end
-		local specId = GetSpecialization()
-		local settings = nil
-		if specId == 1 then
-			settings = TRB.Data.settings.shaman.elemental
-		elseif specId == 2 then
-			settings = TRB.Data.settings.shaman.enhancement
-		elseif specId == 3 then
-			settings = TRB.Data.settings.shaman.restoration
-		end
-
-		if specId == 1 then
-			if var == "$resource" or var == "$maelstrom" then
-				if TRB.Data.snapshotData.resource > 0 then
-					valid = true
-				end
-			elseif var == "$resourceMax" or var == "$maelstromMax" then
-				valid = true
-			elseif var == "$resourceTotal" or var == "$maelstromTotal" then
-				if TRB.Data.snapshotData.resource > 0 or
-					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.chainLightning.id or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.lavaBeam.id)) then
-					valid = true
-				end
-			elseif var == "$resourcePlusCasting" or var == "$maelstromPlusCasting" then
-				if TRB.Data.snapshotData.resource > 0 or
-					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.chainLightning.id or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.lavaBeam.id)) then
-					valid = true
-				end
-			elseif var == "$overcap" or var == "$insanityOvercap" or var == "$resourceOvercap" then
-				if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.shaman.elemental.overcapThreshold then
-					valid = true
-				end
-			elseif var == "$resourcePlusPassive" or var == "$maelstromPlusPassive" then
-				if TRB.Data.snapshotData.resource > 0 then
-					valid = true
-				end
-			elseif var == "$casting" then
-				if TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.chainLightning.id) then
-					valid = true
-				end
-			elseif var == "$passive" then
-			elseif var == "$ifMaelstrom" then
-				if TRB.Data.snapshotData.icefury.maelstrom > 0 then
-					valid = true
-				end
-			elseif var == "$ifStacks" then
-				if TRB.Data.snapshotData.icefury.stacks > 0 then
-					valid = true
-				end
-			elseif var == "$ifTime" then
-				if TRB.Data.snapshotData.icefury.startTime ~= nil and TRB.Data.snapshotData.icefury.startTime > 0 then
-					valid = true
-				end
-			elseif var == "$skStacks" then
-				if TRB.Data.snapshotData.stormkeeper.stacks ~= nil and TRB.Data.snapshotData.stormkeeper.stacks > 0 then
-					valid = true
-				end
-			elseif var == "$skTime" then
-				if TRB.Data.snapshotData.stormkeeper.stacks ~= nil and TRB.Data.snapshotData.stormkeeper.stacks > 0 then
-					valid = true
-				end
-			elseif var == "$eogsTime" then
-				if GetEchoesOfGreatSunderingRemainingTime() > 0 then
-					valid = true
-				end
-			end
-		elseif specId == 2 then --Enhancement
-			if var == "$casting" then
-				if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0 then
-					valid = true
-				end
-			elseif var == "$passive" then
-				if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
-					settings.generation.enabled and
-					((settings.generation.mode == "time" and settings.generation.time > 0) or
-					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-					valid = true
-				end
-			elseif var == "$resource" or var == "$mana" then
-				if TRB.Data.snapshotData.resource > 0 then
-					valid = true
-				end
-			elseif var == "$resourceMax" or var == "$manaMax" then
-				valid = true
-			elseif var == "$resourceTotal" or var == "$manaTotal" then
-				if TRB.Data.snapshotData.resource > 0 or
-					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
-					then
-					valid = true
-				end
-			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
-				if TRB.Data.snapshotData.resource > 0 or
-					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
-					valid = true
-				end
-			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
-				if TRB.Data.snapshotData.resource > 0 then
-					valid = true
-				end
-			elseif var == "$regen" or var == "$regenMana" or var == "$manaRegen" then
-				if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
-					((settings.generation.mode == "time" and settings.generation.time > 0) or
-					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-					valid = true
-				end
-			elseif var == "$comboPoints" or var == "$maelstromWeapon" then
-				valid = true
-			elseif var == "$comboPointsMax"or var == "$maelstromWeaponMax" then
-				valid = true
-			end
-		elseif specId == 3 then
-			if var == "$resource" or var == "$mana" then
-				valid = true
-			elseif var == "$resourceMax" or var == "$manaMax" then
-				valid = true
-			elseif var == "$resourceTotal" or var == "$manaTotal" then
-				valid = true
-			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
-				valid = true
-			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
-				valid = true
-			elseif var == "$casting" then
-				if TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
-					valid = true
-				end
-			elseif var == "$passive" then
-				if IsValidVariableForSpec("$channeledMana") or
-					IsValidVariableForSpec("$sohMana") or
-					IsValidVariableForSpec("$innervateMana") or
-					IsValidVariableForSpec("$potionOfChilledClarityMana") or
-					IsValidVariableForSpec("$mttMana") then
-					valid = true
-				end
-			elseif var == "$sohMana" then
-				if TRB.Data.snapshotData.symbolOfHope.resourceRaw > 0 then
-					valid = true
-				end
-			elseif var == "$sohTime" then
-				if TRB.Data.snapshotData.symbolOfHope.isActive then
-					valid = true
-				end
-			elseif var == "$sohTicks" then
-				if TRB.Data.snapshotData.symbolOfHope.isActive then
-					valid = true
-				end
-			elseif var == "$innervateMana" then
-				if TRB.Data.snapshotData.innervate.mana > 0 then
-					valid = true
-				end
-			elseif var == "$innervateTime" then
-				if TRB.Data.snapshotData.innervate.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$potionOfChilledClarityMana" then
-				if TRB.Data.snapshotData.potionOfChilledClarity.mana > 0 then
-					valid = true
-				end
-			elseif var == "$potionOfChilledClarityTime" then
-				if TRB.Data.snapshotData.potionOfChilledClarity.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$mttMana" or var == "$manaTideTotemMana" then
-				if TRB.Data.snapshotData.manaTideTotem.mana > 0 then
-					valid = true
-				end
-			elseif var == "$mttTime" or var == "$manaTideTotemTime" then
-				if TRB.Data.snapshotData.manaTideTotem.isActive then
-					valid = true
-				end
-			elseif var == "$channeledMana" then
-				if TRB.Data.snapshotData.channeledManaPotion.mana > 0 then
-					valid = true
-				end
-			elseif var == "$potionOfFrozenFocusTicks" then
-				if TRB.Data.snapshotData.channeledManaPotion.ticksRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$potionOfFrozenFocusTime" then
-				if GetChanneledPotionRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$potionCooldown" then
-				if TRB.Data.snapshotData.potion.onCooldown then
-					valid = true
-				end
-			elseif var == "$potionCooldownSeconds" then
-				if TRB.Data.snapshotData.potion.onCooldown then
-					valid = true
-				end
-			end
-		else
-			valid = false
-		end
-		
-		-- Spec Agnostic
-		if var == "$fsCount" then
-			if TRB.Data.snapshotData.targetData.flameShock > 0 then
-				valid = true
-			end
-		elseif var == "$fsTime" then
-			if not UnitIsDeadOrGhost("target") and
-				UnitCanAttack("player", "target") and
-				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-				TRB.Data.snapshotData.targetData.targets ~= nil and
-				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining > 0 then
-				valid = true
-			end
-		elseif var == "$ascendanceTime" then
-			if TRB.Data.snapshotData.ascendance.remainingTime ~= nil and TRB.Data.snapshotData.ascendance.remainingTime > 0 then
-				valid = true
-			end
-		end
-
-		return valid
-	end
-	TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
-
 	local function RefreshLookupData_Elemental()
 		--Spec specific implementation
 		local currentTime = GetTime()
 
 		--$overcap
-		local overcap = IsValidVariableForSpec("$overcap")
+		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
 		local currentMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom
 		local castingMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom
@@ -2273,7 +2051,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					local passiveBarValue = 0
 					local castingBarValue = 0
 
-					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
 						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -3286,6 +3064,227 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			return true
 		end
 		return false
+	end
+
+	function TRB.Functions.Class:IsValidVariableForSpec(var)
+		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
+		if valid then
+			return valid
+		end
+		local specId = GetSpecialization()
+		local settings = nil
+		if specId == 1 then
+			settings = TRB.Data.settings.shaman.elemental
+		elseif specId == 2 then
+			settings = TRB.Data.settings.shaman.enhancement
+		elseif specId == 3 then
+			settings = TRB.Data.settings.shaman.restoration
+		end
+
+		if specId == 1 then
+			if var == "$resource" or var == "$maelstrom" then
+				if TRB.Data.snapshotData.resource > 0 then
+					valid = true
+				end
+			elseif var == "$resourceMax" or var == "$maelstromMax" then
+				valid = true
+			elseif var == "$resourceTotal" or var == "$maelstromTotal" then
+				if TRB.Data.snapshotData.resource > 0 or
+					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.chainLightning.id or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.lavaBeam.id)) then
+					valid = true
+				end
+			elseif var == "$resourcePlusCasting" or var == "$maelstromPlusCasting" then
+				if TRB.Data.snapshotData.resource > 0 or
+					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.chainLightning.id or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.lavaBeam.id)) then
+					valid = true
+				end
+			elseif var == "$overcap" or var == "$insanityOvercap" or var == "$resourceOvercap" then
+				if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.shaman.elemental.overcapThreshold then
+					valid = true
+				end
+			elseif var == "$resourcePlusPassive" or var == "$maelstromPlusPassive" then
+				if TRB.Data.snapshotData.resource > 0 then
+					valid = true
+				end
+			elseif var == "$casting" then
+				if TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.chainLightning.id) then
+					valid = true
+				end
+			elseif var == "$passive" then
+			elseif var == "$ifMaelstrom" then
+				if TRB.Data.snapshotData.icefury.maelstrom > 0 then
+					valid = true
+				end
+			elseif var == "$ifStacks" then
+				if TRB.Data.snapshotData.icefury.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$ifTime" then
+				if TRB.Data.snapshotData.icefury.startTime ~= nil and TRB.Data.snapshotData.icefury.startTime > 0 then
+					valid = true
+				end
+			elseif var == "$skStacks" then
+				if TRB.Data.snapshotData.stormkeeper.stacks ~= nil and TRB.Data.snapshotData.stormkeeper.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$skTime" then
+				if TRB.Data.snapshotData.stormkeeper.stacks ~= nil and TRB.Data.snapshotData.stormkeeper.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$eogsTime" then
+				if GetEchoesOfGreatSunderingRemainingTime() > 0 then
+					valid = true
+				end
+			end
+		elseif specId == 2 then --Enhancement
+			if var == "$casting" then
+				if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0 then
+					valid = true
+				end
+			elseif var == "$passive" then
+				if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
+					settings.generation.enabled and
+					((settings.generation.mode == "time" and settings.generation.time > 0) or
+					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+					valid = true
+				end
+			elseif var == "$resource" or var == "$mana" then
+				if TRB.Data.snapshotData.resource > 0 then
+					valid = true
+				end
+			elseif var == "$resourceMax" or var == "$manaMax" then
+				valid = true
+			elseif var == "$resourceTotal" or var == "$manaTotal" then
+				if TRB.Data.snapshotData.resource > 0 or
+					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
+					then
+					valid = true
+				end
+			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
+				if TRB.Data.snapshotData.resource > 0 or
+					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
+					valid = true
+				end
+			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
+				if TRB.Data.snapshotData.resource > 0 then
+					valid = true
+				end
+			elseif var == "$regen" or var == "$regenMana" or var == "$manaRegen" then
+				if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
+					((settings.generation.mode == "time" and settings.generation.time > 0) or
+					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+					valid = true
+				end
+			elseif var == "$comboPoints" or var == "$maelstromWeapon" then
+				valid = true
+			elseif var == "$comboPointsMax"or var == "$maelstromWeaponMax" then
+				valid = true
+			end
+		elseif specId == 3 then
+			if var == "$resource" or var == "$mana" then
+				valid = true
+			elseif var == "$resourceMax" or var == "$manaMax" then
+				valid = true
+			elseif var == "$resourceTotal" or var == "$manaTotal" then
+				valid = true
+			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
+				valid = true
+			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
+				valid = true
+			elseif var == "$casting" then
+				if TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
+					valid = true
+				end
+			elseif var == "$passive" then
+				if TRB.Functions.Class:IsValidVariableForSpec("$channeledMana") or
+					TRB.Functions.Class:IsValidVariableForSpec("$sohMana") or
+					TRB.Functions.Class:IsValidVariableForSpec("$innervateMana") or
+					TRB.Functions.Class:IsValidVariableForSpec("$potionOfChilledClarityMana") or
+					TRB.Functions.Class:IsValidVariableForSpec("$mttMana") then
+					valid = true
+				end
+			elseif var == "$sohMana" then
+				if TRB.Data.snapshotData.symbolOfHope.resourceRaw > 0 then
+					valid = true
+				end
+			elseif var == "$sohTime" then
+				if TRB.Data.snapshotData.symbolOfHope.isActive then
+					valid = true
+				end
+			elseif var == "$sohTicks" then
+				if TRB.Data.snapshotData.symbolOfHope.isActive then
+					valid = true
+				end
+			elseif var == "$innervateMana" then
+				if TRB.Data.snapshotData.innervate.mana > 0 then
+					valid = true
+				end
+			elseif var == "$innervateTime" then
+				if TRB.Data.snapshotData.innervate.remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$potionOfChilledClarityMana" then
+				if TRB.Data.snapshotData.potionOfChilledClarity.mana > 0 then
+					valid = true
+				end
+			elseif var == "$potionOfChilledClarityTime" then
+				if TRB.Data.snapshotData.potionOfChilledClarity.remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$mttMana" or var == "$manaTideTotemMana" then
+				if TRB.Data.snapshotData.manaTideTotem.mana > 0 then
+					valid = true
+				end
+			elseif var == "$mttTime" or var == "$manaTideTotemTime" then
+				if TRB.Data.snapshotData.manaTideTotem.isActive then
+					valid = true
+				end
+			elseif var == "$channeledMana" then
+				if TRB.Data.snapshotData.channeledManaPotion.mana > 0 then
+					valid = true
+				end
+			elseif var == "$potionOfFrozenFocusTicks" then
+				if TRB.Data.snapshotData.channeledManaPotion.ticksRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$potionOfFrozenFocusTime" then
+				if GetChanneledPotionRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$potionCooldown" then
+				if TRB.Data.snapshotData.potion.onCooldown then
+					valid = true
+				end
+			elseif var == "$potionCooldownSeconds" then
+				if TRB.Data.snapshotData.potion.onCooldown then
+					valid = true
+				end
+			end
+		else
+			valid = false
+		end
+		
+		-- Spec Agnostic
+		if var == "$fsCount" then
+			if TRB.Data.snapshotData.targetData.flameShock > 0 then
+				valid = true
+			end
+		elseif var == "$fsTime" then
+			if not UnitIsDeadOrGhost("target") and
+				UnitCanAttack("player", "target") and
+				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+				TRB.Data.snapshotData.targetData.targets ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].flameShockRemaining > 0 then
+				valid = true
+			end
+		elseif var == "$ascendanceTime" then
+			if TRB.Data.snapshotData.ascendance.remainingTime ~= nil and TRB.Data.snapshotData.ascendance.remainingTime > 0 then
+				valid = true
+			end
+		end
+
+		return valid
 	end
 
 	--HACK to fix FPS

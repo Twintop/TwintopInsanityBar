@@ -2004,567 +2004,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		return snapshot
 	end
 
-	local function IsValidVariableForSpec(var)
-		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-		if valid then
-			return valid
-		end
-		local specId = GetSpecialization()
-		local settings = nil
-		if specId == 1 then
-			settings = TRB.Data.settings.druid.balance
-		elseif specId == 2 then
-			settings = TRB.Data.settings.druid.feral
-		elseif specId == 4 then
-			settings = TRB.Data.settings.druid.restoration
-		end
-
-		local affectingCombat = UnitAffectingCombat("player")
-
-		if specId == 1 then -- Balance
-			if var == "$moonkinForm" then
-				if TRB.Data.spells.moonkinForm.isActive then
-					valid = true
-				end
-			elseif var == "$eclipse" then
-				if TRB.Data.spells.eclipseSolar.isActive or TRB.Data.spells.eclipseLunar.isActive or TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive then
-					valid = true
-				end
-			elseif var == "$solar" or var == "$eclipseSolar" or var == "$solarEclipse" then
-				if TRB.Data.spells.eclipseSolar.isActive then
-					valid = true
-				end
-			elseif var == "$lunar" or var == "$eclipseLunar" or var == "$lunarEclipse" then
-				if TRB.Data.spells.eclipseLunar.isActive then
-					valid = true
-				end
-			elseif var == "$celestialAlignment" then
-				if TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive then
-					valid = true
-				end
-			elseif var == "$eclipseTime" then
-				if TRB.Data.spells.eclipseSolar.isActive or TRB.Data.spells.eclipseLunar.isActive or TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive then
-					valid = true
-				end
-			elseif var == "$resource" or var == "$astralPower" then
-				if TRB.Data.snapshotData.resource > 0 then
-					valid = true
-				end
-			elseif var == "$resourceMax" or var == "$astralPowerMax" then
-				valid = true
-			elseif var == "$resourceTotal" or var == "$astralPowerTotal" then
-				if TRB.Data.snapshotData.resource > 0 or
-					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw > 0) then
-					valid = true
-				end
-			elseif var == "$resourcePlusCasting" or var == "$astralPowerPlusCasting" then
-				if TRB.Data.snapshotData.resource > 0 or
-					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw > 0) then
-					valid = true
-				end
-			elseif var == "$overcap" or var == "$astralPowerOvercap" or var == "$resourceOvercap" then
-				if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.druid.balance.overcapThreshold then
-					valid = true
-				end
-			elseif var == "$resourcePlusPassive" or var == "$astralPowerPlusPassive" then
-				if TRB.Data.snapshotData.resource > 0 then
-					valid = true
-				end
-			elseif var == "$casting" then
-				if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw > 0 then
-					valid = true
-				end
-			elseif var == "$passive" then
-				if (TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.naturesBalance) and (affectingCombat or (TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) < 50)) or TRB.Data.snapshotData.furyOfElune.astralPower > 0 or TRB.Data.snapshotData.sunderedFirmament.astralPower > 0 then
-					valid = true
-				end
-			elseif var == "$sunfireCount" then
-				if TRB.Data.snapshotData.targetData.sunfire > 0 then
-					valid = true
-				end
-			elseif var == "$sunfireTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].sunfireRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$moonfireCount" then
-				if TRB.Data.snapshotData.targetData.moonfire > 0 then
-					valid = true
-				end
-			elseif var == "$moonfireTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfireRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$stellarFlareCount" then
-				if TRB.Data.snapshotData.targetData.stellarFlare > 0 then
-					valid = true
-				end
-			elseif var == "$stellarFlareTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].stellarFlareRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$talentStellarFlare" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.stellarFlare) then
-					valid = true
-				end
-			elseif var == "$foeAstralPower" then
-				if TRB.Data.snapshotData.furyOfElune.astralPower > 0 then
-					valid = true
-				end
-			elseif var == "$foeTicks" then
-				if TRB.Data.snapshotData.furyOfElune.remainingTicks > 0 then
-					valid = true
-				end
-			elseif var == "$foeTime" then
-				if TRB.Data.snapshotData.furyOfElune.startTime ~= nil then
-					valid = true
-				end
-			elseif var == "$sunderedFirmamentAstralPower" then
-				if TRB.Data.snapshotData.sunderedFirmament.astralPower > 0 then
-					valid = true
-				end
-			elseif var == "$sunderedFirmamentTicks" then
-				if TRB.Data.snapshotData.sunderedFirmament.remainingTicks > 0 then
-					valid = true
-				end
-			elseif var == "$sunderedFirmamentTime" then
-				if TRB.Data.snapshotData.sunderedFirmament.startTime ~= nil then
-					valid = true
-				end				
-			elseif var == "$starweaverTime" then
-				if TRB.Data.spells.starweaversWarp.isActive or TRB.Data.spells.starweaversWarp.isActive  then
-					valid = true
-				end
-			elseif var == "$starweaversWarp" then
-				if TRB.Data.spells.starweaversWarp.isActive then
-					valid = true
-				end
-			elseif var == "$starweaversWeft" then
-				if TRB.Data.spells.starweaversWarp.isActive then
-					valid = true
-				end
-			elseif var == "$moonAstralPower" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.newMoon) then
-					valid = true
-				end
-			elseif var == "$moonCharges" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.newMoon) then
-					if TRB.Data.snapshotData.newMoon.charges > 0 then
-						valid = true
-					end
-				end
-			elseif var == "$moonCooldown" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.newMoon) then
-					if TRB.Data.snapshotData.newMoon.cooldown > 0 then
-						valid = true
-					end
-				end
-			elseif var == "$moonCooldownTotal" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.newMoon) then
-					if TRB.Data.snapshotData.newMoon.charges < TRB.Data.snapshotData.newMoon.maxCharges then
-						valid = true
-					end
-				end
-			elseif var == "$pulsarCollected" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
-					valid = true
-				end
-			elseif var == "$pulsarCollectedPercent" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
-					valid = true
-				end
-			elseif var == "$pulsarRemaining" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
-					valid = true
-				end
-			elseif var == "$pulsarRemainingPercent" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
-					valid = true
-				end
-			elseif var == "$pulsarStarsurgeCount" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
-					valid = true
-				end
-			elseif var == "$pulsarStarfallCount" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
-					valid = true
-				end
-			elseif var == "$pulsarNextStarsurge" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) and
-					(((TRB.Data.spells.primordialArcanicPulsar.maxAstralPower or 0) - (TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower or 0)) <= TRB.Data.character.starsurgeThreshold) then
-					valid = true
-				end
-			elseif var == "$pulsarNextStarfall" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) and
-					(((TRB.Data.spells.primordialArcanicPulsar.maxAstralPower or 0) - (TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower or 0)) <= TRB.Data.character.starfallThreshold) then
-					valid = true
-				end
-			end
-		elseif specId == 2 then -- Feral
-			if var == "$resource" or var == "$energy" then
-				if TRB.Data.snapshotData.resource > 0 then
-					valid = true
-				end
-			elseif var == "$resourceMax" or var == "$energyMax" then
-				valid = true
-			elseif var == "$resourceTotal" or var == "$energyTotal" then
-				if TRB.Data.snapshotData.resource > 0 or
-					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw > 0) then
-					valid = true
-				end
-			elseif var == "$resourcePlusCasting" or var == "$energyPlusCasting" then
-				if TRB.Data.snapshotData.resource > 0 or
-					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw > 0) then
-					valid = true
-				end
-			elseif var == "$overcap" or var == "$energyOvercap" or var == "$resourceOvercap" then
-				if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.druid.feral.overcapThreshold then
-					valid = true
-				end
-			elseif var == "$resourcePlusPassive" or var == "$energyPlusPassive" then
-				if TRB.Data.snapshotData.resource > 0 then
-					valid = true
-				end
-			elseif var == "$comboPoints" then
-				valid = true
-			elseif var == "$comboPointsMax" then
-				valid = true
-			elseif var == "$ripCount" then
-				if TRB.Data.snapshotData.targetData.rip > 0 then
-					valid = true
-				end
-			elseif var == "$ripCurrent" then
-				valid = true
-			elseif var == "$ripTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ripRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$ripPercent" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ripSnapshot > 0 then
-					valid = true
-				end
-			elseif var == "$ripSnapshot" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ripSnapshot > 0 then
-					valid = true
-				end
-			elseif var == "$rakeCount" then
-				if TRB.Data.snapshotData.targetData.rake > 0 then
-					valid = true
-				end
-			elseif var == "$rakeCurrent" then
-				valid = true
-			elseif var == "$rakeTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rakeRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$rakePercent" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rakeSnapshot > 0 then
-					valid = true
-				end
-			elseif var == "$rakeSnapshot" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rakeSnapshot > 0 then
-					valid = true
-				end
-			elseif var == "$thrashCount" then
-				if TRB.Data.snapshotData.targetData.thrash > 0 then
-					valid = true
-				end
-			elseif var == "$thrashCurrent" then
-				valid = true
-			elseif var == "$thrashTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].thrashRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$thrashPercent" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].thrashSnapshot > 0 then
-					valid = true
-				end
-			elseif var == "$thrashSnapshot" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].thrashSnapshot > 0 then
-					valid = true
-				end
-			elseif var == "$moonfireCount" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true and TRB.Data.snapshotData.targetData.moonfire > 0 then
-					valid = true
-				end
-			elseif var == "$moonfireCurrent" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true then
-					valid = true
-				end
-			elseif var == "$moonfireTime" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true and
-					not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfireRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$moonfirePercent" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true and
-					not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfireSnapshot > 0 then
-					valid = true
-				end
-			elseif var == "$moonfireSnapshot" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true and
-					not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfireSnapshot > 0 then
-					valid = true
-				end
-			elseif var == "$lunarInspiration" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true then
-					valid = true
-				end
-			elseif var == "$brutalSlashCharges" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.brutalSlash) then
-					if TRB.Data.snapshotData.brutalSlash.charges > 0 then
-						valid = true
-					end
-				end
-			elseif var == "$brutalSlashCooldown" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.brutalSlash) then
-					if TRB.Data.snapshotData.brutalSlash.cooldown > 0 then
-						valid = true
-					end
-				end
-			elseif var == "$brutalSlashCooldownTotal" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.brutalSlash) then
-					if TRB.Data.snapshotData.brutalSlash.charges < TRB.Data.snapshotData.brutalSlash.maxCharges then
-						valid = true
-					end
-				end
-			elseif var == "$bloodtalonsStacks" then
-				if TRB.Data.snapshotData.bloodtalons.stacks > 0 then
-					valid = true
-				end
-			elseif var == "$bloodtalonsTime" then
-				if TRB.Data.snapshotData.bloodtalons.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$suddenAmbushTime" then
-				if GetSuddenAmbushRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$clearcastingStacks" then
-				if TRB.Data.snapshotData.clearcasting.stacks > 0 then
-					valid = true
-				end
-			elseif var == "$clearcastingTime" then
-				if TRB.Data.snapshotData.clearcastingTime.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$berserkTime" or var == "$incarnationTime" then
-				if GetBerserkRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$apexPredatorsCravingTime" then
-				if GetApexPredatorsCravingRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$tigersFuryTime" then
-				if TRB.Data.snapshotData.tigersFury.duration > 0 then
-					valid = true
-				end
-			elseif var == "$tigersFuryCooldownTime" then
-				if TRB.Data.snapshotData.tigersFury.cooldown.duration > 0 then
-					valid = true
-				end
-			elseif var == "$inStealth" then
-				if IsStealthed() then
-					valid = true
-				end
-			end
-		elseif specId == 4 then --Restoration
-			if var == "$resource" or var == "$mana" then
-				valid = true
-			elseif var == "$resourceMax" or var == "$manaMax" then
-				valid = true
-			elseif var == "$resourceTotal" or var == "$manaTotal" then
-				valid = true
-			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
-				valid = true
-			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
-				valid = true
-			elseif var == "$casting" then
-				if TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
-					valid = true
-				end
-			elseif var == "$passive" then
-				if IsValidVariableForSpec("$channeledMana") or
-					IsValidVariableForSpec("$sohMana") or
-					IsValidVariableForSpec("$innervateMana") or
-					IsValidVariableForSpec("$potionOfChilledClarityMana") or
-					IsValidVariableForSpec("$mttMana") then
-					valid = true
-				end
-			elseif var == "$efflorescenceTime" then
-				if GetEfflorescenceRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$sunfireCount" then
-				if TRB.Data.snapshotData.targetData.sunfire > 0 then
-					valid = true
-				end
-			elseif var == "$clearcastingTime" then
-				if TRB.Data.snapshotData.clearcasting.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$sunfireTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].sunfireRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$moonfireCount" then
-				if TRB.Data.snapshotData.targetData.moonfire > 0 then
-					valid = true
-				end
-			elseif var == "$moonfireTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfireRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$sohMana" then
-				if TRB.Data.snapshotData.symbolOfHope.resourceRaw > 0 then
-					valid = true
-				end
-			elseif var == "$sohTime" then
-				if TRB.Data.snapshotData.symbolOfHope.isActive then
-					valid = true
-				end
-			elseif var == "$sohTicks" then
-				if TRB.Data.snapshotData.symbolOfHope.isActive then
-					valid = true
-				end
-			elseif var == "$innervateMana" then
-				if TRB.Data.snapshotData.innervate.mana > 0 then
-					valid = true
-				end
-			elseif var == "$innervateTime" then
-				if TRB.Data.snapshotData.innervate.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$potionOfChilledClarityMana" then
-				if TRB.Data.snapshotData.potionOfChilledClarity.mana > 0 then
-					valid = true
-				end
-			elseif var == "$potionOfChilledClarityTime" then
-				if TRB.Data.snapshotData.potionOfChilledClarity.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$mttMana" or var == "$manaTideTotemMana" then
-				if TRB.Data.snapshotData.manaTideTotem.mana > 0 then
-					valid = true
-				end
-			elseif var == "$mttTime" or var == "$manaTideTotemTime" then
-				if TRB.Data.snapshotData.manaTideTotem.isActive then
-					valid = true
-				end
-			elseif var == "$channeledMana" then
-				if TRB.Data.snapshotData.channeledManaPotion.mana > 0 then
-					valid = true
-				end
-			elseif var == "$potionOfFrozenFocusTicks" then
-				if TRB.Data.snapshotData.channeledManaPotion.ticksRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$potionOfFrozenFocusTime" then
-				if GetChanneledPotionRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$potionCooldown" then
-				if TRB.Data.snapshotData.potion.onCooldown then
-					valid = true
-				end
-			elseif var == "$potionCooldownSeconds" then
-				if TRB.Data.snapshotData.potion.onCooldown then
-					valid = true
-				end
-			end
-		else
-			valid = false
-		end
-
-		return valid
-	end
-	TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
-
 	local function RefreshLookupData_Balance()
 		local currentTime = GetTime()
 		local normalizedAstralPower = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
@@ -2572,7 +2011,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		--local moonkinFormActive = TRB.Data.spells.moonkinForm.isActive
 
 		--$overcap
-		local overcap = IsValidVariableForSpec("$overcap")
+		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
 		local currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.current
 		local castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.casting
@@ -2945,7 +2384,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Data.snapshotData.energyRegen, _ = GetPowerRegen()
 
 		--$overcap
-		local overcap = IsValidVariableForSpec("$overcap")
+		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
 		local currentEnergyColor = TRB.Data.settings.druid.feral.colors.text.current
 		local castingEnergyColor = TRB.Data.settings.druid.feral.colors.text.casting
@@ -4152,7 +3591,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local currentResource = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 					local flashBar = false
 
-					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
 						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -4598,7 +4037,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local barBorderColor = specSettings.colors.bar.border
 					if IsStealthed() then
 						barBorderColor = specSettings.colors.bar.borderStealth
-					elseif specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -5707,6 +5146,566 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			return true
 		end
 		return false
+	end
+
+	function TRB.Functions.Class:IsValidVariableForSpec(var)
+		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
+		if valid then
+			return valid
+		end
+		local specId = GetSpecialization()
+		local settings = nil
+		if specId == 1 then
+			settings = TRB.Data.settings.druid.balance
+		elseif specId == 2 then
+			settings = TRB.Data.settings.druid.feral
+		elseif specId == 4 then
+			settings = TRB.Data.settings.druid.restoration
+		end
+
+		local affectingCombat = UnitAffectingCombat("player")
+
+		if specId == 1 then -- Balance
+			if var == "$moonkinForm" then
+				if TRB.Data.spells.moonkinForm.isActive then
+					valid = true
+				end
+			elseif var == "$eclipse" then
+				if TRB.Data.spells.eclipseSolar.isActive or TRB.Data.spells.eclipseLunar.isActive or TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive then
+					valid = true
+				end
+			elseif var == "$solar" or var == "$eclipseSolar" or var == "$solarEclipse" then
+				if TRB.Data.spells.eclipseSolar.isActive then
+					valid = true
+				end
+			elseif var == "$lunar" or var == "$eclipseLunar" or var == "$lunarEclipse" then
+				if TRB.Data.spells.eclipseLunar.isActive then
+					valid = true
+				end
+			elseif var == "$celestialAlignment" then
+				if TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive then
+					valid = true
+				end
+			elseif var == "$eclipseTime" then
+				if TRB.Data.spells.eclipseSolar.isActive or TRB.Data.spells.eclipseLunar.isActive or TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive then
+					valid = true
+				end
+			elseif var == "$resource" or var == "$astralPower" then
+				if TRB.Data.snapshotData.resource > 0 then
+					valid = true
+				end
+			elseif var == "$resourceMax" or var == "$astralPowerMax" then
+				valid = true
+			elseif var == "$resourceTotal" or var == "$astralPowerTotal" then
+				if TRB.Data.snapshotData.resource > 0 or
+					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw > 0) then
+					valid = true
+				end
+			elseif var == "$resourcePlusCasting" or var == "$astralPowerPlusCasting" then
+				if TRB.Data.snapshotData.resource > 0 or
+					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw > 0) then
+					valid = true
+				end
+			elseif var == "$overcap" or var == "$astralPowerOvercap" or var == "$resourceOvercap" then
+				if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.druid.balance.overcapThreshold then
+					valid = true
+				end
+			elseif var == "$resourcePlusPassive" or var == "$astralPowerPlusPassive" then
+				if TRB.Data.snapshotData.resource > 0 then
+					valid = true
+				end
+			elseif var == "$casting" then
+				if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw > 0 then
+					valid = true
+				end
+			elseif var == "$passive" then
+				if (TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.naturesBalance) and (affectingCombat or (TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) < 50)) or TRB.Data.snapshotData.furyOfElune.astralPower > 0 or TRB.Data.snapshotData.sunderedFirmament.astralPower > 0 then
+					valid = true
+				end
+			elseif var == "$sunfireCount" then
+				if TRB.Data.snapshotData.targetData.sunfire > 0 then
+					valid = true
+				end
+			elseif var == "$sunfireTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].sunfireRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$moonfireCount" then
+				if TRB.Data.snapshotData.targetData.moonfire > 0 then
+					valid = true
+				end
+			elseif var == "$moonfireTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfireRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$stellarFlareCount" then
+				if TRB.Data.snapshotData.targetData.stellarFlare > 0 then
+					valid = true
+				end
+			elseif var == "$stellarFlareTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].stellarFlareRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$talentStellarFlare" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.stellarFlare) then
+					valid = true
+				end
+			elseif var == "$foeAstralPower" then
+				if TRB.Data.snapshotData.furyOfElune.astralPower > 0 then
+					valid = true
+				end
+			elseif var == "$foeTicks" then
+				if TRB.Data.snapshotData.furyOfElune.remainingTicks > 0 then
+					valid = true
+				end
+			elseif var == "$foeTime" then
+				if TRB.Data.snapshotData.furyOfElune.startTime ~= nil then
+					valid = true
+				end
+			elseif var == "$sunderedFirmamentAstralPower" then
+				if TRB.Data.snapshotData.sunderedFirmament.astralPower > 0 then
+					valid = true
+				end
+			elseif var == "$sunderedFirmamentTicks" then
+				if TRB.Data.snapshotData.sunderedFirmament.remainingTicks > 0 then
+					valid = true
+				end
+			elseif var == "$sunderedFirmamentTime" then
+				if TRB.Data.snapshotData.sunderedFirmament.startTime ~= nil then
+					valid = true
+				end				
+			elseif var == "$starweaverTime" then
+				if TRB.Data.spells.starweaversWarp.isActive or TRB.Data.spells.starweaversWarp.isActive  then
+					valid = true
+				end
+			elseif var == "$starweaversWarp" then
+				if TRB.Data.spells.starweaversWarp.isActive then
+					valid = true
+				end
+			elseif var == "$starweaversWeft" then
+				if TRB.Data.spells.starweaversWarp.isActive then
+					valid = true
+				end
+			elseif var == "$moonAstralPower" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.newMoon) then
+					valid = true
+				end
+			elseif var == "$moonCharges" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.newMoon) then
+					if TRB.Data.snapshotData.newMoon.charges > 0 then
+						valid = true
+					end
+				end
+			elseif var == "$moonCooldown" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.newMoon) then
+					if TRB.Data.snapshotData.newMoon.cooldown > 0 then
+						valid = true
+					end
+				end
+			elseif var == "$moonCooldownTotal" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.newMoon) then
+					if TRB.Data.snapshotData.newMoon.charges < TRB.Data.snapshotData.newMoon.maxCharges then
+						valid = true
+					end
+				end
+			elseif var == "$pulsarCollected" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
+					valid = true
+				end
+			elseif var == "$pulsarCollectedPercent" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
+					valid = true
+				end
+			elseif var == "$pulsarRemaining" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
+					valid = true
+				end
+			elseif var == "$pulsarRemainingPercent" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
+					valid = true
+				end
+			elseif var == "$pulsarStarsurgeCount" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
+					valid = true
+				end
+			elseif var == "$pulsarStarfallCount" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
+					valid = true
+				end
+			elseif var == "$pulsarNextStarsurge" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) and
+					(((TRB.Data.spells.primordialArcanicPulsar.maxAstralPower or 0) - (TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower or 0)) <= TRB.Data.character.starsurgeThreshold) then
+					valid = true
+				end
+			elseif var == "$pulsarNextStarfall" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) and
+					(((TRB.Data.spells.primordialArcanicPulsar.maxAstralPower or 0) - (TRB.Data.snapshotData.primordialArcanicPulsar.currentAstralPower or 0)) <= TRB.Data.character.starfallThreshold) then
+					valid = true
+				end
+			end
+		elseif specId == 2 then -- Feral
+			if var == "$resource" or var == "$energy" then
+				if TRB.Data.snapshotData.resource > 0 then
+					valid = true
+				end
+			elseif var == "$resourceMax" or var == "$energyMax" then
+				valid = true
+			elseif var == "$resourceTotal" or var == "$energyTotal" then
+				if TRB.Data.snapshotData.resource > 0 or
+					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw > 0) then
+					valid = true
+				end
+			elseif var == "$resourcePlusCasting" or var == "$energyPlusCasting" then
+				if TRB.Data.snapshotData.resource > 0 or
+					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw > 0) then
+					valid = true
+				end
+			elseif var == "$overcap" or var == "$energyOvercap" or var == "$resourceOvercap" then
+				if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.druid.feral.overcapThreshold then
+					valid = true
+				end
+			elseif var == "$resourcePlusPassive" or var == "$energyPlusPassive" then
+				if TRB.Data.snapshotData.resource > 0 then
+					valid = true
+				end
+			elseif var == "$comboPoints" then
+				valid = true
+			elseif var == "$comboPointsMax" then
+				valid = true
+			elseif var == "$ripCount" then
+				if TRB.Data.snapshotData.targetData.rip > 0 then
+					valid = true
+				end
+			elseif var == "$ripCurrent" then
+				valid = true
+			elseif var == "$ripTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ripRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$ripPercent" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ripSnapshot > 0 then
+					valid = true
+				end
+			elseif var == "$ripSnapshot" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ripSnapshot > 0 then
+					valid = true
+				end
+			elseif var == "$rakeCount" then
+				if TRB.Data.snapshotData.targetData.rake > 0 then
+					valid = true
+				end
+			elseif var == "$rakeCurrent" then
+				valid = true
+			elseif var == "$rakeTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rakeRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$rakePercent" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rakeSnapshot > 0 then
+					valid = true
+				end
+			elseif var == "$rakeSnapshot" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rakeSnapshot > 0 then
+					valid = true
+				end
+			elseif var == "$thrashCount" then
+				if TRB.Data.snapshotData.targetData.thrash > 0 then
+					valid = true
+				end
+			elseif var == "$thrashCurrent" then
+				valid = true
+			elseif var == "$thrashTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].thrashRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$thrashPercent" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].thrashSnapshot > 0 then
+					valid = true
+				end
+			elseif var == "$thrashSnapshot" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].thrashSnapshot > 0 then
+					valid = true
+				end
+			elseif var == "$moonfireCount" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true and TRB.Data.snapshotData.targetData.moonfire > 0 then
+					valid = true
+				end
+			elseif var == "$moonfireCurrent" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true then
+					valid = true
+				end
+			elseif var == "$moonfireTime" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true and
+					not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfireRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$moonfirePercent" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true and
+					not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfireSnapshot > 0 then
+					valid = true
+				end
+			elseif var == "$moonfireSnapshot" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true and
+					not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfireSnapshot > 0 then
+					valid = true
+				end
+			elseif var == "$lunarInspiration" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true then
+					valid = true
+				end
+			elseif var == "$brutalSlashCharges" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.brutalSlash) then
+					if TRB.Data.snapshotData.brutalSlash.charges > 0 then
+						valid = true
+					end
+				end
+			elseif var == "$brutalSlashCooldown" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.brutalSlash) then
+					if TRB.Data.snapshotData.brutalSlash.cooldown > 0 then
+						valid = true
+					end
+				end
+			elseif var == "$brutalSlashCooldownTotal" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.brutalSlash) then
+					if TRB.Data.snapshotData.brutalSlash.charges < TRB.Data.snapshotData.brutalSlash.maxCharges then
+						valid = true
+					end
+				end
+			elseif var == "$bloodtalonsStacks" then
+				if TRB.Data.snapshotData.bloodtalons.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$bloodtalonsTime" then
+				if TRB.Data.snapshotData.bloodtalons.remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$suddenAmbushTime" then
+				if GetSuddenAmbushRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$clearcastingStacks" then
+				if TRB.Data.snapshotData.clearcasting.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$clearcastingTime" then
+				if TRB.Data.snapshotData.clearcastingTime.remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$berserkTime" or var == "$incarnationTime" then
+				if GetBerserkRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$apexPredatorsCravingTime" then
+				if GetApexPredatorsCravingRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$tigersFuryTime" then
+				if TRB.Data.snapshotData.tigersFury.duration > 0 then
+					valid = true
+				end
+			elseif var == "$tigersFuryCooldownTime" then
+				if TRB.Data.snapshotData.tigersFury.cooldown.duration > 0 then
+					valid = true
+				end
+			elseif var == "$inStealth" then
+				if IsStealthed() then
+					valid = true
+				end
+			end
+		elseif specId == 4 then --Restoration
+			if var == "$resource" or var == "$mana" then
+				valid = true
+			elseif var == "$resourceMax" or var == "$manaMax" then
+				valid = true
+			elseif var == "$resourceTotal" or var == "$manaTotal" then
+				valid = true
+			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
+				valid = true
+			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
+				valid = true
+			elseif var == "$casting" then
+				if TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
+					valid = true
+				end
+			elseif var == "$passive" then
+				if TRB.Functions.Class:IsValidVariableForSpec("$channeledMana") or
+					TRB.Functions.Class:IsValidVariableForSpec("$sohMana") or
+					TRB.Functions.Class:IsValidVariableForSpec("$innervateMana") or
+					TRB.Functions.Class:IsValidVariableForSpec("$potionOfChilledClarityMana") or
+					TRB.Functions.Class:IsValidVariableForSpec("$mttMana") then
+					valid = true
+				end
+			elseif var == "$efflorescenceTime" then
+				if GetEfflorescenceRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$sunfireCount" then
+				if TRB.Data.snapshotData.targetData.sunfire > 0 then
+					valid = true
+				end
+			elseif var == "$clearcastingTime" then
+				if TRB.Data.snapshotData.clearcasting.remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$sunfireTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].sunfireRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$moonfireCount" then
+				if TRB.Data.snapshotData.targetData.moonfire > 0 then
+					valid = true
+				end
+			elseif var == "$moonfireTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].moonfireRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$sohMana" then
+				if TRB.Data.snapshotData.symbolOfHope.resourceRaw > 0 then
+					valid = true
+				end
+			elseif var == "$sohTime" then
+				if TRB.Data.snapshotData.symbolOfHope.isActive then
+					valid = true
+				end
+			elseif var == "$sohTicks" then
+				if TRB.Data.snapshotData.symbolOfHope.isActive then
+					valid = true
+				end
+			elseif var == "$innervateMana" then
+				if TRB.Data.snapshotData.innervate.mana > 0 then
+					valid = true
+				end
+			elseif var == "$innervateTime" then
+				if TRB.Data.snapshotData.innervate.remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$potionOfChilledClarityMana" then
+				if TRB.Data.snapshotData.potionOfChilledClarity.mana > 0 then
+					valid = true
+				end
+			elseif var == "$potionOfChilledClarityTime" then
+				if TRB.Data.snapshotData.potionOfChilledClarity.remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$mttMana" or var == "$manaTideTotemMana" then
+				if TRB.Data.snapshotData.manaTideTotem.mana > 0 then
+					valid = true
+				end
+			elseif var == "$mttTime" or var == "$manaTideTotemTime" then
+				if TRB.Data.snapshotData.manaTideTotem.isActive then
+					valid = true
+				end
+			elseif var == "$channeledMana" then
+				if TRB.Data.snapshotData.channeledManaPotion.mana > 0 then
+					valid = true
+				end
+			elseif var == "$potionOfFrozenFocusTicks" then
+				if TRB.Data.snapshotData.channeledManaPotion.ticksRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$potionOfFrozenFocusTime" then
+				if GetChanneledPotionRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$potionCooldown" then
+				if TRB.Data.snapshotData.potion.onCooldown then
+					valid = true
+				end
+			elseif var == "$potionCooldownSeconds" then
+				if TRB.Data.snapshotData.potion.onCooldown then
+					valid = true
+				end
+			end
+		else
+			valid = false
+		end
+
+		return valid
 	end
 
 	--HACK to fix FPS

@@ -990,139 +990,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 	end
 
-	local function IsValidVariableForSpec(var)
-		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-		local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
-		if valid then
-			return valid
-		end
-		local specId = GetSpecialization()
-		local settings = nil
-		if specId == 1 then
-			settings = TRB.Data.settings.warrior.arms
-		elseif specId == 2 then
-			settings = TRB.Data.settings.warrior.fury
-		end
-
-		if specId == 1 then --Arms
-			if var == "$suddenDeathTime" then
-				if TRB.Data.snapshotData.suddenDeath.isActive then
-					valid = true
-				end
-			elseif var == "$rend" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.rend) then
-					valid = true
-				end
-			elseif var == "$rendCount" then
-				if TRB.Data.snapshotData.targetData.rend > 0 then
-					valid = true
-				end
-			elseif var == "$rendTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$deepWoundsCount" then
-				if TRB.Data.snapshotData.targetData.deepWounds > 0 then
-					valid = true
-				end
-			elseif var == "$deepWoundsTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$resourceTotal" or var == "$rageTotal" then
-				if normalizedRage > 0 or
-					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
-					then
-					valid = true
-				end
-			elseif var == "$passive" then
-				valid = false
-			elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
-				if normalizedRage > 0 then
-					valid = true
-				end
-			end
-		elseif specId == 2 then --Fury
-			if var == "$suddenDeathTime" then
-				if TRB.Data.snapshotData.suddenDeath.isActive then
-					valid = true
-				end
-			elseif var == "$resourceTotal" or var == "$rageTotal" then
-				if normalizedRage > 0 or TRB.Data.snapshotData.ravager.rage > 0 or
-					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
-					then
-					valid = true
-				end
-			elseif var == "$passive" then
-				if TRB.Data.snapshotData.ravager.rage > 0 then
-					valid = true
-				end
-			elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
-				if normalizedRage > 0 or TRB.Data.snapshotData.ravager.rage > 0 then
-					valid = true
-				end
-			elseif var == "$enrageTime" then
-				if GetEnrageRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$whirlwindTime" then
-				if GetWhirlwindRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$whirlwindStacks" then
-				if TRB.Data.snapshotData.whirlwind.stacks ~= nil and TRB.Data.snapshotData.whirlwind.stacks > 0 then
-					valid = true
-				end
-			elseif var == "$ravagerTicks" then
-				if TRB.Data.snapshotData.ravager.isActive then
-					valid = true
-				end
-			elseif var == "$ravagerRage" then
-				if TRB.Data.snapshotData.ravager.isActive then
-					valid = true
-				end
-			end
-		end
-
-		if valid == true then
-			return valid
-		end
-
-		if var == "$resource" or var == "$rage" then
-			if normalizedRage > 0 then
-				valid = true
-			end
-		elseif var == "$resourceMax" or var == "$rageMax" then
-			valid = true
-		elseif var == "$resourcePlusCasting" or var == "$ragePlusCasting" then
-			if normalizedRage > 0 or
-				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
-				valid = true
-			end
-		elseif var == "$overcap" or var == "$rageOvercap" or var == "$resourceOvercap" then
-			if (normalizedRage + TRB.Data.snapshotData.casting.resourceFinal) > settings.overcapThreshold then
-				valid = true
-			end
-		elseif var == "$casting" then
-			if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0 then
-				valid = true
-			end
-		end
-
-		return valid
-	end
-	TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
-
 	local function RefreshLookupData_Arms()
 		local _
 		local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
@@ -1130,7 +997,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local currentTime = GetTime()
 
 		--$overcap
-		local overcap = IsValidVariableForSpec("$overcap")
+		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
 		local currentRageColor = TRB.Data.settings.warrior.arms.colors.text.current
 		local castingRageColor = TRB.Data.settings.warrior.arms.colors.text.casting
@@ -1314,7 +1181,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local currentTime = GetTime()
 
 		--$overcap
-		local overcap = IsValidVariableForSpec("$overcap")
+		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
 		local currentRageColor = TRB.Data.settings.warrior.fury.colors.text.current
 		local castingRageColor = TRB.Data.settings.warrior.fury.colors.text.casting
@@ -1841,7 +1708,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border
 
-					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -2012,7 +1879,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 					local barBorderColor = specSettings.colors.bar.border
 
-					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -2511,6 +2378,137 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 
 		return true
+	end
+	function TRB.Functions.Class:IsValidVariableForSpec(var)
+		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
+		local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
+		if valid then
+			return valid
+		end
+		local specId = GetSpecialization()
+		local settings = nil
+		if specId == 1 then
+			settings = TRB.Data.settings.warrior.arms
+		elseif specId == 2 then
+			settings = TRB.Data.settings.warrior.fury
+		end
+
+		if specId == 1 then --Arms
+			if var == "$suddenDeathTime" then
+				if TRB.Data.snapshotData.suddenDeath.isActive then
+					valid = true
+				end
+			elseif var == "$rend" then
+				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.rend) then
+					valid = true
+				end
+			elseif var == "$rendCount" then
+				if TRB.Data.snapshotData.targetData.rend > 0 then
+					valid = true
+				end
+			elseif var == "$rendTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$deepWoundsCount" then
+				if TRB.Data.snapshotData.targetData.deepWounds > 0 then
+					valid = true
+				end
+			elseif var == "$deepWoundsTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$resourceTotal" or var == "$rageTotal" then
+				if normalizedRage > 0 or
+					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
+					then
+					valid = true
+				end
+			elseif var == "$passive" then
+				valid = false
+			elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
+				if normalizedRage > 0 then
+					valid = true
+				end
+			end
+		elseif specId == 2 then --Fury
+			if var == "$suddenDeathTime" then
+				if TRB.Data.snapshotData.suddenDeath.isActive then
+					valid = true
+				end
+			elseif var == "$resourceTotal" or var == "$rageTotal" then
+				if normalizedRage > 0 or TRB.Data.snapshotData.ravager.rage > 0 or
+					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
+					then
+					valid = true
+				end
+			elseif var == "$passive" then
+				if TRB.Data.snapshotData.ravager.rage > 0 then
+					valid = true
+				end
+			elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
+				if normalizedRage > 0 or TRB.Data.snapshotData.ravager.rage > 0 then
+					valid = true
+				end
+			elseif var == "$enrageTime" then
+				if GetEnrageRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$whirlwindTime" then
+				if GetWhirlwindRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$whirlwindStacks" then
+				if TRB.Data.snapshotData.whirlwind.stacks ~= nil and TRB.Data.snapshotData.whirlwind.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$ravagerTicks" then
+				if TRB.Data.snapshotData.ravager.isActive then
+					valid = true
+				end
+			elseif var == "$ravagerRage" then
+				if TRB.Data.snapshotData.ravager.isActive then
+					valid = true
+				end
+			end
+		end
+
+		if valid == true then
+			return valid
+		end
+
+		if var == "$resource" or var == "$rage" then
+			if normalizedRage > 0 then
+				valid = true
+			end
+		elseif var == "$resourceMax" or var == "$rageMax" then
+			valid = true
+		elseif var == "$resourcePlusCasting" or var == "$ragePlusCasting" then
+			if normalizedRage > 0 or
+				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
+				valid = true
+			end
+		elseif var == "$overcap" or var == "$rageOvercap" or var == "$resourceOvercap" then
+			if (normalizedRage + TRB.Data.snapshotData.casting.resourceFinal) > settings.overcapThreshold then
+				valid = true
+			end
+		elseif var == "$casting" then
+			if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0 then
+				valid = true
+			end
+		end
+
+		return valid
 	end
 
 	--HACK to fix FPS

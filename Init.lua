@@ -287,12 +287,6 @@ TRB.Data.sanityCheckValues = {
 	barMinHeight = 0
 }
 
--- This gets overwritten with a spec/class specific version of the function
-local function IsValidVariableForSpec(input)
-	return true
-end
-TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
-
 --[[
 -- Taken from BlizzBugsSuck (which appears to be abandoned) -- https://www.curseforge.com/wow/addons/blizzbugssuck
 -- Fix InterfaceOptionsFrame_OpenToCategory not actually opening the category (and not even scrolling to it)

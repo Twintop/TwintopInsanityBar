@@ -1619,295 +1619,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return insanity * modifier
 	end
 
-	local function IsValidVariableForSpec(var)
-		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-		if valid then
-			return valid
-		end
-		local specId = GetSpecialization()
-
-		if specId == 2 then
-			if var == "$resource" or var == "$mana" then
-				valid = true
-			elseif var == "$resourceMax" or var == "$manaMax" then
-				valid = true
-			elseif var == "$resourceTotal" or var == "$manaTotal" then
-				valid = true
-			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
-				valid = true
-			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
-				valid = true
-			elseif var == "$casting" then
-				if TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
-					valid = true
-				end
-			elseif var == "$passive" then
-				if IsValidVariableForSpec("$channeledMana") or
-					IsValidVariableForSpec("$sohMana") or
-					IsValidVariableForSpec("$innervateMana") or
-					IsValidVariableForSpec("$potionOfChilledClarityMana") or
-					IsValidVariableForSpec("$mttMana") then
-					valid = true
-				end
-			elseif var == "$sohMana" then
-				if TRB.Data.snapshotData.symbolOfHope.resourceRaw > 0 then
-					valid = true
-				end
-			elseif var == "$sohTime" then
-				if TRB.Data.snapshotData.symbolOfHope.isActive then
-					valid = true
-				end
-			elseif var == "$sohTicks" then
-				if TRB.Data.snapshotData.symbolOfHope.isActive then
-					valid = true
-				end
-			elseif var == "$lightweaverTime" then
-				if TRB.Data.snapshotData.lightweaver.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$lightweaverStacks" then
-				if TRB.Data.snapshotData.lightweaver.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$rwTime" then
-				if TRB.Data.snapshotData.resonantWords.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$innervateMana" then
-				if TRB.Data.snapshotData.innervate.mana > 0 then
-					valid = true
-				end
-			elseif var == "$innervateTime" then
-				if TRB.Data.snapshotData.innervate.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$potionOfChilledClarityMana" then
-				if TRB.Data.snapshotData.potionOfChilledClarity.mana > 0 then
-					valid = true
-				end
-			elseif var == "$potionOfChilledClarityTime" then
-				if TRB.Data.snapshotData.potionOfChilledClarity.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$mttMana" or var == "$manaTideTotemMana" then
-				if TRB.Data.snapshotData.manaTideTotem.mana > 0 then
-					valid = true
-				end
-			elseif var == "$mttTime" or var == "$manaTideTotemTime" then
-				if TRB.Data.snapshotData.manaTideTotem.isActive then
-					valid = true
-				end
-			elseif var == "$channeledMana" then
-				if TRB.Data.snapshotData.channeledManaPotion.mana > 0 then
-					valid = true
-				end
-			elseif var == "$potionOfFrozenFocusTicks" then
-				if TRB.Data.snapshotData.channeledManaPotion.ticksRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$potionOfFrozenFocusTime" then
-				if GetChanneledPotionRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$potionCooldown" then
-				if TRB.Data.snapshotData.potion.onCooldown then
-					valid = true
-				end
-			elseif var == "$potionCooldownSeconds" then
-				if TRB.Data.snapshotData.potion.onCooldown then
-					valid = true
-				end
-			elseif var == "$solStacks" then
-				if TRB.Data.snapshotData.surgeOfLight.stacks > 0 then
-					valid = true
-				end
-			elseif var == "$solTime" then
-				if TRB.Data.snapshotData.surgeOfLight.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$apotheosisTime" then
-				if TRB.Data.snapshotData.apotheosis.remainingTime > 0 then
-					valid = true
-				end
-			elseif var == "$hwChastiseTime" then
-				if GetHolyWordChastiseCooldownRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$hwSerenityTime" then
-				if GetHolyWordSerenityCooldownRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$hwSanctifyTime" then
-				if GetHolyWordSanctifyCooldownRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$sfMana" then
-				if TRB.Data.snapshotData.shadowfiend.resourceRaw > 0 then
-					valid = true
-				end
-			elseif var == "$sfGcds" then
-				if TRB.Data.snapshotData.shadowfiend.remaining.gcds > 0 then
-					valid = true
-				end
-			elseif var == "$sfSwings" then
-				if TRB.Data.snapshotData.shadowfiend.remaining.swings > 0 then
-					valid = true
-				end
-			elseif var == "$sfTime" then
-				if TRB.Data.snapshotData.shadowfiend.remaining.time > 0 then
-					valid = true
-				end
-			end
-		elseif specId == 3 then
-			if var == "$vfTime" then
-				if (TRB.Data.snapshotData.voidform.remainingTime ~= nil and TRB.Data.snapshotData.voidform.remainingTime > 0) or
-					(TRB.Data.snapshotData.darkAscension.remainingTime ~= nil and TRB.Data.snapshotData.darkAscension.remainingTime > 0) then
-					valid = true
-				end
-			elseif var == "$resource" or var == "$insanity" then
-				if TRB.Data.snapshotData.resource > 0 then
-					valid = true
-				end
-			elseif var == "$resourceMax" or var == "$insanityMax" then
-				valid = true
-			elseif var == "$resourceTotal" or var == "$insanityTotal" then
-				if TRB.Data.snapshotData.resource > 0 or
-					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id)) or
-					(((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal + CalculateInsanityGain(TRB.Data.snapshotData.deathAndMadness.insanity)) > 0) then
-					valid = true
-				end
-			elseif var == "$resourcePlusCasting" or var == "$insanityPlusCasting" then
-				if TRB.Data.snapshotData.resource > 0 or
-					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id)) then
-					valid = true
-				end
-			elseif var == "$overcap" or var == "$insanityOvercap" or var == "$resourceOvercap" then
-				if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.priest.shadow.overcapThreshold then
-					valid = true
-				end
-			elseif var == "$resourcePlusPassive" or var == "$insanityPlusPassive" then
-				if TRB.Data.snapshotData.resource > 0 or
-					((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal + CalculateInsanityGain(TRB.Data.snapshotData.deathAndMadness.insanity)) > 0 then
-					valid = true
-				end
-			elseif var == "$casting" then
-				if TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id) then
-					valid = true
-				end
-			elseif var == "$passive" then
-				if ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal + CalculateInsanityGain(TRB.Data.snapshotData.deathAndMadness.insanity)) > 0 then
-					valid = true
-				end
-			elseif var == "$mbInsanity" then
-				if TRB.Data.snapshotData.shadowfiend.resourceRaw > 0 then
-					valid = true
-				end
-			elseif var == "$mbGcds" then
-				if TRB.Data.snapshotData.shadowfiend.remaining.gcds > 0 then
-					valid = true
-				end
-			elseif var == "$mbSwings" then
-				if TRB.Data.snapshotData.shadowfiend.remaining.swings > 0 then
-					valid = true
-				end
-			elseif var == "$mbTime" then
-				if TRB.Data.snapshotData.shadowfiend.remaining.time > 0 then
-					valid = true
-				end
-			elseif var == "$loiInsanity" then
-				if TRB.Data.snapshotData.voidTendrils.resourceFinal > 0 then
-					valid = true
-				end
-			elseif var == "$loiTicks" then
-				if TRB.Data.snapshotData.voidTendrils.maxTicksRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$cttvEquipped" then
-				if TRB.Data.settings.priest.shadow.voidTendrilTracker and (TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.idolOfCthun) or TRB.Data.character.items.callToTheVoid == true) then
-					valid = true
-				end
-			elseif var == "$ecttvCount" then
-				if TRB.Data.settings.priest.shadow.voidTendrilTracker and TRB.Data.snapshotData.voidTendrils.numberActive > 0 then
-					valid = true
-				end
-			elseif var == "$damInsanity" then
-				if TRB.Data.snapshotData.deathAndMadness.insanity > 0 then
-					valid = true
-				end
-			elseif var == "$damTicks" then
-				if TRB.Data.snapshotData.deathAndMadness.ticksRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$asCount" then
-				if TRB.Data.snapshotData.targetData.auspiciousSpirits > 0 then
-					valid = true
-				end
-			elseif var == "$asInsanity" then
-				if TRB.Data.snapshotData.targetData.auspiciousSpirits > 0 then
-					valid = true
-				end
-			elseif var == "$vtCount" then
-				if TRB.Data.snapshotData.targetData.vampiricTouch > 0 then
-					valid = true
-				end
-			elseif var == "$vtTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouchRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$dpCount" then
-				if TRB.Data.snapshotData.targetData.devouringPlague > 0 then
-					valid = true
-				end
-			elseif var == "$dpTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].devouringPlagueRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$mdTime" then
-				if TRB.Data.spells.mindDevourer.isActive then
-					valid = true
-				end
-			elseif var == "$mfiTime" then
-				if TRB.Data.spells.mindFlayInsanity.isActive then
-					valid = true
-				end
-			elseif var == "$tofTime" then
-				if TRB.Data.snapshotData.twistOfFate.spellId ~= nil then
-					valid = true
-				end
-			else
-				valid = false
-			end
-		end
-
-		-- Spec Agnostic
-		if var == "$swpCount" then
-			if TRB.Data.snapshotData.targetData.shadowWordPain > 0 then
-				valid = true
-			end
-		elseif var == "$swpTime" then
-			if not UnitIsDeadOrGhost("target") and
-				UnitCanAttack("player", "target") and
-				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-				TRB.Data.snapshotData.targetData.targets ~= nil and
-				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining > 0 then
-				valid = true
-			end
-		end
-		return valid
-	end
-	TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
-
 	local function RefreshLookupData_Holy()
 		local currentTime = GetTime()
 		local normalizedMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
@@ -2270,7 +1981,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		----------
 
 		--$overcap
-		local overcap = IsValidVariableForSpec("$overcap")
+		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
 		local currentInsanityColor = TRB.Data.settings.priest.shadow.colors.text.currentInsanity
 		local castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.castingInsanity
@@ -2432,7 +2143,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local tofTime = string.format("%.1f", _tofTime)
 
 		--$cttvEquipped
-		local cttvEquipped = IsValidVariableForSpec("$cttvEquipped")
+		local cttvEquipped = TRB.Functions.Class:IsValidVariableForSpec("$cttvEquipped")
 
 		----------------------------
 
@@ -3561,7 +3272,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local passiveValue = 0
 					local barBorderColor = specSettings.colors.bar.border
 
-					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
@@ -3573,7 +3284,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.audio.overcapCue = false
 					end
 
-					if specSettings.colors.bar.mindFlayInsanityBorderChange and IsValidVariableForSpec("$mfiTime") then
+					if specSettings.colors.bar.mindFlayInsanityBorderChange and TRB.Functions.Class:IsValidVariableForSpec("$mfiTime") then
 						barBorderColor = specSettings.colors.bar.borderMindFlayInsanity
 					end
 					
@@ -4476,6 +4187,294 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			return true
 		end
 		return false
+	end
+
+	function TRB.Functions.Class:IsValidVariableForSpec(var)
+		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
+		if valid then
+			return valid
+		end
+		local specId = GetSpecialization()
+
+		if specId == 2 then
+			if var == "$resource" or var == "$mana" then
+				valid = true
+			elseif var == "$resourceMax" or var == "$manaMax" then
+				valid = true
+			elseif var == "$resourceTotal" or var == "$manaTotal" then
+				valid = true
+			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
+				valid = true
+			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
+				valid = true
+			elseif var == "$casting" then
+				if TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
+					valid = true
+				end
+			elseif var == "$passive" then
+				if TRB.Functions.Class:IsValidVariableForSpec("$channeledMana") or
+					TRB.Functions.Class:IsValidVariableForSpec("$sohMana") or
+					TRB.Functions.Class:IsValidVariableForSpec("$innervateMana") or
+					TRB.Functions.Class:IsValidVariableForSpec("$potionOfChilledClarityMana") or
+					TRB.Functions.Class:IsValidVariableForSpec("$mttMana") then
+					valid = true
+				end
+			elseif var == "$sohMana" then
+				if TRB.Data.snapshotData.symbolOfHope.resourceRaw > 0 then
+					valid = true
+				end
+			elseif var == "$sohTime" then
+				if TRB.Data.snapshotData.symbolOfHope.isActive then
+					valid = true
+				end
+			elseif var == "$sohTicks" then
+				if TRB.Data.snapshotData.symbolOfHope.isActive then
+					valid = true
+				end
+			elseif var == "$lightweaverTime" then
+				if TRB.Data.snapshotData.lightweaver.remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$lightweaverStacks" then
+				if TRB.Data.snapshotData.lightweaver.remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$rwTime" then
+				if TRB.Data.snapshotData.resonantWords.remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$innervateMana" then
+				if TRB.Data.snapshotData.innervate.mana > 0 then
+					valid = true
+				end
+			elseif var == "$innervateTime" then
+				if TRB.Data.snapshotData.innervate.remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$potionOfChilledClarityMana" then
+				if TRB.Data.snapshotData.potionOfChilledClarity.mana > 0 then
+					valid = true
+				end
+			elseif var == "$potionOfChilledClarityTime" then
+				if TRB.Data.snapshotData.potionOfChilledClarity.remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$mttMana" or var == "$manaTideTotemMana" then
+				if TRB.Data.snapshotData.manaTideTotem.mana > 0 then
+					valid = true
+				end
+			elseif var == "$mttTime" or var == "$manaTideTotemTime" then
+				if TRB.Data.snapshotData.manaTideTotem.isActive then
+					valid = true
+				end
+			elseif var == "$channeledMana" then
+				if TRB.Data.snapshotData.channeledManaPotion.mana > 0 then
+					valid = true
+				end
+			elseif var == "$potionOfFrozenFocusTicks" then
+				if TRB.Data.snapshotData.channeledManaPotion.ticksRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$potionOfFrozenFocusTime" then
+				if GetChanneledPotionRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$potionCooldown" then
+				if TRB.Data.snapshotData.potion.onCooldown then
+					valid = true
+				end
+			elseif var == "$potionCooldownSeconds" then
+				if TRB.Data.snapshotData.potion.onCooldown then
+					valid = true
+				end
+			elseif var == "$solStacks" then
+				if TRB.Data.snapshotData.surgeOfLight.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$solTime" then
+				if TRB.Data.snapshotData.surgeOfLight.remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$apotheosisTime" then
+				if TRB.Data.snapshotData.apotheosis.remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$hwChastiseTime" then
+				if GetHolyWordChastiseCooldownRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$hwSerenityTime" then
+				if GetHolyWordSerenityCooldownRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$hwSanctifyTime" then
+				if GetHolyWordSanctifyCooldownRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$sfMana" then
+				if TRB.Data.snapshotData.shadowfiend.resourceRaw > 0 then
+					valid = true
+				end
+			elseif var == "$sfGcds" then
+				if TRB.Data.snapshotData.shadowfiend.remaining.gcds > 0 then
+					valid = true
+				end
+			elseif var == "$sfSwings" then
+				if TRB.Data.snapshotData.shadowfiend.remaining.swings > 0 then
+					valid = true
+				end
+			elseif var == "$sfTime" then
+				if TRB.Data.snapshotData.shadowfiend.remaining.time > 0 then
+					valid = true
+				end
+			end
+		elseif specId == 3 then
+			if var == "$vfTime" then
+				if (TRB.Data.snapshotData.voidform.remainingTime ~= nil and TRB.Data.snapshotData.voidform.remainingTime > 0) or
+					(TRB.Data.snapshotData.darkAscension.remainingTime ~= nil and TRB.Data.snapshotData.darkAscension.remainingTime > 0) then
+					valid = true
+				end
+			elseif var == "$resource" or var == "$insanity" then
+				if TRB.Data.snapshotData.resource > 0 then
+					valid = true
+				end
+			elseif var == "$resourceMax" or var == "$insanityMax" then
+				valid = true
+			elseif var == "$resourceTotal" or var == "$insanityTotal" then
+				if TRB.Data.snapshotData.resource > 0 or
+					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id)) or
+					(((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal + CalculateInsanityGain(TRB.Data.snapshotData.deathAndMadness.insanity)) > 0) then
+					valid = true
+				end
+			elseif var == "$resourcePlusCasting" or var == "$insanityPlusCasting" then
+				if TRB.Data.snapshotData.resource > 0 or
+					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id)) then
+					valid = true
+				end
+			elseif var == "$overcap" or var == "$insanityOvercap" or var == "$resourceOvercap" then
+				if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.priest.shadow.overcapThreshold then
+					valid = true
+				end
+			elseif var == "$resourcePlusPassive" or var == "$insanityPlusPassive" then
+				if TRB.Data.snapshotData.resource > 0 or
+					((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal + CalculateInsanityGain(TRB.Data.snapshotData.deathAndMadness.insanity)) > 0 then
+					valid = true
+				end
+			elseif var == "$casting" then
+				if TRB.Data.snapshotData.casting.resourceRaw ~= nil and (TRB.Data.snapshotData.casting.resourceRaw > 0 or TRB.Data.snapshotData.casting.spellId == TRB.Data.spells.mindSear.id) then
+					valid = true
+				end
+			elseif var == "$passive" then
+				if ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal + CalculateInsanityGain(TRB.Data.snapshotData.deathAndMadness.insanity)) > 0 then
+					valid = true
+				end
+			elseif var == "$mbInsanity" then
+				if TRB.Data.snapshotData.shadowfiend.resourceRaw > 0 then
+					valid = true
+				end
+			elseif var == "$mbGcds" then
+				if TRB.Data.snapshotData.shadowfiend.remaining.gcds > 0 then
+					valid = true
+				end
+			elseif var == "$mbSwings" then
+				if TRB.Data.snapshotData.shadowfiend.remaining.swings > 0 then
+					valid = true
+				end
+			elseif var == "$mbTime" then
+				if TRB.Data.snapshotData.shadowfiend.remaining.time > 0 then
+					valid = true
+				end
+			elseif var == "$loiInsanity" then
+				if TRB.Data.snapshotData.voidTendrils.resourceFinal > 0 then
+					valid = true
+				end
+			elseif var == "$loiTicks" then
+				if TRB.Data.snapshotData.voidTendrils.maxTicksRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$cttvEquipped" then
+				if TRB.Data.settings.priest.shadow.voidTendrilTracker and (TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.idolOfCthun) or TRB.Data.character.items.callToTheVoid == true) then
+					valid = true
+				end
+			elseif var == "$ecttvCount" then
+				if TRB.Data.settings.priest.shadow.voidTendrilTracker and TRB.Data.snapshotData.voidTendrils.numberActive > 0 then
+					valid = true
+				end
+			elseif var == "$damInsanity" then
+				if TRB.Data.snapshotData.deathAndMadness.insanity > 0 then
+					valid = true
+				end
+			elseif var == "$damTicks" then
+				if TRB.Data.snapshotData.deathAndMadness.ticksRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$asCount" then
+				if TRB.Data.snapshotData.targetData.auspiciousSpirits > 0 then
+					valid = true
+				end
+			elseif var == "$asInsanity" then
+				if TRB.Data.snapshotData.targetData.auspiciousSpirits > 0 then
+					valid = true
+				end
+			elseif var == "$vtCount" then
+				if TRB.Data.snapshotData.targetData.vampiricTouch > 0 then
+					valid = true
+				end
+			elseif var == "$vtTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].vampiricTouchRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$dpCount" then
+				if TRB.Data.snapshotData.targetData.devouringPlague > 0 then
+					valid = true
+				end
+			elseif var == "$dpTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].devouringPlagueRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$mdTime" then
+				if TRB.Data.spells.mindDevourer.isActive then
+					valid = true
+				end
+			elseif var == "$mfiTime" then
+				if TRB.Data.spells.mindFlayInsanity.isActive then
+					valid = true
+				end
+			elseif var == "$tofTime" then
+				if TRB.Data.snapshotData.twistOfFate.spellId ~= nil then
+					valid = true
+				end
+			else
+				valid = false
+			end
+		end
+
+		-- Spec Agnostic
+		if var == "$swpCount" then
+			if TRB.Data.snapshotData.targetData.shadowWordPain > 0 then
+				valid = true
+			end
+		elseif var == "$swpTime" then
+			if not UnitIsDeadOrGhost("target") and
+				UnitCanAttack("player", "target") and
+				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+				TRB.Data.snapshotData.targetData.targets ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].shadowWordPainRemaining > 0 then
+				valid = true
+			end
+		end
+		return valid
 	end
 
 	--HACK to fix FPS

@@ -1972,282 +1972,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end
 	end
 
-	local function IsValidVariableForSpec(var)
-		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-		if valid then
-			return valid
-		end
-		local specId = GetSpecialization()
-		local settings = nil
-		if specId == 1 then
-			settings = TRB.Data.settings.rogue.assassination
-		elseif specId == 2 then
-			settings = TRB.Data.settings.rogue.outlaw
-		end
-
-		if specId == 1 then --Assassination
-			-- Bleeds
-			if var == "$isBleeding" then
-				if IsTargetBleeding() then
-					valid = true
-				end
-			elseif var == "$ctCount" or var == "$crimsonTempestCount" then
-				if TRB.Data.snapshotData.targetData.crimsonTempest > 0 then
-					valid = true
-				end
-			elseif var == "$ctTime" or var == "$crimsonTempestTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].crimsonTempestRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$garroteCount" then
-				if TRB.Data.snapshotData.targetData.garrote > 0 then
-					valid = true
-				end
-			elseif var == "$garroteTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].garroteRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$ibCount" or var == "$internalBleedingCount" then
-				if TRB.Data.snapshotData.targetData.internalBleeding > 0 then
-					valid = true
-				end
-			elseif var == "$ibTime" or var == "$internalBleedingTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].internalBleedingRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$ruptureCount" then
-				if TRB.Data.snapshotData.targetData.rupture > 0 then
-					valid = true
-				end
-			elseif var == "$ruptureTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ruptureRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$dpCount" or var == "$deadlyPoisonCount" then
-				if TRB.Data.snapshotData.targetData.deadlyPoison > 0 then
-					valid = true
-				end
-			elseif var == "$dpTime" or var == "$deadlyPoisonTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deadlyPoisonRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$amplifyingPoisonCount" then
-				if TRB.Data.snapshotData.targetData.amplifyingPoison > 0 then
-					valid = true
-				end
-			elseif var == "$amplifyingPoisonTime" then
-				if not UnitIsDeadOrGhost("target") and
-					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].amplifyingPoisonRemaining > 0 then
-					valid = true
-				end
-			-- Other abilities
-			elseif var == "$blindsideTime" then
-				if TRB.Data.snapshotData.blindside.spellId ~= nil then
-					valid = true
-				end
-			end
-		elseif specId == 2 then --Outlaw
-			-- Roll the Bones buff counts
-			if var == "$rtbCount" or var == "$rollTheBonesCount" then
-				if TRB.Data.snapshotData.rollTheBones.count > 0 then
-					valid = true
-				end
-			elseif var == "$rtbTemporaryCount" or var == "$rollTheBonesTemporaryCount" then
-				if TRB.Data.snapshotData.rollTheBones.temporaryCount > 0 then
-					valid = true
-				end
-			elseif var == "$rtbAllCount" or var == "$rollTheBonesAllCount" then
-				if TRB.Data.snapshotData.rollTheBones.count > 0 or TRB.Data.snapshotData.rollTheBones.temporaryCount > 0 then
-					valid = true
-				end
-			elseif var == "$rtbBuffTime" or var == "$rollTheBonesBuffTime" then
-				if TRB.Data.snapshotData.rollTheBones.remaining > 0 then
-					valid = true
-				end
-			-- Roll the Bones Buffs
-			elseif var == "$broadsideTime" then
-				if TRB.Data.snapshotData.rollTheBones.buffs.broadside.duration > 0 then
-					valid = true
-				end
-			elseif var == "$buriedTreasureTime" then
-				if TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure.duration > 0 then
-					valid = true
-				end
-			elseif var == "$grandMeleeTime" then
-				if TRB.Data.snapshotData.rollTheBones.buffs.grandMelee.duration > 0 then
-					valid = true
-				end
-			elseif var == "$ruthlessPrecisionTime" then
-				if TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision.duration > 0 then
-					valid = true
-				end
-			elseif var == "$skullAndCrossbonesTime" then
-				if TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones.duration > 0 then
-					valid = true
-				end
-			elseif var == "$trueBearingTime" then
-				if TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.duration > 0 then
-					valid = true
-				end
-			-- Other abilities
-			elseif var == "$opportunityTime" then
-				if TRB.Data.snapshotData.opportunity.spellId ~= nil then
-					valid = true
-				end
-			elseif var == "$rtbGoodBuff" or var == "$rollTheBonesGoodBuff" then
-				if TRB.Data.snapshotData.rollTheBones.goodBuffs == true then
-					valid = true
-				end
-			end
-		--[[elseif specId == 3 then --Survivial]]
-		end
-
-		if var == "$resource" or var == "$energy" then
-			if TRB.Data.snapshotData.resource > 0 then
-				valid = true
-			end
-		elseif var == "$resourceMax" or var == "$energyMax" then
-			valid = true
-		elseif var == "$resourceTotal" or var == "$energyTotal" then
-			if TRB.Data.snapshotData.resource > 0 or
-				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
-				then
-				valid = true
-			end
-		elseif var == "$resourcePlusCasting" or var == "$energyPlusCasting" then
-			if TRB.Data.snapshotData.resource > 0 or
-				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
-				valid = true
-			end
-		elseif var == "$overcap" or var == "$energyOvercap" or var == "$resourceOvercap" then
-			if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > settings.overcapThreshold then
-				valid = true
-			end
-		elseif var == "$resourcePlusPassive" or var == "$energyPlusPassive" then
-			if TRB.Data.snapshotData.resource > 0 then
-				valid = true
-			end
-		elseif var == "$casting" then
-			if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0 then
-				valid = true
-			end
-		elseif var == "$passive" then
-			if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
-				settings.generation.enabled and
-				((settings.generation.mode == "time" and settings.generation.time > 0) or
-				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-				valid = true
-			end
-		elseif var == "$regen" or var == "$regenEnergy" or var == "$energyRegen" then
-			if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
-				((settings.generation.mode == "time" and settings.generation.time > 0) or
-				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-				valid = true
-			end
-		elseif var == "$comboPoints" then
-			valid = true
-		elseif var == "$comboPointsMax" then
-			valid = true
-		elseif var == "$sadTime" or var == "$sliceAndDiceTime" then
-			if TRB.Data.snapshotData.sliceAndDice.spellId ~= nil then
-				valid = true
-			end
-		elseif var == "$sbsCount" or var == "$serratedBoneSpikeCount" then
-			if TRB.Data.snapshotData.targetData.serratedBoneSpike > 0 then
-				valid = true
-			end
-		-- Poisons
-		elseif var == "$cpCount" or var == "$cripplingPoisonCount" then
-			if TRB.Data.snapshotData.targetData.cripplingPoison > 0 then
-				valid = true
-			end
-		elseif var == "$cpTime" or var == "$cripplingPoisonTime" then
-			if not UnitIsDeadOrGhost("target") and
-				UnitCanAttack("player", "target") and
-				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-				TRB.Data.snapshotData.targetData.targets ~= nil and
-				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].cripplingPoisonRemaining > 0 then
-				valid = true
-			end
-		elseif var == "$npCount" or var == "$numbingPoisonCount" then
-			if TRB.Data.snapshotData.targetData.numbingPoison > 0 then
-				valid = true
-			end
-		elseif var == "$npTime" or var == "$numbingPoisonTime" then
-			if not UnitIsDeadOrGhost("target") and
-				UnitCanAttack("player", "target") and
-				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-				TRB.Data.snapshotData.targetData.targets ~= nil and
-				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].numbingPoisonRemaining > 0 then
-				valid = true
-			end
-		elseif var == "$atrophicPoisonCount" then
-			if TRB.Data.snapshotData.targetData.atrophicPoison > 0 then
-				valid = true
-			end
-		elseif var == "$atrophicPoisonPoisonTime" then
-			if not UnitIsDeadOrGhost("target") and
-				UnitCanAttack("player", "target") and
-				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-				TRB.Data.snapshotData.targetData.targets ~= nil and
-				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].atrophicPoisonRemaining > 0 then
-				valid = true
-			end
-		elseif var == "$wpCount" or var == "$woundPoisonCount" then
-			if TRB.Data.snapshotData.targetData.woundPoison > 0 then
-				valid = true
-			end
-		elseif var == "$wpTime" or var == "$woundPoisonTime" then
-			if not UnitIsDeadOrGhost("target") and
-				UnitCanAttack("player", "target") and
-				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-				TRB.Data.snapshotData.targetData.targets ~= nil and
-				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].woundPoisonRemaining > 0 then
-				valid = true
-			end
-		elseif var == "$inStealth" then
-			if IsStealthed() then
-				valid = true
-			end
-		end
-
-		return valid
-	end
-	TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
-
 	local function RefreshLookupData_Assassination()
 		local _
 		--Spec specific implementation
@@ -2257,7 +1981,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Data.snapshotData.energyRegen, _ = GetPowerRegen()
 
 		--$overcap
-		local overcap = IsValidVariableForSpec("$overcap")
+		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
 		local currentEnergyColor = TRB.Data.settings.rogue.assassination.colors.text.current
 		local castingEnergyColor = TRB.Data.settings.rogue.assassination.colors.text.casting
@@ -2732,7 +2456,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Data.snapshotData.energyRegen, _ = GetPowerRegen()
 
 		--$overcap
-		local overcap = IsValidVariableForSpec("$overcap")
+		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
 		local currentEnergyColor = TRB.Data.settings.rogue.outlaw.colors.text.current
 		local castingEnergyColor = TRB.Data.settings.rogue.outlaw.colors.text.casting
@@ -3608,7 +3332,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					local barBorderColor = specSettings.colors.bar.border
 					if IsStealthed() or TRB.Data.spells.subterfuge.isActive or TRB.Data.spells.sepsis.isActive then
 						barBorderColor = specSettings.colors.bar.borderStealth
-					elseif specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -3939,7 +3663,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						barBorderColor = specSettings.colors.bar.borderRtbGood
 					elseif TRB.Data.snapshotData.rollTheBones.goodBuffs == false and TRB.Data.snapshotData.rollTheBones.startTime == nil then
 						barBorderColor = specSettings.colors.bar.borderRtbBad
-					elseif specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -4815,6 +4539,281 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			return true
 		end
 		return false
+	end
+
+	function TRB.Functions.Class:IsValidVariableForSpec(var)
+		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
+		if valid then
+			return valid
+		end
+		local specId = GetSpecialization()
+		local settings = nil
+		if specId == 1 then
+			settings = TRB.Data.settings.rogue.assassination
+		elseif specId == 2 then
+			settings = TRB.Data.settings.rogue.outlaw
+		end
+
+		if specId == 1 then --Assassination
+			-- Bleeds
+			if var == "$isBleeding" then
+				if IsTargetBleeding() then
+					valid = true
+				end
+			elseif var == "$ctCount" or var == "$crimsonTempestCount" then
+				if TRB.Data.snapshotData.targetData.crimsonTempest > 0 then
+					valid = true
+				end
+			elseif var == "$ctTime" or var == "$crimsonTempestTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].crimsonTempestRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$garroteCount" then
+				if TRB.Data.snapshotData.targetData.garrote > 0 then
+					valid = true
+				end
+			elseif var == "$garroteTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].garroteRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$ibCount" or var == "$internalBleedingCount" then
+				if TRB.Data.snapshotData.targetData.internalBleeding > 0 then
+					valid = true
+				end
+			elseif var == "$ibTime" or var == "$internalBleedingTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].internalBleedingRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$ruptureCount" then
+				if TRB.Data.snapshotData.targetData.rupture > 0 then
+					valid = true
+				end
+			elseif var == "$ruptureTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ruptureRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$dpCount" or var == "$deadlyPoisonCount" then
+				if TRB.Data.snapshotData.targetData.deadlyPoison > 0 then
+					valid = true
+				end
+			elseif var == "$dpTime" or var == "$deadlyPoisonTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deadlyPoisonRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$amplifyingPoisonCount" then
+				if TRB.Data.snapshotData.targetData.amplifyingPoison > 0 then
+					valid = true
+				end
+			elseif var == "$amplifyingPoisonTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshotData.targetData.targets ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].amplifyingPoisonRemaining > 0 then
+					valid = true
+				end
+			-- Other abilities
+			elseif var == "$blindsideTime" then
+				if TRB.Data.snapshotData.blindside.spellId ~= nil then
+					valid = true
+				end
+			end
+		elseif specId == 2 then --Outlaw
+			-- Roll the Bones buff counts
+			if var == "$rtbCount" or var == "$rollTheBonesCount" then
+				if TRB.Data.snapshotData.rollTheBones.count > 0 then
+					valid = true
+				end
+			elseif var == "$rtbTemporaryCount" or var == "$rollTheBonesTemporaryCount" then
+				if TRB.Data.snapshotData.rollTheBones.temporaryCount > 0 then
+					valid = true
+				end
+			elseif var == "$rtbAllCount" or var == "$rollTheBonesAllCount" then
+				if TRB.Data.snapshotData.rollTheBones.count > 0 or TRB.Data.snapshotData.rollTheBones.temporaryCount > 0 then
+					valid = true
+				end
+			elseif var == "$rtbBuffTime" or var == "$rollTheBonesBuffTime" then
+				if TRB.Data.snapshotData.rollTheBones.remaining > 0 then
+					valid = true
+				end
+			-- Roll the Bones Buffs
+			elseif var == "$broadsideTime" then
+				if TRB.Data.snapshotData.rollTheBones.buffs.broadside.duration > 0 then
+					valid = true
+				end
+			elseif var == "$buriedTreasureTime" then
+				if TRB.Data.snapshotData.rollTheBones.buffs.buriedTreasure.duration > 0 then
+					valid = true
+				end
+			elseif var == "$grandMeleeTime" then
+				if TRB.Data.snapshotData.rollTheBones.buffs.grandMelee.duration > 0 then
+					valid = true
+				end
+			elseif var == "$ruthlessPrecisionTime" then
+				if TRB.Data.snapshotData.rollTheBones.buffs.ruthlessPrecision.duration > 0 then
+					valid = true
+				end
+			elseif var == "$skullAndCrossbonesTime" then
+				if TRB.Data.snapshotData.rollTheBones.buffs.skullAndCrossbones.duration > 0 then
+					valid = true
+				end
+			elseif var == "$trueBearingTime" then
+				if TRB.Data.snapshotData.rollTheBones.buffs.trueBearing.duration > 0 then
+					valid = true
+				end
+			-- Other abilities
+			elseif var == "$opportunityTime" then
+				if TRB.Data.snapshotData.opportunity.spellId ~= nil then
+					valid = true
+				end
+			elseif var == "$rtbGoodBuff" or var == "$rollTheBonesGoodBuff" then
+				if TRB.Data.snapshotData.rollTheBones.goodBuffs == true then
+					valid = true
+				end
+			end
+		--[[elseif specId == 3 then --Survivial]]
+		end
+
+		if var == "$resource" or var == "$energy" then
+			if TRB.Data.snapshotData.resource > 0 then
+				valid = true
+			end
+		elseif var == "$resourceMax" or var == "$energyMax" then
+			valid = true
+		elseif var == "$resourceTotal" or var == "$energyTotal" then
+			if TRB.Data.snapshotData.resource > 0 or
+				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
+				then
+				valid = true
+			end
+		elseif var == "$resourcePlusCasting" or var == "$energyPlusCasting" then
+			if TRB.Data.snapshotData.resource > 0 or
+				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
+				valid = true
+			end
+		elseif var == "$overcap" or var == "$energyOvercap" or var == "$resourceOvercap" then
+			if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > settings.overcapThreshold then
+				valid = true
+			end
+		elseif var == "$resourcePlusPassive" or var == "$energyPlusPassive" then
+			if TRB.Data.snapshotData.resource > 0 then
+				valid = true
+			end
+		elseif var == "$casting" then
+			if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0 then
+				valid = true
+			end
+		elseif var == "$passive" then
+			if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
+				settings.generation.enabled and
+				((settings.generation.mode == "time" and settings.generation.time > 0) or
+				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+				valid = true
+			end
+		elseif var == "$regen" or var == "$regenEnergy" or var == "$energyRegen" then
+			if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
+				((settings.generation.mode == "time" and settings.generation.time > 0) or
+				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+				valid = true
+			end
+		elseif var == "$comboPoints" then
+			valid = true
+		elseif var == "$comboPointsMax" then
+			valid = true
+		elseif var == "$sadTime" or var == "$sliceAndDiceTime" then
+			if TRB.Data.snapshotData.sliceAndDice.spellId ~= nil then
+				valid = true
+			end
+		elseif var == "$sbsCount" or var == "$serratedBoneSpikeCount" then
+			if TRB.Data.snapshotData.targetData.serratedBoneSpike > 0 then
+				valid = true
+			end
+		-- Poisons
+		elseif var == "$cpCount" or var == "$cripplingPoisonCount" then
+			if TRB.Data.snapshotData.targetData.cripplingPoison > 0 then
+				valid = true
+			end
+		elseif var == "$cpTime" or var == "$cripplingPoisonTime" then
+			if not UnitIsDeadOrGhost("target") and
+				UnitCanAttack("player", "target") and
+				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+				TRB.Data.snapshotData.targetData.targets ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].cripplingPoisonRemaining > 0 then
+				valid = true
+			end
+		elseif var == "$npCount" or var == "$numbingPoisonCount" then
+			if TRB.Data.snapshotData.targetData.numbingPoison > 0 then
+				valid = true
+			end
+		elseif var == "$npTime" or var == "$numbingPoisonTime" then
+			if not UnitIsDeadOrGhost("target") and
+				UnitCanAttack("player", "target") and
+				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+				TRB.Data.snapshotData.targetData.targets ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].numbingPoisonRemaining > 0 then
+				valid = true
+			end
+		elseif var == "$atrophicPoisonCount" then
+			if TRB.Data.snapshotData.targetData.atrophicPoison > 0 then
+				valid = true
+			end
+		elseif var == "$atrophicPoisonPoisonTime" then
+			if not UnitIsDeadOrGhost("target") and
+				UnitCanAttack("player", "target") and
+				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+				TRB.Data.snapshotData.targetData.targets ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].atrophicPoisonRemaining > 0 then
+				valid = true
+			end
+		elseif var == "$wpCount" or var == "$woundPoisonCount" then
+			if TRB.Data.snapshotData.targetData.woundPoison > 0 then
+				valid = true
+			end
+		elseif var == "$wpTime" or var == "$woundPoisonTime" then
+			if not UnitIsDeadOrGhost("target") and
+				UnitCanAttack("player", "target") and
+				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+				TRB.Data.snapshotData.targetData.targets ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].woundPoisonRemaining > 0 then
+				valid = true
+			end
+		elseif var == "$inStealth" then
+			if IsStealthed() then
+				valid = true
+			end
+		end
+
+		return valid
 	end
 
 	--HACK to fix FPS

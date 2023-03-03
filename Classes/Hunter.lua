@@ -1621,142 +1621,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 	end
 
-	local function IsValidVariableForSpec(var)
-		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-		if valid then
-			return valid
-		end
-		local specId = GetSpecialization()
-		local settings = nil
-		if specId == 1 then
-			settings = TRB.Data.settings.hunter.beastMastery
-		elseif specId == 2 then
-			settings = TRB.Data.settings.hunter.marksmanship
-		elseif specId == 3 then
-			settings = TRB.Data.settings.hunter.survival
-		end
-
-		if specId == 1 then --Beast Mastery
-			if var == "$barbedShotFocus" then
-				if TRB.Data.snapshotData.barbedShot.isActive or TRB.Data.snapshotData.barbedShot.count > 0 or TRB.Data.snapshotData.barbedShot.focus > 0 then
-					valid = true
-				end
-			elseif var == "$barbedShotTicks" then
-				if TRB.Data.snapshotData.barbedShot.isActive or TRB.Data.snapshotData.barbedShot.count > 0 or TRB.Data.snapshotData.barbedShot.focus > 0 then
-					valid = true
-				end
-			elseif var == "$barbedShotTime" then
-				if TRB.Data.snapshotData.barbedShot.isActive or TRB.Data.snapshotData.barbedShot.count > 0 or TRB.Data.snapshotData.barbedShot.focus > 0 then
-					valid = true
-				end
-			elseif var == "$frenzyTime" then
-				if TRB.Data.snapshotData.frenzy.endTime ~= nil then
-					valid = true
-				end
-			elseif var == "$frenzyStacks" then
-				if TRB.Data.snapshotData.frenzy.stacks ~= nil and TRB.Data.snapshotData.frenzy.stacks > 0 then
-					valid = true
-				end
-			end
-		elseif specId == 2 then --Marksmanship
-			if var == "$trueshotTime" then
-				if GetTrueshotRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$steadyFocusTime" then
-				if GetSteadyFocusRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$lockAndLoadTime" then
-				if GetLockAndLoadRemainingTime() > 0 then
-					valid = true
-				end
-			end
-		elseif specId == 3 then --Survivial
-			if var == "$coordinatedAssaultTime" then
-				if GetCoordinatedAssaultRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$toeFocus" then
-				if TRB.Data.snapshotData.termsOfEngagement.focus > 0 then
-					valid = true
-				end
-			elseif var == "$toeTicks" then
-				if TRB.Data.snapshotData.termsOfEngagement.ticksRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$wildfireBombCharges" then
-				if TRB.Data.snapshotData.wildfireBomb.charges > 0 then
-					valid = true
-				end
-			end
-		end
-
-		if var == "$resource" or var == "$focus" then
-			if TRB.Data.snapshotData.resource > 0 then
-				valid = true
-			end
-		elseif var == "$resourceMax" or var == "$focusMax" then
-			valid = true
-		elseif var == "$resourceTotal" or var == "$focusTotal" then
-			if TRB.Data.snapshotData.resource > 0 or
-				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
-				then
-				valid = true
-			end
-		elseif var == "$resourcePlusCasting" or var == "$focusPlusCasting" then
-			if TRB.Data.snapshotData.resource > 0 or
-				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
-				valid = true
-			end
-		elseif var == "$overcap" or var == "$focusOvercap" or var == "$resourceOvercap" then
-			if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > settings.overcapThreshold then
-				valid = true
-			end
-		elseif var == "$resourcePlusPassive" or var == "$focusPlusPassive" then
-			if TRB.Data.snapshotData.resource > 0 then
-				valid = true
-			end
-		elseif var == "$casting" then
-			if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0 then
-				valid = true
-			end
-		elseif var == "$passive" then
-			if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
-				settings.generation.enabled and
-				((settings.generation.mode == "time" and settings.generation.time > 0) or
-				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-				valid = true
-			elseif specId == 1 and IsValidVariableForSpec("$barbedShotFocus") then
-				valid = true
-			elseif specId == 3 and TRB.Data.snapshotData.termsOfEngagement.focus > 0 then
-				valid = true
-			end
-		elseif var == "$regen" or var == "$regenFocus" or var == "$focusRegen" then
-			if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
-				((settings.generation.mode == "time" and settings.generation.time > 0) or
-				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-				valid = true
-			end
-		elseif var == "$ssCount" then
-			if TRB.Data.snapshotData.targetData.serpentSting > 0 then
-				valid = true
-			end
-		elseif var == "$ssTime" then
-			if not UnitIsDeadOrGhost("target") and
-				UnitCanAttack("player", "target") and
-				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-				TRB.Data.snapshotData.targetData.targets ~= nil and
-				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining > 0 then
-				valid = true
-			end
-		end
-
-		return valid
-	end
-	TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
-
 	local function RefreshLookupData_BeastMastery()
 		local _
 		--Spec specific implementation
@@ -1766,7 +1630,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Data.snapshotData.focusRegen, _ = GetPowerRegen()
 
 		--$overcap
-		local overcap = IsValidVariableForSpec("$overcap")
+		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
 		local currentFocusColor = TRB.Data.settings.hunter.beastMastery.colors.text.current
 		local castingFocusColor = TRB.Data.settings.hunter.beastMastery.colors.text.casting
@@ -1988,7 +1852,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Data.snapshotData.focusRegen, _ = GetPowerRegen()
 
 		--$overcap
-		local overcap = IsValidVariableForSpec("$overcap")
+		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
 		local currentFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.current
 		local castingFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.casting
@@ -2183,7 +2047,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Data.snapshotData.focusRegen, _ = GetPowerRegen()
 
 		--$overcap
-		local overcap = IsValidVariableForSpec("$overcap")
+		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
 		local currentFocusColor = TRB.Data.settings.hunter.survival.colors.text.current
 		local castingFocusColor = TRB.Data.settings.hunter.survival.colors.text.casting
@@ -2850,7 +2714,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 					local barBorderColor = specSettings.colors.bar.border
 
-					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -2896,7 +2760,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					local castingBarValue = 0
 					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 					local borderColor = specSettings.colors.bar.border
-					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
 						borderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -3109,7 +2973,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					local passiveBarValue = 0
 					local castingBarValue = 0
 					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
-					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
 						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -3262,7 +3126,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					local barColor = specSettings.colors.bar.base
-					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
 							---@diagnostic disable-next-line: redundant-parameter
@@ -3838,6 +3702,141 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			return true
 		end
 		return false
+	end
+
+	function TRB.Functions.Class:IsValidVariableForSpec(var)
+		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
+		if valid then
+			return valid
+		end
+		local specId = GetSpecialization()
+		local settings = nil
+		if specId == 1 then
+			settings = TRB.Data.settings.hunter.beastMastery
+		elseif specId == 2 then
+			settings = TRB.Data.settings.hunter.marksmanship
+		elseif specId == 3 then
+			settings = TRB.Data.settings.hunter.survival
+		end
+
+		if specId == 1 then --Beast Mastery
+			if var == "$barbedShotFocus" then
+				if TRB.Data.snapshotData.barbedShot.isActive or TRB.Data.snapshotData.barbedShot.count > 0 or TRB.Data.snapshotData.barbedShot.focus > 0 then
+					valid = true
+				end
+			elseif var == "$barbedShotTicks" then
+				if TRB.Data.snapshotData.barbedShot.isActive or TRB.Data.snapshotData.barbedShot.count > 0 or TRB.Data.snapshotData.barbedShot.focus > 0 then
+					valid = true
+				end
+			elseif var == "$barbedShotTime" then
+				if TRB.Data.snapshotData.barbedShot.isActive or TRB.Data.snapshotData.barbedShot.count > 0 or TRB.Data.snapshotData.barbedShot.focus > 0 then
+					valid = true
+				end
+			elseif var == "$frenzyTime" then
+				if TRB.Data.snapshotData.frenzy.endTime ~= nil then
+					valid = true
+				end
+			elseif var == "$frenzyStacks" then
+				if TRB.Data.snapshotData.frenzy.stacks ~= nil and TRB.Data.snapshotData.frenzy.stacks > 0 then
+					valid = true
+				end
+			end
+		elseif specId == 2 then --Marksmanship
+			if var == "$trueshotTime" then
+				if GetTrueshotRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$steadyFocusTime" then
+				if GetSteadyFocusRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$lockAndLoadTime" then
+				if GetLockAndLoadRemainingTime() > 0 then
+					valid = true
+				end
+			end
+		elseif specId == 3 then --Survivial
+			if var == "$coordinatedAssaultTime" then
+				if GetCoordinatedAssaultRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$toeFocus" then
+				if TRB.Data.snapshotData.termsOfEngagement.focus > 0 then
+					valid = true
+				end
+			elseif var == "$toeTicks" then
+				if TRB.Data.snapshotData.termsOfEngagement.ticksRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$wildfireBombCharges" then
+				if TRB.Data.snapshotData.wildfireBomb.charges > 0 then
+					valid = true
+				end
+			end
+		end
+
+		if var == "$resource" or var == "$focus" then
+			if TRB.Data.snapshotData.resource > 0 then
+				valid = true
+			end
+		elseif var == "$resourceMax" or var == "$focusMax" then
+			valid = true
+		elseif var == "$resourceTotal" or var == "$focusTotal" then
+			if TRB.Data.snapshotData.resource > 0 or
+				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
+				then
+				valid = true
+			end
+		elseif var == "$resourcePlusCasting" or var == "$focusPlusCasting" then
+			if TRB.Data.snapshotData.resource > 0 or
+				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
+				valid = true
+			end
+		elseif var == "$overcap" or var == "$focusOvercap" or var == "$resourceOvercap" then
+			if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > settings.overcapThreshold then
+				valid = true
+			end
+		elseif var == "$resourcePlusPassive" or var == "$focusPlusPassive" then
+			if TRB.Data.snapshotData.resource > 0 then
+				valid = true
+			end
+		elseif var == "$casting" then
+			if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0 then
+				valid = true
+			end
+		elseif var == "$passive" then
+			if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
+				settings.generation.enabled and
+				((settings.generation.mode == "time" and settings.generation.time > 0) or
+				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+				valid = true
+			elseif specId == 1 and TRB.Functions.Class:IsValidVariableForSpec("$barbedShotFocus") then
+				valid = true
+			elseif specId == 3 and TRB.Data.snapshotData.termsOfEngagement.focus > 0 then
+				valid = true
+			end
+		elseif var == "$regen" or var == "$regenFocus" or var == "$focusRegen" then
+			if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
+				((settings.generation.mode == "time" and settings.generation.time > 0) or
+				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+				valid = true
+			end
+		elseif var == "$ssCount" then
+			if TRB.Data.snapshotData.targetData.serpentSting > 0 then
+				valid = true
+			end
+		elseif var == "$ssTime" then
+			if not UnitIsDeadOrGhost("target") and
+				UnitCanAttack("player", "target") and
+				TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
+				TRB.Data.snapshotData.targetData.targets ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
+				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining > 0 then
+				valid = true
+			end
+		end
+
+		return valid
 	end
 
 	--HACK to fix FPS

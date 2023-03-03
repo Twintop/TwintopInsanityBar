@@ -327,7 +327,7 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 ---@diagnostic disable-next-line: undefined-field
 									local var = string.trim(string.sub(logicString, nextVariable.position - positionOffset - p, variableEnd))
 									var = string.gsub(var, " ", "")
-									local valid = TRB.Data.IsValidVariableForSpec(var)
+									local valid = TRB.Functions.Class:IsValidVariableForSpec(var)
 									
 ---@diagnostic disable-next-line: undefined-field
 									local beforeVar = string.trim(string.sub(logicString, s-p, nextVariable.position - positionOffset - p - 1))

@@ -577,103 +577,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end
 	end
 
-	local function IsValidVariableForSpec(var)
-		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-		local normalizedFury = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
-		if valid then
-			return valid
-		end
-		local specId = GetSpecialization()
-		local settings = nil
-		if specId == 1 then
-			settings = TRB.Data.settings.demonhunter.havoc
-		end
-
-		
-		if specId == 1 then --Havoc
-			if var == "$metamorphosisTime" then
-				if GetMetamorphosisRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$bhFury" then
-				if TRB.Data.snapshotData.immolationAura.fury > 0 then
-					valid = true
-				end
-			elseif var == "$bhTicks" or var == "$iaTicks" then
-				if TRB.Data.snapshotData.immolationAura.ticksRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$bhTime" or var == "$iaTime" then
-				if GetImmolationAuraRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$ucTime" then
-				if GetUnboundChaosRemainingTime() > 0 then
-					valid = true
-				end
-			elseif var == "$tacticalRetreatFury" then
-				if TRB.Data.snapshotData.tacticalRetreat.fury > 0 then
-					valid = true
-				end
-			elseif var == "$tacticalRetreatTicks" then
-				if TRB.Data.snapshotData.tacticalRetreat.ticksRemaining > 0 then
-					valid = true
-				end
-			elseif var == "$tacticalRetreatTime" then
-				if GetTacticalRetreatRemainingTime() > 0 then
-					valid = true
-				end
-			end
-		end
-
-		if var == "$resource" or var == "$fury" then
-			if normalizedFury > 0 then
-				valid = true
-			end
-		elseif var == "$resourceMax" or var == "$furyMax" then
-			valid = true
-		elseif var == "$resourceTotal" or var == "$furyTotal" then
-			if normalizedFury > 0  or IsValidVariableForSpec("$passive") or IsValidVariableForSpec("$bhFury") or
-				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
-				then
-				valid = true
-			end
-		elseif var == "$resourcePlusCasting" or var == "$furyPlusCasting" then
-			if normalizedFury > 0 or
-				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
-				valid = true
-			end
-		elseif var == "$overcap" or var == "$furyOvercap" or var == "$resourceOvercap" then
-			local lowerBoundFury = TRB.Data.spells.demonsBite.fury
-
-			if TRB.Data.snapshotData.casting.resourceFinal == 0 and (normalizedFury + lowerBoundFury) > settings.overcapThreshold then
-				valid = true
-			end
-		elseif var == "$resourcePlusPassive" or var == "$furyPlusPassive" then
-			if normalizedFury > 0 or IsValidVariableForSpec("$passive") or IsValidVariableForSpec("$bhFury") then
-				valid = true
-			end
-		elseif var == "$casting" then
-			if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0 then
-				valid = true
-			end
-		elseif var == "$passive" then
-			if IsValidVariableForSpec("$bhFury") or IsValidVariableForSpec("$tacticalRetreatFury") then
-				valid = true
-			end
-		end
-
-		return valid
-	end
-	TRB.Data.IsValidVariableForSpec = IsValidVariableForSpec
-
 	local function RefreshLookupData_Havoc()
 		local _
 		local normalizedFury = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 		--Spec specific implementation
 
 		--$overcap
-		local overcap = IsValidVariableForSpec("$overcap")
+		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
 		local currentFuryColor = TRB.Data.settings.demonhunter.havoc.colors.text.current
 		local castingFuryColor = TRB.Data.settings.demonhunter.havoc.colors.text.casting
@@ -1205,7 +1115,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 					local barBorderColor = specSettings.colors.bar.border
 
-					if specSettings.colors.bar.overcapEnabled and IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -1576,6 +1486,96 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end
 		return false
 	end
+
+	function TRB.Functions.Class:IsValidVariableForSpec(var)
+		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
+		local normalizedFury = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
+		if valid then
+			return valid
+		end
+		local specId = GetSpecialization()
+		local settings = nil
+		if specId == 1 then
+			settings = TRB.Data.settings.demonhunter.havoc
+		end
+
+		
+		if specId == 1 then --Havoc
+			if var == "$metamorphosisTime" then
+				if GetMetamorphosisRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$bhFury" then
+				if TRB.Data.snapshotData.immolationAura.fury > 0 then
+					valid = true
+				end
+			elseif var == "$bhTicks" or var == "$iaTicks" then
+				if TRB.Data.snapshotData.immolationAura.ticksRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$bhTime" or var == "$iaTime" then
+				if GetImmolationAuraRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$ucTime" then
+				if GetUnboundChaosRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$tacticalRetreatFury" then
+				if TRB.Data.snapshotData.tacticalRetreat.fury > 0 then
+					valid = true
+				end
+			elseif var == "$tacticalRetreatTicks" then
+				if TRB.Data.snapshotData.tacticalRetreat.ticksRemaining > 0 then
+					valid = true
+				end
+			elseif var == "$tacticalRetreatTime" then
+				if GetTacticalRetreatRemainingTime() > 0 then
+					valid = true
+				end
+			end
+		end
+
+		if var == "$resource" or var == "$fury" then
+			if normalizedFury > 0 then
+				valid = true
+			end
+		elseif var == "$resourceMax" or var == "$furyMax" then
+			valid = true
+		elseif var == "$resourceTotal" or var == "$furyTotal" then
+			if normalizedFury > 0  or TRB.Functions.Class:IsValidVariableForSpec("$passive") or TRB.Functions.Class:IsValidVariableForSpec("$bhFury") or
+				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
+				then
+				valid = true
+			end
+		elseif var == "$resourcePlusCasting" or var == "$furyPlusCasting" then
+			if normalizedFury > 0 or
+				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
+				valid = true
+			end
+		elseif var == "$overcap" or var == "$furyOvercap" or var == "$resourceOvercap" then
+			local lowerBoundFury = TRB.Data.spells.demonsBite.fury
+
+			if TRB.Data.snapshotData.casting.resourceFinal == 0 and (normalizedFury + lowerBoundFury) > settings.overcapThreshold then
+				valid = true
+			end
+		elseif var == "$resourcePlusPassive" or var == "$furyPlusPassive" then
+			if normalizedFury > 0 or TRB.Functions.Class:IsValidVariableForSpec("$passive") or TRB.Functions.Class:IsValidVariableForSpec("$bhFury") then
+				valid = true
+			end
+		elseif var == "$casting" then
+			if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0 then
+				valid = true
+			end
+		elseif var == "$passive" then
+			if TRB.Functions.Class:IsValidVariableForSpec("$bhFury") or TRB.Functions.Class:IsValidVariableForSpec("$tacticalRetreatFury") then
+				valid = true
+			end
+		end
+
+		return valid
+	end
+
 
 	--HACK to fix FPS
 	local updateRateLimit = 0
