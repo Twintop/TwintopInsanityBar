@@ -883,7 +883,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 391092,
 				name = "",
 				icon = "",
-				isTalent = true
+				isTalent = true,
+				maxStacks = 2
 			},
 			maddeningTouch = {
 				id = 73510,
@@ -1036,12 +1037,26 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.shadow.snapshotData.mindFlayInsanity = {
 			spellId = nil,
 			endTime = nil,
+			remainingTime = 0,
 			duration = 0
 		}
 		specCache.shadow.snapshotData.twistOfFate = {
 			spellId = nil,
 			endTime = nil,
 			duration = 0
+		}
+		specCache.shadow.snapshotData.mindMelt = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0,
+			stacks = 0
+		}
+		specCache.shadow.snapshotData.shadowyInsight = {
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0,
 		}
 		specCache.shadow.snapshotData.voidBolt = {
 			lastSuccess = nil,
@@ -2928,6 +2943,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.snapshotData.mindFlayInsanity.endTime = nil
 			TRB.Data.snapshotData.mindFlayInsanity.duration = 0
 			TRB.Data.snapshotData.mindFlayInsanity.spellId = nil
+		else
+			
 		end
 
 		if TRB.Data.snapshotData.mindDevourer.endTime ~= nil and currentTime > (TRB.Data.snapshotData.mindDevourer.endTime) then
@@ -3271,6 +3288,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					local passiveValue = 0
 					local barBorderColor = specSettings.colors.bar.border
+					local barColor = specSettings.colors.bar.base
 
 					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
@@ -3437,7 +3455,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 					end
 
-					if TRB.Data.snapshotData.voidform.remainingTime > 0 or TRB.Data.snapshotData.darkAscension.remainingTime > 0 then
+					if TRB.Data.snapshotData.mindMelt.stacks == TRB.Data.spells.mindMelt.maxStacks or TRB.Data.snapshotData.shadowyInsight.duration > 0 then
+						barColor = specSettings.colors.bar.instantMindBlast
+					elseif TRB.Data.snapshotData.voidform.remainingTime > 0 or TRB.Data.snapshotData.darkAscension.remainingTime > 0 then
 						local timeLeft = TRB.Data.snapshotData.voidform.remainingTime
 						if TRB.Data.snapshotData.darkAscension.remainingTime > 0 then
 							timeLeft = TRB.Data.snapshotData.darkAscension.remainingTime
@@ -3456,19 +3476,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 
 						if useEndOfVoidformColor and timeLeft <= timeThreshold then
-							resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.inVoidform1GCD, true))
+							barColor = specSettings.colors.bar.inVoidform1GCD
 						elseif TRB.Data.snapshotData.mindDevourer.spellId ~= nil or currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
-							resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.devouringPlagueUsable, true))
+							barColor = specSettings.colors.bar.devouringPlagueUsable
 						else
-							resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.inVoidform, true))
+							barColor = specSettings.colors.bar.inVoidform
 						end
 					else
 						if TRB.Data.snapshotData.mindDevourer.spellId ~= nil or currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
-							resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.devouringPlagueUsable, true))
+							barColor = specSettings.colors.bar.devouringPlagueUsable
 						else
-							resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.base, true))
+							barColor = specSettings.colors.bar.base
 						end
 					end
+					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 				end
 			end
 			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
@@ -3812,6 +3833,31 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.twistOfFate.spellId = nil
 							TRB.Data.snapshotData.twistOfFate.duration = 0
 							TRB.Data.snapshotData.twistOfFate.endTime = nil
+						end
+					elseif spellId == TRB.Data.spells.shadowyInsight.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
+							TRB.Data.spells.shadowyInsight.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.shadowyInsight.duration, TRB.Data.snapshotData.shadowyInsight.endTime, _, _, _, TRB.Data.snapshotData.shadowyInsight.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.shadowyInsight.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.shadowyInsight.isActive = false
+							TRB.Data.snapshotData.shadowyInsight.spellId = nil
+							TRB.Data.snapshotData.shadowyInsight.duration = 0
+							TRB.Data.snapshotData.shadowyInsight.endTime = nil
+						end
+					elseif spellId == TRB.Data.spells.mindMelt.id then
+						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.mindMelt.isActive = true
+							_, _, TRB.Data.snapshotData.mindMelt.stacks, _, TRB.Data.snapshotData.mindMelt.duration, TRB.Data.snapshotData.mindMelt.endTime, _, _, _, TRB.Data.snapshotData.mindMelt.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.mindMelt.id)
+						elseif type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
+							--TRB.Data.snapshotData.audio.mindMelt2Cue = false
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.mindMelt.isActive = false
+							TRB.Data.snapshotData.mindMelt.spellId = nil
+							TRB.Data.snapshotData.mindMelt.duration = 0
+							TRB.Data.snapshotData.mindMelt.stacks = 0
+							TRB.Data.snapshotData.mindMelt.endTime = nil
+							TRB.Data.snapshotData.audio.mindMeltCue = false
+							TRB.Data.snapshotData.audio.mindMelt2Cue = false
 						end
 					elseif type == "SPELL_SUMMON" and settings.voidTendrilTracker and (spellId == TRB.Data.spells.idolOfCthun_Tendril.id or spellId == TRB.Data.spells.idolOfCthun_Lasher.id) then
 						InitializeVoidTendril(destGUID)

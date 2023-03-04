@@ -435,6 +435,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					base="FF763BAF",
 					devouringPlagueUsable="FF5C2F89",
 					devouringPlagueUsableCasting="FFFFFFFF",
+					instantMindBlast="FFC2A3E0",
 					inVoidform="FF431863",
 					inVoidform1GCD="FFFF0000",
 					spending="FFFFFFFF",
@@ -1807,23 +1808,36 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.devouringPlagueUsable = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity when you can cast Devouring Plague", spec.colors.bar.devouringPlagueUsable, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.devouringPlagueUsable		
+		controls.colors.devouringPlagueUsable = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity when you can cast Devouring Plague or Mind Sear", spec.colors.bar.devouringPlagueUsable, 300, 25, oUi.xCoord, yCoord)
+		f = controls.colors.devouringPlagueUsable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "devouringPlagueUsable")
 		end)
 
-		controls.colors.inVoidform1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity while you have less than 1 GCD left in Voidform / Dark Ascension (if enabled)", spec.colors.bar.inVoidform1GCD, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.inVoidform1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity when Voidform / Dark Ascension is ending (as configured)", spec.colors.bar.inVoidform1GCD, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inVoidform1GCD
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inVoidform1GCD")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity from hardcasting spells", spec.colors.bar.casting, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.instantMindBlast = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity when Mind Blast is instant cast (Shadowy Insight or 2x Mind Melt stacks)", spec.colors.bar.instantMindBlast, 300, 25, oUi.xCoord, yCoord)
+		f = controls.colors.instantMindBlast
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "instantMindBlast")
+		end)
+
+		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity from hardcasting spells", spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 3)
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity cost of current spender (Mind Sear)", spec.colors.bar.spending, 300, 25, oUi.xCoord, yCoord)
+		f = controls.colors.spending
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
 		end)
 		
 		controls.colors.devouringPlagueUsableCasting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity from hardcasting spells while DP can be cast", spec.colors.bar.devouringPlagueUsableCasting, 300, 25, oUi.xCoord2, yCoord)
@@ -1833,13 +1847,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity cost of current spender (Mind Sear)", spec.colors.bar.spending, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.spending
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
-		end)
-
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
@@ -1863,6 +1871,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
+		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_overcapBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overcapEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
+		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Insanity."
+		f:SetChecked(spec.colors.bar.overcapEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.overcapEnabled = self:GetChecked()
+		end)
+
 		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when your current hardcast will overcap Insanity", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderOvercap		
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2035,18 +2053,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_CB1_8", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
-		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Insanity."
-		f:SetChecked(spec.colors.bar.overcapEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.overcapEnabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 40
-
 		title = "Show Overcap Notification Above"
 		controls.overcapAt = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 100, spec.overcapThreshold, 0.5, 1,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
