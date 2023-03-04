@@ -962,7 +962,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				duration = 15,
 				ticks = 15,
 				tickDuration = 1, --This is hasted
-			},			
+			},
 		}
 
 		specCache.shadow.snapshotData.voidform = {
@@ -1061,6 +1061,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.shadow.snapshotData.voidBolt = {
 			lastSuccess = nil,
 			flightTime = 1.0
+		}
+		specCache.shadow.snapshotData.mindBlast = {
+			startTime = nil,
+			duration = 0,
+			charges = 1,
+			maxCharges = 1
 		}
 	end
 
@@ -1258,53 +1264,69 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
+			{ variable = "#as", icon = spells.auspiciousSpirits.icon, description = spells.auspiciousSpirits.name, printInSettings = true },
+			{ variable = "#auspiciousSpirits", icon = spells.auspiciousSpirits.icon, description = spells.auspiciousSpirits.name, printInSettings = false },
+			
+			{ variable = "#cthun", icon = spells.idolOfCthun.icon, description = spells.idolOfCthun.name, printInSettings = true },
+			{ variable = "#idolOfCthun", icon = spells.idolOfCthun.icon, description = spells.idolOfCthun.name, printInSettings = false },
+			{ variable = "#loi", icon = spells.idolOfCthun.icon, description = spells.idolOfCthun.name, printInSettings = false },
+
+			{ variable = "#dam", icon = spells.deathAndMadness.icon, description = spells.deathAndMadness.name, printInSettings = true },
+			{ variable = "#deathAndMadness", icon = spells.deathAndMadness.icon, description = spells.deathAndMadness.name, printInSettings = false },
+
+			{ variable = "#dp", icon = spells.devouringPlague.icon, description = spells.devouringPlague.name, printInSettings = true },
+			{ variable = "#devouringPlague", icon = spells.devouringPlague.icon, description = spells.devouringPlague.name, printInSettings = false },
+
+			{ variable = "#halo", icon = spells.halo.icon, description = spells.halo.name, printInSettings = true },
+
+			{ variable = "#mDev", icon = spells.mindDevourer.icon, description = spells.mindDevourer.name, printInSettings = true },
+			{ variable = "#mindDevourer", icon = spells.mindDevourer.icon, description = spells.mindDevourer.name, printInSettings = false },
+
+			{ variable = "#mindgames", icon = spells.mindgames.icon, description = spells.mindgames.name, printInSettings = true },
+
+			{ variable = "#mb", icon = spells.mindBlast.icon, description = spells.mindBlast.name, printInSettings = true },
+			{ variable = "#mindBlast", icon = spells.mindBlast.icon, description = spells.mindBlast.name, printInSettings = false },
+			
+			{ variable = "#md", icon = spells.massDispel.icon, description = spells.massDispel.name, printInSettings = true },
+			{ variable = "#massDispel", icon = spells.massDispel.icon, description = spells.massDispel.name, printInSettings = false },
+			
+			{ variable = "#mf", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = true },
+			{ variable = "#mindFlay", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = false },
+			{ variable = "#mfi", icon = spells.mindFlayInsanity.icon, description = spells.mindFlayInsanity.name, printInSettings = true },
+			{ variable = "#mindFlayInsanity", icon = spells.mindFlayInsanity.icon, description = spells.mindFlayInsanity.name, printInSettings = false },
+			
+			{ variable = "#mm", icon = spells.mindMelt.icon, description = spells.mindMelt.name, printInSettings = true },
+			{ variable = "#mindMelt", icon = spells.mindMelt.icon, description = spells.mindMelt.name, printInSettings = false },
+			
+			{ variable = "#ms", icon = spells.mindSear.icon, description = spells.mindSear.name, printInSettings = true },
+			{ variable = "#mindSear", icon = spells.mindSear.icon, description = spells.mindSear.name, printInSettings = false },
+																						  
+			{ variable = "#sa", icon = spells.shadowyApparition.icon, description = spells.shadowyApparition.name, printInSettings = true },
+			{ variable = "#shadowyApparition", icon = spells.shadowyApparition.icon, description = spells.shadowyApparition.name, printInSettings = false },
+																					  																															  
+			{ variable = "#swp", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = true },
+			{ variable = "#shadowWordPain", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = false },
+
+			{ variable = "#sf", icon = spells.shadowfiend.icon, description = "Shadowfiend / Mindbender", printInSettings = true },
+			{ variable = "#mindbender", icon = spells.mindbender.icon, description = "Mindbender", printInSettings = false },
+			{ variable = "#shadowfiend", icon = spells.shadowfiend.icon, description = "Shadowfiend", printInSettings = false },
+																						  
+			{ variable = "#si", icon = spells.shadowyInsight.icon, description = spells.shadowyInsight.name, printInSettings = true },
+			{ variable = "#shadowyInsight", icon = spells.shadowyInsight.icon, description = spells.shadowyInsight.name, printInSettings = false },
+																															  
+			{ variable = "#tof", icon = spells.twistOfFate.icon, description = spells.twistOfFate.name, printInSettings = true },
+			{ variable = "#twistOfFate", icon = spells.twistOfFate.icon, description = spells.twistOfFate.name, printInSettings = false },
+
 			{ variable = "#vb", icon = spells.voidBolt.icon, description = spells.voidBolt.name, printInSettings = true },
 			{ variable = "#voidBolt", icon = spells.voidBolt.icon, description = spells.voidBolt.name, printInSettings = false },
 			{ variable = "#vf", icon = spells.voidform.icon, description = spells.voidform.name, printInSettings = true },
 			{ variable = "#voidform", icon = spells.voidform.icon, description = spells.voidform.name, printInSettings = false },
 																															  
-			{ variable = "#mb", icon = spells.mindBlast.icon, description = spells.mindBlast.name, printInSettings = true },
-			{ variable = "#mindBlast", icon = spells.mindBlast.icon, description = spells.mindBlast.name, printInSettings = false },
-			{ variable = "#mfi", icon = spells.mindFlayInsanity.icon, description = spells.mindFlayInsanity.name, printInSettings = true },
-			{ variable = "#mindFlayInsanity", icon = spells.mindFlayInsanity.icon, description = spells.mindFlayInsanity.name, printInSettings = false },
-			{ variable = "#mf", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = true },
-			{ variable = "#mindFlay", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = false },
-			{ variable = "#mindgames", icon = spells.mindgames.icon, description = spells.mindgames.name, printInSettings = true },
-			{ variable = "#ms", icon = spells.mindSear.icon, description = spells.mindSear.name, printInSettings = true },
-			{ variable = "#mindSear", icon = spells.mindSear.icon, description = spells.mindSear.name, printInSettings = false },
 			{ variable = "#voit", icon = spells.voidTorrent.icon, description = spells.voidTorrent.name, printInSettings = true },
 			{ variable = "#voidTorrent", icon = spells.voidTorrent.icon, description = spells.voidTorrent.name, printInSettings = false },
-			{ variable = "#dam", icon = spells.deathAndMadness.icon, description = spells.deathAndMadness.name, printInSettings = true },
-			{ variable = "#deathAndMadness", icon = spells.deathAndMadness.icon, description = spells.deathAndMadness.name, printInSettings = false },
-			{ variable = "#halo", icon = spells.halo.icon, description = spells.halo.name, printInSettings = true },
-																															  
-			{ variable = "#swp", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = true },
-			{ variable = "#shadowWordPain", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = false },
+
 			{ variable = "#vt", icon = spells.vampiricTouch.icon, description = spells.vampiricTouch.name, printInSettings = true },
 			{ variable = "#vampiricTouch", icon = spells.vampiricTouch.icon, description = spells.vampiricTouch.name, printInSettings = false },
-			{ variable = "#dp", icon = spells.devouringPlague.icon, description = spells.devouringPlague.name, printInSettings = true },
-			{ variable = "#devouringPlague", icon = spells.devouringPlague.icon, description = spells.devouringPlague.name, printInSettings = false },
-			{ variable = "#mDev", icon = spells.mindDevourer.icon, description = spells.mindDevourer.name, printInSettings = true },
-			{ variable = "#mindDevourer", icon = spells.mindDevourer.icon, description = spells.mindDevourer.name, printInSettings = false },
-																															  
-			{ variable = "#as", icon = spells.auspiciousSpirits.icon, description = spells.auspiciousSpirits.name, printInSettings = true },
-			{ variable = "#auspiciousSpirits", icon = spells.auspiciousSpirits.icon, description = spells.auspiciousSpirits.name, printInSettings = false },
-			{ variable = "#sa", icon = spells.shadowyApparition.icon, description = spells.shadowyApparition.name, printInSettings = true },
-			{ variable = "#shadowyApparition", icon = spells.shadowyApparition.icon, description = spells.shadowyApparition.name, printInSettings = false },
-																					  
-			{ variable = "#mindbender", icon = spells.mindbender.icon, description = "Mindbender", printInSettings = false },
-			{ variable = "#shadowfiend", icon = spells.shadowfiend.icon, description = "Shadowfiend", printInSettings = false },
-			{ variable = "#sf", icon = spells.shadowfiend.icon, description = "Shadowfiend / Mindbender", printInSettings = true },
-																															  
-			{ variable = "#tof", icon = spells.twistOfFate.icon, description = spells.twistOfFate.name, printInSettings = true },
-			{ variable = "#twistOfFate", icon = spells.twistOfFate.icon, description = spells.twistOfFate.name, printInSettings = false },
-			
-			{ variable = "#cthun", icon = spells.idolOfCthun.icon, description = spells.idolOfCthun.name, printInSettings = true },
-			{ variable = "#idolOfCthun", icon = spells.idolOfCthun.icon, description = spells.idolOfCthun.name, printInSettings = false },
-			{ variable = "#loi", icon = spells.idolOfCthun.icon, description = spells.idolOfCthun.name, printInSettings = false },
-			
-			{ variable = "#md", icon = spells.massDispel.icon, description = spells.massDispel.name, printInSettings = true },
-			{ variable = "#massDispel", icon = spells.massDispel.icon, description = spells.massDispel.name, printInSettings = false }
 		}
 		specCache.shadow.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -1382,6 +1404,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$mdTime", description = "Time remaining on Mind Devourer buff", printInSettings = true, color = false },
 
 			{ variable = "$mfiTime", description = "Time remaining on Mind Flay: Insanity buff", printInSettings = true, color = false },
+			
+			{ variable = "$siTime", description = "Time remaining on Shadowy Insight buff", printInSettings = true, color = false },
+			
+			{ variable = "$mindBlastCharges", description = "Current number of Mind Blast charges", printInSettings = true, color = false },
+			{ variable = "$mindBlastMaxCharges", description = "Maximum number of Mind Blast charges", printInSettings = true, color = false },
+			
+
+			{ variable = "$mmTime", description = "Time remaining on Mind Melt buff", printInSettings = true, color = false },
+			{ variable = "$mmStacks", description = "Time remaining on Mind Melt stacks", printInSettings = true, color = false },
 
 			{ variable = "$vfTime", description = "Duration remaining of Voidform", printInSettings = true, color = false },
 
@@ -2156,6 +2187,28 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			_tofTime = math.abs(TRB.Data.snapshotData.twistOfFate.endTime - currentTime)
 		end
 		local tofTime = string.format("%.1f", _tofTime)
+		
+		--$mindBlastCharges
+		local mindBlastCharges = TRB.Data.snapshotData.mindBlast.charges or 0
+		
+		--$mindBlastMaxCharges
+		local mindBlastMaxCharges = TRB.Data.snapshotData.mindBlast.maxCharges or 0
+
+		--$siTime
+		local _siTime = 0
+		if TRB.Data.snapshotData.shadowyInsight.endTime then
+			_siTime = math.abs(TRB.Data.snapshotData.shadowyInsight.endTime - currentTime)
+		end
+		local siTime = string.format("%.1f", _siTime)
+		
+		--$mmTime
+		local _mmTime = 0
+		if TRB.Data.snapshotData.mindMelt.endTime then
+			_mmTime = math.abs(TRB.Data.snapshotData.mindMelt.endTime - currentTime)
+		end
+		local mmTime = string.format("%.1f", _mmTime)
+		--$mmStacks
+		local mmStacks = TRB.Data.snapshotData.mindMelt.stacks or 0
 
 		--$cttvEquipped
 		local cttvEquipped = TRB.Functions.Class:IsValidVariableForSpec("$cttvEquipped")
@@ -2232,6 +2285,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#mindDevourer"] = TRB.Data.spells.mindDevourer.icon
 		lookup["#tof"] = TRB.Data.spells.twistOfFate.icon
 		lookup["#twistOfFate"] = TRB.Data.spells.twistOfFate.icon
+		lookup["#si"] = TRB.Data.spells.shadowyInsight.icon
+		lookup["#shadowyInsight"] = TRB.Data.spells.shadowyInsight.icon
+		lookup["#mm"] = TRB.Data.spells.mindMelt.icon
+		lookup["#mindMelt"] = TRB.Data.spells.mindMelt.icon
 		lookup["#md"] = TRB.Data.spells.massDispel.icon
 		lookup["#massDispel"] = TRB.Data.spells.massDispel.icon
 		lookup["#dam"] = TRB.Data.spells.deathAndMadness.icon
@@ -2249,6 +2306,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$mfiTime"] = mfiTime
 		lookup["$tofTime"] = tofTime
 		lookup["$vfTime"] = voidformTime
+		lookup["$mmTime"] = mmTime
+		lookup["$mmStacks"] = mmStacks
+		lookup["$siTime"] = siTime
+		lookup["$mindBlastCharges"] = mindBlastCharges
+		lookup["$mindBlastMaxCharges"] = mindBlastMaxCharges
 		lookup["$insanityPlusCasting"] = insanityPlusCasting
 		lookup["$insanityPlusPassive"] = insanityPlusPassive
 		lookup["$insanityTotal"] = insanityTotal
@@ -2289,6 +2351,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$mfiTime"] = _mfiTime
 		lookupLogic["$tofTime"] = _tofTime
 		lookupLogic["$vfTime"] = _voidformTime
+		lookupLogic["$mmTime"] = _mmTime
+		lookupLogic["$mmStacks"] = mmStacks
+		lookupLogic["$siTime"] = _siTime
+		lookupLogic["$mindBlastCharges"] = mindBlastCharges
+		lookupLogic["$mindBlastMaxCharges"] = mindBlastMaxCharges
 		lookupLogic["$insanityPlusCasting"] = _insanityPlusCasting
 		lookupLogic["$insanityPlusPassive"] = _insanityPlusPassive
 		lookupLogic["$insanityTotal"] = _insanityTotal
@@ -2978,6 +3045,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			end
 		end
+
+		TRB.Data.snapshotData.mindBlast.charges, TRB.Data.snapshotData.mindBlast.maxCharges, TRB.Data.snapshotData.mindBlast.startTime, TRB.Data.snapshotData.mindBlast.duration, _ = GetSpellCharges(TRB.Data.spells.mindBlast.id)
 	end
 
 	local function UpdateResourceBar()
@@ -3455,7 +3524,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 					end
 
-					if TRB.Data.snapshotData.mindMelt.stacks == TRB.Data.spells.mindMelt.maxStacks or TRB.Data.snapshotData.shadowyInsight.duration > 0 then
+					if TRB.Data.snapshotData.mindBlast.charges > 0 and (TRB.Data.snapshotData.mindMelt.stacks == TRB.Data.spells.mindMelt.maxStacks or TRB.Data.snapshotData.shadowyInsight.duration > 0) then
 						barColor = specSettings.colors.bar.instantMindBlast
 					elseif TRB.Data.snapshotData.voidform.remainingTime > 0 or TRB.Data.snapshotData.darkAscension.remainingTime > 0 then
 						local timeLeft = TRB.Data.snapshotData.voidform.remainingTime
@@ -4498,6 +4567,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif var == "$tofTime" then
 				if TRB.Data.snapshotData.twistOfFate.spellId ~= nil then
+					valid = true
+				end
+			elseif var == "$siTime" then
+				if TRB.Data.snapshotData.shadowyInsight.duration > 0 then
+					valid = true
+				end
+			elseif var == "$mmTime" then
+				if TRB.Data.snapshotData.mindMelt.duration > 0 then
+					valid = true
+				end
+			elseif var == "$mmStacks" then
+				if TRB.Data.snapshotData.mindMelt.stacks > 0 then
 					valid = true
 				end
 			else
