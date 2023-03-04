@@ -943,26 +943,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		}
 
 		specCache.restoration.spells = {
-			efflorescence = {
-				id = 145205,
-				name = "",
-				icon = "",
-				duration = 30
-			},
-			innervate = {
-				id = 29166,
-				name = "",
-				icon = "",
-				duration = 10,
-				isActive = false
-			},
-			sunfire = {
-				id = 164815,
-				name = "",
-				icon = "",
-				pandemic = true,
-				pandemicTime = 12 * 0.3
-			},
+			-- Druid Class Baseline Abilities
 			moonfire = {
 				id = 164812,
 				name = "",
@@ -971,6 +952,43 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				pandemic = true,
 				pandemicTime = 16 * 0.3
 			},
+
+			-- Druid Class Talents
+			sunfire = {
+				id = 164815,
+				name = "",
+				icon = "",
+				isTalent = true,
+				pandemic = true,
+				pandemicTime = 12 * 0.3
+			},
+
+			-- Restoration Spec Baseline Abilities
+			-- Restoration Spec Talents
+			efflorescence = {
+				id = 145205,
+				name = "",
+				icon = "",
+				duration = 30,
+				isTalent = true
+			},
+			incarnationTreeOfLife = {
+				id = 117679,
+				name = "",
+				icon = ""
+			},
+			cenariusGuidance = {
+				id = 393371,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+			reforestation = {
+				id = 392360,
+				name = "",
+				icon = "",
+				--isTalent = true
+			},
 			clearcasting = {
 				id = 16870,
 				name = "",
@@ -978,6 +996,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			},
 
 			-- External mana
+			innervate = { -- Technically a talent but we can get it from outside/don't do any talent checks with it
+				id = 29166,
+				name = "",
+				icon = "",
+				duration = 10,
+				isActive = false
+			},
 			symbolOfHope = {
 				id = 64901,
 				name = "",
@@ -1177,6 +1202,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			startTime = nil,
 			duration = 0
 		}
+		specCache.restoration.snapshotData.incarnationTreeOfLife = {
+			spellId = nil,
+			endTime = nil
+		}
+		specCache.restoration.snapshotData.reforestation = {
+			stacks = 0
+		}
 
 		specCache.restoration.barTextVariables = {
 			icons = {},
@@ -1191,24 +1223,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "druid", "balance")
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.balance)
-	end
-
-	local function Setup_Feral()
-		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-			return
-		end
-
-		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "druid", "feral")
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.feral)
-	end
-
-	local function Setup_Restoration()
-		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-			return
-		end
-
-		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "druid", "restoration")
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.restoration)
 	end
 
 	local function FillSpellData_Balance()
@@ -1363,6 +1377,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		specCache.balance.spells = spells
 	end
 
+	local function Setup_Feral()
+		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
+			return
+		end
+
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "druid", "feral")
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.feral)
+	end
+
 	local function FillSpellData_Feral()
 		Setup_Feral()
 		local spells = TRB.Functions.Spell:FillSpellData(specCache.feral.spells)
@@ -1503,6 +1526,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		specCache.feral.spells = spells
 	end
 
+	local function Setup_Restoration()
+		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
+			return
+		end
+
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "druid", "restoration")
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.restoration)
+	end
+
 	local function FillSpellData_Restoration()
 		Setup_Restoration()
 		local spells = TRB.Functions.Spell:FillSpellData(specCache.restoration.spells)
@@ -1515,6 +1547,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			{ variable = "#efflorescence", icon = spells.efflorescence.icon, description = spells.efflorescence.name, printInSettings = true },
 			{ variable = "#clearcasting", icon = spells.clearcasting.icon, description = spells.clearcasting.name, printInSettings = true },
+			{ variable = "#incarnation", icon = spells.incarnationTreeOfLife.icon, description = spells.incarnationTreeOfLife.name, printInSettings = true },
+			{ variable = "#reforestation", icon = spells.reforestation.icon, description = spells.reforestation.name, printInSettings = true },
 			
 			{ variable = "#moonfire", icon = spells.moonfire.icon, description = "Moonfire", printInSettings = true },
 			{ variable = "#sunfire", icon = spells.sunfire.icon, description = "Sunfire", printInSettings = true },
@@ -1577,6 +1611,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$resourcePlusPassive", description = "Current + Passive Mana Total", printInSettings = false, color = false },
 			{ variable = "$manaTotal", description = "Current + Passive + Casting Mana Total", printInSettings = true, color = false },
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Mana Total", printInSettings = false, color = false },
+
+			{ variable = "$incarnationTime", description = "Time remaining on Incarnation: Tree of Life", printInSettings = false, color = false },
+
+			{ variable = "$reforestationStacks", description = "Current stacks of Reforestation", printInSettings = false, color = false },
 
 			{ variable = "$sunfireCount", description = "Number of Sunfires active on targets", printInSettings = true, color = false },
 			{ variable = "$sunfireTime", description = "Time remaining on Sunfire on your current target", printInSettings = true, color = false },
@@ -1928,10 +1966,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		return cdRemaining
 	end
 	
-	local function GetFuryOfEluneRemainingTime()
-		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.furyOfElune)
-	end
-	
 	local function GetSunderedFirmamentRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.sunderedFirmament)
 	end
@@ -1950,6 +1984,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function GetSymbolOfHopeRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.symbolOfHope)
+	end
+	
+	local function GetFuryOfEluneRemainingTime()
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.furyOfElune)
+	end
+
+	local function GetIncarnationTreeOfLifeRemainingTime()
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.incarnationTreeOfLife)
 	end
 
 	local function GetEfflorescenceRemainingTime()
@@ -2957,6 +2999,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local _clearcastingTime = TRB.Data.snapshotData.clearcasting.remainingTime or 0
 		local clearcastingTime = string.format("%.1f", _clearcastingTime)
 
+		--$incarnationTime
+		local _incarnationTime = GetIncarnationTreeOfLifeRemainingTime()
+		local incarnationTime = string.format("%.1f", _incarnationTime)	
+
+		--$reforestationStacks
+		local reforestationStacks = TRB.Data.snapshotData.reforestation.stacks or 0
+
 		----------
 		--$sunfireCount and $sunfireTime
 		local _sunfireCount = TRB.Data.snapshotData.targetData.sunfire or 0
@@ -3036,6 +3085,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#efflorescence"] = TRB.Data.spells.efflorescence.icon
+		lookup["#incarnation"] = TRB.Data.spells.incarnationTreeOfLife.icon
 		lookup["#clearcasting"] = TRB.Data.spells.clearcasting.icon
 		lookup["#sunfire"] = TRB.Data.spells.sunfire.icon
 		lookup["#moonfire"] = TRB.Data.spells.moonfire.icon
@@ -3050,6 +3100,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#potionOfFrozenFocus"] = TRB.Data.spells.potionOfFrozenFocusRank1.icon
 		lookup["#pocc"] = TRB.Data.spells.potionOfChilledClarity.icon
 		lookup["#potionOfChilledClarity"] = TRB.Data.spells.potionOfChilledClarity.icon
+		lookup["#reforestation"] = TRB.Data.spells.reforestation.icon
 		lookup["$manaPlusCasting"] = manaPlusCasting
 		lookup["$manaPlusPassive"] = manaPlusPassive
 		lookup["$manaTotal"] = manaTotal
@@ -3075,6 +3126,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$sunfireTime"] = sunfireTime
 		lookup["$moonfireCount"] = moonfireCount
 		lookup["$moonfireTime"] = moonfireTime
+		lookup["$incarnationTime"] = incarnationTime
+		lookup["$reforestationStacks"] = reforestationStacks
 		lookup["$mttMana"] = mttMana
 		lookup["$mttTime"] = mttTime
 		lookup["$channeledMana"] = channeledMana
@@ -3121,6 +3174,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookupLogic["$sunfireTime"] = _sunfireTime
 		lookupLogic["$moonfireCount"] = _moonfireCount
 		lookupLogic["$moonfireTime"] = _moonfireTime
+		lookupLogic["$incarnationTime"] = _incarnationTime
+		lookupLogic["$reforestationStacks"] = reforestationStacks
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -3565,6 +3620,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		TRB.Data.snapshotData.clearcasting.remainingTime = GetClearcastingRemainingTime()
+		_, _, _, _, _, TRB.Data.snapshotData.incarnationTreeOfLife.endTime, _, _, _, TRB.Data.snapshotData.incarnationTreeOfLife.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.incarnationTreeOfLife.id)
+		_, _, TRB.Data.snapshotData.reforestation.stacks, _, _, _, _, _, _, _ = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.reforestation.id)
 	end
 
 	local function UpdateResourceBar()
@@ -4218,10 +4275,29 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end
 		
 					local resourceBarColor = specSettings.colors.bar.base
-							
+
 					local affectingCombat = UnitAffectingCombat("player")
 
-					if affectingCombat and GetEfflorescenceRemainingTime() == 0 then
+					if GetIncarnationTreeOfLifeRemainingTime() > 0 and (TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.cenariusGuidance) or GetClearcastingRemainingTime() == 0) then
+						local timeThreshold = 0
+						local useEndOfIncarnationColor = false
+
+						if specSettings.endOfIncarnation.enabled then
+							useEndOfIncarnationColor = true
+							if specSettings.endOfIncarnation.mode == "gcd" then
+								local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+								timeThreshold = gcd * specSettings.endOfIncarnation.gcdsMax
+							elseif specSettings.endOfIncarnation.mode == "time" then
+								timeThreshold = specSettings.endOfIncarnation.timeMax
+							end
+						end
+
+						if useEndOfIncarnationColor and GetIncarnationTreeOfLifeRemainingTime() <= timeThreshold then
+							resourceBarColor = specSettings.colors.bar.incarnationEnd
+						else
+							resourceBarColor = specSettings.colors.bar.incarnation
+						end
+					elseif affectingCombat and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.efflorescence) and GetEfflorescenceRemainingTime() == 0 then
 						resourceBarColor = specSettings.colors.bar.noEfflorescence
 					elseif GetClearcastingRemainingTime() > 0 then
 						resourceBarColor = specSettings.colors.bar.clearcasting
@@ -4755,6 +4831,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Data.snapshotData.clearcasting.duration = 0
 							TRB.Data.snapshotData.clearcasting.stacks = 0
 							TRB.Data.spells.clearcasting.isActive = false
+						end
+					elseif spellId == TRB.Data.spells.incarnationTreeOfLife.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.incarnationTreeOfLife.isActive = true
+							_, _, _, _, _, TRB.Data.snapshotData.incarnationTreeOfLife.endTime, _, _, _, TRB.Data.snapshotData.incarnationTreeOfLife.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.incarnationTreeOfLife.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.incarnationTreeOfLife.isActive = false
+							TRB.Data.snapshotData.incarnationTreeOfLife.spellId = nil
+							TRB.Data.snapshotData.incarnationTreeOfLife.endTime = nil
 						end
 					end
 				end
@@ -5698,6 +5783,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 			elseif var == "$potionCooldownSeconds" then
 				if TRB.Data.snapshotData.potion.onCooldown then
+					valid = true
+				end
+			elseif var == "$incarnationTime" then
+				if GetIncarnationTreeOfLifeRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$reforestationStacks" then
+				if TRB.Data.snapshotData.reforestation.stacks > 0 then
 					valid = true
 				end
 			end

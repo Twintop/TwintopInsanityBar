@@ -850,7 +850,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 5, 2, yCoord)
 
-		yCoord = yCoord - 40
+		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 5, 2, yCoord)
 		
 		yCoord = yCoord - 40

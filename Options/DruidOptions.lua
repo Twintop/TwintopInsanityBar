@@ -604,6 +604,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				manaTideTotem = true,
 				symbolOfHope = true
 			},
+			endOfIncarnation = {
+				enabled=true,
+				mode="gcd",
+				gcdsMax=2,
+				timeMax=3.0
+			},
 			colors={
 				text={
 					current="FF4D4DFF",
@@ -625,6 +631,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					base="FF0000FF",
 					noEfflorescence="FFFF0000",
 					clearcasting="FF4A95CE",
+					incarnation="FF005500",
+					incarnationEnd="FFDD5500",
 					innervate="FF00FF00",
 					potionOfChilledClarity="FF9EC51E",
 					spending="FFFFFFFF",
@@ -2852,11 +2860,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 4)
 		end)
-		
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.background
+
+		controls.colors.incarnation = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Incarnation is active", spec.colors.bar.incarnation, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.incarnation
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 4)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "incarnation")
 		end)
 
 		yCoord = yCoord - 30
@@ -2866,11 +2874,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "clearcasting")
 		end)
 
+		controls.colors.incarnationEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Incarnation is ending (per settings)", spec.colors.bar.incarnationEnd, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.incarnationEnd
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "incarnationEnd")
+		end)
+
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 4)
+		end)
+		
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 4)
 		end)
 
 
@@ -2923,8 +2943,73 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 4, yCoord)
 
-		yCoord = yCoord - 40
+		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 11, 4, yCoord)
+		
+		yCoord = yCoord - 40
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Incarnation Configuration", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.endOfIncarnation = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_EOI_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfIncarnation
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Incarnation")
+		f.tooltip = "Changes the bar color when Incarnation is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(spec.endOfIncarnation.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.endOfIncarnation.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 40
+		controls.checkBoxes.endOfIncarnationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_EOI_M_GCD", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfIncarnationModeGCDs
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Incarnation ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many GCDs remain until Incarnation ends."
+		if spec.endOfIncarnation.mode == "gcd" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfIncarnationModeGCDs:SetChecked(true)
+			controls.checkBoxes.endOfIncarnationModeTime:SetChecked(false)
+			spec.endOfIncarnation.mode = "gcd"
+		end)
+
+		title = "Incarnation GCDs - 0.75sec Floor"
+		controls.endOfIncarnationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfIncarnation.gcdsMax, 0.25, 2,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.endOfIncarnationGCDs:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			spec.endOfIncarnation.gcdsMax = value
+		end)
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.endOfIncarnationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_EOI_M_TIME", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfIncarnationModeTime
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Time until Incarnation ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many seconds remain until Incarnation will end."
+		if spec.endOfIncarnation.mode == "time" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfIncarnationModeGCDs:SetChecked(false)
+			controls.checkBoxes.endOfIncarnationModeTime:SetChecked(true)
+			spec.endOfIncarnation.mode = "time"
+		end)
+
+		title = "Incarnation Time Remaining"
+		controls.endOfIncarnationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfIncarnation.timeMax, 0.25, 2,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.endOfIncarnationTime:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 2)
+			self.EditBox:SetText(value)
+			spec.endOfIncarnation.timeMax = value
+		end)
 	end
 
 	local function RestorationConstructFontAndTextPanel(parent)
