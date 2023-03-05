@@ -70,6 +70,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
 			elseif specId == 4 then -- Restoration
+				configuration.endOfIncarnation = settings.endOfIncarnation
 			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
 			configuration.endOfMetamorphosis = settings.endOfMetamorphosis
