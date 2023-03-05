@@ -20,6 +20,7 @@ Libs\LibSharedMedia-3.0.lua
 Libs\base64.lua
 Libs\json.lua
 Libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
+Libs\LibMarkdown\LibMarkdown.xml
 
 Init.lua
 
@@ -40,6 +41,9 @@ Functions\Target.lua
 Functions\Threshold.lua
 Functions\TimeToDie.lua
 
+Options\OptionsUi.lua
+
+Functions\News.lua
 
 Classes\DemonHunter.lua
 Classes\Druid.lua
@@ -51,7 +55,6 @@ Classes\Rogue.lua
 Classes\Shaman.lua
 Classes\Warrior.lua
 
-Options\OptionsUi.lua
 Options\Options.lua
 Options\DemonHunterOptions.lua
 Options\DruidOptions.lua
