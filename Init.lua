@@ -310,6 +310,8 @@ function SlashCmdList.TWINTOP(msg)
 	elseif cmd == "move" then
 		local x, y = ParseCmdString(subcmd)
 		TRB.Functions.Bar:SetPositionXY(tonumber(x), tonumber(y))
+	elseif cmd == "news" then
+		TRB.Functions.News:Show()
 	else
 		--Settings.OpenToCategory(TRB.Frames.interfaceSettingsFrameContainer.panel)
 		if TRB.Data.barConstructedForSpec == nil then

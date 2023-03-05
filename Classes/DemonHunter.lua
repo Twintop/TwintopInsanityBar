@@ -1387,6 +1387,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 								ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 							end
 							TRB.Functions.Class:EventRegistration()
+							TRB.Functions.News:Init()
 						end)
 					end)
 				end

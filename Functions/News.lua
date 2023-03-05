@@ -16,18 +16,18 @@ local content = [====[
 ### Restoration
 
 - (#291 - NEW) Add support for Incarnation: Tree of Life bar color change. This works similarly to other bar color changes via buffs (e.g. Voidform, Trueshot, Eclipse, etc.) with colors for both when it is active and when it is close to ending, and configuration of when to show the close to ending color.
-<br/>&emsp;&ensp;- New Bar Text variable: `$incarnationTime`
-<br/>&emsp;&ensp;- New Bar Text icon: `#incarnation`<br/><br/>
+<br/>&emsp;&ensp;- New bar text variable: `$incarnationTime`
+<br/>&emsp;&ensp;- New bar text icon: `#incarnation`<br/><br/>
 - (#291 - NEW) Add Reforestation tracking.
-<br/>&emsp;&ensp;- New Bar Text variable: `$reforestationStacks`
-<br/>&emsp;&ensp;- New Bar Text icon: `#reforestation`
+<br/>&emsp;&ensp;- New bar text variable: `$reforestationStacks`
+<br/>&emsp;&ensp;- New bar text icon: `#reforestation`
 
 ## Priest
 ### Shadow
 
 - (#288 - NEW) Add a bar color change while Mind Blast is instant cast either via a Shadowy Insight proc or having two stacks of Mind Melt. This will only change the bar color if you can currently cast Mind Blast (it isn't completely on cooldown).
-<br/>&emsp;&ensp;- New Bar Text variables: `$mmTime`, `$mmStacks`, `$siTime`, `$mindBlastCharges`, `$mindBlastMaxCharges`
-<br/>&emsp;&ensp;- New Bar Text icons: `#mm`/`#mindMelt`, `#si`/`#shadowyInsight`
+<br/>&emsp;&ensp;- New bar text variables: `$mmTime`, `$mmStacks`, `$siTime`, `$mindBlastCharges`, `$mindBlastMaxCharges`
+<br/>&emsp;&ensp;- New bar text icons: `#mm`/`#mindMelt`, `#si`/`#shadowyInsight`
 
 <br/>
 # 10.0.5.7-release (2023-02-28)
@@ -523,8 +523,13 @@ local content = [====[
 
 ]====]
 
+local newsFrame = CreateFrame("Frame", "TRB_News_Frame", UIParent, "BackdropTemplate")
+newsFrame:SetFrameStrata("DIALOG")
+local isConstructed = false
+
 function TRB.Functions.News:BuildNewsPopup()
-    local newsFrame = CreateFrame("Frame", "TRB_News_Frame", UIParent, "BackdropTemplate")
+    isConstructed = true
+    TRB.Functions.News:Hide()
 	newsFrame:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile =  "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -540,7 +545,7 @@ function TRB.Functions.News:BuildNewsPopup()
 	})
 	newsFrame:SetBackdropColor(0, 0, 0, 0.5)
 	newsFrame:SetWidth(650)
-	newsFrame:SetHeight(450)
+	newsFrame:SetHeight(480)
 	newsFrame:SetPoint("CENTER", UIParent)
 
 	local newsPanelParent = TRB.Functions.OptionsUi:CreateTabFrameContainer("TRB_News_Frame_Panel", newsFrame, 640, 410)
@@ -552,12 +557,27 @@ function TRB.Functions.News:BuildNewsPopup()
 	--return newsPanel]]
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(newsFrame, "Twintop's Resource Bar Updates", oUi.xCoord, 0)
+    local closeButton = TRB.Functions.OptionsUi:BuildButton(newsFrame, "Close", 510, -10, 100, 25)
+	closeButton:ClearAllPoints()
+	closeButton:SetPoint("BOTTOMRIGHT", -5, 5)
+    closeButton:SetScript("OnClick", function(self, ...)
+        TRB.Functions.News:Hide()
+    end)
+
+    local showAgainCheckbox = CreateFrame("CheckButton", "TwintopResourceBar_News_ShowAgain", newsFrame, "ChatConfigCheckButtonTemplate")
+    local f = showAgainCheckbox
+    f:SetPoint("BOTTOMLEFT", 5, 5)
+    getglobal(f:GetName() .. 'Text'):SetText("Show on new version release")
+    f.tooltip = "Show this update popup whenever a new version of Twintop's Resource Bar is released."
+    f:SetChecked(TRB.Data.settings.core.news.enabled)
+    f:SetScript("OnClick", function(self, ...)
+        TRB.Data.settings.core.news.enabled = self:GetChecked()
+    end)
 
     local simpleHtml = CreateFrame("SimpleHTML", "TRB_News_HTML_Frame", newsPanel)
 	simpleHtml:SetPoint("TOPLEFT", newsPanel, "TOPLEFT", 5, -5)
-    simpleHtml:SetPoint("BOTTOMRIGHT", newsPanel, "BOTTOMRIGHT", 5, -5)
-	simpleHtml:SetWidth(610)
-	--simpleHtml:SetHeight(510)
+    simpleHtml:SetPoint("BOTTOMRIGHT", newsPanel, "BOTTOMRIGHT", 5, -35)
+	simpleHtml:SetWidth(600)
     
     simpleHtml:SetFontObject("h1", "SubzoneTextFont")
     simpleHtml:SetTextColor("h1", 0, 0.6, 1, 1)
@@ -572,12 +592,12 @@ function TRB.Functions.News:BuildNewsPopup()
     simpleHtml:SetTextColor("p", 1, 1, 1, 1)
 
     simpleHtml:SetHyperlinkFormat("[|cff3399ff|H%s|h%s|h|r]")
-    --simpleHtml:SetHyperlinkFormat("|cffFF0000|H%s|h%s|h|r")
 
     simpleHtml:SetScript("OnHyperlinkClick", 
         function(f, link, text, ...) 
             if     link=="window:close" 
-            then   f:GetParent():Hide() 
+            then   TRB.Functions.News:Hide()
+                --f:GetParent():Hide() 
             elseif link:match("https?://")
             then
                    StaticPopup_Show("LIBMARKDOWNDEMOFRAME_URL", nil, nil, { title = text, url = link })
@@ -611,4 +631,23 @@ function TRB.Functions.News:BuildNewsPopup()
     }
 end
 
-TRB.Functions.News:BuildNewsPopup()
+function TRB.Functions.News:Hide()
+    newsFrame:Hide()
+end
+
+function TRB.Functions.News:Show()
+    if not isConstructed then
+        TRB.Functions.News:BuildNewsPopup()
+    end
+
+    if TRB.Data.settings.core.news.lastUpdate ~= TRB.Details.addonVersion then
+        TRB.Data.settings.core.news.lastUpdate = TRB.Details.addonVersion
+    end
+    newsFrame:Show()
+end
+
+function TRB.Functions.News:Init()
+    if TRB.Data.settings.core.news.enabled and TRB.Data.settings.core.news.lastUpdate ~= TRB.Details.addonVersion then
+        TRB.Functions.News:Show()
+    end
+end

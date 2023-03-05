@@ -2,9 +2,9 @@
 ## Title: Twintop's Resource Bar
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 10.0.5.7
+## Version: 10.0.5.8
 ## X-ReleaseType: release
-## X-ReleaseDate: February 28, 2023
+## X-ReleaseDate: March 05, 2023
 ## SavedVariables: TwintopInsanityBarSettings
 ## DefaultState: enabled
 ## Notes: Multi-class Resource Bar, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
@@ -42,8 +42,7 @@ Functions\Threshold.lua
 Functions\TimeToDie.lua
 
 Options\OptionsUi.lua
-
-Functions\News.lua
+Options\Options.lua
 
 Classes\DemonHunter.lua
 Classes\Druid.lua
@@ -55,7 +54,8 @@ Classes\Rogue.lua
 Classes\Shaman.lua
 Classes\Warrior.lua
 
-Options\Options.lua
+Functions\News.lua
+
 Options\DemonHunterOptions.lua
 Options\DruidOptions.lua
 Options\EvokerOptions.lua

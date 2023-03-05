@@ -4106,6 +4106,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 							end
 							TRB.Functions.Class:EventRegistration()
+							TRB.Functions.News:Init()
 						end)
 					end)
 				end

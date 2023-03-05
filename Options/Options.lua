@@ -41,6 +41,10 @@ local function LoadDefaultSettings()
 		core = {
 			dataRefreshRate = 5.0,
 			reactionTime = 0.1,
+			news = {
+				enabled = true,
+				lastUpdate = ""
+			},
 			ttd = {
 				sampleRate = 0.2,
 				numEntries = 50,
@@ -1879,6 +1883,14 @@ function TRB.Options:ConstructOptionsPanel()
 	local yCoord = -5
 
 	interfaceSettingsFrame.controls.barPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, TRB.Details.addonTitle, oUi.xCoord+oUi.xPadding, yCoord)
+
+	local newsButton = TRB.Functions.OptionsUi:BuildButton(parent, "Show News Popup", 510, yCoord, 200, 40)
+	newsButton:ClearAllPoints()
+	newsButton:SetPoint("TOPRIGHT", yCoord, 5)
+    newsButton:SetScript("OnClick", function(self, ...)
+        TRB.Functions.News:Show()
+    end)
+
 	yCoord = yCoord - 40
 	interfaceSettingsFrame.controls.labels.infoAuthor = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "Author:", TRB.Details.addonAuthor .. " - " .. TRB.Details.addonAuthorServer, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 450, 15, 15)
 	yCoord = yCoord - 40
