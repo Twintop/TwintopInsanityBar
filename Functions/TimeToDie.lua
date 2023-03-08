@@ -87,6 +87,10 @@ local unitDeathHealthPercentageList = {
     ["40320"] = 0.2, -- Valiona
 
     ---- Mists of Pandaria ----
+    --- Mogu'shan Palace ---
+    ["61442"] = 0.1, -- Kuai the Brute
+    ["61444"] = 0.1, -- Ming the Cunning
+    ["61445"] = 0.1, -- Haiyan the Unstoppable
 
     ---- Warlords of Draenor ----
     --- Shadowmoon Burial Grounds ---
