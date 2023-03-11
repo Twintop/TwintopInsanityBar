@@ -1833,7 +1833,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.instantMindBlast = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity when Mind Blast is instant cast (Shadowy Insight or 2x Mind Melt stacks)", spec.colors.bar.instantMindBlast.color, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.instantMindBlast = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity when Mind Blast is instant cast (Shadowy Insight proc)", spec.colors.bar.instantMindBlast.color, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.instantMindBlast
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "instantMindBlast")
@@ -1843,7 +1843,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.instantMindBlast
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Instant Mind Blast color change enabled")
-		f.tooltip = "This will change the bar color when Mind Blast is able to be cast instantly either due to a Shadowy Insight proc or having 2 stacks of Mind Melt."
+		f.tooltip = "This will change the bar color when Mind Blast is able to be cast instantly either due to a Shadowy Insight proc."
 		f:SetChecked(spec.colors.bar.instantMindBlast.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.instantMindBlast.enabled = self:GetChecked()
