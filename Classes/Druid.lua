@@ -96,7 +96,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 164812,
 				name = "",
 				icon = "",
-				astralPower = 2,
+				astralPower = 6,
 				pandemic = true,
 				pandemicTime = 22 * 0.3,
 				baseline = true
@@ -107,7 +107,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 194153,
 				name = "",
 				icon = "",
-				astralPower = 8,
+				astralPower = 10,
 				baseline = true,
 				isTalent = true
 			},
@@ -161,7 +161,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 164815,
 				name = "",
 				icon = "",
-				astralPower = 2,
+				astralPower = 6,
 				pandemic = true,
 				pandemicTime = 18 * 0.3,
 				isTalent = true
@@ -172,7 +172,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 190984,
 				name = "",
 				icon = "",
-				astralPower = 8
+				astralPower = 10
 			},
 
 			-- Balance Spec Talents
@@ -198,9 +198,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 202430,
 				name = "",
 				icon = "",
-				astralPower = 0.5,
-				outOfCombatAstralPower = 1.5,
-				tickRate = 1,
+				astralPower = 2,
+				outOfCombatAstralPower = 6,
+				tickRate = 3,
 				isTalent = true
 			},
 			starfall = {
@@ -222,10 +222,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 202347,
 				name = "",
 				icon = "",
-				astralPower = 8,
+				astralPower = 10,
 				pandemic = true,
 				pandemicTime = 24 * 0.3,
 				isTalent = true
+			},
+			wildSurges = {
+				id = 406890,
+				name = "",
+				icon = "",
+				isTalent = true,
+				modifier = 2
 			},
 			rattleTheStars = {
 				id = 340049,
@@ -272,7 +279,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 114107,
 				name = "",
 				icon = "",
-				modifier = 1.5,
+				modifier = {
+					wrath = 0.5,
+					starfire = 0.3
+				},
 				isTalent = true
 			},
 			-- TODO: Add Wild Mushroom + associated tracking
@@ -287,8 +297,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 393991,
 				name = "",
 				icon = "",
-				modifierStarsurge = -5,
-				modifierStarfall = -8,
+				modifierStarsurge = -8,
+				modifierStarfall = -10,
 				isTalent = true,
 				isActive = false
 			},
@@ -3214,11 +3224,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				else
 					if currentSpellId == TRB.Data.spells.wrath.id then
 						FillSnapshotDataCasting_Balance(TRB.Data.spells.wrath)
+						if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.wildSurges) then
+							TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.spells.wildSurges.modifier
+						end
 						if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.soulOfTheForest) and TRB.Data.spells.eclipseSolar.isActive then
-							TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal * TRB.Data.spells.soulOfTheForest.modifier
+							TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal * (1 + TRB.Data.spells.soulOfTheForest.modifier.wrath)
 						end
 					elseif currentSpellId == TRB.Data.spells.starfire.id then
 						FillSnapshotDataCasting_Balance(TRB.Data.spells.starfire)
+						if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.wildSurges) then
+							TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.spells.wildSurges.modifier
+						end
+						--TODO: Track how many targets were hit by the last Starfire to guess how much bonus AP you'll get?
+						--TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal * (1 + TRB.Data.spells.soulOfTheForest.modifier.wrath)
 						--Warrior of Elune logic would go here if it didn't make it instant cast!
 					elseif currentSpellId == TRB.Data.spells.sunfire.id then
 						FillSnapshotDataCasting_Balance(TRB.Data.spells.sunfire)
