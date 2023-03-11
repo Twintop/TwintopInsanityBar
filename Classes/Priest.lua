@@ -1292,7 +1292,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			
 			{ variable = "#mfi", icon = spells.mindFlayInsanity.icon, description = spells.mindFlayInsanity.name, printInSettings = true },
 			{ variable = "#mindFlayInsanity", icon = spells.mindFlayInsanity.icon, description = spells.mindFlayInsanity.name, printInSettings = false },
-			
+
 			{ variable = "#mf", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = true },
 			{ variable = "#mindFlay", icon = spells.mindFlay.icon, description = spells.mindFlay.name, printInSettings = false },
 			
@@ -3525,8 +3525,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 					end
 
-					if TRB.Data.snapshotData.mindBlast.charges > 0 and (TRB.Data.snapshotData.mindMelt.stacks == TRB.Data.spells.mindMelt.maxStacks or TRB.Data.snapshotData.shadowyInsight.duration > 0) then
-						barColor = specSettings.colors.bar.instantMindBlast
+					if specSettings.colors.bar.instantMindBlast.enabled and (TRB.Data.snapshotData.mindBlast.charges > 0 and (TRB.Data.snapshotData.mindMelt.stacks == TRB.Data.spells.mindMelt.maxStacks or TRB.Data.snapshotData.shadowyInsight.duration > 0)) then
+						barColor = specSettings.colors.bar.instantMindBlast.color
 					elseif TRB.Data.snapshotData.voidform.remainingTime > 0 or TRB.Data.snapshotData.darkAscension.remainingTime > 0 then
 						local timeLeft = TRB.Data.snapshotData.voidform.remainingTime
 						if TRB.Data.snapshotData.darkAscension.remainingTime > 0 then

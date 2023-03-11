@@ -2182,6 +2182,22 @@ function TRB.Options:PortForwardSettings()
 		TwintopInsanityBarSettings.shaman.elemental.earthShockThreshold = nil
 		TwintopInsanityBarSettings.shaman.elemental.thresholdsOverlapBorder = nil
 	end
+
+	-- Shadow Instant Mindblast color
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.priest ~= nil and
+		TwintopInsanityBarSettings.priest.shadow ~= nil and
+		TwintopInsanityBarSettings.priest.shadow.colors ~= nil and
+		TwintopInsanityBarSettings.priest.shadow.colors.bar ~= nil and
+		TwintopInsanityBarSettings.priest.shadow.colors.bar.instantMindBlast ~= nil and
+		type(TwintopInsanityBarSettings.priest.shadow.colors.bar.instantMindBlast) == "string" and
+		type(TwintopInsanityBarSettings.priest.shadow.colors.bar.instantMindBlast) ~= "table" then
+		local barColor = TwintopInsanityBarSettings.priest.shadow.colors.bar.instantMindBlast
+		TwintopInsanityBarSettings.priest.shadow.colors.bar.instantMindBlast = {
+			color = barColor,
+			enabled = true
+		}
+	end
 end
 
 function TRB.Options:CleanupSettings(oldSettings)

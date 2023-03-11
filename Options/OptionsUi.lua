@@ -226,6 +226,27 @@ end
 
 function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorControlsTable, key, frameType, frames, specId)
 	if button == "LeftButton" then
+		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorTable[key].color, true)
+		TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
+			local r, g, b, a = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
+			colorControlsTable[key].Texture:SetColorTexture(r, g, b, 1-a)
+			colorTable[key].color = TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, 1-a)
+		
+			if frameType == "backdrop" then
+				TRB.Functions.Color:SetBackdropColor(frames, colorTable[key].color, true, specId)
+			elseif frameType == "border" then
+				TRB.Functions.Color:SetBackdropBorderColor(frames, colorTable[key].color, true, specId)
+			elseif frameType == "bar" then
+				TRB.Functions.Color:SetStatusBarColor(frames, colorTable[key].color, true, specId)
+			elseif frameType == "threshold" then
+				TRB.Functions.Color:SetThresholdColor(frames, colorTable[key].color, true, specId)
+			end
+		end)
+	end
+end
+
+function TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, colorTable, colorControlsTable, key, frameType, frames, specId)
+	if button == "LeftButton" then
 		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorTable[key], true)
 		TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
 			local r, g, b, a = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
@@ -1771,19 +1792,19 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana gain from potions and items (when usable)", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-0)
 	f = controls.colors.threshold.over
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
 	end)
 
 	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana potion or item on cooldown", spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-30)
 	f = controls.colors.threshold.unusable
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "unusable")
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 	end)
 
 	controls.colors.threshold.mindbender = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Passive mana gain per source", spec.colors.threshold.mindbender, 300, 25, oUi.xCoord2, yCoord-60)
 	f = controls.colors.threshold.mindbender
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "mindbender")
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "mindbender")
 	end)
 
 	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_ThresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
@@ -2218,21 +2239,21 @@ function TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, cla
 													250, 25, oUi.xCoord2, yCoord-30)
 	f = controls.colors.text.left
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "left")
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "left")
 	end)
 
 	controls.colors.text.middle = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
 													225, 25, oUi.xCoord2, yCoord-70)
 	f = controls.colors.text.middle
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "middle")
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "middle")
 	end)
 
 	controls.colors.text.right = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
 													225, 25, oUi.xCoord2, yCoord-110)
 	f = controls.colors.text.right
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "right")
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "right")
 	end)
 
 	title = "Middle Bar Text Font Size"

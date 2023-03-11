@@ -435,7 +435,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					base="FF763BAF",
 					devouringPlagueUsable="FF5C2F89",
 					devouringPlagueUsableCasting="FFFFFFFF",
-					instantMindBlast="FFC2A3E0",
+					instantMindBlast={
+						color = "FFC2A3E0",
+						enabled = true
+					},
 					inVoidform="FF431863",
 					inVoidform1GCD="FFFF0000",
 					spending="FFFFFFFF",
@@ -675,59 +678,59 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
 		end)
 		
 		controls.colors.holyWordChastise = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when your cast will complete the cooldown of Holy Word: Chastise", spec.colors.bar.holyWordChastise, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.holyWordChastise
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "holyWordChastise")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "holyWordChastise")
 		end)
 
 		yCoord = yCoord - 30
 		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana cost of current hardcast spell", spec.colors.bar.spending, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
 		end)
 
 		controls.colors.holyWordSanctify = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when your cast will complete the cooldown of Holy Word: Sanctify", spec.colors.bar.holyWordSanctify, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.holyWordSanctify
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "holyWordSanctify")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "holyWordSanctify")
 		end)
 
 		yCoord = yCoord - 30
 		controls.colors.inApotheosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana while Apotheosis is active", spec.colors.bar.apotheosis, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.inApotheosis
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "apotheosis")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "apotheosis")
 		end)
 
 		controls.colors.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when your cast will complete the cooldown of Holy Word: Serenity", spec.colors.bar.holyWordSerenity, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.holyWordSerenity
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "holyWordSerenity")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "holyWordSerenity")
 		end)
 
 		yCoord = yCoord - 30
 		controls.colors.inApotheosisEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Apotheosis is close to ending (configurable/if enabled)", spec.colors.bar.apotheosisEnd, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.inApotheosisEnd
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "apotheosisEnd")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "apotheosisEnd")
 		end)
 
 		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
 		end)
 
 		yCoord = yCoord - 30
 		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
 		end)
 
 		yCoord = yCoord - 40
@@ -737,43 +740,43 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border is normal/base border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord-0)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 2)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 2)
 		end)
 
 		controls.colors.innervate = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Innervate", spec.colors.bar.innervate, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.innervate
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "innervate")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "innervate")
 		end)
 
 		controls.colors.potionOfChilledClarity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Potion of Chilled Clarity's effect", spec.colors.bar.potionOfChilledClarity, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.potionOfChilledClarity
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "potionOfChilledClarity")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "potionOfChilledClarity")
 		end)
 
 		controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.surgeOfLight1
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "surgeOfLight1")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight1")
 		end)
 						
 		controls.colors.surgeOfLight2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 2 stacks of Surge of Light", spec.colors.bar.surgeOfLight2, 300, 25, oUi.xCoord2, yCoord-120)
 		f = controls.colors.surgeOfLight2
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "surgeOfLight2")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight2")
 		end)
 
 		controls.colors.resonantWords = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Resonant Words", spec.colors.bar.resonantWords, 300, 25, oUi.xCoord2, yCoord-150)
 		f = controls.colors.resonantWords
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "resonantWords")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "resonantWords")
 		end)
 
 		controls.colors.lightweaver = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have any stacks of Lightweaver", spec.colors.bar.lightweaver, 300, 25, oUi.xCoord2, yCoord-180)
 		f = controls.colors.lightweaver
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "lightweaver")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "lightweaver")
 		end)
 
 		yCoord = yCoord - 30
@@ -950,20 +953,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Mana", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "current")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
 		controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana spent from hardcasting spells", spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "casting")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "casting")
 		end)
 
 		yCoord = yCoord - 30
 		controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Passive Mana", spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passive")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 	
 
@@ -986,19 +989,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
 		f = controls.colors.dots.up
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "up")
 		end)
 
 		controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
 		f = controls.colors.dots.pandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
 		end)
 
 		controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
 		f = controls.colors.dots.down
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "down")
 		end)
 
 		yCoord = yCoord - 130
@@ -1789,75 +1792,119 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		yCoord = yCoord - 30
 		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, "Insanity", "notEmpty", true, true, true, "Devouring Plague", "DP")
+		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, "Insanity", "notEmpty", false, false, true, "Devouring Plague", "DP")
 
 		yCoord = yCoord - 70
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
+		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors + Changing", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity while not in Voidform", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity", spec.colors.bar.base, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.base		
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "base")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
 		end)
 
+		yCoord = yCoord - 30
 		controls.colors.inVoidform = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity while in Voidform / Dark Ascension", spec.colors.bar.inVoidform, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inVoidform		
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inVoidform")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inVoidform")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.devouringPlagueUsable = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity when you can cast Devouring Plague or Mind Sear", spec.colors.bar.devouringPlagueUsable, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.devouringPlagueUsable
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "devouringPlagueUsable")
-		end)
-
 		controls.colors.inVoidform1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity when Voidform / Dark Ascension is ending (as configured)", spec.colors.bar.inVoidform1GCD, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inVoidform1GCD
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "inVoidform1GCD")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inVoidform1GCD")
+		end)
+
+		controls.checkBoxes.endOfVoidform = CreateFrame("CheckButton", "TRB_EOVF_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfVoidform
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("VF/DA color change when ending enabled")
+		f.tooltip = "Changes the bar color when Voidform / Dark Ascension is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(spec.endOfVoidform.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.endOfVoidform.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.instantMindBlast = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity when Mind Blast is instant cast (Shadowy Insight or 2x Mind Melt stacks)", spec.colors.bar.instantMindBlast, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.devouringPlagueUsable = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity when you can cast Devouring Plague or Mind Sear", spec.colors.bar.devouringPlagueUsable, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.devouringPlagueUsable
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "devouringPlagueUsable")
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.instantMindBlast = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity when Mind Blast is instant cast (Shadowy Insight or 2x Mind Melt stacks)", spec.colors.bar.instantMindBlast.color, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.instantMindBlast
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "instantMindBlast")
 		end)
 
+		controls.checkBoxes.instantMindBlast = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Checkbox_InstantMindBlast", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.instantMindBlast
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Instant Mind Blast color change enabled")
+		f.tooltip = "This will change the bar color when Mind Blast is able to be cast instantly either due to a Shadowy Insight proc or having 2 stacks of Mind Melt."
+		f:SetChecked(spec.colors.bar.instantMindBlast.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.instantMindBlast.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 30
 		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity from hardcasting spells", spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 3)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 3)
+		end)
+
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(spec.bar.showCasting)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showCasting = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity cost of current spender (Mind Sear)", spec.colors.bar.spending, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity cost of current spender (Mind Sear)", spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
 		end)
 		
+		yCoord = yCoord - 30
 		controls.colors.devouringPlagueUsableCasting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity from hardcasting spells while DP can be cast", spec.colors.bar.devouringPlagueUsableCasting, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.devouringPlagueUsableCasting
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "devouringPlagueUsableCasting")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "devouringPlagueUsableCasting")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.background
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity from Auspicious Spirits, Shadowfiend/Mindbender swings, Death and Madness ticks, and Lash of Insanity ticks.", spec.colors.bar.passive, 600, 25, oUi.xCoord, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity from passive sources (e.g Auspicious Spirits, Shadowfiend/Mindbender swings)", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
+		end)
+
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(spec.bar.showPassive)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showPassive = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
 		end)
 
 		yCoord = yCoord - 40
@@ -1867,7 +1914,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border is normal/base border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
 		end)
 
 		yCoord = yCoord - 30
@@ -1884,7 +1931,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when your current hardcast will overcap Insanity", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderOvercap		
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderOvercap")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderOvercap")
 		end)
 
 		yCoord = yCoord - 30
@@ -1901,7 +1948,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.colors.borderMindFlayInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you can channel Mind Flay: Insanity", spec.colors.bar.borderMindFlayInsanity, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderMindFlayInsanity
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "borderMindFlayInsanity")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderMindFlayInsanity")
 		end)
 
 		yCoord = yCoord - 40
@@ -1913,25 +1960,25 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Under minimum required Insanity", spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "under")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
 		controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Over minimum required Insanity", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "over")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
 		controls.colors.threshold.mindbender = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Shadowfiend / Mindbender / Wrathful Faerie Insanity Gain", spec.colors.threshold.mindbender, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.mindbender
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "mindbender")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "mindbender")
 		end)
 
 		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Out of range of current target to use ability", spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.threshold.outOfRange
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
 		end)
 
 		controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
@@ -1986,17 +2033,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		yCoord = yCoord - 40
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Voidform Configuration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.endOfVoidform = CreateFrame("CheckButton", "TRB_EOVF_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.endOfVoidform
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Voidform")
-		f.tooltip = "Changes the bar color when Voidform is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(spec.endOfVoidform.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.endOfVoidform.enabled = self:GetChecked()
-		end)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfVoidformModeGCDs = CreateFrame("CheckButton", "TRB_EOFV_M_GCD", parent, "UIRadioButtonTemplate")
@@ -2096,33 +2132,33 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.colors.text.currentInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Insanity", spec.colors.text.currentInsanity, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.currentInsanity
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "currentInsanity")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "currentInsanity")
 		end)
 
 		controls.colors.text.castingInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity from hardcasting spells", spec.colors.text.castingInsanity, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.castingInsanity
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "castingInsanity")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "castingInsanity")
 		end)
 
 		yCoord = yCoord - 30
 		controls.colors.text.passiveInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Passive Insanity", spec.colors.text.passiveInsanity, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.passiveInsanity
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "passiveInsanity")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passiveInsanity")
 		end)
 
 		yCoord = yCoord - 30
 		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Have enough Insanity to cast Devouring Plague or Mind Sear", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overThreshold")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
 		controls.colors.text.overcapInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Cast will overcap Insanity", spec.colors.text.overcapInsanity, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.overcapInsanity
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "overcapInsanity")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcapInsanity")
 		end)
 
 		yCoord = yCoord - 30
@@ -2166,19 +2202,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
 		f = controls.colors.dots.up
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "up")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "up")
 		end)
 
 		controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
 		f = controls.colors.dots.pandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
 		end)
 
 		controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
 		f = controls.colors.dots.down
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text.dots, controls.colors.dots, "down")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "down")
 		end)
 
 
@@ -2208,21 +2244,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 													250, 25, oUi.xCoord2, yCoord+10)
 		f = controls.colors.text.hasteBelow
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "hasteBelow")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "hasteBelow")
 		end)
 
 		controls.colors.text.hasteApproaching = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Medium Haste% in Voidform", spec.colors.text.hasteApproaching,
 													250, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.text.hasteApproaching
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "hasteApproaching")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "hasteApproaching")
 		end)
 
 		controls.colors.text.hasteAbove = TRB.Functions.OptionsUi:BuildColorPicker(parent, "High Haste% in Voidform", spec.colors.text.hasteAbove,
 													250, 25, oUi.xCoord2, yCoord-70)
 		f = controls.colors.text.hasteAbove
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.text, controls.colors.text, "hasteAbove")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "hasteAbove")
 		end)
 
 		yCoord = yCoord - 60
