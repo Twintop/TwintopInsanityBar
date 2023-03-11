@@ -768,7 +768,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				isSnowflake = true
 			},
 			shadowyApparition = {
-				id = 78203,
+				id = 341491,
 				name = "",
 				icon = "",
 				isTalent = true
@@ -782,7 +782,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			auspiciousSpirits = {
 				id = 155271,
-				idSpawn = 147193,
+				idSpawn = 341263,
 				idImpact = 148859,
 				insanity = 1,
 				name = "",
@@ -3846,9 +3846,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							end
 						end
 					elseif settings.auspiciousSpiritsTracker and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.auspiciousSpirits) and spellId == TRB.Data.spells.auspiciousSpirits.idSpawn and type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
-						TRB.Functions.Class:InitializeTarget(destGUID)
-						TRB.Data.snapshotData.targetData.targets[destGUID].auspiciousSpirits = TRB.Data.snapshotData.targetData.targets[destGUID].auspiciousSpirits + 1
-						TRB.Data.snapshotData.targetData.auspiciousSpirits = TRB.Data.snapshotData.targetData.auspiciousSpirits + 1
+						for guid, _ in pairs(TRB.Data.snapshotData.targetData.targets) do
+							if TRB.Data.snapshotData.targetData.targets[guid].vampiricTouch then
+								TRB.Data.snapshotData.targetData.targets[guid].auspiciousSpirits = TRB.Data.snapshotData.targetData.targets[guid].auspiciousSpirits + 1
+							end
+							TRB.Data.snapshotData.targetData.auspiciousSpirits = TRB.Data.snapshotData.targetData.auspiciousSpirits + 1
+						end
 						triggerUpdate = true
 					elseif settings.auspiciousSpiritsTracker and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.auspiciousSpirits) and spellId == TRB.Data.spells.auspiciousSpirits.idImpact and (type == "SPELL_DAMAGE" or type == "SPELL_MISSED" or type == "SPELL_ABSORBED") then --Auspicious Spirit Hit
 						if TRB.Functions.Target:CheckTargetExists(destGUID) then
