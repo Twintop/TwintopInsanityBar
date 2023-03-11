@@ -438,7 +438,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					},
 					inVoidform="FF431863",
 					inVoidform1GCD="FFFF0000",
-					spending="FFFFFFFF",
 					casting="FFFFFFFF",
 					passive="FFDF00FF",
 					flashAlpha=0.70,

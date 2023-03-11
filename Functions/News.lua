@@ -6,6 +6,39 @@ local LMD = LibStub("LibMarkdown-1.0")
 local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
+# 10.1.0.0-beta01 (2023-03-11)
+## General
+
+- (#292 - UPDATE) Updates to the bar to make it usable. Not all modifications are complete / this is a work in progress!
+
+## Druid
+### Balance
+- (#292 - UPDATE) 10.1.0 changes:
+<br/>&emsp;&ensp;- Baseline Astral Power adjustments for Wrath, Starfire, and Stellar Flare.
+<br/>&emsp;&ensp;- Soul of the Forest only increases Wrath's incoming Astral Power by 50%. *Starfire support TBD.*
+<br/>&emsp;&ensp;- Nature's Balance passive Astral Power generation values updated. *Bar may not hide properly in all situations.*
+<br/>&emsp;&ensp;- Elune's Guidance Astral Power reduction to Starsurge and Starfall updated.
+
+### Feral
+
+- (#292 - UPDATE) 10.1.0 changes:
+<br/>&emsp;&ensp;- Relentless Predator's Energy modifier for Ferocious Bite updated to 80% (was 60%).
+
+## Priest
+### Shadow
+
+- (#292 - UPDATE) 10.1.0 changes:
+<br/>&emsp;&ensp;- Remove old spells/abilities: Dark Void, Mind Sear, Surge of Darkness, and Piercing Shadows.
+<br/>&emsp;&ensp;- Baseline Insanity adjustments for Void Torrent, Mind Flay: Insanity, Auspicious Spirits, and Void Tendril + Void Lasher.
+<br/>&emsp;&ensp;- Remove Mind Melt from granting an instant Mind Blast.
+<br/>&emsp;&ensp;- Remove "spending" bar color config.
+<br/>&emsp;&ensp;- Remove all references to Mind Sear.
+<br/>&emsp;&ensp;- Voidtouched support works automagically, allowing maximum Insanity to be 150.
+<br/>&emsp;&ensp;- Add Mind's Eye support, reducing Devouring Plague's cost from 50 -> 45.
+<br/>&emsp;&ensp;- Add Mind Spike: Insanity support.
+
+
+<br/>
 # 10.0.7.0-release (2023-03-21)
 ## Priest
 ### Shadow
