@@ -774,7 +774,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				isTalent = true,
-				energyModifier = 0.6
+				energyModifier = 0.8
 			},
 			circleOfLifeAndDeath = {
 				id = 391969,
