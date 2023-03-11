@@ -6,6 +6,12 @@ local LMD = LibStub("LibMarkdown-1.0")
 local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
+# 10.0.7.0-release (2023-03-21)
+## Priest
+### Shadow
+
+- (#273 - UPDATE) Auspicious Spirits once again generate Insanity on hit instead of on spawn.
+
 # 10.0.5.9-release (2023-03-11)
 ## General
 

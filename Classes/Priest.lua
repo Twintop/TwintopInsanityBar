@@ -2509,9 +2509,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				else
 					if currentSpellId == TRB.Data.spells.mindBlast.id then
 						TRB.Data.snapshotData.casting.startTime = currentTime
-						--TODO: Bug #273 - Auspicious Spirits grant Insanity on spawn not on hit
-						--TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindBlast.insanity
-						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindBlast.insanity + (TRB.Data.snapshotData.targetData.vampiricTouch * TRB.Data.spells.auspiciousSpirits.insanity)
+						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindBlast.insanity
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.mindBlast.id
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.mindBlast.icon
 					elseif currentSpellId == TRB.Data.spells.mindSpike.id then
@@ -3847,9 +3845,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								triggerUpdate = true
 							end
 						end
-					--TODO: Bug #273 - Auspicious Spirits grant Insanity on spawn not on hit
-					--[[elseif settings.auspiciousSpiritsTracker and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.auspiciousSpirits) and spellId == TRB.Data.spells.auspiciousSpirits.idSpawn and type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
-						InitializeTarget(destGUID)
+					elseif settings.auspiciousSpiritsTracker and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.auspiciousSpirits) and spellId == TRB.Data.spells.auspiciousSpirits.idSpawn and type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
+						TRB.Functions.Class:InitializeTarget(destGUID)
 						TRB.Data.snapshotData.targetData.targets[destGUID].auspiciousSpirits = TRB.Data.snapshotData.targetData.targets[destGUID].auspiciousSpirits + 1
 						TRB.Data.snapshotData.targetData.auspiciousSpirits = TRB.Data.snapshotData.targetData.auspiciousSpirits + 1
 						triggerUpdate = true
@@ -3858,7 +3855,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.targetData.targets[destGUID].auspiciousSpirits = TRB.Data.snapshotData.targetData.targets[destGUID].auspiciousSpirits - 1
 							TRB.Data.snapshotData.targetData.auspiciousSpirits = TRB.Data.snapshotData.targetData.auspiciousSpirits - 1
 						end
-						triggerUpdate = true]]
+						triggerUpdate = true
 					elseif type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.shadowCrash.id then
 						triggerUpdate = true
 					elseif spellId == TRB.Data.spells.mindDevourer.buffId then
