@@ -6,6 +6,19 @@ local LMD = LibStub("LibMarkdown-1.0")
 local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
+# 10.0.5.9-release (2023-03-11)
+## General
+
+- (#219 - UPDATE) Add detection support for the first boss of Mogu'shan Palace -- Kuai the Brute, Ming the Cunning, and Haiyan the Unstoppable @ 10% each.
+
+## Priest
+### Shadow
+
+- (#288 - UPDATE) Add an option to disable bar color change when Mind Blast can be instantly cast.
+- (FIX) Update Mind Flay: Insanity bar text icon detection.
+- (UPDATE) Do some minor rearranging of the options menu for bar colors. This layout change (or one like it) will be applied to other option screens and more configurations will be added soon (tm)!
+
+<br/>
 # 10.0.5.8-release (2023-03-05)
 ## General
 
