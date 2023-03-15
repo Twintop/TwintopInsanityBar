@@ -814,6 +814,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				isTalent = true,
 				insanity = -5
 			},
+			distortedReality = {
+				id = 409044,
+				name = "",
+				icon = "",
+				isTalent = true,
+				insanity = 25
+			},
 			mindFlayInsanity = {
 				id = 391403,
 				name = "",
@@ -3293,6 +3300,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										resourceAmount = resourceAmount - TRB.Data.spells.mindsEye.insanity
 									end
 
+									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.distortedReality) then
+										resourceAmount = resourceAmount - TRB.Data.spells.distortedReality.insanity
+									end
+
 									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 									
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
@@ -4016,7 +4027,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.mindsEye) then
 				TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + TRB.Data.spells.mindsEye.insanity
 			end
+			
+			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.distortedReality) then
+				TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + TRB.Data.spells.distortedReality.insanity
+			end
 
+			TRB.Frames.resourceFrame.thresholds[2]:Hide()
 			TRB.Frames.resourceFrame.thresholds[3]:Hide()
 			TRB.Frames.resourceFrame.thresholds[4]:Hide()
 			TRB.Frames.resourceFrame.thresholds[5]:Hide()
