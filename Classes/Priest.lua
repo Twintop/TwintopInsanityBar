@@ -616,7 +616,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				passive = 0,
 				auspiciousSpirits = 0,
 				shadowfiend = 0,
-				deathAndMadness = 0,
 				ecttv = 0
 			},
 			auspiciousSpirits = {
@@ -633,10 +632,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				gcds = 0,
 				swings = 0,
 				time = 0
-			},
-			deathAndMadness = {
-				insanity = 0,
-				ticks = 0
 			}
 		}
 
@@ -715,15 +710,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				insanity = 3,
 				isTalent = true,
 				baseline = true
-			},
-			deathAndMadness = {
-				id = 321973,
-				name = "",
-				icon = "",
-				insanity = 7.5,
-				ticks = 4,
-				duration = 4,
-				isTalent = true
 			},
 			massDispel = {
 				id = 32375,
@@ -966,13 +952,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			vampiricTouch = 0,
 			devouringPlague = 0,
 			targets = {}
-		}
-		specCache.shadow.snapshotData.deathAndMadness = {
-			isActive = false,
-			ticksRemaining = 0,
-			insanity = 0,
-			endTime = nil,
-			lastTick = nil
 		}
 		specCache.shadow.snapshotData.shadowfiend = {
 			isActive = false,
@@ -1245,9 +1224,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#idolOfCthun", icon = spells.idolOfCthun.icon, description = spells.idolOfCthun.name, printInSettings = false },
 			{ variable = "#loi", icon = spells.idolOfCthun.icon, description = spells.idolOfCthun.name, printInSettings = false },
 
-			{ variable = "#dam", icon = spells.deathAndMadness.icon, description = spells.deathAndMadness.name, printInSettings = true },
-			{ variable = "#deathAndMadness", icon = spells.deathAndMadness.icon, description = spells.deathAndMadness.name, printInSettings = false },
-
 			{ variable = "#dp", icon = spells.devouringPlague.icon, description = spells.devouringPlague.name, printInSettings = true },
 			{ variable = "#devouringPlague", icon = spells.devouringPlague.icon, description = spells.devouringPlague.name, printInSettings = false },
 
@@ -1347,9 +1323,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$overcap", description = "Will hardcast spell will overcap Insanity? Logic variable only!", printInSettings = false, color = false },
 			{ variable = "$resourceOvercap", description = "Will hardcast spell will overcap Insanity? Logic variable only!", printInSettings = false, color = false },
 			{ variable = "$insanityOvercap", description = "Will hardcast spell will overcap Insanity? Logic variable only!", printInSettings = false, color = false },
-
-			{ variable = "$damInsanity", description = "Insanity from Death and Madness", printInSettings = true, color = false },
-			{ variable = "$damTicks", description = "Number of ticks left on Death and Madness", printInSettings = true, color = false },
 
 			{ variable = "$mbInsanity", description = "Insanity from Mindbender/Shadowfiend (per settings)", printInSettings = true, color = false },
 			{ variable = "$mbGcds", description = "Number of GCDs left on Mindbender/Shadowfiend", printInSettings = true, color = false },
@@ -2051,14 +2024,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$asInsanity
 		local _asInsanity = CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits
 		local asInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_asInsanity, insanityPrecision, "floor"))
-		--$damInsanity
-		local _damInsanity = CalculateInsanityGain(TRB.Data.snapshotData.deathAndMadness.insanity)
-		local damInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_damInsanity, insanityPrecision, "floor"))
-		--$damStacks
-		local _damTicks = TRB.Data.snapshotData.deathAndMadness.ticksRemaining
-		local damTicks = string.format("%.0f", _damTicks)
 		--$passive
-		local _passiveInsanity = _asInsanity + TRB.Data.snapshotData.shadowfiend.resourceFinal + _damInsanity + TRB.Data.snapshotData.voidTendrils.resourceFinal
+		local _passiveInsanity = _asInsanity + TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.voidTendrils.resourceFinal
 		local passiveInsanity = string.format("|c%s%s|r", TRB.Data.settings.priest.shadow.colors.text.passiveInsanity, TRB.Functions.Number:RoundTo(_passiveInsanity, insanityPrecision, "floor"))
 		--$insanityTotal
 		local _insanityTotal = math.min(_passiveInsanity + TRB.Data.snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
@@ -2190,7 +2157,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		Global_TwintopResourceBar.resource.auspiciousSpirits = _asInsanity
 		Global_TwintopResourceBar.resource.shadowfiend = TRB.Data.snapshotData.shadowfiend.resourceFinal or 0
 		Global_TwintopResourceBar.resource.mindbender = TRB.Data.snapshotData.shadowfiend.resourceFinal or 0
-		Global_TwintopResourceBar.resource.deathAndMadness = _damInsanity
 		Global_TwintopResourceBar.resource.ecttv = TRB.Data.snapshotData.voidTendrils.resourceFinal or 0
 		Global_TwintopResourceBar.auspiciousSpirits = {
 			count = TRB.Data.snapshotData.targetData.auspiciousSpirits or 0,
@@ -2212,10 +2178,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			gcds = TRB.Data.snapshotData.shadowfiend.remaining.gcds or 0,
 			swings = TRB.Data.snapshotData.shadowfiend.remaining.swings or 0,
 			time = TRB.Data.snapshotData.shadowfiend.remaining.time or 0
-		}
-		Global_TwintopResourceBar.deathAndMadness = {
-			insanity = _damInsanity,
-			ticks = TRB.Data.snapshotData.deathAndMadness.ticksRemaining or 0
 		}
 		Global_TwintopResourceBar.eternalCallToTheVoid = {
 			insanity = TRB.Data.snapshotData.voidTendrils.resourceFinal or 0,
@@ -2258,8 +2220,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#mindMelt"] = TRB.Data.spells.mindMelt.icon
 		lookup["#md"] = TRB.Data.spells.massDispel.icon
 		lookup["#massDispel"] = TRB.Data.spells.massDispel.icon
-		lookup["#dam"] = TRB.Data.spells.deathAndMadness.icon
-		lookup["#deathAndMadness"] = TRB.Data.spells.deathAndMadness.icon
 		lookup["#cthun"] = TRB.Data.spells.idolOfCthun.icon
 		lookup["#idolOfCthun"] = TRB.Data.spells.idolOfCthun.icon
 		lookup["#loi"] = TRB.Data.spells.idolOfCthun.icon
@@ -2301,8 +2261,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$loiTicks"] = loiTicks
 		lookup["$cttvEquipped"] = ""
 		lookup["$ecttvCount"] = ecttvCount
-		lookup["$damInsanity"] = damInsanity
-		lookup["$damTicks"] = damTicks
 		lookup["$asCount"] = asCount
 		lookup["$asInsanity"] = asInsanity
 		TRB.Data.lookup = lookup
@@ -2346,8 +2304,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$loiTicks"] = _loiTicks
 		lookupLogic["$cttvEquipped"] = cttvEquipped
 		lookupLogic["$ecttvCount"] = _ecttvCount
-		lookupLogic["$damInsanity"] = _damInsanity
-		lookupLogic["$damTicks"] = _damTicks
 		lookupLogic["$asCount"] = _asCount
 		lookupLogic["$asInsanity"] = _asInsanity
 		TRB.Data.lookupLogic = lookupLogic
@@ -2700,21 +2656,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.snapshotData.voidTendrils.resourceFinal = CalculateInsanityGain(TRB.Data.snapshotData.voidTendrils.resourceRaw)
 	end
 
-	local function UpdateDeathAndMadness()
-		if TRB.Data.snapshotData.deathAndMadness.isActive then
-			local currentTime = GetTime()
-			if TRB.Data.snapshotData.deathAndMadness.endTime == nil or currentTime > TRB.Data.snapshotData.deathAndMadness.endTime then
-				TRB.Data.snapshotData.deathAndMadness.ticksRemaining = 0
-				TRB.Data.snapshotData.deathAndMadness.endTime = nil
-				TRB.Data.snapshotData.deathAndMadness.insanity = 0
-				TRB.Data.snapshotData.deathAndMadness.isActive = false
-			else
-				TRB.Data.snapshotData.deathAndMadness.ticksRemaining = math.ceil((TRB.Data.snapshotData.deathAndMadness.endTime - currentTime) / (TRB.Data.spells.deathAndMadness.duration / TRB.Data.spells.deathAndMadness.ticks))
-				TRB.Data.snapshotData.deathAndMadness.insanity = TRB.Data.snapshotData.deathAndMadness.ticksRemaining * TRB.Data.spells.deathAndMadness.insanity
-			end
-		end
-	end
-
 	local function UpdateChanneledManaPotion(forceCleanup)
 		if TRB.Data.snapshotData.channeledManaPotion.isActive or forceCleanup then
 			local currentTime = GetTime()
@@ -2912,7 +2853,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateSnapshot()
 		UpdateShadowfiendValues()
 		UpdateExternalCallToTheVoidValues()
-		UpdateDeathAndMadness()
 
 		local currentTime = GetTime()
 		local _
@@ -3315,9 +3255,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if specSettings.bar.showPassive and
 						(TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.auspiciousSpirits) or
 						TRB.Data.snapshotData.shadowfiend.resourceFinal > 0 or
-						TRB.Data.snapshotData.deathAndMadness.isActive or
 						TRB.Data.snapshotData.voidTendrils.resourceFinal > 0) then
-						passiveValue = ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.deathAndMadness.insanity + TRB.Data.snapshotData.voidTendrils.resourceFinal)
+						passiveValue = ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.voidTendrils.resourceFinal)
 						if TRB.Data.snapshotData.shadowfiend.resourceFinal > 0 and (castingBarValue + TRB.Data.snapshotData.shadowfiend.resourceFinal) < TRB.Data.character.maxResource then
 							TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (castingBarValue + TRB.Data.snapshotData.shadowfiend.resourceFinal), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
@@ -3712,29 +3651,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.darkAscension.spellId = nil
 							TRB.Data.snapshotData.darkAscension.duration = 0
 							TRB.Data.snapshotData.darkAscension.endTime = nil
-						end
-					elseif spellId == TRB.Data.spells.deathAndMadness.id then
-						if type == "SPELL_AURA_APPLIED" then -- Gain Death and Madness
-							TRB.Data.snapshotData.deathAndMadness.isActive = true
-							TRB.Data.snapshotData.deathAndMadness.ticksRemaining = TRB.Data.spells.deathAndMadness.ticks
-							TRB.Data.snapshotData.deathAndMadness.insanity = TRB.Data.snapshotData.deathAndMadness.ticksRemaining * TRB.Data.spells.deathAndMadness.insanity
-							TRB.Data.snapshotData.deathAndMadness.endTime = currentTime + TRB.Data.spells.deathAndMadness.duration
-							TRB.Data.snapshotData.deathAndMadness.lastTick = currentTime
-						elseif type == "SPELL_AURA_REFRESH" then
-							TRB.Data.snapshotData.deathAndMadness.ticksRemaining = TRB.Data.spells.deathAndMadness.ticks + 1
-							TRB.Data.snapshotData.deathAndMadness.insanity = TRB.Data.snapshotData.deathAndMadness.ticksRemaining * TRB.Data.spells.deathAndMadness.insanity
-							TRB.Data.snapshotData.deathAndMadness.endTime = currentTime + TRB.Data.spells.deathAndMadness.duration + ((TRB.Data.spells.deathAndMadness.duration / TRB.Data.spells.deathAndMadness.ticks) - (currentTime - TRB.Data.snapshotData.deathAndMadness.lastTick))
-							TRB.Data.snapshotData.deathAndMadness.lastTick = currentTime
-						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshotData.deathAndMadness.isActive = false
-							TRB.Data.snapshotData.deathAndMadness.ticksRemaining = 0
-							TRB.Data.snapshotData.deathAndMadness.insanity = 0
-							TRB.Data.snapshotData.deathAndMadness.endTime = nil
-							TRB.Data.snapshotData.deathAndMadness.lastTick = nil
-						elseif type == "SPELL_PERIODIC_ENERGIZE" then
-							TRB.Data.snapshotData.deathAndMadness.ticksRemaining = TRB.Data.snapshotData.deathAndMadness.ticksRemaining - 1
-							TRB.Data.snapshotData.deathAndMadness.insanity = TRB.Data.snapshotData.deathAndMadness.ticksRemaining * TRB.Data.spells.deathAndMadness.insanity
-							TRB.Data.snapshotData.deathAndMadness.lastTick = currentTime
 						end
 					elseif spellId == TRB.Data.spells.vampiricTouch.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
@@ -4384,7 +4300,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			elseif var == "$resourceTotal" or var == "$insanityTotal" then
 				if TRB.Data.snapshotData.resource > 0 or
 					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw > 0) or
-					(((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal + CalculateInsanityGain(TRB.Data.snapshotData.deathAndMadness.insanity)) > 0) then
+					(((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal) > 0) then
 					valid = true
 				end
 			elseif var == "$resourcePlusCasting" or var == "$insanityPlusCasting" then
@@ -4398,7 +4314,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif var == "$resourcePlusPassive" or var == "$insanityPlusPassive" then
 				if TRB.Data.snapshotData.resource > 0 or
-					((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal + CalculateInsanityGain(TRB.Data.snapshotData.deathAndMadness.insanity)) > 0 then
+					((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal) > 0 then
 					valid = true
 				end
 			elseif var == "$casting" then
@@ -4406,7 +4322,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$passive" then
-				if ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal + CalculateInsanityGain(TRB.Data.snapshotData.deathAndMadness.insanity)) > 0 then
+				if ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal) > 0 then
 					valid = true
 				end
 			elseif var == "$mbInsanity" then
@@ -4439,14 +4355,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif var == "$ecttvCount" then
 				if TRB.Data.settings.priest.shadow.voidTendrilTracker and TRB.Data.snapshotData.voidTendrils.numberActive > 0 then
-					valid = true
-				end
-			elseif var == "$damInsanity" then
-				if TRB.Data.snapshotData.deathAndMadness.insanity > 0 then
-					valid = true
-				end
-			elseif var == "$damTicks" then
-				if TRB.Data.snapshotData.deathAndMadness.ticksRemaining > 0 then
 					valid = true
 				end
 			elseif var == "$asCount" then

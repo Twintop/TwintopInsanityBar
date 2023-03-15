@@ -6,6 +6,8 @@ local LMD = LibStub("LibMarkdown-1.0")
 local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
+# 10.1.0.0-beta02 (2023-03-16)
+
 # 10.1.0.0-beta01 (2023-03-11)
 ## General
 
