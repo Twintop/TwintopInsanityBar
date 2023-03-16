@@ -332,6 +332,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				ticks = 16,
 				tickRate = 0.5,
 				isTalent = true
+			},
+			touchTheCosmos = { -- T29 4P
+				id = 394414,
+				name = "",
+				icon = "",
 			}
 		}
 		
@@ -411,6 +416,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		}
 		specCache.balance.snapshotData.primordialArcanicPulsar = {
 			currentAstralPower = 0
+		}
+		specCache.balance.snapshotData.touchTheCosmos = {
+			spellId = nil,
+			endTime = nil,
+			duration = 0
 		}
 
 		-- Feral
@@ -3709,7 +3719,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								if spell.settingKey == TRB.Data.spells.starsurge.settingKey then
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
-									elseif TRB.Data.spells.starweaversWeft.isActive then
+									elseif TRB.Data.spells.starweaversWeft.isActive or TRB.Data.spells.touchTheCosmos.isActive then
 										thresholdColor = specSettings.colors.threshold.over
 									elseif currentResource >= TRB.Data.character.starsurgeThreshold then
 										thresholdColor = specSettings.colors.threshold.over
@@ -3764,7 +3774,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								elseif spell.id == TRB.Data.spells.starfall.id then
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
-									elseif currentResource >= TRB.Data.character.starfallThreshold then
+									elseif currentResource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.touchTheCosmos.isActive then
 										if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > (TRB.Data.character.pandemicModifier * TRB.Data.spells.starfall.pandemicTime) then
 											thresholdColor = specSettings.colors.threshold.starfallPandemic
 										else
@@ -4562,7 +4572,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 ---@diagnostic disable-next-line: redundant-parameter
 							TRB.Data.spells.newMoon.currentIcon = select(3, GetSpellInfo(202767)) -- Use the old Legion artiface spell ID since New Moon's icon returns incorrect for several seconds after casting Full Moon
 						end
-					else
+					elseif spellId == TRB.Data.spells.touchTheCosmos.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.touchTheCosmos.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.touchTheCosmos.duration, TRB.Data.snapshotData.touchTheCosmos.endTime, _, _, _, TRB.Data.snapshotData.touchTheCosmos.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.touchTheCosmos.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.touchTheCosmos.isActive = false
+							TRB.Data.snapshotData.touchTheCosmos.spellId = nil
+							TRB.Data.snapshotData.touchTheCosmos.duration = 0
+							TRB.Data.snapshotData.touchTheCosmos.endTime = nil
+						end
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "feral" then
 					if spellId == TRB.Data.spells.rip.id then
