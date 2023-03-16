@@ -64,7 +64,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "#deepWounds $deepWoundsCount   $haste% ($gcd)||n{$rend}[#rend $rendCount   ][		  ]{$ttd}[TTD: $ttd][ ]",
+				text = "#deepWounds $deepWoundsCount   $haste% ($gcd)||n{$rend}[#rend $rendCount   ][          ]{$ttd}[TTD: $ttd][ ]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
