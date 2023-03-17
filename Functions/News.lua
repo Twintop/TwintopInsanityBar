@@ -13,6 +13,7 @@ local content = [====[
 ## Druid
 ### Balance
 - (#294 - NEW) Add support for Touch of Cosmos (T29 4P bonus). Starfall and Starsurge will now show as usable when first entering Eclispe, regardless of Astral Power.
+- (FIX) Fix Elune's Guidance modifying the threshold for Starsurge and Starfall.
 
 ## Priest
 ### Shadow

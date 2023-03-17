@@ -3728,6 +3728,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 
+									if TRB.Data.spells.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
+										resourceAmount = resourceAmount - TRB.Data.spells.elunesGuidance.modifierStarsurge 
+										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									end
+
 									if showThreshold then
 										if TRB.Data.spells.starweaversWeft.isActive and specSettings.audio.starweaversReady.enabled and TRB.Data.snapshotData.audio.playedstarweaverCue == false then
 											TRB.Data.snapshotData.audio.playedstarweaverCue = true
@@ -3744,6 +3749,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										TRB.Data.snapshotData.audio.playedstarweaverCue = false
 									end
 								elseif spell.settingKey == TRB.Data.spells.starsurge2.settingKey then
+									if TRB.Data.spells.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
+										resourceAmount = resourceAmount - (TRB.Data.spells.elunesGuidance.modifierStarsurge * 2)
+										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									end
+
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									elseif (TRB.Data.character.starsurgeThreshold * 2) >= TRB.Data.character.maxResource then
@@ -3758,6 +3768,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.settingKey == TRB.Data.spells.starsurge3.settingKey then
+									if TRB.Data.spells.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
+										resourceAmount = resourceAmount - (TRB.Data.spells.elunesGuidance.modifierStarsurge * 3)
+										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									end
+
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									elseif (TRB.Data.character.starsurgeThreshold * 3) >= TRB.Data.character.maxResource then
@@ -3772,6 +3787,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.starfall.id then
+									if TRB.Data.spells.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
+										resourceAmount = resourceAmount - TRB.Data.spells.elunesGuidance.modifierStarfall
+										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									end
+
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									elseif currentResource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.touchTheCosmos.isActive then
