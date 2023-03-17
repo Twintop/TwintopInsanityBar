@@ -277,7 +277,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			},
 			-- TODO: Add Wild Mushroom + associated tracking
 			incarnationChosenOfElune = {
-				id = 394013,
+				id = 102560,
+				talentId = 394013,
 				name = "",
 				icon = "",
 				isActive = false,
@@ -3732,6 +3733,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										resourceAmount = resourceAmount - TRB.Data.spells.elunesGuidance.modifierStarsurge 
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 									end
+									print(TRB.Data.spells.incarnationChosenOfElune.isActive, TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance), resourceAmount)
 
 									if showThreshold then
 										if TRB.Data.spells.starweaversWeft.isActive and specSettings.audio.starweaversReady.enabled and TRB.Data.snapshotData.audio.playedstarweaverCue == false then
