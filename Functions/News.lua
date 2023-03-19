@@ -6,12 +6,21 @@ local LMD = LibStub("LibMarkdown-1.0")
 local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
-# 10.0.7.0-release (2023-03-21)
+# 10.0.7.0-release (2023-03-22)
+## General
+- (FIX) Correct a number of default advanced bar text that would render improperly.
+
+## Druid
+### Balance
+- (#294 - NEW) Add support for Touch of Cosmos (T29 4P bonus). Starfall and Starsurge will now show as usable when first entering Eclispe, regardless of Astral Power.
+- (FIX) Fix Elune's Guidance modifying the threshold for Starsurge and Starfall.
+
 ## Priest
 ### Shadow
 
-- (#273 - UPDATE) Auspicious Spirits once again generate Insanity on hit instead of on spawn.
+- (#273 - UPDATE) Auspicious Spirits once again generate Insanity on hit instead of on spawn. Support for the passive Insanity generation has been re-enabled.
 
+<br/>
 # 10.0.5.9-release (2023-03-11)
 ## General
 

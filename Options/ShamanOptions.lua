@@ -63,7 +63,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "#flameShock $fsCount	$haste% ($gcd)||n{$ifStacks}[#frostShock $ifStacks][	   ]	{$ttd}[TTD: $ttd]",
+				text = "#flameShock $fsCount    $haste% ($gcd)||n{$ifStacks}[#frostShock $ifStacks][       ]    {$ttd}[TTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13

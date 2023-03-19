@@ -66,7 +66,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "#sunfire $sunfireCount	{$talentStellarFlare}[#stellarFlare $stellarFlareCount	]$haste% ($gcd)||n#moonfire $moonfireCount	 {$talentStellarFlare}[		  ]{$ttd}[TTD: $ttd]",
+				text = "#sunfire $sunfireCount    {$talentStellarFlare}[#stellarFlare $stellarFlareCount    ]$haste% ($gcd)||n#moonfire $moonfireCount     {$talentStellarFlare}[          ]{$ttd}[TTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -272,7 +272,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "#rake $rakeCount	#thrash $thrashCount||n#rip $ripCount	{$lunarInspiration}[#moonfire $moonfireCount]",
+				text = "#rake $rakeCount    #thrash $thrashCount||n#rip $ripCount    {$lunarInspiration}[#moonfire $moonfireCount]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
