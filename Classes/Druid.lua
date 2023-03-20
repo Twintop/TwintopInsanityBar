@@ -3738,16 +3738,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.settingKey == TRB.Data.spells.starsurge.settingKey then
 									local redrawThreshold = false
-									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
-										showThreshold = false
-									elseif TRB.Data.spells.starweaversWeft.isActive or TRB.Data.spells.touchTheCosmos.isActive then
-										thresholdColor = specSettings.colors.threshold.over
-									elseif currentResource >= TRB.Data.character.starsurgeThreshold then
-										thresholdColor = specSettings.colors.threshold.over
-									else
-										thresholdColor = specSettings.colors.threshold.under
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end
 
 									if TRB.Data.spells.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
 										resourceAmount = resourceAmount - TRB.Data.spells.elunesGuidance.modifierStarsurge
@@ -3759,8 +3749,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										redrawThreshold = true
 									end
 
-									if redrawThreshold then										
+									if redrawThreshold then
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									end
+									
+									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+										showThreshold = false
+									elseif TRB.Data.spells.starweaversWeft.isActive then
+										thresholdColor = specSettings.colors.threshold.over
+									elseif currentResource >= TRB.Data.character.starsurgeThreshold then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 									
 									if showThreshold then
@@ -3854,7 +3855,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
-									elseif currentResource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.touchTheCosmos.isActive then
+									elseif currentResource >= TRB.Data.character.starfallThreshold then
 										if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > (TRB.Data.character.pandemicModifier * TRB.Data.spells.starfall.pandemicTime) then
 											thresholdColor = specSettings.colors.threshold.starfallPandemic
 										else
