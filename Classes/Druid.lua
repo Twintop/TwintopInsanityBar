@@ -348,6 +348,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 394414,
 				name = "",
 				icon = "",
+				astralPowerMod = -5
 			}
 		}
 		
@@ -3736,6 +3737,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.settingKey == TRB.Data.spells.starsurge.settingKey then
+									local redrawThreshold = false
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									elseif TRB.Data.spells.starweaversWeft.isActive or TRB.Data.spells.touchTheCosmos.isActive then
@@ -3748,7 +3750,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									end
 
 									if TRB.Data.spells.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
-										resourceAmount = resourceAmount - TRB.Data.spells.elunesGuidance.modifierStarsurge 
+										resourceAmount = resourceAmount - TRB.Data.spells.elunesGuidance.modifierStarsurge
+										redrawThreshold = true
+									end
+
+									if TRB.Data.spells.touchTheCosmos.isActive then
+										resourceAmount = resourceAmount - TRB.Data.spells.touchTheCosmos.astralPowerMod
+										redrawThreshold = true
+									end
+
+									if redrawThreshold then										
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 									end
 									
@@ -3768,8 +3779,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										TRB.Data.snapshotData.audio.playedstarweaverCue = false
 									end
 								elseif spell.settingKey == TRB.Data.spells.starsurge2.settingKey then
+									local redrawThreshold = false
 									if TRB.Data.spells.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
 										resourceAmount = resourceAmount - (TRB.Data.spells.elunesGuidance.modifierStarsurge * 2)
+										redrawThreshold = true
+									end
+
+									if TRB.Data.spells.touchTheCosmos.isActive then
+										resourceAmount = resourceAmount - TRB.Data.spells.touchTheCosmos.astralPowerMod
+										redrawThreshold = true
+									end
+
+									if redrawThreshold then										
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 									end
 
@@ -3787,8 +3808,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.settingKey == TRB.Data.spells.starsurge3.settingKey then
+									local redrawThreshold = false
 									if TRB.Data.spells.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
 										resourceAmount = resourceAmount - (TRB.Data.spells.elunesGuidance.modifierStarsurge * 3)
+										redrawThreshold = true
+									end
+
+									if TRB.Data.spells.touchTheCosmos.isActive then
+										resourceAmount = resourceAmount - TRB.Data.spells.touchTheCosmos.astralPowerMod
+										redrawThreshold = true
+									end
+
+									if redrawThreshold then										
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 									end
 
@@ -3806,8 +3837,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.starfall.id then
+									local redrawThreshold = false
 									if TRB.Data.spells.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
 										resourceAmount = resourceAmount - TRB.Data.spells.elunesGuidance.modifierStarfall
+										redrawThreshold = true
+									end
+
+									if TRB.Data.spells.touchTheCosmos.isActive then
+										resourceAmount = resourceAmount - TRB.Data.spells.touchTheCosmos.astralPowerMod
+										redrawThreshold = true
+									end
+
+									if redrawThreshold then										
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 									end
 
