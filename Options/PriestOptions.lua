@@ -55,7 +55,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text = "{$hwSanctifyTime}[#hwSanctify $hwSanctifyTime][		  ]	{$potionCooldown}[#potionOfFrozenFocus $potionCooldown]||n{$hwSerenityTime}[#hwSerenity $hwSerenityTime] ",
+				text = "{$hwSanctifyTime}[#hwSanctify $hwSanctifyTime][          ]    {$potionCooldown}[#potionOfFrozenFocus $potionCooldown]||n{$hwSerenityTime}[#hwSerenity $hwSerenityTime] ",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13
@@ -296,7 +296,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			fontSizeLock = false,
 			fontFaceLock = true,
 			left = {
-				text="#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount][	   ]   {$ttd}[TTD: $ttd]",
+				text="#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount][       ]   {$ttd}[TTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 13

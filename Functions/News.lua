@@ -39,14 +39,19 @@ local content = [====[
 <br/>&emsp;&ensp;- Add Mind's Eye support, reducing Devouring Plague's cost from 50 -> 45.
 <br/>&emsp;&ensp;- Add Mind Spike: Insanity support.
 
-
-<br/>
 # 10.0.7.0-release (2023-03-21)
+## General
+- (FIX) Correct a number of default advanced bar text that would render improperly.
+
+## Druid
+### Balance
+- (#294 - NEW) Add support for Touch of Cosmos (T29 4P bonus). Starfall and Starsurge will now show as usable when first entering Eclispe, regardless of Astral Power.
+- (FIX) Fix Elune's Guidance modifying the threshold for Starsurge and Starfall.
+
 ## Priest
 ### Shadow
-
-- (#273 - UPDATE) Auspicious Spirits once again generate Insanity on hit instead of on spawn.
-
+TODO: AS
+<br/>
 # 10.0.5.9-release (2023-03-11)
 ## General
 
