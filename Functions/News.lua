@@ -6,8 +6,19 @@ local LMD = LibStub("LibMarkdown-1.0")
 local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
-# 10.1.0.0-beta02 (2023-03-16)
+----
+# 10.1.0.0-beta02 (2023-03-22)
+## Druid
+### Balance
+- (#294 - UPDATE) Adjust how Touch of Cosmos (T29 4P bonus) is implemented to match changes on PTR.diagnostic
 
+## Priest
+### Shadow
+- (#292 - UPDATE) 10.1.0 changes:
+<br/>&emsp;&ensp;- Remove old Death and Madness logic.
+<br/>&emsp;&ensp;- Add Distorted Reality support.
+
+----
 # 10.1.0.0-beta01 (2023-03-11)
 ## General
 
@@ -39,7 +50,8 @@ local content = [====[
 <br/>&emsp;&ensp;- Add Mind's Eye support, reducing Devouring Plague's cost from 50 -> 45.
 <br/>&emsp;&ensp;- Add Mind Spike: Insanity support.
 
-# 10.0.7.0-release (2023-03-21)
+----
+# 10.0.7.0-release (2023-03-22)
 ## General
 - (FIX) Correct a number of default advanced bar text that would render improperly.
 
@@ -50,8 +62,10 @@ local content = [====[
 
 ## Priest
 ### Shadow
-TODO: AS
-<br/>
+
+- (#273 - UPDATE) Auspicious Spirits once again generate Insanity on hit instead of on spawn. Support for the passive Insanity generation has been re-enabled.
+
+----
 # 10.0.5.9-release (2023-03-11)
 ## General
 
@@ -64,7 +78,7 @@ TODO: AS
 - (FIX) Update Mind Flay: Insanity bar text icon detection.
 - (UPDATE) Do some minor rearranging of the options menu for bar colors. This layout change (or one like it) will be applied to other option screens and more configurations will be added soon (tm)!
 
-<br/>
+----
 # 10.0.5.8-release (2023-03-05)
 ## General
 
@@ -88,7 +102,7 @@ TODO: AS
 <br/>&emsp;&ensp;- New bar text variables: `$mmTime`, `$mmStacks`, `$siTime`, `$mindBlastCharges`, `$mindBlastMaxCharges`
 <br/>&emsp;&ensp;- New bar text icons: `#mm`/`#mindMelt`, `#si`/`#shadowyInsight`
 
-<br/>
+----
 # 10.0.5.7-release (2023-02-28)
 ## General
 
@@ -112,7 +126,7 @@ TODO: AS
 
 - (#290 - HOTFIX) Frost Shocks that are buffed by Icefury now generate 14 Maelstrom.
 
-<br/>
+----
 # 10.0.5.6-release (2023-02-24)
 ## General
 
@@ -147,7 +161,7 @@ TODO: AS
 
 - (#289 - FIX) Prevent LUA errors from sometimes triggering when Deep Wounds is applied.
 
-<br/>
+----
 # 10.0.5.5-release (2023-02-21)
 ## General
 
@@ -160,14 +174,14 @@ TODO: AS
 - This feature is EXPERIMENTAL and is not enabled by default. To enable Enhancement Shaman support, go to the main "General" options menu for Twintop's Resource Bar and check "Enhancement Shaman support" under the "Experimental Features" section then reload your UI!<br/>
 - (#283 - EXPERIMENTAL) Minimalist implementation for Enhancement Shaman, tracking Maelstrom Weapon stacks and Mana (to a much lesser extent). Presently displays Maelstrom Weapon in a similar fashion as Combo Points or Chi, tracks Ascendance (with mana bar color changing), and Flame Shock target count/duration.
 
-<br/>
+----
 # 10.0.5.4-release (2023-02-02)
 ## Evoker
 ### Preservation
 
 - (FIX) Remove spammy debug prints from chat window.
 
-<br/>
+----
 # 10.0.5.3-release (2023-02-01)
 ## General
 
@@ -177,7 +191,7 @@ TODO: AS
 
 - (FIX) Fix LUA errors related to options menus.
 
-<br/>
+----
 # 10.0.5.2-release (2023-02-01)
 ## General
 
@@ -206,7 +220,7 @@ TODO: AS
 
 - (FIX) Prevent a LUA error when switching to Elemental from another specialization.
 
-<br/>
+----
 # 10.0.5.1-release (2023-01-28)
 ## General
 ### DPS
@@ -238,7 +252,7 @@ TODO: AS
 - (#249 - NEW) Add support for multiple Kill Command charges via Alpha Predator.<br/>
 - (#249 - NEW) Add support for the PvP talent Sniper Shot. This has an additional threshold line which will only show up when actively engaged in PvP, warmode is on, or in an arena or battleground.
 
-<br/>
+----
 # 10.0.5.0-release (2023-01-25)
 ## General
 
@@ -289,7 +303,7 @@ TODO: AS
 
 - (#264 - UPDATE) Storm of Steel now increases Ravager's Rage generation by 20.
 
-<br/>
+----
 # 10.0.2.7-release (2023-01-17)
 ## Demon Hunter
 ### Havoc
@@ -335,7 +349,7 @@ TODO: AS
 - (#258 - NEW) Support Storm of Steel increasing Ravager's Rage generation.<br/>
 - (#258 - UPDATE) Improve Execute implementation by supporting Sudden Death and Improved Execute; re-add threshold lines.
 
-<br/>
+----
 # 10.0.2.6-release (2023-01-11)
 ## General
 
@@ -357,7 +371,7 @@ TODO: AS
 
 - (#251 - NEW) Add Soothing Mist mana cost per tick.
 
-<br/>
+----
 # 10.0.2.5-release (2023-01-08)
 ## General
 
@@ -406,14 +420,14 @@ TODO: AS
 
 - (#265 - NEW) Add support for Conjured Chillglobe via threshold line and configuration option.
 
-<br/>
+----
 # 10.0.2.4-release (2022-12-14)
 ## Priest
 ### Holy
 
 - (#242 - FIX) Fix logic errors with new bar text variables.
 
-<br/>
+----
 # 10.0.2.3-release (2022-12-14)
 ## Priest
 ### Holy
@@ -421,7 +435,7 @@ TODO: AS
 - (#242 - NEW) Add Lightweaver support. This includes bar text variables for stacks and time remaining, border color change when you have any stacks, and an audio cue for when you go from 0 -> 1 stacks.<br/>
 - (#242 - UPDATE) Change the priority ordering of bar border color changes for procs to be: Lightweaver < Resonant Words < Surge of Light (1 Stack) < Surge of Light (2 Stacks) < Innervate.
 
-<br/>
+----
 # 10.0.2.2-release (2022-12-14)
 ## General
 
@@ -464,14 +478,14 @@ TODO: AS
 - (#263 - UPDATE) Update mana potions for Dragonflight.<br/>
 - (#256 - UPDATE) Separate logic between border color changes and audio cues when gaining Innervate.
 
-<br/>
+----
 # 10.0.2.1-release (2022/12/01)
 ## Priest
 ### Shadow
 
 - (#241 - FIX) Fix Voidform time remaining to be more accurate and includ extentions due to spent Insanity.
 
-<br/>
+----
 # 10.0.2.0-release (2022/11/28)
 ## General
 
@@ -492,13 +506,13 @@ TODO: AS
 
 - (#261 - FIX) Correct Gouge thresholdline logic to stop crashing when talented.
 
-<br/>
+----
 # 10.0.0.15-release (2022/11/18)
 ## Druid
 
 - (FIX) Remove old options that caused crashes for new bar users.
 
-<br/>
+----
 # 10.0.0.14-release (2022/11/11)
 ## Rogue
 ### Assassanation
@@ -511,14 +525,14 @@ TODO: AS
 - (#260 - FIX) Remove debug prints of current combo points.<br/>
 - (#254 - FIX) Fix LUA errors when switching specs with poisons applied.
 
-<br/>
+----
 # 10.0.0.13-release (2022/11/11)
 ## Druid
 ### Balance
 
 - (#245 - UPDATE) Change Wrath's Astral Power generation to 8 to match hotfixes.
 
-<br/>
+----
 # 10.0.0.12-release (2022/11/08)
 ## Druid
 ### Balance
@@ -567,13 +581,13 @@ TODO: AS
 
 - (#255 - FIX) Fix LUA errors when switching specs.
 
-<br/>
+----
 # 10.0.0.11-release (2022/10/27)
 ## General
 
 - (FIX) Prevent LUA errors causing bar initialization crashing due to invalid texture layers.
 
-<br/>
+----
 # 10.0.0.10-release (2022/10/26)
 
 ## General
