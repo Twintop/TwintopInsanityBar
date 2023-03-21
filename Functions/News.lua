@@ -666,7 +666,6 @@ function TRB.Functions.News:BuildNewsPopup()
 
     simpleHtml:SetText(LMD:ToHTML(content))
     -- ... and this is the popup it opens.
-    --
     StaticPopupDialogs["LIBMARKDOWNDEMOFRAME_URL"] = 
     { OnShow = 
         function(self, data)
