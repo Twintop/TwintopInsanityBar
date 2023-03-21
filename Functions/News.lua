@@ -7,10 +7,11 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 ----
+
 # 10.1.0.0-beta02 (2023-03-22)
 ## Druid
 ### Balance
-- (#294 - UPDATE) Adjust how Touch of Cosmos (T29 4P bonus) is implemented to match changes on PTR.diagnostic
+- (#294 - UPDATE) Adjust how Touch of Cosmos (T29 4P bonus) is implemented to match changes on PTR.
 
 ## Priest
 ### Shadow
