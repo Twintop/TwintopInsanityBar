@@ -8,6 +8,15 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.1.0.0-beta03 (2023-03-23)
+
+## Priest
+### Shadow
+- (#292 - UPDATE) 10.1.0 changes:
+<br/>&emsp;&ensp;- Baseline Insanity adjustments for Mind Spike: Insanity, Void Bolt, Shadowfiend (swing), Mindbender (swing).
+<br/>&emsp;&ensp;- Update Distorted Reality increasing Insanity cost of Devouring Plague.
+
+----
 # 10.1.0.0-beta02 (2023-03-22)
 ## Druid
 ### Balance

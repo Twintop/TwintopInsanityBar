@@ -695,7 +695,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 205448,
 				name = "",
 				icon = "",
-				insanity = 12,
+				insanity = 10,
 				isTalent = false,
 				baseline = true
 			},
@@ -707,7 +707,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				energizeId = 279420,
 				name = "",
 				icon = "",
-				insanity = 3,
+				insanity = 2,
 				isTalent = true,
 				baseline = true
 			},
@@ -819,7 +819,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				isTalent = true,
-				insanity = 25
+				insanity = 10
 			},
 			mindFlayInsanity = {
 				id = 391403,
@@ -834,7 +834,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				buffId = 407468,
-				insanity = 8,
+				insanity = 6,
 				isTalent = true
 			},
 			voidTorrent = {
@@ -878,7 +878,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				energizeId = 200010,
 				name = "",
 				icon = "",
-				insanity = 3,
+				insanity = 2,
 				isTalent = true
 			},
 			devouredDespair = { -- Idol of Y'Shaarj proc
