@@ -8,6 +8,15 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.1.0.0-beta04 (2023-03-25)
+
+## Priest
+### Shadow
+- (#292 - UPDATE) 10.1.0 changes:
+<br/>&emsp;&ensp;- Mind Flay: Insanity / Mind Spike: Insanity buff duration refreshes on stacks now.
+<br/>&emsp;&ensp;- Add support for T30 4P via tracking multiple active Shadowfiends/Mindbenders.
+
+----
 # 10.1.0.0-beta03 (2023-03-23)
 
 ## Priest
