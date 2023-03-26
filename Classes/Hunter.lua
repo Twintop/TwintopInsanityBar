@@ -2674,8 +2674,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 					local barColor = specSettings.colors.bar.base
 
-					local latency = TRB.Functions.Character:GetLatency()
-
 					local barbedShotRechargeRemaining = -(currentTime - (TRB.Data.snapshotData.barbedShot.startTime + TRB.Data.snapshotData.barbedShot.duration))
 					local barbedShotTotalRechargeRemaining = barbedShotRechargeRemaining + ((1 - TRB.Data.snapshotData.barbedShot.charges) * TRB.Data.snapshotData.barbedShot.duration)
 					local barbedShotPartialCharges = TRB.Data.snapshotData.barbedShot.charges + (barbedShotRechargeRemaining / TRB.Data.snapshotData.barbedShot.duration)
