@@ -10,7 +10,12 @@ local content = [====[
 _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https://www.curseforge.com/wow/addons/twintops-insanity-bar/files), [Wago](https://addons.wago.io/addons/twintopresourcebar/versions?stability=beta), or via WowUp's beta channel!_
 
 ----
+# 10.0.7.1-release (2023-03-26)
+## Demon Hunter
+### Havoc
+- (#296 - FIX) Restore access to Havoc's options menu.
 
+----
 # 10.0.7.0-release (2023-03-22)
 ## General
 - (FIX) Correct a number of default advanced bar text that would render improperly.
