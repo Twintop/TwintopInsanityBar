@@ -866,7 +866,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 	end
 
-	local function HavocConstructOptionsPanel(cache)				
+	local function HavocConstructOptionsPanel(cache)
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local parent = interfaceSettingsFrame.panel
 		local controls = interfaceSettingsFrame.controls.havoc or {}
@@ -883,7 +883,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		interfaceSettingsFrame.havocDisplayPanel.name = "Havoc Demon Hunter"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.havocDisplayPanel.parent = parent.name
-		local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.havocDisplayPanel, "Havoc Demon Hunter")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.havocDisplayPanel, "Havoc Demon Hunter")
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.havocDisplayPanel)
 		
 		parent = interfaceSettingsFrame.havocDisplayPanel
 
