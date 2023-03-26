@@ -499,7 +499,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				baseline = true
 			},
 			thrash = {
-				id = 106830,
+				id = 405233,
+				talentId = 106830,
 				name = "",
 				icon = "",
 				energy = -40,
@@ -799,6 +800,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 391882,
 				name = "",
 				icon = ""
+			},
+			
+			-- T30 4P
+			predatorRevealed = {
+				id = 408468,
+				name = "",
+				icon = "",
+				tickRate = 1.5
 			}
 		}
 
@@ -881,6 +890,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			endTimeLeeway = nil
 		}
 		specCache.feral.snapshotData.apexPredatorsCraving = {
+			spellId = nil,
+			endTime = nil,
+			duration = 0
+		}
+		specCache.feral.snapshotData.predatorRevealed = {
 			spellId = nil,
 			endTime = nil,
 			duration = 0
@@ -1951,6 +1965,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	
 	local function GetApexPredatorsCravingRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.apexPredatorsCraving)
+	end
+	
+	local function GetPredatorRevealedRemainingTime()
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.predatorRevealed)
 	end
 
 	local function GetEclipseRemainingTime()
@@ -4205,6 +4223,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 					
+					local latency = 0--TRB.Functions.Character:GetLatency()
+
+					local prTime = GetPredatorRevealedRemainingTime()
+					local prTotalCps = TRB.Functions.Number:RoundTo(prTime / TRB.Data.spells.predatorRevealed.tickRate, 0, "ceil")
+					local prNextTime = TRB.Data.spells.predatorRevealed.tickRate - (prTime - ((prTotalCps - 1) * TRB.Data.spells.predatorRevealed.tickRate))
+					local nextCp = nil
+
 					for x = 1, TRB.Data.character.maxResource2 do
 						local cpBorderColor = specSettings.colors.comboPoints.border
 						local cpColor = specSettings.colors.comboPoints.base
@@ -4220,12 +4245,26 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								cpColor = specSettings.colors.comboPoints.final
 							end
 						else
-							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+							if prTime > 0 and x <= (TRB.Data.snapshotData.resource2 + prTotalCps) and prNextTime > latency then
+								if x == TRB.Data.snapshotData.resource2 + 1 then
+									TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, prNextTime * 1000, TRB.Data.spells.predatorRevealed.tickRate * 1000)
+									nextCp = x
+								else
+									TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+								end
+							else
+								TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+							end
 						end
 
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+					end
+
+					
+					if prTime > 0 then
+						--print(nextCp, prTotalCps, prTime, prNextTime, latency)
 					end
 				end
 			end
@@ -4833,7 +4872,21 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Data.snapshotData.apexPredatorsCraving.duration = 0
 							TRB.Data.snapshotData.apexPredatorsCraving.endTime = nil
 						end
-					else
+					elseif spellId == TRB.Data.spells.predatorRevealed.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.predatorRevealed.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.predatorRevealed.duration, TRB.Data.snapshotData.predatorRevealed.endTime, _, _, _, TRB.Data.snapshotData.predatorRevealed.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.predatorRevealed.id)
+
+							--if TRB.Data.settings.druid.feral.audio.predatorRevealed.enabled then
+								---@diagnostic disable-next-line: redundant-parameter
+								--PlaySoundFile(TRB.Data.settings.druid.feral.audio.predatorRevealed.sound, TRB.Data.settings.core.audio.channel.channel)
+							--end
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.predatorRevealed.isActive = false
+							TRB.Data.snapshotData.predatorRevealed.spellId = nil
+							TRB.Data.snapshotData.predatorRevealed.duration = 0
+							TRB.Data.snapshotData.predatorRevealed.endTime = nil
+						end
 					end
 				elseif specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then
 					if spellId == TRB.Data.spells.symbolOfHope.id then
