@@ -522,11 +522,11 @@ function TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, name, text, wid
 	end)
 	e:SetCursorPosition(0)
 	e:SetScript("OnCursorChanged", function(self, arg1, arg2, arg3, arg4)
-		local vs = self:GetParent():GetVerticalScroll();
-		local h  = self:GetParent():GetHeight();
+		local vs = self:GetParent():GetVerticalScroll()
+		local h  = self:GetParent():GetHeight()
 	
 		if vs+arg2 > 0 or 0 > vs+arg2-arg4+h then
-			self:GetParent():SetVerticalScroll(arg2*-1);
+			self:GetParent():SetVerticalScroll(arg2*-1)
 		end
 	end)
 

@@ -296,13 +296,13 @@ local function ParseCmdString(msg)
 		if a then
 			return c,strsub(msg,b+2)
 		else
-			return "";
+			return ""
 		end
 	end
 end
 
 function SlashCmdList.TWINTOP(msg)
-	local cmd, subcmd = ParseCmdString(msg);
+	local cmd, subcmd = ParseCmdString(msg)
 	if cmd == "reset" then
 		StaticPopup_Show("TwintopResourceBar_Reset")
 	elseif cmd == "fill" then

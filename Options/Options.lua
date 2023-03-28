@@ -810,7 +810,7 @@ local function ConstructImportExportPanel()
 		timeout = 0,
 		whileDead = true,
 		EditBoxOnEscapePressed = function(self)
-			self:GetParent():Hide();
+			self:GetParent():Hide()
 		end,
 		hideOnEscape = true,
 		preferredIndex = 3
@@ -839,7 +839,7 @@ local function ConstructImportExportPanel()
 			editBox:HighlightText(false)
 		end,
 		EditBoxOnEscapePressed = function(self)
-			self:GetParent():Hide();
+			self:GetParent():Hide()
 		end,
 		hideOnEscape = true,
 		preferredIndex = 3
