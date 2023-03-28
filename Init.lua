@@ -296,7 +296,7 @@ local function ParseCmdString(msg)
 		if a then
 			return c,strsub(msg,b+2)
 		else
-			return "";
+			return ""
 		end
 	end
 end

@@ -82,7 +82,8 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 <br/>&emsp;&ensp;- Trial of Valor: Hymdall -- 10%; Fenryr (phase 1) -- 60%; Odyn -- 80%
 <br/>&emsp;&ensp;- Brackenhide Hollow: Decatriarch Wratheye -- 4.5%
 
-## Healers<br/>
+## Healers
+
 - [#265 - UPDATE](#265) Add an option to hide the threshold line of Conjured Chillglobe while it is on cooldown.
 
 ## Priest
@@ -656,24 +657,32 @@ function TRB.Functions.News:BuildNewsPopup()
 
     simpleHtml:SetText(LMD:ToHTML(content))
     -- ... and this is the popup it opens.
-    StaticPopupDialogs["LIBMARKDOWNDEMOFRAME_URL"] = 
-    { OnShow = 
-        function(self, data)
-        self.text:SetFormattedText("Here's a link to " .. data.title)
-        self.editBox:SetText(data.url)
-        self.editBox:SetAutoFocus(true)
-        self.editBox:HighlightText()
+    StaticPopupDialogs["LIBMARKDOWNDEMOFRAME_URL"] = {
+        OnShow = function(self, data)
+			self:SetWidth(420)
+            self.text:SetFormattedText("Here's a link to " .. data.title)
+            self.editBox:SetText(data.url)
+            self.editBox:SetAutoFocus(true)
+            self.editBox:HighlightText()
         end,
-    text         = "",
-    wide         = true,
-    closeButton  = true,
-    button1      = "OK",
-    timeout      = 60,
-    hasEditBox   = true,
-    hideOnEscape = true,
-    OnAccept               = function(self) self:Hide() end,
-    EditBoxOnEnterPressed  = function(self) self:Hide() end,
-    EditBoxOnEscapePressed = function(self) self:Hide() end 
+        OnAccept = function(self)
+            self:Hide()
+        end,
+        EditBoxOnEnterPressed = function(self)
+			self:GetParent():Hide()
+        end,
+        EditBoxOnEscapePressed = function(self)
+			self:GetParent():Hide()
+        end,
+        text = "",
+        wide = true,
+        closeButton = true,
+        button1 = "OK",
+        timeout = 60,
+        hasEditBox = true,
+        hasWideEditBox = true,
+        editBoxWidth = 500,
+        hideOnEscape = true
     }
 end
 
