@@ -659,7 +659,7 @@ function TRB.Functions.News:BuildNewsPopup()
     -- ... and this is the popup it opens.
     StaticPopupDialogs["LIBMARKDOWNDEMOFRAME_URL"] = {
         OnShow = function(self, data)
-			self:SetWidth(420)
+			self:SetWidth(450)
             self.text:SetFormattedText("Here's a link to " .. data.title)
             self.editBox:SetText(data.url)
             self.editBox:SetAutoFocus(true)
@@ -675,13 +675,13 @@ function TRB.Functions.News:BuildNewsPopup()
 			self:GetParent():Hide()
         end,
         text = "",
-        wide = true,
-        closeButton = true,
         button1 = "OK",
-        timeout = 60,
         hasEditBox = true,
         hasWideEditBox = true,
-        editBoxWidth = 500,
+        editBoxWidth = 400,
+        timeout = 60,
+		whileDead = true,
+        closeButton = true,
         hideOnEscape = true
     }
 end

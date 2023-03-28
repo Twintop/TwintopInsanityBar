@@ -487,12 +487,7 @@ function TRB.Functions.IO:Import(input)
 end
 
 function TRB.Functions.IO:ExportPopup(exportMessage, classId, specId, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
-	StaticPopupDialogs["TwintopResourceBar_Export"].text = exportMessage
-	StaticPopupDialogs["TwintopResourceBar_Export"].OnShow = function(self)
-		local configuration = ExportGetConfiguration(classId, specId, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
-		local output = Export(configuration)
----@diagnostic disable-next-line: undefined-field
-		self.editBox:SetText(output)
-	end
-	StaticPopup_Show("TwintopResourceBar_Export")
+	local configuration = ExportGetConfiguration(classId, specId, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText, includeCore)
+	local output = Export(configuration)
+	StaticPopup_Show("TwintopResourceBar_Export", nil, nil, { message = exportMessage, exportString = output})
 end
