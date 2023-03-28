@@ -10,10 +10,15 @@ local content = [====[
 _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https://www.curseforge.com/wow/addons/twintops-insanity-bar/files), [Wago](https://addons.wago.io/addons/twintopresourcebar/versions?stability=beta), or via WowUp's beta channel!_
 
 ----
+# 10.0.7.2-release (2023-03-??)
+## General
+- [#278 - UPDATE](#278) Added clickable links to each of the issue numbers in the news dialog.
+
+----
 # 10.0.7.1-release (2023-03-26)
 ## Demon Hunter
 ### Havoc
-- (#296 - FIX) Restore access to Havoc's options menu.
+- [#296 - FIX](#296) Restore access to Havoc's options menu.
 
 ----
 # 10.0.7.0-release (2023-03-22)
@@ -22,78 +27,74 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 
 ## Druid
 ### Balance
-- (#294 - NEW) Add support for Touch of Cosmos (T29 4P bonus). Starfall and Starsurge will now show as usable when first entering Eclispe, regardless of Astral Power.
+- [#294 - NEW](#294) Add support for Touch of Cosmos (T29 4P bonus). Starfall and Starsurge will now show as usable when first entering Eclispe, regardless of Astral Power.
 - (FIX) Fix Elune's Guidance modifying the threshold for Starsurge and Starfall.
 
 ## Priest
 ### Shadow
 
-- (#273 - UPDATE) Auspicious Spirits once again generate Insanity on hit instead of on spawn. Support for the passive Insanity generation has been re-enabled.
-
+- [#273 - UPDATE](#273) Auspicious Spirits once again generate Insanity on hit instead of on spawn. Support for the passive Insanity generation has been re-enabled.
 
 ----
 # 10.0.5.9-release (2023-03-11)
 ## General
 
-- (#219 - UPDATE) Add detection support for the first boss of Mogu'shan Palace -- Kuai the Brute, Ming the Cunning, and Haiyan the Unstoppable @ 10% each.
+- [#219 - UPDATE](#219) Add detection support for the first boss of Mogu'shan Palace -- Kuai the Brute, Ming the Cunning, and Haiyan the Unstoppable @ 10% each.
 
 ## Priest
 ### Shadow
 
-- (#288 - UPDATE) Add an option to disable bar color change when Mind Blast can be instantly cast.
+- [#288 - UPDATE](#288) Add an option to disable bar color change when Mind Blast can be instantly cast.
 - (FIX) Update Mind Flay: Insanity bar text icon detection.
 - (UPDATE) Do some minor rearranging of the options menu for bar colors. This layout change (or one like it) will be applied to other option screens and more configurations will be added soon (tm)!
-
 
 ----
 # 10.0.5.8-release (2023-03-05)
 ## General
 
-- (#278 - NEW) Add a news popup to be shown whenever a new version of the bar is released. This will contain (predominantly) the release notes for new versions of the bar.<br/><br/>
-- (#219 - UPDATE) Add an alternate detection method for the poisoning of the Flask of Solemn Night in Court of Stars.
+- [#278 - NEW](#278) Add a news popup to be shown whenever a new version of the bar is released. This will contain (predominantly) the release notes for new versions of the bar.<br/><br/>
+- [#219 - UPDATE](#219) Add an alternate detection method for the poisoning of the Flask of Solemn Night in Court of Stars.
 
 ## Druid
 ### Restoration
 
-- (#291 - NEW) Add support for Incarnation: Tree of Life bar color change. This works similarly to other bar color changes via buffs (e.g. Voidform, Trueshot, Eclipse, etc.) with colors for both when it is active and when it is close to ending, and configuration of when to show the close to ending color.
+- [#291 - NEW](#291) Add support for Incarnation: Tree of Life bar color change. This works similarly to other bar color changes via buffs (e.g. Voidform, Trueshot, Eclipse, etc.) with colors for both when it is active and when it is close to ending, and configuration of when to show the close to ending color.
 <br/>&emsp;&ensp;- New bar text variable: `$incarnationTime`
 <br/>&emsp;&ensp;- New bar text icon: `#incarnation`<br/><br/>
-- (#291 - NEW) Add Reforestation tracking.
+- [#291 - NEW](#291) Add Reforestation tracking.
 <br/>&emsp;&ensp;- New bar text variable: `$reforestationStacks`
 <br/>&emsp;&ensp;- New bar text icon: `#reforestation`
 
 ## Priest
 ### Shadow
 
-- (#288 - NEW) Add a bar color change while Mind Blast is instant cast either via a Shadowy Insight proc or having two stacks of Mind Melt. This will only change the bar color if you can currently cast Mind Blast (it isn't completely on cooldown).
+- [#288 - NEW](#288) Add a bar color change while Mind Blast is instant cast either via a Shadowy Insight proc or having two stacks of Mind Melt. This will only change the bar color if you can currently cast Mind Blast (it isn't completely on cooldown).
 <br/>&emsp;&ensp;- New bar text variables: `$mmTime`, `$mmStacks`, `$siTime`, `$mindBlastCharges`, `$mindBlastMaxCharges`
 <br/>&emsp;&ensp;- New bar text icons: `#mm`/`#mindMelt`, `#si`/`#shadowyInsight`
-
 
 ----
 # 10.0.5.7-release (2023-02-28)
 ## General
 
-- (#219 - NEW) For targets that are "defeated" at a health other than 0% can now have an override "death" percent to provide more accurate time to die estimates. For current content this includes:
+- [#219 - NEW](#219) For targets that are "defeated" at a health other than 0% can now have an override "death" percent to provide more accurate time to die estimates. For current content this includes:
 <br/>&emsp;&ensp;- Shadowmoon Burrial Grounds: Carrion Worm (trash/before Bonemaw) -- 20%
 <br/>&emsp;&ensp;- Court of Stars: Patrol Captain Gerdo (if Flask of the Solemn Night is poisoned) -- 25%
 <br/>&emsp;&ensp;- Trial of Valor: Hymdall -- 10%; Fenryr (phase 1) -- 60%; Odyn -- 80%
 <br/>&emsp;&ensp;- Brackenhide Hollow: Decatriarch Wratheye -- 4.5%
 
 ## Healers<br/>
-- (#265 - UPDATE) Add an option to hide the threshold line of Conjured Chillglobe while it is on cooldown.
+- [#265 - UPDATE](#265) Add an option to hide the threshold line of Conjured Chillglobe while it is on cooldown.
 
 ## Priest
 ### Holy
 
-- (#282 - NEW) Add threshold line showing how much mana would be gained by using Shadowfiend. This is separate and in addition to the passive threshold line that shows when Shadowfiend is actively attacking and regenerating mana. This also includes an option to hide the threshold line while Shadowfiend is on cooldown.<br/>
-- (#282 - FIX) Adjust the logic around detecting Shadowfiend swings for Holy to get more accurate predictions.
+- [#282 - NEW](#282) Add threshold line showing how much mana would be gained by using Shadowfiend. This is separate and in addition to the passive threshold line that shows when Shadowfiend is actively attacking and regenerating mana. This also includes an option to hide the threshold line while Shadowfiend is on cooldown.<br/>
+- [#282 - FIX](#282) Adjust the logic around detecting Shadowfiend swings for Holy to get more accurate predictions.
 
 ## Shaman
 ### Elemental
 
-- (#290 - HOTFIX) Frost Shocks that are buffed by Icefury now generate 14 Maelstrom.
-
+- [#290 - HOTFIX) Frost Shocks that are buffed by Icefury now generate 14 Maelstrom.
 
 ----
 # 10.0.5.6-release (2023-02-24)
@@ -104,46 +105,44 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 ## Druid
 ### Feral
 
-- (#286 - NEW) Add a new bar border color change and bar text variable, `$inStealth`, for when you are in stealth or have a proc/effect that allows you to act as if you were stealthed.
+- [#286 - NEW](#286) Add a new bar border color change and bar text variable, `$inStealth`, for when you are in stealth or have a proc/effect that allows you to act as if you were stealthed.
 
 ## Priest
 ### Shadow
 
-- (#284 - FIX) Update Insanity generated per tick from Void Lashers and Void Tentacles to 2 Insanity.
+- [#284 - FIX](#284) Update Insanity generated per tick from Void Lashers and Void Tentacles to 2 Insanity.
 
 ## Rogue
 ### Assassination
 
-- (#286 - NEW) Add a new bar border color change and bar text variable, `$inStealth`, for when you are in stealth or have a proc/effect that allows you to act as if you were stealthed.
+- [#286 - NEW](#286) Add a new bar border color change and bar text variable, `$inStealth`, for when you are in stealth or have a proc/effect that allows you to act as if you were stealthed.
 
 ### Outlaw
 
-- (#286 - NEW) Add a new bar border color change and bar text variable, `$inStealth`, for when you are in stealth or have a proc/effect that allows you to act as if you were stealthed.
+- [#286 - NEW](#286) Add a new bar border color change and bar text variable, `$inStealth`, for when you are in stealth or have a proc/effect that allows you to act as if you were stealthed.
 
 ## Shaman
 ### Elemental
 
-- (#287 - FIX) Only play the audio cue for Earth Shock once instead of forever. Dingdingindingdingdingnindging!
+- [#287 - FIX](#287) Only play the audio cue for Earth Shock once instead of forever. Dingdingindingdingdingnindging!
 
 ## Warrior
 ### Arms
 
-- (#289 - FIX) Prevent LUA errors from sometimes triggering when Deep Wounds is applied.
-
+- [#289 - FIX](#289) Prevent LUA errors from sometimes triggering when Deep Wounds is applied.
 
 ----
 # 10.0.5.5-release (2023-02-21)
 ## General
 
-- (#283 - EXPERIMENTAL) Experimental/minimal support for Enhancement Shaman.<br/>
-- (#87 - REFACTOR) Lots of under the hood changes in preparation for future bar text and layout improvements. Stay tuned! 
+- [#283 - EXPERIMENTAL](#283) Experimental/minimal support for Enhancement Shaman.<br/>
+- [#87 - REFACTOR](#87) Lots of under the hood changes in preparation for future bar text and layout improvements. Stay tuned! 
 
 ## Shaman
 ### Enhancement
 
 - This feature is EXPERIMENTAL and is not enabled by default. To enable Enhancement Shaman support, go to the main "General" options menu for Twintop's Resource Bar and check "Enhancement Shaman support" under the "Experimental Features" section then reload your UI!<br/>
-- (#283 - EXPERIMENTAL) Minimalist implementation for Enhancement Shaman, tracking Maelstrom Weapon stacks and Mana (to a much lesser extent). Presently displays Maelstrom Weapon in a similar fashion as Combo Points or Chi, tracks Ascendance (with mana bar color changing), and Flame Shock target count/duration.
-
+- [#283 - EXPERIMENTAL](#283) Minimalist implementation for Enhancement Shaman, tracking Maelstrom Weapon stacks and Mana (to a much lesser extent). Presently displays Maelstrom Weapon in a similar fashion as Combo Points or Chi, tracks Ascendance (with mana bar color changing), and Flame Shock target count/duration.
 
 ----
 # 10.0.5.4-release (2023-02-02)
@@ -151,7 +150,6 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 ### Preservation
 
 - (FIX) Remove spammy debug prints from chat window.
-
 
 ----
 # 10.0.5.3-release (2023-02-01)
@@ -163,13 +161,12 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 
 - (FIX) Fix LUA errors related to options menus.
 
-
 ----
 # 10.0.5.2-release (2023-02-01)
 ## General
 
-- (#259 - EXPERIMENTAL) Experimental/minimal support for Devastation Evoker.<br/>
-- (#280 - EXPERIMENTAL) Experimental support for Preservation Evoker.<br/>
+- [#259 - EXPERIMENTAL](#259) Experimental/minimal support for Devastation Evoker.<br/>
+- [#280 - EXPERIMENTAL](#280) Experimental support for Preservation Evoker.<br/>
 - (FIX) Change how resetting specialization configuration to defaults work. Previously, some configuration resets were not reliably resetting to default values.
 
 ## Druid
@@ -181,34 +178,33 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 ### Devastation
 
 - This feature is EXPERIMENTAL and is not enabled by default. To enable Devastation Evoker support, go to the main "General" options menu for Twintop's Resource Bar and check "Devastation Evoker support" under the "Experimental Features" section.<br/>
-- (#259 - EXPERIMENTAL) Minimalist implementation for Devastation Evoker, tracking Essence and Mana (to a much lesser extent). Presently displays Essence in a similar fashion as Combo Points or Chi, but shows the refill status in the currently regenerating node.
+- [#259 - EXPERIMENTAL](#259) Minimalist implementation for Devastation Evoker, tracking Essence and Mana (to a much lesser extent). Presently displays Essence in a similar fashion as Combo Points or Chi, but shows the refill status in the currently regenerating node.
 
 ### Preservation
 
 - This feature is EXPERIMENTAL and is not enabled by default. To enable Devastation Evoker support, go to the main "General" options menu for Twintop's Resource Bar and check "Devastation Evoker support" under the "Experimental Features" section.<br/>
-- (#280 - EXPERIMENTAL) Experimental implementation for Devastation Evoker, tracking Essence and Mana. Currently supports the same generic healer tracking capabilities as the other supported healing specializations: Innervate, Mana Tide Totem, Symbol of Hope, mana potions, Chillglobe, etc. Additional support has been added for mana regeneration via Emerald Communion.
+- [#280 - EXPERIMENTAL](#280) Experimental implementation for Devastation Evoker, tracking Essence and Mana. Currently supports the same generic healer tracking capabilities as the other supported healing specializations: Innervate, Mana Tide Totem, Symbol of Hope, mana potions, Chillglobe, etc. Additional support has been added for mana regeneration via Emerald Communion.
 
 ## Shaman
 ### Elemental
 
 - (FIX) Prevent a LUA error when switching to Elemental from another specialization.
 
-
 ----
 # 10.0.5.1-release (2023-01-28)
 ## General
 ### DPS
 
-- (#194 - NEW) Abilities which are unusable due to being out of range now have a new optional threshold line color. 
+- [#194 - NEW](#194) Abilities which are unusable due to being out of range now have a new optional threshold line color. 
 
 ### Healing
 
-- (#277 - NEW) For supported healing specs: add new bar border color change, passive incoming (regen) mana, and bar text ($potionOfChilledClarityTime and $potionOfChilledClarityMana) when Potion of Chilled Clarity has been used. This behaves almost exactly like Innervate's implementation and superceeds it in priority.<br/>
+- [#277 - NEW](#277) For supported healing specs: add new bar border color change, passive incoming (regen) mana, and bar text ($potionOfChilledClarityTime and $potionOfChilledClarityMana) when Potion of Chilled Clarity has been used. This behaves almost exactly like Innervate's implementation and superceeds it in priority.<br/>
 - (UPDATE) Fix some issues with Innervate bar text variables and logic checks.
 
 ## Demon Hunter
 
-- (#274 - NEW) Add a new special threshold line color change to Chaos Strike/Annihilation when the Chaos Theory buff is active.
+- [#274 - NEW](#274) Add a new special threshold line color change to Chaos Strike/Annihilation when the Chaos Theory buff is active.
 
 ## Hunter
 ### General
@@ -217,143 +213,139 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 
 ### Beast Mastery
 
-- (#248 - NEW) Add support for multiple Kill Command charges via the class talent Alpha Predator.<br/>
-- (#248 - NEW) Add support for the PvP talent Dire Beast: Basilisk. This has an additional threshold line which will only show up when actively engaged in PvP, warmode is on, or in an arena or battleground.<br/>
-- (#248 - NEW) Add support for the PvP talent Dire Beast: Hawk. This has an additional threshold line which will only show up when actively engaged in PvP, warmode is on, or in an arena or battleground.
+- [#248 - NEW](#248) Add support for multiple Kill Command charges via the class talent Alpha Predator.<br/>
+- [#248 - NEW](#248) Add support for the PvP talent Dire Beast: Basilisk. This has an additional threshold line which will only show up when actively engaged in PvP, warmode is on, or in an arena or battleground.<br/>
+- [#248 - NEW](#248) Add support for the PvP talent Dire Beast: Hawk. This has an additional threshold line which will only show up when actively engaged in PvP, warmode is on, or in an arena or battleground.
 
 ### Marksmanship
 
-- (#249 - NEW) Add support for multiple Kill Command charges via Alpha Predator.<br/>
-- (#249 - NEW) Add support for the PvP talent Sniper Shot. This has an additional threshold line which will only show up when actively engaged in PvP, warmode is on, or in an arena or battleground.
-
+- [#249 - NEW](#249) Add support for multiple Kill Command charges via Alpha Predator.<br/>
+- [#249 - NEW](#249) Add support for the PvP talent Sniper Shot. This has an additional threshold line which will only show up when actively engaged in PvP, warmode is on, or in an arena or battleground.
 
 ----
 # 10.0.5.0-release (2023-01-25)
 ## General
 
-- (#271 - NEW) Threshold icons can now have the option to be shown as desaturated when an the associated ability is not usable.<br/>
-- (#264 - UPDATE) Adjust existing and add new interactions for the changes in patch 10.0.5.<br/>
-- (#271 - UPDATE) Under the hood refactoring to threshold lines. Behavior should be identical to before but if there are any regressions or changes please open an issue on GitHub!
+- [#271 - NEW](#271) Threshold icons can now have the option to be shown as desaturated when an the associated ability is not usable.<br/>
+- [#264 - UPDATE](#264) Adjust existing and add new interactions for the changes in patch 10.0.5.<br/>
+- [#271 - UPDATE](#271) Under the hood refactoring to threshold lines. Behavior should be identical to before but if there are any regressions or changes please open an issue on GitHub!
 
 ## Druid
 ### Balance
 
-- (#264 - UPDATE) Remove Circle of Life and Death.
+- [#264 - UPDATE](#264) Remove Circle of Life and Death.
 
 ### Feral
 
-- (#264 - UPDATE) Change Rip, Thrash, and Swipe's baseline/talent/ability statuses.<br/>
-- (#264 - UPDATE) Update Relentless Predator's to reduce the cost of associated abilities by 40%.
+- [#264 - UPDATE](#264) Change Rip, Thrash, and Swipe's baseline/talent/ability statuses.<br/>
+- [#264 - UPDATE](#264) Update Relentless Predator's to reduce the cost of associated abilities by 40%.
 
 ## Priest
 ### Shadow
 
-- (#264 - UPDATE) Mindgames and Halo both generate 10 Insanity on cast.<br/>
-- (#272 - BUG) When talented in to Auspicious Spirits, update Mind Blast's incoming Insanity value to include the number of Auspicious Spirits it will spawn and produce Insanity. This is due to a bug (?) in 10.0.x where Auspicious Spirits are granting Insanity on spawn rather than the intended (historical back to 5.x?) on hit.
+- [#264 - UPDATE](#264) Mindgames and Halo both generate 10 Insanity on cast.<br/>
+- [#272 - BUG](#272) When talented in to Auspicious Spirits, update Mind Blast's incoming Insanity value to include the number of Auspicious Spirits it will spawn and produce Insanity. This is due to a bug (?) in 10.0.x where Auspicious Spirits are granting Insanity on spawn rather than the intended (historical back to 5.x?) on hit.
 
 ## Rogue
 ### Assassination
 
-- (#253 - NEW) Add Tight Spender support.<br/>
-- (#253 - NEW) Add Lightweight Shiv support.<br/>
-- (#253 - NEW) Add Improved Garrote support. There is a new "special" threshold line color configuration option that will be used when Improved Garrote's effect is active.<br/>
-- (#270 - NEW) Add option to use the same background for all unfilled combo points instead of ability-specific (e.g. Echoing Reprimand) background coloring.<br/>
-- (#264 - UPDATE) Feint is now a baseline ability and not a talent.<br/>
-- (#264 - UPDATE) Update Sepsis behavior and associated stealth ability usage.
+- [#253 - NEW](#253) Add Tight Spender support.<br/>
+- [#253 - NEW](#253) Add Lightweight Shiv support.<br/>
+- [#253 - NEW](#253) Add Improved Garrote support. There is a new "special" threshold line color configuration option that will be used when Improved Garrote's effect is active.<br/>
+- [#270 - NEW](#270) Add option to use the same background for all unfilled combo points instead of ability-specific (e.g. Echoing Reprimand) background coloring.<br/>
+- [#264 - UPDATE](#264) Feint is now a baseline ability and not a talent.<br/>
+- [#264 - UPDATE](#264) Update Sepsis behavior and associated stealth ability usage.
 
 ### Outlaw
 
-- (#254 - NEW) Add Tight Spender support.<br/>
-- (#270 - NEW) Add option to use the same background for all unfilled combo points instead of ability-specific (e.g. Echoing Reprimand) background coloring.<br/>
-- (#264 - UPDATE) Feint is now a baseline ability and not a talent.<br/>
-- (#264 - UPDATE) Update Sepsis behavior and associated stealth ability usage.
+- [#254 - NEW](#254) Add Tight Spender support.<br/>
+- [#270 - NEW](#270) Add option to use the same background for all unfilled combo points instead of ability-specific (e.g. Echoing Reprimand) background coloring.<br/>
+- [#264 - UPDATE](#264) Feint is now a baseline ability and not a talent.<br/>
+- [#264 - UPDATE](#264) Update Sepsis behavior and associated stealth ability usage.
 
 ## Warrior
 ### Arms
 
-- (#264 - NEW) Add Ignore Pain threshold line.<br/>
-- (#264 - UPDATE) Storm of Swords now increases Whirlwind's Rage cost by 20.
+- [#264 - NEW](#264) Add Ignore Pain threshold line.<br/>
+- [#264 - UPDATE](#264) Storm of Swords now increases Whirlwind's Rage cost by 20.
 
 ### Fury
 
-- (#264 - UPDATE) Storm of Steel now increases Ravager's Rage generation by 20.
-
+- [#264 - UPDATE](#264) Storm of Steel now increases Ravager's Rage generation by 20.
 
 ----
 # 10.0.2.7-release (2023-01-17)
 ## Demon Hunter
 ### Havoc
 
-- (#243 - UPDATE) Change Prepared's logic to be related to Tactical Retreat instead.<br/>
-- (#243 - FIX) Restore icon listing to bar text flyout in options.<br/>
-- (#243 - FIX) Adjust Furious Throws behavior.
+- [#243 - UPDATE](#243) Change Prepared's logic to be related to Tactical Retreat instead.<br/>
+- [#243 - FIX](#243) Restore icon listing to bar text flyout in options.<br/>
+- [#243 - FIX](#243) Adjust Furious Throws behavior.
 
 ## Druid
 ### Balance
 
-- (#245 - FIX) Fix LUA errors associated with Primordial Arcanic Pulsar bar text.
+- [#245 - FIX](#245) Fix LUA errors associated with Primordial Arcanic Pulsar bar text.
 
 ## Hunter
 ### Beast Mastery
 
-- (#248 - NEW) Add Aspect of the Wild support for reducing the Focus cost of Cobra Shot.<br/>
-- (#248 - NEW) Add Dire Pack support for reducing the Focus cost of Kill Command (needs testing/verification).<br/>
-- (#248 - FIX) Update the spell id associated with Cobra Sting's buff.
+- [#248 - NEW](#248) Add Aspect of the Wild support for reducing the Focus cost of Cobra Shot.<br/>
+- [#248 - NEW](#248) Add Dire Pack support for reducing the Focus cost of Kill Command (needs testing/verification).<br/>
+- [#248 - FIX](#248) Update the spell id associated with Cobra Sting's buff.
 
 ## Priest
 ### Holy
 
-- (#266 - NEW) Add passive mana regen from Shadowfiend.
+- [#266 - NEW](#266) Add passive mana regen from Shadowfiend.
 
 ## Shaman
 ### Elemental
 
-- (#255 - NEW) Add Ascendance bar color change and bar text variables. As with other major cooldown-related bar colors, configuration options exist to give a different warning color when the buff is close to expiring.
+- [#255 - NEW](#255) Add Ascendance bar color change and bar text variables. As with other major cooldown-related bar colors, configuration options exist to give a different warning color when the buff is close to expiring.
 
 ### Restoration
 
-- (#256 - NEW) Add Ascendance bar color change and bar text variables. As with other major cooldown-related bar colors, configuration options exist to give a different warning color when the buff is close to expiring.
+- [#256 - NEW](#256) Add Ascendance bar color change and bar text variables. As with other major cooldown-related bar colors, configuration options exist to give a different warning color when the buff is close to expiring.
 
 ## Warrior
 ### Arms
 
-- (#257 - NEW) Add Bloodletting support for bleed pandemic timings.<br/>
-- (#257 - NEW) Add support for Battlelord reducing Rage costs for Mortal Strike and Cleave.
+- [#257 - NEW](#257) Add Bloodletting support for bleed pandemic timings.<br/>
+- [#257 - NEW](#257) Add support for Battlelord reducing Rage costs for Mortal Strike and Cleave.
 
 ### Fury
 
-- (#258 - NEW) Support Storm of Steel increasing Ravager's Rage generation.<br/>
-- (#258 - UPDATE) Improve Execute implementation by supporting Sudden Death and Improved Execute; re-add threshold lines.
-
+- [#258 - NEW](#258) Support Storm of Steel increasing Ravager's Rage generation.<br/>
+- [#258 - UPDATE](#258) Improve Execute implementation by supporting Sudden Death and Improved Execute; re-add threshold lines.
 
 ----
 # 10.0.2.6-release (2023-01-11)
 ## General
 
-- (#267 - NEW) Added $inCombat as a bar text variable that is TRUE when you are currently enaged in combat.<br/>
-- (#265 - UPDATE) Update what bonus ids are used to detect Conjured Chillglobe versions.<br/>
+- [#267 - NEW](#267) Added $inCombat as a bar text variable that is TRUE when you are currently enaged in combat.<br/>
+- [#265 - UPDATE](#265) Update what bonus ids are used to detect Conjured Chillglobe versions.<br/>
 - (UPDATE) The listing of currently supported specs has been corrected.
 
 ## Druid
 ### Balance
 
-- (#245 - NEW) Add Circle of Life and Death support for showing pandemic range for DoTs.
+- [#245 - NEW](#245) Add Circle of Life and Death support for showing pandemic range for DoTs.
 
 ### Feral
 
-- (#246 - FIX) Restore overcapping border color picker to options menu.
+- [#246 - FIX](#246) Restore overcapping border color picker to options menu.
 
 ## Monk
 ### Mistweaver
 
-- (#251 - NEW) Add Soothing Mist mana cost per tick.
-
+- [#251 - NEW](#251) Add Soothing Mist mana cost per tick.
 
 ----
 # 10.0.2.5-release (2023-01-08)
 ## General
 
-- (#265 - NEW) Add support for Conjured Chillglobe via threshold line and configuration option for supported healing specs.<br/>
+- [#265 - NEW](#265) Add support for Conjured Chillglobe via threshold line and configuration option for supported healing specs.<br/>
 - (FIX) Fixed an issue with some not (!) logic in bar text returning invalid results.<br/>
 - (FIX) Correct various typos and layout issues in settings.<br/>
 - (UPDATE) Adjust how item icons are accessed and loaded.
@@ -361,119 +353,114 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 ## Druid
 ### Balance
 
-- (#245 - NEW) Add Circle of Life and Death support for calculating pandemic timings for DoTs.
+- [#245 - NEW](#245) Add Circle of Life and Death support for calculating pandemic timings for DoTs.
 
 ### Feral
 
-- (#246 - NEW) Add Relentless Predator support for Ferocious Bite energy cost calculations.
+- [#246 - NEW](#246) Add Relentless Predator support for Ferocious Bite energy cost calculations.
 
 ### Restoration
 
-- (#265 - NEW) Add support for Conjured Chillglobe via threshold line and configuration option.
+- [#265 - NEW](#265) Add support for Conjured Chillglobe via threshold line and configuration option.
 
 ## Monk
 ### Mistweaver
 
-- (#265 - NEW) Add support for Conjured Chillglobe via threshold line and configuration option.
+- [#265 - NEW](#265) Add support for Conjured Chillglobe via threshold line and configuration option.
 
 ## Priest
 ### Holy
 
-- (#242 - NEW) Add support for T30 2P affecting Holy Word reductions.<br/>
-- (#265 - NEW) Add support for Conjured Chillglobe via threshold line and configuration option.<br/>
-- (#242 - FIX) Fix logic errors with new bar text variables.
+- [#242 - NEW](#242) Add support for T30 2P affecting Holy Word reductions.<br/>
+- [#265 - NEW](#265) Add support for Conjured Chillglobe via threshold line and configuration option.<br/>
+- [#242 - FIX](#242) Fix logic errors with new bar text variables.
 
 ### Shadow
 
-- (#241 - NEW) Mind Flay: Insanity now has an optional border color change when the buff is active.<br/>
-- (#241 - NEW) Add Devoured Despair (Idol of Y'Shaarj) passive insanity generation to Mindbender/Shadowfiend.<br/>
-- (#241 - FIX) Add Idol of C'Thun icons back in.<br/>
-- (#241 - FIX) Death and Madness generates 7.5 Insanity per tick, not 10 Insanity per tick.<br/>
-- (#241 - FIX) Correct Auspicious Spirits enable/disable option.<br/>
-- (#241 - FIX) Properly track Mind Sear channeling cost, including with a Devouring Plague proc.<br/>
-- (#241 - UPDATE) Modify default advanced bar text to include Mind Flay: Insanity
+- [#241 - NEW](#241) Mind Flay: Insanity now has an optional border color change when the buff is active.<br/>
+- [#241 - NEW](#241) Add Devoured Despair (Idol of Y'Shaarj) passive insanity generation to Mindbender/Shadowfiend.<br/>
+- [#241 - FIX](#241) Add Idol of C'Thun icons back in.<br/>
+- [#241 - FIX](#241) Death and Madness generates 7.5 Insanity per tick, not 10 Insanity per tick.<br/>
+- [#241 - FIX](#241) Correct Auspicious Spirits enable/disable option.<br/>
+- [#241 - FIX](#241) Properly track Mind Sear channeling cost, including with a Devouring Plague proc.<br/>
+- [#241 - UPDATE](#241) Modify default advanced bar text to include Mind Flay: Insanity
 
 ## Shaman
 ### Restoration
 
-- (#265 - NEW) Add support for Conjured Chillglobe via threshold line and configuration option.
-
+- [#265 - NEW](#265) Add support for Conjured Chillglobe via threshold line and configuration option.
 
 ----
 # 10.0.2.4-release (2022-12-14)
 ## Priest
 ### Holy
 
-- (#242 - FIX) Fix logic errors with new bar text variables.
-
+- [#242 - FIX](#242) Fix logic errors with new bar text variables.
 
 ----
 # 10.0.2.3-release (2022-12-14)
 ## Priest
 ### Holy
 
-- (#242 - NEW) Add Lightweaver support. This includes bar text variables for stacks and time remaining, border color change when you have any stacks, and an audio cue for when you go from 0 -> 1 stacks.<br/>
-- (#242 - UPDATE) Change the priority ordering of bar border color changes for procs to be: Lightweaver < Resonant Words < Surge of Light (1 Stack) < Surge of Light (2 Stacks) < Innervate.
-
+- [#242 - NEW](#242) Add Lightweaver support. This includes bar text variables for stacks and time remaining, border color change when you have any stacks, and an audio cue for when you go from 0 -> 1 stacks.<br/>
+- [#242 - UPDATE](#242) Change the priority ordering of bar border color changes for procs to be: Lightweaver < Resonant Words < Surge of Light (1 Stack) < Surge of Light (2 Stacks) < Innervate.
 
 ----
 # 10.0.2.2-release (2022-12-14)
 ## General
 
 - (FIX) Options tabs for all specs have had their UI updated.<br/>
-- (#263 - UPDATE) Update mana potions for healing specs to use Dragonflight potions instead of Shadowlands. Different ranks are options but rank 3 is selected by default for both Aerated Mana Potion and Potion of Frozen Focus.
+- [#263 - UPDATE](#263) Update mana potions for healing specs to use Dragonflight potions instead of Shadowlands. Different ranks are options but rank 3 is selected by default for both Aerated Mana Potion and Potion of Frozen Focus.
 
 ## Druid
 ### Feral
 
-- (#246 - FIX) Update Apex Predator's Craving proc detection.
+- [#246 - FIX](#246) Update Apex Predator's Craving proc detection.
 
 ### Restoration
 
-- (#263 - UPDATE) Update mana potions for Dragonflight.<br/>
-- (#247 - UPDATE) Separate logic between border color changes and audio cues when gaining Innervate.
+- [#263 - UPDATE](#263) Update mana potions for Dragonflight.<br/>
+- [#247 - UPDATE](#247) Separate logic between border color changes and audio cues when gaining Innervate.
 
 ## Monk
 ### Mistweaver
 
-- (#263 - UPDATE) Update mana potions for Dragonflight.<br/>
-- (#251 - UPDATE) Separate logic between border color changes and audio cues when gaining Innervate.
+- [#263 - UPDATE](#263) Update mana potions for Dragonflight.<br/>
+- [#251 - UPDATE](#251) Separate logic between border color changes and audio cues when gaining Innervate.
 
 ## Priest
 ### Holy
 
-- (#242 - NEW) Add Resonant Words support: bar border color change, bar text variable for time remaining, and audio cue for proc.<br/>
-- (#242 - FIX) Correct Holy Word: Sanctuary cooldown reduction bar color change behavior.<br/>
-- (#242 - UPDATE) Add logic to prevent bar color change for Holy Word cooldowns if the associated Holy Word is not talented. <br/>
-- (#263 - UPDATE) Update mana potions for Dragonflight.<br/>
-- (#242 - UPDATE) Separate logic between border color changes and audio cues when gaining Innervate, Surge of Light procs (1 or 2 stacks), or Resonant Words.
+- [#242 - NEW](#242) Add Resonant Words support: bar border color change, bar text variable for time remaining, and audio cue for proc.<br/>
+- [#242 - FIX](#242) Correct Holy Word: Sanctuary cooldown reduction bar color change behavior.<br/>
+- [#242 - UPDATE](#242) Add logic to prevent bar color change for Holy Word cooldowns if the associated Holy Word is not talented. <br/>
+- [#263 - UPDATE](#263) Update mana potions for Dragonflight.<br/>
+- [#242 - UPDATE](#242) Separate logic between border color changes and audio cues when gaining Innervate, Surge of Light procs (1 or 2 stacks), or Resonant Words.
 
 ## Rogue
 ### Assassination
 
-- (#253 - NEW) Add configuration option to disable unfilled Combo Point color for Serrated Bone Spike.
+- [#253 - NEW](#253) Add configuration option to disable unfilled Combo Point color for Serrated Bone Spike.
 
 ## Shaman
 ### Restoration
 
-- (#263 - UPDATE) Update mana potions for Dragonflight.<br/>
-- (#256 - UPDATE) Separate logic between border color changes and audio cues when gaining Innervate.
-
+- [#263 - UPDATE](#263) Update mana potions for Dragonflight.<br/>
+- [#256 - UPDATE](#256) Separate logic between border color changes and audio cues when gaining Innervate.
 
 ----
 # 10.0.2.1-release (2022/12/01)
 ## Priest
 ### Shadow
 
-- (#241 - FIX) Fix Voidform time remaining to be more accurate and includ extentions due to spent Insanity.
-
+- [#241 - FIX](#241) Fix Voidform time remaining to be more accurate and includ extentions due to spent Insanity.
 
 ----
 # 10.0.2.0-release (2022/11/28)
 ## General
 
 - (CLEANUP) Removed remaining support for Shadowlands systems: legendaries, covenants, soulbinds, Torghast powers, Sanctum of Domination powers, and M+ affixes <br/>
-- (#260, #262 - FIX) Avoid running bar code when a specialization switch has just occurred; add some extra validation for what spec is currently active.
+- [#260, #262 - FIX](#260) Avoid running bar code when a specialization switch has just occurred; add some extra validation for what spec is currently active.
 
 ## Hunter
 ### Beast Mastery
@@ -482,13 +469,12 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 
 ## Priest
 
-- (#262 - FIX) Stop LUA errors from occurring as Discipline.
+- [#262 - FIX](#262) Stop LUA errors from occurring as Discipline.
 
 ## Rogue
 ### Assassination
 
-- (#261 - FIX) Correct Gouge thresholdline logic to stop crashing when talented.
-
+- [#261 - FIX](#261) Correct Gouge thresholdline logic to stop crashing when talented.
 
 ----
 # 10.0.0.15-release (2022/11/18)
@@ -496,85 +482,80 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 
 - (FIX) Remove old options that caused crashes for new bar users.
 
-
 ----
 # 10.0.0.14-release (2022/11/11)
 ## Rogue
 ### Assassanation
 
-- (#253 - FIX) Fix LUA errors when switching specs with poisons applied.
+- [#253 - FIX](#253) Fix LUA errors when switching specs with poisons applied.
 
 ### Outlaw
 
-- (#260 - FIX) Fix Atrophic Poison related LUA errors.<br/>
-- (#260 - FIX) Remove debug prints of current combo points.<br/>
-- (#254 - FIX) Fix LUA errors when switching specs with poisons applied.
-
+- [#260 - FIX](#260) Fix Atrophic Poison related LUA errors.<br/>
+- [#260 - FIX](#260) Remove debug prints of current combo points.<br/>
+- [#254 - FIX](#254) Fix LUA errors when switching specs with poisons applied.
 
 ----
 # 10.0.0.13-release (2022/11/11)
 ## Druid
 ### Balance
 
-- (#245 - UPDATE) Change Wrath's Astral Power generation to 8 to match hotfixes.
-
+- [#245 - UPDATE](#245) Change Wrath's Astral Power generation to 8 to match hotfixes.
 
 ----
 # 10.0.0.12-release (2022/11/08)
 ## Druid
 ### Balance
 
-- (#245 - FIX) Stop Combo Points from attempting to render and causing LUA errors.
+- [#245 - FIX](#245) Stop Combo Points from attempting to render and causing LUA errors.
 
 ### Feral
 
-- (#246 - FIX) Fix Carnivorous Instinct LUA errors.<br/>
-- (#246 - FIX) Add Primal Wrath threshold line toggle to options.
+- [#246 - FIX](#246) Fix Carnivorous Instinct LUA errors.<br/>
+- [#246 - FIX](#246) Add Primal Wrath threshold line toggle to options.
 
 ### Restoration
 
-- (#247 - FIX) Stop Combo Points from attempting to render and causing LUA errors.
+- [#247 - FIX](#247) Stop Combo Points from attempting to render and causing LUA errors.
 
 ## Hunter
 ### Marksmanship
 
-- (#249 - FIX) Fix Steady Shot and Improved Steady Shot's Focus generation amounts causing LUA errors.
+- [#249 - FIX](#249) Fix Steady Shot and Improved Steady Shot's Focus generation amounts causing LUA errors.
 
 ## Monk
 ### Mistweaver
 
-- (#251 - FIX) Stop Chi from attempting to render and causing LUA errors.
+- [#251 - FIX](#251) Stop Chi from attempting to render and causing LUA errors.
 
 ### Windwalker
 
-- (#252 - FIX) Fix Strike of the Windlord.
+- [#252 - FIX](#252) Fix Strike of the Windlord.
 
 ## Priest
 
-- (#241 - FIX) Fix Mind Devourer proc detection and bar UI notifications related to using Devouring Plague or Mind Sear.<br/>
-- (#241 - FIX) Prevent Mind Sear from showing a cost or active Insanity drain amount  when used with a Mind Devourer proc.
+- [#241 - FIX](#241) Fix Mind Devourer proc detection and bar UI notifications related to using Devouring Plague or Mind Sear.<br/>
+- [#241 - FIX](#241) Prevent Mind Sear from showing a cost or active Insanity drain amount  when used with a Mind Devourer proc.
 
 ## Rogue
 ### Assassination
 
-- (#253 - FIX) Fix Slice and Dice and Echoing Reprimand LUA errors relating to having a possible 7 Combo Points.
+- [#253 - FIX](#253) Fix Slice and Dice and Echoing Reprimand LUA errors relating to having a possible 7 Combo Points.
 
 ### Outlaw
 
-- (#254 - FIX) Fix Slice and Dice and Echoing Reprimand LUA errors relating to having a possible 7 Combo Points.
+- [#254 - FIX](#254) Fix Slice and Dice and Echoing Reprimand LUA errors relating to having a possible 7 Combo Points.
 
 ## Shaman
 ### Elemental
 
-- (#255 - FIX) Fix LUA errors when switching specs.
-
+- [#255 - FIX](#255) Fix LUA errors when switching specs.
 
 ----
 # 10.0.0.11-release (2022/10/27)
 ## General
 
 - (FIX) Prevent LUA errors causing bar initialization crashing due to invalid texture layers.
-
 
 ----
 # 10.0.0.10-release (2022/10/26)
@@ -657,12 +638,16 @@ function TRB.Functions.News:BuildNewsPopup()
 
     simpleHtml:SetScript("OnHyperlinkClick", 
         function(f, link, text, ...) 
-            if     link=="window:close" 
-            then   TRB.Functions.News:Hide()
+            if link=="window:close" then  
+                TRB.Functions.News:Hide()
                 --f:GetParent():Hide() 
-            elseif link:match("https?://")
-            then
-                   StaticPopup_Show("LIBMARKDOWNDEMOFRAME_URL", nil, nil, { title = text, url = link })
+            elseif link:match("https?://") then
+                StaticPopup_Show("LIBMARKDOWNDEMOFRAME_URL", nil, nil, { title = text, url = link })
+            elseif link:match("^#%d+$") then
+                local issueId = string.sub(link, 2)
+                local url = "https://github.com/Twintop/TwintopInsanityBar/issues/" .. issueId
+                local titleText = "view issue " .. link .. " on GitHub"
+                StaticPopup_Show("LIBMARKDOWNDEMOFRAME_URL", nil, nil, { title = titleText, url = url })
             end 
         end)
 
