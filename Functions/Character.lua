@@ -165,7 +165,7 @@ end
 
 function TRB.Functions.Character:GetCurrentGCDLockRemaining()
 ---@diagnostic disable-next-line: redundant-parameter
-	local startTime, duration, _ = GetSpellCooldown(61304);
+	local startTime, duration, _ = GetSpellCooldown(61304)
 	return (startTime + duration - GetTime())
 end
 
