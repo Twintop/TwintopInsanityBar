@@ -8,6 +8,11 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.1.0.0-beta06 (2023-04-??)
+## General
+- [#292 - UPDATE](#292) Add `IconTexture` to TOC. This shows the addon's icon/logo in the AddOn List menu in game.
+
+---
 # 10.1.0.0-beta05 (2023-03-30)
 ## General
 - [#292 - UPDATE](#292) Fix addon loading LUA errors thanks to `GetAddOnMetadata` being changed to `C_AddOns.GetAddOnMetadata`.
@@ -24,7 +29,6 @@ local content = [====[
 <br/>&emsp;&ensp;- Remove previous T30 4P tracking of multiple Shadowfiends/Mindbenders.
 
 ----
-
 # 10.1.0.0-beta04 (2023-03-27)
 ## General
 - [#278 - UPDATE](#278) Added clickable links to each of the issue numbers in the news dialog.
