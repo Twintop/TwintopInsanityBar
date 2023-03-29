@@ -280,8 +280,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				modifier = {
-					wrath = 0.5,
-					starfire = 0.3
+					wrath = 0.3,
+					starfire = 0.2
 				},
 				isTalent = true
 			},
@@ -317,7 +317,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 274281,
 				name = "",
 				icon = "",
-				astralPower = 10,
+				astralPower = 12,
 				recharge = 20,
 				isTalent = true
 			},
@@ -325,13 +325,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 274282,
 				name = "",
 				icon = "",
-				astralPower = 20
+				astralPower = 24
 			},
 			fullMoon = {
 				id = 274283,
 				name = "",
 				icon = "",
-				astralPower = 40
+				astralPower = 50
 			},
 			sunderedFirmament = {
 				id = 394094,

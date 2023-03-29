@@ -933,14 +933,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				ticks = 15,
 				tickDuration = 1
 			},
-
-			-- T30 4P
-			weakeningReality = {
-				id = 409502,
-				name = "",
-				icon = "",
-				maxStacks = 7 -- 0 - 7, at 8 it triggers SF/Mb and goes back to 0 TODO: verify this doesn't change to something like Arcano Pulsar for Balance
-			},
 		}
 
 		specCache.shadow.snapshotData.voidform = {
@@ -970,22 +962,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			targets = {}
 		}
 		specCache.shadow.snapshotData.shadowfiend = {
-			isActive = false,
-			guid = nil,
-			totemId = nil,
-			startTime = nil,
-			duration = 0,
-			onCooldown = false,
-			swingTime = 0,
-			remaining = {
-				swings = 0,
-				gcds = 0,
-				time = 0
-			},
-			resourceRaw = 0,
-			resourceFinal = 0
-		}
-		specCache.shadow.snapshotData.shadowfiendTier30 = {
 			isActive = false,
 			guid = nil,
 			totemId = nil,
@@ -1055,10 +1031,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			duration = 0,
 			charges = 1,
 			maxCharges = 1
-		}
-		specCache.shadow.snapshotData.weakeningReality = {
-			stacks = 0,
-			lastDevouringPlagueCastTime = nil
 		}
 	end
 
@@ -2041,7 +2013,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _castingInsanity = TRB.Data.snapshotData.casting.resourceFinal
 		local castingInsanity = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.Number:RoundTo(_castingInsanity, insanityPrecision, "floor"))
 		--$mbInsanity
-		local _mbInsanity = TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.shadowfiendTier30.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal
+		local _mbInsanity = TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal
 		local mbInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_mbInsanity, insanityPrecision, "floor"))
 		--$mbGcds
 		local _mbGcds = TRB.Data.snapshotData.shadowfiend.remaining.gcds
@@ -2638,10 +2610,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _
 
 		UpdateSpecificShadowfiendValues(TRB.Data.snapshotData.shadowfiend)
-
-		if specId == 3 then
-			UpdateSpecificShadowfiendValues(TRB.Data.snapshotData.shadowfiendTier30)
-		end
 		
 		---@diagnostic disable-next-line: redundant-parameter
 		if specId == 2 and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.shadowfiend) then
@@ -3329,11 +3297,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					if specSettings.bar.showPassive and
 						(TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.auspiciousSpirits) or
-						(TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.shadowfiendTier30.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal) > 0 or
+						(TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal) > 0 or
 						TRB.Data.snapshotData.voidTendrils.resourceFinal > 0) then
-						passiveValue = ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.shadowfiendTier30.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal + TRB.Data.snapshotData.voidTendrils.resourceFinal)
-						if (TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.shadowfiendTier30.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal) > 0 and (castingBarValue + (TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.shadowfiendTier30.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal)) < TRB.Data.character.maxResource then
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (castingBarValue + (TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.shadowfiendTier30.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal)), TRB.Data.character.maxResource)
+						passiveValue = ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal + TRB.Data.snapshotData.voidTendrils.resourceFinal)
+						if (TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal) > 0 and (castingBarValue + (TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal)) < TRB.Data.character.maxResource then
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (castingBarValue + (TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal)), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 							TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 							TRB.Frames.passiveFrame.thresholds[1]:Show()
@@ -3614,8 +3582,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							else
 								TRB.Data.snapshotData.shadowfiend.startTime, TRB.Data.snapshotData.shadowfiend.duration, _, _ = GetSpellCooldown(TRB.Data.spells.shadowfiend.id)
 							end
-						elseif sourceGUID == TRB.Data.snapshotData.shadowfiendTier30.guid then
-							TRB.Data.snapshotData.shadowfiendTier30.swingTime = currentTime
 						end
 						triggerUpdate = true
 					end
@@ -3753,10 +3719,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					elseif spellId == TRB.Data.spells.devouringPlague.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-								TRB.Data.snapshotData.weakeningReality.lastDevouringPlagueCastTime = currentTime
-							end
-
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- DP Applied to Target
 								TRB.Data.snapshotData.targetData.targets[destGUID].devouringPlague = true
 								if type == "SPELL_AURA_APPLIED" then
@@ -3854,12 +3816,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.audio.mindMeltCue = false
 							TRB.Data.snapshotData.audio.mindMelt2Cue = false
 						end
-					elseif spellId == TRB.Data.spells.weakeningReality.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" then
-							TRB.Data.snapshotData.weakeningReality.stacks = TRB.Data.snapshotData.weakeningReality.stacks + 1							
-						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshotData.weakeningReality.stacks = 0
-						end
 					elseif type == "SPELL_SUMMON" and settings.voidTendrilTracker and (spellId == TRB.Data.spells.idolOfCthun_Tendril.id or spellId == TRB.Data.spells.idolOfCthun_Lasher.id) then
 						InitializeVoidTendril(destGUID)
 						if spellId == TRB.Data.spells.idolOfCthun_Tendril.id then
@@ -3877,24 +3833,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif type == "SPELL_SUMMON" and settings.mindbender.enabled and (spellId == TRB.Data.spells.shadowfiend.id or spellId == TRB.Data.spells.mindbender.id) then
 						local currentSf = TRB.Data.snapshotData.shadowfiend
 						local totemId = 1
-						if TRB.Data.snapshotData.weakeningReality.lastDevouringPlagueCastTime == currentTime then
-							print("T30")
-							currentSf = TRB.Data.snapshotData.shadowfiendTier30
-							if TRB.Data.snapshotData.shadowfiend.totemId ~= nil and TRB.Data.snapshotData.shadowfiend.totemId == 1 then
-								totemId = 2
-							end
-						else
-							print("Ability")
-							if TRB.Data.snapshotData.shadowfiendTier30.totemId ~= nil and TRB.Data.snapshotData.shadowfiendTier30.totemId == 1 then
-								totemId = 2
-							end
-						end
-
 						currentSf.guid = sourceGUID
 						currentSf.totemId = totemId
-						print(currentSf.guid, currentSf.totemId)
-					elseif type == "SPELL_SUMMON" then
-					print(spellId)
 					end
 				end
 
@@ -4420,7 +4360,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			elseif var == "$resourceTotal" or var == "$insanityTotal" then
 				if TRB.Data.snapshotData.resource > 0 or
 					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw > 0) or
-					(((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.shadowfiendTier30.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal) > 0) then
+					(((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal) > 0) then
 					valid = true
 				end
 			elseif var == "$resourcePlusCasting" or var == "$insanityPlusCasting" then
@@ -4434,7 +4374,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif var == "$resourcePlusPassive" or var == "$insanityPlusPassive" then
 				if TRB.Data.snapshotData.resource > 0 or
-					((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.shadowfiendTier30.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal) > 0 then
+					((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal) > 0 then
 					valid = true
 				end
 			elseif var == "$casting" then
@@ -4442,11 +4382,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$passive" then
-				if ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.shadowfiendTier30.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal) > 0 then
+				if ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.voidTendrils.resourceFinal) > 0 then
 					valid = true
 				end
 			elseif var == "$mbInsanity" then
-				if TRB.Data.snapshotData.shadowfiend.resourceRaw + TRB.Data.snapshotData.shadowfiendTier30.resourceRaw > 0 then
+				if TRB.Data.snapshotData.shadowfiend.resourceRaw > 0 then
 					valid = true
 				end
 			elseif var == "$mbGcds" then
