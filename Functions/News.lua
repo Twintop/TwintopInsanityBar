@@ -10,9 +10,12 @@ local content = [====[
 _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https://www.curseforge.com/wow/addons/twintops-insanity-bar/files), [Wago](https://addons.wago.io/addons/twintopresourcebar/versions?stability=beta), or via WowUp's beta channel!_
 
 ----
-# 10.0.7.2-release (2023-03-??)
+# 10.0.7.2-release (2023-04-08)
 ## General
 - [#278 - UPDATE](#278) Added clickable links to each of the issue numbers in the news dialog.
+
+## Hunter
+- (FIX) Re-add `$serpentSting` logic variable that had gone missing.
 
 ----
 # 10.0.7.1-release (2023-03-26)
@@ -27,6 +30,7 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 
 ## Druid
 ### Balance
+
 - [#294 - NEW](#294) Add support for Touch of Cosmos (T29 4P bonus). Starfall and Starsurge will now show as usable when first entering Eclispe, regardless of Astral Power.
 - (FIX) Fix Elune's Guidance modifying the threshold for Starsurge and Starfall.
 
