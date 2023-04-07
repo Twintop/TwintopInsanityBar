@@ -1315,6 +1315,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$focusTotal", description = "Current + Passive + Casting Focus Total", printInSettings = true, color = false },
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Focus Total", printInSettings = false, color = false },
 
+			{ variable = "$serpentSting", description = "Is Serpent Sting talented? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 			{ variable = "$ssCount", description = "Number of Serpent Stings active on targets", printInSettings = true, color = false },
 			{ variable = "$ssTime", description = "Time remaining on Serpent Sting on your current target", printInSettings = true, color = false },
 
@@ -1413,7 +1414,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "$lockAndLoadTime", description = "Time remaining on Lock and Load buff", printInSettings = true, color = false },
 
 			{ variable = "$steadyFocusTime", description = "Time remaining on Steady Focus buff", printInSettings = true, color = false },
-			
+
+			{ variable = "$serpentSting", description = "Is Serpent Sting talented? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 			{ variable = "$ssCount", description = "Number of Serpent Stings active on targets", printInSettings = true, color = false },
 			{ variable = "$ssTime", description = "Time remaining on Serpent Sting on your current target", printInSettings = true, color = false },
 
@@ -1503,6 +1505,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			{ variable = "$coordinatedAssaultTime", description = "Time remaining on Coordinated Assault buff", printInSettings = true, color = false },
 
+			{ variable = "$serpentSting", description = "Is Serpent Sting talented? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
 			{ variable = "$ssCount", description = "Number of Serpent Stings active on targets", printInSettings = true, color = false },
 			{ variable = "$ssTime", description = "Time remaining on Serpent Sting on your current target", printInSettings = true, color = false },
 
@@ -1775,7 +1778,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#killShot"] = TRB.Data.spells.killShot.icon
 		lookup["#multiShot"] = TRB.Data.spells.multiShot.icon
 		lookup["#revivePet"] = TRB.Data.spells.revivePet.icon
-		lookup["#scareBeast"] = TRB.Data.spells.scareBeast.icon		
+		lookup["#scareBeast"] = TRB.Data.spells.scareBeast.icon
 		lookup["#serpentSting"] = TRB.Data.spells.serpentSting.icon
 		lookup["$frenzyTime"] = frenzyTime
 		lookup["$frenzyStacks"] = frenzyStacks
@@ -1799,6 +1802,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$barbedShotFocus"] = barbedShotFocus
 		lookup["$barbedShotTicks"] = barbedShotTicks
 		lookup["$barbedShotTime"] = barbedShotTime
+		lookup["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.serpentSting)
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
 		lookup["$regen"] = regenFocus
@@ -1832,6 +1836,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookupLogic["$barbedShotFocus"] = _barbedShotFocus
 		lookupLogic["$barbedShotTicks"] = TRB.Data.snapshotData.barbedShot.ticksRemaining
 		lookupLogic["$barbedShotTime"] = _barbedShotTime
+		lookupLogic["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.serpentSting)
 		lookupLogic["$ssCount"] = _serpentStingCount
 		lookupLogic["$ssTime"] = _serpentStingTime
 		lookupLogic["$regen"] = _regenFocus
@@ -1992,6 +1997,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$trueshotTime"] = trueshotTime
 		lookup["$lockAndLoadTime"] = lockAndLoadTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
+		lookup["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.serpentSting)
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
 		lookup["$focusTotal"] = focusTotal
@@ -2017,6 +2023,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookupLogic["$trueshotTime"] = _trueshotTime
 		lookupLogic["$lockAndLoadTime"] = _lockAndLoadTime
 		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
+		lookupLogic["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.serpentSting)
 		lookupLogic["$ssCount"] = _serpentStingCount
 		lookupLogic["$ssTime"] = _serpentStingTime
 		lookupLogic["$focusTotal"] = _focusTotal
@@ -2186,6 +2193,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#wildfireBomb"] = TRB.Data.spells.wildfireBomb.icon
 		lookup["$coordinatedAssaultTime"] = coordinatedAssaultTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
+		lookup["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.serpentSting)
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
 		lookup["$wildfireBombCharges"] = wildfireBombCharges
@@ -2213,6 +2221,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		lookupLogic["$coordinatedAssaultTime"] = _coordinatedAssaultTime
 		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
+		lookupLogic["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.serpentSting)
 		lookupLogic["$ssCount"] = _serpentStingCount
 		lookupLogic["$ssTime"] = _serpentStingTime
 		lookupLogic["$wildfireBombCharges"] = wildfireBombCharges
@@ -3831,6 +3840,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				TRB.Data.snapshotData.targetData.targets ~= nil and
 				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
 				TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].serpentStingRemaining > 0 then
+				valid = true
+			end
+		elseif var == "$serpentSting" then
+			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.serpentSting) then
 				valid = true
 			end
 		end
