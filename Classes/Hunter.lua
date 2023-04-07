@@ -592,7 +592,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 120360,
 				name = "",
 				icon = "",
-				focus = -60,
+				focus = -30,
 				texture = "",
 				thresholdId = 8,
 				settingKey = "barrage",

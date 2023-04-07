@@ -17,6 +17,10 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 ## Hunter
 - (FIX) Re-add `$serpentSting` logic variable that had gone missing.
 
+### Marksmanship
+
+- (FIX) Change Barrage's Focus cost to 30.
+
 ----
 # 10.0.7.1-release (2023-03-26)
 ## Demon Hunter
