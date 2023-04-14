@@ -3355,7 +3355,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if TRB.Data.spells.predatorRevealed.isActive then
 			local prTime = GetPredatorRevealedRemainingTime()
 			local untilNextTick = TRB.Data.spells.predatorRevealed.tickRate - (currentTime - TRB.Data.snapshotData.predatorRevealed.lastTick)
-			local totalCps = TRB.Functions.Number:RoundTo(prTime / TRB.Data.spells.predatorRevealed.tickRate, 0, "ceil") or 0
+			local totalCps = TRB.Functions.Number:RoundTo(prTime / TRB.Data.spells.predatorRevealed.tickRate, 0, "ceil", true) or 0
 
 			if TRB.Data.snapshotData.predatorRevealed.endTime < currentTime then
 				totalCps = 1

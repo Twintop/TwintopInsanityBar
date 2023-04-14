@@ -764,7 +764,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 155271,
 				idSpawn = 341263,
 				idImpact = 148859,
-				insanity = 2,
+				insanity = 1,
+				targetChance = function(targets)
+					if targets == 0 then
+						return 0
+					else
+						return 0.792*(targets^(-0.816))
+					end
+				end,
 				name = "",
 				icon = "",
 				isTalent = true
@@ -814,14 +821,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				isTalent = true,
-				insanity = -5
+				insanityMod = -5
 			},
 			distortedReality = {
 				id = 409044,
 				name = "",
 				icon = "",
 				isTalent = true,
-				insanity = 10
+				insanityMod = 5
 			},
 			mindFlayInsanity = {
 				id = 391403,
@@ -956,6 +963,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			ttdIsActive = false,
 			currentTargetGuid = nil,
 			auspiciousSpirits = 0,
+			auspiciousSpiritsGenerate = 0,
 			shadowWordPain = 0,
 			vampiricTouch = 0,
 			devouringPlague = 0,
@@ -1450,8 +1458,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			TRB.Data.snapshotData.targetData.auspiciousSpirits = asTotal
+
+			if vtTotal == 0 and asTotal > 0 then
+				TRB.Data.snapshotData.targetData.auspiciousSpiritsGenerate = TRB.Data.spells.auspiciousSpirits.targetChance(1) * TRB.Data.snapshotData.targetData.auspiciousSpirits
+			else
+				TRB.Data.snapshotData.targetData.auspiciousSpiritsGenerate = TRB.Data.spells.auspiciousSpirits.targetChance(vtTotal) * TRB.Data.snapshotData.targetData.auspiciousSpirits
+			end
+
 			if TRB.Data.snapshotData.targetData.auspiciousSpirits < 0 then
 				TRB.Data.snapshotData.targetData.auspiciousSpirits = 0
+				TRB.Data.snapshotData.targetData.auspiciousSpiritsGenerate = 0
 			end
 
 			TRB.Data.snapshotData.targetData.shadowWordPain = swpTotal
@@ -1471,6 +1487,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshotData.targetData.vampiricTouch = 0
 				TRB.Data.snapshotData.targetData.devouringPlague = 0
 				TRB.Data.snapshotData.targetData.auspiciousSpirits = 0
+				TRB.Data.snapshotData.targetData.auspiciousSpiritsGenerate = 0
 			end
 		end
 	end
@@ -2037,8 +2054,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _asCount = TRB.Data.snapshotData.targetData.auspiciousSpirits
 		local asCount = string.format("%.0f", _asCount)
 		--$asInsanity
-		local _asInsanity = CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits
-		local asInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_asInsanity, insanityPrecision, "floor"))
+		local _asInsanity = CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpiritsGenerate
+		local asInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_asInsanity, insanityPrecision, "ceil"))
 		--$passive
 		local _passiveInsanity = _asInsanity + _mbInsanity + _loiInsanity
 		local passiveInsanity = string.format("|c%s%s|r", TRB.Data.settings.priest.shadow.colors.text.passiveInsanity, TRB.Functions.Number:RoundTo(_passiveInsanity, insanityPrecision, "floor"))
@@ -3299,7 +3316,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						(TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.auspiciousSpirits) or
 						(TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal) > 0 or
 						TRB.Data.snapshotData.voidTendrils.resourceFinal > 0) then
-						passiveValue = ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpirits) + TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal + TRB.Data.snapshotData.voidTendrils.resourceFinal)
+						passiveValue = ((CalculateInsanityGain(TRB.Data.spells.auspiciousSpirits.insanity) * TRB.Data.snapshotData.targetData.auspiciousSpiritsGenerate) + TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal + TRB.Data.snapshotData.voidTendrils.resourceFinal)
 						if (TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal) > 0 and (castingBarValue + (TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal)) < TRB.Data.character.maxResource then
 							TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (castingBarValue + (TRB.Data.snapshotData.shadowfiend.resourceFinal + TRB.Data.snapshotData.devouredDespair.resourceFinal)), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
@@ -3333,11 +3350,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.devouringPlague.id then
 									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.mindsEye) then
-										resourceAmount = resourceAmount - TRB.Data.spells.mindsEye.insanity
+										resourceAmount = resourceAmount - TRB.Data.spells.mindsEye.insanityMod
 									end
 
 									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.distortedReality) then
-										resourceAmount = resourceAmount - TRB.Data.spells.distortedReality.insanity
+										resourceAmount = resourceAmount - TRB.Data.spells.distortedReality.insanityMod
 									end
 
 									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
@@ -4069,11 +4086,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.character.devouringPlagueThreshold = -TRB.Data.spells.devouringPlague.insanity
 			
 			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.mindsEye) then
-				TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + TRB.Data.spells.mindsEye.insanity
+				TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + TRB.Data.spells.mindsEye.insanityMod
 			end
 			
 			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.distortedReality) then
-				TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + TRB.Data.spells.distortedReality.insanity
+				TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + TRB.Data.spells.distortedReality.insanityMod
 			end
 
 			TRB.Frames.resourceFrame.thresholds[2]:Hide()
