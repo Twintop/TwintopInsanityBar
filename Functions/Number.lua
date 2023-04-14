@@ -34,7 +34,7 @@ function TRB.Functions.Number:RoundTo(num, numDecimalPlaces, mode)
 			newNum = string.format("%s.%s", whole, chopped)
 		end
 
-		return newNum
+		return tonumber(newNum)
 	elseif mode == "ceil" then
 		local whole, decimal = strsplit(".", newNum, 2)
 
@@ -58,7 +58,7 @@ function TRB.Functions.Number:RoundTo(num, numDecimalPlaces, mode)
 			newNum = string.format("%s.%s", whole, chopped)
 		end
 
-		return newNum
+		return tonumber(newNum)
 	end
 
 	return tonumber(string.format("%." .. numDecimalPlaces .. "f", newNum))

@@ -807,7 +807,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 408468,
 				name = "",
 				icon = "",
-				tickRate = 1.5
+				energizeId = 411344,
+				tickRate = 2.0
 			}
 		}
 
@@ -897,7 +898,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		specCache.feral.snapshotData.predatorRevealed = {
 			spellId = nil,
 			endTime = nil,
-			duration = 0
+			duration = 0,
+			lastTick = nil
 		}
 		specCache.feral.snapshotData.snapshots = {
 			rake = 100,
@@ -3348,6 +3350,42 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 	end
 
+	local function UpdatePredatorRevealed()
+		local currentTime = GetTime()
+		if TRB.Data.spells.predatorRevealed.isActive then
+			local prTime = GetPredatorRevealedRemainingTime()
+			local untilNextTick = TRB.Data.spells.predatorRevealed.tickRate - (currentTime - TRB.Data.snapshotData.predatorRevealed.lastTick)
+			local totalCps = TRB.Functions.Number:RoundTo(prTime / TRB.Data.spells.predatorRevealed.tickRate, 0, "ceil") or 0
+
+			if TRB.Data.snapshotData.predatorRevealed.endTime < currentTime then
+				totalCps = 1
+				untilNextTick = 0
+			elseif untilNextTick < 0 then
+				totalCps = totalCps + 1
+				untilNextTick = 0
+			end
+
+			TRB.Data.snapshotData.predatorRevealed.ticks = totalCps
+			TRB.Data.snapshotData.predatorRevealed.nextTick = currentTime + untilNextTick
+			TRB.Data.snapshotData.predatorRevealed.untilNextTick = untilNextTick
+		elseif TRB.Data.snapshotData.predatorRevealed.lastTick ~= nil and TRB.Data.snapshotData.predatorRevealed.endTime ~= nil then
+			if (currentTime - TRB.Data.snapshotData.predatorRevealed.endTime) < 0.1 then
+				TRB.Data.snapshotData.predatorRevealed.lastTick = nil
+				TRB.Data.snapshotData.predatorRevealed.ticks = 0
+				TRB.Data.snapshotData.predatorRevealed.nextTick = nil
+				TRB.Data.snapshotData.predatorRevealed.untilNextTick = 0
+			end
+		else
+			TRB.Data.snapshotData.predatorRevealed.duration = 0
+			TRB.Data.snapshotData.predatorRevealed.endTime = nil
+			TRB.Data.snapshotData.predatorRevealed.spellId = nil
+			TRB.Data.snapshotData.predatorRevealed.lastTick = nil
+			TRB.Data.snapshotData.predatorRevealed.ticks = 0
+			TRB.Data.snapshotData.predatorRevealed.nextTick = nil
+			TRB.Data.snapshotData.predatorRevealed.untilNextTick = 0
+		end
+	end
+
 	local function UpdateChanneledManaPotion(forceCleanup)
 		if TRB.Data.snapshotData.channeledManaPotion.isActive or forceCleanup then
 			local currentTime = GetTime()
@@ -3526,6 +3564,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function UpdateSnapshot_Feral()
 		UpdateSnapshot()
 		local currentTime = GetTime()
+		UpdatePredatorRevealed()
 		
 		if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.incarnationAvatarOfAshamane) then
 			-- Incarnation: King of the Jungle doesn't show up in-game as a combat log event. Check for it manually instead.
@@ -4222,12 +4261,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 					
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-					
-					local latency = 0--TRB.Functions.Character:GetLatency()
 
 					local prTime = GetPredatorRevealedRemainingTime()
-					local prTotalCps = TRB.Functions.Number:RoundTo(prTime / TRB.Data.spells.predatorRevealed.tickRate, 0, "ceil")
-					local prNextTime = TRB.Data.spells.predatorRevealed.tickRate - (prTime - ((prTotalCps - 1) * TRB.Data.spells.predatorRevealed.tickRate))
+					local prTotalCps = TRB.Data.snapshotData.predatorRevealed.ticks
+					local prNextTick = TRB.Data.spells.predatorRevealed.tickRate - TRB.Data.snapshotData.predatorRevealed.untilNextTick
 					local nextCp = nil
 
 					for x = 1, TRB.Data.character.maxResource2 do
@@ -4245,9 +4282,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								cpColor = specSettings.colors.comboPoints.final
 							end
 						else
-							if prTime > 0 and x <= (TRB.Data.snapshotData.resource2 + prTotalCps) and prNextTime > latency then
+							if prTime ~= nil and prTime > 0 and x <= (TRB.Data.snapshotData.resource2 + prTotalCps) then
 								if x == TRB.Data.snapshotData.resource2 + 1 then
-									TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, prNextTime * 1000, TRB.Data.spells.predatorRevealed.tickRate * 1000)
+									TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, prNextTick * 1000, TRB.Data.spells.predatorRevealed.tickRate * 1000)
 									nextCp = x
 								else
 									TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
@@ -4877,15 +4914,21 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Data.spells.predatorRevealed.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.predatorRevealed.duration, TRB.Data.snapshotData.predatorRevealed.endTime, _, _, _, TRB.Data.snapshotData.predatorRevealed.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.predatorRevealed.id)
 
+							if type == "SPELL_AURA_APPLIED" then						
+								TRB.Data.snapshotData.predatorRevealed.lastTick = currentTime
+							end
+							UpdatePredatorRevealed()
 							--if TRB.Data.settings.druid.feral.audio.predatorRevealed.enabled then
 								---@diagnostic disable-next-line: redundant-parameter
 								--PlaySoundFile(TRB.Data.settings.druid.feral.audio.predatorRevealed.sound, TRB.Data.settings.core.audio.channel.channel)
-							--end
+							--end							
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.predatorRevealed.isActive = false
-							TRB.Data.snapshotData.predatorRevealed.spellId = nil
-							TRB.Data.snapshotData.predatorRevealed.duration = 0
-							TRB.Data.snapshotData.predatorRevealed.endTime = nil
+							UpdatePredatorRevealed()
+						end
+					elseif spellId == TRB.Data.spells.predatorRevealed.energizeId then
+						if type == "SPELL_ENERGIZE" then
+							TRB.Data.snapshotData.predatorRevealed.lastTick = currentTime
 						end
 					end
 				elseif specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then
