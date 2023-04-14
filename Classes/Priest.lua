@@ -765,11 +765,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				idSpawn = 341263,
 				idImpact = 148859,
 				insanity = 1,
-				targetChance = function(targets)
-					if targets == 0 then
+				targetChance = function(num)
+					if num == 0 then
 						return 0
 					else
-						return 0.792*(targets^(-0.816))
+						return 0.8*(num^(-0.8))
 					end
 				end,
 				name = "",
@@ -1459,15 +1459,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			TRB.Data.snapshotData.targetData.auspiciousSpirits = asTotal
 
-			if vtTotal == 0 and asTotal > 0 then
-				TRB.Data.snapshotData.targetData.auspiciousSpiritsGenerate = TRB.Data.spells.auspiciousSpirits.targetChance(1) * TRB.Data.snapshotData.targetData.auspiciousSpirits
-			else
-				TRB.Data.snapshotData.targetData.auspiciousSpiritsGenerate = TRB.Data.spells.auspiciousSpirits.targetChance(vtTotal) * TRB.Data.snapshotData.targetData.auspiciousSpirits
-			end
-
 			if TRB.Data.snapshotData.targetData.auspiciousSpirits < 0 then
 				TRB.Data.snapshotData.targetData.auspiciousSpirits = 0
 				TRB.Data.snapshotData.targetData.auspiciousSpiritsGenerate = 0
+			else
+				TRB.Data.snapshotData.targetData.auspiciousSpiritsGenerate = TRB.Data.spells.auspiciousSpirits.targetChance(asTotal) * TRB.Data.snapshotData.targetData.auspiciousSpirits
 			end
 
 			TRB.Data.snapshotData.targetData.shadowWordPain = swpTotal
