@@ -8,17 +8,34 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
-# 10.1.0.0-beta06 (2023-04-??)
+# 10.1.0.0-beta06 (2023-04-15)
 ## General
+
 - [#292 - UPDATE](#292) Add `IconTexture` to TOC. This shows the addon's icon/logo in the AddOn List menu in game.
+
+## Druid
+### Feral
+
+- [#292 - UPDATE](#292) 10.1.0 changes:
+<br/>&emsp;&ensp;- Rework how Feral T30 4P incoming Combo Points are handled/calculated to improve accuracy.
+<br/>&emsp;&ensp;- Update Feral T30 4P to generate over 2.0 seconds.
+
+## Priest
+### Shadow
+
+- [#292 - UPDATE](#292) 10.1.0 changes:
+<br/>&emsp;&ensp;- Update Distorted Reality's Insanity modifier to be +5.
+<br/>&emsp;&ensp;- Update Auspicious Spirits predicted incoming Insanity to match the formula in SimulationCraft.
 
 ---
 # 10.1.0.0-beta05 (2023-03-30)
 ## General
+
 - [#292 - UPDATE](#292) Fix addon loading LUA errors thanks to `GetAddOnMetadata` being changed to `C_AddOns.GetAddOnMetadata`.
 
 ## Druid
 ### Balance
+
 - [#292 - UPDATE](#292) 10.1.0 changes:
 <br/>&emsp;&ensp;- Update the Astral Power generation of New Moon, Half Moon, and Full Moon.
 
@@ -31,10 +48,12 @@ local content = [====[
 ----
 # 10.1.0.0-beta04 (2023-03-27)
 ## General
+
 - [#278 - UPDATE](#278) Added clickable links to each of the issue numbers in the news dialog.
 
 ## Druid
 ### Feral
+
 - [#292 - UPDATE](#292) 10.1.0 changes:
 <br/>&emsp;&ensp;- Add preliminary support for T30 4P. The next combo point to be generated will fill according to when it will be granted. **THIS IS NOT A FINAL IMPLEMENTATION**
 
@@ -50,6 +69,7 @@ local content = [====[
 
 ## Priest
 ### Shadow
+
 - [#292 - UPDATE](#292) 10.1.0 changes:
 <br/>&emsp;&ensp;- Baseline Insanity adjustments for Mind Spike: Insanity, Void Bolt, Shadowfiend (swing), Mindbender (swing).
 <br/>&emsp;&ensp;- Update Distorted Reality increasing Insanity cost of Devouring Plague.
@@ -58,10 +78,12 @@ local content = [====[
 # 10.1.0.0-beta02 (2023-03-22)
 ## Druid
 ### Balance
+
 - [#294 - UPDATE](#294) Adjust how Touch of Cosmos (T29 4P bonus) is implemented to match changes on PTR.
 
 ## Priest
 ### Shadow
+
 - [#292 - UPDATE](#292) 10.1.0 changes:
 <br/>&emsp;&ensp;- Remove old Death and Madness logic.
 <br/>&emsp;&ensp;- Add Distorted Reality support.
@@ -74,6 +96,7 @@ local content = [====[
 
 ## Druid
 ### Balance
+
 - [#292 - UPDATE](#292) 10.1.0 changes:
 <br/>&emsp;&ensp;- Baseline Astral Power adjustments for Wrath, Starfire, and Stellar Flare.
 <br/>&emsp;&ensp;- Soul of the Forest only increases Wrath's incoming Astral Power by 50%. *Starfire support TBD.*
@@ -99,14 +122,31 @@ local content = [====[
 <br/>&emsp;&ensp;- Add Mind Spike: Insanity support.
 
 ----
+# 10.0.7.2-release (2023-04-15)
+## General
+
+- [#278 - UPDATE](#278) Added clickable links to each of the issue numbers in the news dialog.
+
+## Hunter
+
+- (FIX) Re-add `$serpentSting` logic variable that had gone missing.
+
+### Marksmanship
+
+- (FIX) Change Barrage's Focus cost to 30.
+- (FIX) Update Steady Focus to use the correct TalentID.
+
+----
 # 10.0.7.1-release (2023-03-26)
 ## Demon Hunter
 ### Havoc
+
 - [#296 - FIX](#296) Restore access to Havoc's options menu.
 
 ----
 # 10.0.7.0-release (2023-03-22)
 ## General
+
 - (FIX) Correct a number of default advanced bar text that would render improperly.
 
 ## Druid
