@@ -10,7 +10,7 @@ local content = [====[
 _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https://www.curseforge.com/wow/addons/twintops-insanity-bar/files), [Wago](https://addons.wago.io/addons/twintopresourcebar/versions?stability=beta), or via WowUp's beta channel!_
 
 ----
-# 10.0.7.2-release (2023-04-08)
+# 10.0.7.2-release (2023-04-15)
 ## General
 - [#278 - UPDATE](#278) Added clickable links to each of the issue numbers in the news dialog.
 
@@ -20,6 +20,7 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 ### Marksmanship
 
 - (FIX) Change Barrage's Focus cost to 30.
+- (FIX) Update Steady Focus to use the correct TalentID.
 
 ----
 # 10.0.7.1-release (2023-03-26)
