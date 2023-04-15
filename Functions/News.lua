@@ -12,9 +12,11 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 ----
 # 10.0.7.2-release (2023-04-15)
 ## General
+
 - [#278 - UPDATE](#278) Added clickable links to each of the issue numbers in the news dialog.
 
 ## Hunter
+
 - (FIX) Re-add `$serpentSting` logic variable that had gone missing.
 
 ### Marksmanship
@@ -26,11 +28,13 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 # 10.0.7.1-release (2023-03-26)
 ## Demon Hunter
 ### Havoc
+
 - [#296 - FIX](#296) Restore access to Havoc's options menu.
 
 ----
 # 10.0.7.0-release (2023-03-22)
 ## General
+
 - (FIX) Correct a number of default advanced bar text that would render improperly.
 
 ## Druid
