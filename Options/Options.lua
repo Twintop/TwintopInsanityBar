@@ -828,15 +828,15 @@ local function ConstructImportExportPanel()
 		button1 = "Close",
 		hasEditBox = true,
 		hasWideEditBox = true,
-		editBoxWidth = 500,
+		editBoxWidth = 400,
 		timeout = 0,
 		whileDead = true,
-		OnShow = function(self)
-			self:SetWidth(420)
-			local editBox = _G[self:GetName() .. "WideEditBox"] or _G[self:GetName() .. "EditBox"]
-			editBox:SetText(self.text.text_arg1)
-			editBox:SetFocus()
-			editBox:HighlightText(false)
+		OnShow = function(self, data)
+			self:SetWidth(450)
+			self.text:SetFormattedText(data.message)
+			self.editBox:SetText(data.exportString)
+            self.editBox:SetAutoFocus(true)
+            self.editBox:HighlightText()
 		end,
 		EditBoxOnEscapePressed = function(self)
 			self:GetParent():Hide()

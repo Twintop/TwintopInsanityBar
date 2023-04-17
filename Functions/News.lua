@@ -46,80 +46,16 @@ local content = [====[
 <br/>&emsp;&ensp;- Remove previous T30 4P tracking of multiple Shadowfiends/Mindbenders.
 
 ----
-# 10.1.0.0-beta04 (2023-03-27)
+# 10.0.7.3-release (2023-04-20)
 ## General
 
-- [#278 - UPDATE](#278) Added clickable links to each of the issue numbers in the news dialog.
+- [#298 - FIX](#298) Fix an issue where PvP ability threshold lines would show up when enabled even if you weren't talented in to the associated PvP Talent.
+<br/>&emsp;&ensp;- This fix applies to: Devastation Evokers, Beast Mastery Hunters, Marksmanship Hunters, Assassination Rogues, and Outlaw Rogues.
 
-## Druid
-### Feral
+## Hunter
+### Beast Mastery
 
-- [#292 - UPDATE](#292) 10.1.0 changes:
-<br/>&emsp;&ensp;- Add preliminary support for T30 4P. The next combo point to be generated will fill according to when it will be granted. **THIS IS NOT A FINAL IMPLEMENTATION**
-
-## Priest
-### Shadow
-
-- [#292 - UPDATE](#292) 10.1.0 changes:
-<br/>&emsp;&ensp;- Mind Flay: Insanity / Mind Spike: Insanity buff duration refreshes on stacks now.
-<br/>&emsp;&ensp;- Add support for T30 4P via tracking multiple active Shadowfiends/Mindbenders.
-
-----
-# 10.1.0.0-beta03 (2023-03-23)
-
-## Priest
-### Shadow
-
-- [#292 - UPDATE](#292) 10.1.0 changes:
-<br/>&emsp;&ensp;- Baseline Insanity adjustments for Mind Spike: Insanity, Void Bolt, Shadowfiend (swing), Mindbender (swing).
-<br/>&emsp;&ensp;- Update Distorted Reality increasing Insanity cost of Devouring Plague.
-
-----
-# 10.1.0.0-beta02 (2023-03-22)
-## Druid
-### Balance
-
-- [#294 - UPDATE](#294) Adjust how Touch of Cosmos (T29 4P bonus) is implemented to match changes on PTR.
-
-## Priest
-### Shadow
-
-- [#292 - UPDATE](#292) 10.1.0 changes:
-<br/>&emsp;&ensp;- Remove old Death and Madness logic.
-<br/>&emsp;&ensp;- Add Distorted Reality support.
-
-----
-# 10.1.0.0-beta01 (2023-03-11)
-## General
-
-- [#292 - UPDATE](#292) Updates to the bar to make it usable. Not all modifications are complete / this is a work in progress!
-
-## Druid
-### Balance
-
-- [#292 - UPDATE](#292) 10.1.0 changes:
-<br/>&emsp;&ensp;- Baseline Astral Power adjustments for Wrath, Starfire, and Stellar Flare.
-<br/>&emsp;&ensp;- Soul of the Forest only increases Wrath's incoming Astral Power by 50%. *Starfire support TBD.*
-<br/>&emsp;&ensp;- Nature's Balance passive Astral Power generation values updated. *Bar may not hide properly in all situations.*
-<br/>&emsp;&ensp;- Elune's Guidance Astral Power reduction to Starsurge and Starfall updated.
-
-### Feral
-
-- [#292 - UPDATE](#292) 10.1.0 changes:
-<br/>&emsp;&ensp;- Relentless Predator's Energy modifier for Ferocious Bite updated to 80% (was 60%).
-
-## Priest
-### Shadow
-
-- [#292 - UPDATE](#292) 10.1.0 changes:
-<br/>&emsp;&ensp;- Remove old spells/abilities: Dark Void, Mind Sear, Surge of Darkness, and Piercing Shadows.
-<br/>&emsp;&ensp;- Baseline Insanity adjustments for Void Torrent, Mind Flay: Insanity, Auspicious Spirits, and Void Tendril + Void Lasher.
-<br/>&emsp;&ensp;- Remove Mind Melt from granting an instant Mind Blast.
-<br/>&emsp;&ensp;- Remove "spending" bar color config.
-<br/>&emsp;&ensp;- Remove all references to Mind Sear.
-<br/>&emsp;&ensp;- Voidtouched support works automagically, allowing maximum Insanity to be 150.
-<br/>&emsp;&ensp;- Add Mind's Eye support, reducing Devouring Plague's cost from 50 -> 45.
-<br/>&emsp;&ensp;- Add Mind Spike: Insanity support.
+- [#299 - NEW](#299) Various WIP Beast Cleave enhancements.
 
 ----
 # 10.0.7.2-release (2023-04-15)
@@ -142,10 +78,13 @@ local content = [====[
 ### Havoc
 
 - [#296 - FIX](#296) Restore access to Havoc's options menu.
+# 10.1.0.0-beta04 (2023-03-27)
+## General
 
 ----
 # 10.0.7.0-release (2023-03-22)
 ## General
+
 
 - (FIX) Correct a number of default advanced bar text that would render improperly.
 
@@ -209,6 +148,9 @@ local content = [====[
 ## Healers
 
 - [#265 - UPDATE](#265) Add an option to hide the threshold line of Conjured Chillglobe while it is on cooldown.
+## Healers
+
+- [#265 - UPDATE](#265) Add an option to hide the threshold line of Conjured Chillglobe while it is on cooldown.
 
 ## Priest
 ### Holy
@@ -219,7 +161,7 @@ local content = [====[
 ## Shaman
 ### Elemental
 
-- [#290 - HOTFIX) Frost Shocks that are buffed by Icefury now generate 14 Maelstrom.
+- [#290 - HOTFIX](#290) Frost Shocks that are buffed by Icefury now generate 14 Maelstrom.
 
 ----
 # 10.0.5.6-release (2023-02-24)
@@ -783,7 +725,7 @@ function TRB.Functions.News:BuildNewsPopup()
     -- ... and this is the popup it opens.
     StaticPopupDialogs["LIBMARKDOWNDEMOFRAME_URL"] = {
         OnShow = function(self, data)
-			self:SetWidth(420)
+			self:SetWidth(450)
             self.text:SetFormattedText("Here's a link to " .. data.title)
             self.editBox:SetText(data.url)
             self.editBox:SetAutoFocus(true)
@@ -799,13 +741,13 @@ function TRB.Functions.News:BuildNewsPopup()
 			self:GetParent():Hide()
         end,
         text = "",
-        wide = true,
-        closeButton = true,
         button1 = "OK",
-        timeout = 60,
         hasEditBox = true,
         hasWideEditBox = true,
-        editBoxWidth = 500,
+        editBoxWidth = 400,
+        timeout = 60,
+		whileDead = true,
+        closeButton = true,
         hideOnEscape = true
     }
 end

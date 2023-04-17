@@ -3369,7 +3369,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							--The rest isn't used. Keeping it here for consistency until I can finish abstracting this whole mess out
 							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-							elseif spell.isPvp and not TRB.Data.character.isPvp then
+							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
 								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and

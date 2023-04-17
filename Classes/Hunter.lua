@@ -592,7 +592,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 120360,
 				name = "",
 				icon = "",
-				focus = -60,
+				focus = -30,
 				texture = "",
 				thresholdId = 8,
 				settingKey = "barrage",
@@ -734,6 +734,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			},
 			steadyFocus = {
 				id = 193534,
+				talentId = 193533,
 				talentId = 193533,
 				name = "",
 				icon = "",
@@ -2653,7 +2654,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								end
-							elseif spell.isPvp and not TRB.Data.character.isPvp then
+							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
@@ -2915,7 +2916,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								end
 							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-							elseif spell.isPvp and not TRB.Data.character.isPvp then
+							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
 								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
@@ -3106,7 +3107,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								end
 							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-							elseif spell.isPvp and not TRB.Data.character.isPvp then
+							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
 								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and

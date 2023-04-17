@@ -68,7 +68,8 @@ end
 function TRB.Functions.Talent:IsTalentActive(spell)
 	return spell.baseline == true or
 		(TRB.Data.talents[spell.id] ~= nil and TRB.Data.talents[spell.id].currentRank > 0) or
-		(TRB.Data.talents[spell.talentId] ~= nil and TRB.Data.talents[spell.talentId].currentRank > 0)
+		(TRB.Data.talents[spell.talentId] ~= nil and TRB.Data.talents[spell.talentId].currentRank > 0) or
+		(spell.isPvp and IsPlayerSpell(spell.id))
 end
 
 
@@ -81,10 +82,10 @@ function TRB.Functions.Talent:ArePvpTalentsActive()
 		return false
 	else
 		local talents = C_SpecializationInfo.GetAllSelectedPvpTalentIDs()
-		for _, pvptalent in pairs(talents) do
+		for _, pvpTalent in pairs(talents) do
 ---@diagnostic disable-next-line: missing-parameter
-			local spellID = select(6, GetPvpTalentInfoByID(pvptalent))
-			if IsPlayerSpell(spellID) then
+			local spellId = select(6, GetPvpTalentInfoByID(pvpTalent))
+			if IsPlayerSpell(spellId) then
 				return true
 			end
 		end
