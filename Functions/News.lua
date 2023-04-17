@@ -10,6 +10,18 @@ local content = [====[
 _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https://www.curseforge.com/wow/addons/twintops-insanity-bar/files), [Wago](https://addons.wago.io/addons/twintopresourcebar/versions?stability=beta), or via WowUp's beta channel!_
 
 ----
+# 10.0.7.3-release (2023-04-20)
+## General
+
+- [#298 - FIX](#298) Fix an issue where PvP ability threshold lines would show up when enabled even if you weren't talented in to the associated PvP Talent.
+<br/>&emsp;&ensp;- This fix applies to: Devastation Evokers, Beast Mastery Hunters, Marksmanship Hunters, Assassination Rogues, and Outlaw Rogues.
+
+## Hunter
+### Beast Mastery
+
+- [#299 - NEW](#299) Various WIP Beast Cleave enhancements.
+
+----
 # 10.0.7.2-release (2023-04-15)
 ## General
 

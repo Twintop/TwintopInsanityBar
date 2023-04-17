@@ -3281,7 +3281,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											end
 										end
 									end
-								elseif spell.isPvp and not TRB.Data.character.isPvp then
+								elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 									showThreshold = false
 								elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
@@ -3607,7 +3607,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 										end
 									end
-								elseif spell.isPvp and not TRB.Data.character.isPvp then
+								elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 									showThreshold = false
 								elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false

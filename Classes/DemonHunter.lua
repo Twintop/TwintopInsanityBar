@@ -1011,7 +1011,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 								showThreshold = false
 							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-							elseif spell.isPvp and not TRB.Data.character.isPvp then
+							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.deathSweep.id then

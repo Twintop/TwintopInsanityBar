@@ -1998,7 +1998,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-							elseif spell.isPvp and not TRB.Data.character.isPvp then
+							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
