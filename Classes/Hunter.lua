@@ -735,7 +735,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			steadyFocus = {
 				id = 193534,
 				talentId = 193533,
-				talentId = 193533,
 				name = "",
 				icon = "",
 				duration = 15,

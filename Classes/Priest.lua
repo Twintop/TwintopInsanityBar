@@ -763,7 +763,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			auspiciousSpirits = {
 				id = 155271,
 				idSpawn = 341263,
-				idImpact = 148859,
+				idImpact = 413231,
 				insanity = 1,
 				targetChance = function(num)
 					if num == 0 then
