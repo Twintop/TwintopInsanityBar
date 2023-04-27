@@ -481,7 +481,7 @@ local function ConstructAddonOptionsPanel()
 		elseif value < min then
 			value = min
 		else
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		end
 
 		self.EditBox:SetText(value)
@@ -515,7 +515,7 @@ local function ConstructAddonOptionsPanel()
 			value = min
 		end
 
-		value = TRB.Functions.Number:RoundTo(value, 0)
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 		self.EditBox:SetText(value)
 		TRB.Data.settings.core.ttd.precision = value
 	end)
@@ -535,7 +535,7 @@ local function ConstructAddonOptionsPanel()
 		elseif value < min then
 			value = min
 		else
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		end
 
 		self.EditBox:SetText(value)
@@ -552,7 +552,7 @@ local function ConstructAddonOptionsPanel()
 		elseif value < min then
 			value = min
 		else
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		end
 
 		self.EditBox:SetText(value)

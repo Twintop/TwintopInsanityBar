@@ -1179,7 +1179,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 1)
+			value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
 			self.EditBox:SetText(value)
 			spec.overcapThreshold = value
 		end)
@@ -1304,7 +1304,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 0)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			spec.hastePrecision = value
 		end)
@@ -1524,7 +1524,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.generation.time = value
 		end)
@@ -2168,7 +2168,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfTrueshotTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.endOfTrueshot.timeMax = value
 		end)
@@ -2234,7 +2234,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.steadyFocusTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.steadyFocus.timeMax = value
 		end)
@@ -2260,7 +2260,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 1)
+			value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
 			self.EditBox:SetText(value)
 			spec.overcapThreshold = value
 		end)
@@ -2398,7 +2398,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 0)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			spec.hastePrecision = value
 		end)
@@ -2537,7 +2537,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.aimedShotTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.audio.aimedShot.time = value
 		end)
@@ -2868,7 +2868,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.generation.time = value
 		end)
@@ -3437,7 +3437,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfCoordinatedAssaultTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.endOfCoordinatedAssault.timeMax = value
 		end)
@@ -3463,7 +3463,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 1)
+			value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
 			self.EditBox:SetText(value)
 			spec.overcapThreshold = value
 		end)
@@ -3595,7 +3595,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 0)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			spec.hastePrecision = value
 		end)
@@ -3817,7 +3817,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.generation.time = value
 		end)

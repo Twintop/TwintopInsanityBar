@@ -792,7 +792,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 						TRB.Data.snapshotData.casting.endTime = currentChannelEndTime / 1000
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.eyeBeam.icon
 						local remainingTime = TRB.Data.snapshotData.casting.endTime - currentTime
-						local ticks = TRB.Functions.Number:RoundTo(remainingTime / (TRB.Data.spells.blindFury.tickRate * (gcd / 1.5)), 0, "ceil")
+						local ticks = TRB.Functions.Number:RoundTo(remainingTime / (TRB.Data.spells.blindFury.tickRate * (gcd / 1.5)), 0, "ceil", true)
 						local fury = ticks * TRB.Data.spells.blindFury.fury
 						TRB.Data.snapshotData.casting.resourceRaw = fury
 						TRB.Data.snapshotData.casting.resourceFinal = fury

@@ -1099,7 +1099,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfEclipseTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.endOfEclipse.timeMax = value
 		end)
@@ -1125,7 +1125,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 1)
+			value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
 			self.EditBox:SetText(value)
 			spec.overcapThreshold = value
 		end)
@@ -1258,7 +1258,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 0)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			spec.hastePrecision = value
 		end)
@@ -1268,7 +1268,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.astralPowerPrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 0)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			spec.astralPowerPrecision = value
 		end)
@@ -2190,7 +2190,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 1)
+			value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
 			self.EditBox:SetText(value)
 			spec.overcapThreshold = value
 		end)
@@ -2321,7 +2321,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 0)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			spec.hastePrecision = value
 		end)
@@ -2540,7 +2540,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.energyGenerationTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.generation.time = value
 		end)
@@ -3006,7 +3006,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfIncarnationTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.endOfIncarnation.timeMax = value
 		end)
@@ -3100,7 +3100,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 0)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			spec.hastePrecision = value
 		end)

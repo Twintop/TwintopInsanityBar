@@ -2636,7 +2636,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			
 			if TRB.Data.snapshotData.devouredDespair.isActive and TRB.Data.snapshotData.devouredDespair.endTime ~= nil and TRB.Data.snapshotData.devouredDespair.endTime > currentTime then
 				_, _, _, _, TRB.Data.snapshotData.devouredDespair.duration, TRB.Data.snapshotData.devouredDespair.endTime, _, _, _, TRB.Data.snapshotData.devouredDespair.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.devouredDespair.id)
-				TRB.Data.snapshotData.devouredDespair.ticks = TRB.Functions.Number:RoundTo(TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.devouredDespair), 0, "ceil")
+				TRB.Data.snapshotData.devouredDespair.ticks = TRB.Functions.Number:RoundTo(TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.devouredDespair), 0, "ceil", true)
 				TRB.Data.snapshotData.devouredDespair.resourceRaw = TRB.Data.snapshotData.devouredDespair.ticks * TRB.Data.spells.devouredDespair.insanity
 				TRB.Data.snapshotData.devouredDespair.resourceFinal = CalculateInsanityGain(TRB.Data.snapshotData.devouredDespair.resourceRaw)
 			else
@@ -3489,13 +3489,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	barContainerFrame:SetScript("OnEvent", function(self, event, ...)
-		--local currentTime = GetTime()
+		local currentTime = GetTime()
 		local triggerUpdate = false
 		local _
 		local specId = GetSpecialization()
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-			local currentTime, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName, _, auraType = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
+			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName, _, auraType = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 
 			local settings
 
@@ -4382,8 +4382,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$overcap" or var == "$insanityOvercap" or var == "$resourceOvercap" then
-				if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.priest.shadow.overcapThreshold then
-					valid = true
+				local threshold = ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal)
+				if TRB.Data.settings.priest.shadow.overcap.mode == "relative" and (TRB.Data.character.maxResource + TRB.Data.settings.priest.shadow.overcap.relative) < threshold then
+					return true
+				elseif TRB.Data.settings.priest.shadow.overcap.mode == "fixed" and TRB.Data.settings.priest.shadow.overcap.fixed < threshold then
+					return true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$insanityPlusPassive" then
 				if TRB.Data.snapshotData.resource > 0 or

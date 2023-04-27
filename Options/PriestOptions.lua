@@ -402,6 +402,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				gcdsMax=2,
 				timeMax=3.0
 			},
+			overcap={
+				threshold=95,
+				mode="relative",
+				relative=0,
+				fixed=100
+			},
 			colors={
 				text={
 					currentInsanity="FFC2A3E0",
@@ -912,7 +918,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfApotheosisTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.endOfApotheosis.timeMax = value
 		end)
@@ -1009,7 +1015,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 0)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			spec.hastePrecision = value
 		end)
@@ -1489,7 +1495,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.shadowfiendTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.shadowfiend.timeMax = value
 		end)
@@ -2059,23 +2065,64 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfVoidformTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.endOfVoidform.timeMax = value
 		end)
 
+
 		yCoord = yCoord - 40
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
 
-		yCoord = yCoord - 30
-		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 100, spec.overcapThreshold, 0.5, 1,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
+		yCoord = yCoord - 40
+		controls.checkBoxes.overcapModeRelative = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Overcap_RadioButton_Relative", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.overcapModeRelative
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Relative offset from maximum")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Set the overcap to be some relative value below your current maximum Insanity. Example: when the maximum Insanity is 150, setting this to -25 will cause overcapping to occur at 125 Insanity."
+		if spec.overcap.mode == "relative" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.overcapModeRelative:SetChecked(true)
+			controls.checkBoxes.overcapModeFixed:SetChecked(false)
+			spec.overcap.mode = "relative"
+		end)
+
+		title = "Relative Offset Amount"
+		controls.overcapRelative = TRB.Functions.OptionsUi:BuildSlider(parent, title, -150, 0, spec.overcap.relative, 1, 2,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.overcapRelative:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 1)
-			self.EditBox:SetText(value)
-			spec.overcapThreshold = value
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+			spec.overcap.relative = value
+		end)
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.overcapModeFixed = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Overcap_RadioButton_Fixed", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.overcapModeFixed
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Fixed value")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Set the overcap to be at an exact value, regardless of maximum Insanity."
+		if spec.overcap.mode == "fixed" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.overcapModeRelative:SetChecked(false)
+			controls.checkBoxes.overcapModeFixed:SetChecked(true)
+			spec.overcap.mode = "fixed"
+		end)
+
+		title = "Overcap Above"
+		controls.overcapFixed = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 150, spec.overcap.fixed, 1, 2,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.overcapFixed:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+			spec.overcap.fixed = value
 		end)
 
 
@@ -2214,7 +2261,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = spec.hasteThreshold
 			end
 
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.hasteApproachingThreshold = value
 		end)
@@ -2254,7 +2301,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = spec.hasteApproachingThreshold
 			end
 
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.hasteThreshold = value
 		end)
@@ -2267,7 +2314,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 0)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			spec.hastePrecision = value
 		end)
@@ -2277,7 +2324,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.insanityPrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 0)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			spec.insanityPrecision = value
 		end)
@@ -2633,7 +2680,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.mindbenderTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.mindbender.timeMax = value
 		end)

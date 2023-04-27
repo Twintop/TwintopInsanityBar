@@ -1805,6 +1805,29 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				end
 			end
 
+			--[[
+			if spellId == 409898 and type == "SPELL_AURA_APPLIED" then
+				local a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q = TRB.Functions.Aura:FindBuffById(409898)
+				print("a",a)
+				print("b",b)
+				print("c",c)
+				print("d",d)
+				print("e",e)
+				print("f",f)
+				print("g",g)
+				print("h",h)
+				print("i",i)
+				print("j",j)
+				print("k",k)
+				print("l",l)
+				print("m",m)
+				print("n",n)
+				print("o",o)
+				print("p",p)
+				print("q",q)
+			end
+			]]
+
 			if sourceGUID == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "devastation" then --Devastation					
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "preservation" then

@@ -2294,8 +2294,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local pulsarRemainingPercent = string.format("%.1f", TRB.Functions.Number:RoundTo(_pulsarRemainingPercent * 100, 1))
 		--local pulsarNextStarsurge = ""
 		--local pulsarNextStarfall = ""
-		local pulsarStarsurgeCount = TRB.Functions.Number:RoundTo(pulsarRemaining / -TRB.Data.spells.starsurge.astralPower, 0, ceil)
-		local pulsarStarfallCount = TRB.Functions.Number:RoundTo(pulsarRemaining / -TRB.Data.spells.starfall.astralPower, 0, ceil)
+		local pulsarStarsurgeCount = TRB.Functions.Number:RoundTo(pulsarRemaining / -TRB.Data.spells.starsurge.astralPower, 0, ceil, true)
+		local pulsarStarfallCount = TRB.Functions.Number:RoundTo(pulsarRemaining / -TRB.Data.spells.starfall.astralPower, 0, ceil, true)
 		
 		----------------------------
 
@@ -2691,27 +2691,27 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			rakeTime = string.format("%.1f", _rakeTime)
 			thrashTime = string.format("%.1f", _thrashTime)
 
-			ripSnapshot = TRB.Functions.Number:RoundTo(100 * _ripSnapshot, 0, "floor")
-			rakeSnapshot = TRB.Functions.Number:RoundTo(100 * _rakeSnapshot, 0, "floor")
-			thrashSnapshot = TRB.Functions.Number:RoundTo(100 * _thrashSnapshot, 0, "floor")
+			ripSnapshot = TRB.Functions.Number:RoundTo(100 * _ripSnapshot, 0, "floor", true)
+			rakeSnapshot = TRB.Functions.Number:RoundTo(100 * _rakeSnapshot, 0, "floor", true)
+			thrashSnapshot = TRB.Functions.Number:RoundTo(100 * _thrashSnapshot, 0, "floor", true)
 
-			ripCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotRip, 0, "floor")
-			rakeCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotRake, 0, "floor")
-			thrashCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotThrash, 0, "floor")
+			ripCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotRip, 0, "floor", true)
+			rakeCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotRake, 0, "floor", true)
+			thrashCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotThrash, 0, "floor", true)
 
-			ripPercent = TRB.Functions.Number:RoundTo(100 * _ripPercent, 0, "floor")
-			rakePercent = TRB.Functions.Number:RoundTo(100 * _rakePercent, 0, "floor")
-			thrashPercent = TRB.Functions.Number:RoundTo(100 * _thrashPercent, 0, "floor")
+			ripPercent = TRB.Functions.Number:RoundTo(100 * _ripPercent, 0, "floor", true)
+			rakePercent = TRB.Functions.Number:RoundTo(100 * _rakePercent, 0, "floor", true)
+			thrashPercent = TRB.Functions.Number:RoundTo(100 * _thrashPercent, 0, "floor", true)
 
 			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true then
 				moonfireTime = string.format("%.1f", _moonfireTime)
-				moonfireSnapshot = TRB.Functions.Number:RoundTo(100 * _moonfireSnapshot, 0, "floor")
-				moonfireCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor")
-				moonfirePercent = TRB.Functions.Number:RoundTo(100 * _moonfirePercent, 0, "floor")
+				moonfireSnapshot = TRB.Functions.Number:RoundTo(100 * _moonfireSnapshot, 0, "floor", true)
+				moonfireCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor", true)
+				moonfirePercent = TRB.Functions.Number:RoundTo(100 * _moonfirePercent, 0, "floor", true)
 			else
 				moonfireTime = string.format("%.1f", 0)
 				moonfireSnapshot = 0
-				moonfireCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor")
+				moonfireCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor", true)
 				moonfirePercent = 0
 			end
 		end
