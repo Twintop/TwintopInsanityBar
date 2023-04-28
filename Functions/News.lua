@@ -8,54 +8,52 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
-# 10.1.0.0-beta06 (2023-04-15)
+# 10.1.0.0-release (2023-05-02)
 ## General
 
+- [#300 - UPDATE](#300) Greatly improve resource overcap support and customization.
+<br/>&emsp;&ensp;- In addition to the existing "fixed" mode, an additional configuration option to set the overcap amount relative to your maximum resource has been added and set as the default behavior.
+<br/>&emsp;&ensp;- Bar border and resource text will not change to the overcap color while out of combat.
 - [#292 - UPDATE](#292) Add `IconTexture` to TOC. This shows the addon's icon/logo in the AddOn List menu in game.
-
-## Druid
-### Feral
-
-- [#292 - UPDATE](#292) 10.1.0 changes:
-<br/>&emsp;&ensp;- Rework how Feral T30 4P incoming Combo Points are handled/calculated to improve accuracy.
-<br/>&emsp;&ensp;- Update Feral T30 4P to generate over 2.0 seconds.
-
-## Priest
-### Shadow
-
-- [#292 - UPDATE](#292) 10.1.0 changes:
-<br/>&emsp;&ensp;- Update Distorted Reality's Insanity modifier to be +5.
-<br/>&emsp;&ensp;- Update Auspicious Spirits predicted incoming Insanity to match the formula in SimulationCraft.
-
----
-# 10.1.0.0-beta05 (2023-03-30)
-## General
-
-- [#292 - UPDATE](#292) Fix addon loading LUA errors thanks to `GetAddOnMetadata` being changed to `C_AddOns.GetAddOnMetadata`.
+- [#298 - FIX](#298) Fix an issue where PvP ability threshold lines would show up when enabled even if you weren't talented in to the associated PvP Talent.
+<br/>&emsp;&ensp;- This fix applies to: Devastation Evokers, Beast Mastery Hunters, Marksmanship Hunters, Assassination Rogues, and Outlaw Rogues.
 
 ## Druid
 ### Balance
 
 - [#292 - UPDATE](#292) 10.1.0 changes:
 <br/>&emsp;&ensp;- Update the Astral Power generation of New Moon, Half Moon, and Full Moon.
+<br/>&emsp;&ensp;- Baseline Astral Power adjustments for Wrath, Starfire, and Stellar Flare.
+<br/>&emsp;&ensp;- Soul of the Forest only increases Wrath's incoming Astral Power by 50%.
+<br/>&emsp;&ensp;- Nature's Balance passive Astral Power generation values updated.
+<br/>&emsp;&ensp;- Elune's Guidance Astral Power reduction to Starsurge and Starfall updated.
+- [#294 - UPDATE](#294) Adjust how Touch of Cosmos (T29 4P bonus) is implemented to match changes in 10.1.0.
 
-## Priest
-### Shadow
+### Feral
 
 - [#292 - UPDATE](#292) 10.1.0 changes:
-<br/>&emsp;&ensp;- Remove previous T30 4P tracking of multiple Shadowfiends/Mindbenders.
-
-----
-# 10.0.7.3-release (2023-04-20)
-## General
-
-- [#298 - FIX](#298) Fix an issue where PvP ability threshold lines would show up when enabled even if you weren't talented in to the associated PvP Talent.
-<br/>&emsp;&ensp;- This fix applies to: Devastation Evokers, Beast Mastery Hunters, Marksmanship Hunters, Assassination Rogues, and Outlaw Rogues.
+<br/>&emsp;&ensp;- Relentless Predator's Energy modifier for Ferocious Bite updated to 80% (was 60%).
+<br/>&emsp;&ensp;- Rework how Feral T30 4P incoming Combo Points are handled/calculated to improve accuracy.
+<br/>&emsp;&ensp;- Update Feral T30 4P to generate over 2.0 seconds.
 
 ## Hunter
 ### Beast Mastery
 
 - [#299 - NEW](#299) Various WIP Beast Cleave enhancements.
+
+## Priest
+### Shadow
+
+- [#292 - UPDATE](#292) 10.1.0 changes:
+<br/>&emsp;&ensp;- Remove old spells/abilities: Dark Void, Mind Sear, Surge of Darkness, Piercing Shadows, Death and Madness (incoming over time).
+<br/>&emsp;&ensp;- Baseline Insanity adjustments for Void Torrent, Mind Flay: Insanity, Auspicious Spirits, Void Bolt, Shadowfiend (swing), Mindbender (swing), Void Tendril (tick), and Void Lasher (tick).
+<br/>&emsp;&ensp;- Remove Mind Melt from granting an instant Mind Blast.
+<br/>&emsp;&ensp;- Remove "spending" bar color config.
+<br/>&emsp;&ensp;- Remove all references to Mind Sear.
+<br/>&emsp;&ensp;- Add support for Devouring Plague's Insanity cost being modified by Distorted Reality and Mind's Eye.
+<br/>&emsp;&ensp;- Voidtouched support works automagically, allowing maximum Insanity to be 150.
+<br/>&emsp;&ensp;- Add Mind Spike: Insanity in addition to current Mind Flay: Insanity support.
+<br/>&emsp;&ensp;- Update Auspicious Spirits predicted incoming Insanity to match the formula in SimulationCraft.
 
 ----
 # 10.0.7.2-release (2023-04-15)
@@ -84,7 +82,6 @@ local content = [====[
 ----
 # 10.0.7.0-release (2023-03-22)
 ## General
-
 
 - (FIX) Correct a number of default advanced bar text that would render improperly.
 

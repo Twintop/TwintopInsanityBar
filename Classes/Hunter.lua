@@ -1638,23 +1638,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local currentFocusColor = TRB.Data.settings.hunter.beastMastery.colors.text.current
 		local castingFocusColor = TRB.Data.settings.hunter.beastMastery.colors.text.casting
-
-		if TRB.Data.settings.hunter.beastMastery.colors.text.overcapEnabled and overcap then
-			currentFocusColor = TRB.Data.settings.hunter.beastMastery.colors.text.overcap
-			castingFocusColor = TRB.Data.settings.hunter.beastMastery.colors.text.overcap
-		elseif TRB.Data.settings.hunter.beastMastery.colors.text.overThresholdEnabled then
-			local _overThreshold = false
-			for k, v in pairs(TRB.Data.spells) do
-				local spell = TRB.Data.spells[k]
-				if	spell ~= nil and spell.thresholdUsable == true then
-					_overThreshold = true
-					break
+		
+		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+			if TRB.Data.settings.hunter.beastMastery.colors.text.overcapEnabled and overcap then
+				currentFocusColor = TRB.Data.settings.hunter.beastMastery.colors.text.overcap
+				castingFocusColor = TRB.Data.settings.hunter.beastMastery.colors.text.overcap
+			elseif TRB.Data.settings.hunter.beastMastery.colors.text.overThresholdEnabled then
+				local _overThreshold = false
+				for k, v in pairs(TRB.Data.spells) do
+					local spell = TRB.Data.spells[k]
+					if	spell ~= nil and spell.thresholdUsable == true then
+						_overThreshold = true
+						break
+					end
 				end
-			end
 
-			if _overThreshold then
-				currentFocusColor = TRB.Data.settings.hunter.beastMastery.colors.text.overThreshold
-				castingFocusColor = TRB.Data.settings.hunter.beastMastery.colors.text.overThreshold
+				if _overThreshold then
+					currentFocusColor = TRB.Data.settings.hunter.beastMastery.colors.text.overThreshold
+					castingFocusColor = TRB.Data.settings.hunter.beastMastery.colors.text.overThreshold
+				end
 			end
 		end
 
@@ -1863,22 +1865,24 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local currentFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.current
 		local castingFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.casting
 
-		if TRB.Data.settings.hunter.marksmanship.colors.text.overcapEnabled and overcap then
-			currentFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.overcap
-			castingFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.overcap
-		elseif TRB.Data.settings.hunter.marksmanship.colors.text.overThresholdEnabled then
-			local _overThreshold = false
-			for k, v in pairs(TRB.Data.spells) do
-				local spell = TRB.Data.spells[k]
-				if	spell ~= nil and spell.thresholdUsable == true then
-					_overThreshold = true
-					break
+		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+			if TRB.Data.settings.hunter.marksmanship.colors.text.overcapEnabled and overcap then
+				currentFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.overcap
+				castingFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.overcap
+			elseif TRB.Data.settings.hunter.marksmanship.colors.text.overThresholdEnabled then
+				local _overThreshold = false
+				for k, v in pairs(TRB.Data.spells) do
+					local spell = TRB.Data.spells[k]
+					if	spell ~= nil and spell.thresholdUsable == true then
+						_overThreshold = true
+						break
+					end
 				end
-			end
 
-			if _overThreshold then
-				currentFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.overThreshold
-				castingFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.overThreshold
+				if _overThreshold then
+					currentFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.overThreshold
+					castingFocusColor = TRB.Data.settings.hunter.marksmanship.colors.text.overThreshold
+				end
 			end
 		end
 
@@ -2060,22 +2064,24 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local currentFocusColor = TRB.Data.settings.hunter.survival.colors.text.current
 		local castingFocusColor = TRB.Data.settings.hunter.survival.colors.text.casting
 
-		if TRB.Data.settings.hunter.survival.colors.text.overcapEnabled and overcap then
-			currentFocusColor = TRB.Data.settings.hunter.survival.colors.text.overcap
-			castingFocusColor = TRB.Data.settings.hunter.survival.colors.text.overcap
-		elseif TRB.Data.settings.hunter.survival.colors.text.overThresholdEnabled then
-			local _overThreshold = false
-			for k, v in pairs(TRB.Data.spells) do
-				local spell = TRB.Data.spells[k]
-				if	spell ~= nil and spell.thresholdUsable == true then
-					_overThreshold = true
-					break
+		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+			if TRB.Data.settings.hunter.survival.colors.text.overcapEnabled and overcap then
+				currentFocusColor = TRB.Data.settings.hunter.survival.colors.text.overcap
+				castingFocusColor = TRB.Data.settings.hunter.survival.colors.text.overcap
+			elseif TRB.Data.settings.hunter.survival.colors.text.overThresholdEnabled then
+				local _overThreshold = false
+				for k, v in pairs(TRB.Data.spells) do
+					local spell = TRB.Data.spells[k]
+					if	spell ~= nil and spell.thresholdUsable == true then
+						_overThreshold = true
+						break
+					end
 				end
-			end
 
-			if _overThreshold then
-				currentFocusColor = TRB.Data.settings.hunter.survival.colors.text.overThreshold
-				castingFocusColor = TRB.Data.settings.hunter.survival.colors.text.overThreshold
+				if _overThreshold then
+					currentFocusColor = TRB.Data.settings.hunter.survival.colors.text.overThreshold
+					castingFocusColor = TRB.Data.settings.hunter.survival.colors.text.overThreshold
+				end
 			end
 		end
 
@@ -2722,7 +2728,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 					local barBorderColor = specSettings.colors.bar.border
 
-					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -2768,7 +2774,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					local castingBarValue = 0
 					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 					local borderColor = specSettings.colors.bar.border
-					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						borderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -2981,7 +2987,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					local passiveBarValue = 0
 					local castingBarValue = 0
 					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
-					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -3134,7 +3140,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					local barColor = specSettings.colors.bar.base
-					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
 							---@diagnostic disable-next-line: redundant-parameter
@@ -3802,8 +3808,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				valid = true
 			end
 		elseif var == "$overcap" or var == "$focusOvercap" or var == "$resourceOvercap" then
-			if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > settings.overcapThreshold then
-				valid = true
+			local threshold = ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal)
+			if TRB.Data.settings.priest.shadow.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) < threshold then
+				return true
+			elseif TRB.Data.settings.priest.shadow.overcap.mode == "fixed" and settings.overcap.fixed < threshold then
+				return true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$focusPlusPassive" then
 			if TRB.Data.snapshotData.resource > 0 then

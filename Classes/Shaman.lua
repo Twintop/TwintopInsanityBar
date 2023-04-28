@@ -1231,12 +1231,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local maelstromThreshold = TRB.Data.character.earthShockThreshold
 
-		if TRB.Data.settings.shaman.elemental.colors.text.overcapEnabled and overcap then 
-			currentMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom
-			castingMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom
-		elseif TRB.Data.settings.shaman.elemental.colors.text.overThresholdEnabled and TRB.Data.snapshotData.resource >= maelstromThreshold then
-			currentMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overThreshold
-			castingMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overThreshold
+		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+			if TRB.Data.settings.shaman.elemental.colors.text.overcapEnabled and overcap then 
+				currentMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom
+				castingMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom
+			elseif TRB.Data.settings.shaman.elemental.colors.text.overThresholdEnabled and TRB.Data.snapshotData.resource >= maelstromThreshold then
+				currentMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overThreshold
+				castingMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overThreshold
+			end
 		end
 
 		--$maelstrom
@@ -2051,7 +2053,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					local passiveBarValue = 0
 					local castingBarValue = 0
 
-					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -3100,8 +3102,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					valid = true
 				end
 			elseif var == "$overcap" or var == "$insanityOvercap" or var == "$resourceOvercap" then
-				if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.shaman.elemental.overcapThreshold then
-					valid = true
+				local threshold = ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal)
+				if TRB.Data.settings.priest.shadow.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) < threshold then
+					return true
+				elseif TRB.Data.settings.priest.shadow.overcap.mode == "fixed" and settings.overcap.fixed < threshold then
+					return true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$maelstromPlusPassive" then
 				if TRB.Data.snapshotData.resource > 0 then

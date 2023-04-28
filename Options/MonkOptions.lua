@@ -271,7 +271,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	local function WindwalkerLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			overcapThreshold=120,
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
@@ -321,6 +320,17 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				notZeroShow=true,
 				neverShow=false
 			},
+			endOfSerenity = {
+				enabled=true,
+				mode="gcd",
+				gcdsMax=2,
+				timeMax=3.0
+			},
+			overcap={
+				mode="relative",
+				relative=0,
+				fixed=100
+			},
 			bar = {
 				width=555,
 				height=34,
@@ -342,12 +352,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				relativeTo="TOP",
 				relativeToName="Above - Middle",
 				fullWidth=false,
-			},
-			endOfSerenity = {
-				enabled=true,
-				mode="gcd",
-				gcdsMax=2,
-				timeMax=3.0
 			},
 			colors = {
 				text = {
@@ -1498,16 +1502,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		yCoord = yCoord - 40
-
-		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 170, spec.overcapThreshold, 1, 1,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
-			self.EditBox:SetText(value)
-			spec.overcapThreshold = value
-		end)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 3, yCoord, "Energy", 150)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = controls
 	end

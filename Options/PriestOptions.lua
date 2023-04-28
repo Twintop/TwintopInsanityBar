@@ -350,7 +350,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			hasteApproachingThreshold=135,
 			hasteThreshold=140,
 			hastePrecision=2,
-			overcapThreshold=100,
 			insanityPrecision=0,
 			auspiciousSpiritsTracker=true,
 			voidTendrilTracker=true,
@@ -403,7 +402,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				timeMax=3.0
 			},
 			overcap={
-				threshold=95,
 				mode="relative",
 				relative=0,
 				fixed=100
@@ -2070,61 +2068,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.endOfVoidform.timeMax = value
 		end)
 
-
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
-
-		yCoord = yCoord - 40
-		controls.checkBoxes.overcapModeRelative = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Overcap_RadioButton_Relative", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.overcapModeRelative
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Relative offset from maximum")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Set the overcap to be some relative value below your current maximum Insanity. Example: when the maximum Insanity is 150, setting this to -25 will cause overcapping to occur at 125 Insanity."
-		if spec.overcap.mode == "relative" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.overcapModeRelative:SetChecked(true)
-			controls.checkBoxes.overcapModeFixed:SetChecked(false)
-			spec.overcap.mode = "relative"
-		end)
-
-		title = "Relative Offset Amount"
-		controls.overcapRelative = TRB.Functions.OptionsUi:BuildSlider(parent, title, -150, 0, spec.overcap.relative, 1, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.overcapRelative:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-			spec.overcap.relative = value
-		end)
-
-
-		yCoord = yCoord - 60
-		controls.checkBoxes.overcapModeFixed = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Overcap_RadioButton_Fixed", parent, "UIRadioButtonTemplate")
-		f = controls.checkBoxes.overcapModeFixed
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Fixed value")
-		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Set the overcap to be at an exact value, regardless of maximum Insanity."
-		if spec.overcap.mode == "fixed" then
-			f:SetChecked(true)
-		end
-		f:SetScript("OnClick", function(self, ...)
-			controls.checkBoxes.overcapModeRelative:SetChecked(false)
-			controls.checkBoxes.overcapModeFixed:SetChecked(true)
-			spec.overcap.mode = "fixed"
-		end)
-
-		title = "Overcap Above"
-		controls.overcapFixed = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 150, spec.overcap.fixed, 1, 2,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.overcapFixed:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
-			spec.overcap.fixed = value
-		end)
-
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 5, 3, yCoord, "Insanity", 150)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.shadow = controls

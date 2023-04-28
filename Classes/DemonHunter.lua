@@ -587,21 +587,23 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		local currentFuryColor = TRB.Data.settings.demonhunter.havoc.colors.text.current
 		local castingFuryColor = TRB.Data.settings.demonhunter.havoc.colors.text.casting
-
-		if TRB.Data.settings.demonhunter.havoc.colors.text.overcapEnabled and overcap then
-			currentFuryColor = TRB.Data.settings.demonhunter.havoc.colors.text.overcap
-		elseif TRB.Data.settings.demonhunter.havoc.colors.text.overThresholdEnabled then
-			local _overThreshold = false
-			for k, v in pairs(TRB.Data.spells) do
-				local spell = TRB.Data.spells[k]
-				if	spell ~= nil and spell.thresholdUsable == true then
-					_overThreshold = true
-					break
+		
+		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+			if TRB.Data.settings.demonhunter.havoc.colors.text.overcapEnabled and overcap then
+				currentFuryColor = TRB.Data.settings.demonhunter.havoc.colors.text.overcap
+			elseif TRB.Data.settings.demonhunter.havoc.colors.text.overThresholdEnabled then
+				local _overThreshold = false
+				for k, v in pairs(TRB.Data.spells) do
+					local spell = TRB.Data.spells[k]
+					if	spell ~= nil and spell.thresholdUsable == true then
+						_overThreshold = true
+						break
+					end
 				end
-			end
 
-			if _overThreshold then
-				currentFuryColor = TRB.Data.settings.demonhunter.havoc.colors.text.overThreshold
+				if _overThreshold then
+					currentFuryColor = TRB.Data.settings.demonhunter.havoc.colors.text.overThreshold
+				end
 			end
 		end
 
@@ -1115,7 +1117,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 					local barBorderColor = specSettings.colors.bar.border
 
-					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -1555,10 +1557,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				valid = true
 			end
 		elseif var == "$overcap" or var == "$furyOvercap" or var == "$resourceOvercap" then
-			local lowerBoundFury = TRB.Data.spells.demonsBite.fury
-
-			if TRB.Data.snapshotData.casting.resourceFinal == 0 and (normalizedFury + lowerBoundFury) > settings.overcapThreshold then
-				valid = true
+			local threshold = ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal)
+			if TRB.Data.settings.priest.shadow.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) < threshold then
+				return true
+			elseif TRB.Data.settings.priest.shadow.overcap.mode == "fixed" and settings.overcap.fixed < threshold then
+				return true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$furyPlusPassive" then
 			if normalizedFury > 0 or TRB.Functions.Class:IsValidVariableForSpec("$passive") or TRB.Functions.Class:IsValidVariableForSpec("$bhFury") then

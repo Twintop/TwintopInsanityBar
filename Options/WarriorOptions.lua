@@ -90,7 +90,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local settings = {
 			hastePrecision=2,
 			ragePrecision=0,
-			overcapThreshold=100,
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
@@ -151,6 +150,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				alwaysShow=false,
 				notZeroShow=true,
 				neverShow=false
+			},
+			overcap={
+				mode="relative",
+				relative=0,
+				fixed=100
 			},
 			bar = {
 				width=555,
@@ -297,7 +301,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local settings = {
 			hastePrecision=2,
 			ragePrecision=0,
-			overcapThreshold=100,
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
@@ -346,6 +349,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				alwaysShow=false,
 				notZeroShow=true,
 				neverShow=false
+			},
+			overcap={
+				mode="relative",
+				relative=0,
+				fixed=100
 			},
 			bar = {
 				width=555,
@@ -822,16 +830,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		yCoord = yCoord - 40
-
-		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 130, spec.overcapThreshold, 1, 1,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
-			self.EditBox:SetText(value)
-			spec.overcapThreshold = value
-		end)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 1, yCoord, "Rage", 130)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.arms = controls
 	end
@@ -1624,18 +1623,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			spec.colors.bar.overcapEnabled = self:GetChecked()
 		end)
 
-
 		yCoord = yCoord - 40
-
-		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 100, spec.overcapThreshold, 1, 1,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
-			self.EditBox:SetText(value)
-			spec.overcapThreshold = value
-		end)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 2, yCoord, "Rage", 130)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.fury = controls
 	end

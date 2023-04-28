@@ -1258,22 +1258,24 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local currentEnergyColor = TRB.Data.settings.monk.windwalker.colors.text.current
 		local castingEnergyColor = TRB.Data.settings.monk.windwalker.colors.text.casting
 
-		if TRB.Data.settings.monk.windwalker.colors.text.overcapEnabled and overcap then
-			currentEnergyColor = TRB.Data.settings.monk.windwalker.colors.text.overcap
-			castingEnergyColor = TRB.Data.settings.monk.windwalker.colors.text.overcap
-		elseif TRB.Data.settings.monk.windwalker.colors.text.overThresholdEnabled then
-			local _overThreshold = false
-			for k, v in pairs(TRB.Data.spells) do
-				local spell = TRB.Data.spells[k]
-				if	spell ~= nil and spell.thresholdUsable == true then
-					_overThreshold = true
-					break
+		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+			if TRB.Data.settings.monk.windwalker.colors.text.overcapEnabled and overcap then
+				currentEnergyColor = TRB.Data.settings.monk.windwalker.colors.text.overcap
+				castingEnergyColor = TRB.Data.settings.monk.windwalker.colors.text.overcap
+			elseif TRB.Data.settings.monk.windwalker.colors.text.overThresholdEnabled then
+				local _overThreshold = false
+				for k, v in pairs(TRB.Data.spells) do
+					local spell = TRB.Data.spells[k]
+					if	spell ~= nil and spell.thresholdUsable == true then
+						_overThreshold = true
+						break
+					end
 				end
-			end
 
-			if _overThreshold then
-				currentEnergyColor = TRB.Data.settings.monk.windwalker.colors.text.overThreshold
-				castingEnergyColor = TRB.Data.settings.monk.windwalker.colors.text.overThreshold
+				if _overThreshold then
+					currentEnergyColor = TRB.Data.settings.monk.windwalker.colors.text.overThreshold
+					castingEnergyColor = TRB.Data.settings.monk.windwalker.colors.text.overThreshold
+				end
 			end
 		end
 
@@ -2052,7 +2054,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					local barBorderColor = specSettings.colors.bar.border
 					if GetDanceOfChiJiRemainingTime() > 0 then
 						barBorderColor = specSettings.colors.bar.borderChiJi
-					elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
+					elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -2789,8 +2791,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					valid = true
 				end
 			elseif var == "$overcap" or var == "$energyOvercap" or var == "$resourceOvercap" then
-				if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > settings.overcapThreshold then
-					valid = true
+				local threshold = ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal)
+				if TRB.Data.settings.priest.shadow.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) < threshold then
+					return true
+				elseif TRB.Data.settings.priest.shadow.overcap.mode == "fixed" and settings.overcap.fixed < threshold then
+					return true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$energyPlusPassive" then
 				if TRB.Data.snapshotData.resource > 0 then

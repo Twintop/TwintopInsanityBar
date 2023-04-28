@@ -3,8 +3,8 @@
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 10.1.0.0
-## X-ReleaseType: beta07
-## X-ReleaseDate: April 20, 2023
+## X-ReleaseType: release
+## X-ReleaseDate: May 02, 2023
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled

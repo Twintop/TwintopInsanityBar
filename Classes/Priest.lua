@@ -2010,12 +2010,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			insanityThreshold = 0
 		end
 
-		if TRB.Data.settings.priest.shadow.colors.text.overcapEnabled and overcap then
-			currentInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overcapInsanity
-			castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overcapInsanity
-		elseif TRB.Data.settings.priest.shadow.colors.text.overThresholdEnabled and normalizedInsanity >= insanityThreshold then
-			currentInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overThreshold
-			castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overThreshold
+		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+			if TRB.Data.settings.priest.shadow.colors.text.overcapEnabled and overcap then
+				currentInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overcapInsanity
+				castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overcapInsanity
+			elseif TRB.Data.settings.priest.shadow.colors.text.overThresholdEnabled and normalizedInsanity >= insanityThreshold then
+				currentInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overThreshold
+				castingInsanityColor = TRB.Data.settings.priest.shadow.colors.text.overThreshold
+			end
 		end
 
 		--$insanity
@@ -3284,7 +3286,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local barBorderColor = specSettings.colors.bar.border
 					local barColor = specSettings.colors.bar.base
 
-					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
@@ -4225,6 +4227,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			return valid
 		end
 		local specId = GetSpecialization()
+		local settings = nil
+		if specId == 2 then
+			settings = TRB.Data.settings.priest.holy
+		elseif specId == 3 then
+			settings = TRB.Data.settings.priest.shadow
+		end
 
 		if specId == 2 then
 			if var == "$resource" or var == "$mana" then
@@ -4383,9 +4391,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif var == "$overcap" or var == "$insanityOvercap" or var == "$resourceOvercap" then
 				local threshold = ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal)
-				if TRB.Data.settings.priest.shadow.overcap.mode == "relative" and (TRB.Data.character.maxResource + TRB.Data.settings.priest.shadow.overcap.relative) < threshold then
+				if TRB.Data.settings.priest.shadow.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) < threshold then
 					return true
-				elseif TRB.Data.settings.priest.shadow.overcap.mode == "fixed" and TRB.Data.settings.priest.shadow.overcap.fixed < threshold then
+				elseif TRB.Data.settings.priest.shadow.overcap.mode == "fixed" and settings.overcap.fixed < threshold then
 					return true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$insanityPlusPassive" then

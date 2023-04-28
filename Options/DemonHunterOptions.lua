@@ -82,7 +82,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local settings = {
 			hastePrecision=2,
 			furyPrecision=0,
-			overcapThreshold=120,
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
@@ -138,6 +137,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				mode="gcd",
 				gcdsMax=2,
 				timeMax=3.0
+			},
+			overcap={
+				mode="relative",
+				relative=0,
+				fixed=100
 			},
 			bar = {
 				width=555,
@@ -609,16 +613,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end)
 
 		yCoord = yCoord - 40
-
-		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 120, spec.overcapThreshold, 1, 1,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
-			self.EditBox:SetText(value)
-			spec.overcapThreshold = value
-		end)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 1, yCoord, "Fury", 120)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = controls
 	end

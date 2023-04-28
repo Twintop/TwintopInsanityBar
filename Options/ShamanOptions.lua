@@ -88,7 +88,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function ElementalLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			overcapThreshold=100,
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
@@ -119,6 +118,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				notZeroShow=true,
 				neverShow=false
 			},
+			endOfAscendance = {
+				enabled=true,
+				mode="gcd",
+				gcdsMax=2,
+				timeMax=3.0
+			},
+			overcap={
+				mode="relative",
+				relative=0,
+				fixed=100
+			},
 			bar = {
 				width=555,
 				height=34,
@@ -129,12 +139,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
 				showCasting=true
-			},
-			endOfAscendance = {
-				enabled=true,
-				mode="gcd",
-				gcdsMax=2,
-				timeMax=3.0
 			},
 			colors = {
 				text = {
@@ -924,16 +928,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 40
-
-		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 100, spec.overcapThreshold, 0.5, 1,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
-			self.EditBox:SetText(value)
-			spec.overcapThreshold = value
-		end)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 7, 1, yCoord, "Maelstrom", 150)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls

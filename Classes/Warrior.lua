@@ -1002,22 +1002,24 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local currentRageColor = TRB.Data.settings.warrior.arms.colors.text.current
 		local castingRageColor = TRB.Data.settings.warrior.arms.colors.text.casting
 
-		if TRB.Data.settings.warrior.arms.colors.text.overcapEnabled and overcap then
-			currentRageColor = TRB.Data.settings.warrior.arms.colors.text.overcap
-			castingRageColor = TRB.Data.settings.warrior.arms.colors.text.overcap
-		elseif TRB.Data.settings.warrior.arms.colors.text.overThresholdEnabled then
-			local _overThreshold = false
-			for k, v in pairs(TRB.Data.spells) do
-				local spell = TRB.Data.spells[k]
-				if spell ~= nil and spell.thresholdUsable == true then
-					_overThreshold = true
-					break
+		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+			if TRB.Data.settings.warrior.arms.colors.text.overcapEnabled and overcap then
+				currentRageColor = TRB.Data.settings.warrior.arms.colors.text.overcap
+				castingRageColor = TRB.Data.settings.warrior.arms.colors.text.overcap
+			elseif TRB.Data.settings.warrior.arms.colors.text.overThresholdEnabled then
+				local _overThreshold = false
+				for k, v in pairs(TRB.Data.spells) do
+					local spell = TRB.Data.spells[k]
+					if spell ~= nil and spell.thresholdUsable == true then
+						_overThreshold = true
+						break
+					end
 				end
-			end
 
-			if _overThreshold then
-				currentRageColor = TRB.Data.settings.warrior.arms.colors.text.overThreshold
-				castingRageColor = TRB.Data.settings.warrior.arms.colors.text.overThreshold
+				if _overThreshold then
+					currentRageColor = TRB.Data.settings.warrior.arms.colors.text.overThreshold
+					castingRageColor = TRB.Data.settings.warrior.arms.colors.text.overThreshold
+				end
 			end
 		end
 
@@ -1186,22 +1188,24 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local currentRageColor = TRB.Data.settings.warrior.fury.colors.text.current
 		local castingRageColor = TRB.Data.settings.warrior.fury.colors.text.casting
 
-		if TRB.Data.settings.warrior.fury.colors.text.overcapEnabled and overcap then
-			currentRageColor = TRB.Data.settings.warrior.fury.colors.text.overcap
-			castingRageColor = TRB.Data.settings.warrior.fury.colors.text.overcap
-		elseif TRB.Data.settings.warrior.fury.colors.text.overThresholdEnabled then
-			local _overThreshold = false
-			for k, v in pairs(TRB.Data.spells) do
-				local spell = TRB.Data.spells[k]
-				if spell ~= nil and spell.thresholdUsable == true then
-					_overThreshold = true
-					break
+		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+			if TRB.Data.settings.warrior.fury.colors.text.overcapEnabled and overcap then
+				currentRageColor = TRB.Data.settings.warrior.fury.colors.text.overcap
+				castingRageColor = TRB.Data.settings.warrior.fury.colors.text.overcap
+			elseif TRB.Data.settings.warrior.fury.colors.text.overThresholdEnabled then
+				local _overThreshold = false
+				for k, v in pairs(TRB.Data.spells) do
+					local spell = TRB.Data.spells[k]
+					if spell ~= nil and spell.thresholdUsable == true then
+						_overThreshold = true
+						break
+					end
 				end
-			end
 
-			if _overThreshold then
-				currentRageColor = TRB.Data.settings.warrior.fury.colors.text.overThreshold
-				castingRageColor = TRB.Data.settings.warrior.fury.colors.text.overThreshold
+				if _overThreshold then
+					currentRageColor = TRB.Data.settings.warrior.fury.colors.text.overThreshold
+					castingRageColor = TRB.Data.settings.warrior.fury.colors.text.overThreshold
+				end
 			end
 		end
 
@@ -1708,7 +1712,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border
 
-					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -1879,7 +1883,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 					local barBorderColor = specSettings.colors.bar.border
 
-					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -2500,8 +2504,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				valid = true
 			end
 		elseif var == "$overcap" or var == "$rageOvercap" or var == "$resourceOvercap" then
-			if (normalizedRage + TRB.Data.snapshotData.casting.resourceFinal) > settings.overcapThreshold then
-				valid = true
+			local threshold = ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal)
+			if TRB.Data.settings.priest.shadow.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) < threshold then
+				return true
+			elseif TRB.Data.settings.priest.shadow.overcap.mode == "fixed" and settings.overcap.fixed < threshold then
+				return true
 			end
 		elseif var == "$casting" then
 			if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0 then

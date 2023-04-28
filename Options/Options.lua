@@ -2050,7 +2050,7 @@ function TRB.Options:PortForwardSettings()
 		TwintopInsanityBarSettings.shaman.elemental.thresholdsOverlapBorder = nil
 	end
 
-	-- Hunters
+	-- Hunter Thresholds
 	if TwintopInsanityBarSettings ~= nil and
 		TwintopInsanityBarSettings.hunter ~= nil and
 		TwintopInsanityBarSettings.hunter.beastMastery ~= nil and

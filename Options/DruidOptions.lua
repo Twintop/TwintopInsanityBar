@@ -92,7 +92,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local settings = {
 			hastePrecision=2,
 			astralPowerPrecision=0,
-			overcapThreshold=100,
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
@@ -134,6 +133,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				mode="gcd",
 				gcdsMax=2,
 				timeMax=3.0
+			},
+			overcap={
+				mode="relative",
+				relative=0,
+				fixed=100
 			},
 			bar = {
 				width=555,
@@ -297,7 +301,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function FeralLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			overcapThreshold=120,
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
@@ -363,6 +366,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				gcds=1,
 				time=1.5,
 				enabled=true
+			},
+			overcap={
+				mode="relative",
+				relative=0,
+				fixed=100
 			},
 			displayBar = {
 				alwaysShow=false,
@@ -1119,16 +1127,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 40
-
-		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 100, spec.overcapThreshold, 0.5, 1,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
-			self.EditBox:SetText(value)
-			spec.overcapThreshold = value
-		end)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 1, yCoord, "Astral Power", 100)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.balance = controls
@@ -2184,16 +2183,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 40
-
-		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 130, spec.overcapThreshold, 1, 1,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 1, nil, true)
-			self.EditBox:SetText(value)
-			spec.overcapThreshold = value
-		end)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 2, yCoord, "Energy", 160)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.feral = controls
 	end

@@ -2102,12 +2102,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local astralPowerThreshold = math.min(TRB.Data.character.starsurgeThreshold, TRB.Data.character.starfallThreshold)
 
-		if TRB.Data.settings.druid.balance.colors.text.overcapEnabled and overcap then 
-			currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap
-			castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap
-		elseif TRB.Data.settings.druid.balance.colors.text.overThresholdEnabled and normalizedAstralPower >= astralPowerThreshold then
-			currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overThreshold
-			castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overThreshold
+		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+			if TRB.Data.settings.druid.balance.colors.text.overcapEnabled and overcap then 
+				currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap
+				castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap
+			elseif TRB.Data.settings.druid.balance.colors.text.overThresholdEnabled and normalizedAstralPower >= astralPowerThreshold then
+				currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overThreshold
+				castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overThreshold
+			end
 		end
 
 		--$astralPower
@@ -2472,23 +2474,25 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local currentEnergyColor = TRB.Data.settings.druid.feral.colors.text.current
 		local castingEnergyColor = TRB.Data.settings.druid.feral.colors.text.casting
-
-		if TRB.Data.settings.druid.feral.colors.text.overcapEnabled and overcap then
-			currentEnergyColor = TRB.Data.settings.druid.feral.colors.text.overcap
-			castingEnergyColor = TRB.Data.settings.druid.feral.colors.text.overcap
-		elseif TRB.Data.settings.druid.feral.colors.text.overThresholdEnabled then
-			local _overThreshold = false
-			for k, v in pairs(TRB.Data.spells) do
-				local spell = TRB.Data.spells[k]
-				if	spell ~= nil and spell.thresholdUsable == true then
-					_overThreshold = true
-					break
+		
+		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+			if TRB.Data.settings.druid.feral.colors.text.overcapEnabled and overcap then
+				currentEnergyColor = TRB.Data.settings.druid.feral.colors.text.overcap
+				castingEnergyColor = TRB.Data.settings.druid.feral.colors.text.overcap
+			elseif TRB.Data.settings.druid.feral.colors.text.overThresholdEnabled then
+				local _overThreshold = false
+				for k, v in pairs(TRB.Data.spells) do
+					local spell = TRB.Data.spells[k]
+					if	spell ~= nil and spell.thresholdUsable == true then
+						_overThreshold = true
+						break
+					end
 				end
-			end
 
-			if _overThreshold then
-				currentEnergyColor = TRB.Data.settings.druid.feral.colors.text.overThreshold
-				castingEnergyColor = TRB.Data.settings.druid.feral.colors.text.overThreshold
+				if _overThreshold then
+					currentEnergyColor = TRB.Data.settings.druid.feral.colors.text.overThreshold
+					castingEnergyColor = TRB.Data.settings.druid.feral.colors.text.overThreshold
+				end
 			end
 		end
 
@@ -3735,7 +3739,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local currentResource = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 					local flashBar = false
 
-					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -4242,7 +4246,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local barBorderColor = specSettings.colors.bar.border
 					if IsStealthed() then
 						barBorderColor = specSettings.colors.bar.borderStealth
-					elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
+					elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -5489,8 +5493,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$overcap" or var == "$astralPowerOvercap" or var == "$resourceOvercap" then
-				if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.druid.balance.overcapThreshold then
-					valid = true
+				local threshold = ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal)
+				if TRB.Data.settings.priest.shadow.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) < threshold then
+					return true
+				elseif TRB.Data.settings.priest.shadow.overcap.mode == "fixed" and settings.overcap.fixed < threshold then
+					return true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$astralPowerPlusPassive" then
 				if TRB.Data.snapshotData.resource > 0 then
@@ -5658,8 +5665,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$overcap" or var == "$energyOvercap" or var == "$resourceOvercap" then
-				if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.druid.feral.overcapThreshold then
-					valid = true
+				local threshold = ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal)
+				if TRB.Data.settings.priest.shadow.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) < threshold then
+					return true
+				elseif TRB.Data.settings.priest.shadow.overcap.mode == "fixed" and settings.overcap.fixed < threshold then
+					return true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$energyPlusPassive" then
 				if TRB.Data.snapshotData.resource > 0 then
