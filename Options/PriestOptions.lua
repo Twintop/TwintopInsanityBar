@@ -635,52 +635,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 2, yCoord, false)
 
 		yCoord = yCoord - 30
-		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 2, yCoord, "Mana", "notFull", true, true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 2, yCoord, "Mana", "notFull", false)
 
 		yCoord = yCoord - 70
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 2, yCoord, "Mana")
+		
+		yCoord = yCoord - 30
 		controls.checkBoxes.holyWordChastiseEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordChastiseEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.holyWordChastiseEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change mana bar color for Holy Word: Chastise cooldown")
+		getglobal(f:GetName() .. 'Text'):SetText("Enable Holy Word: Chastise cooldown color")
 		f.tooltip = "This will change the mana bar color when your current cast will complete the cooldown of Holy Word: Chastise."
 		f:SetChecked(spec.bar.holyWordChastiseEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.bar.holyWordChastiseEnabled = self:GetChecked()
 		end)
 
-		yCoord = yCoord - 20
-		controls.checkBoxes.holyWordSanctifyEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSanctifyEnabled", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.holyWordSanctifyEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change mana bar color for Holy Word: Sanctify cooldown")
-		f.tooltip = "This will change the mana bar color when your current cast will complete the cooldown of Holy Word: Sanctify."
-		f:SetChecked(spec.bar.holyWordSanctifyEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.bar.holyWordSanctifyEnabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 20
-		controls.checkBoxes.holyWordSerenityEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSerenityEnabled", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.holyWordSerenityEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change mana bar color for Holy Word: Serenity cooldown")
-		f.tooltip = "This will change the mana bar color when your current cast will complete the cooldown of Holy Word: Serenity."
-		f:SetChecked(spec.bar.holyWordSerenityEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.bar.holyWordSerenityEnabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 30
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.base
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
-		end)
-		
 		controls.colors.holyWordChastise = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when your cast will complete the cooldown of Holy Word: Chastise", spec.colors.bar.holyWordChastise, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.holyWordChastise
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -688,10 +658,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana cost of current hardcast spell", spec.colors.bar.spending, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.spending
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
+		controls.checkBoxes.holyWordSanctifyEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSanctifyEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.holyWordSanctifyEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enable Holy Word: Sanctify cooldown color")
+		f.tooltip = "This will change the mana bar color when your current cast will complete the cooldown of Holy Word: Sanctify."
+		f:SetChecked(spec.bar.holyWordSanctifyEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.holyWordSanctifyEnabled = self:GetChecked()
 		end)
 
 		controls.colors.holyWordSanctify = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when your cast will complete the cooldown of Holy Word: Sanctify", spec.colors.bar.holyWordSanctify, 300, 25, oUi.xCoord2, yCoord)
@@ -699,12 +673,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "holyWordSanctify")
 		end)
-
+		
 		yCoord = yCoord - 30
-		controls.colors.inApotheosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana while Apotheosis is active", spec.colors.bar.apotheosis, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.inApotheosis
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "apotheosis")
+		controls.checkBoxes.holyWordSerenityEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSerenityEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.holyWordSerenityEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enable Holy Word: Serenity cooldown color")
+		f.tooltip = "This will change the mana bar color when your current cast will complete the cooldown of Holy Word: Serenity."
+		f:SetChecked(spec.bar.holyWordSerenityEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.holyWordSerenityEnabled = self:GetChecked()
 		end)
 
 		controls.colors.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when your cast will complete the cooldown of Holy Word: Serenity", spec.colors.bar.holyWordSerenity, 300, 25, oUi.xCoord2, yCoord)
@@ -714,46 +692,72 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.inApotheosisEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Apotheosis is close to ending (configurable/if enabled)", spec.colors.bar.apotheosisEnd, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.inApotheosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana while Apotheosis is active", spec.colors.bar.apotheosis, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.inApotheosis
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "apotheosis")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.endOfApotheosis = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_EOA_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfApotheosis
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Apotheosis")
+		f.tooltip = "Changes the bar color when Apotheosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(spec.endOfApotheosis.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.endOfApotheosis.enabled = self:GetChecked()
+		end)
+
+		controls.colors.inApotheosisEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Apotheosis is close to ending (as configured)", spec.colors.bar.apotheosisEnd, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inApotheosisEnd
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "apotheosisEnd")
 		end)
 
+		yCoord = yCoord - 30
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_2_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(spec.bar.showCasting)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showCasting = self:GetChecked()
+		end)
+
+		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana cost of current hardcast spell", spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.spending
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_2_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(spec.bar.showPassive)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showPassive = self:GetChecked()
+		end)
+
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc.)", spec.colors.bar.passive, 550, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.passive
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
+		end)
+
+		yCoord = yCoord - 30
 		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
 		end)
 
-		yCoord = yCoord - 30
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
-		f = controls.colors.passive
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
-		end)
-
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
-
-		yCoord = yCoord - 25
-		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border is normal/base border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord-0)
-		f = controls.colors.border
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 2)
-		end)
-
-		controls.colors.innervate = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Innervate", spec.colors.bar.innervate, 300, 25, oUi.xCoord2, yCoord-30)
-		f = controls.colors.innervate
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "innervate")
-		end)
-
-		controls.colors.potionOfChilledClarity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Potion of Chilled Clarity's effect", spec.colors.bar.potionOfChilledClarity, 300, 25, oUi.xCoord2, yCoord-60)
-		f = controls.colors.potionOfChilledClarity
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "potionOfChilledClarity")
-		end)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 2, yCoord, "Mana", false, true)
 
 		controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.surgeOfLight1
@@ -858,17 +862,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 		yCoord = yCoord - 40
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Apotheosis Configuration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.endOfApotheosis = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_EOA_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.endOfApotheosis
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Apotheosis")
-		f.tooltip = "Changes the bar color when Apotheosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(spec.endOfApotheosis.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.endOfApotheosis.enabled = self:GetChecked()
-		end)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfApotheosisModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_EOA_M_GCD", parent, "UIRadioButtonTemplate")
@@ -1791,18 +1784,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false)
 
 		yCoord = yCoord - 30
-		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, "Insanity", "notEmpty", false, false, true, "Devouring Plague", "DP")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, "Insanity", "notEmpty", true, "Devouring Plague", "DP")
 
 		yCoord = yCoord - 70
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors + Changing", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity", spec.colors.bar.base, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.base		
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
-		end)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 3, yCoord, "Insanity")
 
 		yCoord = yCoord - 30
 		controls.colors.inVoidform = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity while in Voidform / Dark Ascension", spec.colors.bar.inVoidform, 300, 25, oUi.xCoord2, yCoord)
@@ -1818,7 +1803,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inVoidform1GCD")
 		end)
 
-		controls.checkBoxes.endOfVoidform = CreateFrame("CheckButton", "TRB_EOVF_CB", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.endOfVoidform = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Bar_Option_vfDaColorChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfVoidform
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("VF/DA color change when ending enabled")
@@ -1901,34 +1886,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
-
-		yCoord = yCoord - 25
-		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border is normal/base border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.border
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
-		end)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 3, yCoord, "Insanity", true, false)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_overcapBorderChange", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
-		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Insanity."
-		f:SetChecked(spec.colors.bar.overcapEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.overcapEnabled = self:GetChecked()
-		end)
-
-		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when your current hardcast will overcap Insanity", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.borderOvercap		
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderOvercap")
-		end)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.mindFlayInsanityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_mindFlayInsanityBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.mindFlayInsanityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Border_Option_mindFlayInsanityBorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mindFlayInsanityBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Mind Flay: Insanity")
@@ -1945,7 +1906,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
 
 		controls.colors.threshold = {}
 

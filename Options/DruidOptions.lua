@@ -824,29 +824,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 1, yCoord, false)
 
 		yCoord = yCoord - 30
-		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 1, yCoord, "Astral Power", "balance", true, true, true, "Starsurge", "Starsurge")
-
-		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DRUID_1_Checkbox_MoonkinFormMissing", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.flashEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2-20)
-		getglobal(f:GetName() .. 'Text'):SetText("Flash bar when Moonkin Form is missing")
-		f.tooltip = "This will flash the bar when Moonkin Form is missing while in combat."
-		f:SetChecked(spec.colors.bar.flashEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.flashEnabled = self:GetChecked()
-		end)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 1, yCoord, "Astral Power", "balance", true, "Starsurge", "Starsurge")
 
 		yCoord = yCoord - 70
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 1, yCoord, "Astral Power")
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Astral Power", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.base
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
-		end)
-
 		controls.colors.solar = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Eclipse (Solar) is Active", spec.colors.bar.solar, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.solar
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -854,12 +837,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.border
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 1)
-		end)
-
 		controls.colors.lunar = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Eclipse (Lunar) is Active", spec.colors.bar.lunar, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.lunar
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -867,12 +844,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Astral Power from hardcasting spells", spec.colors.bar.casting, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.casting
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 1)
-		end)
-
 		controls.colors.celestial = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Celestial Alignment / Incarnation: Chosen of Elune is Active", spec.colors.bar.celestial, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.celestial
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -880,11 +851,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-
-		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Astral Power", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.borderOvercap
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderOvercap")
+		controls.checkBoxes.endOfEclipse = CreateFrame("CheckButton", "TwintopResourceBar_Druid_1_Checkbox_EOE", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfEclipse
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Eclipse")
+		f.tooltip = "Changes the bar color when Eclipse is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(spec.endOfEclipse.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.endOfEclipse.enabled = self:GetChecked()
+		end)
+		controls.checkBoxes.endOfEclipseOnly = CreateFrame("CheckButton", "TwintopResourceBar_Druid_1_Checkbox_EOE_CAO", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfEclipseOnly
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
+		getglobal(f:GetName() .. 'Text'):SetText("Only for Celestial Alignment")
+		f.tooltip = "Only changes the bar color when you are exiting an Eclipse from Celestial Alignment or Incarnation: Chosen of Elune."
+		f:SetChecked(spec.endOfEclipse.celestialAlignmentOnly)
+		f:SetScript("OnClick", function(self, ...)
+			spec.endOfEclipse.celestialAlignmentOnly = self:GetChecked()
 		end)
 
 		controls.colors.eclipse1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Astral Power when Eclipse is ending", spec.colors.bar.eclipse1GCD, 300, 25, oUi.xCoord2, yCoord)
@@ -894,29 +877,58 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-
-		controls.colors.moonkinFormMissing = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Moonkin Form missing when in combat", spec.colors.bar.moonkinFormMissing, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.moonkinFormMissing = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Moonkin Form missing when in combat", spec.colors.bar.moonkinFormMissing, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.moonkinFormMissing
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "moonkinFormMissing")
 		end)
 
+		yCoord = yCoord - 30
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Druid_1_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(spec.bar.showCasting)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showCasting = self:GetChecked()
+		end)
+
+		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Astral Power from hardcasting spells", spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.casting
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 1)
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Druid_1_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(spec.bar.showPassive)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showPassive = self:GetChecked()
+		end)
+
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Astral Power from Fury of Elune and Nature's Balance", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.passive
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
+		end)
+
+		yCoord = yCoord - 30
 		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
 		end)
 
-		yCoord = yCoord - 30
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Astral Power from Fury of Elune and Nature's Balance", spec.colors.bar.passive, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.passive
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
-		end)
-
+		yCoord = yCoord - 40
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 1, yCoord, "Astral Power", true, false)
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
 
 		controls.colors.threshold = {}
 
@@ -1040,27 +1052,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 40
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Eclipse Configuration", 0, yCoord)
 
-		yCoord = yCoord - 30
-		controls.checkBoxes.endOfEclipse = CreateFrame("CheckButton", "TRB_EOE_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.endOfEclipse
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Eclipse")
-		f.tooltip = "Changes the bar color when Eclipse is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(spec.endOfEclipse.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.endOfEclipse.enabled = self:GetChecked()
-		end)
-		yCoord = yCoord - 20
-		controls.checkBoxes.endOfEclipseOnly = CreateFrame("CheckButton", "TRB_EOE_CB_CAO", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.endOfEclipseOnly
-		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Only change the bar color when in Celestial Alignment")
-		f.tooltip = "Only changes the bar color when you are exiting an Eclipse from Celestial Alignment or Incarnation: Chosen of Elune."
-		f:SetChecked(spec.endOfEclipse.celestialAlignmentOnly)
-		f:SetScript("OnClick", function(self, ...)
-			spec.endOfEclipse.celestialAlignmentOnly = self:GetChecked()
-		end)
-
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfEclipseModeGCDs = CreateFrame("CheckButton", "TRB_EOE_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfEclipseModeGCDs
@@ -1110,20 +1101,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.endOfEclipse.timeMax = value
-		end)
-
-		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_CB1_8", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
-		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Astral Power."
-		f:SetChecked(spec.colors.bar.overcapEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.overcapEnabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
@@ -1202,11 +1179,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			spec.colors.text.overThresholdEnabled = self:GetChecked()
 		end)
 
-		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TRB_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TRB_Druid_Balance_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
-		f.tooltip = "This will change the Astral Power text color when your current hardcast spell will result in overcapping maximum Astral Power."
+		f.tooltip = "This will change the Astral Power text color when your current hardcast spell will result in overcapping Astral Power (as configured)."
 		f:SetChecked(spec.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overcapEnabled = self:GetChecked()
@@ -1504,7 +1481,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f = controls.checkBoxes.overcapAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Astral Power")
-		f.tooltip = "Play an audio cue when your hardcast spell will overcap Astral Power."
+		f.tooltip = "Play an audio cue when your hardcast spell will overcap Astral Power (as configured)."
 ---@diagnostic disable-next-line: undefined-field
 		f:SetChecked(spec.audio.overcap.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1517,7 +1494,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_overcapAudio", parent)
+		controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Druid_Balance_overcapAudio", parent)
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30+10)
 		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.sliderWidth)
 		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
@@ -1838,56 +1815,41 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 2, yCoord, true, "Combo Point")
 
 		yCoord = yCoord - 30
-		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 2, yCoord, "Energy", "notFull", false, true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 2, yCoord, "Energy", "notFull", false)
 
 		yCoord = yCoord - 70
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 2, yCoord, "Energy")
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.base
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
-		end)
-
-		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.border
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 2)
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.clearcasting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy when Clearcasting proc is up", spec.colors.bar.clearcasting, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.clearcasting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy when Clearcasting proc is up", spec.colors.bar.clearcasting, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.clearcasting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "clearcasting")
 		end)
 
-		controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Bar border color when you are stealth (via any ability or proc)", spec.colors.bar.borderStealth, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.borderStealth
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderStealth")
-		end)
-
 		yCoord = yCoord - 30
-		controls.colors.maxBite = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy when 5 Combo Points and Ferocious Bite will do max damage", spec.colors.bar.maxBite, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.maxBite = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy when 5 Combo Points and Ferocious Bite will do max damage", spec.colors.bar.maxBite, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.maxBite
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "maxBite")
 		end)
 
-		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Bar border color when you are overcapping Energy", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.borderOvercap
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderOvercap")
-		end)
-
 		yCoord = yCoord - 30
-		controls.colors.apexPredator = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy when you have an Apex Predator's Craving proc", spec.colors.bar.apexPredator, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.apexPredator = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy when you have an Apex Predator's Craving proc", spec.colors.bar.apexPredator, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.apexPredator
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "apexPredator")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Druid_2_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(spec.bar.showPassive)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showPassive = self:GetChecked()
 		end)
 
 		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
@@ -1897,10 +1859,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
+		end)
+		
+		yCoord = yCoord - 40
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 2, yCoord, "Energy", true, false)
+
+		yCoord = yCoord - 30
+		controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Bar border color when you are stealth (via any ability or proc)", spec.colors.bar.borderStealth, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.borderStealth
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderStealth")
 		end)
 
 		yCoord = yCoord - 40
@@ -1954,7 +1926,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
 		
 		controls.colors.threshold = {}
 
@@ -2167,20 +2139,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 30
 
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 2, yCoord)
-
-		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_CB1_8", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
-		f.tooltip = "This will change the bar's border color when your current energy is above the overcapping maximum Energy as configured below."
-		f:SetChecked(spec.colors.bar.overcapEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.overcapEnabled = self:GetChecked()
-		end)
 
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 11, 2, yCoord, "Energy", 160)
@@ -2825,19 +2783,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 11, 4, yCoord, false)
 
 		yCoord = yCoord - 30
-		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 4, yCoord, "Mana", "notFull", true, true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 4, yCoord, "Mana", "notFull", false)
 
 		yCoord = yCoord - 70
 		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana", spec.colors.bar.base, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
 		end)
 
+		yCoord = yCoord - 30
 		controls.colors.noEfflorescence = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Efflorescence is not out", spec.colors.bar.noEfflorescence, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.noEfflorescence
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2845,99 +2803,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana cost of current hardcast spell", spec.colors.bar.spending, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.spending
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 4)
-		end)
-
-		controls.colors.incarnation = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Incarnation is active", spec.colors.bar.incarnation, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.incarnation
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "incarnation")
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.clearcasting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Clearcasting proc is up", spec.colors.bar.clearcasting, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.clearcasting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Clearcasting proc is up", spec.colors.bar.clearcasting, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.clearcasting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "clearcasting")
 		end)
 
-		controls.colors.incarnationEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Incarnation is ending (per settings)", spec.colors.bar.incarnationEnd, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.incarnationEnd
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "incarnationEnd")
-		end)
-
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.passive
+		controls.colors.incarnation = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Incarnation is active", spec.colors.bar.incarnation, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.incarnation
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 4)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "incarnation")
 		end)
-		
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.background
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 4)
-		end)
-
-
-		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
-
-		yCoord = yCoord - 25
-		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border's normal/base border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord-0)
-		f = controls.colors.border
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 4)
-		end)
-
-		controls.colors.innervate = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Innervate", spec.colors.bar.innervate, 300, 25, oUi.xCoord2, yCoord-30)
-		f = controls.colors.innervate
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "innervate")
-		end)	
-		
-		controls.colors.potionOfChilledClarity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Potion of Chilled Clarity's effect", spec.colors.bar.potionOfChilledClarity, 300, 25, oUi.xCoord2, yCoord-60)
-		f = controls.colors.potionOfChilledClarity
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "potionOfChilledClarity")
-		end)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.innervateBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_Threshold_Option_innervateBorderChange", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.innervateBorderChange
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Innervate")
-		f.tooltip = "This will change the bar border color when you have Innervate."
-		f:SetChecked(spec.colors.bar.innervateBorderChange)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.innervateBorderChange = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.potionOfChilledClarityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_Threshold_Option_potionOfChilledClarityBorderChange", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.potionOfChilledClarityBorderChange
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Potion of Chilled Clarity")
-		f.tooltip = "This will change the bar border color when you have Potion of Chilled Clarity's effect."
-		f:SetChecked(spec.colors.bar.potionOfChilledClarityBorderChange)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.potionOfChilledClarityBorderChange = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, 11, 4, yCoord)
-
-		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 4, yCoord)
-
-		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 11, 4, yCoord)
-		
-		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Incarnation Configuration", 0, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.endOfIncarnation = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_EOI_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -2949,6 +2826,68 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetScript("OnClick", function(self, ...)
 			spec.endOfIncarnation.enabled = self:GetChecked()
 		end)
+
+		controls.colors.incarnationEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Incarnation is ending (as configured)", spec.colors.bar.incarnationEnd, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.incarnationEnd
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "incarnationEnd")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Druid_4_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(spec.bar.showCasting)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showCasting = self:GetChecked()
+		end)
+
+		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana cost of current hardcast spell", spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.spending
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 4)
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Druid_4_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(spec.bar.showPassive)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showPassive = self:GetChecked()
+		end)
+
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.passive
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 4)
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 4)
+		end)
+
+
+		yCoord = yCoord - 40
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 4, yCoord, "Mana", false, true)
+
+		yCoord = yCoord - 40
+		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, 11, 4, yCoord)
+
+		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 11, 4, yCoord)
+
+		yCoord = yCoord - 30
+		yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 11, 4, yCoord)
+		
+		yCoord = yCoord - 40
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Incarnation Configuration", 0, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfIncarnationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_EOI_M_GCD", parent, "UIRadioButtonTemplate")

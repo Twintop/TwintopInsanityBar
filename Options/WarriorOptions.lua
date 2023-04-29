@@ -578,8 +578,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 1, yCoord, false)
 
 		yCoord = yCoord - 30
-		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 1, yCoord, "Rage", "notEmpty", true, true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 1, yCoord, "Rage", "notEmpty", false)
 
 		yCoord = yCoord - 70
 		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
@@ -619,7 +618,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		yCoord = yCoord - 40
 
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
 
 		controls.colors.threshold = {}
 
@@ -1409,8 +1408,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 2, yCoord, false)
 
 		yCoord = yCoord - 30
-		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 2, yCoord, "Rage", "notEmpty", false, true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 2, yCoord, "Rage", "notEmpty", false)
 
 		yCoord = yCoord - 70
 		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
@@ -1456,7 +1454,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		yCoord = yCoord - 40
 
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
 
 		controls.colors.threshold = {}
 

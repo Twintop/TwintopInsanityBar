@@ -722,8 +722,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 1, yCoord, true, "Combo Point")
 
 		yCoord = yCoord - 30
-		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 1, yCoord, "Energy", "notFull", false, true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 1, yCoord, "Energy", "notFull", false)
 
 		yCoord = yCoord - 70
 		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
@@ -865,7 +864,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		yCoord = yCoord - 40
 
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
 
 		controls.colors.threshold = {}
 
@@ -1900,8 +1899,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 2, yCoord, true, "Combo Point")
 
 		yCoord = yCoord - 30
-		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 2, yCoord, "Energy", "notFull", false, true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 2, yCoord, "Energy", "notFull", false)
 
 		yCoord = yCoord - 70
 		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
@@ -2041,7 +2039,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		yCoord = yCoord - 40
 
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
 
 		controls.colors.threshold = {}
 

@@ -334,19 +334,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 1, yCoord, false)
 
 		yCoord = yCoord - 30
-		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 1, yCoord, "Fury", "notEmpty", true, true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 1, yCoord, "Fury", "notEmpty", false)
 
 		yCoord = yCoord - 70
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 1, yCoord, "Fury")
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Fury", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.base
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
-		end)
-
 		controls.colors.metamorphosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Fury while Metamorphosis is active", spec.colors.bar.metamorphosis, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.metamorphosis
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -354,10 +347,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Fury gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.passive
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
+		controls.checkBoxes.endOfMetamorphosis = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_1_EndOfMetamorphosisCheckbox", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfMetamorphosis
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Metamorphosis")
+		f.tooltip = "Changes the bar color when Metamorphosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(spec.endOfMetamorphosis.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.endOfMetamorphosis.enabled = self:GetChecked()
 		end)
 
 		controls.colors.metamorphosisEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Fury when Metamorphosis is ending", spec.colors.bar.metamorphosisEnding, 250, 25, oUi.xCoord2, yCoord)
@@ -367,34 +364,51 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Fury gain from Eye Beam with Blind Fury", spec.colors.bar.casting, 300, 25, oUi.xCoord, yCoord)
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_1_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(spec.bar.showCasting)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showCasting = self:GetChecked()
+		end)
+
+		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Fury gain from Eye Beam with Blind Fury", spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 1)
 		end)
 
-		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 250, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.border
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 1)
+		yCoord = yCoord - 30
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_1_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(spec.bar.showPassive)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showPassive = self:GetChecked()
 		end)
 
-		
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Fury gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.passive
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
+		end)
+
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
 		end)
 
-		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Bar border color when your next builder will overcap Fury", spec.colors.bar.borderOvercap, 250, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.borderOvercap
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderOvercap")
-		end)
+		yCoord = yCoord - 40
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 12, 1, yCoord, "Fury", true, false)
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
 		
 		controls.colors.threshold = {}
 
@@ -535,17 +549,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 40
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Metamorphosis Configuration", 0, yCoord)
 
-		yCoord = yCoord - 30
-		controls.checkBoxes.endOfMetamorphosis = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.endOfMetamorphosis
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Metamorphosis")
-		f.tooltip = "Changes the bar color when Metamorphosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(spec.endOfMetamorphosis.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.endOfMetamorphosis.enabled = self:GetChecked()
-		end)
-
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfMetamorphosisModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfMetamorphosisModeGCDs
@@ -595,21 +598,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.endOfMetamorphosis.timeMax = value
-		end)
-
-
-		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_CB1_8", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change border color when your next builder ability will overcap Fury")
-		f.tooltip = "This will change the bar's border color when your next builder ability will result in overcapping maximum Fury. Setting accepts values up to 130 to accomidate the Deadly Calm talent."
-		f:SetChecked(spec.colors.bar.overcapEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.overcapEnabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40

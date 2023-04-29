@@ -700,8 +700,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 1, yCoord, false)
 
 		yCoord = yCoord - 30
-		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, "Maelstrom", "notEmpty", true, true, true, "Earth Shock/Elemental Blast", "ES/EB")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, "Maelstrom", "notEmpty", true, "Earth Shock/Elemental Blast", "ES/EB")
 		
 		yCoord = yCoord - 70
 		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
@@ -768,7 +767,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
 
 		controls.colors.threshold = {}
 
@@ -1487,8 +1486,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 2, yCoord, true, "Maelstrom Weapon")
 
 		yCoord = yCoord - 30
-		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 2, yCoord, "Mana", "notFull", true, true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 2, yCoord, "Mana", "notFull", false)
 
 		yCoord = yCoord - 70
 		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
@@ -2030,8 +2028,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 3, yCoord, false)
 
 		yCoord = yCoord - 30
-		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 3, yCoord, "Mana", "notFull", true, true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 3, yCoord, "Mana", "notFull", false)
 
 		yCoord = yCoord - 70
 		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
@@ -2078,48 +2075,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
-
-		yCoord = yCoord - 25
-		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border's normal/base border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord-0)
-		f = controls.colors.border
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
-		end)
-
-		controls.colors.innervate = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Innervate", spec.colors.bar.innervate, 300, 25, oUi.xCoord2, yCoord-30)
-		f = controls.colors.innervate
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "innervate")
-		end)
-		
-		controls.colors.potionOfChilledClarity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Potion of Chilled Clarity's effect", spec.colors.bar.potionOfChilledClarity, 300, 25, oUi.xCoord2, yCoord-60)
-		f = controls.colors.potionOfChilledClarity
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "potionOfChilledClarity")
-		end)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.innervateBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_Threshold_Option_innervateBorderChange", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.innervateBorderChange
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Innervate")
-		f.tooltip = "This will change the bar border color when you have Innervate."
-		f:SetChecked(spec.colors.bar.innervateBorderChange)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.innervateBorderChange = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.potionOfChilledClarityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Restoration_Threshold_Option_potionOfChilledClarityBorderChange", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.potionOfChilledClarityBorderChange
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Potion of Chilled Clarity")
-		f.tooltip = "This will change the bar border color when you have Potion of Chilled Clarity's effect."
-		f:SetChecked(spec.colors.bar.potionOfChilledClarityBorderChange)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.potionOfChilledClarityBorderChange = self:GetChecked()
-		end)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 3, yCoord, "Mana", false, true)
 
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, 7, 3, yCoord)

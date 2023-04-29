@@ -1203,7 +1203,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$swpCount", description = "Number of Shadow Word: Pains active on targets", printInSettings = true, color = false },
 			{ variable = "$swpTime", description = "Time remaining on Shadow Word: Pain on your current target", printInSettings = true, color = false },
 			
-			{ variable = "$sfMana", description = "Mana from Shadowfiend (per settings)", printInSettings = true, color = false },
+			{ variable = "$sfMana", description = "Mana from Shadowfiend (as configured)", printInSettings = true, color = false },
 			{ variable = "$sfGcds", description = "Number of GCDs left on Shadowfiend", printInSettings = true, color = false },
 			{ variable = "$sfSwings", description = "Number of Swings left on Shadowfiend", printInSettings = true, color = false },
 			{ variable = "$sfTime", description = "Time left on Shadowfiend", printInSettings = true, color = false },
@@ -1343,7 +1343,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$resourceOvercap", description = "Will hardcast spell will overcap Insanity? Logic variable only!", printInSettings = false, color = false },
 			{ variable = "$insanityOvercap", description = "Will hardcast spell will overcap Insanity? Logic variable only!", printInSettings = false, color = false },
 
-			{ variable = "$mbInsanity", description = "Insanity from Mindbender/Shadowfiend (per settings)", printInSettings = true, color = false },
+			{ variable = "$mbInsanity", description = "Insanity from Mindbender/Shadowfiend (as configured)", printInSettings = true, color = false },
 			{ variable = "$mbGcds", description = "Number of GCDs left on Mindbender/Shadowfiend", printInSettings = true, color = false },
 			{ variable = "$mbSwings", description = "Number of Swings left on Mindbender/Shadowfiend", printInSettings = true, color = false },
 			{ variable = "$mbTime", description = "Time left on Mindbender/Shadowfiend", printInSettings = true, color = false },
