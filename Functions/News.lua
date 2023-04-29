@@ -11,12 +11,13 @@ local content = [====[
 # 10.1.0.0-release (2023-05-02)
 ## General
 
-- [#300 - UPDATE](#300) Greatly improve resource overcap support and customization.
-<br/>&emsp;&ensp;- In addition to the existing "fixed" mode, an additional configuration option to set the overcap amount relative to your maximum resource has been added and set as the default behavior.
-<br/>&emsp;&ensp;- Bar border and resource text will not change to the overcap color while out of combat.
 - [#292 - UPDATE](#292) Add `IconTexture` to TOC. This shows the addon's icon/logo in the AddOn List menu in game.
 - [#298 - FIX](#298) Fix an issue where PvP ability threshold lines would show up when enabled even if you weren't talented in to the associated PvP Talent.
 <br/>&emsp;&ensp;- This fix applies to: Devastation Evokers, Beast Mastery Hunters, Marksmanship Hunters, Assassination Rogues, and Outlaw Rogues.
+- [#300 - UPDATE](#300) Greatly improve resource overcap support and customization.
+<br/>&emsp;&ensp;- In addition to the existing "fixed" mode, an additional configuration option to set the overcap amount relative to your maximum resource has been added and set as the default behavior.
+<br/>&emsp;&ensp;- Bar border and resource text will not change to the overcap color while out of combat.
+- [#301 - UPDATE](#301) Update the options UI for all specs to splpit bar color and bar border color in to separate sections. Relocate some enabling toggles to these sections from elsewhere in the options menus.
 
 ## Druid
 ### Balance
