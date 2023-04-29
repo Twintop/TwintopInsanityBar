@@ -883,30 +883,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.colors.bar.beastialWrathEnabled = self:GetChecked()
 		end)
 
-		yCoord = yCoord - 60
-
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.base
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
-		end)
-
-		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.border
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 1)
-		end)
+		yCoord = yCoord - 70
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 1, yCoord, "Focus")
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.passive
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
-		end)
-
 		controls.colors.borderBeastialWrath = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Bar border color when you can use Beastial Wrath", spec.colors.bar.borderBeastialWrath, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderBeastialWrath
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -914,24 +894,45 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.frenzyUse = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus when Barbed Shot should be used", spec.colors.bar.frenzyUse, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.frenzyUse = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus when Barbed Shot should be used", spec.colors.bar.frenzyUse, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.frenzyUse
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "frenzyUse")
 		end)
 
+		yCoord = yCoord - 30
+		controls.colors.frenzyHold = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus when Barbed Shot charges should be held", spec.colors.bar.frenzyHold, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.frenzyHold
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "frenzyHold")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_1_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(spec.bar.showPassive)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showPassive = self:GetChecked()
+		end)
+
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.passive
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
+		end)
+
+		yCoord = yCoord - 30
 		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
 		end)
 
-		yCoord = yCoord - 30
-		controls.colors.frenzyHold = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus when Barbed Shot charges should be held", spec.colors.bar.frenzyHold, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.frenzyHold
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "frenzyHold")
-		end)
+		yCoord = yCoord - 40
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 1, yCoord, "Focus", true, false)
 
 		yCoord = yCoord - 40
 		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
@@ -1168,20 +1169,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 40
 
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 1, yCoord)
-
-		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_8", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
-		f.tooltip = "This will change the bar's border color when your current focus is above the overcapping maximum Focus as configured below."
-		f:SetChecked(spec.colors.bar.overcapEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.overcapEnabled = self:GetChecked()
-		end)
 
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 1, yCoord, "Focus", 120)
@@ -1822,54 +1809,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 2, yCoord, "Focus", "notFull", false)
 
 		yCoord = yCoord - 70
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 1, yCoord, "Fury")
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.base
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
-		end)
-
-		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.border
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 2)
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", spec.colors.bar.casting, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.casting
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 2)
-		end)
-
-		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Bar border color when your current hardcast builder will overcap Focus", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.borderOvercap
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderOvercap")
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.bar.spending, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.spending
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending")
-		end)
-
-		controls.colors.borderSteadyFocus = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when Steady Focus is expiring or not up (as configured)", spec.colors.bar.borderSteadyFocus, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.borderSteadyFocus
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderSteadyFocus")
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.passive
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
-		end)
-
 		controls.colors.trueshot = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus while Trueshot is active", spec.colors.bar.trueshot, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.trueshot
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -1877,17 +1819,88 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.background
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
+		controls.checkBoxes.endOfTrueshot = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfTrueshot
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Trueshot")
+		f.tooltip = "Changes the bar color when Trueshot is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(spec.endOfTrueshot.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.endOfTrueshot.enabled = self:GetChecked()
 		end)
 
 		controls.colors.trueshotEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus when Trueshot is ending", spec.colors.bar.trueshotEnding, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.trueshotEnding
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "trueshotEnding")
+		end)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_2_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(spec.bar.showCasting)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showCasting = self:GetChecked()
+		end)
+
+		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.casting
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 2)
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.spending
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_2_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(spec.bar.showPassive)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showPassive = self:GetChecked()
+		end)
+
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.passive
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
+		end)
+
+		yCoord = yCoord - 40
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 2, yCoord, "Focus", true, false)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.steadyFocus = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.steadyFocus
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Steady Focus color change enabled")
+		f.tooltip = "Changes the bar border color when your Steady Focus buff is not up or is expiring in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(spec.steadyFocus.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.steadyFocus.enabled = self:GetChecked()
+		end)
+		
+		controls.colors.borderSteadyFocus = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when Steady Focus is expiring or not up (as configured)", spec.colors.bar.borderSteadyFocus, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.borderSteadyFocus
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderSteadyFocus")
 		end)
 
 		yCoord = yCoord - 40
@@ -2104,24 +2117,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.thresholds.sniperShot.enabled = self:GetChecked()
 		end)
 
-
 		yCoord = yCoord - 30
-
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 2, yCoord)
 
 		yCoord = yCoord - 40
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Trueshot Configuration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.endOfTrueshot = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.endOfTrueshot
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Trueshot")
-		f.tooltip = "Changes the bar color when Trueshot is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(spec.endOfTrueshot.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.endOfTrueshot.enabled = self:GetChecked()
-		end)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfTrueshotModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_GCD", parent, "UIRadioButtonTemplate")
@@ -2177,18 +2177,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 40
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Steady Focus Expiration Configuration", 0, yCoord)
 
-		yCoord = yCoord - 30
-		controls.checkBoxes.steadyFocus = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.steadyFocus
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar border when your Steady Focus buff is close to expiring or not up (if talented)")
-		f.tooltip = "Changes the bar border color when your Steady Focus buff is not up or is expiring in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(spec.steadyFocus.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.steadyFocus.enabled = self:GetChecked()
-		end)
-
-
 		yCoord = yCoord - 40
 		controls.checkBoxes.steadyFocusModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.steadyFocusModeGCDs
@@ -2212,7 +2200,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			spec.steadyFocus.gcdsMax = value
 		end)
-
 
 		yCoord = yCoord - 60
 		controls.checkBoxes.steadyFocusModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_M_TIME", parent, "UIRadioButtonTemplate")
@@ -2238,20 +2225,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.steadyFocus.timeMax = value
-		end)
-
-		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_CB1_8", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
-		f.tooltip = "This will change the bar's border color when your current focus is above or a hardcast spell will result in overcapping maximum Focus as configured below."
-		f:SetChecked(spec.colors.bar.overcapEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.overcapEnabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
@@ -3136,42 +3109,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 3, yCoord, "Focus", "notFull", false)
 
 		yCoord = yCoord - 70
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 3, yCoord, "Fury")
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.base
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
-		end)
-
-		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.border
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 525, 25, oUi.xCoord, yCoord)
-		f = controls.colors.passive
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
-		end)
-
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.background
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
-		end)
-
-		yCoord = yCoord - 30
-
-		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.bar.spending, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.spending
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending")
-		end)
-
 		controls.colors.coordinatedAssault = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus while Coordinated Assault is active", spec.colors.bar.coordinatedAssault, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.coordinatedAssault
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -3179,11 +3119,65 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
+		controls.checkBoxes.endOfCoordinatedAssault = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfCoordinatedAssault
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change color at the end of Coordinated Assault")
+		f.tooltip = "Changes the bar color when Coordinated Assault is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(spec.endOfCoordinatedAssault.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.endOfCoordinatedAssault.enabled = self:GetChecked()
+		end)
+
 		controls.colors.coordinatedAssaultEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus when Coordinated Assault is ending", spec.colors.bar.coordinatedAssaultEnding, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.coordinatedAssaultEnding
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "coordinatedAssaultEnding")
 		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_3_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(spec.bar.showCasting)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showCasting = self:GetChecked()
+		end)
+
+		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.spending
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending")
+		end)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_3_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(spec.bar.showPassive)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showPassive = self:GetChecked()
+		end)
+
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 525, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.passive
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
+		end)
+
+		yCoord = yCoord - 40
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 3, yCoord, "Fury", true, false)
 
 		yCoord = yCoord - 40
 		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
@@ -3369,18 +3363,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 3, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Configuration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.endOfCoordinatedAssault = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.endOfCoordinatedAssault
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Coordinated Assault")
-		f.tooltip = "Changes the bar color when Coordinated Assault is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(spec.endOfCoordinatedAssault.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.endOfCoordinatedAssault.enabled = self:GetChecked()
-		end)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Coordinated Assault Configuration", 0, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfCoordinatedAssaultModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_M_GCD", parent, "UIRadioButtonTemplate")
@@ -3406,7 +3389,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.endOfCoordinatedAssault.gcdsMax = value
 		end)
 
-
 		yCoord = yCoord - 60
 		controls.checkBoxes.endOfCoordinatedAssaultModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfCoordinatedAssaultModeTime
@@ -3431,20 +3413,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.endOfCoordinatedAssault.timeMax = value
-		end)
-
-		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB1_8", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
-		f.tooltip = "This will change the bar's border color when your current focus is above the overcapping maximum Focus as configured below."
-		f:SetChecked(spec.colors.bar.overcapEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.overcapEnabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 40
