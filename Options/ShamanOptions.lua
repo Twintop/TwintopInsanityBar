@@ -752,7 +752,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderOvercap")
 		end)
 
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maelstrom from Passive Sources", spec.colors.bar.passive, 550, 25, oUi.xCoord2, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maelstrom from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
@@ -2067,7 +2067,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)

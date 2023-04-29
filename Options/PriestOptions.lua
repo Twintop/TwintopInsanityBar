@@ -743,7 +743,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.bar.showPassive = self:GetChecked()
 		end)
 
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc.)", spec.colors.bar.passive, 550, 25, oUi.xCoord2, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc.)", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)

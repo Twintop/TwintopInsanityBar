@@ -2235,13 +2235,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		controls.colors.dots = {}
 
-		controls.colors.dots.same = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Bleed snapshot on current target is the same", spec.colors.text.dots.same, 550, 25, oUi.xCoord, yCoord-30)
+		controls.colors.dots.same = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Bleed snapshot on current target is the same", spec.colors.text.dots.same, 300, 25, oUi.xCoord, yCoord-30)
 		f = controls.colors.dots.same
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "same")
 		end)
 
-		controls.colors.dots.worse = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Bleed snapshot on current target is worse and should be reapplied.", spec.colors.text.dots.worse, 550, 25, oUi.xCoord, yCoord-60)
+		controls.colors.dots.worse = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Bleed snapshot on current target is worse and should be reapplied.", spec.colors.text.dots.worse, 300, 25, oUi.xCoord, yCoord-60)
 		f = controls.colors.dots.worse
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "worse")
@@ -2785,15 +2785,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 4, yCoord, "Mana", "notFull", false)
 
-		yCoord = yCoord - 70
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
 
-		yCoord = yCoord - 30
-		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana", spec.colors.bar.base, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.base
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
-		end)
+		yCoord = yCoord - 70
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 4, yCoord, "Mana")
 
 		yCoord = yCoord - 30
 		controls.colors.noEfflorescence = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Efflorescence is not out", spec.colors.bar.noEfflorescence, 300, 25, oUi.xCoord2, yCoord)

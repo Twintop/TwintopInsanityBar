@@ -524,27 +524,17 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 1, yCoord, "Mana", "notFull", false)
 
 		yCoord = yCoord - 70
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 1, yCoord, "Mana")
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.base
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
-		end)
-
-		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Resource Bar's border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.border
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
 		end)
+
+		yCoord = yCoord - 40
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 13, 1, yCoord, "Mana", false, false)
 
 		yCoord = yCoord - 40
 		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Essence Colors", 0, yCoord)
@@ -963,35 +953,48 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 2, yCoord, "Mana", "notFull", false)
 
 		yCoord = yCoord - 70
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 2, yCoord, "Mana")
 
 		yCoord = yCoord - 30
-		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.base
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_2_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(spec.bar.showCasting)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showCasting = self:GetChecked()
 		end)
 
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.background
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana cost of current hardcast spell", spec.colors.bar.spending, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana cost of current hardcast spell", spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_2_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(spec.bar.showPassive)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showPassive = self:GetChecked()
+		end)
+
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
 		end)
 
+		yCoord = yCoord - 30
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
+		end)
 
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 13, 2, yCoord, "Mana", false, true)
