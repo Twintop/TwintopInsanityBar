@@ -1450,6 +1450,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "#maim", icon = spells.maim.icon, description = spells.maim.name, printInSettings = true },
 			{ variable = "#moonfire", icon = spells.moonfire.icon, description = spells.moonfire.name, printInSettings = true },
 			{ variable = "#predatorySwiftness", icon = spells.predatorySwiftness.icon, description = spells.predatorySwiftness.name, printInSettings = true },
+			{ variable = "#predatorRevealed", icon = spells.predatorRevealed.icon, description = spells.predatorRevealed.name, printInSettings = true },
 			{ variable = "#primalWrath", icon = spells.primalWrath.icon, description = spells.primalWrath.name, printInSettings = true },
 			{ variable = "#prowl", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = true },
 			{ variable = "#stealth", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = false },
@@ -1556,6 +1557,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			
 			{ variable = "$tigersFuryTime", description = "Time remaining on your Tiger's Fury buff", printInSettings = true, color = false },
 			{ variable = "$tigersFuryCooldownTime", description = "Time remaining on your Tiger's Fury ability cooldown", printInSettings = true, color = false },
+
+			{ variable = "$predatorRevealedTime", description = "Time remaining on your Predator Revealed proc", printInSettings = true, color = false },
+			{ variable = "$predatorRevealedTicks", description = "Number of remaining ticks / incoming Combo Points from your Predator Revealed proc", printInSettings = true, color = false },
+			{ variable = "$predatorRevealedTickTime", description = "Time until the next tick / Combo Point generation occurs from your Predator Revealed proc", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -2781,6 +2786,24 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if _apexPredatorsCravingTime ~= nil then
 			apexPredatorsCravingTime = string.format("%.1f", _apexPredatorsCravingTime)
 		end
+		
+		--$predatorRevealedTime
+		local _predatorRevealedTime = GetPredatorRevealedRemainingTime()
+		local predatorRevealedTime = "0"
+		if _predatorRevealedTime ~= nil then
+			predatorRevealedTime = string.format("%.1f", _predatorRevealedTime)
+		end
+
+		--$predatorRevealedTicks 
+		local _predatorRevealedTicks = TRB.Data.snapshotData.predatorRevealed.ticks
+		
+		--$predatorRevealedTickTime
+		local _predatorRevealedTickTime = TRB.Data.snapshotData.predatorRevealed.untilNextTick
+		local predatorRevealedTickTime = "0"
+		if _predatorRevealedTickTime ~= nil then
+			predatorRevealedTickTime = string.format("%.1f", _predatorRevealedTickTime)
+		end
+
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveEnergy or 0
@@ -2817,6 +2840,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#lunarInspiration"] = TRB.Data.spells.lunarInspiration.icon
 		lookup["#maim"] = TRB.Data.spells.maim.icon
 		lookup["#moonfire"] = TRB.Data.spells.moonfire.icon
+		lookup["#predatorRevealed"] = TRB.Data.spells.predatorRevealed.icon
 		lookup["#predatorySwiftness"] = TRB.Data.spells.predatorySwiftness.icon
 		lookup["#primalWrath"] = TRB.Data.spells.primalWrath.icon
 		lookup["#prowl"] = TRB.Data.spells.prowl.icon
@@ -2864,6 +2888,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$apexPredatorsCravingTime"] = apexPredatorsCravingTime
 		lookup["$tigersFuryTime"] = tigersFuryTime
 		lookup["$tigersFuryCooldownTime"] = tigersFuryCooldownTime
+
+		lookup["$predatorRevealedTime"] = predatorRevealedTime
+		lookup["$predatorRevealedTicks"] = _predatorRevealedTicks
+		lookup["$predatorRevealedTickTime"] = predatorRevealedTickTime
 
 		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$energyTotal"] = energyTotal
@@ -2921,6 +2949,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookupLogic["$apexPredatorsCravingTime"] = _apexPredatorsCravingTime
 		lookupLogic["$tigersFuryTime"] = _tigersFuryTime
 		lookupLogic["$tigersFuryCooldownTime"] = _tigersFuryCooldownTime
+		lookupLogic["$predatorRevealedTime"] = _predatorRevealedTime
+		lookupLogic["$predatorRevealedTicks"] = _predatorRevealedTicks
+		lookupLogic["$predatorRevealedTickTime"] = _predatorRevealedTickTime
 		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
 		lookupLogic["$energyTotal"] = _energyTotal
 		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
@@ -4269,7 +4300,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local prTime = GetPredatorRevealedRemainingTime()
 					local prTotalCps = TRB.Data.snapshotData.predatorRevealed.ticks
 					local prNextTick = TRB.Data.spells.predatorRevealed.tickRate - TRB.Data.snapshotData.predatorRevealed.untilNextTick
-					local nextCp = nil
 
 					for x = 1, TRB.Data.character.maxResource2 do
 						local cpBorderColor = specSettings.colors.comboPoints.border
@@ -4289,9 +4319,24 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							if prTime ~= nil and prTime > 0 and x <= (TRB.Data.snapshotData.resource2 + prTotalCps) then
 								if x == TRB.Data.snapshotData.resource2 + 1 then
 									TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, prNextTick * 1000, TRB.Data.spells.predatorRevealed.tickRate * 1000)
-									nextCp = x
 								else
 									TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+								end
+
+								if specSettings.comboPoints.spec.predatorRevealedColor and x > TRB.Data.snapshotData.resource2 and x <= (TRB.Data.snapshotData.resource2 + prTotalCps) then
+									cpBorderColor = specSettings.colors.comboPoints.predatorRevealed
+	
+									if specSettings.comboPoints.sameColor ~= true then
+										cpColor = specSettings.colors.comboPoints.predatorRevealed
+									end
+	
+									if not specSettings.comboPoints.consistentUnfilledColor then
+										cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.predatorRevealed, true)
+									end
+								elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+									cpColor = specSettings.colors.comboPoints.penultimate
+								elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+									cpColor = specSettings.colors.comboPoints.final
 								end
 							else
 								TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
@@ -4301,11 +4346,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
 						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
 						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
-					end
-
-					
-					if prTime > 0 then
-						--print(nextCp, prTotalCps, prTime, prNextTime, latency)
 					end
 				end
 			end
@@ -5872,6 +5912,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 			elseif var == "$tigersFuryCooldownTime" then
 				if TRB.Data.snapshotData.tigersFury.cooldown.duration > 0 then
+					valid = true
+				end
+			elseif var == "$predatorRevealedTime" then
+				if TRB.Data.snapshotData.predatorRevealed.endTime ~= nil then
+					valid = true
+				end
+			elseif var == "$predatorRevealedTicks" then
+				if TRB.Data.snapshotData.predatorRevealed.endTime ~= nil then
+					valid = true
+				end
+			elseif var == "$predatorRevealedTickTime" then
+				if TRB.Data.snapshotData.predatorRevealed.endTime ~= nil then
 					valid = true
 				end
 			elseif var == "$inStealth" then

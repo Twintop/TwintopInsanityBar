@@ -813,7 +813,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 		end)
 
-		controls.colors.comboPoints.serratedBoneSpike = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Combo Point that wil generate on next Serrated Bone Spike use", spec.colors.comboPoints.serratedBoneSpike, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.serratedBoneSpike = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Combo Point that will generate on next Serrated Bone Spike use", spec.colors.comboPoints.serratedBoneSpike, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.serratedBoneSpike
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "serratedBoneSpike")

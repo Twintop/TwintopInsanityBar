@@ -34,8 +34,14 @@ local content = [====[
 
 - [#292 - UPDATE](#292) 10.1.0 changes:
 <br/>&emsp;&ensp;- Relentless Predator's Energy modifier for Ferocious Bite updated to 80% (was 60%).
-<br/>&emsp;&ensp;- Rework how Feral T30 4P incoming Combo Points are handled/calculated to improve accuracy.
-<br/>&emsp;&ensp;- Update Feral T30 4P to generate over 2.0 seconds.
+- [#292 - NEW](#292) Add support for Predator Revealed (T30 4P).
+<br/>&emsp;&ensp;- When a proc occurs, show the progress towards the next Combo Point as a filling bar on the next available Combo Point.
+<br/>&emsp;&ensp;- Custom color available to denote which Combo Points are incoming from this proc.
+<br/>&emsp;&ensp;- New bar text icon and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#predatorRevealed` -- spell icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$predatorRevealedTime` -- total time remaining on the buff
+<br/>&emsp;&ensp;&emsp;&ensp;- `$predatorRevealedTicks` -- total remaining ticks / Combo Points to be generated
+<br/>&emsp;&ensp;&emsp;&ensp;- `$predatorRevealedTickTime` -- time until the next tick occurs / Combo Point is generated
 
 ## Hunter
 ### Beast Mastery

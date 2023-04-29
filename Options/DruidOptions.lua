@@ -397,7 +397,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				spacing=14,
 				relativeTo="TOP",
 				relativeToName="Above - Middle",
-				fullWidth=false
+				fullWidth=false,
+				consistentUnfilledColor = false,
+				spec={
+					predatorRevealedColor = true
+				}
 			},
 			colors = {
 				text = {
@@ -440,6 +444,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					base="FFFFFF00",
 					penultimate="FFFF9900",
 					final="FFFF0000",
+					predatorRevealed="FF009900",
 					sameColor=false
 				},
 				threshold = {
@@ -1881,34 +1886,27 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
-		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Combo Points", spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Combo Points", spec.colors.comboPoints.base, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 		end)
 
+		yCoord = yCoord - 30
 		controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Combo Point's border", spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 		end)
 
-		yCoord = yCoord - 30		
-		controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Penultimate Combo Point", spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
+		yCoord = yCoord - 30
+		controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Penultimate Combo Point", spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.penultimate
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Final Combo Point", spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.comboPoints.final
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
-		end)
-
-		yCoord = yCoord - 30
-
 		controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sameColorComboPoint
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -1917,6 +1915,40 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f:SetChecked(spec.comboPoints.sameColor)
 		f:SetScript("OnClick", function(self, ...)
 			spec.comboPoints.sameColor = self:GetChecked()
+		end)
+
+		controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Final Combo Point", spec.colors.comboPoints.final, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.final
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.t30ComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Druid_2_comboPointsT30", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.t30ComboPoint
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enable Predator Revealed (T30 4P) color")
+		f.tooltip = "When checked, the next incoming Combo Point and any subsequent unfilled combo points that will generate from your Predator Revealed (T30 4P) proc will be a different color bar, background, and border color (as specified to the right)."
+		f:SetChecked(spec.comboPoints.spec.predatorRevealedColor)
+		f:SetScript("OnClick", function(self, ...)
+			spec.comboPoints.spec.predatorRevealedColor = self:GetChecked()
+		end)
+
+		controls.colors.comboPoints.predatorRevealed = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Combo Points incoming from Predator Revealed (T30 4P)", spec.colors.comboPoints.predatorRevealed, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.predatorRevealed
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "predatorRevealed")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.consistentUnfilledColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Feral_comboPointsConsistentBackgroundColor", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.consistentUnfilledColorComboPoint
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Always use default unfilled background")
+		f.tooltip = "When checked, unfilled combo points will always use the 'Unfilled Combo Point background' color above for their background. Borders will still change color depending on Predator Revealed settings."
+		f:SetChecked(spec.comboPoints.consistentUnfilledColor)
+		f:SetScript("OnClick", function(self, ...)
+			spec.comboPoints.consistentUnfilledColor = self:GetChecked()
 		end)
 
 		controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled Combo Point background", spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
