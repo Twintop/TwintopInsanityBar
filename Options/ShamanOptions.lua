@@ -746,7 +746,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		yCoord = yCoord - 30
 
-		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Bar border color when your current hardcast will overcap Maelstrom", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border color when your current hardcast will overcap Maelstrom", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderOvercap")

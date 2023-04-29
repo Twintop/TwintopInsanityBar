@@ -603,7 +603,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
 		end)
 
-		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Bar border color when you are overcapping Rage", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border color when you are overcapping Rage", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderOvercap")
@@ -1433,7 +1433,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
 		end)
 
-		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Bar border color when you are overcapping Rage", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border color when you are overcapping Rage", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderOvercap")

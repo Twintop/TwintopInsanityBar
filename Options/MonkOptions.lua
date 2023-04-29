@@ -1224,7 +1224,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Chi Colors", 0, yCoord)
+		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Chi Colors", 0, yCoord)
 		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30

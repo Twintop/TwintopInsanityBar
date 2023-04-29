@@ -1869,14 +1869,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 11, 2, yCoord, "Energy", true, false)
 
 		yCoord = yCoord - 30
-		controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Bar border color when you are stealth (via any ability or proc)", spec.colors.bar.borderStealth, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border color when you are stealth (via any ability or proc)", spec.colors.bar.borderStealth, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderStealth
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderStealth")
 		end)
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Combo Point Colors", 0, yCoord)
+		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Combo Point Colors", 0, yCoord)
 
 		controls.colors.comboPoints = {}
 

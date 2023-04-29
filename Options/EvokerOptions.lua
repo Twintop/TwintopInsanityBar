@@ -537,7 +537,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 13, 1, yCoord, "Mana", false, false)
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Essence Colors", 0, yCoord)
+		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Essence Colors", 0, yCoord)
 		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
@@ -1000,7 +1000,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 13, 2, yCoord, "Mana", false, true)
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Essence Colors", 0, yCoord)
+		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Essence Colors", 0, yCoord)
 		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30

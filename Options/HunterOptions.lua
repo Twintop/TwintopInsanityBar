@@ -887,7 +887,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 1, yCoord, "Focus")
 
 		yCoord = yCoord - 30
-		controls.colors.borderBeastialWrath = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Bar border color when you can use Beastial Wrath", spec.colors.bar.borderBeastialWrath, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderBeastialWrath = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border color when you can use Beastial Wrath", spec.colors.bar.borderBeastialWrath, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderBeastialWrath
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderBeastialWrath")
