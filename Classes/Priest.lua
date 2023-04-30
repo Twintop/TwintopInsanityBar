@@ -460,6 +460,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				}
 			},
 
+			-- Rashok's Molten Heart
+			moltenRadiance = {
+				id = 409898,
+				name = "",
+				icon = "",
+			},
+
 			-- Set Bonuses
 			divineConversation = { -- T28 4P
 				id = 363727,
@@ -599,6 +606,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			onCooldown = false,
 			startTime = nil,
 			duration = 0
+		}
+		specCache.preservation.snapshotData.moltenRadiance = {
+			spellId = nil,
+			startTime = nil,
+			duration = 0,
+			manaPerTick = 0,
+			mana = 0
 		}
 		specCache.holy.snapshotData.divineConversation = {
 			isActive = false
@@ -1122,6 +1136,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#innervate", icon = spells.innervate.icon, description = spells.innervate.name, printInSettings = true },
 			{ variable = "#lotn", icon = spells.lightOfTheNaaru.icon, description = spells.lightOfTheNaaru.name, printInSettings = true },
 			{ variable = "#lightOfTheNaaru", icon = spells.lightOfTheNaaru.icon, description = spells.lightOfTheNaaru.name, printInSettings = false },
+			{ variable = "#mr", icon = spells.moltenRadiance.icon, description = spells.moltenRadiance.name, printInSettings = true },
+			{ variable = "#moltenRadiance", icon = spells.moltenRadiance.icon, description = spells.moltenRadiance.name, printInSettings = false },
 			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
 			{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
 			{ variable = "#poh", icon = spells.prayerOfHealing.icon, description = spells.prayerOfHealing.name, printInSettings = true },
@@ -1226,7 +1242,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			{ variable = "$potionOfChilledClarityMana", description = "Passive mana regen while Potion of Chilled Clarity's effect is active", printInSettings = true, color = false },
 			{ variable = "$potionOfChilledClarityTime", description = "Time left on Potion of Chilled Clarity's effect", printInSettings = true, color = false },
-			
+									
+			{ variable = "$mrMana", description = "Mana from Molten Radiance", printInSettings = true, color = false },
+			{ variable = "$mrTime", description = "Time left on Molten Radiance", printInSettings = true, color = false },
+
 			{ variable = "$mttMana", description = "Bonus passive mana regen while Mana Tide Totem is active", printInSettings = true, color = false },
 			{ variable = "$mttTime", description = "Time left on Mana Tide Totem", printInSettings = true, color = false },
 
@@ -1586,6 +1605,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.manaTideTotem)
 	end
 
+	local function GetMoltenRadianceRemainingTime()
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.moltenRadiance)
+	end
+
 	local function GetSymbolOfHopeRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.symbolOfHope)
 	end
@@ -1725,11 +1748,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
 
 		--$mttMana
-		local _mttMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
+		local _mttMana = TRB.Data.snapshotData.manaTideTotem.mana
 		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
 		local _mttTime = GetManaTideTotemRemainingTime()
 		local mttTime = string.format("%.1f", _mttTime)
+
+		--$mrMana
+		local _mrMana = TRB.Data.snapshotData.moltenRadiance.mana
+		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
+		--$mrTime
+		local _mrTime = GetMoltenRadianceRemainingTime()
+		local mrTime = string.format("%.1f", _mrTime)
 
 		--$potionCooldownSeconds
 		local _potionCooldown = 0
@@ -1766,7 +1796,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local sfTime = string.format("%.1f", _sfTime)
 
 		--$passive
-		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _sfMana
+		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _sfMana + _mrMana
 		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.priest.holy.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 		--$manaTotal
 		local _manaTotal = math.min(_passiveMana + TRB.Data.snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
@@ -1858,6 +1888,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		Global_TwintopResourceBar.resource.innervate = _innervateMana or 0
 		Global_TwintopResourceBar.resource.potionOfChilledClarity = _potionOfChilledClarityMana or 0
 		Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
+		Global_TwintopResourceBar.resource.moltenRadiance = _mrMana or 0
 		Global_TwintopResourceBar.channeledPotion = {
 			mana = _channeledMana,
 			ticks = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining or 0
@@ -1902,6 +1933,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#innervate"] = TRB.Data.spells.innervate.icon
 		lookup["#lotn"] = TRB.Data.spells.lightOfTheNaaru.icon
 		lookup["#lightOfTheNaaru"] = TRB.Data.spells.lightOfTheNaaru.icon
+		lookup["#mr"] = TRB.Data.spells.moltenRadiance.icon
+		lookup["#moltenRadiance"] = TRB.Data.spells.moltenRadiance.icon
 		lookup["#mtt"] = TRB.Data.spells.manaTideTotem.icon
 		lookup["#manaTideTotem"] = TRB.Data.spells.manaTideTotem.icon
 		lookup["#poh"] = TRB.Data.spells.prayerOfHealing.icon
@@ -1955,6 +1988,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$innervateTime"] = innervateTime
 		lookup["$potionOfChilledClarityMana"] = potionOfChilledClarityMana
 		lookup["$potionOfChilledClarityTime"] = potionOfChilledClarityTime
+		lookup["$mrMana"] = mrMana
+		lookup["$mrTime"] = mrTime
 		lookup["$mttMana"] = mttMana
 		lookup["$mttTime"] = mttTime
 		lookup["$channeledMana"] = channeledMana
@@ -2007,6 +2042,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$innervateTime"] = _innervateTime
 		lookupLogic["$potionOfChilledClarityMana"] = _potionOfChilledClarityMana
 		lookupLogic["$potionOfChilledClarityTime"] = _potionOfChilledClarityTime
+		lookupLogic["$mrMana"] = _mrMana
+		lookupLogic["$mrTime"] = _mrTime
 		lookupLogic["$mttMana"] = _mttMana
 		lookupLogic["$mttTime"] = _mttTime
 		lookupLogic["$channeledMana"] = _channeledMana
@@ -2882,6 +2919,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 	end
 
+	local function UpdateMoltenRadiance(forceCleanup)
+		local currentTime = GetTime()
+
+		if forceCleanup or (TRB.Data.snapshotData.moltenRadiance.endTime ~= nil and currentTime > TRB.Data.snapshotData.moltenRadiance.endTime) then
+			TRB.Data.snapshotData.moltenRadiance.endTime = nil
+			TRB.Data.snapshotData.moltenRadiance.duration = 0
+			TRB.Data.snapshotData.moltenRadiance.remainingTime = 0
+			TRB.Data.snapshotData.moltenRadiance.mana = 0
+			TRB.Data.snapshotData.moltenRadiance.manaPerTick = 0
+		elseif TRB.Data.snapshotData.moltenRadiance.endTime ~= nil then
+			TRB.Data.snapshotData.moltenRadiance.remainingTime = GetMoltenRadianceRemainingTime()
+			TRB.Data.snapshotData.moltenRadiance.mana = TRB.Data.snapshotData.moltenRadiance.manaPerTick * TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.moltenRadiance.remainingTime, 0, "ceil", true)
+		end
+	end
+
 	local function UpdateSnapshot()
 		TRB.Functions.Character:UpdateSnapshot()
 		local currentTime = GetTime()
@@ -2894,6 +2946,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateInnervate()
 		UpdatePotionOfChilledClarity()
 		UpdateManaTideTotem()
+		UpdateMoltenRadiance()
 		UpdateShadowfiendValues()
 
 		local currentTime = GetTime()
@@ -3196,11 +3249,23 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Frames.passiveFrame.thresholds[1]:Hide()
 						end
 
-						-- Old Wrathful Faerie threshold. TODO: remove
-						TRB.Frames.passiveFrame.thresholds[2]:Hide()
-
 						if TRB.Data.snapshotData.innervate.mana > 0 or TRB.Data.snapshotData.potionOfChilledClarity.mana > 0 then
 							passiveValue = passiveValue + math.max(TRB.Data.snapshotData.innervate.mana, TRB.Data.snapshotData.potionOfChilledClarity.mana)
+		
+							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[2]:Show()
+							else
+								TRB.Frames.passiveFrame.thresholds[2]:Hide()
+							end
+						else
+							TRB.Frames.passiveFrame.thresholds[2]:Hide()
+						end
+
+						if TRB.Data.snapshotData.symbolOfHope.resourceFinal > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshotData.symbolOfHope.resourceFinal
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -3214,8 +3279,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Frames.passiveFrame.thresholds[3]:Hide()
 						end
 
-						if TRB.Data.snapshotData.symbolOfHope.resourceFinal > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshotData.symbolOfHope.resourceFinal
+						if TRB.Data.snapshotData.manaTideTotem.mana > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshotData.manaTideTotem.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -3229,8 +3294,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Frames.passiveFrame.thresholds[4]:Hide()
 						end
 
-						if TRB.Data.snapshotData.manaTideTotem.mana > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshotData.manaTideTotem.mana
+						if TRB.Data.snapshotData.moltenRadiance.mana > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshotData.moltenRadiance.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -3717,7 +3782,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.manaTideTotem.duration = 0
 							TRB.Data.snapshotData.manaTideTotem.endTime = nil
 							TRB.Data.snapshotData.audio.manaTideTotemCue = false
-						end				
+						end
+					elseif spellId == TRB.Data.spells.moltenRadiance.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
+							local _
+							_, _, _, _, TRB.Data.snapshotData.moltenRadiance.duration, TRB.Data.snapshotData.moltenRadiance.endTime, _, _, _, TRB.Data.snapshotData.moltenRadiance.spellId, _, _, _, _, _, _, _, TRB.Data.snapshotData.moltenRadiance.manaPerTick = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.moltenRadiance.id)
+							TRB.Data.snapshotData.moltenRadiance.isActive = false
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.moltenRadiance.isActive = false
+							TRB.Data.snapshotData.moltenRadiance.spellId = nil
+							TRB.Data.snapshotData.moltenRadiance.duration = 0
+							TRB.Data.snapshotData.moltenRadiance.endTime = nil
+							TRB.Data.snapshotData.moltenRadiance.manaPerTick = 0
+							TRB.Data.snapshotData.moltenRadiance.mana = 0
+						end			
 					elseif settings.shadowfiend.enabled and type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.shadowfiend.energizeId and sourceName == TRB.Data.spells.shadowfiend.name then
 						TRB.Data.snapshotData.shadowfiend.swingTime = currentTime
 						TRB.Data.snapshotData.shadowfiend.startTime, TRB.Data.snapshotData.shadowfiend.duration, _, _ = GetSpellCooldown(TRB.Data.spells.shadowfiend.id)
@@ -4398,7 +4476,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					TRB.Functions.Class:IsValidVariableForSpec("$sohMana") or
 					TRB.Functions.Class:IsValidVariableForSpec("$innervateMana") or
 					TRB.Functions.Class:IsValidVariableForSpec("$potionOfChilledClarityMana") or
-					TRB.Functions.Class:IsValidVariableForSpec("$mttMana") then
+					TRB.Functions.Class:IsValidVariableForSpec("$mttMana") or
+					TRB.Functions.Class:IsValidVariableForSpec("$mrMana") then
 					valid = true
 				end
 			elseif var == "$sohMana" then
@@ -4441,12 +4520,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if TRB.Data.snapshotData.potionOfChilledClarity.remainingTime > 0 then
 					valid = true
 				end
-			elseif var == "$mttMana" or var == "$manaTideTotemMana" then
+			elseif var == "$mttMana" then
 				if TRB.Data.snapshotData.manaTideTotem.mana > 0 then
 					valid = true
 				end
-			elseif var == "$mttTime" or var == "$manaTideTotemTime" then
+			elseif var == "$mttTime" then
 				if TRB.Data.snapshotData.manaTideTotem.isActive then
+					valid = true
+				end
+			elseif var == "$mrMana" then
+				if TRB.Data.snapshotData.moltenRadiance.mana > 0 then
+					valid = true
+				end
+			elseif var == "$mrTime" then
+				if TRB.Data.snapshotData.moltenRadiance.isActive then
 					valid = true
 				end
 			elseif var == "$channeledMana" then
