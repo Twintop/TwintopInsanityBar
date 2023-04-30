@@ -110,7 +110,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				icon = "",
 				maelstrom = 8,
 				overload = 3,
-				baseline = true
+				baseline = true,
+				primalFracture = true
 			},
 			flameShock = {
 				id = 188389,
@@ -131,7 +132,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				icon = "",
 				maelstrom = 10,
 				isTalent = true,
-				baseline = true
+				baseline = true,
+				primalFracture = true
 			},
 			chainLightning = {
 				id = 188443,
@@ -147,7 +149,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				name = "",
 				icon = "",
 				maelstrom = 14,
-				isTalent = true
+				isTalent = true,
+				primalFracture = true
 			},
 			hex = {
 				id = 51514,
@@ -228,6 +231,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				stacks = 4,
 				duration = 15,
 				isTalent = true,
+				primalFracture = true
 			},
 			stormkeeper = {
 				id = 191634,
@@ -310,6 +314,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			},
 
 			--TODO: Add Searing Flames passive maelstrom
+
+			primalFracture = { -- T30 4P
+				id = 410018,
+				name = "",
+				icon = "",
+				maelstromMod = 1.5
+			}
 		}
 		
 		specCache.elemental.snapshotData.audio = {
@@ -346,6 +357,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spell = nil
 		}
 		specCache.elemental.snapshotData.echoesOfGreatSundering = {
+			isActive = false,
+			duration = 0,
+			endTime = nil
+		}
+		specCache.elemental.snapshotData.primalFracture = {
 			isActive = false,
 			duration = 0,
 			endTime = nil
@@ -794,6 +810,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "#lavaBurst", icon = spells.lavaBurst.icon, description = spells.lavaBurst.name, printInSettings = true },
 			{ variable = "#lightningBolt", icon = spells.lightningBolt.icon, description = spells.lightningBolt.name, printInSettings = true },
 			{ variable = "#lightningShield", icon = spells.lightningShield.icon, description = spells.lightningShield.name, printInSettings = true },
+			{ variable = "#primalFracture", icon = spells.primalFracture.icon, description = spells.primalFracture.name, printInSettings = true },
 			{ variable = "#stormkeeper", icon = spells.stormkeeper.icon, description = spells.stormkeeper.name, printInSettings = true },
 		}
 		specCache.elemental.barTextVariables.values = {
@@ -854,6 +871,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "$ascendanceTime", description = "Duration remaining of Ascendance", printInSettings = true, color = false },
 
 			{ variable = "$eogsTime", description = "Time remaining on Echoes of Great Sundering buff", printInSettings = true, color = false },
+
+			{ variable = "$pfTime", description = "Time remaining on Primal Fracture (T30 4P) buff", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -1200,7 +1219,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function GetEchoesOfGreatSunderingRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.echoesOfGreatSundering)
 	end
-		
+	
+	local function GetPrimalFractureRemainingTime()
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.primalFracture)
+	end
+	
+	
 	local function GetIcefuryRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.icefury)
 	end
@@ -1344,6 +1368,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			eogsTime = string.format("%.1f", _eogsTime)
 		end
 
+		--$pfTime
+		local _pfTime = GetPrimalFractureRemainingTime()
+
+		local pfTime = "0.0"
+		if _pfTime > 0 then
+			pfTime = string.format("%.1f", _pfTime)
+		end
+
 		--$ascendanceTime
 		local _ascendanceTime = TRB.Data.snapshotData.ascendance.remainingTime
 		local ascendanceTime = string.format("%.1f", _ascendanceTime)
@@ -1376,6 +1408,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["#lavaBurst"] = TRB.Data.spells.lavaBurst.icon
 		lookup["#lightningBolt"] = TRB.Data.spells.lightningBolt.icon
 		lookup["#lightningShield"] = TRB.Data.spells.lightningShield.icon
+		lookup["#primalFracture"] = TRB.Data.spells.primalFracture.icon
 		lookup["#stormkeeper"] = TRB.Data.spells.stormkeeper.icon
 		lookup["$maelstromPlusCasting"] = maelstromPlusCasting
 		lookup["$maelstromPlusPassive"] = maelstromPlusPassive
@@ -1401,6 +1434,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["$fsCount"] = flameShockCount
 		lookup["$fsTime"] = flameShockTime
 		lookup["$ascendanceTime"] = ascendanceTime
+		lookup["$pfTime"] = pfTime
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1428,6 +1462,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookupLogic["$fsCount"] = _flameShockCount
 		lookupLogic["$fsTime"] = _flameShockTime
 		lookupLogic["$ascendanceTime"] = _ascendanceTime
+		lookupLogic["$pfTime"] = _pfTime
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -1758,10 +1793,22 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local function FillSnapshotDataCasting(spell, maelstromMod)
 		maelstromMod = maelstromMod or 0
+		local maelstromMultMod = 1
+
+		if TRB.Data.snapshotData.primalFracture.isActive then
+			if spell.id == TRB.Data.spells.lavaBurst.id or
+				spell.id == TRB.Data.spells.lightningBolt.id or
+				spell.id == TRB.Data.spells.icefury.id or
+				spell.id == TRB.Data.spells.frostShock.id
+				then
+				maelstromMultMod = TRB.Data.spells.primalFracture.maelstromMod
+			end
+		end
+
 		local currentTime = GetTime()
 		TRB.Data.snapshotData.casting.startTime = currentTime
-		TRB.Data.snapshotData.casting.resourceRaw = spell.maelstrom + maelstromMod
-		TRB.Data.snapshotData.casting.resourceFinal = spell.maelstrom + maelstromMod
+		TRB.Data.snapshotData.casting.resourceRaw = (spell.maelstrom + maelstromMod) * maelstromMultMod
+		TRB.Data.snapshotData.casting.resourceFinal = (spell.maelstrom + maelstromMod) * maelstromMultMod
 		TRB.Data.snapshotData.casting.spellId = spell.id
 		TRB.Data.snapshotData.casting.icon = spell.icon
 	end
@@ -2108,9 +2155,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
+					local barBorderColor = specSettings.colors.bar.border
 
 					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
+						local barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
@@ -2118,9 +2166,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.border, true))
 						TRB.Data.snapshotData.audio.overcapCue = false
 					end
+					
+
+					if specSettings.colors.bar.primalFracture.enabled and TRB.Functions.Class:IsValidVariableForSpec("$pfTime") then
+						barBorderColor = specSettings.colors.bar.primalFracture.color
+					end
+
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
 					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
 
@@ -2696,7 +2750,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Data.snapshotData.echoesOfGreatSundering.duration = 0
 							TRB.Data.snapshotData.echoesOfGreatSundering.endTime = nil
 						end
-					end
+					elseif spellId == TRB.Data.spells.primalFracture.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.snapshotData.primalFracture.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.primalFracture.duration, TRB.Data.snapshotData.primalFracture.endTime, _, _, _, TRB.Data.snapshotData.primalFracture.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.primalFracture.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.primalFracture.isActive = false
+							TRB.Data.snapshotData.primalFracture.spellId = nil
+							TRB.Data.snapshotData.primalFracture.duration = 0
+							TRB.Data.snapshotData.primalFracture.endTime = nil
+						end
+					end					
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "enhancement" then
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "restoration" then
 					if spellId == TRB.Data.spells.symbolOfHope.id then
@@ -3223,6 +3287,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end
 			elseif var == "$eogsTime" then
 				if GetEchoesOfGreatSunderingRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$pfTime" then
+				if GetPrimalFractureRemainingTime() > 0 then
 					valid = true
 				end
 			end

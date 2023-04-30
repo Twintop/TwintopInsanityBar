@@ -172,7 +172,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					flashAlpha=0.70,
 					flashPeriod=0.5,
 					flashEnabled=true,
-					overcapEnabled=true
+					overcapEnabled=true,
+					primalFracture = {
+						color = "FFFF9900",
+						enabled = true
+					}
 				},
 				threshold = {
 					under="FFFFFFFF",
@@ -779,6 +783,23 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 1, yCoord, "Maelstrom", true, false)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.primalFractureBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_1_Border_Option_primalFractureBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.primalFractureBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Primal Fracture (T30 4P) buff")
+		f.tooltip = "This will change the bar border color when you have the Primal Fracture (T30 4P) buff."
+		f:SetChecked(spec.colors.bar.primalFracture.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.primalFracture.enabled = self:GetChecked()
+		end)
+
+		controls.colors.borderPrimalFracture = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you can have the Primal Fracture (T30 4P) buff", spec.colors.bar.primalFracture.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.borderPrimalFracture
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "primalFracture")
+		end)
 
 		yCoord = yCoord - 40
 		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
