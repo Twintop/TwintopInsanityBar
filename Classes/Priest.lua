@@ -2468,6 +2468,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindSpike.insanity
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.mindSpike.id
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.mindSpike.icon
+					elseif currentSpellId == TRB.Data.spells.mindSpikeInsanity.id then
+						TRB.Data.snapshotData.casting.startTime = currentTime
+						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.mindSpikeInsanity.insanity
+						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.mindSpikeInsanity.id
+						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.mindSpikeInsanity.icon
 					elseif currentSpellId == TRB.Data.spells.darkAscension.id then
 						TRB.Data.snapshotData.casting.startTime = currentTime
 						TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.spells.darkAscension.insanity
@@ -2963,8 +2968,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.snapshotData.mindFlayInsanity.endTime = nil
 			TRB.Data.snapshotData.mindFlayInsanity.duration = 0
 			TRB.Data.snapshotData.mindFlayInsanity.spellId = nil
-		else
-			
+		elseif TRB.Data.snapshotData.mindFlayInsanity.spellId ~= nil then
+			_, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.duration, TRB.Data.snapshotData.mindFlayInsanity.endTime, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.snapshotData.mindFlayInsanity.spellId)
 		end
 
 		if TRB.Data.snapshotData.mindDevourer.endTime ~= nil and currentTime > (TRB.Data.snapshotData.mindDevourer.endTime) then
