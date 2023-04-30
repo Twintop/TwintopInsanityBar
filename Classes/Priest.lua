@@ -870,6 +870,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				insanity = 6,
 				isTalent = true
 			},
+			deathspeaker = {
+				id = 392507,
+				name = "",
+				icon = "",
+				buffId = 392511,
+				isTalent = true,
+				isActive = false
+			},
 			voidTorrent = {
 				id = 263165,
 				name = "",
@@ -1034,6 +1042,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spellId = nil,
 			endTime = nil,
 			remainingTime = 0,
+			duration = 0
+		}
+		specCache.shadow.snapshotData.deathspeaker = {
+			spellId = nil,
+			endTime = nil,
 			duration = 0
 		}
 		specCache.shadow.snapshotData.twistOfFate = {
@@ -1298,6 +1311,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#swp", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = true },
 			{ variable = "#shadowWordPain", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = false },
 
+			{ variable = "#swd", icon = spells.deathspeaker.icon, description = spells.deathspeaker.name, printInSettings = true },
+			{ variable = "#shadowWordDeath", icon = spells.deathspeaker.icon, description = spells.deathspeaker.name, printInSettings = false },
+			{ variable = "#deathspeaker", icon = spells.deathspeaker.icon, description = spells.deathspeaker.name, printInSettings = false },
+
 			{ variable = "#sf", icon = spells.shadowfiend.icon, description = "Shadowfiend / Mindbender", printInSettings = true },
 			{ variable = "#mindbender", icon = spells.mindbender.icon, description = "Mindbender", printInSettings = false },
 			{ variable = "#shadowfiend", icon = spells.shadowfiend.icon, description = "Shadowfiend", printInSettings = false },
@@ -1392,6 +1409,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$mdTime", description = "Time remaining on Mind Devourer buff", printInSettings = true, color = false },
 
 			{ variable = "$mfiTime", description = "Time remaining on Mind Flay: Insanity buff", printInSettings = true, color = false },
+			
+			{ variable = "$deathspeakerTime", description = "Time remaining on Deathspeaker proc", printInSettings = true, color = false },
 			
 			{ variable = "$siTime", description = "Time remaining on Shadowy Insight buff", printInSettings = true, color = false },
 			
@@ -2172,6 +2191,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			_mfiTime = math.abs(TRB.Data.snapshotData.mindFlayInsanity.endTime - currentTime)
 		end
 		local mfiTime = string.format("%.1f", _mfiTime)
+		
+		--$deathspeakerTime
+		local _deathspeakerTime = 0
+		if TRB.Data.snapshotData.deathspeaker.endTime then
+			_deathspeakerTime = math.abs(TRB.Data.snapshotData.deathspeaker.endTime - currentTime)
+		end
+		local deathspeakerTime = string.format("%.1f", _deathspeakerTime)
 
 		--$tofTime
 		local _tofTime = 0
@@ -2279,6 +2305,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#cthun"] = TRB.Data.spells.idolOfCthun.icon
 		lookup["#idolOfCthun"] = TRB.Data.spells.idolOfCthun.icon
 		lookup["#loi"] = TRB.Data.spells.idolOfCthun.icon
+		lookup["#swd"] = TRB.Data.spells.deathspeaker.icon
+		lookup["#shadowWordDeath"] = TRB.Data.spells.deathspeaker.icon
+		lookup["#deathspeaker"] = TRB.Data.spells.deathspeaker.icon
 		lookup["$swpCount"] = shadowWordPainCount
 		lookup["$swpTime"] = shadowWordPainTime
 		lookup["$vtCount"] = vampiricTouchCount
@@ -2287,6 +2316,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$dpTime"] = devouringPlagueTime
 		lookup["$mdTime"] = mdTime
 		lookup["$mfiTime"] = mfiTime
+		lookup["$deathspeakerTime"] = deathspeakerTime
 		lookup["$tofTime"] = tofTime
 		lookup["$vfTime"] = voidformTime
 		lookup["$mmTime"] = mmTime
@@ -2330,6 +2360,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$dpTime"] = devouringPlagueTime
 		lookupLogic["$mdTime"] = _mdTime
 		lookupLogic["$mfiTime"] = _mfiTime
+		lookupLogic["$deathspeakerTime"] = _deathspeakerTime
 		lookupLogic["$tofTime"] = _tofTime
 		lookupLogic["$vfTime"] = _voidformTime
 		lookupLogic["$mmTime"] = _mmTime
@@ -2972,6 +3003,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			_, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.duration, TRB.Data.snapshotData.mindFlayInsanity.endTime, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.snapshotData.mindFlayInsanity.spellId)
 		end
 
+		if TRB.Data.snapshotData.deathspeaker.endTime ~= nil and currentTime > (TRB.Data.snapshotData.deathspeaker.endTime) then
+			TRB.Data.snapshotData.deathspeaker.endTime = nil
+			TRB.Data.snapshotData.deathspeaker.duration = 0
+			TRB.Data.snapshotData.deathspeaker.spellId = nil
+		end
+
 		if TRB.Data.snapshotData.mindDevourer.endTime ~= nil and currentTime > (TRB.Data.snapshotData.mindDevourer.endTime) then
 			TRB.Data.snapshotData.mindDevourer.endTime = nil
 			TRB.Data.snapshotData.mindDevourer.duration = 0
@@ -3331,6 +3368,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					if specSettings.colors.bar.mindFlayInsanityBorderChange and TRB.Functions.Class:IsValidVariableForSpec("$mfiTime") then
 						barBorderColor = specSettings.colors.bar.borderMindFlayInsanity
+					end
+
+					if specSettings.colors.bar.deathspeaker.enabled and TRB.Functions.Class:IsValidVariableForSpec("$deathspeakerTime") then
+						barBorderColor = specSettings.colors.bar.deathspeaker.color
 					end
 					
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
@@ -3882,7 +3923,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.devouredDespair.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.mindFlayInsanity.buffId or spellId == TRB.Data.spells.mindSpikeInsanity.buffId then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then -- Gained buff
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" or type == "SPELL_AURA_APPLIED_DOSE" then -- Gained buff
 							TRB.Data.spells.mindFlayInsanity.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.duration, TRB.Data.snapshotData.mindFlayInsanity.endTime, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.spellId = TRB.Functions.Aura:FindBuffById(spellId)
 						elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_DISPEL" then -- Lost buff
@@ -3890,6 +3931,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.mindFlayInsanity.spellId = nil
 							TRB.Data.snapshotData.mindFlayInsanity.duration = 0
 							TRB.Data.snapshotData.mindFlayInsanity.endTime = nil
+						end
+					elseif spellId == TRB.Data.spells.deathspeaker.buffId then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
+							TRB.Data.spells.deathspeaker.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.deathspeaker.duration, TRB.Data.snapshotData.deathspeaker.endTime, _, _, _, TRB.Data.snapshotData.deathspeaker.spellId = TRB.Functions.Aura:FindBuffById(spellId)
+						elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_DISPEL" then -- Lost buff
+							TRB.Data.spells.deathspeaker.isActive = false
+							TRB.Data.snapshotData.deathspeaker.spellId = nil
+							TRB.Data.snapshotData.deathspeaker.duration = 0
+							TRB.Data.snapshotData.deathspeaker.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.twistOfFate.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
@@ -4574,6 +4625,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif var == "$mfiTime" then
 				if TRB.Data.spells.mindFlayInsanity.isActive then
+					valid = true
+				end
+			elseif var == "$deathspeakerTime" then
+				if TRB.Data.spells.deathspeaker.isActive then
 					valid = true
 				end
 			elseif var == "$tofTime" then

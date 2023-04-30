@@ -439,6 +439,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					border="FF431863",
 					borderOvercap="FFFF0000",
 					borderMindFlayInsanity="FF00FF00",
+					deathspeaker = {
+						color = "FFFF9900",
+						enabled = true
+					},
 					background="66000000",
 					base="FF763BAF",
 					devouringPlagueUsable="FF5C2F89",
@@ -1894,22 +1898,39 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 3, yCoord, "Insanity", true, false)
-
+		
 		yCoord = yCoord - 30
 		controls.checkBoxes.mindFlayInsanityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Border_Option_mindFlayInsanityBorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mindFlayInsanityBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mind Flay: Insanity")
-		f.tooltip = "This will change the bar border color when you are able to cast Mind Flay: Insanity"
+		getglobal(f:GetName() .. 'Text'):SetText("Mind Flay: Insanity / Mind Spike: Insanity")
+		f.tooltip = "This will change the bar border color when you are able to cast Mind Flay: Insanity / Mind Spike: Insanity"
 		f:SetChecked(spec.colors.bar.mindFlayInsanityBorderChange)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.mindFlayInsanityBorderChange = self:GetChecked()
 		end)
 
-		controls.colors.borderMindFlayInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you can channel Mind Flay: Insanity", spec.colors.bar.borderMindFlayInsanity, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderMindFlayInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you can channel Mind Flay: Insanity or Mind Spike: Insanity", spec.colors.bar.borderMindFlayInsanity, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderMindFlayInsanity
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderMindFlayInsanity")
+		end)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.deathspeakerBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Border_Option_deathspeakerBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.deathspeakerBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Deathspeaker proc")
+		f.tooltip = "This will change the bar border color when you are able to cast Shadow Word: Death with the Deathspeaker proc effect active."
+		f:SetChecked(spec.colors.bar.deathspeaker.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.deathspeaker.enabled = self:GetChecked()
+		end)
+
+		controls.colors.borderDeathspeaker = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when a Deathspeaker proc is active", spec.colors.bar.deathspeaker.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.borderDeathspeaker
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "deathspeaker")
 		end)
 
 		yCoord = yCoord - 40

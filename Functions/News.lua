@@ -62,6 +62,11 @@ local content = [====[
 <br/>&emsp;&ensp;- Add Mind Spike: Insanity in addition to current Mind Flay: Insanity support.
 <br/>&emsp;&ensp;- Update Auspicious Spirits predicted incoming Insanity to match the formula in SimulationCraft.
 - [#292 - NEW](#292) Added extra threshold lines for Devouring Plague, similar to Starsurge threshold lines for Balance Druids. These are separately toggleable at 2x and 3x the cost with an additional option to only show the next available threshold line.
+- [#302 - NEW](#302) Add support for tracking Deathspeaker procs:
+<br/>&emsp;&ensp;- Optional bar border change when the buff is up. This superceeds the Mind Flay: Insanity / Mind Spike: Insanity border color change.
+<br/>&emsp;&ensp;- New bar text icon and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#swd`, `#shadowWordDeath`, `#deathspeaker` -- buff icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$deathspeakerTime` -- total time remaining on the buff
 
 ----
 # 10.0.7.2-release (2023-04-15)
