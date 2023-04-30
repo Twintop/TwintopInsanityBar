@@ -753,6 +753,30 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				thresholdUsable = false,
 				isTalent = true,
 				isSnowflake = true
+			},			
+			devouringPlague2 = {
+				id = 335467,
+				name = "",
+				icon = "",
+				texture = "",
+				insanity = -100,
+				thresholdId = 2,
+				settingKey = "devouringPlague2",
+				thresholdUsable = false,
+				isTalent = true,
+				isSnowflake = true
+			},			
+			devouringPlague3 = {
+				id = 335467,
+				name = "",
+				icon = "",
+				texture = "",
+				insanity = -150,
+				thresholdId = 3,
+				settingKey = "devouringPlague3",
+				thresholdUsable = false,
+				isTalent = true,
+				isSnowflake = true
 			},
 			shadowyApparition = {
 				id = 341491,
@@ -1501,6 +1525,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[8], TRB.Data.spells.shadowfiend.settingKey, TRB.Data.settings.priest.holy)
 		elseif specId == 3 then
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.devouringPlague.settingKey, TRB.Data.settings.priest.shadow)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.devouringPlague2.settingKey, TRB.Data.settings.priest.shadow)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.devouringPlague3.settingKey, TRB.Data.settings.priest.shadow)
 		end
 
 		TRB.Functions.Bar:Construct(settings)
@@ -3346,7 +3372,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 							
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-								if spell.id == TRB.Data.spells.devouringPlague.id then
+								if spell.settingKey == TRB.Data.spells.devouringPlague.settingKey then
 									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.mindsEye) then
 										resourceAmount = resourceAmount - TRB.Data.spells.mindsEye.insanityMod
 									end
@@ -3359,8 +3385,72 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 									
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
+									elseif resourceAmount >= TRB.Data.character.maxResource then
+										showThreshold = false
 									elseif TRB.Data.snapshotData.mindDevourer.endTime ~= nil and currentTime < TRB.Data.snapshotData.mindDevourer.endTime then
 										thresholdColor = specSettings.colors.threshold.over
+									elseif currentResource >= -resourceAmount then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								elseif spell.settingKey == TRB.Data.spells.devouringPlague2.settingKey then
+									local previousResourceAmount = TRB.Data.spells.devouringPlague.insanity
+									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.mindsEye) then
+										resourceAmount = resourceAmount - (TRB.Data.spells.mindsEye.insanityMod*2)
+										previousResourceAmount = previousResourceAmount - (TRB.Data.spells.mindsEye.insanityMod)
+									end
+
+									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.distortedReality) then
+										resourceAmount = resourceAmount - (TRB.Data.spells.distortedReality.insanityMod*2)
+										previousResourceAmount = previousResourceAmount - (TRB.Data.spells.distortedReality.insanityMod)
+									end
+
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									
+									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+										showThreshold = false
+									elseif -resourceAmount >= TRB.Data.character.maxResource then
+										showThreshold = false
+									elseif TRB.Data.snapshotData.mindDevourer.endTime ~= nil and
+										currentTime < TRB.Data.snapshotData.mindDevourer.endTime and
+										currentResource >= -previousResourceAmount then
+										thresholdColor = specSettings.colors.threshold.over
+									elseif specSettings.thresholds.devouringPlagueThresholdOnlyOverShow and
+										   -previousResourceAmount > currentResource  then
+										showThreshold = false
+									elseif currentResource >= -resourceAmount then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								elseif spell.settingKey == TRB.Data.spells.devouringPlague3.settingKey then
+									local previousResourceAmount = TRB.Data.spells.devouringPlague2.insanity
+									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.mindsEye) then
+										resourceAmount = resourceAmount - (TRB.Data.spells.mindsEye.insanityMod*3)
+										previousResourceAmount = previousResourceAmount - (TRB.Data.spells.mindsEye.insanityMod*2)
+									end
+
+									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.distortedReality) then
+										resourceAmount = resourceAmount - (TRB.Data.spells.distortedReality.insanityMod*3)
+										previousResourceAmount = previousResourceAmount - (TRB.Data.spells.distortedReality.insanityMod*2)
+									end
+
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									
+									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+										showThreshold = false
+									elseif -resourceAmount >= TRB.Data.character.maxResource then
+										showThreshold = false
+									elseif TRB.Data.snapshotData.mindDevourer.endTime ~= nil and
+										currentTime < TRB.Data.snapshotData.mindDevourer.endTime and
+										currentResource >= -previousResourceAmount then
+										thresholdColor = specSettings.colors.threshold.over
+									elseif specSettings.thresholds.devouringPlagueThresholdOnlyOverShow and
+										-previousResourceAmount > currentResource then
+										showThreshold = false
 									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
@@ -4091,8 +4181,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + TRB.Data.spells.distortedReality.insanityMod
 			end
 
-			TRB.Frames.resourceFrame.thresholds[2]:Hide()
-			TRB.Frames.resourceFrame.thresholds[3]:Hide()
 			TRB.Frames.resourceFrame.thresholds[4]:Hide()
 			TRB.Frames.resourceFrame.thresholds[5]:Hide()
 			TRB.Frames.resourceFrame.thresholds[6]:Hide()

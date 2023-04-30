@@ -368,7 +368,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					width=24,
 					height=24
 				},
+				devouringPlagueThresholdOnlyOverShow = false,
 				devouringPlague = { -- 1
+					enabled = true,
+				},
+				devouringPlague2 = { -- 2
+					enabled = true,
+				},
+				devouringPlague3 = { -- 3
 					enabled = true,
 				}
 			},
@@ -1966,9 +1973,39 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.thresholds.devouringPlague.enabled = self:GetChecked()
 		end)
 
-		yCoord = yCoord - 25
-		yCoord = yCoord - 25
-		yCoord = yCoord - 25
+		yCoord = yCoord - 20
+		controls.checkBoxes.dpThreshold2Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague2", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.dpThreshold2Show
+		f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show 2x Devouring Plague threshold line")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast two Devouring Plagues in a row."
+		f:SetChecked(spec.thresholds.devouringPlague2.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.devouringPlague2.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 20
+		controls.checkBoxes.dpThreshold3Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague3", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.dpThreshold3Show
+		f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show 3x Devouring Plague threshold line")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast three Devouring Plagues in a row."
+		f:SetChecked(spec.thresholds.devouringPlague3.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.devouringPlague3.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 20
+		controls.checkBoxes.dpThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlagueOnlyOver", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.dpThresholdOnlyOverShow
+		f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Only show current + next threshold line?")
+		f.tooltip = "This will only show Devouring Plague threshold lines if you already have enough Insanity to cast it, or, if it is the next threshold you're approaching. Only triggers the next after the previous threshold line has been reached, even if it is not checked above!"
+		f:SetChecked(spec.thresholds.devouringPlagueThresholdOnlyOverShow)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.devouringPlagueThresholdOnlyOverShow = self:GetChecked()
+		end)
+
 		yCoord = yCoord - 25
 		yCoord = yCoord - 25
 		yCoord = yCoord - 50

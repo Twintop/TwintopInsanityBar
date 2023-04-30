@@ -3873,6 +3873,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									end
 								elseif spell.settingKey == TRB.Data.spells.starsurge2.settingKey then
 									local redrawThreshold = false
+									local touchTheCosmosMod = 0
 									if TRB.Data.spells.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
 										resourceAmount = resourceAmount - (TRB.Data.spells.elunesGuidance.modifierStarsurge * 2)
 										redrawThreshold = true
@@ -3881,20 +3882,21 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									if TRB.Data.spells.touchTheCosmos.isActive then
 										resourceAmount = resourceAmount - TRB.Data.spells.touchTheCosmos.astralPowerMod
 										redrawThreshold = true
+										touchTheCosmosMod = TRB.Data.spells.touchTheCosmos.astralPowerMod
 									end
 
-									if redrawThreshold then										
+									if redrawThreshold then
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 									end
 
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
-									elseif (TRB.Data.character.starsurgeThreshold * 2) >= TRB.Data.character.maxResource then
+									elseif -resourceAmount >= TRB.Data.character.maxResource then
 										showThreshold = false
 									elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and
-										   TRB.Data.character.starsurgeThreshold > currentResource then
+										   -(TRB.Data.character.starsurgeThreshold - touchTheCosmosMod) > currentResource then
 										showThreshold = false
-									elseif currentResource >= TRB.Data.character.starsurgeThreshold * 2 then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -3902,6 +3904,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									end
 								elseif spell.settingKey == TRB.Data.spells.starsurge3.settingKey then
 									local redrawThreshold = false
+									local touchTheCosmosMod = 0
 									if TRB.Data.spells.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
 										resourceAmount = resourceAmount - (TRB.Data.spells.elunesGuidance.modifierStarsurge * 3)
 										redrawThreshold = true
@@ -3910,20 +3913,21 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									if TRB.Data.spells.touchTheCosmos.isActive then
 										resourceAmount = resourceAmount - TRB.Data.spells.touchTheCosmos.astralPowerMod
 										redrawThreshold = true
+										touchTheCosmosMod = TRB.Data.spells.touchTheCosmos.astralPowerMod
 									end
 
-									if redrawThreshold then										
+									if redrawThreshold then	
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 									end
 
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
-									elseif (TRB.Data.character.starsurgeThreshold * 3) >= TRB.Data.character.maxResource then
+									elseif -resourceAmount >= TRB.Data.character.maxResource then
 										showThreshold = false
 									elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and
-										   (TRB.Data.character.starsurgeThreshold * 2) > currentResource then
+										   -((TRB.Data.character.starsurgeThreshold * 2) - touchTheCosmosMod) > currentResource then
 										showThreshold = false
-									elseif currentResource >= (TRB.Data.character.starsurgeThreshold * 3) then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
