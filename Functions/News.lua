@@ -19,6 +19,14 @@ local content = [====[
 <br/>&emsp;&ensp;- Bar border and resource text will not change to the overcap color while out of combat.
 - [#301 - UPDATE](#301) Update the options UI for all specs to splpit bar color and bar border color in to separate sections. Relocate some enabling toggles to these sections from elsewhere in the options menus.
 
+### Healers
+
+- [#303 - NEW](#303) Add support for the new trinket *Rashok's Molten Heart* and the proc effect, *Molten Radiance*'s, mana regen.
+<br/>&emsp;&ensp;- New bar text icon and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#mt`, `#moltenRadiance` -- spell icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$mrTime` -- total time remaining on the proc
+<br/>&emsp;&ensp;&emsp;&ensp;- `$mrMana` -- total remaining incoming mana from the proc
+
 ## Druid
 ### Balance
 

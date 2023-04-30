@@ -344,7 +344,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			startTime = nil,
 			duration = 0
 		}
-		specCache.preservation.snapshotData.moltenRadiance = {
+		specCache.mistweaver.snapshotData.moltenRadiance = {
 			spellId = nil,
 			startTime = nil,
 			duration = 0,

@@ -1248,7 +1248,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			startTime = nil,
 			duration = 0
 		}
-		specCache.preservation.snapshotData.moltenRadiance = {
+		specCache.restoration.snapshotData.moltenRadiance = {
 			spellId = nil,
 			startTime = nil,
 			duration = 0,

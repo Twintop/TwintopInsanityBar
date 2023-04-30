@@ -732,7 +732,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			endTime = nil,
 			remainingTime = 0
 		}
-		specCache.preservation.snapshotData.moltenRadiance = {
+		specCache.restoration.snapshotData.moltenRadiance = {
 			spellId = nil,
 			startTime = nil,
 			duration = 0,

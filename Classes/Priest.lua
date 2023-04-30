@@ -607,7 +607,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			startTime = nil,
 			duration = 0
 		}
-		specCache.preservation.snapshotData.moltenRadiance = {
+		specCache.holy.snapshotData.moltenRadiance = {
 			spellId = nil,
 			startTime = nil,
 			duration = 0,
