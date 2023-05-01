@@ -209,7 +209,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					flashPeriod=0.5,
 					flashEnabled=true,
 					overcapEnabled=true,
-					beastialWrathEnabled=true
+					beastialWrathEnabled=true,
+					beastCleave = {
+						color = "FF005500",
+						enabled = true
+					},
 				},
 				threshold = {
 					under="FFFFFFFF",
@@ -873,25 +877,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 1, yCoord, "Focus", "notFull", true, "Beastial Wrath", "Beastial Wrath")
 
-		controls.checkBoxes.esThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_CB1_6", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.esThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Border color when Beastial Wrath is usable")
-		f.tooltip = "This will change the bar's border color (as configured below) when Beastial Wrath is usable."
-		f:SetChecked(spec.colors.bar.beastialWrathEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.beastialWrathEnabled = self:GetChecked()
-		end)
-
 		yCoord = yCoord - 70
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 1, yCoord, "Focus")
-
-		yCoord = yCoord - 30
-		controls.colors.borderBeastialWrath = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border color when you can use Beastial Wrath", spec.colors.bar.borderBeastialWrath, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.borderBeastialWrath
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderBeastialWrath")
-		end)
 
 		yCoord = yCoord - 30
 		controls.colors.frenzyUse = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus when Barbed Shot should be used", spec.colors.bar.frenzyUse, 300, 25, oUi.xCoord2, yCoord)
@@ -933,6 +920,40 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 1, yCoord, "Focus", true, false)
+		
+		yCoord = yCoord - 30		
+		controls.checkBoxes.beastialWrathBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Border_Option_beastialWrathChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.beastialWrathBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change when Beastial Wrath is usable")
+		f.tooltip = "This will change the bar's border color when Beastial Wrath is usable. This takes precedence over Beast Cleave's color."
+		f:SetChecked(spec.colors.bar.beastialWrathEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.beastialWrathEnabled = self:GetChecked()
+		end)
+
+		controls.colors.borderBeastialWrath = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border color when you can use Beastial Wrath", spec.colors.bar.borderBeastialWrath, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.borderBeastialWrath
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderBeastialWrath")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.beastCleaveBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_1_Border_Option_beastCleaveChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.beastCleaveBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change when Beast Cleave is active")
+		f.tooltip = "This will change the bar border color when the Beast Cleave effect is active, either via Beast Cleave it self or Call of the Wild being active with Bloody Frenzy."
+		f:SetChecked(spec.colors.bar.beastCleave.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.beastCleave.enabled = self:GetChecked()
+		end)
+
+		controls.colors.beastCleave = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when a the Beast Cleave effect is active", spec.colors.bar.beastCleave.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.beastCleave
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "beastCleave")
+		end)
 
 		yCoord = yCoord - 40
 		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
@@ -958,13 +979,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
+		--[[
 		controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, "(T28) Cobra Shot's damage is buffed", spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.threshold.special
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "special")
-		end)
+		end)]]
 
-		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Out of range of current target to use ability", spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-120)
+		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Out of range of current target to use ability", spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.threshold.outOfRange
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
@@ -972,7 +994,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOutOfRange
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-150)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
 		getglobal(f:GetName() .. 'Text'):SetText("Change threshold line color when out of range?")
 		f.tooltip = "When checked, while in combat threshold lines will change color when you are unable to use the ability due to being out of range of your current target."
 		f:SetChecked(spec.thresholds.outOfRange)
@@ -982,7 +1004,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-170)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(spec.thresholds.overlapBorder)

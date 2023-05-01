@@ -795,8 +795,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.colors.bar.primalFracture.enabled = self:GetChecked()
 		end)
 
-		controls.colors.borderPrimalFracture = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you can have the Primal Fracture (T30 4P) buff", spec.colors.bar.primalFracture.color, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.borderPrimalFracture
+		controls.colors.primalFracture = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you can have the Primal Fracture (T30 4P) buff", spec.colors.bar.primalFracture.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.primalFracture
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "primalFracture")
 		end)

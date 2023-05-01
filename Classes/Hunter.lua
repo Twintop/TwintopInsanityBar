@@ -345,6 +345,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				isTalent = true,
 				focusMod = -10
 			},
+			beastCleave = {
+				id = 115939,
+				name = "",
+				icon = "",
+				buffId = 268877,
+				isTalent = true
+			},
+			callOfTheWild = {
+				id = 359844,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+			bloodFrenzy = {
+				id = 407412,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
 
 			-- PvP
 			direBeastBasilisk = {
@@ -446,7 +465,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			duration = 0,
 			spellId = nil
 		}
-
+		specCache.beastMastery.snapshotData.callOfTheWild = {
+			endTime = nil,
+			duration = 0,
+			spellId = nil
+		}
+		specCache.beastMastery.snapshotData.beastCleave = {
+			endTime = nil,
+			duration = 0,
+			spellId = nil
+		}
 		specCache.beastMastery.snapshotData.frenzy = {
 			endTime = nil,
 			duration = 0,
@@ -1255,7 +1283,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = "Arcane Shot", printInSettings = true },
 			{ variable = "#barbedShot", icon = spells.barbedShot.icon, description = "Barbed Shot", printInSettings = true },
 			{ variable = "#barrage", icon = spells.barrage.icon, description = "Barrage", printInSettings = true },
-			{ variable = "#beastialWrath", icon = spells.beastialWrath.icon, description = "Beastial Wrath", printInSettings = true },
+			{ variable = "#beastCleave", icon = spells.beastCleave.icon, description = "Beast Cleave", printInSettings = true },
+			{ variable = "#beastailWrath", icon = spells.beastialWrath.icon, description = "Beastial Wrath", printInSettings = true },
 			{ variable = "#cobraShot", icon = spells.cobraShot.icon, description = "Cobra Shot", printInSettings = true },
 			{ variable = "#frenzy", icon = spells.frenzy.icon, description = "Frenzy", printInSettings = true },
 			{ variable = "#killCommand", icon = spells.killCommand.icon, description = "Kill Command", printInSettings = true },
@@ -1325,6 +1354,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 			{ variable = "$barbedShotTicks", description = "Total number of Barbed Shot buff ticks remaining", printInSettings = true, color = false },
 			{ variable = "$barbedShotTime", description = "Time remaining until the most recent Barbed Shot buff expires", printInSettings = true, color = false },
+			
+			{ variable = "$beastCleaveTime", description = "Time remaining on the Beast Cleave effect, either from Beast Cleave itself or from Call of the Wild with Bloody Frenzy", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -1699,7 +1730,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		if _barbedShotTime > 0 then
 			barbedShotTime = string.format("%.1f", _barbedShotTime)
 		end
+		
+		--$beastCleaveTime
+		local beastCleaveTime = "0.0"
+		local _beastCleaveTime = (TRB.Data.snapshotData.beastCleave.endTime or 0) - currentTime
 
+		if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.bloodFrenzy) and (TRB.Data.snapshotData.callOfTheWild.endTime or 0) > (TRB.Data.snapshotData.beastCleave.endTime or 0) then
+			_beastCleaveTime = (TRB.Data.snapshotData.callOfTheWild.endTime or 0) - currentTime
+		end
+
+		if _beastCleaveTime > 0 then
+			beastCleaveTime = string.format("%.1f", _beastCleaveTime)
+		end
+		
 		_passiveFocus = _regenFocus + _barbedShotFocus
 		_passiveFocusMinusRegen = _passiveFocus - _regenFocus
 
@@ -1774,6 +1817,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#arcaneShot"] = TRB.Data.spells.arcaneShot.icon
 		lookup["#barbedShot"] = TRB.Data.spells.barbedShot.icon
 		lookup["#barrage"] = TRB.Data.spells.barrage.icon
+		lookup["#beastCleave"] = TRB.Data.spells.beastCleave.icon
 		lookup["#beastialWrath"] = TRB.Data.spells.beastialWrath.icon
 		lookup["#cobraShot"] = TRB.Data.spells.cobraShot.icon
 		lookup["#frenzy"] = TRB.Data.spells.frenzy.icon
@@ -1805,6 +1849,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$barbedShotFocus"] = barbedShotFocus
 		lookup["$barbedShotTicks"] = barbedShotTicks
 		lookup["$barbedShotTime"] = barbedShotTime
+		lookup["$beastCleaveTime"] = beastCleaveTime
 		lookup["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.serpentSting)
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
@@ -1839,6 +1884,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookupLogic["$barbedShotFocus"] = _barbedShotFocus
 		lookupLogic["$barbedShotTicks"] = TRB.Data.snapshotData.barbedShot.ticksRemaining
 		lookupLogic["$barbedShotTime"] = _barbedShotTime
+		lookupLogic["$beastCleaveTime"] = _beastCleaveTime
 		lookupLogic["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.serpentSting)
 		lookupLogic["$ssCount"] = _serpentStingCount
 		lookupLogic["$ssTime"] = _serpentStingTime
@@ -2728,6 +2774,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 					local barBorderColor = specSettings.colors.bar.border
 
+					if specSettings.colors.bar.beastCleave.enabled and TRB.Functions.Class:IsValidVariableForSpec("$beastCleaveTime") then
+						barBorderColor = specSettings.colors.bar.beastCleave.color
+					end
+
 					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
@@ -2741,7 +2791,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					if beastialWrathCooldownRemaining <= gcd and affectingCombat then
-						if specSettings.bar.beastialWrathEnabled then
+						if specSettings.colors.bar.beastialWrathEnabled then
 							barBorderColor = specSettings.colors.bar.borderBeastialWrath
 						end
 
@@ -3255,9 +3305,30 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							_, _, _, _, TRB.Data.snapshotData.aspectOfTheWild.duration, TRB.Data.snapshotData.aspectOfTheWild.endTime, _, _, _, TRB.Data.snapshotData.aspectOfTheWild.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.aspectOfTheWild.id)
 							TRB.Data.spells.aspectOfTheWild.isActive = true
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.aspectOfTheWild.spellId = nil
 							TRB.Data.snapshotData.aspectOfTheWild.endTime = nil
 							TRB.Data.snapshotData.aspectOfTheWild.duration = 0
 							TRB.Data.spells.aspectOfTheWild.isActive = false
+						end
+					elseif spellId == TRB.Data.spells.callOfTheWild.id then
+						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
+							_, _, _, _, TRB.Data.snapshotData.callOfTheWild.duration, TRB.Data.snapshotData.callOfTheWild.endTime, _, _, _, TRB.Data.snapshotData.callOfTheWild.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.callOfTheWild.id)
+							TRB.Data.snapshotData.callOfTheWild.isActive = true
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.callOfTheWild.spellId = nil
+							TRB.Data.snapshotData.callOfTheWild.endTime = nil
+							TRB.Data.snapshotData.callOfTheWild.duration = 0
+							TRB.Data.snapshotData.callOfTheWild.isActive = false
+						end
+					elseif spellId == TRB.Data.spells.beastCleave.buffId then
+						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
+							_, _, _, _, TRB.Data.snapshotData.beastCleave.duration, TRB.Data.snapshotData.beastCleave.endTime, _, _, _, TRB.Data.snapshotData.beastCleave.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.beastCleave.buffId)
+							TRB.Data.snapshotData.beastCleave.isActive = true
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.beastCleave.spellId = nil
+							TRB.Data.snapshotData.beastCleave.endTime = nil
+							TRB.Data.snapshotData.beastCleave.duration = 0
+							TRB.Data.snapshotData.beastCleave.isActive = false
 						end
 					elseif spellId == TRB.Data.spells.direBeastBasilisk.id then
 						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
@@ -3753,6 +3824,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				end
 			elseif var == "$frenzyStacks" then
 				if TRB.Data.snapshotData.frenzy.stacks ~= nil and TRB.Data.snapshotData.frenzy.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$beastCleaveTime" then
+				if TRB.Data.snapshotData.beastCleave.endTime ~= nil or TRB.Data.snapshotData.callOfTheWild.endTime ~= nil then
 					valid = true
 				end
 			end

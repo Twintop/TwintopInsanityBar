@@ -1927,8 +1927,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.colors.bar.deathspeaker.enabled = self:GetChecked()
 		end)
 
-		controls.colors.borderDeathspeaker = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when a Deathspeaker proc is active", spec.colors.bar.deathspeaker.color, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.borderDeathspeaker
+		controls.colors.deathspeaker = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when a Deathspeaker proc is active", spec.colors.bar.deathspeaker.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.deathspeaker
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "deathspeaker")
 		end)

@@ -54,7 +54,12 @@ local content = [====[
 ## Hunter
 ### Beast Mastery
 
-- [#299 - NEW](#299) Various WIP Beast Cleave enhancements.
+- [#299 - NEW](#299) Add support for Beast Cleave.
+<br/>&emsp;&ensp;- Change the bar's border color when the Beast Cleave effect is active either via Beast Cleave, or, Call of the Wild with Bloody Frenzy also talented.
+<br/>&emsp;&ensp;- New bar text icon and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#beastCleave` -- ability icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$beastCleaveTime` -- total time remaining on the effect (Beast Cleave or Call of the Wild w/Bloody Frenzy, whichever is greater)
+- (FIX) Fix Beastial Wrath being usable border color change notification.
 
 ## Monk
 ### Mistweaver
