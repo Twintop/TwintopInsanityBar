@@ -280,6 +280,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				id = 409898,
 				name = "",
 				icon = "",
+			},
+
+			-- Tier Bonuses
+			soulfangInfusion = { -- T30 2P
+				id = 410007,
+				name = "",
+				icon = "",
+				ticks = 3,
+				manaPerTick = 0.01,
+				duration = 3
 			}
 
 		}
@@ -350,6 +360,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			duration = 0,
 			manaPerTick = 0,
 			mana = 0
+		}
+		specCache.mistweaver.snapshotData.soulfangInfusion = {
+			isActive = false,
+			ticksRemaining = 0,
+			mana = 0,
+			endTime = nil,
+			lastTick = nil
 		}
 
 		specCache.mistweaver.barTextVariables = {
@@ -672,6 +689,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "#soh", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = true },
 			{ variable = "#symbolOfHope", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = false },
 
+			{ variable = "#si", icon = spells.soulfangInfusion.icon, description = spells.soulfangInfusion.name, printInSettings = true },
+			{ variable = "#soulfangInfusion", icon = spells.soulfangInfusion.icon, description = spells.soulfangInfusion.name, printInSettings = false },
+
 			{ variable = "#amp", icon = spells.aeratedManaPotionRank1.icon, description = spells.aeratedManaPotionRank1.name, printInSettings = true },
 			{ variable = "#aeratedManaPotion", icon = spells.aeratedManaPotionRank1.icon, description = spells.aeratedManaPotionRank1.name, printInSettings = false },
 			{ variable = "#pocc", icon = spells.potionOfChilledClarity.icon, description = spells.potionOfChilledClarity.name, printInSettings = true },
@@ -738,6 +758,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 			{ variable = "$mttMana", description = "Bonus passive mana regen while Mana Tide Totem is active", printInSettings = true, color = false },
 			{ variable = "$mttTime", description = "Time left on Mana Tide Totem", printInSettings = true, color = false },
+
+			{ variable = "$siMana", description = "Mana from Soulfang Infusion", printInSettings = true, color = false },
+			{ variable = "$siTime", description = "Time left on Soulfang Infusion", printInSettings = true, color = false },
+			{ variable = "$siTicks", description = "Number of ticks left from Soulfang Infusion", printInSettings = true, color = false },
 
 			{ variable = "$channeledMana", description = "Mana while channeling of Potion of Frozen Focus", printInSettings = true, color = false },
 			{ variable = "$potionOfFrozenFocusTicks", description = "Number of ticks left channeling Potion of Frozen Focus", printInSettings = true, color = false },
@@ -915,7 +939,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
 
-			for x = 1, 5 do
+			for x = 1, 6 do
 				if TRB.Frames.passiveFrame.thresholds[x] == nil then
 					TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 				end
@@ -988,6 +1012,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 	local function GetPotionOfChilledClarityRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.potionOfChilledClarity)
+	end
+
+	local function GetSoulfangInfusionRemainingTime()
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.soulfangInfusion)
 	end
 
 	local function CalculateManaGain(mana, isPotion)
@@ -1134,6 +1162,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local _mrTime = GetMoltenRadianceRemainingTime()
 		local mrTime = string.format("%.1f", _mrTime)
 
+		--$siMana
+		local _siMana = TRB.Data.snapshotData.soulfangInfusion.mana
+		local siMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_siMana, manaPrecision, "floor", true))
+		--$siTicks
+		local _siTicks = TRB.Data.snapshotData.soulfangInfusion.ticksRemaining or 0
+		local siTicks = string.format("%.0f", _siTicks)
+		--$siTime
+		local _siTime = GetSoulfangInfusionRemainingTime()
+		local siTime = string.format("%.1f", _siTime)
+
 		--$potionCooldownSeconds
 		local _potionCooldown = 0
 		if TRB.Data.snapshotData.potion.onCooldown then
@@ -1162,7 +1200,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local _potionOfFrozenFocusTime = GetChanneledPotionRemainingTime()
 		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
 		--$passive
-		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana
+		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana + _siMana
 		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.monk.mistweaver.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 		--$manaTotal
 		local _manaTotal = math.min(_passiveMana + TRB.Data.snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
@@ -1194,6 +1232,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		Global_TwintopResourceBar.resource.innervate = _innervateMana or 0
 		Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
 		Global_TwintopResourceBar.resource.moltenRadiance = _mrMana or 0
+		Global_TwintopResourceBar.resource.soulfangInfusion = _siMana or 0
 		Global_TwintopResourceBar.potionOfSpiritualClarity = {
 			mana = _channeledMana,
 			ticks = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining or 0
@@ -1201,6 +1240,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		Global_TwintopResourceBar.symbolOfHope = {
 			mana = _sohMana,
 			ticks = TRB.Data.snapshotData.symbolOfHope.ticksRemaining or 0
+		}
+		Global_TwintopResourceBar.soulfangInfusion = {
+			mana = _siMana,
+			ticks = TRB.Data.snapshotData.soulfangInfusion.ticksRemaining or 0
 		}
 
 
@@ -1218,6 +1261,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["#potionOfFrozenFocus"] = TRB.Data.spells.potionOfFrozenFocusRank1.icon
 		lookup["#pocc"] = TRB.Data.spells.potionOfChilledClarity.icon
 		lookup["#potionOfChilledClarity"] = TRB.Data.spells.potionOfChilledClarity.icon
+		lookup["#si"] = TRB.Data.spells.soulfangInfusion.icon
+		lookup["#soulfangInfusion"] = TRB.Data.spells.soulfangInfusion.icon
 		lookup["$manaPlusCasting"] = manaPlusCasting
 		lookup["$manaPlusPassive"] = manaPlusPassive
 		lookup["$manaTotal"] = manaTotal
@@ -1243,6 +1288,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["$mrTime"] = mrTime
 		lookup["$mttMana"] = mttMana
 		lookup["$mttTime"] = mttTime
+		lookup["$siMana"] = siMana
+		lookup["$siTicks"] = siTicks
+		lookup["$siTime"] = siTime
 		lookup["$channeledMana"] = channeledMana
 		lookup["$potionOfFrozenFocusTicks"] = potionOfFrozenFocusTicks
 		lookup["$potionOfFrozenFocusTime"] = potionOfFrozenFocusTime
@@ -1276,6 +1324,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookupLogic["$mrTime"] = _mrTime
 		lookupLogic["$mttMana"] = _mttMana
 		lookupLogic["$mttTime"] = _mttTime
+		lookupLogic["$siMana"] = _siMana
+		lookupLogic["$siTicks"] = _siTicks
+		lookupLogic["$siTime"] = _siTime
 		lookupLogic["$channeledMana"] = _channeledMana
 		lookupLogic["$potionOfFrozenFocusTicks"] = _potionOfFrozenFocusTicks
 		lookupLogic["$potionOfFrozenFocusTime"] = _potionOfFrozenFocusTime
@@ -1676,6 +1727,21 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end
 	end
 
+	local function UpdateSoulfangInfusion(forceCleanup)
+		if TRB.Data.snapshotData.soulfangInfusion.isActive or forceCleanup then
+			local currentTime = GetTime()
+			if forceCleanup or TRB.Data.snapshotData.soulfangInfusion.endTime == nil or currentTime > TRB.Data.snapshotData.soulfangInfusion.endTime then
+				TRB.Data.snapshotData.soulfangInfusion.ticksRemaining = 0
+				TRB.Data.snapshotData.soulfangInfusion.endTime = nil
+				TRB.Data.snapshotData.soulfangInfusion.mana = 0
+				TRB.Data.snapshotData.soulfangInfusion.isActive = false
+			else
+				TRB.Data.snapshotData.soulfangInfusion.ticksRemaining = math.ceil((TRB.Data.snapshotData.soulfangInfusion.endTime - currentTime) / (TRB.Data.spells.soulfangInfusion.duration / TRB.Data.spells.soulfangInfusion.ticks))
+				TRB.Data.snapshotData.soulfangInfusion.mana = TRB.Data.snapshotData.soulfangInfusion.ticksRemaining * CalculateManaGain(TRB.Data.character.maxResource * TRB.Data.spells.soulfangInfusion.manaPerTick, false)
+			end
+		end
+	end
+	
 	local function UpdateSymbolOfHope(forceCleanup)
 		if TRB.Data.snapshotData.symbolOfHope.isActive or forceCleanup then
 			local currentTime = GetTime()
@@ -1784,6 +1850,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		UpdateSnapshot()
 		UpdateSymbolOfHope()
 		UpdateChanneledManaPotion()
+		UpdateSoulfangInfusion()
 		UpdateInnervate()
 		UpdatePotionOfChilledClarity()
 		UpdateManaTideTotem()
@@ -1963,12 +2030,28 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						else
 							TRB.Frames.passiveFrame.thresholds[5]:Hide()
 						end
+
+						if TRB.Data.snapshotData.soulfangInfusion.isActive then
+							passiveValue = passiveValue + TRB.Data.snapshotData.soulfangInfusion.mana
+
+							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[6], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.passiveFrame.thresholds[6].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[6]:Show()
+							else
+								TRB.Frames.passiveFrame.thresholds[6]:Hide()
+							end
+						else
+							TRB.Frames.passiveFrame.thresholds[6]:Hide()
+						end
 					else
 						TRB.Frames.passiveFrame.thresholds[1]:Hide()
 						TRB.Frames.passiveFrame.thresholds[2]:Hide()
 						TRB.Frames.passiveFrame.thresholds[3]:Hide()
 						TRB.Frames.passiveFrame.thresholds[4]:Hide()
 						TRB.Frames.passiveFrame.thresholds[5]:Hide()
+						TRB.Frames.passiveFrame.thresholds[6]:Hide()
 					end
 
 					passiveBarValue = castingBarValue + passiveValue
@@ -2295,7 +2378,17 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Frozen Focus channel
 							-- Let UpdateChanneledManaPotion() clean this up
 							UpdateChanneledManaPotion(true)
-						end					
+						end
+					elseif spellId == TRB.Data.spells.soulfangInfusion.id then
+						if type == "SPELL_AURA_APPLIED" then -- Gain Soulfang Infusion
+							TRB.Data.snapshotData.soulfangInfusion.isActive = true
+							TRB.Data.snapshotData.soulfangInfusion.ticksRemaining = TRB.Data.spells.soulfangInfusion.ticks
+							TRB.Data.snapshotData.soulfangInfusion.mana = TRB.Data.snapshotData.soulfangInfusion.ticksRemaining * CalculateManaGain(TRB.Data.character.maxResource * TRB.Data.spells.soulfangInfusion.manaPerTick, false)
+							TRB.Data.snapshotData.soulfangInfusion.endTime = currentTime + TRB.Data.spells.soulfangInfusion.duration
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Frozen Focus channel
+							-- Let UpdateSoulfangInfusion() clean this up
+							UpdateSoulfangInfusion(true)
+						end
 					elseif spellId == TRB.Data.spells.potionOfChilledClarity.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.potionOfChilledClarity.isActive = true
@@ -2818,6 +2911,18 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				end
 			elseif var == "$potionCooldownSeconds" then
 				if TRB.Data.snapshotData.potion.onCooldown then
+					valid = true
+				end
+			elseif var == "$siMana" then
+				if TRB.Data.snapshotData.soulfangInfusion.isActive then
+					valid = true
+				end
+			elseif var == "$siTicks" then
+				if TRB.Data.snapshotData.soulfangInfusion.isActive then
+					valid = true
+				end
+			elseif var == "$siTime" then
+				if TRB.Data.snapshotData.soulfangInfusion.isActive then
 					valid = true
 				end
 			end

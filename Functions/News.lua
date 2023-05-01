@@ -56,6 +56,16 @@ local content = [====[
 
 - [#299 - NEW](#299) Various WIP Beast Cleave enhancements.
 
+## Monk
+### Mistweaver
+
+- [#292 - NEW](#292) Add support for Mistweaver's T30 2P proc effect, *Soulfang Infusion*, which gives passive mana regeneration.
+<br/>&emsp;&ensp;- New bar text icon and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#si`, `#soulfangInfusion` -- spell icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$siTime` -- total time remaining on the proc
+<br/>&emsp;&ensp;&emsp;&ensp;- `$siTicks` -- total remaining ticks of mana regen from the proc
+<br/>&emsp;&ensp;&emsp;&ensp;- `$siMana` -- total remaining incoming mana from the proc
+
 ## Priest
 ### Shadow
 
