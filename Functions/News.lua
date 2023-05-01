@@ -77,9 +77,11 @@ local content = [====[
 <br/>&emsp;&ensp;- Remove all references to Mind Sear.
 <br/>&emsp;&ensp;- Add support for Devouring Plague's Insanity cost being modified by Distorted Reality and Mind's Eye.
 <br/>&emsp;&ensp;- Voidtouched support works automagically, allowing maximum Insanity to be 150.
-<br/>&emsp;&ensp;- Add Mind Spike: Insanity in addition to current Mind Flay: Insanity support.
 <br/>&emsp;&ensp;- Update Auspicious Spirits predicted incoming Insanity to match the formula in SimulationCraft.
 - [#292 - NEW](#292) Added extra threshold lines for Devouring Plague, similar to Starsurge threshold lines for Balance Druids. These are separately toggleable at 2x and 3x the cost with an additional option to only show the next available threshold line.
+- [#292 - NEW](#292) Mind Flay: Insanity tracking has been extended to include Mind Spike: Insanity and keep track of stacks of the buff.
+<br/>&emsp;&ensp;- New bar text variable:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$mfiStacks` -- number of stacks of the buff
 - [#302 - NEW](#302) Add support for tracking Deathspeaker procs:
 <br/>&emsp;&ensp;- Optional bar border change when the buff is up. This superceeds the Mind Flay: Insanity / Mind Spike: Insanity border color change.
 <br/>&emsp;&ensp;- New bar text icon and variables:

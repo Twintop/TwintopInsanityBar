@@ -1427,7 +1427,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			{ variable = "$mdTime", description = "Time remaining on Mind Devourer buff", printInSettings = true, color = false },
 
-			{ variable = "$mfiTime", description = "Time remaining on Mind Flay: Insanity buff", printInSettings = true, color = false },
+			{ variable = "$mfiTime", description = "Time remaining on Mind Flay: Insanity/Mind Spike: Insanity buff", printInSettings = true, color = false },
+			{ variable = "$mfiStacks", description = "Number of stacks of Mind Flay: Insanity/Mind Spike: Insanity buff", printInSettings = true, color = false },
 			
 			{ variable = "$deathspeakerTime", description = "Time remaining on Deathspeaker proc", printInSettings = true, color = false },
 			
@@ -2228,6 +2229,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			_mfiTime = math.abs(TRB.Data.snapshotData.mindFlayInsanity.endTime - currentTime)
 		end
 		local mfiTime = string.format("%.1f", _mfiTime)
+
+		--$mfiStacks
+		local _mfiStacks = TRB.Data.snapshotData.mindFlayInsanity or 0
+		local mfiStacks = string.format("%.0f", _mfiStacks)
 		
 		--$deathspeakerTime
 		local _deathspeakerTime = 0
@@ -2353,6 +2358,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$dpTime"] = devouringPlagueTime
 		lookup["$mdTime"] = mdTime
 		lookup["$mfiTime"] = mfiTime
+		lookup["$mfiStacks"] = mfiStacks
 		lookup["$deathspeakerTime"] = deathspeakerTime
 		lookup["$tofTime"] = tofTime
 		lookup["$vfTime"] = voidformTime
@@ -2397,6 +2403,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$dpTime"] = devouringPlagueTime
 		lookupLogic["$mdTime"] = _mdTime
 		lookupLogic["$mfiTime"] = _mfiTime
+		lookupLogic["$mfiStacks"] = _mfiStacks
 		lookupLogic["$deathspeakerTime"] = _deathspeakerTime
 		lookupLogic["$tofTime"] = _tofTime
 		lookupLogic["$vfTime"] = _voidformTime
@@ -3051,9 +3058,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		if TRB.Data.snapshotData.mindFlayInsanity.endTime ~= nil and currentTime > (TRB.Data.snapshotData.mindFlayInsanity.endTime) then
 			TRB.Data.snapshotData.mindFlayInsanity.endTime = nil
 			TRB.Data.snapshotData.mindFlayInsanity.duration = 0
+			TRB.Data.snapshotData.mindFlayInsanity.stacks = 0
 			TRB.Data.snapshotData.mindFlayInsanity.spellId = nil
 		elseif TRB.Data.snapshotData.mindFlayInsanity.spellId ~= nil then
-			_, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.duration, TRB.Data.snapshotData.mindFlayInsanity.endTime, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.snapshotData.mindFlayInsanity.spellId)
+			_, _, TRB.Data.snapshotData.mindFlayInsanity.stacks, _, TRB.Data.snapshotData.mindFlayInsanity.duration, TRB.Data.snapshotData.mindFlayInsanity.endTime, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.snapshotData.mindFlayInsanity.spellId)
 		end
 
 		if TRB.Data.snapshotData.deathspeaker.endTime ~= nil and currentTime > (TRB.Data.snapshotData.deathspeaker.endTime) then
@@ -4003,11 +4011,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif spellId == TRB.Data.spells.mindFlayInsanity.buffId or spellId == TRB.Data.spells.mindSpikeInsanity.buffId then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" or type == "SPELL_AURA_APPLIED_DOSE" then -- Gained buff
 							TRB.Data.spells.mindFlayInsanity.isActive = true
-							_, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.duration, TRB.Data.snapshotData.mindFlayInsanity.endTime, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.spellId = TRB.Functions.Aura:FindBuffById(spellId)
+							_, _, TRB.Data.snapshotData.mindFlayInsanity.stacks, _, TRB.Data.snapshotData.mindFlayInsanity.duration, TRB.Data.snapshotData.mindFlayInsanity.endTime, _, _, _, TRB.Data.snapshotData.mindFlayInsanity.spellId = TRB.Functions.Aura:FindBuffById(spellId)
 						elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_DISPEL" then -- Lost buff
 							TRB.Data.spells.mindFlayInsanity.isActive = false
 							TRB.Data.snapshotData.mindFlayInsanity.spellId = nil
 							TRB.Data.snapshotData.mindFlayInsanity.duration = 0
+							TRB.Data.snapshotData.mindFlayInsanity.stacks = 0
 							TRB.Data.snapshotData.mindFlayInsanity.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.deathspeaker.buffId then
@@ -4711,6 +4720,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$mfiTime" then
+				if TRB.Data.spells.mindFlayInsanity.isActive then
+					valid = true
+				end
+			elseif var == "$mfiStacks" then
 				if TRB.Data.spells.mindFlayInsanity.isActive then
 					valid = true
 				end
