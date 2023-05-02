@@ -40,6 +40,7 @@ function TRB.Functions.Spell:FillSpellData(spells)
 					icon = "Interface\\Icons\\" .. spells[k]["iconName"]
 				end
 
+				--print(spells[k]["id"], spells[k]["spellId"], name)
 				spells[k]["icon"] = string.format("|T%s:0|t", icon)
 				spells[k]["name"] = name
 

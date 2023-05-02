@@ -6,20 +6,104 @@ local LMD = LibStub("LibMarkdown-1.0")
 local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
-### Are you trying out the latest changes on the 10.1 PTR?
-_Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https://www.curseforge.com/wow/addons/twintops-insanity-bar/files), [Wago](https://addons.wago.io/addons/twintopresourcebar/versions?stability=beta), or via WowUp's beta channel!_
-
 ----
-# 10.0.7.3-release (2023-04-20)
+
+# 10.1.0.0-release (2023-05-02)
 ## General
 
+- [#292 - UPDATE](#292) Add `IconTexture` to TOC. This shows the addon's icon/logo in the AddOn List menu in game.
 - [#298 - FIX](#298) Fix an issue where PvP ability threshold lines would show up when enabled even if you weren't talented in to the associated PvP Talent.
 <br/>&emsp;&ensp;- This fix applies to: Devastation Evokers, Beast Mastery Hunters, Marksmanship Hunters, Assassination Rogues, and Outlaw Rogues.
+- [#300 - UPDATE](#300) Greatly improve resource overcap support and customization.
+<br/>&emsp;&ensp;- In addition to the existing "fixed" mode, an additional configuration option to set the overcap amount relative to your maximum resource has been added and set as the default behavior.
+<br/>&emsp;&ensp;- Bar border and resource text will not change to the overcap color while out of combat.
+- [#301 - UPDATE](#301) Update the options UI for all specs to split bar color and bar border color in to separate sections. Relocate some enabling toggles to these sections from elsewhere in the options menus.
+
+### Healers
+
+- [#303 - NEW](#303) Add support for the new trinket *Rashok's Molten Heart* and the proc effect, *Molten Radiance*'s, mana regen.
+<br/>&emsp;&ensp;- New bar text icon and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#mt`, `#moltenRadiance` -- spell icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$mrTime` -- total time remaining on the proc
+<br/>&emsp;&ensp;&emsp;&ensp;- `$mrMana` -- total remaining incoming mana from the proc
+
+## Druid
+### Balance
+
+- [#292 - UPDATE](#292) 10.1.0 changes:
+<br/>&emsp;&ensp;- Update the Astral Power generation of New Moon, Half Moon, and Full Moon.
+<br/>&emsp;&ensp;- Baseline Astral Power adjustments for Wrath, Starfire, and Stellar Flare.
+<br/>&emsp;&ensp;- Soul of the Forest only increases Wrath's incoming Astral Power by 50%.
+<br/>&emsp;&ensp;- Nature's Balance passive Astral Power generation values updated.
+<br/>&emsp;&ensp;- Elune's Guidance Astral Power reduction to Starsurge and Starfall updated.
+- [#294 - UPDATE](#294) Adjust how Touch the Cosmos (T29 4P bonus) is implemented to match changes in 10.1.0.
+
+### Feral
+
+- [#292 - UPDATE](#292) 10.1.0 changes:
+<br/>&emsp;&ensp;- Relentless Predator's Energy modifier for Ferocious Bite updated to 80% (was 60%).
+- [#292 - NEW] Add support for Berserking / Incarnation: Avatar of Ashamane passively generating Combo Points.
+<br/>&emsp;&ensp;- While the buff is active, show the progress towards the next Combo Point as a filling bar on the next available Combo Point.
+- [#292 - NEW](#292) Add support for Predator Revealed (T30 4P).
+<br/>&emsp;&ensp;- When a proc occurs, show the progress towards the next Combo Point as a filling bar on the next available Combo Point.
+<br/>&emsp;&ensp;- Custom color available to denote which Combo Points are incoming from this proc.
+<br/>&emsp;&ensp;- When Berserking / Incarnation: Avatar of Ashamane is active, the order of filling Combo Points will be from soonest to last.
+<br/>&emsp;&ensp;- New bar text icon and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#predatorRevealed` -- spell icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$predatorRevealedTime` -- total time remaining on the buff
+<br/>&emsp;&ensp;&emsp;&ensp;- `$predatorRevealedTicks` -- total remaining ticks / Combo Points to be generated
+<br/>&emsp;&ensp;&emsp;&ensp;- `$predatorRevealedTickTime` -- time until the next tick occurs / Combo Point is generated
 
 ## Hunter
 ### Beast Mastery
 
-- [#299 - NEW](#299) Various WIP Beast Cleave enhancements.
+- [#299 - NEW](#299) Add support for Beast Cleave.
+<br/>&emsp;&ensp;- Change the bar's border color when the Beast Cleave effect is active either via Beast Cleave, or, Call of the Wild with Bloody Frenzy also talented.
+<br/>&emsp;&ensp;- New bar text icon and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#beastCleave` -- ability icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$beastCleaveTime` -- total time remaining on the effect (Beast Cleave or Call of the Wild w/Bloody Frenzy, whichever is greater)
+- (FIX) Fix Beastial Wrath being usable border color change notification.
+
+## Monk
+### Mistweaver
+
+- [#292 - NEW](#292) Add support for Mistweaver's T30 2P proc effect, *Soulfang Infusion*, which gives passive mana regeneration.
+<br/>&emsp;&ensp;- New bar text icon and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#si`, `#soulfangInfusion` -- spell icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$siTime` -- total time remaining on the proc
+<br/>&emsp;&ensp;&emsp;&ensp;- `$siTicks` -- total remaining ticks of mana regen from the proc
+<br/>&emsp;&ensp;&emsp;&ensp;- `$siMana` -- total remaining incoming mana from the proc
+
+## Priest
+### Shadow
+
+- [#292 - UPDATE](#292) 10.1.0 changes:
+<br/>&emsp;&ensp;- Remove old spells/abilities: Dark Void, Mind Sear, Surge of Darkness, Piercing Shadows, Death and Madness (incoming over time).
+<br/>&emsp;&ensp;- Baseline Insanity adjustments for Void Torrent, Mind Flay: Insanity, Auspicious Spirits, Void Bolt, Shadowfiend (swing), Mindbender (swing), Void Tendril (tick), and Void Lasher (tick).
+<br/>&emsp;&ensp;- Remove Mind Melt from granting an instant Mind Blast.
+<br/>&emsp;&ensp;- Remove "spending" bar color config.
+<br/>&emsp;&ensp;- Remove all references to Mind Sear.
+<br/>&emsp;&ensp;- Add support for Devouring Plague's Insanity cost being modified by Distorted Reality and Mind's Eye.
+<br/>&emsp;&ensp;- Voidtouched support works automagically, allowing maximum Insanity to be 150.
+<br/>&emsp;&ensp;- Update Auspicious Spirits predicted incoming Insanity to match the formula in SimulationCraft.
+- [#292 - NEW](#292) Added extra threshold lines for Devouring Plague, similar to Starsurge threshold lines for Balance Druids. These are separately toggleable at 2x and 3x the cost with an additional option to only show the next available threshold line.
+- [#292 - NEW](#292) Mind Flay: Insanity tracking has been extended to include Mind Spike: Insanity and keep track of stacks of the buff.
+<br/>&emsp;&ensp;- New bar text variable:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$mfiStacks` -- number of stacks of the buff
+- [#302 - NEW](#302) Add support for tracking Deathspeaker procs:
+<br/>&emsp;&ensp;- Optional bar border change when the buff is up. This superceeds the Mind Flay: Insanity / Mind Spike: Insanity border color change.
+<br/>&emsp;&ensp;- New bar text icon and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#swd`, `#shadowWordDeath`, `#deathspeaker` -- buff icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$deathspeakerTime` -- total time remaining on the buff
+
+## Shaman
+### Elemental
+
+- [#292 - NEW](#292) Added support for Primal Fracture (T30 4P bonus):
+<br/>&emsp;&ensp;- Optional bar border change when the buff is up.
+<br/>&emsp;&ensp;- New bar text icon and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#primalFracture`
+<br/>&emsp;&ensp;&emsp;&ensp;- `$pfTime` -- total time remaining on the buff
 
 ----
 # 10.0.7.2-release (2023-04-15)
@@ -42,6 +126,8 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 ### Havoc
 
 - [#296 - FIX](#296) Restore access to Havoc's options menu.
+# 10.1.0.0-beta04 (2023-03-27)
+## General
 
 ----
 # 10.0.7.0-release (2023-03-22)
@@ -51,7 +137,6 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 
 ## Druid
 ### Balance
-
 - [#294 - NEW](#294) Add support for Touch of Cosmos (T29 4P bonus). Starfall and Starsurge will now show as usable when first entering Eclispe, regardless of Astral Power.
 - (FIX) Fix Elune's Guidance modifying the threshold for Starsurge and Starfall.
 
@@ -110,6 +195,9 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 ## Healers
 
 - [#265 - UPDATE](#265) Add an option to hide the threshold line of Conjured Chillglobe while it is on cooldown.
+## Healers
+
+- [#265 - UPDATE](#265) Add an option to hide the threshold line of Conjured Chillglobe while it is on cooldown.
 
 ## Priest
 ### Holy
@@ -120,7 +208,7 @@ _Be sure to grab the beta version of Twintop's Resource Bar from [Curse](https:/
 ## Shaman
 ### Elemental
 
-- [#290 - HOTFIX) Frost Shocks that are buffed by Icefury now generate 14 Maelstrom.
+- [#290 - HOTFIX](#290) Frost Shocks that are buffed by Icefury now generate 14 Maelstrom.
 
 ----
 # 10.0.5.6-release (2023-02-24)

@@ -553,7 +553,15 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					175942,
 					175943
 				}
+			},
+
+			-- Rashok's Molten Heart
+			moltenRadiance = {
+				id = 409898,
+				name = "",
+				icon = "",
 			}
+
 		}
 
 		specCache.preservation.snapshotData.manaRegen = 0
@@ -627,6 +635,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			onCooldown = false,
 			startTime = nil,
 			duration = 0
+		}
+		specCache.preservation.snapshotData.moltenRadiance = {
+			spellId = nil,
+			startTime = nil,
+			duration = 0,
+			manaPerTick = 0,
+			mana = 0
 		}
 
 		specCache.preservation.barTextVariables = {
@@ -748,12 +763,14 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			{ variable = "#ec", icon = spells.emeraldCommunion.icon, description = spells.emeraldCommunion.name, printInSettings = true },
 			{ variable = "#emeraldCommunion", icon = spells.emeraldCommunion.icon, description = spells.emeraldCommunion.name, printInSettings = false },
 
+			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
+			{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
+
+			{ variable = "#mr", icon = spells.moltenRadiance.icon, description = spells.moltenRadiance.name, printInSettings = true },
+			{ variable = "#moltenRadiance", icon = spells.moltenRadiance.icon, description = spells.moltenRadiance.name, printInSettings = false },
 
 			{ variable = "#soh", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = true },
 			{ variable = "#symbolOfHope", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = false },
-
-			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
-			{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
 
 			{ variable = "#amp", icon = spells.aeratedManaPotionRank1.icon, description = spells.aeratedManaPotionRank1.name, printInSettings = true },
 			{ variable = "#aeratedManaPotion", icon = spells.aeratedManaPotionRank1.icon, description = spells.aeratedManaPotionRank1.name, printInSettings = false },
@@ -822,6 +839,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			
 			{ variable = "$mttMana", description = "Bonus passive mana regen while Mana Tide Totem is active", printInSettings = true, color = false },
 			{ variable = "$mttTime", description = "Time left on Mana Tide Totem", printInSettings = true, color = false },
+						
+			{ variable = "$mrMana", description = "Mana from Molten Radiance", printInSettings = true, color = false },
+			{ variable = "$mrTime", description = "Time left on Molten Radiance", printInSettings = true, color = false },
 
 			{ variable = "$channeledMana", description = "Mana while channeling of Potion of Frozen Focus", printInSettings = true, color = false },
 			{ variable = "$potionOfFrozenFocusTicks", description = "Number of ticks left channeling Potion of Frozen Focus", printInSettings = true, color = false },
@@ -900,7 +920,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
 
-			for x = 1, 5 do
+			for x = 1, 6 do
 				if TRB.Frames.passiveFrame.thresholds[x] == nil then
 					TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 				end
@@ -940,6 +960,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.manaTideTotem)
 	end
 
+	local function GetMoltenRadianceRemainingTime()
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.moltenRadiance)
+	end
+	
 	local function GetSymbolOfHopeRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.symbolOfHope)
 	end
@@ -1042,7 +1066,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local _ecTicks = TRB.Data.snapshotData.emeraldCommunion.ticksRemaining or 0
 		local ecTicks = string.format("%.0f", _ecTicks)
 		--$ecTime
-		local _ecTime = GetSymbolOfHopeRemainingTime()
+		local _ecTime = GetEmeraldCommunionRemainingTime()
 		local ecTime = string.format("%.1f", _ecTime)
 
 		--$sohMana
@@ -1063,11 +1087,18 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local innervateTime = string.format("%.1f", _innervateTime)
 
 		--$mttMana
-		local _mttMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
+		local _mttMana = TRB.Data.snapshotData.manaTideTotem.mana
 		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
 		local _mttTime = GetManaTideTotemRemainingTime()
 		local mttTime = string.format("%.1f", _mttTime)
+
+		--$mrMana
+		local _mrMana = TRB.Data.snapshotData.moltenRadiance.mana
+		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
+		--$mrTime
+		local _mrTime = GetMoltenRadianceRemainingTime()
+		local mrTime = string.format("%.1f", _mrTime)
 
 		--$potionCooldownSeconds
 		local _potionCooldown = 0
@@ -1097,7 +1128,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local _potionOfFrozenFocusTime = GetChanneledPotionRemainingTime()
 		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
 		--$passive
-		local _passiveMana = _ecMana + _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana
+		local _passiveMana = _ecMana + _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana
 		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.evoker.preservation.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 		--$manaTotal
 		local _manaTotal = math.min(_passiveMana + TRB.Data.snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
@@ -1128,6 +1159,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		Global_TwintopResourceBar.resource.manaTideTotem = _mttMana or 0
 		Global_TwintopResourceBar.resource.innervate = _innervateMana or 0
 		Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
+		Global_TwintopResourceBar.resource.moltenRadiance = _mrMana or 0
+		Global_TwintopResourceBar.resource.emeraldCommunion = _ecMana or 0
 		Global_TwintopResourceBar.potionOfSpiritualClarity = {
 			mana = _channeledMana,
 			ticks = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining or 0
@@ -1148,6 +1181,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		lookup["#innervate"] = TRB.Data.spells.innervate.icon
 		lookup["#mtt"] = TRB.Data.spells.manaTideTotem.icon
 		lookup["#manaTideTotem"] = TRB.Data.spells.manaTideTotem.icon
+		lookup["#mr"] = TRB.Data.spells.moltenRadiance.icon
+		lookup["#moltenRadiance"] = TRB.Data.spells.moltenRadiance.icon
 		lookup["#soh"] = TRB.Data.spells.symbolOfHope.icon
 		lookup["#symbolOfHope"] = TRB.Data.spells.symbolOfHope.icon
 		lookup["#amp"] = TRB.Data.spells.aeratedManaPotionRank1.icon
@@ -1182,6 +1217,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		lookup["$potionOfChilledClarityTime"] = potionOfChilledClarityTime
 		lookup["$mttMana"] = mttMana
 		lookup["$mttTime"] = mttTime
+		lookup["$mrMana"] = mrMana
+		lookup["$mrTime"] = mrTime
 		lookup["$channeledMana"] = channeledMana
 		lookup["$potionOfFrozenFocusTicks"] = potionOfFrozenFocusTicks
 		lookup["$potionOfFrozenFocusTime"] = potionOfFrozenFocusTime
@@ -1220,6 +1257,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		lookupLogic["$potionOfChilledClarityTime"] = _potionOfChilledClarityTime
 		lookupLogic["$mttMana"] = _mttMana
 		lookupLogic["$mttTime"] = _mttTime
+		lookupLogic["$mrMana"] = _mrMana
+		lookupLogic["$mrTime"] = _mrTime
 		lookupLogic["$channeledMana"] = _channeledMana
 		lookupLogic["$potionOfFrozenFocusTicks"] = _potionOfFrozenFocusTicks
 		lookupLogic["$potionOfFrozenFocusTime"] = _potionOfFrozenFocusTime
@@ -1422,9 +1461,24 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Data.snapshotData.manaTideTotem.remainingTime = 0
 			TRB.Data.snapshotData.manaTideTotem.mana = 0
 			TRB.Data.snapshotData.audio.manaTideTotemCue = false
-		else
+		elseif TRB.Data.snapshotData.manaTideTotem.endTime ~= nil then
 			TRB.Data.snapshotData.manaTideTotem.remainingTime = GetManaTideTotemRemainingTime()
 			TRB.Data.snapshotData.manaTideTotem.mana = TRB.Data.snapshotData.manaTideTotem.remainingTime * (TRB.Data.snapshotData.manaRegen / 2) --Only half of this is considered bonus
+		end
+	end
+
+	local function UpdateMoltenRadiance(forceCleanup)
+		local currentTime = GetTime()
+
+		if forceCleanup or (TRB.Data.snapshotData.moltenRadiance.endTime ~= nil and currentTime > TRB.Data.snapshotData.moltenRadiance.endTime) then
+			TRB.Data.snapshotData.moltenRadiance.endTime = nil
+			TRB.Data.snapshotData.moltenRadiance.duration = 0
+			TRB.Data.snapshotData.moltenRadiance.remainingTime = 0
+			TRB.Data.snapshotData.moltenRadiance.mana = 0
+			TRB.Data.snapshotData.moltenRadiance.manaPerTick = 0
+		elseif TRB.Data.snapshotData.moltenRadiance.endTime ~= nil then
+			TRB.Data.snapshotData.moltenRadiance.remainingTime = GetMoltenRadianceRemainingTime()
+			TRB.Data.snapshotData.moltenRadiance.mana = TRB.Data.snapshotData.moltenRadiance.manaPerTick * TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.moltenRadiance.remainingTime, 0, "ceil", true)
 		end
 	end
 
@@ -1447,6 +1501,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		UpdateInnervate()
 		UpdatePotionOfChilledClarity()
 		UpdateManaTideTotem()
+		UpdateMoltenRadiance()
 
 		local currentTime = GetTime()
 		local _
@@ -1619,7 +1674,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							passiveValue = passiveValue + TRB.Data.snapshotData.symbolOfHope.resourceFinal
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[3]:Show()
@@ -1645,8 +1700,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							TRB.Frames.passiveFrame.thresholds[4]:Hide()
 						end
 
-						if TRB.Data.snapshotData.emeraldCommunion.resourceFinal > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshotData.emeraldCommunion.resourceFinal
+						if TRB.Data.snapshotData.moltenRadiance.mana > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshotData.moltenRadiance.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -1659,12 +1714,28 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						else
 							TRB.Frames.passiveFrame.thresholds[5]:Hide()
 						end
+
+						if TRB.Data.snapshotData.emeraldCommunion.resourceFinal > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshotData.emeraldCommunion.resourceFinal
+
+							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[6], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.passiveFrame.thresholds[6].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[6]:Show()
+							else
+								TRB.Frames.passiveFrame.thresholds[6]:Hide()
+							end
+						else
+							TRB.Frames.passiveFrame.thresholds[6]:Hide()
+						end
 					else
 						TRB.Frames.passiveFrame.thresholds[1]:Hide()
 						TRB.Frames.passiveFrame.thresholds[2]:Hide()
 						TRB.Frames.passiveFrame.thresholds[3]:Hide()
 						TRB.Frames.passiveFrame.thresholds[4]:Hide()
 						TRB.Frames.passiveFrame.thresholds[5]:Hide()
+						TRB.Frames.passiveFrame.thresholds[6]:Hide()
 					end
 
 					passiveBarValue = castingBarValue + passiveValue
@@ -1801,9 +1872,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							TRB.Data.snapshotData.manaTideTotem.endTime = nil
 							TRB.Data.snapshotData.audio.manaTideTotemCue = false
 						end
+					elseif spellId == TRB.Data.spells.moltenRadiance.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
+							local _
+							_, _, _, _, TRB.Data.snapshotData.moltenRadiance.duration, TRB.Data.snapshotData.moltenRadiance.endTime, _, _, _, TRB.Data.snapshotData.moltenRadiance.spellId, _, _, _, _, _, _, _, TRB.Data.snapshotData.moltenRadiance.manaPerTick = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.moltenRadiance.id)
+							TRB.Data.snapshotData.moltenRadiance.isActive = false
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.moltenRadiance.isActive = false
+							TRB.Data.snapshotData.moltenRadiance.spellId = nil
+							TRB.Data.snapshotData.moltenRadiance.duration = 0
+							TRB.Data.snapshotData.moltenRadiance.endTime = nil
+							TRB.Data.snapshotData.moltenRadiance.manaPerTick = 0
+							TRB.Data.snapshotData.moltenRadiance.mana = 0
+						end
 					end
 				end
-			end
+			end			
 
 			if sourceGUID == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "devastation" then --Devastation					
@@ -2284,7 +2368,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					TRB.Functions.Class:IsValidVariableForSpec("$sohMana") or
 					TRB.Functions.Class:IsValidVariableForSpec("$innervateMana") or
 					TRB.Functions.Class:IsValidVariableForSpec("$potionOfChilledClarityMana") or
-					TRB.Functions.Class:IsValidVariableForSpec("$mttMana") then
+					TRB.Functions.Class:IsValidVariableForSpec("$mttMana") or
+					TRB.Functions.Class:IsValidVariableForSpec("$mrMana") then
 					valid = true
 				end
 			elseif var == "$ecMana" then
@@ -2327,12 +2412,20 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				if TRB.Data.snapshotData.potionOfChilledClarity.remainingTime > 0 then
 					valid = true
 				end
-			elseif var == "$mttMana" or var == "$manaTideTotemMana" then
+			elseif var == "$mttMana" then
 				if TRB.Data.snapshotData.manaTideTotem.mana > 0 then
 					valid = true
 				end
-			elseif var == "$mttTime" or var == "$manaTideTotemTime" then
+			elseif var == "$mttTime" then
 				if TRB.Data.snapshotData.manaTideTotem.isActive then
+					valid = true
+				end
+			elseif var == "$mrMana" then
+				if TRB.Data.snapshotData.moltenRadiance.mana > 0 then
+					valid = true
+				end
+			elseif var == "$mrTime" then
+				if TRB.Data.snapshotData.moltenRadiance.isActive then
 					valid = true
 				end
 			elseif var == "$channeledMana" then

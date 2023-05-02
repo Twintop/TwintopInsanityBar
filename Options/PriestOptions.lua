@@ -308,7 +308,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				fontSize = 13
 			},
 			right = {
-				text="{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]{$damInsanity}[#dam$damInsanity+]$insanity",
+				text="{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]$insanity",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 22
@@ -350,7 +350,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			hasteApproachingThreshold=135,
 			hasteThreshold=140,
 			hastePrecision=2,
-			overcapThreshold=100,
 			insanityPrecision=0,
 			auspiciousSpiritsTracker=true,
 			voidTendrilTracker=true,
@@ -369,10 +368,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					width=24,
 					height=24
 				},
+				devouringPlagueThresholdOnlyOverShow = false,
 				devouringPlague = { -- 1
 					enabled = true,
 				},
-				mindSear = { -- 2
+				devouringPlague2 = { -- 2
+					enabled = true,
+				},
+				devouringPlague3 = { -- 3
 					enabled = true,
 				}
 			},
@@ -405,6 +408,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				gcdsMax=2,
 				timeMax=3.0
 			},
+			overcap={
+				mode="relative",
+				relative=0,
+				fixed=100
+			},
 			colors={
 				text={
 					currentInsanity="FFC2A3E0",
@@ -431,6 +439,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					border="FF431863",
 					borderOvercap="FFFF0000",
 					borderMindFlayInsanity="FF00FF00",
+					deathspeaker = {
+						color = "FFFF9900",
+						enabled = true
+					},
 					background="66000000",
 					base="FF763BAF",
 					devouringPlagueUsable="FF5C2F89",
@@ -441,7 +453,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					},
 					inVoidform="FF431863",
 					inVoidform1GCD="FFFF0000",
-					spending="FFFFFFFF",
 					casting="FFFFFFFF",
 					passive="FFDF00FF",
 					flashAlpha=0.70,
@@ -635,52 +646,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 2, yCoord, false)
 
 		yCoord = yCoord - 30
-		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 2, yCoord, "Mana", "notFull", true, true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 2, yCoord, "Mana", "notFull", false)
 
 		yCoord = yCoord - 70
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 2, yCoord, "Mana")
+		
+		yCoord = yCoord - 30
 		controls.checkBoxes.holyWordChastiseEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordChastiseEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.holyWordChastiseEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change mana bar color for Holy Word: Chastise cooldown")
+		getglobal(f:GetName() .. 'Text'):SetText("Enable Holy Word: Chastise cooldown color")
 		f.tooltip = "This will change the mana bar color when your current cast will complete the cooldown of Holy Word: Chastise."
 		f:SetChecked(spec.bar.holyWordChastiseEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.bar.holyWordChastiseEnabled = self:GetChecked()
 		end)
 
-		yCoord = yCoord - 20
-		controls.checkBoxes.holyWordSanctifyEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSanctifyEnabled", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.holyWordSanctifyEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change mana bar color for Holy Word: Sanctify cooldown")
-		f.tooltip = "This will change the mana bar color when your current cast will complete the cooldown of Holy Word: Sanctify."
-		f:SetChecked(spec.bar.holyWordSanctifyEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.bar.holyWordSanctifyEnabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 20
-		controls.checkBoxes.holyWordSerenityEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSerenityEnabled", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.holyWordSerenityEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change mana bar color for Holy Word: Serenity cooldown")
-		f.tooltip = "This will change the mana bar color when your current cast will complete the cooldown of Holy Word: Serenity."
-		f:SetChecked(spec.bar.holyWordSerenityEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.bar.holyWordSerenityEnabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 30
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana", spec.colors.bar.base, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.base
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
-		end)
-		
 		controls.colors.holyWordChastise = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when your cast will complete the cooldown of Holy Word: Chastise", spec.colors.bar.holyWordChastise, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.holyWordChastise
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -688,10 +669,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana cost of current hardcast spell", spec.colors.bar.spending, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.spending
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
+		controls.checkBoxes.holyWordSanctifyEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSanctifyEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.holyWordSanctifyEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enable Holy Word: Sanctify cooldown color")
+		f.tooltip = "This will change the mana bar color when your current cast will complete the cooldown of Holy Word: Sanctify."
+		f:SetChecked(spec.bar.holyWordSanctifyEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.holyWordSanctifyEnabled = self:GetChecked()
 		end)
 
 		controls.colors.holyWordSanctify = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when your cast will complete the cooldown of Holy Word: Sanctify", spec.colors.bar.holyWordSanctify, 300, 25, oUi.xCoord2, yCoord)
@@ -699,12 +684,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "holyWordSanctify")
 		end)
-
+		
 		yCoord = yCoord - 30
-		controls.colors.inApotheosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana while Apotheosis is active", spec.colors.bar.apotheosis, 300, 25, oUi.xCoord, yCoord)
-		f = controls.colors.inApotheosis
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "apotheosis")
+		controls.checkBoxes.holyWordSerenityEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSerenityEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.holyWordSerenityEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enable Holy Word: Serenity cooldown color")
+		f.tooltip = "This will change the mana bar color when your current cast will complete the cooldown of Holy Word: Serenity."
+		f:SetChecked(spec.bar.holyWordSerenityEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.holyWordSerenityEnabled = self:GetChecked()
 		end)
 
 		controls.colors.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when your cast will complete the cooldown of Holy Word: Serenity", spec.colors.bar.holyWordSerenity, 300, 25, oUi.xCoord2, yCoord)
@@ -714,46 +703,72 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.inApotheosisEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Apotheosis is close to ending (configurable/if enabled)", spec.colors.bar.apotheosisEnd, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.inApotheosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana while Apotheosis is active", spec.colors.bar.apotheosis, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.inApotheosis
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "apotheosis")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.endOfApotheosis = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_EOA_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfApotheosis
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Apotheosis")
+		f.tooltip = "Changes the bar color when Apotheosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(spec.endOfApotheosis.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.endOfApotheosis.enabled = self:GetChecked()
+		end)
+
+		controls.colors.inApotheosisEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Apotheosis is close to ending (as configured)", spec.colors.bar.apotheosisEnd, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inApotheosisEnd
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "apotheosisEnd")
 		end)
 
+		yCoord = yCoord - 30
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_2_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showCastingBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
+		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		f:SetChecked(spec.bar.showCasting)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showCasting = self:GetChecked()
+		end)
+
+		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana cost of current hardcast spell", spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.spending
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_2_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.showPassiveBar
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
+		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		f:SetChecked(spec.bar.showPassive)
+		f:SetScript("OnClick", function(self, ...)
+			spec.bar.showPassive = self:GetChecked()
+		end)
+
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc.)", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.passive
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
+		end)
+
+		yCoord = yCoord - 30
 		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
 		end)
 
-		yCoord = yCoord - 30
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 550, 25, oUi.xCoord, yCoord)
-		f = controls.colors.passive
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
-		end)
-
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
-
-		yCoord = yCoord - 25
-		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border is normal/base border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord-0)
-		f = controls.colors.border
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 2)
-		end)
-
-		controls.colors.innervate = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Innervate", spec.colors.bar.innervate, 300, 25, oUi.xCoord2, yCoord-30)
-		f = controls.colors.innervate
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "innervate")
-		end)
-
-		controls.colors.potionOfChilledClarity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Potion of Chilled Clarity's effect", spec.colors.bar.potionOfChilledClarity, 300, 25, oUi.xCoord2, yCoord-60)
-		f = controls.colors.potionOfChilledClarity
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "potionOfChilledClarity")
-		end)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 2, yCoord, "Mana", false, true)
 
 		controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.surgeOfLight1
@@ -859,17 +874,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 40
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Apotheosis Configuration", 0, yCoord)
 
-		yCoord = yCoord - 30
-		controls.checkBoxes.endOfApotheosis = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_EOA_CB", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.endOfApotheosis
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Apotheosis")
-		f.tooltip = "Changes the bar color when Apotheosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
-		f:SetChecked(spec.endOfApotheosis.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.endOfApotheosis.enabled = self:GetChecked()
-		end)
-
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfApotheosisModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_EOA_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfApotheosisModeGCDs
@@ -916,7 +920,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfApotheosisTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.endOfApotheosis.timeMax = value
 		end)
@@ -1013,7 +1017,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 0)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			spec.hastePrecision = value
 		end)
@@ -1493,7 +1497,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.shadowfiendTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.shadowfiend.timeMax = value
 		end)
@@ -1791,18 +1795,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 3, yCoord, false)
 
 		yCoord = yCoord - 30
-		local yCoord2 = yCoord
-		yCoord, yCoord2 = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, "Insanity", "notEmpty", false, false, true, "Devouring Plague", "DP")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 3, yCoord, "Insanity", "notEmpty", true, "Devouring Plague", "DP")
 
 		yCoord = yCoord - 70
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors + Changing", 0, yCoord)
-
-		yCoord = yCoord - 30
-		controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity", spec.colors.bar.base, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.base		
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
-		end)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 3, yCoord, "Insanity")
 
 		yCoord = yCoord - 30
 		controls.colors.inVoidform = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity while in Voidform / Dark Ascension", spec.colors.bar.inVoidform, 300, 25, oUi.xCoord2, yCoord)
@@ -1818,7 +1814,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inVoidform1GCD")
 		end)
 
-		controls.checkBoxes.endOfVoidform = CreateFrame("CheckButton", "TRB_EOVF_CB", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.endOfVoidform = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Bar_Option_vfDaColorChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfVoidform
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("VF/DA color change when ending enabled")
@@ -1829,14 +1825,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.devouringPlagueUsable = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity when you can cast Devouring Plague or Mind Sear", spec.colors.bar.devouringPlagueUsable, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.devouringPlagueUsable = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity when you can cast Devouring Plague", spec.colors.bar.devouringPlagueUsable, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.devouringPlagueUsable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "devouringPlagueUsable")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.instantMindBlast = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity when Mind Blast is instant cast (Shadowy Insight or 2x Mind Melt stacks)", spec.colors.bar.instantMindBlast.color, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.instantMindBlast = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity when Mind Blast is instant cast (Shadowy Insight proc)", spec.colors.bar.instantMindBlast.color, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.instantMindBlast
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "instantMindBlast")
@@ -1846,7 +1842,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.instantMindBlast
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Instant Mind Blast color change enabled")
-		f.tooltip = "This will change the bar color when Mind Blast is able to be cast instantly either due to a Shadowy Insight proc or having 2 stacks of Mind Melt."
+		f.tooltip = "This will change the bar color when Mind Blast is able to be cast instantly either due to a Shadowy Insight proc."
 		f:SetChecked(spec.colors.bar.instantMindBlast.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.instantMindBlast.enabled = self:GetChecked()
@@ -1867,13 +1863,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(spec.bar.showCasting)
 		f:SetScript("OnClick", function(self, ...)
 			spec.bar.showCasting = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 30
-		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Insanity cost of current spender (Mind Sear)", spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.spending
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
 		end)
 		
 		yCoord = yCoord - 30
@@ -1908,51 +1897,44 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
-
-		yCoord = yCoord - 25
-		controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border is normal/base border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.border
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
-		end)
-
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 3, yCoord, "Insanity", true, false)
+		
 		yCoord = yCoord - 30
-		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_overcapBorderChange", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.overcapEnabled
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
-		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping maximum Insanity."
-		f:SetChecked(spec.colors.bar.overcapEnabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.overcapEnabled = self:GetChecked()
-		end)
-
-		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when your current hardcast will overcap Insanity", spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.borderOvercap		
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderOvercap")
-		end)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.mindFlayInsanityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_mindFlayInsanityBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.mindFlayInsanityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Border_Option_mindFlayInsanityBorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mindFlayInsanityBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mind Flay: Insanity")
-		f.tooltip = "This will change the bar border color when you are able to cast Mind Flay: Insanity"
+		getglobal(f:GetName() .. 'Text'):SetText("Mind Flay: Insanity / Mind Spike: Insanity")
+		f.tooltip = "This will change the bar border color when you are able to cast Mind Flay: Insanity / Mind Spike: Insanity"
 		f:SetChecked(spec.colors.bar.mindFlayInsanityBorderChange)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.mindFlayInsanityBorderChange = self:GetChecked()
 		end)
 
-		controls.colors.borderMindFlayInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you can channel Mind Flay: Insanity", spec.colors.bar.borderMindFlayInsanity, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderMindFlayInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you can channel Mind Flay: Insanity or Mind Spike: Insanity", spec.colors.bar.borderMindFlayInsanity, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderMindFlayInsanity
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderMindFlayInsanity")
 		end)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.deathspeakerBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Border_Option_deathspeakerBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.deathspeakerBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Deathspeaker proc")
+		f.tooltip = "This will change the bar border color when you are able to cast Shadow Word: Death with the Deathspeaker proc effect active."
+		f:SetChecked(spec.colors.bar.deathspeaker.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.deathspeaker.enabled = self:GetChecked()
+		end)
+
+		controls.colors.deathspeaker = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when a Deathspeaker proc is active", spec.colors.bar.deathspeaker.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.deathspeaker
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "deathspeaker")
+		end)
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
 
 		controls.colors.threshold = {}
 
@@ -2012,19 +1994,39 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.thresholds.devouringPlague.enabled = self:GetChecked()
 		end)
 
-		yCoord = yCoord - 25
-		controls.checkBoxes.snThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_mindSear", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.snThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mind Sear")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast Mind Sear. Only visibile if talented in to Mind Sear."
-		f:SetChecked(spec.thresholds.mindSear.enabled)
+		yCoord = yCoord - 20
+		controls.checkBoxes.dpThreshold2Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague2", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.dpThreshold2Show
+		f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show 2x Devouring Plague threshold line")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast two Devouring Plagues in a row."
+		f:SetChecked(spec.thresholds.devouringPlague2.enabled)
 		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.mindSear.enabled = self:GetChecked()
+			spec.thresholds.devouringPlague2.enabled = self:GetChecked()
 		end)
 
-		yCoord = yCoord - 25
-		yCoord = yCoord - 25
+		yCoord = yCoord - 20
+		controls.checkBoxes.dpThreshold3Show = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlague3", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.dpThreshold3Show
+		f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show 3x Devouring Plague threshold line")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Insanity is required to cast three Devouring Plagues in a row."
+		f:SetChecked(spec.thresholds.devouringPlague3.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.devouringPlague3.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 20
+		controls.checkBoxes.dpThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Threshold_Option_devouringPlagueOnlyOver", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.dpThresholdOnlyOverShow
+		f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Only show current + next threshold line?")
+		f.tooltip = "This will only show Devouring Plague threshold lines if you already have enough Insanity to cast it, or, if it is the next threshold you're approaching. Only triggers the next after the previous threshold line has been reached, even if it is not checked above!"
+		f:SetChecked(spec.thresholds.devouringPlagueThresholdOnlyOverShow)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.devouringPlagueThresholdOnlyOverShow = self:GetChecked()
+		end)
+
 		yCoord = yCoord - 25
 		yCoord = yCoord - 25
 		yCoord = yCoord - 50
@@ -2080,25 +2082,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfVoidformTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.endOfVoidform.timeMax = value
 		end)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
-
-		yCoord = yCoord - 30
-		title = "Show Overcap Notification Above"
-		controls.overcapAt = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 100, spec.overcapThreshold, 0.5, 1,
-										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		controls.overcapAt:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 1)
-			self.EditBox:SetText(value)
-			spec.overcapThreshold = value
-		end)
-
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 5, 3, yCoord, "Insanity", 150)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.shadow = controls
@@ -2149,7 +2139,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Have enough Insanity to cast Devouring Plague or Mind Sear", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Have enough Insanity to cast Devouring Plague", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
@@ -2167,7 +2157,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.overThresholdEnabled
 		f:SetPoint("TOPLEFT", 0, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
-		f.tooltip = "This will change the Insanity text color when you are able to cast Devouring Plague or Mind Sear"
+		f.tooltip = "This will change the Insanity text color when you are able to cast Devouring Plague"
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overThresholdEnabled = self:GetChecked()
@@ -2235,7 +2225,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = spec.hasteThreshold
 			end
 
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.hasteApproachingThreshold = value
 		end)
@@ -2275,7 +2265,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				value = spec.hasteApproachingThreshold
 			end
 
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.hasteThreshold = value
 		end)
@@ -2288,7 +2278,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 0)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			spec.hastePrecision = value
 		end)
@@ -2298,7 +2288,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.insanityPrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 0)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
 			spec.insanityPrecision = value
 		end)
@@ -2654,7 +2644,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.mindbenderTime:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.mindbender.timeMax = value
 		end)

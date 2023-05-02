@@ -110,7 +110,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				icon = "",
 				maelstrom = 8,
 				overload = 3,
-				baseline = true
+				baseline = true,
+				primalFracture = true
 			},
 			flameShock = {
 				id = 188389,
@@ -131,7 +132,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				icon = "",
 				maelstrom = 10,
 				isTalent = true,
-				baseline = true
+				baseline = true,
+				primalFracture = true
 			},
 			chainLightning = {
 				id = 188443,
@@ -147,7 +149,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				name = "",
 				icon = "",
 				maelstrom = 14,
-				isTalent = true
+				isTalent = true,
+				primalFracture = true
 			},
 			hex = {
 				id = 51514,
@@ -228,6 +231,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				stacks = 4,
 				duration = 15,
 				isTalent = true,
+				primalFracture = true
 			},
 			stormkeeper = {
 				id = 191634,
@@ -310,6 +314,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			},
 
 			--TODO: Add Searing Flames passive maelstrom
+
+			primalFracture = { -- T30 4P
+				id = 410018,
+				name = "",
+				icon = "",
+				maelstromMod = 1.5
+			}
 		}
 		
 		specCache.elemental.snapshotData.audio = {
@@ -346,6 +357,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spell = nil
 		}
 		specCache.elemental.snapshotData.echoesOfGreatSundering = {
+			isActive = false,
+			duration = 0,
+			endTime = nil
+		}
+		specCache.elemental.snapshotData.primalFracture = {
 			isActive = false,
 			duration = 0,
 			endTime = nil
@@ -654,7 +670,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					175942,
 					175943
 				}
+			},
+
+			-- Rashok's Molten Heart
+			moltenRadiance = {
+				id = 409898,
+				name = "",
+				icon = "",
 			}
+
 		}
 
 		specCache.restoration.snapshotData.manaRegen = 0
@@ -724,6 +748,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			endTime = nil,
 			remainingTime = 0
 		}
+		specCache.restoration.snapshotData.moltenRadiance = {
+			spellId = nil,
+			startTime = nil,
+			duration = 0,
+			manaPerTick = 0,
+			mana = 0
+		}
 
 		specCache.restoration.barTextVariables = {
 			icons = {},
@@ -779,6 +810,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "#lavaBurst", icon = spells.lavaBurst.icon, description = spells.lavaBurst.name, printInSettings = true },
 			{ variable = "#lightningBolt", icon = spells.lightningBolt.icon, description = spells.lightningBolt.name, printInSettings = true },
 			{ variable = "#lightningShield", icon = spells.lightningShield.icon, description = spells.lightningShield.name, printInSettings = true },
+			{ variable = "#primalFracture", icon = spells.primalFracture.icon, description = spells.primalFracture.name, printInSettings = true },
 			{ variable = "#stormkeeper", icon = spells.stormkeeper.icon, description = spells.stormkeeper.name, printInSettings = true },
 		}
 		specCache.elemental.barTextVariables.values = {
@@ -839,6 +871,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "$ascendanceTime", description = "Duration remaining of Ascendance", printInSettings = true, color = false },
 
 			{ variable = "$eogsTime", description = "Time remaining on Echoes of Great Sundering buff", printInSettings = true, color = false },
+
+			{ variable = "$pfTime", description = "Time remaining on Primal Fracture (T30 4P) buff", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -927,6 +961,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "#ascendance", icon = spells.ascendance.icon, description = spells.ascendance.name, printInSettings = true },
 			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
 			{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
+
+			{ variable = "#mr", icon = spells.moltenRadiance.icon, description = spells.moltenRadiance.name, printInSettings = true },
+			{ variable = "#moltenRadiance", icon = spells.moltenRadiance.icon, description = spells.moltenRadiance.name, printInSettings = false },
+
 			{ variable = "#soh", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = true },
 			{ variable = "#symbolOfHope", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = false },
 
@@ -991,7 +1029,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			{ variable = "$innervateMana", description = "Passive mana regen while Innervate is active", printInSettings = true, color = false },
 			{ variable = "$innervateTime", description = "Time left on Innervate", printInSettings = true, color = false },
-			
+									
+			{ variable = "$mrMana", description = "Mana from Molten Radiance", printInSettings = true, color = false },
+			{ variable = "$mrTime", description = "Time left on Molten Radiance", printInSettings = true, color = false },
+
 			{ variable = "$mttMana", description = "Bonus passive mana regen while Mana Tide Totem is active", printInSettings = true, color = false },
 			{ variable = "$mttTime", description = "Time left on Mana Tide Totem", printInSettings = true, color = false },
 			
@@ -1139,7 +1180,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
 
-			for x = 1, 4 do
+			for x = 1, 5 do
 				if TRB.Frames.passiveFrame.thresholds[x] == nil then
 					TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 				end
@@ -1178,7 +1219,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function GetEchoesOfGreatSunderingRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.echoesOfGreatSundering)
 	end
-		
+	
+	local function GetPrimalFractureRemainingTime()
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.primalFracture)
+	end
+	
+	
 	local function GetIcefuryRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.icefury)
 	end
@@ -1197,6 +1243,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local function GetManaTideTotemRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.manaTideTotem)
+	end
+
+	local function GetMoltenRadianceRemainingTime()
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.moltenRadiance)
 	end
 
 	local function GetSymbolOfHopeRemainingTime()
@@ -1231,12 +1281,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local maelstromThreshold = TRB.Data.character.earthShockThreshold
 
-		if TRB.Data.settings.shaman.elemental.colors.text.overcapEnabled and overcap then 
-			currentMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom
-			castingMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom
-		elseif TRB.Data.settings.shaman.elemental.colors.text.overThresholdEnabled and TRB.Data.snapshotData.resource >= maelstromThreshold then
-			currentMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overThreshold
-			castingMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overThreshold
+		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+			if TRB.Data.settings.shaman.elemental.colors.text.overcapEnabled and overcap then 
+				currentMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom
+				castingMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom
+			elseif TRB.Data.settings.shaman.elemental.colors.text.overThresholdEnabled and TRB.Data.snapshotData.resource >= maelstromThreshold then
+				currentMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overThreshold
+				castingMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overThreshold
+			end
 		end
 
 		--$maelstrom
@@ -1316,6 +1368,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			eogsTime = string.format("%.1f", _eogsTime)
 		end
 
+		--$pfTime
+		local _pfTime = GetPrimalFractureRemainingTime()
+
+		local pfTime = "0.0"
+		if _pfTime > 0 then
+			pfTime = string.format("%.1f", _pfTime)
+		end
+
 		--$ascendanceTime
 		local _ascendanceTime = TRB.Data.snapshotData.ascendance.remainingTime
 		local ascendanceTime = string.format("%.1f", _ascendanceTime)
@@ -1348,6 +1408,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["#lavaBurst"] = TRB.Data.spells.lavaBurst.icon
 		lookup["#lightningBolt"] = TRB.Data.spells.lightningBolt.icon
 		lookup["#lightningShield"] = TRB.Data.spells.lightningShield.icon
+		lookup["#primalFracture"] = TRB.Data.spells.primalFracture.icon
 		lookup["#stormkeeper"] = TRB.Data.spells.stormkeeper.icon
 		lookup["$maelstromPlusCasting"] = maelstromPlusCasting
 		lookup["$maelstromPlusPassive"] = maelstromPlusPassive
@@ -1373,6 +1434,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["$fsCount"] = flameShockCount
 		lookup["$fsTime"] = flameShockTime
 		lookup["$ascendanceTime"] = ascendanceTime
+		lookup["$pfTime"] = pfTime
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1400,6 +1462,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookupLogic["$fsCount"] = _flameShockCount
 		lookupLogic["$fsTime"] = _flameShockTime
 		lookupLogic["$ascendanceTime"] = _ascendanceTime
+		lookupLogic["$pfTime"] = _pfTime
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -1522,11 +1585,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local innervateTime = string.format("%.1f", _innervateTime)
 
 		--$mttMana
-		local _mttMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
+		local _mttMana = TRB.Data.snapshotData.manaTideTotem.mana
 		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
 		local _mttTime = GetManaTideTotemRemainingTime()
 		local mttTime = string.format("%.1f", _mttTime)
+
+		--$mrMana
+		local _mrMana = TRB.Data.snapshotData.moltenRadiance.mana
+		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
+		--$mrTime
+		local _mrTime = GetMoltenRadianceRemainingTime()
+		local mrTime = string.format("%.1f", _mrTime)
 
 		--$potionCooldownSeconds
 		local _potionCooldown = 0
@@ -1556,7 +1626,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local _potionOfFrozenFocusTime = GetChanneledPotionRemainingTime()
 		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
 		--$passive
-		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana
+		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana
 		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.shaman.restoration.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 		--$manaTotal
 		local _manaTotal = math.min(_passiveMana + TRB.Data.snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
@@ -1618,6 +1688,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		Global_TwintopResourceBar.resource.manaTideTotem = _mttMana or 0
 		Global_TwintopResourceBar.resource.innervate = _innervateMana or 0
 		Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
+		Global_TwintopResourceBar.resource.moltenRadiance = _mrMana or 0
 		Global_TwintopResourceBar.potionOfSpiritualClarity = {
 			mana = _channeledMana,
 			ticks = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining or 0
@@ -1637,6 +1708,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["#innervate"] = TRB.Data.spells.innervate.icon
 		lookup["#mtt"] = TRB.Data.spells.manaTideTotem.icon
 		lookup["#manaTideTotem"] = TRB.Data.spells.manaTideTotem.icon
+		lookup["#mr"] = TRB.Data.spells.moltenRadiance.icon
+		lookup["#moltenRadiance"] = TRB.Data.spells.moltenRadiance.icon
 		lookup["#soh"] = TRB.Data.spells.symbolOfHope.icon
 		lookup["#symbolOfHope"] = TRB.Data.spells.symbolOfHope.icon
 		lookup["#potionOfFrozenFocus"] = TRB.Data.spells.potionOfFrozenFocusRank1.icon
@@ -1667,6 +1740,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["$sohTicks"] = sohTicks
 		lookup["$innervateMana"] = innervateMana
 		lookup["$innervateTime"] = innervateTime
+		lookup["$mrMana"] = mrMana
+		lookup["$mrTime"] = mrTime
 		lookup["$mttMana"] = mttMana
 		lookup["$mttTime"] = mttTime
 		lookup["$channeledMana"] = channeledMana
@@ -1699,6 +1774,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookupLogic["$sohTicks"] = _sohTicks
 		lookupLogic["$innervateMana"] = _innervateMana
 		lookupLogic["$innervateTime"] = _innervateTime
+		lookupLogic["$mrMana"] = _mrMana
+		lookupLogic["$mrTime"] = _mrTime
 		lookupLogic["$mttMana"] = _mttMana
 		lookupLogic["$mttTime"] = _mttTime
 		lookupLogic["$channeledMana"] = _channeledMana
@@ -1716,10 +1793,22 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local function FillSnapshotDataCasting(spell, maelstromMod)
 		maelstromMod = maelstromMod or 0
+		local maelstromMultMod = 1
+
+		if TRB.Data.snapshotData.primalFracture.isActive then
+			if spell.id == TRB.Data.spells.lavaBurst.id or
+				spell.id == TRB.Data.spells.lightningBolt.id or
+				spell.id == TRB.Data.spells.icefury.id or
+				spell.id == TRB.Data.spells.frostShock.id
+				then
+				maelstromMultMod = TRB.Data.spells.primalFracture.maelstromMod
+			end
+		end
+
 		local currentTime = GetTime()
 		TRB.Data.snapshotData.casting.startTime = currentTime
-		TRB.Data.snapshotData.casting.resourceRaw = spell.maelstrom + maelstromMod
-		TRB.Data.snapshotData.casting.resourceFinal = spell.maelstrom + maelstromMod
+		TRB.Data.snapshotData.casting.resourceRaw = (spell.maelstrom + maelstromMod) * maelstromMultMod
+		TRB.Data.snapshotData.casting.resourceFinal = (spell.maelstrom + maelstromMod) * maelstromMultMod
 		TRB.Data.snapshotData.casting.spellId = spell.id
 		TRB.Data.snapshotData.casting.icon = spell.icon
 	end
@@ -1953,6 +2042,21 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 	end
 
+	local function UpdateMoltenRadiance(forceCleanup)
+		local currentTime = GetTime()
+
+		if forceCleanup or (TRB.Data.snapshotData.moltenRadiance.endTime ~= nil and currentTime > TRB.Data.snapshotData.moltenRadiance.endTime) then
+			TRB.Data.snapshotData.moltenRadiance.endTime = nil
+			TRB.Data.snapshotData.moltenRadiance.duration = 0
+			TRB.Data.snapshotData.moltenRadiance.remainingTime = 0
+			TRB.Data.snapshotData.moltenRadiance.mana = 0
+			TRB.Data.snapshotData.moltenRadiance.manaPerTick = 0
+		elseif TRB.Data.snapshotData.moltenRadiance.endTime ~= nil then
+			TRB.Data.snapshotData.moltenRadiance.remainingTime = GetMoltenRadianceRemainingTime()
+			TRB.Data.snapshotData.moltenRadiance.mana = TRB.Data.snapshotData.moltenRadiance.manaPerTick * TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.moltenRadiance.remainingTime, 0, "ceil", true)
+		end
+	end
+
 	local function UpdateSnapshot()
 		local currentTime = GetTime()
 		TRB.Functions.Character:UpdateSnapshot()
@@ -2001,6 +2105,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		UpdateInnervate()
 		UpdatePotionOfChilledClarity()
 		UpdateManaTideTotem()
+		UpdateMoltenRadiance()
 
 		local currentTime = GetTime()
 		local _
@@ -2050,9 +2155,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
+					local barBorderColor = specSettings.colors.bar.border
 
-					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+						local barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
 							TRB.Data.snapshotData.audio.overcapCue = true
@@ -2060,9 +2166,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
-						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.border, true))
 						TRB.Data.snapshotData.audio.overcapCue = false
 					end
+					
+
+					if specSettings.colors.bar.primalFracture.enabled and TRB.Functions.Class:IsValidVariableForSpec("$pfTime") then
+						barBorderColor = specSettings.colors.bar.primalFracture.color
+					end
+
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
 					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshotData.resource)
 
@@ -2377,7 +2489,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							passiveValue = passiveValue + TRB.Data.snapshotData.innervate.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[2]:Show()
@@ -2392,7 +2504,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							passiveValue = passiveValue + TRB.Data.snapshotData.symbolOfHope.resourceFinal
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[3]:Show()
@@ -2417,12 +2529,27 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						else
 							TRB.Frames.passiveFrame.thresholds[4]:Hide()
 						end
+
+						if TRB.Data.snapshotData.moltenRadiance.mana > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshotData.moltenRadiance.mana
+
+							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.passiveFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[5]:Show()
+							else
+								TRB.Frames.passiveFrame.thresholds[5]:Hide()
+							end
+						else
+							TRB.Frames.passiveFrame.thresholds[5]:Hide()
+						end
 					else
 						TRB.Frames.passiveFrame.thresholds[1]:Hide()
 						TRB.Frames.passiveFrame.thresholds[2]:Hide()
 						TRB.Frames.passiveFrame.thresholds[3]:Hide()
 						TRB.Frames.passiveFrame.thresholds[4]:Hide()
-						--TRB.Frames.passiveFrame.thresholds[5]:Hide()
+						TRB.Frames.passiveFrame.thresholds[5]:Hide()
 					end
 
 					passiveBarValue = castingBarValue + passiveValue
@@ -2548,6 +2675,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Data.snapshotData.manaTideTotem.endTime = nil
 							TRB.Data.snapshotData.audio.manaTideTotemCue = false
 						end
+					elseif spellId == TRB.Data.spells.moltenRadiance.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
+							local _
+							_, _, _, _, TRB.Data.snapshotData.moltenRadiance.duration, TRB.Data.snapshotData.moltenRadiance.endTime, _, _, _, TRB.Data.snapshotData.moltenRadiance.spellId, _, _, _, _, _, _, _, TRB.Data.snapshotData.moltenRadiance.manaPerTick = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.moltenRadiance.id)
+							TRB.Data.snapshotData.moltenRadiance.isActive = false
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.moltenRadiance.isActive = false
+							TRB.Data.snapshotData.moltenRadiance.spellId = nil
+							TRB.Data.snapshotData.moltenRadiance.duration = 0
+							TRB.Data.snapshotData.moltenRadiance.endTime = nil
+							TRB.Data.snapshotData.moltenRadiance.manaPerTick = 0
+							TRB.Data.snapshotData.moltenRadiance.mana = 0
+						end
 					end
 				end
 			end
@@ -2610,7 +2750,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Data.snapshotData.echoesOfGreatSundering.duration = 0
 							TRB.Data.snapshotData.echoesOfGreatSundering.endTime = nil
 						end
-					end
+					elseif spellId == TRB.Data.spells.primalFracture.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.snapshotData.primalFracture.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.primalFracture.duration, TRB.Data.snapshotData.primalFracture.endTime, _, _, _, TRB.Data.snapshotData.primalFracture.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.primalFracture.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.primalFracture.isActive = false
+							TRB.Data.snapshotData.primalFracture.spellId = nil
+							TRB.Data.snapshotData.primalFracture.duration = 0
+							TRB.Data.snapshotData.primalFracture.endTime = nil
+						end
+					end					
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "enhancement" then
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "restoration" then
 					if spellId == TRB.Data.spells.symbolOfHope.id then
@@ -3100,8 +3250,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					valid = true
 				end
 			elseif var == "$overcap" or var == "$insanityOvercap" or var == "$resourceOvercap" then
-				if (TRB.Data.snapshotData.resource + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.shaman.elemental.overcapThreshold then
-					valid = true
+				local threshold = ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal)
+				if TRB.Data.settings.priest.shadow.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) < threshold then
+					return true
+				elseif TRB.Data.settings.priest.shadow.overcap.mode == "fixed" and settings.overcap.fixed < threshold then
+					return true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$maelstromPlusPassive" then
 				if TRB.Data.snapshotData.resource > 0 then
@@ -3134,6 +3287,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end
 			elseif var == "$eogsTime" then
 				if GetEchoesOfGreatSunderingRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$pfTime" then
+				if GetPrimalFractureRemainingTime() > 0 then
 					valid = true
 				end
 			end
@@ -3201,7 +3358,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					TRB.Functions.Class:IsValidVariableForSpec("$sohMana") or
 					TRB.Functions.Class:IsValidVariableForSpec("$innervateMana") or
 					TRB.Functions.Class:IsValidVariableForSpec("$potionOfChilledClarityMana") or
-					TRB.Functions.Class:IsValidVariableForSpec("$mttMana") then
+					TRB.Functions.Class:IsValidVariableForSpec("$mttMana") or
+					TRB.Functions.Class:IsValidVariableForSpec("$mrMana") then
 					valid = true
 				end
 			elseif var == "$sohMana" then
@@ -3232,12 +3390,20 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				if TRB.Data.snapshotData.potionOfChilledClarity.remainingTime > 0 then
 					valid = true
 				end
-			elseif var == "$mttMana" or var == "$manaTideTotemMana" then
+			elseif var == "$mttMana" then
 				if TRB.Data.snapshotData.manaTideTotem.mana > 0 then
 					valid = true
 				end
-			elseif var == "$mttTime" or var == "$manaTideTotemTime" then
+			elseif var == "$mttTime" then
 				if TRB.Data.snapshotData.manaTideTotem.isActive then
+					valid = true
+				end
+			elseif var == "$mrMana" then
+				if TRB.Data.snapshotData.moltenRadiance.mana > 0 then
+					valid = true
+				end
+			elseif var == "$mrTime" then
+				if TRB.Data.snapshotData.moltenRadiance.isActive then
 					valid = true
 				end
 			elseif var == "$channeledMana" then

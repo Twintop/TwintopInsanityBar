@@ -19,7 +19,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		configuration.thresholds = settings.thresholds
 		configuration.colors.bar = settings.colors.bar
 		configuration.colors.threshold = settings.colors.threshold
-		configuration.overcapThreshold = settings.overcapThreshold
+		configuration.overcap = settings.overcap
 
 		if classId == 1 then -- Warrior
 			if specId == 1 then -- Arms

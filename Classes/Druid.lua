@@ -96,7 +96,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 164812,
 				name = "",
 				icon = "",
-				astralPower = 2,
+				astralPower = 6,
 				pandemic = true,
 				pandemicTime = 22 * 0.3,
 				baseline = true
@@ -107,7 +107,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 194153,
 				name = "",
 				icon = "",
-				astralPower = 8,
+				astralPower = 10,
 				baseline = true,
 				isTalent = true
 			},
@@ -161,7 +161,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 164815,
 				name = "",
 				icon = "",
-				astralPower = 2,
+				astralPower = 6,
 				pandemic = true,
 				pandemicTime = 18 * 0.3,
 				isTalent = true
@@ -172,7 +172,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 190984,
 				name = "",
 				icon = "",
-				astralPower = 8
+				astralPower = 10
 			},
 
 			-- Balance Spec Talents
@@ -198,9 +198,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 202430,
 				name = "",
 				icon = "",
-				astralPower = 0.5,
-				outOfCombatAstralPower = 1.5,
-				tickRate = 1,
+				astralPower = 2,
+				outOfCombatAstralPower = 6,
+				tickRate = 3,
 				isTalent = true
 			},
 			starfall = {
@@ -222,10 +222,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 202347,
 				name = "",
 				icon = "",
-				astralPower = 8,
+				astralPower = 10,
 				pandemic = true,
 				pandemicTime = 24 * 0.3,
 				isTalent = true
+			},
+			wildSurges = {
+				id = 406890,
+				name = "",
+				icon = "",
+				isTalent = true,
+				modifier = 2
 			},
 			rattleTheStars = {
 				id = 340049,
@@ -272,7 +279,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 114107,
 				name = "",
 				icon = "",
-				modifier = 1.5,
+				modifier = {
+					wrath = 0.3,
+					starfire = 0.2
+				},
 				isTalent = true
 			},
 			-- TODO: Add Wild Mushroom + associated tracking
@@ -288,8 +298,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 393991,
 				name = "",
 				icon = "",
-				modifierStarsurge = -5,
-				modifierStarfall = -8,
+				modifierStarsurge = -8,
+				modifierStarfall = -10,
 				isTalent = true,
 				isActive = false
 			},
@@ -307,7 +317,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 274281,
 				name = "",
 				icon = "",
-				astralPower = 10,
+				astralPower = 12,
 				recharge = 20,
 				isTalent = true
 			},
@@ -315,13 +325,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 274282,
 				name = "",
 				icon = "",
-				astralPower = 20
+				astralPower = 24
 			},
 			fullMoon = {
 				id = 274283,
 				name = "",
 				icon = "",
-				astralPower = 40
+				astralPower = 50
 			},
 			sunderedFirmament = {
 				id = 394094,
@@ -338,6 +348,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 394414,
 				name = "",
 				icon = "",
+				astralPowerMod = -5
 			}
 		}
 		
@@ -488,7 +499,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				baseline = true
 			},
 			thrash = {
-				id = 106830,
+				id = 405233,
+				talentId = 106830,
 				name = "",
 				icon = "",
 				energy = -40,
@@ -705,7 +717,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 106951,
 				name = "",
 				icon = "",
-				isTalent = true
+				isTalent = true,
+				energizeId = 343216,
+				tickRate = 1.5
 			},
 			predatorySwiftness = {
 				id = 69369,
@@ -769,13 +783,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				energyModifier = 0.8
-			},
+			}, 
 			relentlessPredator = {
 				id = 393771,
 				name = "",
 				icon = "",
 				isTalent = true,
-				energyModifier = 0.6
+				energyModifier = 0.8
 			},
 			circleOfLifeAndDeath = {
 				id = 391969,
@@ -788,6 +802,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 391882,
 				name = "",
 				icon = ""
+			},
+			
+			-- T30 4P
+			predatorRevealed = {
+				id = 408468,
+				name = "",
+				icon = "",
+				energizeId = 411344,
+				tickRate = 2.0,
+				spellKey = "predatorRevealed"
 			}
 		}
 
@@ -855,7 +879,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		specCache.feral.snapshotData.berserk = {
 			spellId = nil,
 			endTime = nil,
-			duration = 0
+			duration = 0,
+			lastTick = nil,
+			nextTick = nil,
+			untilNextTick = 0,
+			ticks = 0,
 		}
 		specCache.feral.snapshotData.incarnationAvatarOfAshamane = {
 			spellId = nil,
@@ -873,6 +901,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			spellId = nil,
 			endTime = nil,
 			duration = 0
+		}
+		specCache.feral.snapshotData.predatorRevealed = {
+			spellId = nil,
+			endTime = nil,
+			duration = 0,
+			lastTick = nil,
+			nextTick = nil,
+			untilNextTick = 0,
+			ticks = 0,
 		}
 		specCache.feral.snapshotData.snapshots = {
 			rake = 100,
@@ -1138,7 +1175,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					175942,
 					175943
 				}
+			},
+
+			-- Rashok's Molten Heart
+			moltenRadiance = {
+				id = 409898,
+				name = "",
+				icon = "",
 			}
+
 		}
 
 		specCache.restoration.snapshotData.manaRegen = 0
@@ -1212,6 +1257,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			onCooldown = false,
 			startTime = nil,
 			duration = 0
+		}
+		specCache.restoration.snapshotData.moltenRadiance = {
+			spellId = nil,
+			startTime = nil,
+			duration = 0,
+			manaPerTick = 0,
+			mana = 0
 		}
 		specCache.restoration.snapshotData.incarnationTreeOfLife = {
 			spellId = nil,
@@ -1423,6 +1475,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "#maim", icon = spells.maim.icon, description = spells.maim.name, printInSettings = true },
 			{ variable = "#moonfire", icon = spells.moonfire.icon, description = spells.moonfire.name, printInSettings = true },
 			{ variable = "#predatorySwiftness", icon = spells.predatorySwiftness.icon, description = spells.predatorySwiftness.name, printInSettings = true },
+			{ variable = "#predatorRevealed", icon = spells.predatorRevealed.icon, description = spells.predatorRevealed.name, printInSettings = true },
 			{ variable = "#primalWrath", icon = spells.primalWrath.icon, description = spells.primalWrath.name, printInSettings = true },
 			{ variable = "#prowl", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = true },
 			{ variable = "#stealth", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = false },
@@ -1530,6 +1583,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$tigersFuryTime", description = "Time remaining on your Tiger's Fury buff", printInSettings = true, color = false },
 			{ variable = "$tigersFuryCooldownTime", description = "Time remaining on your Tiger's Fury ability cooldown", printInSettings = true, color = false },
 
+			{ variable = "$predatorRevealedTime", description = "Time remaining on your Predator Revealed proc", printInSettings = true, color = false },
+			{ variable = "$predatorRevealedTicks", description = "Number of remaining ticks / incoming Combo Points from your Predator Revealed proc", printInSettings = true, color = false },
+			{ variable = "$predatorRevealedTickTime", description = "Time until the next tick / Combo Point generation occurs from your Predator Revealed proc", printInSettings = true, color = false },
+
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
@@ -1566,6 +1623,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			
 			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
 			{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
+
+			{ variable = "#mr", icon = spells.moltenRadiance.icon, description = spells.moltenRadiance.name, printInSettings = true },
+			{ variable = "#moltenRadiance", icon = spells.moltenRadiance.icon, description = spells.moltenRadiance.name, printInSettings = false },
+
 			{ variable = "#soh", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = true },
 			{ variable = "#symbolOfHope", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = false },
 
@@ -1638,7 +1699,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			{ variable = "$innervateMana", description = "Passive mana regen while Innervate is active", printInSettings = true, color = false },
 			{ variable = "$innervateTime", description = "Time left on Innervate", printInSettings = true, color = false },
-			
+									
+			{ variable = "$mrMana", description = "Mana from Molten Radiance", printInSettings = true, color = false },
+			{ variable = "$mrTime", description = "Time left on Molten Radiance", printInSettings = true, color = false },
+
 			{ variable = "$mttMana", description = "Bonus passive mana regen while Mana Tide Totem is active", printInSettings = true, color = false },
 			{ variable = "$mttTime", description = "Time left on Mana Tide Totem", printInSettings = true, color = false },
 
@@ -1883,7 +1947,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
 
-			for x = 1, 4 do
+			for x = 1, 5 do
 				if TRB.Frames.passiveFrame.thresholds[x] == nil then
 					TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 				end
@@ -1941,6 +2005,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function GetApexPredatorsCravingRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.apexPredatorsCraving)
 	end
+	
+	local function GetPredatorRevealedRemainingTime()
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.predatorRevealed)
+	end
 
 	local function GetEclipseRemainingTime()
 		local remainingTime = 0
@@ -1991,6 +2059,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function GetManaTideTotemRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.manaTideTotem)
+	end
+
+	local function GetMoltenRadianceRemainingTime()
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.moltenRadiance)
 	end
 
 	local function GetSymbolOfHopeRemainingTime()
@@ -2071,12 +2143,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local astralPowerThreshold = math.min(TRB.Data.character.starsurgeThreshold, TRB.Data.character.starfallThreshold)
 
-		if TRB.Data.settings.druid.balance.colors.text.overcapEnabled and overcap then 
-			currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap
-			castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap
-		elseif TRB.Data.settings.druid.balance.colors.text.overThresholdEnabled and normalizedAstralPower >= astralPowerThreshold then
-			currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overThreshold
-			castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overThreshold
+		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+			if TRB.Data.settings.druid.balance.colors.text.overcapEnabled and overcap then 
+				currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap
+				castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap
+			elseif TRB.Data.settings.druid.balance.colors.text.overThresholdEnabled and normalizedAstralPower >= astralPowerThreshold then
+				currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overThreshold
+				castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overThreshold
+			end
 		end
 
 		--$astralPower
@@ -2263,8 +2337,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local pulsarRemainingPercent = string.format("%.1f", TRB.Functions.Number:RoundTo(_pulsarRemainingPercent * 100, 1))
 		--local pulsarNextStarsurge = ""
 		--local pulsarNextStarfall = ""
-		local pulsarStarsurgeCount = TRB.Functions.Number:RoundTo(pulsarRemaining / -TRB.Data.spells.starsurge.astralPower, 0, ceil)
-		local pulsarStarfallCount = TRB.Functions.Number:RoundTo(pulsarRemaining / -TRB.Data.spells.starfall.astralPower, 0, ceil)
+		local pulsarStarsurgeCount = TRB.Functions.Number:RoundTo(pulsarRemaining / -TRB.Data.spells.starsurge.astralPower, 0, ceil, true)
+		local pulsarStarfallCount = TRB.Functions.Number:RoundTo(pulsarRemaining / -TRB.Data.spells.starfall.astralPower, 0, ceil, true)
 		
 		----------------------------
 
@@ -2441,23 +2515,25 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local currentEnergyColor = TRB.Data.settings.druid.feral.colors.text.current
 		local castingEnergyColor = TRB.Data.settings.druid.feral.colors.text.casting
-
-		if TRB.Data.settings.druid.feral.colors.text.overcapEnabled and overcap then
-			currentEnergyColor = TRB.Data.settings.druid.feral.colors.text.overcap
-			castingEnergyColor = TRB.Data.settings.druid.feral.colors.text.overcap
-		elseif TRB.Data.settings.druid.feral.colors.text.overThresholdEnabled then
-			local _overThreshold = false
-			for k, v in pairs(TRB.Data.spells) do
-				local spell = TRB.Data.spells[k]
-				if	spell ~= nil and spell.thresholdUsable == true then
-					_overThreshold = true
-					break
+		
+		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+			if TRB.Data.settings.druid.feral.colors.text.overcapEnabled and overcap then
+				currentEnergyColor = TRB.Data.settings.druid.feral.colors.text.overcap
+				castingEnergyColor = TRB.Data.settings.druid.feral.colors.text.overcap
+			elseif TRB.Data.settings.druid.feral.colors.text.overThresholdEnabled then
+				local _overThreshold = false
+				for k, v in pairs(TRB.Data.spells) do
+					local spell = TRB.Data.spells[k]
+					if	spell ~= nil and spell.thresholdUsable == true then
+						_overThreshold = true
+						break
+					end
 				end
-			end
 
-			if _overThreshold then
-				currentEnergyColor = TRB.Data.settings.druid.feral.colors.text.overThreshold
-				castingEnergyColor = TRB.Data.settings.druid.feral.colors.text.overThreshold
+				if _overThreshold then
+					currentEnergyColor = TRB.Data.settings.druid.feral.colors.text.overThreshold
+					castingEnergyColor = TRB.Data.settings.druid.feral.colors.text.overThreshold
+				end
 			end
 		end
 
@@ -2660,27 +2736,27 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			rakeTime = string.format("%.1f", _rakeTime)
 			thrashTime = string.format("%.1f", _thrashTime)
 
-			ripSnapshot = TRB.Functions.Number:RoundTo(100 * _ripSnapshot, 0, "floor")
-			rakeSnapshot = TRB.Functions.Number:RoundTo(100 * _rakeSnapshot, 0, "floor")
-			thrashSnapshot = TRB.Functions.Number:RoundTo(100 * _thrashSnapshot, 0, "floor")
+			ripSnapshot = TRB.Functions.Number:RoundTo(100 * _ripSnapshot, 0, "floor", true)
+			rakeSnapshot = TRB.Functions.Number:RoundTo(100 * _rakeSnapshot, 0, "floor", true)
+			thrashSnapshot = TRB.Functions.Number:RoundTo(100 * _thrashSnapshot, 0, "floor", true)
 
-			ripCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotRip, 0, "floor")
-			rakeCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotRake, 0, "floor")
-			thrashCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotThrash, 0, "floor")
+			ripCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotRip, 0, "floor", true)
+			rakeCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotRake, 0, "floor", true)
+			thrashCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotThrash, 0, "floor", true)
 
-			ripPercent = TRB.Functions.Number:RoundTo(100 * _ripPercent, 0, "floor")
-			rakePercent = TRB.Functions.Number:RoundTo(100 * _rakePercent, 0, "floor")
-			thrashPercent = TRB.Functions.Number:RoundTo(100 * _thrashPercent, 0, "floor")
+			ripPercent = TRB.Functions.Number:RoundTo(100 * _ripPercent, 0, "floor", true)
+			rakePercent = TRB.Functions.Number:RoundTo(100 * _rakePercent, 0, "floor", true)
+			thrashPercent = TRB.Functions.Number:RoundTo(100 * _thrashPercent, 0, "floor", true)
 
 			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true then
 				moonfireTime = string.format("%.1f", _moonfireTime)
-				moonfireSnapshot = TRB.Functions.Number:RoundTo(100 * _moonfireSnapshot, 0, "floor")
-				moonfireCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor")
-				moonfirePercent = TRB.Functions.Number:RoundTo(100 * _moonfirePercent, 0, "floor")
+				moonfireSnapshot = TRB.Functions.Number:RoundTo(100 * _moonfireSnapshot, 0, "floor", true)
+				moonfireCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor", true)
+				moonfirePercent = TRB.Functions.Number:RoundTo(100 * _moonfirePercent, 0, "floor", true)
 			else
 				moonfireTime = string.format("%.1f", 0)
 				moonfireSnapshot = 0
-				moonfireCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor")
+				moonfireCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor", true)
 				moonfirePercent = 0
 			end
 		end
@@ -2746,6 +2822,24 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if _apexPredatorsCravingTime ~= nil then
 			apexPredatorsCravingTime = string.format("%.1f", _apexPredatorsCravingTime)
 		end
+		
+		--$predatorRevealedTime
+		local _predatorRevealedTime = GetPredatorRevealedRemainingTime()
+		local predatorRevealedTime = "0"
+		if _predatorRevealedTime ~= nil then
+			predatorRevealedTime = string.format("%.1f", _predatorRevealedTime)
+		end
+
+		--$predatorRevealedTicks 
+		local _predatorRevealedTicks = TRB.Data.snapshotData.predatorRevealed.ticks
+		
+		--$predatorRevealedTickTime
+		local _predatorRevealedTickTime = TRB.Data.snapshotData.predatorRevealed.untilNextTick
+		local predatorRevealedTickTime = "0"
+		if _predatorRevealedTickTime ~= nil then
+			predatorRevealedTickTime = string.format("%.1f", _predatorRevealedTickTime)
+		end
+
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveEnergy or 0
@@ -2782,6 +2876,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#lunarInspiration"] = TRB.Data.spells.lunarInspiration.icon
 		lookup["#maim"] = TRB.Data.spells.maim.icon
 		lookup["#moonfire"] = TRB.Data.spells.moonfire.icon
+		lookup["#predatorRevealed"] = TRB.Data.spells.predatorRevealed.icon
 		lookup["#predatorySwiftness"] = TRB.Data.spells.predatorySwiftness.icon
 		lookup["#primalWrath"] = TRB.Data.spells.primalWrath.icon
 		lookup["#prowl"] = TRB.Data.spells.prowl.icon
@@ -2829,6 +2924,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$apexPredatorsCravingTime"] = apexPredatorsCravingTime
 		lookup["$tigersFuryTime"] = tigersFuryTime
 		lookup["$tigersFuryCooldownTime"] = tigersFuryCooldownTime
+
+		lookup["$predatorRevealedTime"] = predatorRevealedTime
+		lookup["$predatorRevealedTicks"] = _predatorRevealedTicks
+		lookup["$predatorRevealedTickTime"] = predatorRevealedTickTime
 
 		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$energyTotal"] = energyTotal
@@ -2886,6 +2985,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookupLogic["$apexPredatorsCravingTime"] = _apexPredatorsCravingTime
 		lookupLogic["$tigersFuryTime"] = _tigersFuryTime
 		lookupLogic["$tigersFuryCooldownTime"] = _tigersFuryCooldownTime
+		lookupLogic["$predatorRevealedTime"] = _predatorRevealedTime
+		lookupLogic["$predatorRevealedTicks"] = _predatorRevealedTicks
+		lookupLogic["$predatorRevealedTickTime"] = _predatorRevealedTickTime
 		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
 		lookupLogic["$energyTotal"] = _energyTotal
 		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
@@ -2944,11 +3046,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local innervateTime = string.format("%.1f", _innervateTime)
 
 		--$mttMana
-		local _mttMana = TRB.Data.snapshotData.symbolOfHope.resourceFinal
+		local _mttMana = TRB.Data.snapshotData.manaTideTotem.mana
 		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
 		local _mttTime = GetManaTideTotemRemainingTime()
 		local mttTime = string.format("%.1f", _mttTime)
+
+		--$mrMana
+		local _mrMana = TRB.Data.snapshotData.moltenRadiance.mana
+		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
+		--$mrTime
+		local _mrTime = GetMoltenRadianceRemainingTime()
+		local mrTime = string.format("%.1f", _mrTime)
 
 		--$potionCooldownSeconds
 		local _potionCooldown = 0
@@ -2978,7 +3087,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local _potionOfFrozenFocusTime = GetChanneledPotionRemainingTime()
 		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
 		--$passive
-		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana
+		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana
 		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.druid.restoration.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 		--$manaTotal
 		local _manaTotal = math.min(_passiveMana + TRB.Data.snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
@@ -3080,6 +3189,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		Global_TwintopResourceBar.resource.manaTideTotem = _mttMana or 0
 		Global_TwintopResourceBar.resource.innervate = _innervateMana or 0
 		Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
+		Global_TwintopResourceBar.resource.moltenRadiance = _mrMana or 0
 		Global_TwintopResourceBar.potionOfSpiritualClarity = {
 			mana = _channeledMana,
 			ticks = TRB.Data.snapshotData.channeledManaPotion.ticksRemaining or 0
@@ -3101,6 +3211,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#sunfire"] = TRB.Data.spells.sunfire.icon
 		lookup["#moonfire"] = TRB.Data.spells.moonfire.icon
 		lookup["#innervate"] = TRB.Data.spells.innervate.icon
+		lookup["#mr"] = TRB.Data.spells.moltenRadiance.icon
+		lookup["#moltenRadiance"] = TRB.Data.spells.moltenRadiance.icon
 		lookup["#mtt"] = TRB.Data.spells.manaTideTotem.icon
 		lookup["#manaTideTotem"] = TRB.Data.spells.manaTideTotem.icon
 		lookup["#soh"] = TRB.Data.spells.symbolOfHope.icon
@@ -3139,6 +3251,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$moonfireTime"] = moonfireTime
 		lookup["$incarnationTime"] = incarnationTime
 		lookup["$reforestationStacks"] = reforestationStacks
+		lookup["$mrMana"] = mrMana
+		lookup["$mrTime"] = mrTime
 		lookup["$mttMana"] = mttMana
 		lookup["$mttTime"] = mttTime
 		lookup["$channeledMana"] = channeledMana
@@ -3170,6 +3284,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookupLogic["$sohTicks"] = _sohTicks
 		lookupLogic["$innervateMana"] = _innervateMana
 		lookupLogic["$innervateTime"] = _innervateTime
+		lookupLogic["$mrMana"] = _mrMana
+		lookupLogic["$mrTime"] = _mrTime
 		lookupLogic["$mttMana"] = _mttMana
 		lookupLogic["$mttTime"] = _mttTime
 		lookupLogic["$channeledMana"] = _channeledMana
@@ -3225,11 +3341,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				else
 					if currentSpellId == TRB.Data.spells.wrath.id then
 						FillSnapshotDataCasting_Balance(TRB.Data.spells.wrath)
+						if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.wildSurges) then
+							TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.spells.wildSurges.modifier
+						end
 						if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.soulOfTheForest) and TRB.Data.spells.eclipseSolar.isActive then
-							TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal * TRB.Data.spells.soulOfTheForest.modifier
+							TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal * (1 + TRB.Data.spells.soulOfTheForest.modifier.wrath)
 						end
 					elseif currentSpellId == TRB.Data.spells.starfire.id then
 						FillSnapshotDataCasting_Balance(TRB.Data.spells.starfire)
+						if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.wildSurges) then
+							TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal + TRB.Data.spells.wildSurges.modifier
+						end
+						--TODO: Track how many targets were hit by the last Starfire to guess how much bonus AP you'll get?
+						--TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceFinal * (1 + TRB.Data.spells.soulOfTheForest.modifier.wrath)
 						--Warrior of Elune logic would go here if it didn't make it instant cast!
 					elseif currentSpellId == TRB.Data.spells.sunfire.id then
 						FillSnapshotDataCasting_Balance(TRB.Data.spells.sunfire)
@@ -3308,6 +3432,55 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.Data.snapshotData.sunderedFirmament.astralPower = 0
 				TRB.Data.snapshotData.sunderedFirmament.isActive = false
 			end
+		end
+	end
+
+	local function CalculateIncomingComboPointsForEffect(spell, buffSnapshot, cpSnapshot)
+		local currentTime = GetTime()
+		local remainingTime = TRB.Functions.Spell:GetRemainingTime(buffSnapshot)
+
+		if remainingTime > 0 then
+			local untilNextTick = spell.tickRate - (currentTime - cpSnapshot.lastTick)
+			local totalCps = TRB.Functions.Number:RoundTo(remainingTime / spell.tickRate, 0, "ceil", true) or 0
+
+			if buffSnapshot.endTime < currentTime then
+				totalCps = 1
+				untilNextTick = 0
+			elseif untilNextTick < 0 then
+				totalCps = totalCps + 1
+				untilNextTick = 0
+			end
+
+			cpSnapshot.ticks = totalCps
+			cpSnapshot.nextTick = currentTime + untilNextTick
+			cpSnapshot.untilNextTick = untilNextTick
+		elseif cpSnapshot.lastTick ~= nil and buffSnapshot.endTime ~= nil then
+			if (currentTime - buffSnapshot.endTime) < 0.2 then
+				cpSnapshot.lastTick = nil
+				cpSnapshot.ticks = 0
+				cpSnapshot.nextTick = nil
+				cpSnapshot.untilNextTick = 0
+			end
+		else
+			buffSnapshot.duration = 0
+			buffSnapshot.endTime = nil
+			buffSnapshot.spellId = nil
+			cpSnapshot.lastTick = nil
+			cpSnapshot.ticks = 0
+			cpSnapshot.nextTick = nil
+			cpSnapshot.untilNextTick = 0
+		end
+	end
+
+	local function UpdatePredatorRevealed()
+		CalculateIncomingComboPointsForEffect(TRB.Data.spells.predatorRevealed, TRB.Data.snapshotData.predatorRevealed, TRB.Data.snapshotData.predatorRevealed)
+	end
+
+	local function UpdateBerserkIncomingComboPoints()
+		if TRB.Data.spells.incarnationAvatarOfAshamane.isActive then
+			CalculateIncomingComboPointsForEffect(TRB.Data.spells.berserk, TRB.Data.snapshotData.incarnationAvatarOfAshamane, TRB.Data.snapshotData.berserk)
+		else
+			CalculateIncomingComboPointsForEffect(TRB.Data.spells.berserk, TRB.Data.snapshotData.berserk, TRB.Data.snapshotData.berserk)
 		end
 	end
 
@@ -3420,6 +3593,21 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 	end
 
+	local function UpdateMoltenRadiance(forceCleanup)
+		local currentTime = GetTime()
+
+		if forceCleanup or (TRB.Data.snapshotData.moltenRadiance.endTime ~= nil and currentTime > TRB.Data.snapshotData.moltenRadiance.endTime) then
+			TRB.Data.snapshotData.moltenRadiance.endTime = nil
+			TRB.Data.snapshotData.moltenRadiance.duration = 0
+			TRB.Data.snapshotData.moltenRadiance.remainingTime = 0
+			TRB.Data.snapshotData.moltenRadiance.mana = 0
+			TRB.Data.snapshotData.moltenRadiance.manaPerTick = 0
+		elseif TRB.Data.snapshotData.moltenRadiance.endTime ~= nil then
+			TRB.Data.snapshotData.moltenRadiance.remainingTime = GetMoltenRadianceRemainingTime()
+			TRB.Data.snapshotData.moltenRadiance.mana = TRB.Data.snapshotData.moltenRadiance.manaPerTick * TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.moltenRadiance.remainingTime, 0, "ceil", true)
+		end
+	end
+
 	local function UpdateSnapshot()
 		TRB.Functions.Character:UpdateSnapshot()
 	end
@@ -3489,6 +3677,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function UpdateSnapshot_Feral()
 		UpdateSnapshot()
 		local currentTime = GetTime()
+		UpdateBerserkIncomingComboPoints()
+		UpdatePredatorRevealed()
 		
 		if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.incarnationAvatarOfAshamane) then
 			-- Incarnation: King of the Jungle doesn't show up in-game as a combat log event. Check for it manually instead.
@@ -3593,6 +3783,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		UpdateInnervate()
 		UpdatePotionOfChilledClarity()
 		UpdateManaTideTotem()
+		UpdateMoltenRadiance()
 
 		local currentTime = GetTime()
 		local _
@@ -3659,7 +3850,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local currentResource = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 					local flashBar = false
 
-					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
+					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -3718,20 +3909,31 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.settingKey == TRB.Data.spells.starsurge.settingKey then
+									local redrawThreshold = false
+
+									if TRB.Data.spells.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
+										resourceAmount = resourceAmount - TRB.Data.spells.elunesGuidance.modifierStarsurge
+										redrawThreshold = true
+									end
+
+									if TRB.Data.spells.touchTheCosmos.isActive then
+										resourceAmount = resourceAmount - TRB.Data.spells.touchTheCosmos.astralPowerMod
+										redrawThreshold = true
+									end
+
+									if redrawThreshold then
+										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									end
+									
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
-									elseif TRB.Data.spells.starweaversWeft.isActive or TRB.Data.spells.touchTheCosmos.isActive then
+									elseif TRB.Data.spells.starweaversWeft.isActive then
 										thresholdColor = specSettings.colors.threshold.over
 									elseif currentResource >= TRB.Data.character.starsurgeThreshold then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end
-
-									if TRB.Data.spells.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
-										resourceAmount = resourceAmount - TRB.Data.spells.elunesGuidance.modifierStarsurge 
-										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 									end
 									
 									if showThreshold then
@@ -3750,52 +3952,86 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										TRB.Data.snapshotData.audio.playedstarweaverCue = false
 									end
 								elseif spell.settingKey == TRB.Data.spells.starsurge2.settingKey then
+									local redrawThreshold = false
+									local touchTheCosmosMod = 0
 									if TRB.Data.spells.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
 										resourceAmount = resourceAmount - (TRB.Data.spells.elunesGuidance.modifierStarsurge * 2)
+										redrawThreshold = true
+									end
+
+									if TRB.Data.spells.touchTheCosmos.isActive then
+										resourceAmount = resourceAmount - TRB.Data.spells.touchTheCosmos.astralPowerMod
+										redrawThreshold = true
+										touchTheCosmosMod = TRB.Data.spells.touchTheCosmos.astralPowerMod
+									end
+
+									if redrawThreshold then
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 									end
 
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
-									elseif (TRB.Data.character.starsurgeThreshold * 2) >= TRB.Data.character.maxResource then
+									elseif -resourceAmount >= TRB.Data.character.maxResource then
 										showThreshold = false
 									elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and
-										   TRB.Data.character.starsurgeThreshold > currentResource then
+										   -(TRB.Data.character.starsurgeThreshold - touchTheCosmosMod) > currentResource then
 										showThreshold = false
-									elseif currentResource >= TRB.Data.character.starsurgeThreshold * 2 then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.settingKey == TRB.Data.spells.starsurge3.settingKey then
+									local redrawThreshold = false
+									local touchTheCosmosMod = 0
 									if TRB.Data.spells.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
 										resourceAmount = resourceAmount - (TRB.Data.spells.elunesGuidance.modifierStarsurge * 3)
+										redrawThreshold = true
+									end
+
+									if TRB.Data.spells.touchTheCosmos.isActive then
+										resourceAmount = resourceAmount - TRB.Data.spells.touchTheCosmos.astralPowerMod
+										redrawThreshold = true
+										touchTheCosmosMod = TRB.Data.spells.touchTheCosmos.astralPowerMod
+									end
+
+									if redrawThreshold then	
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 									end
 
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
-									elseif (TRB.Data.character.starsurgeThreshold * 3) >= TRB.Data.character.maxResource then
+									elseif -resourceAmount >= TRB.Data.character.maxResource then
 										showThreshold = false
 									elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and
-										   (TRB.Data.character.starsurgeThreshold * 2) > currentResource then
+										   -((TRB.Data.character.starsurgeThreshold * 2) - touchTheCosmosMod) > currentResource then
 										showThreshold = false
-									elseif currentResource >= (TRB.Data.character.starsurgeThreshold * 3) then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.starfall.id then
+									local redrawThreshold = false
 									if TRB.Data.spells.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
 										resourceAmount = resourceAmount - TRB.Data.spells.elunesGuidance.modifierStarfall
+										redrawThreshold = true
+									end
+
+									if TRB.Data.spells.touchTheCosmos.isActive then
+										resourceAmount = resourceAmount - TRB.Data.spells.touchTheCosmos.astralPowerMod
+										redrawThreshold = true
+									end
+
+									if redrawThreshold then										
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 									end
 
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
-									elseif currentResource >= TRB.Data.character.starfallThreshold or TRB.Data.spells.touchTheCosmos.isActive then
+									elseif currentResource >= TRB.Data.character.starfallThreshold then
 										if TRB.Data.spells.starfall.isActive and (TRB.Data.snapshotData.starfall.endTime - currentTime) > (TRB.Data.character.pandemicModifier * TRB.Data.spells.starfall.pandemicTime) then
 											thresholdColor = specSettings.colors.threshold.starfallPandemic
 										else
@@ -4125,7 +4361,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local barBorderColor = specSettings.colors.bar.border
 					if IsStealthed() then
 						barBorderColor = specSettings.colors.bar.borderStealth
-					elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") then
+					elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
@@ -4144,7 +4380,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 					
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
-					
+
+					local berserkTotalCps = TRB.Data.snapshotData.berserk.ticks
+					local berserkNextTick = TRB.Data.spells.berserk.tickRate - TRB.Data.snapshotData.berserk.untilNextTick
+
+					local prTime = GetPredatorRevealedRemainingTime()
+					local prTotalCps = TRB.Data.snapshotData.predatorRevealed.ticks
+					local prNextTick = TRB.Data.spells.predatorRevealed.tickRate - TRB.Data.snapshotData.predatorRevealed.untilNextTick
+
+					local prTickShown = 0
+					local berserkTickShown = 0
+
 					for x = 1, TRB.Data.character.maxResource2 do
 						local cpBorderColor = specSettings.colors.comboPoints.border
 						local cpColor = specSettings.colors.comboPoints.base
@@ -4160,7 +4406,42 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								cpColor = specSettings.colors.comboPoints.final
 							end
 						else
-							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+							if specSettings.comboPoints.generation and berserkTickShown == 0 and berserkTotalCps > 0 and (TRB.Data.snapshotData.berserk.untilNextTick <= TRB.Data.snapshotData.predatorRevealed.untilNextTick or prTickShown > 0 or prTotalCps == 0) then
+								TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, berserkNextTick * 1000, TRB.Data.spells.berserk.tickRate * 1000)
+								berserkTickShown = 1
+
+								if (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+									cpColor = specSettings.colors.comboPoints.penultimate
+								elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+									cpColor = specSettings.colors.comboPoints.final
+								end
+							elseif specSettings.comboPoints.generation and prTime ~= nil and prTime > 0 and x <= (TRB.Data.snapshotData.resource2 + prTotalCps) then
+								if x == TRB.Data.snapshotData.resource2 + berserkTickShown + 1 then
+									TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, prNextTick * 1000, TRB.Data.spells.predatorRevealed.tickRate * 1000)
+								else
+									TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+								end
+
+								prTickShown = prTickShown + 1
+
+								if specSettings.comboPoints.spec.predatorRevealedColor and x > TRB.Data.snapshotData.resource2 and x <= (TRB.Data.snapshotData.resource2 + prTotalCps) then
+									cpBorderColor = specSettings.colors.comboPoints.predatorRevealed
+	
+									if specSettings.comboPoints.sameColor ~= true then
+										cpColor = specSettings.colors.comboPoints.predatorRevealed
+									end
+	
+									if not specSettings.comboPoints.consistentUnfilledColor then
+										cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.predatorRevealed, true)
+									end
+								elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+									cpColor = specSettings.colors.comboPoints.penultimate
+								elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+									cpColor = specSettings.colors.comboPoints.final
+								end
+							else
+								TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+							end
 						end
 
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
@@ -4235,7 +4516,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							passiveValue = passiveValue + math.max(TRB.Data.snapshotData.innervate.mana, TRB.Data.snapshotData.potionOfChilledClarity.mana)
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 		---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[2]:Show()
@@ -4250,7 +4531,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							passiveValue = passiveValue + TRB.Data.snapshotData.symbolOfHope.resourceFinal
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 		---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[3]:Show()
@@ -4275,11 +4556,27 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						else
 							TRB.Frames.passiveFrame.thresholds[4]:Hide()
 						end
+
+						if TRB.Data.snapshotData.moltenRadiance.mana > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshotData.moltenRadiance.mana
+
+							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+---@diagnostic disable-next-line: undefined-field
+								TRB.Frames.passiveFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
+								TRB.Frames.passiveFrame.thresholds[5]:Show()
+							else
+								TRB.Frames.passiveFrame.thresholds[5]:Hide()
+							end
+						else
+							TRB.Frames.passiveFrame.thresholds[5]:Hide()
+						end
 					else
 						TRB.Frames.passiveFrame.thresholds[1]:Hide()
 						TRB.Frames.passiveFrame.thresholds[2]:Hide()
 						TRB.Frames.passiveFrame.thresholds[3]:Hide()
 						TRB.Frames.passiveFrame.thresholds[4]:Hide()
+						TRB.Frames.passiveFrame.thresholds[5]:Hide()
 					end
 		
 					passiveBarValue = castingBarValue + passiveValue
@@ -4408,6 +4705,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Data.snapshotData.manaTideTotem.duration = 0
 							TRB.Data.snapshotData.manaTideTotem.endTime = nil
 							TRB.Data.snapshotData.audio.manaTideTotemCue = false
+						end
+					elseif spellId == TRB.Data.spells.moltenRadiance.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
+							local _
+							_, _, _, _, TRB.Data.snapshotData.moltenRadiance.duration, TRB.Data.snapshotData.moltenRadiance.endTime, _, _, _, TRB.Data.snapshotData.moltenRadiance.spellId, _, _, _, _, _, _, _, TRB.Data.snapshotData.moltenRadiance.manaPerTick = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.moltenRadiance.id)
+							TRB.Data.snapshotData.moltenRadiance.isActive = false
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.moltenRadiance.isActive = false
+							TRB.Data.snapshotData.moltenRadiance.spellId = nil
+							TRB.Data.snapshotData.moltenRadiance.duration = 0
+							TRB.Data.snapshotData.moltenRadiance.endTime = nil
+							TRB.Data.snapshotData.moltenRadiance.manaPerTick = 0
+							TRB.Data.snapshotData.moltenRadiance.mana = 0
 						end
 					end
 				end
@@ -4591,7 +4901,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Data.snapshotData.newMoon.currentKey = "newMoon"
 							TRB.Data.snapshotData.newMoon.checkAfter = currentTime + 20
 ---@diagnostic disable-next-line: redundant-parameter
-							TRB.Data.spells.newMoon.currentIcon = select(3, GetSpellInfo(202767)) -- Use the old Legion artiface spell ID since New Moon's icon returns incorrect for several seconds after casting Full Moon
+							TRB.Data.spells.newMoon.currentIcon = select(3, GetSpellInfo(202767)) -- Use the old Legion artifact spell ID since New Moon's icon returns incorrect for several seconds after casting Full Moon
 						end
 					elseif spellId == TRB.Data.spells.touchTheCosmos.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
@@ -4710,21 +5020,37 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.berserk.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.berserk.duration, TRB.Data.snapshotData.berserk.endTime, _, _, _, TRB.Data.snapshotData.berserk.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.berserk.id)
+							
+							if type == "SPELL_AURA_APPLIED" then						
+								TRB.Data.snapshotData.berserk.lastTick = currentTime
+							end
+							UpdateBerserkIncomingComboPoints()
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.berserk.isActive = false
 							TRB.Data.snapshotData.berserk.spellId = nil
 							TRB.Data.snapshotData.berserk.duration = 0
 							TRB.Data.snapshotData.berserk.endTime = nil
+							UpdateBerserkIncomingComboPoints()
 						end
 					elseif spellId == TRB.Data.spells.incarnationAvatarOfAshamane.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.incarnationAvatarOfAshamane.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.incarnationAvatarOfAshamane.duration, TRB.Data.snapshotData.incarnationAvatarOfAshamane.endTime, _, _, _, TRB.Data.snapshotData.incarnationAvatarOfAshamane.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.incarnationAvatarOfAshamane.id)
+							
+							if type == "SPELL_AURA_APPLIED" then
+								TRB.Data.snapshotData.berserk.lastTick = currentTime
+							end
+							UpdateBerserkIncomingComboPoints()
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.incarnationAvatarOfAshamane.isActive = false
 							TRB.Data.snapshotData.incarnationAvatarOfAshamane.spellId = nil
 							TRB.Data.snapshotData.incarnationAvatarOfAshamane.duration = 0
 							TRB.Data.snapshotData.incarnationAvatarOfAshamane.endTime = nil
+							UpdateBerserkIncomingComboPoints()
+						end
+					elseif spellId == TRB.Data.spells.berserk.energizeId then
+						if type == "SPELL_ENERGIZE" then
+							TRB.Data.snapshotData.berserk.lastTick = currentTime
 						end
 					elseif spellId == TRB.Data.spells.clearcasting.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
@@ -4773,7 +5099,27 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Data.snapshotData.apexPredatorsCraving.duration = 0
 							TRB.Data.snapshotData.apexPredatorsCraving.endTime = nil
 						end
-					else
+					elseif spellId == TRB.Data.spells.predatorRevealed.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.spells.predatorRevealed.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.predatorRevealed.duration, TRB.Data.snapshotData.predatorRevealed.endTime, _, _, _, TRB.Data.snapshotData.predatorRevealed.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.predatorRevealed.id)
+
+							if type == "SPELL_AURA_APPLIED" then						
+								TRB.Data.snapshotData.predatorRevealed.lastTick = currentTime
+							end
+							UpdatePredatorRevealed()
+							--if TRB.Data.settings.druid.feral.audio.predatorRevealed.enabled then
+								---@diagnostic disable-next-line: redundant-parameter
+								--PlaySoundFile(TRB.Data.settings.druid.feral.audio.predatorRevealed.sound, TRB.Data.settings.core.audio.channel.channel)
+							--end							
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.spells.predatorRevealed.isActive = false
+							UpdatePredatorRevealed()
+						end
+					elseif spellId == TRB.Data.spells.predatorRevealed.energizeId then
+						if type == "SPELL_ENERGIZE" then
+							TRB.Data.snapshotData.predatorRevealed.lastTick = currentTime
+						end
 					end
 				elseif specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then
 					if spellId == TRB.Data.spells.symbolOfHope.id then
@@ -5333,8 +5679,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$overcap" or var == "$astralPowerOvercap" or var == "$resourceOvercap" then
-				if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.druid.balance.overcapThreshold then
-					valid = true
+				local threshold = ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal)
+				if TRB.Data.settings.priest.shadow.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) < threshold then
+					return true
+				elseif TRB.Data.settings.priest.shadow.overcap.mode == "fixed" and settings.overcap.fixed < threshold then
+					return true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$astralPowerPlusPassive" then
 				if TRB.Data.snapshotData.resource > 0 then
@@ -5502,8 +5851,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$overcap" or var == "$energyOvercap" or var == "$resourceOvercap" then
-				if ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal) > TRB.Data.settings.druid.feral.overcapThreshold then
-					valid = true
+				local threshold = ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal)
+				if TRB.Data.settings.priest.shadow.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) < threshold then
+					return true
+				elseif TRB.Data.settings.priest.shadow.overcap.mode == "fixed" and settings.overcap.fixed < threshold then
+					return true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$energyPlusPassive" then
 				if TRB.Data.snapshotData.resource > 0 then
@@ -5708,6 +6060,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				if TRB.Data.snapshotData.tigersFury.cooldown.duration > 0 then
 					valid = true
 				end
+			elseif var == "$predatorRevealedTime" then
+				if TRB.Data.snapshotData.predatorRevealed.endTime ~= nil then
+					valid = true
+				end
+			elseif var == "$predatorRevealedTicks" then
+				if TRB.Data.snapshotData.predatorRevealed.endTime ~= nil then
+					valid = true
+				end
+			elseif var == "$predatorRevealedTickTime" then
+				if TRB.Data.snapshotData.predatorRevealed.endTime ~= nil then
+					valid = true
+				end
 			elseif var == "$inStealth" then
 				if IsStealthed() then
 					valid = true
@@ -5733,7 +6097,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Functions.Class:IsValidVariableForSpec("$sohMana") or
 					TRB.Functions.Class:IsValidVariableForSpec("$innervateMana") or
 					TRB.Functions.Class:IsValidVariableForSpec("$potionOfChilledClarityMana") or
-					TRB.Functions.Class:IsValidVariableForSpec("$mttMana") then
+					TRB.Functions.Class:IsValidVariableForSpec("$mttMana") or
+					TRB.Functions.Class:IsValidVariableForSpec("$mrMana") then
 					valid = true
 				end
 			elseif var == "$efflorescenceTime" then
@@ -5798,12 +6163,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				if TRB.Data.snapshotData.potionOfChilledClarity.remainingTime > 0 then
 					valid = true
 				end
-			elseif var == "$mttMana" or var == "$manaTideTotemMana" then
+			elseif var == "$mttMana" then
 				if TRB.Data.snapshotData.manaTideTotem.mana > 0 then
 					valid = true
 				end
-			elseif var == "$mttTime" or var == "$manaTideTotemTime" then
+			elseif var == "$mttTime" then
 				if TRB.Data.snapshotData.manaTideTotem.isActive then
+					valid = true
+				end
+			elseif var == "$mrMana" then
+				if TRB.Data.snapshotData.moltenRadiance.mana > 0 then
+					valid = true
+				end
+			elseif var == "$mrTime" then
+				if TRB.Data.snapshotData.moltenRadiance.isActive then
 					valid = true
 				end
 			elseif var == "$channeledMana" then

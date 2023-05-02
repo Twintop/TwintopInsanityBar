@@ -16,7 +16,7 @@ function TRB.Functions.Number:IsNumeric(data)
 	return false
 end
 
-function TRB.Functions.Number:RoundTo(num, numDecimalPlaces, mode)
+function TRB.Functions.Number:RoundTo(num, numDecimalPlaces, mode, returnAsNumber)
 	numDecimalPlaces = math.max(numDecimalPlaces or 0, 0)
 	local newNum = tostring(tonumber(num) or 0)
 	if mode == "floor" then
@@ -33,8 +33,6 @@ function TRB.Functions.Number:RoundTo(num, numDecimalPlaces, mode)
 			end
 			newNum = string.format("%s.%s", whole, chopped)
 		end
-
-		return newNum
 	elseif mode == "ceil" then
 		local whole, decimal = strsplit(".", newNum, 2)
 
@@ -57,9 +55,13 @@ function TRB.Functions.Number:RoundTo(num, numDecimalPlaces, mode)
 			end
 			newNum = string.format("%s.%s", whole, chopped)
 		end
-
-		return newNum
+	else
+		newNum = string.format("%." .. numDecimalPlaces .. "f", newNum)
 	end
 
-	return tonumber(string.format("%." .. numDecimalPlaces .. "f", newNum))
+	if returnAsNumber then
+		return tonumber(newNum)
+	else
+		return newNum
+	end
 end

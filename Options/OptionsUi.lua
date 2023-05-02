@@ -542,7 +542,6 @@ function TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, name, text, wid
 end
 
 function TRB.Functions.OptionsUi:CreateLsmDropdown(parent, dropDowns, section, classId, specId, xCoord, yCoord, lsmType, varName, sectionHeaderText, dropdownInfoText)
-	local oUi = TRB.Data.constants.optionsUi
 	local _, className, _ = GetClassInfo(classId)
 	
 	-- Create the dropdown, and configure its appearance
@@ -617,7 +616,6 @@ function TRB.Functions.OptionsUi:ToggleCheckboxOnOff(checkbox, enable, changeTex
 end
 
 function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord)
-	local oUi = TRB.Data.constants.optionsUi
 	local _, className, _ = GetClassInfo(classId)
 	local f = nil	
 	local title = ""
@@ -809,10 +807,9 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		secondaryResourceString = "Combo Point"
 	end
 
-	local oUi = TRB.Data.constants.optionsUi
 	local _, className, _ = GetClassInfo(classId)
 	local f = nil
-	
+
 	local title = ""
 
 	local maxBorderHeight = math.min(math.floor(spec.bar.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.bar.width / TRB.Data.constants.borderWidthFactor))
@@ -1062,7 +1059,6 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		secondaryResourceString = "Combo Point"
 	end
 
-	local oUi = TRB.Data.constants.optionsUi
 	local _, className, _ = GetClassInfo(classId)
 	local f = nil
 	
@@ -1365,8 +1361,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	return yCoord
 end
 
-function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeCastingBar, includePassiveBar, includeFlashAlpha, flashAlphaName, flashAlphaNameShort)
-	local oUi = TRB.Data.constants.optionsUi
+function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, showWhenCategory, includeFlashAlpha, flashAlphaName, flashAlphaNameShort)
 	local _, className, _ = GetClassInfo(classId)
 	local f = nil
 	local title = ""
@@ -1380,7 +1375,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.colors.bar.flashAlpha = value
 		end)
@@ -1390,7 +1385,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			value = TRB.Functions.Number:RoundTo(value, 2)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.colors.bar.flashPeriod = value
 		end)
@@ -1479,35 +1474,9 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		spec.displayBar.neverShow = true
 		TRB.Functions.Bar:HideResourceBar()
 	end)
-	
+		
 	local yCoord2 = yCoord
 
-	if includeCastingBar then
-		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.showCastingBar
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
-		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
-		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
-		f:SetChecked(spec.bar.showCasting)
-		f:SetScript("OnClick", function(self, ...)
-			spec.bar.showCasting = self:GetChecked()
-		end)
-		yCoord2 = yCoord2-20
-	end
-
-	if includePassiveBar then
-		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.showPassiveBar
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
-		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
-		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
-		f:SetChecked(spec.bar.showPassive)
-		f:SetScript("OnClick", function(self, ...)
-			spec.bar.showPassive = self:GetChecked()
-		end)
-		yCoord2 = yCoord2-20
-	end
-	
 	if includeFlashAlpha then
 		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_FlashEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashEnabled
@@ -1521,11 +1490,10 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		yCoord2 = yCoord2-20
 	end	
 
-	return yCoord, yCoord2+20
+	return yCoord
 end
 
 function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, classId, specId, yCoord)
-	local oUi = TRB.Data.constants.optionsUi
 	local _, className, _ = GetClassInfo(classId)
 	local f = nil
 	local title = ""
@@ -1706,7 +1674,6 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 end
 
 function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, classId, specId, yCoord)
-	local oUi = TRB.Data.constants.optionsUi
 	local _, className, _ = GetClassInfo(classId)
 	local f = nil
 	local title = ""
@@ -1771,7 +1738,7 @@ function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(pa
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.potionCooldownTime:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 2)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		self.EditBox:SetText(value)
 		spec.thresholds.potionCooldown.timeMax = value
 	end)
@@ -1780,7 +1747,6 @@ function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(pa
 end
 
 function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, classId, specId, yCoord)
-	local oUi = TRB.Data.constants.optionsUi
 	local _, className, _ = GetClassInfo(classId)
 	local f = nil
 
@@ -1954,8 +1920,155 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	return yCoord
 end
 
+function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, includeOvercap)
+	local _, className, _ = GetClassInfo(classId)
+	local f = nil
+	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors + Changing", 0, yCoord)
+
+	yCoord = yCoord - 30
+	controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, primaryResourceString, spec.colors.bar.base, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.base		
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
+	end)
+
+	return yCoord
+end
+
+function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, includeOvercap, isHealer)
+	local _, className, _ = GetClassInfo(classId)
+	local f = nil
+
+	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
+
+	yCoord = yCoord - 25
+	controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border is normal/base border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.border
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
+	end)
+
+	if includeOvercap then
+		yCoord = yCoord - 30
+		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Border_Option_overcapBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.overcapEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
+		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping "..primaryResourceString.." (as configured)."
+		f:SetChecked(spec.colors.bar.overcapEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.overcapEnabled = self:GetChecked()
+		end)
+
+		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when your current hardcast will overcap "..primaryResourceString, spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.borderOvercap
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderOvercap")
+		end)
+	end
+
+	if isHealer then
+		yCoord = yCoord - 30
+		controls.checkBoxes.innervateBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_innervateBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.innervateBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Innervate")
+		f.tooltip = "This will change the bar border color when you have Innervate."
+		f:SetChecked(spec.colors.bar.innervateBorderChange)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.innervateBorderChange = self:GetChecked()
+		end)
+
+		controls.colors.innervate = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Innervate", spec.colors.bar.innervate, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.innervate
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "innervate")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.potionOfChilledClarityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_potionOfChilledClarityBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.potionOfChilledClarityBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Potion of Chilled Clarity")
+		f.tooltip = "This will change the bar border color when you have Potion of Chilled Clarity's effect."
+		f:SetChecked(spec.colors.bar.potionOfChilledClarityBorderChange)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.potionOfChilledClarityBorderChange = self:GetChecked()
+		end)
+		
+		controls.colors.potionOfChilledClarity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Potion of Chilled Clarity's effect", spec.colors.bar.potionOfChilledClarity, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.potionOfChilledClarity
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "potionOfChilledClarity")
+		end)
+	end
+
+	return yCoord
+end
+
+function TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, primaryResourceMax)
+	local _, className, _ = GetClassInfo(classId)
+	local f = nil
+	local title = ""
+
+	local exampleMinus = -25
+	local exampleDiff = primaryResourceMax + exampleMinus
+
+	controls.overcappingConfiguration = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
+
+	yCoord = yCoord - 40
+	controls.checkBoxes.overcapModeRelative = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Overcap_RadioButton_Relative", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.overcapModeRelative
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Relative offset from maximum")
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	f.tooltip = "Set the overcap to be some relative value below your current maximum "..primaryResourceString..". Example: when the maximum "..primaryResourceString.." is "..primaryResourceMax..", setting this to "..exampleMinus.." will cause overcapping to occur at "..exampleDiff.." "..primaryResourceString.."."
+	if spec.overcap.mode == "relative" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.overcapModeRelative:SetChecked(true)
+		controls.checkBoxes.overcapModeFixed:SetChecked(false)
+		spec.overcap.mode = "relative"
+	end)
+
+	title = "Relative Offset Amount"
+	controls.overcapRelative = TRB.Functions.OptionsUi:BuildSlider(parent, title, -primaryResourceMax, 0, spec.overcap.relative, 1, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.overcapRelative:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		spec.overcap.relative = value
+	end)
+
+
+	yCoord = yCoord - 60
+	controls.checkBoxes.overcapModeFixed = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Overcap_RadioButton_Fixed", parent, "UIRadioButtonTemplate")
+	f = controls.checkBoxes.overcapModeFixed
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Fixed value")
+	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	f.tooltip = "Set the overcap to be at an exact value, regardless of maximum "..primaryResourceString.."."
+	if spec.overcap.mode == "fixed" then
+		f:SetChecked(true)
+	end
+	f:SetScript("OnClick", function(self, ...)
+		controls.checkBoxes.overcapModeRelative:SetChecked(false)
+		controls.checkBoxes.overcapModeFixed:SetChecked(true)
+		spec.overcap.mode = "fixed"
+	end)
+
+	title = "Overcap Above"
+	controls.overcapFixed = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, primaryResourceMax, spec.overcap.fixed, 1, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.overcapFixed:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		spec.overcap.fixed = value
+	end)
+end
+
 function TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, classId, specId, yCoord)
-	local oUi = TRB.Data.constants.optionsUi
 	local _, className, _ = GetClassInfo(classId)
 	local f = nil
 	local title = ""
