@@ -23,7 +23,7 @@ local content = [====[
 
 - [#303 - NEW](#303) Add support for the new trinket *Rashok's Molten Heart* and the proc effect, *Molten Radiance*'s, mana regen.
 <br/>&emsp;&ensp;- New bar text icon and variables:
-<br/>&emsp;&ensp;&emsp;&ensp;- `#mt`, `#moltenRadiance` -- spell icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `#mr`, `#moltenRadiance` -- spell icon
 <br/>&emsp;&ensp;&emsp;&ensp;- `$mrTime` -- total time remaining on the proc
 <br/>&emsp;&ensp;&emsp;&ensp;- `$mrMana` -- total remaining incoming mana from the proc
 
