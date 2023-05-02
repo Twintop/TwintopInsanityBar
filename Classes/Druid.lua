@@ -4606,7 +4606,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 					local affectingCombat = UnitAffectingCombat("player")
 
-					if GetIncarnationTreeOfLifeRemainingTime() > 0 and (TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.cenariusGuidance) or GetClearcastingRemainingTime() == 0) then
+					if affectingCombat and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.efflorescence) and GetEfflorescenceRemainingTime() == 0 then
+						resourceBarColor = specSettings.colors.bar.noEfflorescence
+					elseif GetClearcastingRemainingTime() > 0 then
+						resourceBarColor = specSettings.colors.bar.clearcasting
+					elseif GetIncarnationTreeOfLifeRemainingTime() > 0 and (TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.cenariusGuidance) or GetClearcastingRemainingTime() == 0) then
 						local timeThreshold = 0
 						local useEndOfIncarnationColor = false
 
@@ -4625,10 +4629,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						else
 							resourceBarColor = specSettings.colors.bar.incarnation
 						end
-					elseif affectingCombat and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.efflorescence) and GetEfflorescenceRemainingTime() == 0 then
-						resourceBarColor = specSettings.colors.bar.noEfflorescence
-					elseif GetClearcastingRemainingTime() > 0 then
-						resourceBarColor = specSettings.colors.bar.clearcasting
 					end
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(resourceBarColor, true))

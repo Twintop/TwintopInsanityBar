@@ -2231,7 +2231,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local mfiTime = string.format("%.1f", _mfiTime)
 
 		--$mfiStacks
-		local _mfiStacks = TRB.Data.snapshotData.mindFlayInsanity or 0
+		local _mfiStacks = TRB.Data.snapshotData.mindFlayInsanity.stacks or 0
 		local mfiStacks = string.format("%.0f", _mfiStacks)
 		
 		--$deathspeakerTime

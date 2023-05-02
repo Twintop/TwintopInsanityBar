@@ -211,7 +211,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					overcapEnabled=true,
 					beastialWrathEnabled=true,
 					beastCleave = {
-						color = "FF005500",
+						color = "FF77FF77",
 						enabled = true
 					},
 				},
@@ -3199,7 +3199,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 3, yCoord, "Fury", true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 3, yCoord, "Focus", true, false)
 
 		yCoord = yCoord - 40
 		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)

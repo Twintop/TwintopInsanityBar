@@ -2005,7 +2005,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
-		if specId == 1 then-- and TRB.Data.settings.core.experimental.specs.evoker.devastation then
+		if specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation then
 			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.evoker.devastation)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.devastation)
 			specCache.devastation.talents = TRB.Functions.Talent:GetTalents()
@@ -2017,7 +2017,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				TRB.Data.barConstructedForSpec = "devastation"
 				ConstructResourceBar(specCache.devastation.settings)
 			end
-		elseif specId == 2 then-- and TRB.Data.settings.core.experimental.specs.evoker.preservation then
+		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation then
 			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.evoker.preservation)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.preservation)
 			specCache.preservation.talents = TRB.Functions.Talent:GetTalents()
@@ -2308,13 +2308,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0 then
 					valid = true
 				end
-			elseif var == "$passive" then
+			--[[elseif var == "$passive" then
 				if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
 					settings.generation.enabled and
 					((settings.generation.mode == "time" and settings.generation.time > 0) or
 					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 					valid = true
-				end
+				end]]
 			elseif var == "$resource" or var == "$mana" then
 				if TRB.Data.snapshotData.resource > 0 then
 					valid = true
@@ -2332,10 +2332,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
 					valid = true
 				end
-			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
+			--[[elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
 				if TRB.Data.snapshotData.resource > 0 then
 					valid = true
-				end
+				end]]
 			elseif var == "$regen" or var == "$regenMana" or var == "$manaRegen" then
 				if TRB.Data.snapshotData.resource < TRB.Data.character.maxResource and
 					((settings.generation.mode == "time" and settings.generation.time > 0) or

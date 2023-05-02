@@ -277,6 +277,51 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function EnhancementLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
+			thresholds = {
+				width = 2,
+				overlapBorder=true,
+				outOfRange=true,
+				icons = {
+					showCooldown=true,
+					border=2,
+					relativeTo = "BOTTOM",
+					relativeToName = "Below",
+					enabled=true,
+					desaturated=true,
+					xPos=0,
+					yPos=12,
+					width=24,
+					height=24
+				},
+				--[[aeratedManaPotionRank1 = {
+					enabled = false, -- 1
+				},
+				aeratedManaPotionRank2 = {
+					enabled = false, -- 2
+				},
+				aeratedManaPotionRank3 = {
+					enabled = true, -- 3
+				},
+				potionOfFrozenFocusRank1 = {
+					enabled = false, -- 4
+				},
+				potionOfFrozenFocusRank2 = {
+					enabled = false, -- 5
+				},
+				potionOfFrozenFocusRank3 = {
+					enabled = true, -- 6
+				},
+				conjuredChillglobe = {
+					enabled = true, -- 7
+					cooldown = true
+				},
+				potionCooldown = {
+					enabled=true,
+					mode="time",
+					gcdsMax=40,
+					timeMax=60
+				},]]
+			},
 			generation = {
 				mode="gcd",
 				gcds=1,
