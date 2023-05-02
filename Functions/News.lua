@@ -17,7 +17,7 @@ local content = [====[
 - [#300 - UPDATE](#300) Greatly improve resource overcap support and customization.
 <br/>&emsp;&ensp;- In addition to the existing "fixed" mode, an additional configuration option to set the overcap amount relative to your maximum resource has been added and set as the default behavior.
 <br/>&emsp;&ensp;- Bar border and resource text will not change to the overcap color while out of combat.
-- [#301 - UPDATE](#301) Update the options UI for all specs to splpit bar color and bar border color in to separate sections. Relocate some enabling toggles to these sections from elsewhere in the options menus.
+- [#301 - UPDATE](#301) Update the options UI for all specs to split bar color and bar border color in to separate sections. Relocate some enabling toggles to these sections from elsewhere in the options menus.
 
 ### Healers
 
@@ -36,7 +36,7 @@ local content = [====[
 <br/>&emsp;&ensp;- Soul of the Forest only increases Wrath's incoming Astral Power by 50%.
 <br/>&emsp;&ensp;- Nature's Balance passive Astral Power generation values updated.
 <br/>&emsp;&ensp;- Elune's Guidance Astral Power reduction to Starsurge and Starfall updated.
-- [#294 - UPDATE](#294) Adjust how Touch of Cosmos (T29 4P bonus) is implemented to match changes in 10.1.0.
+- [#294 - UPDATE](#294) Adjust how Touch the Cosmos (T29 4P bonus) is implemented to match changes in 10.1.0.
 
 ### Feral
 
