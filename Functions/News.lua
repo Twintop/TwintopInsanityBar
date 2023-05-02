@@ -102,7 +102,7 @@ local content = [====[
 - [#292 - NEW](#292) Added support for Primal Fracture (T30 4P bonus):
 <br/>&emsp;&ensp;- Optional bar border change when the buff is up.
 <br/>&emsp;&ensp;- New bar text icon and variables:
-<br/>&emsp;&ensp;&emsp;&ensp;- `#primalFracture`
+<br/>&emsp;&ensp;&emsp;&ensp;- `#primalFracture` - buff icon
 <br/>&emsp;&ensp;&emsp;&ensp;- `$pfTime` -- total time remaining on the buff
 
 ----
