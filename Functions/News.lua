@@ -42,9 +42,12 @@ local content = [====[
 
 - [#292 - UPDATE](#292) 10.1.0 changes:
 <br/>&emsp;&ensp;- Relentless Predator's Energy modifier for Ferocious Bite updated to 80% (was 60%).
+- [#292 - NEW] Add support for Berserking / Incarnation: Avatar of Ashamane passively generating Combo Points.
+<br/>&emsp;&ensp;- While the buff is active, show the progress towards the next Combo Point as a filling bar on the next available Combo Point.
 - [#292 - NEW](#292) Add support for Predator Revealed (T30 4P).
 <br/>&emsp;&ensp;- When a proc occurs, show the progress towards the next Combo Point as a filling bar on the next available Combo Point.
 <br/>&emsp;&ensp;- Custom color available to denote which Combo Points are incoming from this proc.
+<br/>&emsp;&ensp;- When Berserking / Incarnation: Avatar of Ashamane is active, the order of filling Combo Points will be from soonest to last.
 <br/>&emsp;&ensp;- New bar text icon and variables:
 <br/>&emsp;&ensp;&emsp;&ensp;- `#predatorRevealed` -- spell icon
 <br/>&emsp;&ensp;&emsp;&ensp;- `$predatorRevealedTime` -- total time remaining on the buff

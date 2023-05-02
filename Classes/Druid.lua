@@ -717,7 +717,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 106951,
 				name = "",
 				icon = "",
-				isTalent = true
+				isTalent = true,
+				energizeId = 343216,
+				tickRate = 1.5
 			},
 			predatorySwiftness = {
 				id = 69369,
@@ -781,7 +783,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				energyModifier = 0.8
-			},
+			}, 
 			relentlessPredator = {
 				id = 393771,
 				name = "",
@@ -808,7 +810,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				energizeId = 411344,
-				tickRate = 2.0
+				tickRate = 2.0,
+				spellKey = "predatorRevealed"
 			}
 		}
 
@@ -876,7 +879,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		specCache.feral.snapshotData.berserk = {
 			spellId = nil,
 			endTime = nil,
-			duration = 0
+			duration = 0,
+			lastTick = nil,
+			nextTick = nil,
+			untilNextTick = 0,
+			ticks = 0,
 		}
 		specCache.feral.snapshotData.incarnationAvatarOfAshamane = {
 			spellId = nil,
@@ -899,7 +906,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			spellId = nil,
 			endTime = nil,
 			duration = 0,
-			lastTick = nil
+			lastTick = nil,
+			nextTick = nil,
+			untilNextTick = 0,
+			ticks = 0,
 		}
 		specCache.feral.snapshotData.snapshots = {
 			rake = 100,
@@ -3425,14 +3435,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 	end
 
-	local function UpdatePredatorRevealed()
+	local function CalculateIncomingComboPointsForEffect(spell, buffSnapshot, cpSnapshot)
 		local currentTime = GetTime()
-		if TRB.Data.spells.predatorRevealed.isActive then
-			local prTime = GetPredatorRevealedRemainingTime()
-			local untilNextTick = TRB.Data.spells.predatorRevealed.tickRate - (currentTime - TRB.Data.snapshotData.predatorRevealed.lastTick)
-			local totalCps = TRB.Functions.Number:RoundTo(prTime / TRB.Data.spells.predatorRevealed.tickRate, 0, "ceil", true) or 0
+		local remainingTime = TRB.Functions.Spell:GetRemainingTime(buffSnapshot)
 
-			if TRB.Data.snapshotData.predatorRevealed.endTime < currentTime then
+		if remainingTime > 0 then
+			local untilNextTick = spell.tickRate - (currentTime - cpSnapshot.lastTick)
+			local totalCps = TRB.Functions.Number:RoundTo(remainingTime / spell.tickRate, 0, "ceil", true) or 0
+
+			if buffSnapshot.endTime < currentTime then
 				totalCps = 1
 				untilNextTick = 0
 			elseif untilNextTick < 0 then
@@ -3440,24 +3451,36 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				untilNextTick = 0
 			end
 
-			TRB.Data.snapshotData.predatorRevealed.ticks = totalCps
-			TRB.Data.snapshotData.predatorRevealed.nextTick = currentTime + untilNextTick
-			TRB.Data.snapshotData.predatorRevealed.untilNextTick = untilNextTick
-		elseif TRB.Data.snapshotData.predatorRevealed.lastTick ~= nil and TRB.Data.snapshotData.predatorRevealed.endTime ~= nil then
-			if (currentTime - TRB.Data.snapshotData.predatorRevealed.endTime) < 0.1 then
-				TRB.Data.snapshotData.predatorRevealed.lastTick = nil
-				TRB.Data.snapshotData.predatorRevealed.ticks = 0
-				TRB.Data.snapshotData.predatorRevealed.nextTick = nil
-				TRB.Data.snapshotData.predatorRevealed.untilNextTick = 0
+			cpSnapshot.ticks = totalCps
+			cpSnapshot.nextTick = currentTime + untilNextTick
+			cpSnapshot.untilNextTick = untilNextTick
+		elseif cpSnapshot.lastTick ~= nil and buffSnapshot.endTime ~= nil then
+			if (currentTime - buffSnapshot.endTime) < 0.2 then
+				cpSnapshot.lastTick = nil
+				cpSnapshot.ticks = 0
+				cpSnapshot.nextTick = nil
+				cpSnapshot.untilNextTick = 0
 			end
 		else
-			TRB.Data.snapshotData.predatorRevealed.duration = 0
-			TRB.Data.snapshotData.predatorRevealed.endTime = nil
-			TRB.Data.snapshotData.predatorRevealed.spellId = nil
-			TRB.Data.snapshotData.predatorRevealed.lastTick = nil
-			TRB.Data.snapshotData.predatorRevealed.ticks = 0
-			TRB.Data.snapshotData.predatorRevealed.nextTick = nil
-			TRB.Data.snapshotData.predatorRevealed.untilNextTick = 0
+			buffSnapshot.duration = 0
+			buffSnapshot.endTime = nil
+			buffSnapshot.spellId = nil
+			cpSnapshot.lastTick = nil
+			cpSnapshot.ticks = 0
+			cpSnapshot.nextTick = nil
+			cpSnapshot.untilNextTick = 0
+		end
+	end
+
+	local function UpdatePredatorRevealed()
+		CalculateIncomingComboPointsForEffect(TRB.Data.spells.predatorRevealed, TRB.Data.snapshotData.predatorRevealed, TRB.Data.snapshotData.predatorRevealed)
+	end
+
+	local function UpdateBerserkIncomingComboPoints()
+		if TRB.Data.spells.incarnationAvatarOfAshamane.isActive then
+			CalculateIncomingComboPointsForEffect(TRB.Data.spells.berserk, TRB.Data.snapshotData.incarnationAvatarOfAshamane, TRB.Data.snapshotData.berserk)
+		else
+			CalculateIncomingComboPointsForEffect(TRB.Data.spells.berserk, TRB.Data.snapshotData.berserk, TRB.Data.snapshotData.berserk)
 		end
 	end
 
@@ -3654,6 +3677,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function UpdateSnapshot_Feral()
 		UpdateSnapshot()
 		local currentTime = GetTime()
+		UpdateBerserkIncomingComboPoints()
 		UpdatePredatorRevealed()
 		
 		if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.incarnationAvatarOfAshamane) then
@@ -4357,9 +4381,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
+					local berserkTotalCps = TRB.Data.snapshotData.berserk.ticks
+					local berserkNextTick = TRB.Data.spells.berserk.tickRate - TRB.Data.snapshotData.berserk.untilNextTick
+
 					local prTime = GetPredatorRevealedRemainingTime()
 					local prTotalCps = TRB.Data.snapshotData.predatorRevealed.ticks
 					local prNextTick = TRB.Data.spells.predatorRevealed.tickRate - TRB.Data.snapshotData.predatorRevealed.untilNextTick
+
+					local prTickShown = 0
+					local berserkTickShown = 0
 
 					for x = 1, TRB.Data.character.maxResource2 do
 						local cpBorderColor = specSettings.colors.comboPoints.border
@@ -4376,12 +4406,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								cpColor = specSettings.colors.comboPoints.final
 							end
 						else
-							if prTime ~= nil and prTime > 0 and x <= (TRB.Data.snapshotData.resource2 + prTotalCps) then
-								if x == TRB.Data.snapshotData.resource2 + 1 then
+							if specSettings.comboPoints.generation and berserkTickShown == 0 and berserkTotalCps > 0 and (TRB.Data.snapshotData.berserk.untilNextTick <= TRB.Data.snapshotData.predatorRevealed.untilNextTick or prTickShown > 0 or prTotalCps == 0) then
+								TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, berserkNextTick * 1000, TRB.Data.spells.berserk.tickRate * 1000)
+								berserkTickShown = 1
+
+								if (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+									cpColor = specSettings.colors.comboPoints.penultimate
+								elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshotData.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+									cpColor = specSettings.colors.comboPoints.final
+								end
+							elseif specSettings.comboPoints.generation and prTime ~= nil and prTime > 0 and x <= (TRB.Data.snapshotData.resource2 + prTotalCps) then
+								if x == TRB.Data.snapshotData.resource2 + berserkTickShown + 1 then
 									TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, prNextTick * 1000, TRB.Data.spells.predatorRevealed.tickRate * 1000)
 								else
 									TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 								end
+
+								prTickShown = prTickShown + 1
 
 								if specSettings.comboPoints.spec.predatorRevealedColor and x > TRB.Data.snapshotData.resource2 and x <= (TRB.Data.snapshotData.resource2 + prTotalCps) then
 									cpBorderColor = specSettings.colors.comboPoints.predatorRevealed
@@ -4979,21 +5020,37 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.berserk.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.berserk.duration, TRB.Data.snapshotData.berserk.endTime, _, _, _, TRB.Data.snapshotData.berserk.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.berserk.id)
+							
+							if type == "SPELL_AURA_APPLIED" then						
+								TRB.Data.snapshotData.berserk.lastTick = currentTime
+							end
+							UpdateBerserkIncomingComboPoints()
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.berserk.isActive = false
 							TRB.Data.snapshotData.berserk.spellId = nil
 							TRB.Data.snapshotData.berserk.duration = 0
 							TRB.Data.snapshotData.berserk.endTime = nil
+							UpdateBerserkIncomingComboPoints()
 						end
 					elseif spellId == TRB.Data.spells.incarnationAvatarOfAshamane.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							TRB.Data.spells.incarnationAvatarOfAshamane.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.incarnationAvatarOfAshamane.duration, TRB.Data.snapshotData.incarnationAvatarOfAshamane.endTime, _, _, _, TRB.Data.snapshotData.incarnationAvatarOfAshamane.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.incarnationAvatarOfAshamane.id)
+							
+							if type == "SPELL_AURA_APPLIED" then
+								TRB.Data.snapshotData.berserk.lastTick = currentTime
+							end
+							UpdateBerserkIncomingComboPoints()
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.spells.incarnationAvatarOfAshamane.isActive = false
 							TRB.Data.snapshotData.incarnationAvatarOfAshamane.spellId = nil
 							TRB.Data.snapshotData.incarnationAvatarOfAshamane.duration = 0
 							TRB.Data.snapshotData.incarnationAvatarOfAshamane.endTime = nil
+							UpdateBerserkIncomingComboPoints()
+						end
+					elseif spellId == TRB.Data.spells.berserk.energizeId then
+						if type == "SPELL_ENERGIZE" then
+							TRB.Data.snapshotData.berserk.lastTick = currentTime
 						end
 					elseif spellId == TRB.Data.spells.clearcasting.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then

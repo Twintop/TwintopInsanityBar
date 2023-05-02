@@ -399,6 +399,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				relativeToName="Above - Middle",
 				fullWidth=false,
 				consistentUnfilledColor = false,
+				generation = true,
 				spec={
 					predatorRevealedColor = true
 				}
@@ -1886,6 +1887,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
+		controls.checkBoxes.generationComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Druid_2_comboPointsGeneration", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.generationComboPoint
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Show incoming Combo Point generation?")
+		f.tooltip = "When checked, this will show the time-based progress of incoming Combo Points generated from Berserk/Incarnation: Avatar of Ashamane or Predator Revealed (T30 4P) procs."
+		f:SetChecked(spec.comboPoints.generation)
+		f:SetScript("OnClick", function(self, ...)
+			spec.comboPoints.generation = self:GetChecked()
+		end)
+
 		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Combo Points", spec.colors.comboPoints.base, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
