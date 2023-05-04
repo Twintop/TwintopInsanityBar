@@ -8,6 +8,13 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.1.0.1-release (2023-05-04)
+## General
+
+- [#307 - FIX](#307) Fix `$overcap` (and various spec-specific aliases) bar text to pull from the current character's specialization settings.
+
+----
+
 # 10.1.0.0-release (2023-05-02)
 ## General
 
