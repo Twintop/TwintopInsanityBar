@@ -2698,7 +2698,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					else
 						shadowfiend.resourceRaw = countValue * TRB.Data.spells.shadowfiend.insanity
 					end
-					shadowfiend.resourceFinal = CalculateInsanityGain(shadowfiend.resourceRaw)					
+					shadowfiend.resourceFinal = CalculateInsanityGain(shadowfiend.resourceRaw)
 				end
 			end
 		else
@@ -3916,7 +3916,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshotData.prayerFocus.isActive = true
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.prayerFocus.isActive = false
-						end
+						end					
+					elseif type == "SPELL_SUMMON" and spellId == TRB.Data.spells.shadowfiend.id then
+						local currentSf = TRB.Data.snapshotData.shadowfiend
+						local totemId = 1
+						currentSf.guid = sourceGUID
+						currentSf.totemId = totemId
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
 					if spellId == TRB.Data.spells.voidform.id then
