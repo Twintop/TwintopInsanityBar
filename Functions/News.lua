@@ -13,6 +13,11 @@ local content = [====[
 
 - [#307 - FIX](#307) Fix `$overcap` (and various spec-specific aliases) bar text to pull from the current character's specialization settings.
 
+## Priest
+### Holy
+
+- [#308 - FIX](#308) Fix passive incoming mana regen from Shadowfiend not displaying.
+
 ----
 
 # 10.1.0.0-release (2023-05-02)
