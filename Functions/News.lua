@@ -8,6 +8,13 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.1.0.2-release (2023-05-0?)
+## Priest
+### Shadow
+
+- [#309 - FIX](#309) Ensure Mind Spike: Insanity shows incoming casting Insanity.
+
+
 # 10.1.0.1-release (2023-05-04)
 ## General
 

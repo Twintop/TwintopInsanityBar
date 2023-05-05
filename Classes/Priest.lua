@@ -877,10 +877,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				isTalent = true
 			},
 			mindSpikeInsanity = {
-				id = 391403,
+				id = 407466,
 				name = "",
 				icon = "",
 				buffId = 407468,
+				talentId = 391403,
 				insanity = 6,
 				isTalent = true
 			},
