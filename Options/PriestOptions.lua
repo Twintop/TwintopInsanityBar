@@ -488,8 +488,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
-				mindbender={
-					name = "Mindbender Ready",
+				deathspeaker={
+					name = "Deathspeaker Proc",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
@@ -2388,7 +2388,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.mdProc = CreateFrame("CheckButton", "TwintopResourceBar_CB3_MD_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mdProc
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Mind Devourer proc occurs")
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Mind Devourer proc occurs")
 		f.tooltip = "Play an audio cue when a Mind Devourer proc occurs. This supercedes the regular Devouring Plague audio sound."
 		f:SetChecked(spec.audio.mdProc.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -2448,7 +2448,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.mdProc.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
-
 
 
 		yCoord = yCoord - 60
@@ -2514,6 +2513,73 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			CloseDropDownMenus()
 ---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+		
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.deathspeakerProc = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Deathspeaker_Sound", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.deathspeakerProc
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Deathspeaker proc occurs")
+		f.tooltip = "Play an audio cue when a Deathspeaker proc occurs. This supercedes the regular Devouring Plague audio sound."
+		f:SetChecked(spec.audio.deathspeaker.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.audio.deathspeaker.enabled = self:GetChecked()
+
+			if spec.audio.deathspeaker.enabled then
+---@diagnostic disable-next-line: redundant-parameter
+				PlaySoundFile(spec.audio.deathspeaker.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.deathspeakerProcAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_3_Deathspeaker_ProcAudio", parent)
+		controls.dropDown.deathspeakerProcAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.deathspeakerProcAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.deathspeakerProcAudio, spec.audio.deathspeaker.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.deathspeakerProcAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.deathspeakerProcAudio, function(self, level, menuList)
+			local entries = 25
+			local info = LibDD:UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					LibDD:UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == spec.audio.deathspeaker.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						LibDD:UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.deathspeakerProcAudio:SetValue(newValue, newName)
+			spec.audio.deathspeaker.sound = newValue
+			spec.audio.deathspeaker.soundName = newName
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.deathspeakerProcAudio, newName)
+			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
+			PlaySoundFile(spec.audio.deathspeaker.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 

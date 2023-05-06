@@ -30,6 +30,10 @@ local content = [====[
 
 - [#308 - FIX](#308) Fix passive incoming mana regen from Shadowfiend not displaying.
 
+### Shadow 
+
+- [#302 - NEW](#302) Add an optional audio cue for when you gain a Deathspeaker proc.
+
 ----
 
 # 10.1.0.0-release (2023-05-02)

@@ -1004,6 +1004,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.shadow.snapshotData.audio = {
 			playedDpCue = false,
 			playedMdCue = false,
+			playedDeathspeakerCue = false,
 			overcapCue = false
 		}
 		specCache.shadow.snapshotData.targetData = {
@@ -4029,11 +4030,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
 							TRB.Data.spells.deathspeaker.isActive = true
 							_, _, _, _, TRB.Data.snapshotData.deathspeaker.duration, TRB.Data.snapshotData.deathspeaker.endTime, _, _, _, TRB.Data.snapshotData.deathspeaker.spellId = TRB.Functions.Aura:FindBuffById(spellId)
+							if TRB.Data.settings.priest.shadow.audio.deathspeaker.enabled and TRB.Data.snapshotData.audio.playedDeathspeakerCue == false then
+								TRB.Data.snapshotData.audio.playedDeathspeakerCue = true
+								PlaySoundFile(TRB.Data.settings.priest.shadow.audio.deathspeaker.sound, TRB.Data.settings.core.audio.channel.channel)
+							end
 						elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_DISPEL" then -- Lost buff
 							TRB.Data.spells.deathspeaker.isActive = false
 							TRB.Data.snapshotData.deathspeaker.spellId = nil
 							TRB.Data.snapshotData.deathspeaker.duration = 0
 							TRB.Data.snapshotData.deathspeaker.endTime = nil
+							TRB.Data.snapshotData.audio.playedDeathspeakerCue = false
 						end
 					elseif spellId == TRB.Data.spells.twistOfFate.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
