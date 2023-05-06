@@ -9,6 +9,11 @@ local content = [====[
 ----
 
 # 10.1.0.2-release (2023-05-0?)
+## Druid
+### Balance
+
+- [#310 - HOTFIX](#310) Wrath Astral Power generation reduced to 8 (was 10).
+
 ## Priest
 ### Shadow
 
