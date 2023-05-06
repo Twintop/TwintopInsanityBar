@@ -172,7 +172,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 190984,
 				name = "",
 				icon = "",
-				astralPower = 10
+				astralPower = 8
 			},
 
 			-- Balance Spec Talents
