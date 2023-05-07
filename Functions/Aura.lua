@@ -90,3 +90,7 @@ function TRB.Functions.Aura:FindAuraById(spellId, onWhom, filter, byWhom)
 		end
 	end
 end
+
+function TRB.Functions.Aura:HandleGenericAura(spellId, type, spell, snapshot)
+	
+end

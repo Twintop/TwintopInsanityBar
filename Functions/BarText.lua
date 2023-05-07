@@ -641,19 +641,19 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	--Spec specific implementations also needed. This is general/cross-spec data
 
 	--$crit
-	local critPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.crit, settings.hastePrecision))
+	local critPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(TRB.Data.snapshot.crit, settings.hastePrecision))
 
 	--$critRating
-	local critRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshotData.critRating, settings.hastePrecision, "floor", true))
+	local critRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshot.critRating, settings.hastePrecision, "floor", true))
 
 	--$mastery
-	local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.mastery, settings.hastePrecision))
+	local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(TRB.Data.snapshot.mastery, settings.hastePrecision))
 
 	--$masteryRating
-	local masteryRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshotData.masteryRating, settings.hastePrecision, "floor", true))
+	local masteryRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshot.masteryRating, settings.hastePrecision, "floor", true))
 
 	--$gcd
-	local _gcd = 1.5 / (1 + (TRB.Data.snapshotData.haste/100))
+	local _gcd = 1.5 / (1 + (TRB.Data.snapshot.haste/100))
 	if _gcd > 1.5 then
 		_gcd = 1.5
 	elseif _gcd < 0.75 then
@@ -662,34 +662,34 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	local gcd = string.format("%.2f", _gcd)
 
 	--$haste
-	local hastePercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.haste, settings.hastePrecision))
+	local hastePercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(TRB.Data.snapshot.haste, settings.hastePrecision))
 	
 	--$hasteRating
-	local hasteRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshotData.hasteRating, settings.hastePrecision, "floor", true))
+	local hasteRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshot.hasteRating, settings.hastePrecision, "floor", true))
 
 	--$vers
-	local versOff = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.versatilityOffensive, settings.hastePrecision))
-	local versDef = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.versatilityDefensive, settings.hastePrecision))
+	local versOff = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(TRB.Data.snapshot.versatilityOffensive, settings.hastePrecision))
+	local versDef = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(TRB.Data.snapshot.versatilityDefensive, settings.hastePrecision))
 
 	--$versRating
-	local versRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshotData.versatilityRating, settings.hastePrecision, "floor", true))
+	local versRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshot.versatilityRating, settings.hastePrecision, "floor", true))
 	
 	--$int
-	local int = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshotData.intellect, settings.hastePrecision, "floor", true))
+	local int = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshot.intellect, settings.hastePrecision, "floor", true))
 	--$agi
-	local agi = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshotData.agility, settings.hastePrecision, "floor", true))
+	local agi = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshot.agility, settings.hastePrecision, "floor", true))
 	--$str
-	local str = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshotData.strength, settings.hastePrecision, "floor", true))
+	local str = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshot.strength, settings.hastePrecision, "floor", true))
 	--$stam
-	local stam = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshotData.stamina, settings.hastePrecision, "floor", true))
+	local stam = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(TRB.Data.snapshot.stamina, settings.hastePrecision, "floor", true))
 
 	--$ttd
 	local _ttd = 0
 	local ttd = "--"
 	local ttdTotalSeconds = "0"
 
-	if TRB.Data.snapshotData.targetData.ttdIsActive and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd ~= 0 then
-		local target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
+	if TRB.Data.snapshot.targetData.ttdIsActive and TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].ttd ~= 0 then
+		local target = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid]
 		local ttdMinutes = math.floor(target.ttd / 60)
 		local ttdSeconds = target.ttd % 60
 		_ttd = target.ttd
@@ -698,7 +698,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	end
 
 	--#castingIcon
-	local castingIcon = TRB.Data.snapshotData.casting.icon or ""
+	local castingIcon = TRB.Data.snapshot.casting.icon or ""
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#casting"] = castingIcon
@@ -743,35 +743,35 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$haste"] = TRB.Data.snapshotData.haste
-	lookupLogic["$hastePercent"] = TRB.Data.snapshotData.haste
-	lookupLogic["$crit"] = TRB.Data.snapshotData.crit
-	lookupLogic["$critPercent"] = TRB.Data.snapshotData.crit
-	lookupLogic["$mastery"] = TRB.Data.snapshotData.mastery
-	lookupLogic["$masteryPercent"] = TRB.Data.snapshotData.mastery
-	lookupLogic["$vers"] = TRB.Data.snapshotData.versatilityOffensive
-	lookupLogic["$versPercent"] = TRB.Data.snapshotData.versatilityOffensive
-	lookupLogic["$versatility"] = TRB.Data.snapshotData.versatilityOffensive
-	lookupLogic["$versatilityPercent"] = TRB.Data.snapshotData.versatilityOffensive
-	lookupLogic["$oVers"] = TRB.Data.snapshotData.versatilityOffensive
-	lookupLogic["$oVersPercent"] = TRB.Data.snapshotData.versatilityOffensive
-	lookupLogic["$dVers"] = TRB.Data.snapshotData.versatilityDefensive
-	lookupLogic["$dVersPercent"] = TRB.Data.snapshotData.versatilityDefensive
+	lookupLogic["$haste"] = TRB.Data.snapshot.haste
+	lookupLogic["$hastePercent"] = TRB.Data.snapshot.haste
+	lookupLogic["$crit"] = TRB.Data.snapshot.crit
+	lookupLogic["$critPercent"] = TRB.Data.snapshot.crit
+	lookupLogic["$mastery"] = TRB.Data.snapshot.mastery
+	lookupLogic["$masteryPercent"] = TRB.Data.snapshot.mastery
+	lookupLogic["$vers"] = TRB.Data.snapshot.versatilityOffensive
+	lookupLogic["$versPercent"] = TRB.Data.snapshot.versatilityOffensive
+	lookupLogic["$versatility"] = TRB.Data.snapshot.versatilityOffensive
+	lookupLogic["$versatilityPercent"] = TRB.Data.snapshot.versatilityOffensive
+	lookupLogic["$oVers"] = TRB.Data.snapshot.versatilityOffensive
+	lookupLogic["$oVersPercent"] = TRB.Data.snapshot.versatilityOffensive
+	lookupLogic["$dVers"] = TRB.Data.snapshot.versatilityDefensive
+	lookupLogic["$dVersPercent"] = TRB.Data.snapshot.versatilityDefensive
 
-	lookupLogic["$hasteRating"] = TRB.Data.snapshotData.hasteRating
-	lookupLogic["$critRating"] = TRB.Data.snapshotData.critRating
-	lookupLogic["$masteryRating"] = TRB.Data.snapshotData.masteryRating
-	lookupLogic["$versRating"] = TRB.Data.snapshotData.versatilityRating
-	lookupLogic["$versatilityRating"] = TRB.Data.snapshotData.versatilityRating
+	lookupLogic["$hasteRating"] = TRB.Data.snapshot.hasteRating
+	lookupLogic["$critRating"] = TRB.Data.snapshot.critRating
+	lookupLogic["$masteryRating"] = TRB.Data.snapshot.masteryRating
+	lookupLogic["$versRating"] = TRB.Data.snapshot.versatilityRating
+	lookupLogic["$versatilityRating"] = TRB.Data.snapshot.versatilityRating
 
-	lookupLogic["$int"] = TRB.Data.snapshotData.intellect
-	lookupLogic["$intellect"] = TRB.Data.snapshotData.intellect
-	lookupLogic["$str"] = TRB.Data.snapshotData.strength
-	lookupLogic["$strength"] = TRB.Data.snapshotData.strength
-	lookupLogic["$agi"] = TRB.Data.snapshotData.agility
-	lookupLogic["$agility"] = TRB.Data.snapshotData.agility
-	lookupLogic["$stam"] = TRB.Data.snapshotData.stamina
-	lookupLogic["$stamina"] = TRB.Data.snapshotData.stamina
+	lookupLogic["$int"] = TRB.Data.snapshot.intellect
+	lookupLogic["$intellect"] = TRB.Data.snapshot.intellect
+	lookupLogic["$str"] = TRB.Data.snapshot.strength
+	lookupLogic["$strength"] = TRB.Data.snapshot.strength
+	lookupLogic["$agi"] = TRB.Data.snapshot.agility
+	lookupLogic["$agility"] = TRB.Data.snapshot.agility
+	lookupLogic["$stam"] = TRB.Data.snapshot.stamina
+	lookupLogic["$stamina"] = TRB.Data.snapshot.stamina
 
 	lookupLogic["$gcd"] = _gcd
 	lookupLogic["$ttd"] = _ttd
@@ -785,8 +785,8 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 			seconds = ttdTotalSeconds or 0
 		},
 		resource = {
-			resource = TRB.Data.snapshotData.resource or 0,
-			casting = TRB.Data.snapshotData.casting.resourceFinal or 0
+			resource = TRB.Data.snapshot.resource or 0,
+			casting = TRB.Data.snapshot.casting.resourceFinal or 0
 		}
 	}
 end
@@ -796,12 +796,12 @@ function TRB.Functions.BarText:IsTtdActive(settings)
 		if string.find(settings.displayText.left.text, "$ttd") or
 			string.find(settings.displayText.middle.text, "$ttd") or
 			string.find(settings.displayText.right.text, "$ttd") then
-			TRB.Data.snapshotData.targetData.ttdIsActive = true
+			TRB.Data.snapshot.targetData.ttdIsActive = true
 		else
-			TRB.Data.snapshotData.targetData.ttdIsActive = false
+			TRB.Data.snapshot.targetData.ttdIsActive = false
 		end
 	else
-		TRB.Data.snapshotData.targetData.ttdIsActive = false
+		TRB.Data.snapshot.targetData.ttdIsActive = false
 	end
 end
 
@@ -885,7 +885,7 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 	elseif var == "$stam" or var == "$stamina" then
 		valid = true
 	elseif var == "$ttd" or var == "$ttdSeconds" then
-		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].ttd > 0 then
+		if TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].ttd > 0 then
 			valid = true
 		end
 	elseif var == "$inCombat" then

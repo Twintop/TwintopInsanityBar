@@ -172,7 +172,7 @@ function TRB.Functions.Threshold:RedrawThresholdLines(settings)
 	TRB.Frames.passiveFrame = passiveFrame
 end
 
-function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshotData, settings)
+function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings)
 	if settings.thresholds[spell.settingKey].enabled and showThreshold then
 		local currentTime = GetTime()
 		local frameLevel = currentFrameLevel
@@ -207,8 +207,8 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, threshold, showTh
 			threshold.icon.texture:SetDesaturated(not spell.thresholdUsable or outOfRange)
 		end
 		
-		if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshotData.startTime ~= nil and currentTime < (snapshotData.startTime + snapshotData.duration) and (snapshotData.maxCharges == nil or snapshotData.charges < snapshotData.maxCharges) then
-			threshold.icon.cooldown:SetCooldown(snapshotData.startTime, snapshotData.duration)
+		if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshot.startTime ~= nil and currentTime < (snapshot.startTime + snapshot.duration) and (snapshot.maxCharges == nil or snapshot.charges < snapshot.maxCharges) then
+			threshold.icon.cooldown:SetCooldown(snapshot.startTime, snapshot.duration)
 		else
 			threshold.icon.cooldown:SetCooldown(0, 0)
 		end

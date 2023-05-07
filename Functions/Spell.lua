@@ -99,7 +99,7 @@ function TRB.Functions.Spell:FillSpellDataManaCost(spells)
 end
 
 function TRB.Functions.Spell:GetRemainingTime(snapshotSpell, leeway)
-	-- For snapshotData objects that contain .isActive or .endTime
+	-- For snapshot objects that contain .isActive or .endTime
 	local currentTime = GetTime()
 	local remainingTime = 0
 	local endTime = nil

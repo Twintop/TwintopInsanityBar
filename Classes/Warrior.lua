@@ -22,7 +22,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local specCache = {
 		arms = {
-			snapshotData = {},
+			snapshot = {},
 			barTextVariables = {
 				icons = {},
 				values = {}
@@ -39,7 +39,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			}
 		},
 		fury = {
-			snapshotData = {},
+			snapshot = {},
 			barTextVariables = {
 				icons = {},
 				values = {}
@@ -337,68 +337,68 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			}
 		}
 
-		specCache.arms.snapshotData.audio = {
+		specCache.arms.snapshot.audio = {
 			overcapCue = false
 		}
-		specCache.arms.snapshotData.targetData = {
+		specCache.arms.snapshot.targetData = {
 			ttdIsActive = false,
 			currentTargetGuid = nil,
 			targets = {},
 			rend = 0,
 			deepWounds = 0
 		}
-		specCache.arms.snapshotData.execute = {
+		specCache.arms.snapshot.execute = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.arms.snapshotData.shieldBlock = {
+		specCache.arms.snapshot.shieldBlock = {
 			charges = 0,
 			maxCharges = 2,
 			startTime = nil,
 			duration = 0
 		}
-		specCache.arms.snapshotData.impendingVictory = {
+		specCache.arms.snapshot.impendingVictory = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.arms.snapshotData.thunderClap = {
+		specCache.arms.snapshot.thunderClap = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.arms.snapshotData.whirlwind = {
+		specCache.arms.snapshot.whirlwind = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.arms.snapshotData.mortalStrike = {
+		specCache.arms.snapshot.mortalStrike = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.arms.snapshotData.cleave = {
+		specCache.arms.snapshot.cleave = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.arms.snapshotData.ignorePain = {
+		specCache.arms.snapshot.ignorePain = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.arms.snapshotData.victoryRush = {
+		specCache.arms.snapshot.victoryRush = {
 			endTime = nil,
 			duration = 0,
 			spellId = nil
 		}
-		specCache.arms.snapshotData.suddenDeath = {
+		specCache.arms.snapshot.suddenDeath = {
 			endTime = nil,
 			duration = 0,
 			spellId = nil
 		}
-		specCache.arms.snapshotData.battlelord = {
+		specCache.arms.snapshot.battlelord = {
 			endTime = nil,
 			duration = 0,
 			spellId = nil
@@ -640,48 +640,48 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			}
 		}
 
-		specCache.fury.snapshotData.audio = {
+		specCache.fury.snapshot.audio = {
 			overcapCue = false
 		}
-		specCache.fury.snapshotData.targetData = {
+		specCache.fury.snapshot.targetData = {
 			ttdIsActive = false,
 			currentTargetGuid = nil,
 			targets = {},
 			rend = 0,
 		}
-		specCache.fury.snapshotData.shieldBlock = {
+		specCache.fury.snapshot.shieldBlock = {
 			charges = 0,
 			maxCharges = 2,
 			startTime = nil,
 			duration = 0
 		}
-		specCache.fury.snapshotData.thunderClap = {
+		specCache.fury.snapshot.thunderClap = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.fury.snapshotData.impendingVictory = {
+		specCache.fury.snapshot.impendingVictory = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.fury.snapshotData.victoryRush = {
+		specCache.fury.snapshot.victoryRush = {
 			endTime = nil,
 			duration = 0,
 			spellId = nil
 		}
-		specCache.fury.snapshotData.enrage = {
+		specCache.fury.snapshot.enrage = {
 			endTime = nil,
 			duration = 0,
 			spellId = nil
 		}
-		specCache.fury.snapshotData.whirlwind = {
+		specCache.fury.snapshot.whirlwind = {
 			spellId = nil,
 			duration = 0,
 			endTime = nil,
 			stacks = 0
 		}
-		specCache.fury.snapshotData.ravager = {
+		specCache.fury.snapshot.ravager = {
 			isActive = false,
 			ticksRemaining = 0,
 			rage = 0,
@@ -689,7 +689,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			lastTick = nil,
 			totalDuration = 0
 		}
-		specCache.fury.snapshotData.bladestorm = {
+		specCache.fury.snapshot.bladestorm = {
 			endTime = nil,
 			duration = 0,
 			originalDuration = 0,
@@ -697,12 +697,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			ticksRemaining = 0,
 			rage = 0
 		}
-		specCache.fury.snapshotData.execute = {
+		specCache.fury.snapshot.execute = {
 			startTime = nil,
 			duration = 0,
 			enabled = false
 		}
-		specCache.fury.snapshotData.suddenDeath = {
+		specCache.fury.snapshot.suddenDeath = {
 			endTime = nil,
 			duration = 0,
 			spellId = nil
@@ -899,15 +899,15 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	end
 
 	local function GetSuddenDeathRemainingTime()
-		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.suddenDeath)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.suddenDeath)
 	end
 	
 	local function GetEnrageRemainingTime()
-		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.enrage)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.enrage)
 	end
 	
 	local function GetWhirlwindRemainingTime()
-		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.whirlwind)
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.whirlwind)
 	end
 
 	local function CalculateAbilityResourceValue(resource)
@@ -916,7 +916,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	end
 
 	local function UpdateCastingResourceFinal()
-		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
+		TRB.Data.snapshot.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshot.casting.resourceRaw)
 	end
 
 	local function RefreshTargetTracking()
@@ -927,23 +927,23 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		if specId == 1 then
 			local rendTotal = 0
 			local deepWoundsTotal = 0
-			for guid,count in pairs(TRB.Data.snapshotData.targetData.targets) do
-				if (currentTime - TRB.Data.snapshotData.targetData.targets[guid].lastUpdate) > 10 then
-					TRB.Data.snapshotData.targetData.targets[guid].rend = false
-					TRB.Data.snapshotData.targetData.targets[guid].rendRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].deepWounds = false
-					TRB.Data.snapshotData.targetData.targets[guid].deepWoundsRemaining = 0
+			for guid,count in pairs(TRB.Data.snapshot.targetData.targets) do
+				if (currentTime - TRB.Data.snapshot.targetData.targets[guid].lastUpdate) > 10 then
+					TRB.Data.snapshot.targetData.targets[guid].rend = false
+					TRB.Data.snapshot.targetData.targets[guid].rendRemaining = 0
+					TRB.Data.snapshot.targetData.targets[guid].deepWounds = false
+					TRB.Data.snapshot.targetData.targets[guid].deepWoundsRemaining = 0
 				else
-					if TRB.Data.snapshotData.targetData.targets[guid].rend == true then
+					if TRB.Data.snapshot.targetData.targets[guid].rend == true then
 						rendTotal = rendTotal + 1
 					end
-					if TRB.Data.snapshotData.targetData.targets[guid].deepWounds == true then
+					if TRB.Data.snapshot.targetData.targets[guid].deepWounds == true then
 						deepWoundsTotal = deepWoundsTotal + 1
 					end
 				end
 			end
-			TRB.Data.snapshotData.targetData.rend = rendTotal
-			TRB.Data.snapshotData.targetData.deepWounds = deepWoundsTotal
+			TRB.Data.snapshot.targetData.rend = rendTotal
+			TRB.Data.snapshot.targetData.deepWounds = deepWoundsTotal
 		end
 	end
 
@@ -953,8 +953,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		if specId == 1 then
 			if clearAll == true then
-				TRB.Data.snapshotData.targetData.rend = 0
-				TRB.Data.snapshotData.targetData.deepWounds = 0
+				TRB.Data.snapshot.targetData.rend = 0
+				TRB.Data.snapshot.targetData.deepWounds = 0
 			end
 		end
 	end
@@ -992,7 +992,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local function RefreshLookupData_Arms()
 		local _
-		local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
+		local normalizedRage = TRB.Data.snapshot.resource / TRB.Data.resourceFactor
 		--Spec specific implementation
 		local currentTime = GetTime()
 
@@ -1023,7 +1023,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		end
 
-		if TRB.Data.snapshotData.casting.resourceFinal < 0 then
+		if TRB.Data.snapshot.casting.resourceFinal < 0 then
 			castingRageColor = TRB.Data.settings.warrior.arms.colors.text.spending
 		end
 
@@ -1038,7 +1038,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local ragePrecision = TRB.Data.settings.warrior.arms.ragePrecision or 0
 		local currentRage = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(normalizedRage, ragePrecision, "floor"))
 		--$casting
-		local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.casting.resourceFinal, ragePrecision, "floor"))
+		local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(TRB.Data.snapshot.casting.resourceFinal, ragePrecision, "floor"))
 		--$passive
 		local _passiveRage = 0
 
@@ -1047,10 +1047,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local passiveRage = string.format("|c%s%s|r", TRB.Data.settings.warrior.arms.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveRage, ragePrecision, "floor"))
 		
 		--$rageTotal
-		local _rageTotal = math.min(_passiveRage + TRB.Data.snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
+		local _rageTotal = math.min(_passiveRage + TRB.Data.snapshot.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
 		local rageTotal = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(_rageTotal, ragePrecision, "floor"))
 		--$ragePlusCasting
-		local _ragePlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
+		local _ragePlusCasting = math.min(TRB.Data.snapshot.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
 		local ragePlusCasting = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(_ragePlusCasting, ragePrecision, "floor"))
 		--$ragePlusPassive
 		local _ragePlusPassive = math.min(_passiveRage + normalizedRage, TRB.Data.character.maxResource)
@@ -1058,47 +1058,47 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		
 		--$rendCount and $rendTime
-		local _rendCount = TRB.Data.snapshotData.targetData.rend or 0
+		local _rendCount = TRB.Data.snapshot.targetData.rend or 0
 		local rendCount = tostring(_rendCount)
 		local _rendTime = 0
 		
-		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
-			_rendTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining or 0
+		if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil then
+			_rendTime = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rendRemaining or 0
 		end
 
 		local rendTime
 
-		local _deepWoundsCount = TRB.Data.snapshotData.targetData.deepWounds or 0
+		local _deepWoundsCount = TRB.Data.snapshot.targetData.deepWounds or 0
 		local deepWoundsCount = tostring(_deepWoundsCount)
 		local _deepWoundsTime = 0
 		
-		if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil then
-			_deepWoundsTime = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining or 0
+		if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil then
+			_deepWoundsTime = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].deepWoundsRemaining or 0
 		end
 
 		local deepWoundsTime
 
-		if TRB.Data.settings.warrior.arms.colors.text.dots.enabled and TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rend then
-				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining > ((TRB.Data.spells.rend.baseDuration + TRB.Data.character.pandemicModifier) * 0.3) then
+		if TRB.Data.settings.warrior.arms.colors.text.dots.enabled and TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rend then
+				if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rendRemaining > ((TRB.Data.spells.rend.baseDuration + TRB.Data.character.pandemicModifier) * 0.3) then
 					rendCount = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.dots.up, _rendCount)
-					rendTime = string.format("|c%s%.1f|r", TRB.Data.settings.warrior.arms.colors.text.dots.up, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining)
+					rendTime = string.format("|c%s%.1f|r", TRB.Data.settings.warrior.arms.colors.text.dots.up, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rendRemaining)
 				else
 					rendCount = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.dots.pandemic, _rendCount)
-					rendTime = string.format("|c%s%.1f|r", TRB.Data.settings.warrior.arms.colors.text.dots.pandemic, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining)
+					rendTime = string.format("|c%s%.1f|r", TRB.Data.settings.warrior.arms.colors.text.dots.pandemic, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rendRemaining)
 				end
 			else
 				rendCount = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.dots.down, _rendCount)
 				rendTime = string.format("|c%s%.1f|r", TRB.Data.settings.warrior.arms.colors.text.dots.down, 0)
 			end
 
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWounds then
-				if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining > ((TRB.Data.spells.deepWounds.baseDuration + TRB.Data.character.pandemicModifier) * 0.3) then
+			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].deepWounds then
+				if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].deepWoundsRemaining > ((TRB.Data.spells.deepWounds.baseDuration + TRB.Data.character.pandemicModifier) * 0.3) then
 					deepWoundsCount = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.dots.up, _deepWoundsCount)
-					deepWoundsTime = string.format("|c%s%.1f|r", TRB.Data.settings.warrior.arms.colors.text.dots.up, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining)
+					deepWoundsTime = string.format("|c%s%.1f|r", TRB.Data.settings.warrior.arms.colors.text.dots.up, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].deepWoundsRemaining)
 				else
 					deepWoundsCount = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.dots.pandemic, _deepWoundsCount)
-					deepWoundsTime = string.format("|c%s%.1f|r", TRB.Data.settings.warrior.arms.colors.text.dots.pandemic, TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining)
+					deepWoundsTime = string.format("|c%s%.1f|r", TRB.Data.settings.warrior.arms.colors.text.dots.pandemic, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].deepWoundsRemaining)
 				end
 			else
 				deepWoundsCount = string.format("|c%s%.0f|r", TRB.Data.settings.warrior.arms.colors.text.dots.down, _deepWoundsCount)
@@ -1168,7 +1168,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookupLogic["$resourceTotal"] = _rageTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = normalizedRage
-		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
+		lookupLogic["$casting"] = TRB.Data.snapshot.casting.resourceFinal
 		lookupLogic["$passive"] = _passiveRage
 		lookupLogic["$overcap"] = overcap
 		lookupLogic["$resourceOvercap"] = overcap
@@ -1178,7 +1178,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local function RefreshLookupData_Fury()
 		local _
-		local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
+		local normalizedRage = TRB.Data.snapshot.resource / TRB.Data.resourceFactor
 		--Spec specific implementation
 		local currentTime = GetTime()
 
@@ -1209,21 +1209,21 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		end
 
-		if TRB.Data.snapshotData.casting.resourceFinal < 0 then
+		if TRB.Data.snapshot.casting.resourceFinal < 0 then
 			castingRageColor = TRB.Data.settings.warrior.fury.colors.text.spending
 		end
 
 		--$ravagerRage
-		local _ravagerRage = TRB.Data.snapshotData.ravager.rage
-		local ravagerRage = string.format("%.0f", TRB.Data.snapshotData.ravager.rage)
+		local _ravagerRage = TRB.Data.snapshot.ravager.rage
+		local ravagerRage = string.format("%.0f", TRB.Data.snapshot.ravager.rage)
 		--$ravagerTicks
-		local ravagerTicks = string.format("%.0f", TRB.Data.snapshotData.ravager.ticksRemaining)
+		local ravagerTicks = string.format("%.0f", TRB.Data.snapshot.ravager.ticksRemaining)
 
 		--$rage
 		local ragePrecision = TRB.Data.settings.warrior.fury.ragePrecision or 0
 		local currentRage = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(normalizedRage, ragePrecision, "floor"))
 		--$casting
-		local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(TRB.Data.snapshotData.casting.resourceFinal, ragePrecision, "floor"))
+		local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(TRB.Data.snapshot.casting.resourceFinal, ragePrecision, "floor"))
 		--$passive
 		local _passiveRage = _ravagerRage
 
@@ -1232,10 +1232,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local passiveRage = string.format("|c%s%s|r", TRB.Data.settings.warrior.fury.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveRage, ragePrecision, "floor"))
 		
 		--$rageTotal
-		local _rageTotal = math.min(_passiveRage + TRB.Data.snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
+		local _rageTotal = math.min(_passiveRage + TRB.Data.snapshot.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
 		local rageTotal = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(_rageTotal, ragePrecision, "floor"))
 		--$ragePlusCasting
-		local _ragePlusCasting = math.min(TRB.Data.snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
+		local _ragePlusCasting = math.min(TRB.Data.snapshot.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
 		local ragePlusCasting = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(_ragePlusCasting, ragePrecision, "floor"))
 		--$ragePlusPassive
 		local _ragePlusPassive = math.min(_passiveRage + normalizedRage, TRB.Data.character.maxResource)
@@ -1249,7 +1249,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local _whirlwindTime = GetWhirlwindRemainingTime()
 		local whirlwindTime = string.format("%.1f", _whirlwindTime)
 		--$whirlwindStacks
-		local whirlwindStacks = TRB.Data.snapshotData.whirlwind.stacks or 0
+		local whirlwindStacks = TRB.Data.snapshot.whirlwind.stacks or 0
 
 		--$suddenDeathTime
 		local _suddenDeathTime = GetSuddenDeathRemainingTime()
@@ -1264,7 +1264,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		Global_TwintopResourceBar.resource.passive = _passiveRage
 		Global_TwintopResourceBar.ravager = {
 			rage = _ravagerRage,
-			ticks = TRB.Data.snapshotData.ravager.ticksRemaining or 0
+			ticks = TRB.Data.snapshot.ravager.ticksRemaining or 0
 		}
 
 
@@ -1317,7 +1317,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookupLogic["$resourceTotal"] = _rageTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = normalizedRage
-		lookupLogic["$casting"] = TRB.Data.snapshotData.casting.resourceFinal
+		lookupLogic["$casting"] = TRB.Data.snapshot.casting.resourceFinal
 		lookupLogic["$passive"] = _passiveRage
 		lookupLogic["$overcap"] = overcap
 		lookupLogic["$resourceOvercap"] = overcap
@@ -1329,11 +1329,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local function FillSnapshotDataCasting(spell)
 		local currentTime = GetTime()
-		TRB.Data.snapshotData.casting.startTime = currentTime
-		TRB.Data.snapshotData.casting.resourceRaw = spell.rage
-		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.rage)
-		TRB.Data.snapshotData.casting.spellId = spell.id
-		TRB.Data.snapshotData.casting.icon = spell.icon
+		TRB.Data.snapshot.casting.startTime = currentTime
+		TRB.Data.snapshot.casting.resourceRaw = spell.rage
+		TRB.Data.snapshot.casting.resourceFinal = CalculateAbilityResourceValue(spell.rage)
+		TRB.Data.snapshot.casting.spellId = spell.id
+		TRB.Data.snapshot.casting.icon = spell.icon
 	end
 
 	local function CastingSpell()
@@ -1343,7 +1343,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local specId = GetSpecialization()
 
 		if currentSpellName == nil and currentChannelName == nil then
-			if specId == 2 and TRB.Data.snapshotData.bladestorm.isActive then
+			if specId == 2 and TRB.Data.snapshot.bladestorm.isActive then
 				return true
 			end
 			TRB.Functions.Character:ResetCastingSnapshotData()
@@ -1374,44 +1374,44 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	end
 
 	local function UpdateRavager()
-		if TRB.Data.snapshotData.ravager.isActive then
+		if TRB.Data.snapshot.ravager.isActive then
 			local currentTime = GetTime()
-			if TRB.Data.snapshotData.ravager.endTime == nil or currentTime > TRB.Data.snapshotData.ravager.endTime then
-				TRB.Data.snapshotData.ravager.ticksRemaining = 0
-				TRB.Data.snapshotData.ravager.endTime = nil
-				TRB.Data.snapshotData.ravager.rage = 0
-				TRB.Data.snapshotData.ravager.isActive = false
-				TRB.Data.snapshotData.ravager.totalDuration = 0
+			if TRB.Data.snapshot.ravager.endTime == nil or currentTime > TRB.Data.snapshot.ravager.endTime then
+				TRB.Data.snapshot.ravager.ticksRemaining = 0
+				TRB.Data.snapshot.ravager.endTime = nil
+				TRB.Data.snapshot.ravager.rage = 0
+				TRB.Data.snapshot.ravager.isActive = false
+				TRB.Data.snapshot.ravager.totalDuration = 0
 			else
-				local ticksRemaining = math.ceil((TRB.Data.snapshotData.ravager.endTime - currentTime) / (TRB.Data.snapshotData.ravager.totalDuration / TRB.Data.spells.ravager.ticks))
+				local ticksRemaining = math.ceil((TRB.Data.snapshot.ravager.endTime - currentTime) / (TRB.Data.snapshot.ravager.totalDuration / TRB.Data.spells.ravager.ticks))
 
-				if ticksRemaining < TRB.Data.snapshotData.ravager.ticksRemaining then
-					TRB.Data.snapshotData.ravager.ticksRemaining = ticksRemaining
+				if ticksRemaining < TRB.Data.snapshot.ravager.ticksRemaining then
+					TRB.Data.snapshot.ravager.ticksRemaining = ticksRemaining
 				end
 
-				TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * TRB.Data.spells.ravager.rage				
-				if TRB.Data.snapshotData.ravager.rage < 0 then
-					TRB.Data.snapshotData.ravager.rage = 0
+				TRB.Data.snapshot.ravager.rage = TRB.Data.snapshot.ravager.ticksRemaining * TRB.Data.spells.ravager.rage				
+				if TRB.Data.snapshot.ravager.rage < 0 then
+					TRB.Data.snapshot.ravager.rage = 0
 				end
 			end
 		end
 	end
 
 	local function UpdateBladestorm()
-		if TRB.Data.snapshotData.bladestorm.isActive then
+		if TRB.Data.snapshot.bladestorm.isActive then
 			local currentTime = GetTime()
-			if TRB.Data.snapshotData.bladestorm.endTime ~= nil and currentTime > TRB.Data.snapshotData.bladestorm.endTime then
-				TRB.Data.snapshotData.bladestorm.ticksRemaining = 0
-				TRB.Data.snapshotData.bladestorm.endTime = nil
-				TRB.Data.snapshotData.bladestorm.duration = 0
-				TRB.Data.snapshotData.bladestorm.rage = 0
-				TRB.Data.snapshotData.bladestorm.isActive = false
-			elseif TRB.Data.snapshotData.bladestorm.endTime ~= nil then
-				_, _, _, _, TRB.Data.snapshotData.bladestorm.duration, TRB.Data.snapshotData.bladestorm.endTime, _, _, _, TRB.Data.snapshotData.bladestorm.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.bladestorm.id)
-				TRB.Data.snapshotData.bladestorm.ticksRemaining = math.ceil((TRB.Data.snapshotData.bladestorm.endTime - currentTime) / (TRB.Data.snapshotData.bladestorm.originalDuration / TRB.Data.spells.bladestorm.ticks))
-				TRB.Data.snapshotData.bladestorm.rage = TRB.Data.snapshotData.bladestorm.ticksRemaining * TRB.Data.spells.bladestorm.rage
-				TRB.Data.snapshotData.casting.resourceRaw = TRB.Data.snapshotData.bladestorm.rage
-				TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.bladestorm.rage
+			if TRB.Data.snapshot.bladestorm.endTime ~= nil and currentTime > TRB.Data.snapshot.bladestorm.endTime then
+				TRB.Data.snapshot.bladestorm.ticksRemaining = 0
+				TRB.Data.snapshot.bladestorm.endTime = nil
+				TRB.Data.snapshot.bladestorm.duration = 0
+				TRB.Data.snapshot.bladestorm.rage = 0
+				TRB.Data.snapshot.bladestorm.isActive = false
+			elseif TRB.Data.snapshot.bladestorm.endTime ~= nil then
+				_, _, _, _, TRB.Data.snapshot.bladestorm.duration, TRB.Data.snapshot.bladestorm.endTime, _, _, _, TRB.Data.snapshot.bladestorm.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.bladestorm.id)
+				TRB.Data.snapshot.bladestorm.ticksRemaining = math.ceil((TRB.Data.snapshot.bladestorm.endTime - currentTime) / (TRB.Data.snapshot.bladestorm.originalDuration / TRB.Data.spells.bladestorm.ticks))
+				TRB.Data.snapshot.bladestorm.rage = TRB.Data.snapshot.bladestorm.ticksRemaining * TRB.Data.spells.bladestorm.rage
+				TRB.Data.snapshot.casting.resourceRaw = TRB.Data.snapshot.bladestorm.rage
+				TRB.Data.snapshot.casting.resourceFinal = TRB.Data.snapshot.bladestorm.rage
 			end
 		end
 	end
@@ -1420,25 +1420,25 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		TRB.Functions.Character:UpdateSnapshot()
 		local currentTime = GetTime()
 
-		if TRB.Data.snapshotData.impendingVictory.startTime ~= nil and currentTime > (TRB.Data.snapshotData.impendingVictory.startTime + TRB.Data.snapshotData.impendingVictory.duration) then
-			TRB.Data.snapshotData.impendingVictory.startTime = nil
-			TRB.Data.snapshotData.impendingVictory.duration = 0
-		elseif TRB.Data.snapshotData.impendingVictory.startTime ~= nil then
+		if TRB.Data.snapshot.impendingVictory.startTime ~= nil and currentTime > (TRB.Data.snapshot.impendingVictory.startTime + TRB.Data.snapshot.impendingVictory.duration) then
+			TRB.Data.snapshot.impendingVictory.startTime = nil
+			TRB.Data.snapshot.impendingVictory.duration = 0
+		elseif TRB.Data.snapshot.impendingVictory.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter, cast-local-type
-			TRB.Data.snapshotData.impendingVictory.startTime, TRB.Data.snapshotData.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
+			TRB.Data.snapshot.impendingVictory.startTime, TRB.Data.snapshot.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
 		end
 
 
-		if TRB.Data.snapshotData.thunderClap.startTime ~= nil and currentTime > (TRB.Data.snapshotData.thunderClap.startTime + TRB.Data.snapshotData.thunderClap.duration) then
-			TRB.Data.snapshotData.thunderClap.startTime = nil
-			TRB.Data.snapshotData.thunderClap.duration = 0
-		elseif TRB.Data.snapshotData.thunderClap.startTime ~= nil then
+		if TRB.Data.snapshot.thunderClap.startTime ~= nil and currentTime > (TRB.Data.snapshot.thunderClap.startTime + TRB.Data.snapshot.thunderClap.duration) then
+			TRB.Data.snapshot.thunderClap.startTime = nil
+			TRB.Data.snapshot.thunderClap.duration = 0
+		elseif TRB.Data.snapshot.thunderClap.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter, cast-local-type
-			TRB.Data.snapshotData.thunderClap.startTime, TRB.Data.snapshotData.thunderClap.duration, _, _ = GetSpellCooldown(TRB.Data.spells.thunderClap.id)
+			TRB.Data.snapshot.thunderClap.startTime, TRB.Data.snapshot.thunderClap.duration, _, _ = GetSpellCooldown(TRB.Data.spells.thunderClap.id)
 		end
 
 ---@diagnostic disable-next-line: redundant-parameter, cast-local-type
-		TRB.Data.snapshotData.shieldBlock.charges, TRB.Data.snapshotData.shieldBlock.maxCharges, TRB.Data.snapshotData.shieldBlock.startTime, TRB.Data.snapshotData.shieldBlock.duration, _ = GetSpellCharges(TRB.Data.spells.shieldBlock.id)
+		TRB.Data.snapshot.shieldBlock.charges, TRB.Data.snapshot.shieldBlock.maxCharges, TRB.Data.snapshot.shieldBlock.startTime, TRB.Data.snapshot.shieldBlock.duration, _ = GetSpellCharges(TRB.Data.spells.shieldBlock.id)
 	end
 
 	local function UpdateSnapshot_Arms()
@@ -1447,54 +1447,54 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local currentTime = GetTime()
 		local _
 
-		if TRB.Data.snapshotData.mortalStrike.startTime ~= nil and currentTime > (TRB.Data.snapshotData.mortalStrike.startTime + TRB.Data.snapshotData.mortalStrike.duration) then
-			TRB.Data.snapshotData.mortalStrike.startTime = nil
-			TRB.Data.snapshotData.mortalStrike.duration = 0
-		elseif TRB.Data.snapshotData.mortalStrike.startTime ~= nil then
+		if TRB.Data.snapshot.mortalStrike.startTime ~= nil and currentTime > (TRB.Data.snapshot.mortalStrike.startTime + TRB.Data.snapshot.mortalStrike.duration) then
+			TRB.Data.snapshot.mortalStrike.startTime = nil
+			TRB.Data.snapshot.mortalStrike.duration = 0
+		elseif TRB.Data.snapshot.mortalStrike.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter
-			TRB.Data.snapshotData.mortalStrike.startTime, TRB.Data.snapshotData.mortalStrike.duration, _, _ = GetSpellCooldown(TRB.Data.spells.mortalStrike.id)
+			TRB.Data.snapshot.mortalStrike.startTime, TRB.Data.snapshot.mortalStrike.duration, _, _ = GetSpellCooldown(TRB.Data.spells.mortalStrike.id)
 		end
 
-		if TRB.Data.snapshotData.cleave.startTime ~= nil and currentTime > (TRB.Data.snapshotData.cleave.startTime + TRB.Data.snapshotData.cleave.duration) then
-			TRB.Data.snapshotData.cleave.startTime = nil
-			TRB.Data.snapshotData.cleave.duration = 0
-		elseif TRB.Data.snapshotData.cleave.startTime ~= nil then
+		if TRB.Data.snapshot.cleave.startTime ~= nil and currentTime > (TRB.Data.snapshot.cleave.startTime + TRB.Data.snapshot.cleave.duration) then
+			TRB.Data.snapshot.cleave.startTime = nil
+			TRB.Data.snapshot.cleave.duration = 0
+		elseif TRB.Data.snapshot.cleave.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter
-			TRB.Data.snapshotData.cleave.startTime, TRB.Data.snapshotData.cleave.duration, _, _ = GetSpellCooldown(TRB.Data.spells.cleave.id)
+			TRB.Data.snapshot.cleave.startTime, TRB.Data.snapshot.cleave.duration, _, _ = GetSpellCooldown(TRB.Data.spells.cleave.id)
 		end
 
-		if TRB.Data.snapshotData.ignorePain.startTime ~= nil and currentTime > (TRB.Data.snapshotData.ignorePain.startTime + TRB.Data.snapshotData.ignorePain.duration) then
-			TRB.Data.snapshotData.ignorePain.startTime = nil
-			TRB.Data.snapshotData.ignorePain.duration = 0
-		elseif TRB.Data.snapshotData.ignorePain.startTime ~= nil then
+		if TRB.Data.snapshot.ignorePain.startTime ~= nil and currentTime > (TRB.Data.snapshot.ignorePain.startTime + TRB.Data.snapshot.ignorePain.duration) then
+			TRB.Data.snapshot.ignorePain.startTime = nil
+			TRB.Data.snapshot.ignorePain.duration = 0
+		elseif TRB.Data.snapshot.ignorePain.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter
-			TRB.Data.snapshotData.ignorePain.startTime, TRB.Data.snapshotData.ignorePain.duration, _, _ = GetSpellCooldown(TRB.Data.spells.ignorePain.id)
+			TRB.Data.snapshot.ignorePain.startTime, TRB.Data.snapshot.ignorePain.duration, _, _ = GetSpellCooldown(TRB.Data.spells.ignorePain.id)
 		end
 
-		if TRB.Data.snapshotData.whirlwind.startTime ~= nil and currentTime > (TRB.Data.snapshotData.whirlwind.startTime + TRB.Data.snapshotData.whirlwind.duration) then
-			TRB.Data.snapshotData.whirlwind.startTime = nil
-			TRB.Data.snapshotData.whirlwind.duration = 0
-		elseif TRB.Data.snapshotData.whirlwind.startTime ~= nil then
+		if TRB.Data.snapshot.whirlwind.startTime ~= nil and currentTime > (TRB.Data.snapshot.whirlwind.startTime + TRB.Data.snapshot.whirlwind.duration) then
+			TRB.Data.snapshot.whirlwind.startTime = nil
+			TRB.Data.snapshot.whirlwind.duration = 0
+		elseif TRB.Data.snapshot.whirlwind.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter
-			TRB.Data.snapshotData.whirlwind.startTime, TRB.Data.snapshotData.whirlwind.duration, _, _ = GetSpellCooldown(TRB.Data.spells.whirlwind.id)
+			TRB.Data.snapshot.whirlwind.startTime, TRB.Data.snapshot.whirlwind.duration, _, _ = GetSpellCooldown(TRB.Data.spells.whirlwind.id)
 		end
 
-		_, _, _, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.suddenDeath.id, "player")
+		_, _, _, _, TRB.Data.snapshot.suddenDeath.duration, TRB.Data.snapshot.suddenDeath.endTime, _, _, _, TRB.Data.snapshot.suddenDeath.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.suddenDeath.id, "player")
 		
-		if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] then
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rend then
+		if TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] then
+			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rend then
 				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.rend.id, "target", "player"))
 			
 				if expiration ~= nil then
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining = expiration - currentTime
+					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rendRemaining = expiration - currentTime
 				end
 			end
 
-			if TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWounds then
+			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].deepWounds then
 				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.deepWounds.id, "target", "player"))
 			
 				if expiration ~= nil then
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining = expiration - currentTime
+					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].deepWoundsRemaining = expiration - currentTime
 				end
 			end
 		end
@@ -1508,16 +1508,16 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local currentTime = GetTime()
 		local _
 
-		_, _, _, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.suddenDeath.id, "player")
+		_, _, _, _, TRB.Data.snapshot.suddenDeath.duration, TRB.Data.snapshot.suddenDeath.endTime, _, _, _, TRB.Data.snapshot.suddenDeath.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.suddenDeath.id, "player")
 		
-		_, _, TRB.Data.snapshotData.whirlwind.stacks, _, TRB.Data.snapshotData.whirlwind.duration, TRB.Data.snapshotData.whirlwind.endTime, _, _, _, TRB.Data.snapshotData.whirlwind.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.whirlwind.id, "player")
+		_, _, TRB.Data.snapshot.whirlwind.stacks, _, TRB.Data.snapshot.whirlwind.duration, TRB.Data.snapshot.whirlwind.endTime, _, _, _, TRB.Data.snapshot.whirlwind.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.whirlwind.id, "player")
 		
-		if TRB.Data.snapshotData.execute.startTime ~= nil and currentTime > (TRB.Data.snapshotData.execute.startTime + TRB.Data.snapshotData.execute.duration) then
-			TRB.Data.snapshotData.execute.startTime = nil
-			TRB.Data.snapshotData.execute.duration = 0
-		elseif TRB.Data.snapshotData.execute.startTime ~= nil then
+		if TRB.Data.snapshot.execute.startTime ~= nil and currentTime > (TRB.Data.snapshot.execute.startTime + TRB.Data.snapshot.execute.duration) then
+			TRB.Data.snapshot.execute.startTime = nil
+			TRB.Data.snapshot.execute.duration = 0
+		elseif TRB.Data.snapshot.execute.startTime ~= nil then
 			---@diagnostic disable-next-line: redundant-parameter
-			TRB.Data.snapshotData.execute.startTime, TRB.Data.snapshotData.execute.duration, _, _ = GetSpellCooldown(TRB.Data.spells.execute.id)
+			TRB.Data.snapshot.execute.startTime, TRB.Data.snapshot.execute.duration, _, _ = GetSpellCooldown(TRB.Data.spells.execute.id)
 		end
 	end
 
@@ -1533,27 +1533,27 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			UpdateSnapshot_Arms()
 			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
-			if TRB.Data.snapshotData.isTracking then
+			if TRB.Data.snapshot.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local currentRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
+					local currentRage = TRB.Data.snapshot.resource / TRB.Data.resourceFactor
 
 					local passiveValue = 0
 					if specSettings.bar.showPassive then
 					end
 
 					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = currentRage + TRB.Data.snapshotData.casting.resourceFinal
+						castingBarValue = currentRage + TRB.Data.snapshot.casting.resourceFinal
 					else
 						castingBarValue = currentRage
 					end
 
 					if castingBarValue < currentRage then --Using a spender
-						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
+						if -TRB.Data.snapshot.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue) 
 							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
@@ -1583,7 +1583,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local rageAmount = CalculateAbilityResourceValue(spell.rage)
-							local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
+							local normalizedRage = TRB.Data.snapshot.resource / TRB.Data.resourceFactor
 
 							if not (spell.id == TRB.Data.spells.execute.id or spell.id == TRB.Data.spells.whirlwind.id) then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
@@ -1627,22 +1627,22 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.impendingVictory.id then
-									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+									if TRB.Data.snapshot[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshot[spell.settingKey].startTime + TRB.Data.snapshot[spell.settingKey].duration) then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif currentRage >= -rageAmount or TRB.Data.spells.victoryRush.isActive then
+									elseif currentRage >= -rageAmount or TRB.Data.snapshot.victoryRush.isActive then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.mortalStrike.id then
-									if TRB.Data.spells.battlelord.isActive then
+									if TRB.Data.snapshot.battlelord.isActive then
 										rageAmount = rageAmount - TRB.Data.spells.battlelord.rageMod
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 									end
 
-									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+									if TRB.Data.snapshot[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshot[spell.settingKey].startTime + TRB.Data.snapshot[spell.settingKey].duration) then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif currentRage >= -rageAmount then
@@ -1652,12 +1652,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.cleave.id then
-									if TRB.Data.spells.battlelord.isActive then
+									if TRB.Data.snapshot.battlelord.isActive then
 										rageAmount = rageAmount - TRB.Data.spells.battlelord.rageMod
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 									end
 
-									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+									if TRB.Data.snapshot[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshot[spell.settingKey].startTime + TRB.Data.snapshot[spell.settingKey].duration) then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif currentRage >= -rageAmount then
@@ -1671,11 +1671,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										rageAmount = rageAmount + TRB.Data.spells.stormOfSwords.rageMod
 									end 
 									
-									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+									if TRB.Data.snapshot[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshot[spell.settingKey].startTime + TRB.Data.snapshot[spell.settingKey].duration) then
 										showCooldown = true
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif currentRage >= -rageAmount or TRB.Data.spells.victoryRush.isActive then
+									elseif currentRage >= -rageAmount or TRB.Data.snapshot.victoryRush.isActive then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -1685,8 +1685,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 								end
 							elseif spell.hasCooldown then
-								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
-									(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
+								if (TRB.Data.snapshot[spell.settingKey].charges == nil or TRB.Data.snapshot[spell.settingKey].charges == 0) and
+									(TRB.Data.snapshot[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshot[spell.settingKey].startTime + TRB.Data.snapshot[spell.settingKey].duration)) then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif currentRage >= -rageAmount then
@@ -1704,7 +1704,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								end
 							end
 
-							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[spell.settingKey], specSettings)
+							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshot[spell.settingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end
@@ -1715,13 +1715,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
-						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
-							TRB.Data.snapshotData.audio.overcapCue = true
+						if specSettings.audio.overcap.enabled and TRB.Data.snapshot.audio.overcapCue == false then
+							TRB.Data.snapshot.audio.overcapCue = true
 							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
-						TRB.Data.snapshotData.audio.overcapCue = false
+						TRB.Data.snapshot.audio.overcapCue = false
 					end
 
 					barContainerFrame:SetAlpha(1.0)
@@ -1737,30 +1737,30 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			UpdateSnapshot_Fury()
 			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
-			if TRB.Data.snapshotData.isTracking then
+			if TRB.Data.snapshot.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local currentRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
+					local currentRage = TRB.Data.snapshot.resource / TRB.Data.resourceFactor
 
 					local passiveValue = 0
 					if specSettings.bar.showPassive then
-						if TRB.Data.snapshotData.ravager.rage > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshotData.ravager.rage
+						if TRB.Data.snapshot.ravager.rage > 0 then
+							passiveValue = passiveValue + TRB.Data.snapshot.ravager.rage
 						end
 					end
 
 					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = currentRage + TRB.Data.snapshotData.casting.resourceFinal
+						castingBarValue = currentRage + TRB.Data.snapshot.casting.resourceFinal
 					else
 						castingBarValue = currentRage
 					end
 
 					if castingBarValue < currentRage then --Using a spender
-						if -TRB.Data.snapshotData.casting.resourceFinal > passiveValue then
+						if -TRB.Data.snapshot.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
@@ -1789,7 +1789,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						local spell = TRB.Data.spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then							
 							local rageAmount = CalculateAbilityResourceValue(spell.rage)
-							local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
+							local normalizedRage = TRB.Data.snapshot.resource / TRB.Data.resourceFactor
 							
 							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 
@@ -1829,7 +1829,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 											
 											cooldownSettingKey = TRB.Data.spells.execute.settingKey
 
-											if TRB.Data.snapshotData[cooldownSettingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[cooldownSettingKey].startTime + TRB.Data.snapshotData[cooldownSettingKey].duration) then
+											if TRB.Data.snapshot[cooldownSettingKey].startTime ~= nil and currentTime < (TRB.Data.snapshot[cooldownSettingKey].startTime + TRB.Data.snapshot[cooldownSettingKey].duration) then
 												thresholdColor = specSettings.colors.threshold.unusable
 											elseif currentRage >= -rageAmount then
 												thresholdColor = specSettings.colors.threshold.over
@@ -1840,10 +1840,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										end
 									end
 								elseif spell.id == TRB.Data.spells.impendingVictory.id then
-									if TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration) then
+									if TRB.Data.snapshot[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshot[spell.settingKey].startTime + TRB.Data.snapshot[spell.settingKey].duration) then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif currentRage >= -rageAmount or TRB.Data.spells.victoryRush.isActive then
+									elseif currentRage >= -rageAmount or TRB.Data.snapshot.victoryRush.isActive then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -1851,8 +1851,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									end
 								end
 							elseif spell.hasCooldown then
-								if (TRB.Data.snapshotData[spell.settingKey].charges == nil or TRB.Data.snapshotData[spell.settingKey].charges == 0) and
-									(TRB.Data.snapshotData[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshotData[spell.settingKey].startTime + TRB.Data.snapshotData[spell.settingKey].duration)) then
+								if (TRB.Data.snapshot[spell.settingKey].charges == nil or TRB.Data.snapshot[spell.settingKey].charges == 0) and
+									(TRB.Data.snapshot[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshot[spell.settingKey].startTime + TRB.Data.snapshot[spell.settingKey].duration)) then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif currentRage >= -rageAmount then
@@ -1870,7 +1870,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								end
 							end
 
-							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData[cooldownSettingKey], specSettings)
+							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshot[cooldownSettingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end
@@ -1886,13 +1886,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
-						if specSettings.audio.overcap.enabled and TRB.Data.snapshotData.audio.overcapCue == false then
-							TRB.Data.snapshotData.audio.overcapCue = true
+						if specSettings.audio.overcap.enabled and TRB.Data.snapshot.audio.overcapCue == false then
+							TRB.Data.snapshot.audio.overcapCue = true
 							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
-						TRB.Data.snapshotData.audio.overcapCue = false
+						TRB.Data.snapshot.audio.overcapCue = false
 					end
 
 					barContainerFrame:SetAlpha(1.0)
@@ -1920,58 +1920,58 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					if spellId == TRB.Data.spells.mortalStrike.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
-							TRB.Data.snapshotData.mortalStrike.startTime, TRB.Data.snapshotData.mortalStrike.duration, _, _ = GetSpellCooldown(TRB.Data.spells.mortalStrike.id)
+							TRB.Data.snapshot.mortalStrike.startTime, TRB.Data.snapshot.mortalStrike.duration, _, _ = GetSpellCooldown(TRB.Data.spells.mortalStrike.id)
 						end
 					elseif spellId == TRB.Data.spells.cleave.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
-							TRB.Data.snapshotData.cleave.startTime, TRB.Data.snapshotData.cleave.duration, _, _ = GetSpellCooldown(TRB.Data.spells.cleave.id)
+							TRB.Data.snapshot.cleave.startTime, TRB.Data.snapshot.cleave.duration, _, _ = GetSpellCooldown(TRB.Data.spells.cleave.id)
 						end
 					elseif spellId == TRB.Data.spells.ignorePain.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" then
 							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							-- This API call isn't working. Manual override for now.
-							--TRB.Data.snapshotData.ignorePain.startTime, TRB.Data.snapshotData.ignorePain.duration, _, _ = GetSpellCooldown(TRB.Data.spells.ignorePain.id)
-							TRB.Data.snapshotData.ignorePain.startTime = currentTime
-							TRB.Data.snapshotData.ignorePain.duration = TRB.Data.spells.ignorePain.duration
+							--TRB.Data.snapshot.ignorePain.startTime, TRB.Data.snapshot.ignorePain.duration, _, _ = GetSpellCooldown(TRB.Data.spells.ignorePain.id)
+							TRB.Data.snapshot.ignorePain.startTime = currentTime
+							TRB.Data.snapshot.ignorePain.duration = TRB.Data.spells.ignorePain.duration
 						end
 					elseif spellId == TRB.Data.spells.suddenDeath.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.suddenDeath.id)
-							TRB.Data.spells.suddenDeath.isActive = true
+							_, _, _, _, TRB.Data.snapshot.suddenDeath.duration, TRB.Data.snapshot.suddenDeath.endTime, _, _, _, TRB.Data.snapshot.suddenDeath.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.suddenDeath.id)
+							TRB.Data.snapshot.suddenDeath.isActive = true
 							
 							if TRB.Data.settings.warrior.arms.audio.suddenDeath.enabled then
 								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(TRB.Data.settings.warrior.arms.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshotData.suddenDeath.endTime = nil
-							TRB.Data.snapshotData.suddenDeath.duration = 0
-							TRB.Data.snapshotData.suddenDeath.spellId = nil
-							TRB.Data.spells.suddenDeath.isActive = false
+							TRB.Data.snapshot.suddenDeath.endTime = nil
+							TRB.Data.snapshot.suddenDeath.duration = 0
+							TRB.Data.snapshot.suddenDeath.spellId = nil
+							TRB.Data.snapshot.suddenDeath.isActive = false
 						end
 					elseif spellId == TRB.Data.spells.battlelord.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshotData.battlelord.duration, TRB.Data.snapshotData.battlelord.endTime, _, _, _, TRB.Data.snapshotData.battlelord.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.battlelord.id)
-							TRB.Data.spells.battlelord.isActive = true
+							_, _, _, _, TRB.Data.snapshot.battlelord.duration, TRB.Data.snapshot.battlelord.endTime, _, _, _, TRB.Data.snapshot.battlelord.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.battlelord.id)
+							TRB.Data.snapshot.battlelord.isActive = true
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshotData.battlelord.endTime = nil
-							TRB.Data.snapshotData.battlelord.duration = 0
-							TRB.Data.snapshotData.battlelord.spellId = nil
-							TRB.Data.spells.battlelord.isActive = false
+							TRB.Data.snapshot.battlelord.endTime = nil
+							TRB.Data.snapshot.battlelord.duration = 0
+							TRB.Data.snapshot.battlelord.spellId = nil
+							TRB.Data.snapshot.battlelord.isActive = false
 						end
 					elseif spellId == TRB.Data.spells.rend.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rend Applied to Target
-								TRB.Data.snapshotData.targetData.targets[destGUID].rend = true
+								TRB.Data.snapshot.targetData.targets[destGUID].rend = true
 								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshotData.targetData.rend = (TRB.Data.snapshotData.targetData.rend or 0) + 1
+									TRB.Data.snapshot.targetData.rend = (TRB.Data.snapshot.targetData.rend or 0) + 1
 								end
 								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshotData.targetData.targets[destGUID].rend = false
-								TRB.Data.snapshotData.targetData.targets[destGUID].rendRemaining = 0
-								TRB.Data.snapshotData.targetData.rend = (TRB.Data.snapshotData.targetData.rend or 0) - 1
+								TRB.Data.snapshot.targetData.targets[destGUID].rend = false
+								TRB.Data.snapshot.targetData.targets[destGUID].rendRemaining = 0
+								TRB.Data.snapshot.targetData.rend = (TRB.Data.snapshot.targetData.rend or 0) - 1
 								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
@@ -1979,68 +1979,68 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					elseif spellId == TRB.Data.spells.deepWounds.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Deep Wounds Applied to Target
-								TRB.Data.snapshotData.targetData.targets[destGUID].deepWounds = true
+								TRB.Data.snapshot.targetData.targets[destGUID].deepWounds = true
 								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshotData.targetData.deepWounds = (TRB.Data.snapshotData.targetData.deepWounds or 0) + 1
+									TRB.Data.snapshot.targetData.deepWounds = (TRB.Data.snapshot.targetData.deepWounds or 0) + 1
 								end
 								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshotData.targetData.targets[destGUID].deepWounds = false
-								TRB.Data.snapshotData.targetData.targets[destGUID].deepWoundsRemaining = 0
-								TRB.Data.snapshotData.targetData.deepWounds = (TRB.Data.snapshotData.targetData.deepWounds or 0) - 1
+								TRB.Data.snapshot.targetData.targets[destGUID].deepWounds = false
+								TRB.Data.snapshot.targetData.targets[destGUID].deepWoundsRemaining = 0
+								TRB.Data.snapshot.targetData.deepWounds = (TRB.Data.snapshot.targetData.deepWounds or 0) - 1
 								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
 						end
 					elseif spellId == TRB.Data.spells.whirlwind.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshotData.whirlwind.startTime, TRB.Data.snapshotData.whirlwind.duration, _, _ = GetSpellCooldown(TRB.Data.spells.whirlwind.id)
+							TRB.Data.snapshot.whirlwind.startTime, TRB.Data.snapshot.whirlwind.duration, _, _ = GetSpellCooldown(TRB.Data.spells.whirlwind.id)
 						end
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "fury" then
 					if spellId == TRB.Data.spells.bladestorm.id then
 						if type == "SPELL_AURA_APPLIED" then
-							_, _, _, _, TRB.Data.snapshotData.bladestorm.duration, TRB.Data.snapshotData.bladestorm.endTime, _, _, _, TRB.Data.snapshotData.bladestorm.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.bladestorm.id)
-							TRB.Data.snapshotData.bladestorm.originalDuration = TRB.Data.snapshotData.bladestorm.duration
-							TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.bladestorm.id
-							TRB.Data.snapshotData.casting.icon = TRB.Data.spells.bladestorm.icon
-							TRB.Data.snapshotData.bladestorm.isActive = true
+							_, _, _, _, TRB.Data.snapshot.bladestorm.duration, TRB.Data.snapshot.bladestorm.endTime, _, _, _, TRB.Data.snapshot.bladestorm.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.bladestorm.id)
+							TRB.Data.snapshot.bladestorm.originalDuration = TRB.Data.snapshot.bladestorm.duration
+							TRB.Data.snapshot.casting.spellId = TRB.Data.spells.bladestorm.id
+							TRB.Data.snapshot.casting.icon = TRB.Data.spells.bladestorm.icon
+							TRB.Data.snapshot.bladestorm.isActive = true
 							UpdateBladestorm()
 						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshotData.bladestorm.ticksRemaining = 0
-							TRB.Data.snapshotData.bladestorm.endTime = nil
-							TRB.Data.snapshotData.bladestorm.duration = 0
-							TRB.Data.snapshotData.bladestorm.originalDuration = 0
-							TRB.Data.snapshotData.bladestorm.rage = 0
-							TRB.Data.snapshotData.bladestorm.isActive = false
+							TRB.Data.snapshot.bladestorm.ticksRemaining = 0
+							TRB.Data.snapshot.bladestorm.endTime = nil
+							TRB.Data.snapshot.bladestorm.duration = 0
+							TRB.Data.snapshot.bladestorm.originalDuration = 0
+							TRB.Data.snapshot.bladestorm.rage = 0
+							TRB.Data.snapshot.bladestorm.isActive = false
 						end
 					elseif spellId == TRB.Data.spells.enrage.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshotData.enrage.duration, TRB.Data.snapshotData.enrage.endTime, _, _, _, TRB.Data.snapshotData.enrage.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.enrage.id)
-							TRB.Data.spells.enrage.isActive = true
+							_, _, _, _, TRB.Data.snapshot.enrage.duration, TRB.Data.snapshot.enrage.endTime, _, _, _, TRB.Data.snapshot.enrage.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.enrage.id)
+							TRB.Data.snapshot.enrage.isActive = true
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshotData.enrage.endTime = nil
-							TRB.Data.snapshotData.enrage.duration = 0
-							TRB.Data.spells.enrage.isActive = false
+							TRB.Data.snapshot.enrage.endTime = nil
+							TRB.Data.snapshot.enrage.duration = 0
+							TRB.Data.snapshot.enrage.isActive = false
 						end
 					elseif spellId == TRB.Data.spells.whirlwind.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							_, _, TRB.Data.snapshotData.whirlwind.stacks, _, TRB.Data.snapshotData.whirlwind.duration, TRB.Data.snapshotData.whirlwind.endTime, _, _, _, TRB.Data.snapshotData.whirlwind.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.whirlwind.id, "player")
+							_, _, TRB.Data.snapshot.whirlwind.stacks, _, TRB.Data.snapshot.whirlwind.duration, TRB.Data.snapshot.whirlwind.endTime, _, _, _, TRB.Data.snapshot.whirlwind.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.whirlwind.id, "player")
 						end
 					elseif spellId == TRB.Data.spells.suddenDeath.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshotData.suddenDeath.duration, TRB.Data.snapshotData.suddenDeath.endTime, _, _, _, TRB.Data.snapshotData.suddenDeath.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.suddenDeath.id)
-							TRB.Data.spells.suddenDeath.isActive = true
+							_, _, _, _, TRB.Data.snapshot.suddenDeath.duration, TRB.Data.snapshot.suddenDeath.endTime, _, _, _, TRB.Data.snapshot.suddenDeath.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.suddenDeath.id)
+							TRB.Data.snapshot.suddenDeath.isActive = true
 							
 							if TRB.Data.settings.warrior.fury.audio.suddenDeath.enabled then
 								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(TRB.Data.settings.warrior.fury.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshotData.suddenDeath.endTime = nil
-							TRB.Data.snapshotData.suddenDeath.duration = 0
-							TRB.Data.snapshotData.suddenDeath.spellId = nil
-							TRB.Data.spells.suddenDeath.isActive = false
+							TRB.Data.snapshot.suddenDeath.endTime = nil
+							TRB.Data.snapshot.suddenDeath.duration = 0
+							TRB.Data.snapshot.suddenDeath.spellId = nil
+							TRB.Data.snapshot.suddenDeath.isActive = false
 						end
 					elseif spellId == TRB.Data.spells.ravager.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Ravager used
@@ -2048,14 +2048,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.stormOfSteel) then
 								ravagerRage = ravagerRage + TRB.Data.spells.stormOfSteel.rage
 							end
-							TRB.Data.snapshotData.ravager.isActive = true
-							TRB.Data.snapshotData.ravager.totalDuration = TRB.Data.spells.ravager.duration * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)
-							TRB.Data.snapshotData.ravager.ticksRemaining = TRB.Data.spells.ravager.ticks
-							TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * ravagerRage
-							TRB.Data.snapshotData.ravager.endTime = currentTime + TRB.Data.snapshotData.ravager.totalDuration
-							TRB.Data.snapshotData.ravager.lastTick = currentTime
-							if TRB.Data.snapshotData.ravager.rage < 0 then
-								TRB.Data.snapshotData.ravager.rage = 0
+							TRB.Data.snapshot.ravager.isActive = true
+							TRB.Data.snapshot.ravager.totalDuration = TRB.Data.spells.ravager.duration * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)
+							TRB.Data.snapshot.ravager.ticksRemaining = TRB.Data.spells.ravager.ticks
+							TRB.Data.snapshot.ravager.rage = TRB.Data.snapshot.ravager.ticksRemaining * ravagerRage
+							TRB.Data.snapshot.ravager.endTime = currentTime + TRB.Data.snapshot.ravager.totalDuration
+							TRB.Data.snapshot.ravager.lastTick = currentTime
+							if TRB.Data.snapshot.ravager.rage < 0 then
+								TRB.Data.snapshot.ravager.rage = 0
 							end
 						end
 					elseif spellId == TRB.Data.spells.ravager.energizeId then
@@ -2065,18 +2065,18 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								ravagerRage = ravagerRage + TRB.Data.spells.stormOfSteel.rage
 							end
 
-							TRB.Data.snapshotData.ravager.ticksRemaining = TRB.Data.snapshotData.ravager.ticksRemaining - 1
-							if TRB.Data.snapshotData.ravager.ticksRemaining == 0 then
-								TRB.Data.snapshotData.ravager.ticksRemaining = 0
-								TRB.Data.snapshotData.ravager.endTime = nil
-								TRB.Data.snapshotData.ravager.rage = 0
-								TRB.Data.snapshotData.ravager.isActive = false
-								TRB.Data.snapshotData.ravager.totalDuration = 0
+							TRB.Data.snapshot.ravager.ticksRemaining = TRB.Data.snapshot.ravager.ticksRemaining - 1
+							if TRB.Data.snapshot.ravager.ticksRemaining == 0 then
+								TRB.Data.snapshot.ravager.ticksRemaining = 0
+								TRB.Data.snapshot.ravager.endTime = nil
+								TRB.Data.snapshot.ravager.rage = 0
+								TRB.Data.snapshot.ravager.isActive = false
+								TRB.Data.snapshot.ravager.totalDuration = 0
 							else
-								TRB.Data.snapshotData.ravager.rage = TRB.Data.snapshotData.ravager.ticksRemaining * ravagerRage
-								TRB.Data.snapshotData.ravager.lastTick = currentTime
-								if TRB.Data.snapshotData.ravager.rage < 0 then
-									TRB.Data.snapshotData.ravager.rage = 0
+								TRB.Data.snapshot.ravager.rage = TRB.Data.snapshot.ravager.ticksRemaining * ravagerRage
+								TRB.Data.snapshot.ravager.lastTick = currentTime
+								if TRB.Data.snapshot.ravager.rage < 0 then
+									TRB.Data.snapshot.ravager.rage = 0
 								end
 							end
 						end
@@ -2087,31 +2087,31 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				if spellId == TRB.Data.spells.impendingVictory.id then
 					if type == "SPELL_CAST_SUCCESS" then
 						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
-						TRB.Data.snapshotData.impendingVictory.startTime, TRB.Data.snapshotData.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
+						TRB.Data.snapshot.impendingVictory.startTime, TRB.Data.snapshot.impendingVictory.duration, _, _ = GetSpellCooldown(TRB.Data.spells.impendingVictory.id)
 					end
 				elseif spellId == TRB.Data.spells.thunderClap.id then
 					if type == "SPELL_CAST_SUCCESS" then
 						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
-						TRB.Data.snapshotData.thunderClap.startTime, TRB.Data.snapshotData.thunderClap.duration, _, _ = GetSpellCooldown(TRB.Data.spells.thunderClap.id)
+						TRB.Data.snapshot.thunderClap.startTime, TRB.Data.snapshot.thunderClap.duration, _, _ = GetSpellCooldown(TRB.Data.spells.thunderClap.id)
 					end
 				elseif spellId == TRB.Data.spells.execute.id and not TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.improvedExecute) then
 					if type == "SPELL_CAST_SUCCESS" then
 						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
-						TRB.Data.snapshotData.execute.startTime, TRB.Data.snapshotData.execute.duration, _, _ = GetSpellCooldown(TRB.Data.spells.execute.id)
+						TRB.Data.snapshot.execute.startTime, TRB.Data.snapshot.execute.duration, _, _ = GetSpellCooldown(TRB.Data.spells.execute.id)
 					end
 				elseif spellId == TRB.Data.spells.victoryRush.id then
 					if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-						_, _, _, _, TRB.Data.snapshotData.victoryRush.duration, TRB.Data.snapshotData.victoryRush.endTime, _, _, _, TRB.Data.snapshotData.victoryRush.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.victoryRush.id)
-						TRB.Data.spells.victoryRush.isActive = true
+						_, _, _, _, TRB.Data.snapshot.victoryRush.duration, TRB.Data.snapshot.victoryRush.endTime, _, _, _, TRB.Data.snapshot.victoryRush.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.victoryRush.id)
+						TRB.Data.snapshot.victoryRush.isActive = true
 					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-						TRB.Data.snapshotData.victoryRush.endTime = nil
-						TRB.Data.snapshotData.victoryRush.duration = 0
-						TRB.Data.spells.victoryRush.isActive = false
+						TRB.Data.snapshot.victoryRush.endTime = nil
+						TRB.Data.snapshot.victoryRush.duration = 0
+						TRB.Data.snapshot.victoryRush.isActive = false
 					end
 				elseif spellId == TRB.Data.spells.shieldBlock.id then
 					if type == "SPELL_CAST_SUCCESS" then
 						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
-						TRB.Data.snapshotData.shieldBlock.charges, TRB.Data.snapshotData.shieldBlock.maxCharges, TRB.Data.snapshotData.shieldBlock.startTime, TRB.Data.snapshotData.shieldBlock.duration, _ = GetSpellCharges(TRB.Data.spells.shieldBlock.id)
+						TRB.Data.snapshot.shieldBlock.charges, TRB.Data.snapshot.shieldBlock.maxCharges, TRB.Data.snapshot.shieldBlock.startTime, TRB.Data.snapshot.shieldBlock.duration, _ = GetSpellCharges(TRB.Data.spells.shieldBlock.id)
 					end
 				end
 			end
@@ -2324,13 +2324,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.warrior.arms.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.warrior.arms.displayBar.notZeroShow) or
-						(TRB.Data.settings.warrior.arms.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0)
+						(TRB.Data.settings.warrior.arms.displayBar.notZeroShow and TRB.Data.snapshot.resource == 0)
 					)
 				)) then
 				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshotData.isTracking = false
+				TRB.Data.snapshot.isTracking = false
 			else
-				TRB.Data.snapshotData.isTracking = true
+				TRB.Data.snapshot.isTracking = true
 				if TRB.Data.settings.warrior.arms.displayBar.neverShow == true then
 					TRB.Frames.barContainerFrame:Hide()
 				else
@@ -2342,13 +2342,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.warrior.fury.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.warrior.fury.displayBar.notZeroShow) or
-						(TRB.Data.settings.warrior.fury.displayBar.notZeroShow and TRB.Data.snapshotData.resource == 0)
+						(TRB.Data.settings.warrior.fury.displayBar.notZeroShow and TRB.Data.snapshot.resource == 0)
 					)
 				)) then
 				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshotData.isTracking = false
+				TRB.Data.snapshot.isTracking = false
 			else
-				TRB.Data.snapshotData.isTracking = true
+				TRB.Data.snapshot.isTracking = true
 				if TRB.Data.settings.warrior.fury.displayBar.neverShow == true then
 					TRB.Frames.barContainerFrame:Hide()
 				else
@@ -2357,7 +2357,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		else
 			TRB.Frames.barContainerFrame:Hide()
-			TRB.Data.snapshotData.isTracking = false
+			TRB.Data.snapshot.isTracking = false
 		end
 	end
 
@@ -2372,21 +2372,21 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			if not TRB.Functions.Target:CheckTargetExists(guid) then
 				TRB.Functions.Target:InitializeTarget(guid)
 				if specId == 1 then
-					TRB.Data.snapshotData.targetData.targets[guid].rend = false
-					TRB.Data.snapshotData.targetData.targets[guid].rendRemaining = 0
-					TRB.Data.snapshotData.targetData.targets[guid].deepWounds = false
-					TRB.Data.snapshotData.targetData.targets[guid].deepWoundsRemaining = 0
+					TRB.Data.snapshot.targetData.targets[guid].rend = false
+					TRB.Data.snapshot.targetData.targets[guid].rendRemaining = 0
+					TRB.Data.snapshot.targetData.targets[guid].deepWounds = false
+					TRB.Data.snapshot.targetData.targets[guid].deepWoundsRemaining = 0
 				elseif specId == 2 then
 				end
 			end
-			TRB.Data.snapshotData.targetData.targets[guid].lastUpdate = GetTime()
+			TRB.Data.snapshot.targetData.targets[guid].lastUpdate = GetTime()
 		end
 
 		return true
 	end
 	function TRB.Functions.Class:IsValidVariableForSpec(var)
 		local valid = TRB.Functions.BarText:IsValidVariableBase(var)
-		local normalizedRage = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
+		local normalizedRage = TRB.Data.snapshot.resource / TRB.Data.resourceFactor
 		if valid then
 			return valid
 		end
@@ -2400,7 +2400,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		if specId == 1 then --Arms
 			if var == "$suddenDeathTime" then
-				if TRB.Data.snapshotData.suddenDeath.isActive then
+				if TRB.Data.snapshot.suddenDeath.isActive then
 					valid = true
 				end
 			elseif var == "$rend" then
@@ -2408,34 +2408,34 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					valid = true
 				end
 			elseif var == "$rendCount" then
-				if TRB.Data.snapshotData.targetData.rend > 0 then
+				if TRB.Data.snapshot.targetData.rend > 0 then
 					valid = true
 				end
 			elseif var == "$rendTime" then
 				if not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].rendRemaining > 0 then
+					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshot.targetData.targets ~= nil and
+					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rendRemaining > 0 then
 					valid = true
 				end
 			elseif var == "$deepWoundsCount" then
-				if TRB.Data.snapshotData.targetData.deepWounds > 0 then
+				if TRB.Data.snapshot.targetData.deepWounds > 0 then
 					valid = true
 				end
 			elseif var == "$deepWoundsTime" then
 				if not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshotData.targetData.targets ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].deepWoundsRemaining > 0 then
+					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
+					TRB.Data.snapshot.targetData.targets ~= nil and
+					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
+					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].deepWoundsRemaining > 0 then
 					valid = true
 				end
 			elseif var == "$resourceTotal" or var == "$rageTotal" then
 				if normalizedRage > 0 or
-					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
+					(TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw ~= 0)
 					then
 					valid = true
 				end
@@ -2448,21 +2448,21 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		elseif specId == 2 then --Fury
 			if var == "$suddenDeathTime" then
-				if TRB.Data.snapshotData.suddenDeath.isActive then
+				if TRB.Data.snapshot.suddenDeath.isActive then
 					valid = true
 				end
 			elseif var == "$resourceTotal" or var == "$rageTotal" then
-				if normalizedRage > 0 or TRB.Data.snapshotData.ravager.rage > 0 or
-					(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0)
+				if normalizedRage > 0 or TRB.Data.snapshot.ravager.rage > 0 or
+					(TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw ~= 0)
 					then
 					valid = true
 				end
 			elseif var == "$passive" then
-				if TRB.Data.snapshotData.ravager.rage > 0 then
+				if TRB.Data.snapshot.ravager.rage > 0 then
 					valid = true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
-				if normalizedRage > 0 or TRB.Data.snapshotData.ravager.rage > 0 then
+				if normalizedRage > 0 or TRB.Data.snapshot.ravager.rage > 0 then
 					valid = true
 				end
 			elseif var == "$enrageTime" then
@@ -2474,15 +2474,15 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					valid = true
 				end
 			elseif var == "$whirlwindStacks" then
-				if TRB.Data.snapshotData.whirlwind.stacks ~= nil and TRB.Data.snapshotData.whirlwind.stacks > 0 then
+				if TRB.Data.snapshot.whirlwind.stacks ~= nil and TRB.Data.snapshot.whirlwind.stacks > 0 then
 					valid = true
 				end
 			elseif var == "$ravagerTicks" then
-				if TRB.Data.snapshotData.ravager.isActive then
+				if TRB.Data.snapshot.ravager.isActive then
 					valid = true
 				end
 			elseif var == "$ravagerRage" then
-				if TRB.Data.snapshotData.ravager.isActive then
+				if TRB.Data.snapshot.ravager.isActive then
 					valid = true
 				end
 			end
@@ -2500,18 +2500,18 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			valid = true
 		elseif var == "$resourcePlusCasting" or var == "$ragePlusCasting" then
 			if normalizedRage > 0 or
-				(TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0) then
+				(TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw ~= 0) then
 				valid = true
 			end
 		elseif var == "$overcap" or var == "$rageOvercap" or var == "$resourceOvercap" then
-			local threshold = ((TRB.Data.snapshotData.resource / TRB.Data.resourceFactor) + TRB.Data.snapshotData.casting.resourceFinal)
+			local threshold = ((TRB.Data.snapshot.resource / TRB.Data.resourceFactor) + TRB.Data.snapshot.casting.resourceFinal)
 			if settings.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) < threshold then
 				return true
 			elseif settings.overcap.mode == "fixed" and settings.overcap.fixed < threshold then
 				return true
 			end
 		elseif var == "$casting" then
-			if TRB.Data.snapshotData.casting.resourceRaw ~= nil and TRB.Data.snapshotData.casting.resourceRaw ~= 0 then
+			if TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw ~= 0 then
 				valid = true
 			end
 		end

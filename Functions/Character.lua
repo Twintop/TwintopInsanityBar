@@ -16,41 +16,41 @@ end
 
 function TRB.Functions.Character:UpdateSnapshot()
 	local _
-	TRB.Data.snapshotData.resource = UnitPower("player", TRB.Data.resource, true)
+	TRB.Data.snapshot.resource = UnitPower("player", TRB.Data.resource, true)
 
 	if TRB.Data.resource2 ~= nil then
 		if TRB.Data.resource2 == "CUSTOM" and TRB.Data.resource2Id ~= nil then
 			local _, _, stacks, _, duration, endTime, _, _, _, spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.resource2Id)
-			TRB.Data.snapshotData.resource2 = stacks or 0
+			TRB.Data.snapshot.resource2 = stacks or 0
 		else
-			TRB.Data.snapshotData.resource2 = UnitPower("player", TRB.Data.resource2, true)
+			TRB.Data.snapshot.resource2 = UnitPower("player", TRB.Data.resource2, true)
 		end
 	end
 
-	TRB.Data.snapshotData.haste = UnitSpellHaste("player")
-	TRB.Data.snapshotData.crit = GetCritChance()
-	TRB.Data.snapshotData.mastery = GetMasteryEffect()
-	TRB.Data.snapshotData.versatilityOffensive = GetCombatRatingBonus(29)
-	TRB.Data.snapshotData.versatilityDefensive = GetCombatRatingBonus(31)
+	TRB.Data.snapshot.haste = UnitSpellHaste("player")
+	TRB.Data.snapshot.crit = GetCritChance()
+	TRB.Data.snapshot.mastery = GetMasteryEffect()
+	TRB.Data.snapshot.versatilityOffensive = GetCombatRatingBonus(29)
+	TRB.Data.snapshot.versatilityDefensive = GetCombatRatingBonus(31)
 
-	TRB.Data.snapshotData.hasteRating = GetCombatRating(20)
-	TRB.Data.snapshotData.critRating = GetCombatRating(11)
-	TRB.Data.snapshotData.masteryRating = GetCombatRating(26)
-	TRB.Data.snapshotData.versatilityRating = GetCombatRating(29)
+	TRB.Data.snapshot.hasteRating = GetCombatRating(20)
+	TRB.Data.snapshot.critRating = GetCombatRating(11)
+	TRB.Data.snapshot.masteryRating = GetCombatRating(26)
+	TRB.Data.snapshot.versatilityRating = GetCombatRating(29)
 	
 ---@diagnostic disable-next-line: assign-type-mismatch
-	TRB.Data.snapshotData.strength, _, _, _ = UnitStat("player", 1)
+	TRB.Data.snapshot.strength, _, _, _ = UnitStat("player", 1)
 	---@diagnostic disable-next-line: assign-type-mismatch
-	TRB.Data.snapshotData.agility, _, _, _ = UnitStat("player", 2)
+	TRB.Data.snapshot.agility, _, _, _ = UnitStat("player", 2)
 	---@diagnostic disable-next-line: assign-type-mismatch
-	TRB.Data.snapshotData.stamina, _, _, _ = UnitStat("player", 3)
+	TRB.Data.snapshot.stamina, _, _, _ = UnitStat("player", 3)
 	---@diagnostic disable-next-line: assign-type-mismatch
-	TRB.Data.snapshotData.intellect, _, _, _ = UnitStat("player", 4)
+	TRB.Data.snapshot.intellect, _, _, _ = UnitStat("player", 4)
 
 end
 
 function TRB.Functions.Character:ResetSnapshotData()
-	TRB.Data.snapshotData = {
+	TRB.Data.snapshot = {
 		resource = 0,
 		haste = 0,
 		crit = 0,
@@ -93,7 +93,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.barTextVariables.values = cache.barTextVariables.values
 
 	TRB.Functions.Character:ResetSnapshotData()
-	TRB.Data.snapshotData = TRB.Functions.Table:Merge(TRB.Data.snapshotData, cache.snapshotData)
+	TRB.Data.snapshot = TRB.Functions.Table:Merge(TRB.Data.snapshot, cache.snapshot)
 
 ---@diagnostic disable-next-line: missing-parameter
 	TRB.Data.character.specGroup = GetActiveSpecGroup()
@@ -186,13 +186,13 @@ function TRB.Functions.Character:GetCurrentGCDTime(floor)
 end
 
 function TRB.Functions.Character:ResetCastingSnapshotData()
-	TRB.Data.snapshotData.casting.spellId = nil
-	TRB.Data.snapshotData.casting.startTime = nil
-	TRB.Data.snapshotData.casting.endTime = nil
-	TRB.Data.snapshotData.casting.resourceRaw = 0
-	TRB.Data.snapshotData.casting.resourceFinal = 0
-	TRB.Data.snapshotData.casting.icon = ""
-	TRB.Data.snapshotData.casting.spellKey = nil
+	TRB.Data.snapshot.casting.spellId = nil
+	TRB.Data.snapshot.casting.startTime = nil
+	TRB.Data.snapshot.casting.endTime = nil
+	TRB.Data.snapshot.casting.resourceRaw = 0
+	TRB.Data.snapshot.casting.resourceFinal = 0
+	TRB.Data.snapshot.casting.icon = ""
+	TRB.Data.snapshot.casting.spellKey = nil
 end
 
 function TRB.Functions.Character:GetLatency()

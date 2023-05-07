@@ -39,7 +39,7 @@ function TRB.Functions.Bar:ShowResourceBar()
 		TRB.Functions.Class:EventRegistration()
 	end
 
-	TRB.Data.snapshotData.isTracking = true
+	TRB.Data.snapshot.isTracking = true
 	TRB.Functions.Bar:HideResourceBar()
 end
 
