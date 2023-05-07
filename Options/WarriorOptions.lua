@@ -333,7 +333,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					enabled = false, -- 5
 				},
 				slam = {
-					enabled = true, -- 6
+					enabled = false, -- 6
 				},
 				impendingVictory = {
 					enabled = true, -- 7
