@@ -17,8 +17,10 @@ local content = [====[
 ## Monk
 ### Mistweaver
 
+- [#305 - NEW](#305) Add support for Vivacious Vivification.
+<br/>&emsp;&ensp;- Optional bar color change when the effect is active, denoting that Vivify can be cast instantly.
 - [#306 - NEW](#306) Add support for Mana Tea.
-<br/>&emsp;&ensp;- Optional bar border change when the buff is up.
+<br/>&emsp;&ensp;- Optional bar border color change when the buff is up.
 <br/>&emsp;&ensp;- New bar text icon and variable:
 <br/>&emsp;&ensp;&emsp;&ensp;- `#manaTea` -- buff icon
 <br/>&emsp;&ensp;&emsp;&ensp;- `$mtTime` or `$manaTeaTime` -- total time remaining on the buff
@@ -126,7 +128,7 @@ local content = [====[
 <br/>&emsp;&ensp;- New bar text variable:
 <br/>&emsp;&ensp;&emsp;&ensp;- `$mfiStacks` -- number of stacks of the buff
 - [#302 - NEW](#302) Add support for tracking Deathspeaker procs:
-<br/>&emsp;&ensp;- Optional bar border change when the buff is up. This superceeds the Mind Flay: Insanity / Mind Spike: Insanity border color change.
+<br/>&emsp;&ensp;- Optional bar border color change when the buff is up. This superceeds the Mind Flay: Insanity / Mind Spike: Insanity border color change.
 <br/>&emsp;&ensp;- New bar text icon and variables:
 <br/>&emsp;&ensp;&emsp;&ensp;- `#swd`, `#shadowWordDeath`, `#deathspeaker` -- buff icon
 <br/>&emsp;&ensp;&emsp;&ensp;- `$deathspeakerTime` -- total time remaining on the buff
@@ -135,7 +137,7 @@ local content = [====[
 ### Elemental
 
 - [#292 - NEW](#292) Added support for Primal Fracture (T30 4P bonus):
-<br/>&emsp;&ensp;- Optional bar border change when the buff is up.
+<br/>&emsp;&ensp;- Optional bar border color change when the buff is up.
 <br/>&emsp;&ensp;- New bar text icon and variables:
 <br/>&emsp;&ensp;&emsp;&ensp;- `#primalFracture` - buff icon
 <br/>&emsp;&ensp;&emsp;&ensp;- `$pfTime` -- total time remaining on the buff
