@@ -137,6 +137,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				isTalent = true,
 				baseline = true
 			},
+			vivaciousVivification = {
+				id = 392883,
+				name = "", 
+				icon = ""
+			},
 
 			-- Mistweaver Spec Talents
 			manaTea = {
@@ -382,6 +387,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			mana = 0,
 			endTime = nil,
 			lastTick = nil
+		}
+		specCache.mistweaver.snapshotData.vivaciousVivification = {
+			isActive = false
 		}
 
 		specCache.mistweaver.barTextVariables = {
@@ -2110,9 +2118,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
+					local affectingCombat = UnitAffectingCombat("player")
 					local resourceBarColor = nil
 
 					resourceBarColor = specSettings.colors.bar.base
+
+					if specSettings.colors.bar.vivaciousVivification.enabled and affectingCombat and TRB.Data.snapshotData.vivaciousVivification.isActive then
+						resourceBarColor = specSettings.colors.bar.vivaciousVivification.color
+					end
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(resourceBarColor, true))
 				end
@@ -2359,7 +2372,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							local _
 							_, _, _, _, TRB.Data.snapshotData.moltenRadiance.duration, TRB.Data.snapshotData.moltenRadiance.endTime, _, _, _, TRB.Data.snapshotData.moltenRadiance.spellId, _, _, _, _, _, _, _, TRB.Data.snapshotData.moltenRadiance.manaPerTick = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.moltenRadiance.id)
-							TRB.Data.snapshotData.moltenRadiance.isActive = false
+							TRB.Data.snapshotData.moltenRadiance.isActive = true
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshotData.moltenRadiance.isActive = false
 							TRB.Data.snapshotData.moltenRadiance.spellId = nil
@@ -2367,6 +2380,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							TRB.Data.snapshotData.moltenRadiance.endTime = nil
 							TRB.Data.snapshotData.moltenRadiance.manaPerTick = 0
 							TRB.Data.snapshotData.moltenRadiance.mana = 0
+						end
+					elseif spellId == TRB.Data.spells.vivaciousVivification.id then
+						if type == "SPELL_AURA_APPLIED" then
+							TRB.Data.snapshotData.vivaciousVivification.isActive = true
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.vivaciousVivification.isActive = false
 						end
 					end
 				end

@@ -182,6 +182,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						color = "FF00FFFF",
 						enabled = true
 					},
+					vivaciousVivification = {
+						color = "FF00FFBB",
+						enabled = true
+					},
 				},
 				threshold={
 					unusable="FFFF0000",
@@ -593,6 +597,23 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		yCoord = yCoord - 70
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 2, yCoord, "Mana")
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.vivaciousVivification = CreateFrame("CheckButton", "TwintopResourceBar_Monk_2_Checkbox_vivaciousVivification", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.vivaciousVivification
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Instant Vivify color change enabled")
+		f.tooltip = "This will change the bar color when Vivify is able to be cast instantly due to a the effect of Vivacious Vivification being active."
+		f:SetChecked(spec.colors.bar.vivaciousVivification.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.vivaciousVivification.enabled = self:GetChecked()
+		end)
+
+		controls.colors.vivaciousVivification = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Vivify is instant cast (via Vivacious Vivification talent)", spec.colors.bar.vivaciousVivification.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.vivaciousVivification
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "vivaciousVivification")
+		end)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_2_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")

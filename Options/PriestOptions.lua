@@ -1842,7 +1842,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.instantMindBlast
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Instant Mind Blast color change enabled")
-		f.tooltip = "This will change the bar color when Mind Blast is able to be cast instantly either due to a Shadowy Insight proc."
+		f.tooltip = "This will change the bar color when Mind Blast is able to be cast instantly due to a Shadowy Insight proc."
 		f:SetChecked(spec.colors.bar.instantMindBlast.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.instantMindBlast.enabled = self:GetChecked()
