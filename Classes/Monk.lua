@@ -138,6 +138,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				baseline = true
 			},
 
+			-- Mistweaver Spec Talents
+			manaTea = {
+				id = 197908,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+
 			-- External mana
 			symbolOfHope = {
 				id = 64901,
@@ -310,6 +318,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			remainingTime = 0,
 			mana = 0,
 			modifier = 1
+		}
+		specCache.mistweaver.snapshotData.manaTea = {
+			isActive = false,
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0
 		}
 		specCache.mistweaver.snapshotData.manaTideTotem = {
 			spellId = nil,
@@ -759,6 +774,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "$mttMana", description = "Bonus passive mana regen while Mana Tide Totem is active", printInSettings = true, color = false },
 			{ variable = "$mttTime", description = "Time left on Mana Tide Totem", printInSettings = true, color = false },
 
+			{ variable = "$mtTime", description = "Time left on Mana Tea", printInSettings = true, color = false },
+			{ variable = "$manaTeaTime", description = "Time left on Mana Tea", printInSettings = false, color = false },
+
 			{ variable = "$siMana", description = "Mana from Soulfang Infusion", printInSettings = true, color = false },
 			{ variable = "$siTime", description = "Time left on Soulfang Infusion", printInSettings = true, color = false },
 			{ variable = "$siTicks", description = "Number of ticks left from Soulfang Infusion", printInSettings = true, color = false },
@@ -1002,6 +1020,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.manaTideTotem)
 	end
 
+	local function GetManaTeaRemainingTime()
+		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.manaTea)
+	end
+
 	local function GetMoltenRadianceRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshotData.moltenRadiance)
 	end
@@ -1154,6 +1176,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		--$mttTime
 		local _mttTime = GetManaTideTotemRemainingTime()
 		local mttTime = string.format("%.1f", _mttTime)
+		
+		--$mtTime
+		local _mtTime = GetManaTeaRemainingTime()
+		local mtTime = string.format("%.1f", _mtTime)
 
 		--$mrMana
 		local _mrMana = TRB.Data.snapshotData.moltenRadiance.mana
@@ -1288,6 +1314,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["$mrTime"] = mrTime
 		lookup["$mttMana"] = mttMana
 		lookup["$mttTime"] = mttTime
+		lookup["$mtTime"] = mtTime
+		lookup["$manaTeaTime"] = mtTime
 		lookup["$siMana"] = siMana
 		lookup["$siTicks"] = siTicks
 		lookup["$siTime"] = siTime
@@ -1324,6 +1352,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookupLogic["$mrTime"] = _mrTime
 		lookupLogic["$mttMana"] = _mttMana
 		lookupLogic["$mttTime"] = _mttTime
+		lookupLogic["$mtTime"] = _mtTime
+		lookupLogic["$manaTeaTime"] = _mtTime
 		lookupLogic["$siMana"] = _siMana
 		lookupLogic["$siTicks"] = _siTicks
 		lookupLogic["$siTime"] = _siTime
@@ -1924,11 +1954,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					local currentMana = TRB.Data.snapshotData.resource / TRB.Data.resourceFactor
 					local barBorderColor = specSettings.colors.bar.border
 
-					if TRB.Data.spells.potionOfChilledClarity.isActive then
-						if specSettings.colors.bar.potionOfChilledClarityBorderChange then
-							barBorderColor = specSettings.colors.bar.potionOfChilledClarity
-						end
-					elseif TRB.Data.spells.innervate.isActive then
+					if TRB.Data.spells.potionOfChilledClarity.isActive and specSettings.colors.bar.potionOfChilledClarityBorderChange then
+						barBorderColor = specSettings.colors.bar.potionOfChilledClarity
+					elseif TRB.Data.spells.innervate.isActive and (specSettings.colors.bar.innervateBorderChange or specSettings.audio.innervate.enabled)  then
 						if specSettings.colors.bar.innervateBorderChange then
 							barBorderColor = specSettings.colors.bar.innervate
 						end
@@ -1938,6 +1966,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 ---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.innervate.sound, coreSettings.audio.channel.channel)
 						end
+					elseif TRB.Data.snapshotData.manaTea.isActive then
+						barBorderColor = specSettings.colors.bar.manaTea.color
 					end
 
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
@@ -2400,6 +2430,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							TRB.Data.snapshotData.potionOfChilledClarity.duration = 0
 							TRB.Data.snapshotData.potionOfChilledClarity.endTime = nil
 							TRB.Data.snapshotData.potionOfChilledClarity.modifier = 1
+						end
+					elseif spellId == TRB.Data.spells.manaTea.id then
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							TRB.Data.snapshotData.manaTea.isActive = true
+							_, _, _, _, TRB.Data.snapshotData.manaTea.duration, TRB.Data.snapshotData.manaTea.endTime, _, _, _, TRB.Data.snapshotData.manaTea.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.manaTea.id)
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshotData.manaTea.isActive = false
+							TRB.Data.snapshotData.manaTea.spellId = nil
+							TRB.Data.snapshotData.manaTea.duration = 0
+							TRB.Data.snapshotData.manaTea.endTime = nil
 						end
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "windwalker" then --Windwalker
@@ -2883,6 +2923,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				end
 			elseif var == "$mttTime" then
 				if TRB.Data.snapshotData.manaTideTotem.isActive then
+					valid = true
+				end
+			elseif var == "$mtTime" or var == "$manaTeaTime" then
+				if TRB.Data.snapshotData.manaTea.isActive then
 					valid = true
 				end
 			elseif var == "$mrMana" then

@@ -177,7 +177,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					spending="FFFFFFFF",
 					passive="FF8080FF",
 					innervateBorderChange=true,
-					potionOfChilledClarityBorderChange=true
+					potionOfChilledClarityBorderChange=true,
+					manaTea = {
+						color = "FF00FFFF",
+						enabled = true
+					},
 				},
 				threshold={
 					unusable="FFFF0000",
@@ -633,6 +637,23 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 2, yCoord, "Mana", false, true)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.manaTeaBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Monk_2_Border_Option_manaTeaBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.manaTeaBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Mana Tea active")
+		f.tooltip = "This will change the bar border color when the cost of spells is reduced due to Mana Tea being active."
+		f:SetChecked(spec.colors.bar.manaTea.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.manaTea.enabled = self:GetChecked()
+		end)
+
+		controls.colors.manaTea = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when a Mana Tea is active", spec.colors.bar.manaTea.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.manaTea
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "manaTea")
+		end)
 
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, 10, 2, yCoord)

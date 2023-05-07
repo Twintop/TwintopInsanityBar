@@ -8,7 +8,7 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
-# 10.1.0.2-release (2023-05-0?)
+# 10.1.0.2-release (2023-05-09)
 ## Druid
 ### Balance
 
