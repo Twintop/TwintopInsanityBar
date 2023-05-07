@@ -14,11 +14,22 @@ local content = [====[
 
 - [#310 - HOTFIX](#310) Wrath Astral Power generation reduced to 8 (was 10).
 
+## Monk
+### Mistweaver
+
+- [#306 - NEW](#306) Add support for Mana Tea.
+<br/>&emsp;&ensp;- Optional bar border change when the buff is up.
+<br/>&emsp;&ensp;- New bar text icon and variable:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#manaTea` -- buff icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$mtTime` or `$manaTeaTime` -- total time remaining on the buff
+
 ## Priest
 ### Shadow
 
+- [#302 - NEW](#302) Add an optional audio cue for when you gain a Deathspeaker proc.
 - [#309 - FIX](#309) Ensure Mind Spike: Insanity shows incoming casting Insanity.
 
+----
 
 # 10.1.0.1-release (2023-05-04)
 ## General
@@ -29,10 +40,6 @@ local content = [====[
 ### Holy
 
 - [#308 - FIX](#308) Fix passive incoming mana regen from Shadowfiend not displaying.
-
-### Shadow 
-
-- [#302 - NEW](#302) Add an optional audio cue for when you gain a Deathspeaker proc.
 
 ----
 

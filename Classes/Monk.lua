@@ -694,6 +694,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "#casting", icon = "", description = "The icon of the mana spending spell you are currently casting", printInSettings = true },
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+			
+			{ variable = "#manaTea", icon = spells.manaTea.icon, description = spells.manaTea.name, printInSettings = true },
 
 			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
 			{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
@@ -1277,6 +1279,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["#innervate"] = TRB.Data.spells.innervate.icon
 		lookup["#mr"] = TRB.Data.spells.moltenRadiance.icon
 		lookup["#moltenRadiance"] = TRB.Data.spells.moltenRadiance.icon
+		lookup["#manaTea"] = TRB.Data.spells.manaTea.icon
 		lookup["#mtt"] = TRB.Data.spells.manaTideTotem.icon
 		lookup["#manaTideTotem"] = TRB.Data.spells.manaTideTotem.icon
 		lookup["#soh"] = TRB.Data.spells.symbolOfHope.icon
