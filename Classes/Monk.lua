@@ -2531,7 +2531,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							end
 						end
 					elseif spellId == TRB.Data.spells.detox.id then
-						if type == "SPELL_CAST_SUCCESS" then
+						if type == "SPELL_DISPEL" then
 							TRB.Data.snapshotData.detox.startTime = currentTime
 							TRB.Data.snapshotData.detox.duration = TRB.Data.spells.detox.cooldown
 						end

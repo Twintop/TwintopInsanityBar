@@ -25,6 +25,10 @@ local content = [====[
 <br/>&emsp;&ensp;&emsp;&ensp;- `#manaTea` -- buff icon
 <br/>&emsp;&ensp;&emsp;&ensp;- `$mtTime` or `$manaTeaTime` -- total time remaining on the buff
 
+## Windwalker
+
+- [#275 - FIX](#275) Only show Detox's threshold as on cooldown when Detox actually removes a disease or poison.
+
 ## Priest
 ### Shadow
 
