@@ -3786,11 +3786,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshot.audio.manaTideTotemCue = false
 						end
 					elseif spellId == TRB.Data.spells.moltenRadiance.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.moltenRadiance)
-						if type == "SPELL_AURA_REMOVED" then -- Lost buff
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
+							local _
+							_, _, _, _, TRB.Data.snapshot.moltenRadiance.duration, TRB.Data.snapshot.moltenRadiance.endTime, _, _, _, TRB.Data.snapshot.moltenRadiance.spellId, _, _, _, _, _, _, _, TRB.Data.snapshot.moltenRadiance.manaPerTick = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.moltenRadiance.id)
+							TRB.Data.snapshot.moltenRadiance.isActive = false
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							TRB.Data.snapshot.moltenRadiance.isActive = false
+							TRB.Data.snapshot.moltenRadiance.spellId = nil
+							TRB.Data.snapshot.moltenRadiance.duration = 0
+							TRB.Data.snapshot.moltenRadiance.endTime = nil
 							TRB.Data.snapshot.moltenRadiance.manaPerTick = 0
 							TRB.Data.snapshot.moltenRadiance.mana = 0
-						end			
+						end		
 					elseif settings.shadowfiend.enabled and type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.shadowfiend.energizeId and sourceName == TRB.Data.spells.shadowfiend.name then
 						TRB.Data.snapshot.shadowfiend.swingTime = currentTime
 						TRB.Data.snapshot.shadowfiend.startTime, TRB.Data.snapshot.shadowfiend.duration, _, _ = GetSpellCooldown(TRB.Data.spells.shadowfiend.id)

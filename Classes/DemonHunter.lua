@@ -1187,15 +1187,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							TRB.Data.snapshot.felEruption.startTime, TRB.Data.snapshot.felEruption.duration, _, _ = GetSpellCooldown(TRB.Data.spells.felEruption.id)
 						end
 					elseif spellId == TRB.Data.spells.metamorphosis.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.metamorphosis.isActive = true
-							_, _, _, _, TRB.Data.snapshot.metamorphosis.duration, TRB.Data.snapshot.metamorphosis.endTime, _, _, _, TRB.Data.snapshot.metamorphosis.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.metamorphosis.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.metamorphosis.isActive = false
-							TRB.Data.snapshot.metamorphosis.spellId = nil
-							TRB.Data.snapshot.metamorphosis.duration = 0
-							TRB.Data.snapshot.metamorphosis.endTime = nil
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.metamorphosis)
 					elseif spellId == TRB.Data.spells.immolationAura.id then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
 							local felfireHeartDurationMod = 0
@@ -1229,29 +1221,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							TRB.Data.snapshot.immolationAura.lastTick = currentTime
 						end
 					elseif spellId == TRB.Data.spells.unboundChaos.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.unboundChaos.isActive = true
-							_, _, _, _, TRB.Data.snapshot.unboundChaos.duration, TRB.Data.snapshot.unboundChaos.endTime, _, _, _, TRB.Data.snapshot.unboundChaos.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.unboundChaos.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.unboundChaos.isActive = false
-							TRB.Data.snapshot.unboundChaos.spellId = nil
-							TRB.Data.snapshot.unboundChaos.duration = 0
-							TRB.Data.snapshot.unboundChaos.endTime = nil
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.unboundChaos)
 					elseif spellId == TRB.Data.spells.chaosTheory.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.chaosTheory.isActive = true
-							_, _, _, _, TRB.Data.snapshot.chaosTheory.duration, TRB.Data.snapshot.chaosTheory.endTime, _, _, _, TRB.Data.snapshot.chaosTheory.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.chaosTheory.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.chaosTheory.isActive = false
-							TRB.Data.snapshot.chaosTheory.spellId = nil
-							TRB.Data.snapshot.chaosTheory.duration = 0
-							TRB.Data.snapshot.chaosTheory.endTime = nil
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.chaosTheory)
 					elseif spellId == TRB.Data.spells.tacticalRetreat.id then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Tactical Retreat
 							TRB.Data.snapshot.tacticalRetreat.isActive = true
-							TRB.Data.snapshot.tacticalRetreat.ticksRemaining = TRB.Data.spells.tacticalRetreat.ticks								
+							TRB.Data.snapshot.tacticalRetreat.ticksRemaining = TRB.Data.spells.tacticalRetreat.ticks
 							TRB.Data.snapshot.tacticalRetreat.fury = TRB.Data.snapshot.tacticalRetreat.ticksRemaining * TRB.Data.spells.tacticalRetreat.fury
 							TRB.Data.snapshot.tacticalRetreat.endTime = currentTime + TRB.Data.spells.tacticalRetreat.duration
 							TRB.Data.snapshot.tacticalRetreat.lastTick = currentTime
