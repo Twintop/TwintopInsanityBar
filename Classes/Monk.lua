@@ -2342,16 +2342,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						TRB.Data.snapshot.symbolOfHope.resourceRaw = TRB.Data.snapshot.symbolOfHope.ticksRemaining * TRB.Data.spells.symbolOfHope.manaPercent * TRB.Data.character.maxResource
 						TRB.Data.snapshot.symbolOfHope.resourceFinal = CalculateManaGain(TRB.Data.snapshot.symbolOfHope.resourceRaw, false)
 					elseif spellId == TRB.Data.spells.innervate.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.innervate.isActive = true
-							_, _, _, _, TRB.Data.snapshot.innervate.duration, TRB.Data.snapshot.innervate.endTime, _, _, _, TRB.Data.snapshot.innervate.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.innervate.id)
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.innervate)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							TRB.Data.snapshot.innervate.modifier = 0
 							TRB.Data.snapshot.audio.innervateCue = false
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.innervate.isActive = false
-							TRB.Data.snapshot.innervate.spellId = nil
-							TRB.Data.snapshot.innervate.duration = 0
-							TRB.Data.snapshot.innervate.endTime = nil
+						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshot.innervate.modifier = 1
 							TRB.Data.snapshot.audio.innervateCue = false
 						end
@@ -2382,11 +2377,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							TRB.Data.snapshot.moltenRadiance.mana = 0
 						end
 					elseif spellId == TRB.Data.spells.vivaciousVivification.id then
-						if type == "SPELL_AURA_APPLIED" then
-							TRB.Data.snapshot.vivaciousVivification.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.vivaciousVivification.isActive = false
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.vivaciousVivification, true)
 					end
 				end
 			end
@@ -2442,27 +2433,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							UpdateSoulfangInfusion(true)
 						end
 					elseif spellId == TRB.Data.spells.potionOfChilledClarity.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.potionOfChilledClarity.isActive = true
-							_, _, _, _, TRB.Data.snapshot.potionOfChilledClarity.duration, TRB.Data.snapshot.potionOfChilledClarity.endTime, _, _, _, TRB.Data.snapshot.potionOfChilledClarity.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.potionOfChilledClarity.id)
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.potionOfChilledClarity)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							TRB.Data.snapshot.potionOfChilledClarity.modifier = 0
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.potionOfChilledClarity.isActive = false
-							TRB.Data.snapshot.potionOfChilledClarity.spellId = nil
-							TRB.Data.snapshot.potionOfChilledClarity.duration = 0
-							TRB.Data.snapshot.potionOfChilledClarity.endTime = nil
+						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshot.potionOfChilledClarity.modifier = 1
 						end
 					elseif spellId == TRB.Data.spells.manaTea.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.manaTea.isActive = true
-							_, _, _, _, TRB.Data.snapshot.manaTea.duration, TRB.Data.snapshot.manaTea.endTime, _, _, _, TRB.Data.snapshot.manaTea.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.manaTea.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.manaTea.isActive = false
-							TRB.Data.snapshot.manaTea.spellId = nil
-							TRB.Data.snapshot.manaTea.duration = 0
-							TRB.Data.snapshot.manaTea.endTime = nil
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.manaTea)
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "windwalker" then --Windwalker
 					if spellId == TRB.Data.spells.strikeOfTheWindlord.id then
@@ -2471,30 +2449,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							TRB.Data.snapshot.strikeOfTheWindlord.duration = TRB.Data.spells.strikeOfTheWindlord.cooldown
 						end
 					elseif spellId == TRB.Data.spells.serenity.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.serenity.isActive = true
-							_, _, _, _, TRB.Data.snapshot.serenity.duration, TRB.Data.snapshot.serenity.endTime, _, _, _, TRB.Data.snapshot.serenity.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.serenity.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.serenity.isActive = false
-							TRB.Data.snapshot.serenity.spellId = nil
-							TRB.Data.snapshot.serenity.duration = 0
-							TRB.Data.snapshot.serenity.endTime = nil
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.serenity)
 					elseif spellId == TRB.Data.spells.danceOfChiJi.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.danceOfChiJi.isActive = true
-							_, _, _, _, TRB.Data.snapshot.danceOfChiJi.duration, TRB.Data.snapshot.danceOfChiJi.endTime, _, _, _, TRB.Data.snapshot.danceOfChiJi.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.danceOfChiJi.id)
-
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.danceOfChiJi)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.enabled and not TRB.Data.snapshot.audio.playedDanceOfChiJiCue then
 								TRB.Data.snapshot.audio.playedDanceOfChiJiCue = true
 								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.danceOfChiJi.isActive = false
-							TRB.Data.snapshot.danceOfChiJi.spellId = nil
-							TRB.Data.snapshot.danceOfChiJi.duration = 0
-							TRB.Data.snapshot.danceOfChiJi.endTime = nil
+						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshot.audio.playedDanceOfChiJiCue = false
 						end
 					elseif spellId == TRB.Data.spells.markOfTheCrane.id then

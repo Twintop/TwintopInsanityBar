@@ -1617,16 +1617,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						TRB.Data.snapshot.symbolOfHope.resourceRaw = TRB.Data.snapshot.symbolOfHope.ticksRemaining * TRB.Data.spells.symbolOfHope.manaPercent * TRB.Data.character.maxResource
 						TRB.Data.snapshot.symbolOfHope.resourceFinal = CalculateManaGain(TRB.Data.snapshot.symbolOfHope.resourceRaw, false)
 					elseif spellId == TRB.Data.spells.innervate.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.innervate.isActive = true
-							_, _, _, _, TRB.Data.snapshot.innervate.duration, TRB.Data.snapshot.innervate.endTime, _, _, _, TRB.Data.snapshot.innervate.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.innervate.id)
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.innervate)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							TRB.Data.snapshot.innervate.modifier = 0
 							TRB.Data.snapshot.audio.innervateCue = false
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.innervate.isActive = false
-							TRB.Data.snapshot.innervate.spellId = nil
-							TRB.Data.snapshot.innervate.duration = 0
-							TRB.Data.snapshot.innervate.endTime = nil
+						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshot.innervate.modifier = 1
 							TRB.Data.snapshot.audio.innervateCue = false
 						end
@@ -1700,17 +1695,12 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Frozen Focus channel
 							-- Let UpdateChanneledManaPotion() clean this up
 							UpdateChanneledManaPotion(true)
-						end					
+						end
 					elseif spellId == TRB.Data.spells.potionOfChilledClarity.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.potionOfChilledClarity.isActive = true
-							_, _, _, _, TRB.Data.snapshot.potionOfChilledClarity.duration, TRB.Data.snapshot.potionOfChilledClarity.endTime, _, _, _, TRB.Data.snapshot.potionOfChilledClarity.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.potionOfChilledClarity.id)
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.potionOfChilledClarity)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							TRB.Data.snapshot.potionOfChilledClarity.modifier = 0
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.potionOfChilledClarity.isActive = false
-							TRB.Data.snapshot.potionOfChilledClarity.spellId = nil
-							TRB.Data.snapshot.potionOfChilledClarity.duration = 0
-							TRB.Data.snapshot.potionOfChilledClarity.endTime = nil
+						elseif type == "SPELL_AURA_REMOVED" then 
 							TRB.Data.snapshot.potionOfChilledClarity.modifier = 1
 						end
 					elseif spellId == TRB.Data.spells.emeraldCommunion.id then

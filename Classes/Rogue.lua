@@ -3742,25 +3742,15 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							TRB.Data.snapshot.exsanguinate.duration = TRB.Data.spells.exsanguinate.cooldown
 						end
 					elseif spellId == TRB.Data.spells.blindside.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.blindside.isActive = true
-							_, _, _, _, TRB.Data.snapshot.blindside.duration, TRB.Data.snapshot.blindside.endTime, _, _, _, TRB.Data.snapshot.blindside.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.blindside.id)
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.blindside)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.rogue.assassination.audio.blindside.enabled then
 								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.blindside.isActive = false
-							TRB.Data.snapshot.blindside.spellId = nil
-							TRB.Data.snapshot.blindside.duration = 0
-							TRB.Data.snapshot.blindside.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.subterfuge.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.subterfuge.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.subterfuge.isActive = false
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.subterfuge, true)
 					elseif spellId == TRB.Data.spells.garrote.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_CAST_SUCCESS" then
@@ -3895,20 +3885,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							TRB.Data.snapshot.crimsonVial.duration = TRB.Data.spells.crimsonVial.cooldown
 						end
 					elseif spellId == TRB.Data.spells.improvedGarrote.stealthBuffId then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
-							TRB.Data.snapshot.improvedGarrote.isActiveStealth = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.improvedGarrote.isActiveStealth = false
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.improvedGarrote, true)
 					elseif spellId == TRB.Data.spells.improvedGarrote.buffId then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
-							TRB.Data.snapshot.improvedGarrote.isActive = true
-							_, _, _, _, _, TRB.Data.snapshot.improvedGarrote.endTime, _, _, _, TRB.Data.snapshot.improvedGarrote.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.improvedGarrote.buffId)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.improvedGarrote.isActive = false
-							TRB.Data.snapshot.improvedGarrote.spellId = nil
-							TRB.Data.snapshot.improvedGarrote.endTime = nil
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.improvedGarrote)
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "outlaw" then
 					if spellId == TRB.Data.spells.betweenTheEyes.id then
@@ -3942,120 +3921,77 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							TRB.Data.snapshot.rollTheBones.duration = TRB.Data.spells.rollTheBones.cooldown
 						end
 					elseif spellId == TRB.Data.spells.opportunity.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.opportunity.isActive = true
-							_, _, _, _, TRB.Data.snapshot.opportunity.duration, TRB.Data.snapshot.opportunity.endTime, _, _, _, TRB.Data.snapshot.opportunity.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.opportunity.id)
-							
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.opportunity)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.rogue.outlaw.audio.opportunity.enabled then
 								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(TRB.Data.settings.rogue.outlaw.audio.opportunity.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.broadside.isActive = false
-							TRB.Data.snapshot.opportunity.spellId = nil
-							TRB.Data.snapshot.opportunity.duration = 0
-							TRB.Data.snapshot.opportunity.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.broadside.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.broadside.isActive = true
-							_, _, _, _, TRB.Data.snapshot.rollTheBones.buffs.broadside.duration, TRB.Data.snapshot.rollTheBones.buffs.broadside.endTime, _, _, _, TRB.Data.snapshot.rollTheBones.buffs.broadside.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.broadside.id)
-							
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.rollTheBones.buffs.broadside)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.snapshot.rollTheBones.buffs.broadside.duration > TRB.Data.spells.countTheOdds.duration then
 								TRB.Data.snapshot.rollTheBones.buffs.broadside.fromCountTheOdds = false
 							else
 								TRB.Data.snapshot.rollTheBones.buffs.broadside.fromCountTheOdds = true
 							end
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.broadside.isActive = false
-							TRB.Data.snapshot.rollTheBones.buffs.broadside.spellId = nil
-							TRB.Data.snapshot.rollTheBones.buffs.broadside.duration = 0
-							TRB.Data.snapshot.rollTheBones.buffs.broadside.endTime = nil
+						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshot.rollTheBones.buffs.broadside.fromCountTheOdds = false
 						end
 					elseif spellId == TRB.Data.spells.buriedTreasure.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.buriedTreasure.isActive = true
-							_, _, _, _, TRB.Data.snapshot.rollTheBones.buffs.buriedTreasure.duration, TRB.Data.snapshot.rollTheBones.buffs.buriedTreasure.endTime, _, _, _, TRB.Data.snapshot.rollTheBones.buffs.buriedTreasure.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.buriedTreasure.id)
-							
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.rollTheBones.buffs.buriedTreasure)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.snapshot.rollTheBones.buffs.buriedTreasure.duration > TRB.Data.spells.countTheOdds.duration then
 								TRB.Data.snapshot.rollTheBones.buffs.buriedTreasure.fromCountTheOdds = false
 							else
 								TRB.Data.snapshot.rollTheBones.buffs.buriedTreasure.fromCountTheOdds = true
 							end
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.buriedTreasure.isActive = false
-							TRB.Data.snapshot.rollTheBones.buffs.buriedTreasure.spellId = nil
-							TRB.Data.snapshot.rollTheBones.buffs.buriedTreasure.duration = 0
-							TRB.Data.snapshot.rollTheBones.buffs.buriedTreasure.endTime = nil
+						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshot.rollTheBones.buffs.buriedTreasure.fromCountTheOdds = false
 						end
 					elseif spellId == TRB.Data.spells.grandMelee.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.grandMelee.isActive = true
-							_, _, _, _, TRB.Data.snapshot.rollTheBones.buffs.grandMelee.duration, TRB.Data.snapshot.rollTheBones.buffs.grandMelee.endTime, _, _, _, TRB.Data.snapshot.rollTheBones.buffs.grandMelee.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.grandMelee.id)
-							
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.rollTheBones.buffs.grandMelee)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.snapshot.rollTheBones.buffs.grandMelee.duration > TRB.Data.spells.countTheOdds.duration then
 								TRB.Data.snapshot.rollTheBones.buffs.grandMelee.fromCountTheOdds = false
 							else
 								TRB.Data.snapshot.rollTheBones.buffs.grandMelee.fromCountTheOdds = true
 							end
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.grandMelee.isActive = false
-							TRB.Data.snapshot.rollTheBones.buffs.grandMelee.spellId = nil
-							TRB.Data.snapshot.rollTheBones.buffs.grandMelee.duration = 0
-							TRB.Data.snapshot.rollTheBones.buffs.grandMelee.endTime = nil
+						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshot.rollTheBones.buffs.grandMelee.fromCountTheOdds = false
 						end
 					elseif spellId == TRB.Data.spells.ruthlessPrecision.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.ruthlessPrecision.isActive = true
-							_, _, _, _, TRB.Data.snapshot.rollTheBones.buffs.ruthlessPrecision.duration, TRB.Data.snapshot.rollTheBones.buffs.ruthlessPrecision.endTime, _, _, _, TRB.Data.snapshot.rollTheBones.buffs.ruthlessPrecision.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.ruthlessPrecision.id)
-							
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.rollTheBones.buffs.ruthlessPrecision)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.snapshot.rollTheBones.buffs.ruthlessPrecision.duration > TRB.Data.spells.countTheOdds.duration then
 								TRB.Data.snapshot.rollTheBones.buffs.ruthlessPrecision.fromCountTheOdds = false
 							else
 								TRB.Data.snapshot.rollTheBones.buffs.ruthlessPrecision.fromCountTheOdds = true
 							end
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.ruthlessPrecision.isActive = false
-							TRB.Data.snapshot.rollTheBones.buffs.ruthlessPrecision.spellId = nil
-							TRB.Data.snapshot.rollTheBones.buffs.ruthlessPrecision.duration = 0
-							TRB.Data.snapshot.rollTheBones.buffs.ruthlessPrecision.endTime = nil
+						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshot.rollTheBones.buffs.ruthlessPrecision.fromCountTheOdds = false
 						end
 					elseif spellId == TRB.Data.spells.skullAndCrossbones.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.skullAndCrossbones.isActive = true
-							_, _, _, _, TRB.Data.snapshot.rollTheBones.buffs.skullAndCrossbones.duration, TRB.Data.snapshot.rollTheBones.buffs.skullAndCrossbones.endTime, _, _, _, TRB.Data.snapshot.rollTheBones.buffs.skullAndCrossbones.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.skullAndCrossbones.id)
-							
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.rollTheBones.buffs.skullAndCrossbones)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.snapshot.rollTheBones.buffs.skullAndCrossbones.duration > TRB.Data.spells.countTheOdds.duration then
 								TRB.Data.snapshot.rollTheBones.buffs.skullAndCrossbones.fromCountTheOdds = false
 							else
 								TRB.Data.snapshot.rollTheBones.buffs.skullAndCrossbones.fromCountTheOdds = true
 							end
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.skullAndCrossbones.isActive = false
-							TRB.Data.snapshot.rollTheBones.buffs.skullAndCrossbones.spellId = nil
-							TRB.Data.snapshot.rollTheBones.buffs.skullAndCrossbones.duration = 0
-							TRB.Data.snapshot.rollTheBones.buffs.skullAndCrossbones.endTime = nil
+						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshot.rollTheBones.buffs.skullAndCrossbones.fromCountTheOdds = false
 						end
 					elseif spellId == TRB.Data.spells.trueBearing.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.trueBearing.isActive = true
-							_, _, _, _, TRB.Data.snapshot.rollTheBones.buffs.trueBearing.duration, TRB.Data.snapshot.rollTheBones.buffs.trueBearing.endTime, _, _, _, TRB.Data.snapshot.rollTheBones.buffs.trueBearing.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.trueBearing.id)
-
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.rollTheBones.buffs.trueBearing)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.snapshot.rollTheBones.buffs.trueBearing.duration > TRB.Data.spells.countTheOdds.duration then
 								TRB.Data.snapshot.rollTheBones.buffs.trueBearing.fromCountTheOdds = false
 							else
 								TRB.Data.snapshot.rollTheBones.buffs.trueBearing.fromCountTheOdds = true
 							end
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.trueBearing.isActive = false
-							TRB.Data.snapshot.rollTheBones.buffs.trueBearing.spellId = nil
-							TRB.Data.snapshot.rollTheBones.buffs.trueBearing.duration = 0
-							TRB.Data.snapshot.rollTheBones.buffs.trueBearing.endTime = nil
+						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshot.rollTheBones.buffs.trueBearing.fromCountTheOdds = false
 						end
 					elseif spellId == TRB.Data.spells.keepItRolling.id then
@@ -4089,14 +4025,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						TRB.Data.snapshot.crimsonVial.duration = TRB.Data.spells.crimsonVial.cooldown
 					end
 				elseif spellId == TRB.Data.spells.sliceAndDice.id then
-					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
-						TRB.Data.snapshot.sliceAndDice.isActive = true
-						_, _, _, _, _, TRB.Data.snapshot.sliceAndDice.endTime, _, _, _, TRB.Data.snapshot.sliceAndDice.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.sliceAndDice.id)
-					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-						TRB.Data.snapshot.sliceAndDice.isActive = false
-						TRB.Data.snapshot.sliceAndDice.spellId = nil
-						TRB.Data.snapshot.sliceAndDice.endTime = nil
-					end
+					TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.sliceAndDice)
 				elseif spellId == TRB.Data.spells.distract.id then
 					if type == "SPELL_CAST_SUCCESS" then
 						TRB.Data.snapshot.distract.startTime = currentTime
@@ -4125,7 +4054,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					if type == "SPELL_CAST_SUCCESS" then
 						TRB.Data.snapshot.echoingReprimand.startTime = currentTime
 						TRB.Data.snapshot.echoingReprimand.duration = TRB.Data.spells.echoingReprimand.cooldown
-					--elseif type == "SPELL_PERIODIC_DAMAGE" then
 					end
 				elseif spellId == TRB.Data.spells.echoingReprimand.buffId[1] or spellId == TRB.Data.spells.echoingReprimand.buffId[2] or spellId == TRB.Data.spells.echoingReprimand.buffId[3] or spellId == TRB.Data.spells.echoingReprimand.buffId[4] or spellId == TRB.Data.spells.echoingReprimand.buffId[5] then
 					local cpEntry = 1
@@ -4155,14 +4083,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						TRB.Data.snapshot.sepsis.duration = TRB.Data.spells.sepsis.cooldown
 					end
 				elseif spellId == TRB.Data.spells.sepsis.buffId then
-					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-						TRB.Data.snapshot.sepsis.isActive = true
+					TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.sepsis, true)
+					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 						if TRB.Data.settings.rogue.assassination.audio.sepsis.enabled then
 							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
-					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-						TRB.Data.snapshot.sepsis.isActive = false
 					end
 				elseif spellId == TRB.Data.spells.cripplingPoison.id then
 					if TRB.Functions.Class:InitializeTarget(destGUID) then

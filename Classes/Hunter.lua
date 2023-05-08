@@ -3260,15 +3260,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							})
 						end
 					elseif spellId == TRB.Data.spells.frenzy.id and destGUID == TRB.Data.character.petGuid then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, TRB.Data.snapshot.frenzy.stacks, _, TRB.Data.snapshot.frenzy.duration, TRB.Data.snapshot.frenzy.endTime, _, _, _, TRB.Data.snapshot.frenzy.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.frenzy.id, "pet")
-							TRB.Data.snapshot.frenzy.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.frenzy.endTime = nil
-							TRB.Data.snapshot.frenzy.duration = 0
-							TRB.Data.snapshot.frenzy.stacks = 0
-							TRB.Data.snapshot.frenzy.isActive = false
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.frenzy)
 					elseif spellId == TRB.Data.spells.killCommand.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							---@diagnostic disable-next-line: redundant-parameter, cast-local-type
@@ -3278,11 +3270,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 						TRB.Data.snapshot.beastialWrath.startTime, TRB.Data.snapshot.beastialWrath.duration, _, _ = GetSpellCooldown(TRB.Data.spells.beastialWrath.id)
 					elseif spellId == TRB.Data.spells.cobraSting.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.cobraSting.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.cobraSting.isActive = false
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.cobraSting, true)
 					elseif spellId == TRB.Data.spells.wailingArrow.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshot.wailingArrow.startTime = currentTime
@@ -3294,44 +3282,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshot.aMurderOfCrows.duration = TRB.Data.spells.aMurderOfCrows.cooldown
 						end
 					elseif spellId == TRB.Data.spells.direPack.id then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshot.direPack.duration, TRB.Data.snapshot.direPack.endTime, _, _, _, TRB.Data.snapshot.direPack.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.direPack.id)
-							TRB.Data.snapshot.direPack.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.direPack.endTime = nil
-							TRB.Data.snapshot.direPack.duration = 0
-							TRB.Data.snapshot.direPack.isActive = false
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.direPack)
 					elseif spellId == TRB.Data.spells.aspectOfTheWild.id then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshot.aspectOfTheWild.duration, TRB.Data.snapshot.aspectOfTheWild.endTime, _, _, _, TRB.Data.snapshot.aspectOfTheWild.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.aspectOfTheWild.id)
-							TRB.Data.snapshot.aspectOfTheWild.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.aspectOfTheWild.spellId = nil
-							TRB.Data.snapshot.aspectOfTheWild.endTime = nil
-							TRB.Data.snapshot.aspectOfTheWild.duration = 0
-							TRB.Data.snapshot.aspectOfTheWild.isActive = false
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.aspectOfTheWild)
 					elseif spellId == TRB.Data.spells.callOfTheWild.id then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshot.callOfTheWild.duration, TRB.Data.snapshot.callOfTheWild.endTime, _, _, _, TRB.Data.snapshot.callOfTheWild.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.callOfTheWild.id)
-							TRB.Data.snapshot.callOfTheWild.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.callOfTheWild.spellId = nil
-							TRB.Data.snapshot.callOfTheWild.endTime = nil
-							TRB.Data.snapshot.callOfTheWild.duration = 0
-							TRB.Data.snapshot.callOfTheWild.isActive = false
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.callOfTheWild)
 					elseif spellId == TRB.Data.spells.beastCleave.buffId then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshot.beastCleave.duration, TRB.Data.snapshot.beastCleave.endTime, _, _, _, TRB.Data.snapshot.beastCleave.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.beastCleave.buffId)
-							TRB.Data.snapshot.beastCleave.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.beastCleave.spellId = nil
-							TRB.Data.snapshot.beastCleave.endTime = nil
-							TRB.Data.snapshot.beastCleave.duration = 0
-							TRB.Data.snapshot.beastCleave.isActive = false
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.beastCleave)
 					elseif spellId == TRB.Data.spells.direBeastBasilisk.id then
 						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 						TRB.Data.snapshot.direBeastBasilisk.startTime, TRB.Data.snapshot.direBeastBasilisk.duration, _, _ = GetSpellCooldown(TRB.Data.spells.direBeastBasilisk.id)
@@ -3360,58 +3317,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 						TRB.Data.snapshot.explosiveShot.startTime, TRB.Data.snapshot.explosiveShot.duration, _, _ = GetSpellCooldown(TRB.Data.spells.explosiveShot.id)
 					elseif spellId == TRB.Data.spells.trueshot.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.trueshot.isActive = true
-							_, _, _, _, TRB.Data.snapshot.trueshot.duration, TRB.Data.snapshot.trueshot.endTime, _, _, _, TRB.Data.snapshot.trueshot.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.trueshot.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.trueshot.isActive = false
-							TRB.Data.snapshot.trueshot.spellId = nil
-							TRB.Data.snapshot.trueshot.duration = 0
-							TRB.Data.snapshot.trueshot.endTime = nil
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.trueshot)
 					elseif spellId == TRB.Data.spells.steadyFocus.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.steadyFocus.isActive = true
-							_, _, _, _, TRB.Data.snapshot.steadyFocus.duration, TRB.Data.snapshot.steadyFocus.endTime, _, _, _, TRB.Data.snapshot.steadyFocus.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.steadyFocus.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.steadyFocus.isActive = false
-							TRB.Data.snapshot.steadyFocus.spellId = nil
-							TRB.Data.snapshot.steadyFocus.duration = 0
-							TRB.Data.snapshot.steadyFocus.endTime = nil
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.steadyFocus)
 					elseif spellId == TRB.Data.spells.lockAndLoad.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.lockAndLoad.isActive = true
-							_, _, _, _, TRB.Data.snapshot.lockAndLoad.duration, TRB.Data.snapshot.lockAndLoad.endTime, _, _, _, TRB.Data.snapshot.lockAndLoad.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.lockAndLoad.id)
-
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.lockAndLoad)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.enabled then
 								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.lockAndLoad.isActive = false
-							TRB.Data.snapshot.lockAndLoad.spellId = nil
-							TRB.Data.snapshot.lockAndLoad.duration = 0
-							TRB.Data.snapshot.lockAndLoad.endTime = nil
 						end
 					elseif spellId == TRB.Data.spells.rapidFire.id then
-						if type == "SPELL_AURA_APPLIED" then -- Gained buff
-							TRB.Data.snapshot.rapidFire.isActive = true
-							_, _, _, _, TRB.Data.snapshot.rapidFire.duration, TRB.Data.snapshot.rapidFire.endTime, _, _, _, TRB.Data.snapshot.rapidFire.spellId = TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.rapidFire.id, destGUID, TRB.Data.character.guid)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.rapidFire.isActive = false
-							TRB.Data.snapshot.rapidFire.spellId = nil
-							TRB.Data.snapshot.rapidFire.duration = 0
-							TRB.Data.snapshot.rapidFire.endTime = nil
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.rapidFire)
+						if type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshot.rapidFire.ticksRemaining = 0
 							TRB.Data.snapshot.rapidFire.focus = 0
 						end
 					elseif spellId == TRB.Data.spells.eagletalonsTrueFocus.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.eagletalonsTrueFocus.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.eagletalonsTrueFocus.isActive = false
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.eagletalonsTrueFocus, true)
 					elseif spellId == TRB.Data.spells.wailingArrow.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							TRB.Data.snapshot.wailingArrow.startTime = currentTime
@@ -3452,18 +3376,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							TRB.Data.snapshot.termsOfEngagement.lastTick = currentTime
 						end
 					elseif spellId == TRB.Data.spells.coordinatedAssault.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.coordinatedAssault.isActive = true
-							_, _, _, _, TRB.Data.snapshot.coordinatedAssault.duration, TRB.Data.snapshot.coordinatedAssault.endTime, _, _, _, TRB.Data.snapshot.coordinatedAssault.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.coordinatedAssault.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.coordinatedAssault.isActive = false
-							TRB.Data.snapshot.coordinatedAssault.spellId = nil
-							TRB.Data.snapshot.coordinatedAssault.duration = 0
-							TRB.Data.snapshot.coordinatedAssault.endTime = nil
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.coordinatedAssault)
 					elseif spellId == TRB.Data.spells.wildfireBomb.id then
 						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
-							TRB.Data.snapshot.wildfireBomb.charges, TRB.Data.snapshot.wildfireBomb.maxCharges, TRB.Data.snapshot.wildfireBomb.startTime, TRB.Data.snapshot.wildfireBomb.duration, _ = GetSpellCharges(TRB.Data.spells.wildfireBomb.id)
+						TRB.Data.snapshot.wildfireBomb.charges, TRB.Data.snapshot.wildfireBomb.maxCharges, TRB.Data.snapshot.wildfireBomb.startTime, TRB.Data.snapshot.wildfireBomb.duration, _ = GetSpellCharges(TRB.Data.spells.wildfireBomb.id)
 					end
 				end
 

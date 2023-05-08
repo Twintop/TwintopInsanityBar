@@ -1936,30 +1936,15 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							TRB.Data.snapshot.ignorePain.duration = TRB.Data.spells.ignorePain.duration
 						end
 					elseif spellId == TRB.Data.spells.suddenDeath.id then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshot.suddenDeath.duration, TRB.Data.snapshot.suddenDeath.endTime, _, _, _, TRB.Data.snapshot.suddenDeath.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.suddenDeath.id)
-							TRB.Data.snapshot.suddenDeath.isActive = true
-							
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.suddenDeath)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.warrior.arms.audio.suddenDeath.enabled then
 								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(TRB.Data.settings.warrior.arms.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.suddenDeath.endTime = nil
-							TRB.Data.snapshot.suddenDeath.duration = 0
-							TRB.Data.snapshot.suddenDeath.spellId = nil
-							TRB.Data.snapshot.suddenDeath.isActive = false
 						end
 					elseif spellId == TRB.Data.spells.battlelord.id then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshot.battlelord.duration, TRB.Data.snapshot.battlelord.endTime, _, _, _, TRB.Data.snapshot.battlelord.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.battlelord.id)
-							TRB.Data.snapshot.battlelord.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.battlelord.endTime = nil
-							TRB.Data.snapshot.battlelord.duration = 0
-							TRB.Data.snapshot.battlelord.spellId = nil
-							TRB.Data.snapshot.battlelord.isActive = false
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.battlelord)
 					elseif spellId == TRB.Data.spells.rend.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rend Applied to Target
@@ -1999,48 +1984,30 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "fury" then
 					if spellId == TRB.Data.spells.bladestorm.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.bladestorm, true)
 						if type == "SPELL_AURA_APPLIED" then
-							_, _, _, _, TRB.Data.snapshot.bladestorm.duration, TRB.Data.snapshot.bladestorm.endTime, _, _, _, TRB.Data.snapshot.bladestorm.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.bladestorm.id)
 							TRB.Data.snapshot.bladestorm.originalDuration = TRB.Data.snapshot.bladestorm.duration
 							TRB.Data.snapshot.casting.spellId = TRB.Data.spells.bladestorm.id
 							TRB.Data.snapshot.casting.icon = TRB.Data.spells.bladestorm.icon
-							TRB.Data.snapshot.bladestorm.isActive = true
 							UpdateBladestorm()
 						elseif type == "SPELL_AURA_REMOVED" then
 							TRB.Data.snapshot.bladestorm.ticksRemaining = 0
-							TRB.Data.snapshot.bladestorm.endTime = nil
-							TRB.Data.snapshot.bladestorm.duration = 0
 							TRB.Data.snapshot.bladestorm.originalDuration = 0
 							TRB.Data.snapshot.bladestorm.rage = 0
-							TRB.Data.snapshot.bladestorm.isActive = false
 						end
 					elseif spellId == TRB.Data.spells.enrage.id then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshot.enrage.duration, TRB.Data.snapshot.enrage.endTime, _, _, _, TRB.Data.snapshot.enrage.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.enrage.id)
-							TRB.Data.snapshot.enrage.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.enrage.endTime = nil
-							TRB.Data.snapshot.enrage.duration = 0
-							TRB.Data.snapshot.enrage.isActive = false
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.enrage)
 					elseif spellId == TRB.Data.spells.whirlwind.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							_, _, TRB.Data.snapshot.whirlwind.stacks, _, TRB.Data.snapshot.whirlwind.duration, TRB.Data.snapshot.whirlwind.endTime, _, _, _, TRB.Data.snapshot.whirlwind.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.whirlwind.id, "player")
 						end
 					elseif spellId == TRB.Data.spells.suddenDeath.id then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-							_, _, _, _, TRB.Data.snapshot.suddenDeath.duration, TRB.Data.snapshot.suddenDeath.endTime, _, _, _, TRB.Data.snapshot.suddenDeath.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.suddenDeath.id)
-							TRB.Data.snapshot.suddenDeath.isActive = true
-							
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.suddenDeath)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.warrior.fury.audio.suddenDeath.enabled then
 								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(TRB.Data.settings.warrior.fury.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.suddenDeath.endTime = nil
-							TRB.Data.snapshot.suddenDeath.duration = 0
-							TRB.Data.snapshot.suddenDeath.spellId = nil
-							TRB.Data.snapshot.suddenDeath.isActive = false
 						end
 					elseif spellId == TRB.Data.spells.ravager.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Ravager used
@@ -2100,14 +2067,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						TRB.Data.snapshot.execute.startTime, TRB.Data.snapshot.execute.duration, _, _ = GetSpellCooldown(TRB.Data.spells.execute.id)
 					end
 				elseif spellId == TRB.Data.spells.victoryRush.id then
-					if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
-						_, _, _, _, TRB.Data.snapshot.victoryRush.duration, TRB.Data.snapshot.victoryRush.endTime, _, _, _, TRB.Data.snapshot.victoryRush.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.victoryRush.id)
-						TRB.Data.snapshot.victoryRush.isActive = true
-					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-						TRB.Data.snapshot.victoryRush.endTime = nil
-						TRB.Data.snapshot.victoryRush.duration = 0
-						TRB.Data.snapshot.victoryRush.isActive = false
-					end
+					TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.victoryRush)
 				elseif spellId == TRB.Data.spells.shieldBlock.id then
 					if type == "SPELL_CAST_SUCCESS" then
 						---@diagnostic disable-next-line: redundant-parameter, cast-local-type
