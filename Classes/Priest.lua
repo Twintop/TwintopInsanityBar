@@ -1050,8 +1050,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			isActive = false,
 			spellId = nil,
 			endTime = nil,
-			duration = 0,
-			consumedTime = nil
+			duration = 0
 		}
 		specCache.shadow.snapshot.mindFlayInsanity = {
 			isActive = false,
@@ -3758,29 +3757,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Data.snapshot.symbolOfHope.resourceRaw = TRB.Data.snapshot.symbolOfHope.ticksRemaining * TRB.Data.spells.symbolOfHope.manaPercent * TRB.Data.character.maxResource
 						TRB.Data.snapshot.symbolOfHope.resourceFinal = CalculateManaGain(TRB.Data.snapshot.symbolOfHope.resourceRaw, false)
 					elseif spellId == TRB.Data.spells.innervate.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.innervate)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.innervate.isActive = true
-							_, _, _, _, TRB.Data.snapshot.innervate.duration, TRB.Data.snapshot.innervate.endTime, _, _, _, TRB.Data.snapshot.innervate.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.innervate.id)
 							TRB.Data.snapshot.innervate.modifier = 0
 							TRB.Data.snapshot.audio.innervateCue = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.innervate.isActive = false
-							TRB.Data.snapshot.innervate.spellId = nil
-							TRB.Data.snapshot.innervate.duration = 0
-							TRB.Data.snapshot.innervate.endTime = nil
 							TRB.Data.snapshot.innervate.modifier = 1
 							TRB.Data.snapshot.audio.innervateCue = false
 						end
 					elseif spellId == TRB.Data.spells.potionOfChilledClarity.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.potionOfChilledClarity)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.potionOfChilledClarity.isActive = true
-							_, _, _, _, TRB.Data.snapshot.potionOfChilledClarity.duration, TRB.Data.snapshot.potionOfChilledClarity.endTime, _, _, _, TRB.Data.snapshot.potionOfChilledClarity.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.potionOfChilledClarity.id)
 							TRB.Data.snapshot.potionOfChilledClarity.modifier = 0
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.potionOfChilledClarity.isActive = false
-							TRB.Data.snapshot.potionOfChilledClarity.spellId = nil
-							TRB.Data.snapshot.potionOfChilledClarity.duration = 0
-							TRB.Data.snapshot.potionOfChilledClarity.endTime = nil
 							TRB.Data.snapshot.potionOfChilledClarity.modifier = 1
 						end
 					elseif spellId == TRB.Data.spells.manaTideTotem.id then
@@ -3797,15 +3786,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshot.audio.manaTideTotemCue = false
 						end
 					elseif spellId == TRB.Data.spells.moltenRadiance.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-							local _
-							_, _, _, _, TRB.Data.snapshot.moltenRadiance.duration, TRB.Data.snapshot.moltenRadiance.endTime, _, _, _, TRB.Data.snapshot.moltenRadiance.spellId, _, _, _, _, _, _, _, TRB.Data.snapshot.moltenRadiance.manaPerTick = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.moltenRadiance.id)
-							TRB.Data.snapshot.moltenRadiance.isActive = false
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.moltenRadiance.isActive = false
-							TRB.Data.snapshot.moltenRadiance.spellId = nil
-							TRB.Data.snapshot.moltenRadiance.duration = 0
-							TRB.Data.snapshot.moltenRadiance.endTime = nil
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.moltenRadiance)
+						if type == "SPELL_AURA_REMOVED" then -- Lost buff
 							TRB.Data.snapshot.moltenRadiance.manaPerTick = 0
 							TRB.Data.snapshot.moltenRadiance.mana = 0
 						end			
@@ -3871,27 +3853,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							UpdateChanneledManaPotion(true)
 						end
 					elseif spellId == TRB.Data.spells.apotheosis.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.apotheosis.isActive = true
-							_, _, _, _, TRB.Data.snapshot.apotheosis.duration, TRB.Data.snapshot.apotheosis.endTime, _, _, _, TRB.Data.snapshot.apotheosis.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.apotheosis.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.apotheosis.isActive = false
-							TRB.Data.snapshot.apotheosis.spellId = nil
-							TRB.Data.snapshot.apotheosis.duration = 0
-							TRB.Data.snapshot.apotheosis.endTime = nil
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.apotheosis)
 					elseif spellId == TRB.Data.spells.surgeOfLight.id then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.surgeOfLight.isActive = true
-							_, _, TRB.Data.snapshot.surgeOfLight.stacks, _, TRB.Data.snapshot.surgeOfLight.duration, TRB.Data.snapshot.surgeOfLight.endTime, _, _, _, TRB.Data.snapshot.surgeOfLight.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.surgeOfLight.id)
-						elseif type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.surgeOfLight)
+						if type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
 							TRB.Data.snapshot.audio.surgeOfLight2Cue = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.surgeOfLight.isActive = false
-							TRB.Data.snapshot.surgeOfLight.spellId = nil
-							TRB.Data.snapshot.surgeOfLight.duration = 0
-							TRB.Data.snapshot.surgeOfLight.stacks = 0
-							TRB.Data.snapshot.surgeOfLight.endTime = nil
 							TRB.Data.snapshot.audio.surgeOfLightCue = false
 							TRB.Data.snapshot.audio.surgeOfLight2Cue = false
 						end
@@ -3911,17 +3878,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Data.snapshot.holyWordChastise.startTime, TRB.Data.snapshot.holyWordChastise.duration, _, _ = GetSpellCooldown(TRB.Data.spells.holyWordChastise.id)
 						end
 					elseif spellId == TRB.Data.spells.divineConversation.id then
-						if type == "SPELL_AURA_APPLIED" then -- Gained buff
-							TRB.Data.snapshot.divineConversation.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.divineConversation.isActive = false
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.divineConversation, true)
 					elseif spellId == TRB.Data.spells.prayerFocus.id then
-						if type == "SPELL_AURA_APPLIED" then -- Gained buff
-							TRB.Data.snapshot.prayerFocus.isActive = true
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.prayerFocus.isActive = false
-						end					
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.prayerFocus, true)
 					elseif type == "SPELL_SUMMON" and spellId == TRB.Data.spells.shadowfiend.id then
 						local currentSf = TRB.Data.snapshot.shadowfiend
 						local totemId = 1
@@ -3930,25 +3889,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
 					if spellId == TRB.Data.spells.voidform.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.voidform.isActive = true
-							_, _, _, _, TRB.Data.snapshot.voidform.duration, TRB.Data.snapshot.voidform.endTime, _, _, _, TRB.Data.snapshot.voidform.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.voidform.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.voidform.isActive = false
-							TRB.Data.snapshot.voidform.spellId = nil
-							TRB.Data.snapshot.voidform.duration = 0
-							TRB.Data.snapshot.voidform.endTime = nil
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.voidform)
 					elseif spellId == TRB.Data.spells.darkAscension.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.darkAscension.isActive = true
-							_, _, _, _, TRB.Data.snapshot.darkAscension.duration, TRB.Data.snapshot.darkAscension.endTime, _, _, _, TRB.Data.snapshot.darkAscension.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.darkAscension.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.darkAscension.isActive = false
-							TRB.Data.snapshot.darkAscension.spellId = nil
-							TRB.Data.snapshot.darkAscension.duration = 0
-							TRB.Data.snapshot.darkAscension.endTime = nil
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.darkAscension)
 					elseif spellId == TRB.Data.spells.vampiricTouch.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- VT Applied to Target
@@ -3996,89 +3939,25 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.shadowCrash.id then
 						triggerUpdate = true
 					elseif spellId == TRB.Data.spells.mindDevourer.buffId then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
-							TRB.Data.snapshot.mindDevourer.isActive = true
-							_, _, _, _, TRB.Data.snapshot.mindDevourer.duration, TRB.Data.snapshot.mindDevourer.endTime, _, _, _, TRB.Data.snapshot.mindDevourer.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.mindDevourer.buffId)
-						elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_DISPEL" then -- Lost buff
-							if type == "SPELL_AURA_REMOVED" and TRB.Data.snapshot.mindDevourer.endTime ~= nil and TRB.Data.snapshot.mindDevourer.endTime > currentTime then
-								TRB.Data.snapshot.mindDevourer.consumedTime = currentTime
-							end
-							TRB.Data.snapshot.mindDevourer.isActive = false
-							TRB.Data.snapshot.mindDevourer.spellId = nil
-							TRB.Data.snapshot.mindDevourer.duration = 0
-							TRB.Data.snapshot.mindDevourer.endTime = nil
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.mindDevourer)
 					elseif spellId == TRB.Data.spells.devouredDespair.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
-							TRB.Data.snapshot.devouredDespair.isActive = true
-							_, _, _, _, TRB.Data.snapshot.devouredDespair.duration, TRB.Data.snapshot.devouredDespair.endTime, _, _, _, TRB.Data.snapshot.devouredDespair.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.devouredDespair.id)
-						elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_DISPEL" then -- Lost buff
-							TRB.Data.snapshot.devouredDespair.isActive = false
-							TRB.Data.snapshot.devouredDespair.spellId = nil
-							TRB.Data.snapshot.devouredDespair.duration = 0
-							TRB.Data.snapshot.devouredDespair.endTime = nil
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.devouredDespair)
 					elseif spellId == TRB.Data.spells.mindFlayInsanity.buffId or spellId == TRB.Data.spells.mindSpikeInsanity.buffId then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" or type == "SPELL_AURA_APPLIED_DOSE" then -- Gained buff
-							TRB.Data.snapshot.mindFlayInsanity.isActive = true
-							_, _, TRB.Data.snapshot.mindFlayInsanity.stacks, _, TRB.Data.snapshot.mindFlayInsanity.duration, TRB.Data.snapshot.mindFlayInsanity.endTime, _, _, _, TRB.Data.snapshot.mindFlayInsanity.spellId = TRB.Functions.Aura:FindBuffById(spellId)
-						elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_DISPEL" then -- Lost buff
-							TRB.Data.snapshot.mindFlayInsanity.isActive = false
-							TRB.Data.snapshot.mindFlayInsanity.spellId = nil
-							TRB.Data.snapshot.mindFlayInsanity.duration = 0
-							TRB.Data.snapshot.mindFlayInsanity.stacks = 0
-							TRB.Data.snapshot.mindFlayInsanity.endTime = nil
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.mindFlayInsanity)
 					elseif spellId == TRB.Data.spells.deathspeaker.buffId then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.deathspeaker)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
-							TRB.Data.snapshot.deathspeaker.isActive = true
-							_, _, _, _, TRB.Data.snapshot.deathspeaker.duration, TRB.Data.snapshot.deathspeaker.endTime, _, _, _, TRB.Data.snapshot.deathspeaker.spellId = TRB.Functions.Aura:FindBuffById(spellId)
 							if TRB.Data.settings.priest.shadow.audio.deathspeaker.enabled and TRB.Data.snapshot.audio.playedDeathspeakerCue == false then
 								TRB.Data.snapshot.audio.playedDeathspeakerCue = true
 								PlaySoundFile(TRB.Data.settings.priest.shadow.audio.deathspeaker.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
-						elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_DISPEL" then -- Lost buff
-							TRB.Data.snapshot.deathspeaker.isActive = false
-							TRB.Data.snapshot.deathspeaker.spellId = nil
-							TRB.Data.snapshot.deathspeaker.duration = 0
-							TRB.Data.snapshot.deathspeaker.endTime = nil
-							TRB.Data.snapshot.audio.playedDeathspeakerCue = false
 						end
 					elseif spellId == TRB.Data.spells.twistOfFate.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
-							TRB.Data.snapshot.twistOfFate.isActive = true
-							_, _, _, _, TRB.Data.snapshot.twistOfFate.duration, TRB.Data.snapshot.twistOfFate.endTime, _, _, _, TRB.Data.snapshot.twistOfFate.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.twistOfFate.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.twistOfFate.isActive = false
-							TRB.Data.snapshot.twistOfFate.spellId = nil
-							TRB.Data.snapshot.twistOfFate.duration = 0
-							TRB.Data.snapshot.twistOfFate.endTime = nil
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.twistOfFate)
 					elseif spellId == TRB.Data.spells.shadowyInsight.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff
-							TRB.Data.snapshot.shadowyInsight.isActive = true
-							_, _, _, _, TRB.Data.snapshot.shadowyInsight.duration, TRB.Data.snapshot.shadowyInsight.endTime, _, _, _, TRB.Data.snapshot.shadowyInsight.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.shadowyInsight.id)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.shadowyInsight.isActive = false
-							TRB.Data.snapshot.shadowyInsight.spellId = nil
-							TRB.Data.snapshot.shadowyInsight.duration = 0
-							TRB.Data.snapshot.shadowyInsight.endTime = nil
-						end
-					elseif spellId == TRB.Data.spells.mindMelt.id then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.mindMelt.isActive = true
-							_, _, TRB.Data.snapshot.mindMelt.stacks, _, TRB.Data.snapshot.mindMelt.duration, TRB.Data.snapshot.mindMelt.endTime, _, _, _, TRB.Data.snapshot.mindMelt.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.mindMelt.id)
-						elseif type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
-							--TRB.Data.snapshot.audio.mindMelt2Cue = false
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.mindMelt.isActive = false
-							TRB.Data.snapshot.mindMelt.spellId = nil
-							TRB.Data.snapshot.mindMelt.duration = 0
-							TRB.Data.snapshot.mindMelt.stacks = 0
-							TRB.Data.snapshot.mindMelt.endTime = nil
-							TRB.Data.snapshot.audio.mindMeltCue = false
-							TRB.Data.snapshot.audio.mindMelt2Cue = false
-						end
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.shadowyInsight)
+					elseif spellId == TRB.Data.spells.mindMelt.id then						
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.mindMelt)
 					elseif type == "SPELL_SUMMON" and settings.voidTendrilTracker and (spellId == TRB.Data.spells.idolOfCthun_Tendril.id or spellId == TRB.Data.spells.idolOfCthun_Lasher.id) then
 						InitializeVoidTendril(destGUID)
 						if spellId == TRB.Data.spells.idolOfCthun_Tendril.id then

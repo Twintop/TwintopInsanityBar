@@ -91,6 +91,32 @@ function TRB.Functions.Aura:FindAuraById(spellId, onWhom, filter, byWhom)
 	end
 end
 
-function TRB.Functions.Aura:HandleGenericAura(spellId, type, spell, snapshot)
-	
+function TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot, simple)
+	if snapshot == nil then
+		snapshot = {}
+		print("TRB: |cFFFF5555Table missing for spellId |r"..spellId.."Please consider reporting this on GitHub!")
+	end
+
+	if simple == nil then
+		simple = false
+	end
+
+	if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" or type == "SPELL_AURA_APPLIED_DOSE" then -- Gained buff
+		snapshot.isActive = true
+		if not simple then
+			_, _, snapshot.stacks, _, snapshot.duration, snapshot.endTime, _, _, _, snapshot.spellId = TRB.Functions.Aura:FindBuffById(spellId)
+		end
+	elseif type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
+		if snapshot.stacks ~= nil then
+			snapshot.stacks = snapshot.stacks - 1
+		end
+	elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_DISPEL" then -- Lost buff
+		snapshot.isActive = false
+		if not simple then
+			snapshot.spellId = nil
+			snapshot.duration = 0
+			snapshot.stacks = 0
+			snapshot.endTime = nil
+		end
+	end
 end
