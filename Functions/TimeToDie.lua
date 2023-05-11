@@ -128,6 +128,10 @@ local unitDeathHealthPercentageList = {
     ---- Dragonflight ----
     --- Brackenhide Hollow ---
     ["186121"] = 0.045, -- Decatriarch Wratheye TODO: verify 5% vs 4.5%
+    --- Uldaman: Legacy of Tyr ---
+    ["184580"] = 0.1, -- Olaf
+    ["184581"] = 0.1, -- Baelog
+    ["184582"] = 0.1, -- Eric "The Swift"
 }
 
 function TRB.Functions.TimeToDie:GetUnitDeathHealthPercentage(unit)

@@ -9,6 +9,12 @@ local content = [====[
 ----
 
 # 10.1.0.2-release (2023-05-09)
+## General
+- [#311 - NEW](#311) Add Time To Die overrides for The Lost Dwarves in Uldaman: Legacy of Tyr 
+<br/>&emsp;&ensp;- Olaf, Baelog, and Eric "The Swift" -- 10%
+----
+
+# 10.1.0.2-release (2023-05-09)
 ## Druid
 ### Balance
 
