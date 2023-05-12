@@ -412,7 +412,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	end
 
 
-	-- Devastation
+	-- Augmentation
 	local function AugmentationLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
 			fontSizeLock=true,
@@ -589,7 +589,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local settings = TRB.Options.LoadDefaultSettings()
 		settings.evoker.devastation = DevastationLoadDefaultSettings()
 		settings.evoker.preservation = PreservationLoadDefaultSettings()
-		settings.evoker.devastation = AugmentationLoadDefaultSettings()
+		settings.evoker.augmentation = AugmentationLoadDefaultSettings()
 
 		return settings
 	end

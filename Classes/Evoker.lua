@@ -2258,7 +2258,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.evoker.augmentation.displayBar.alwaysShow) and (
-						(not TRB.Data.settings.evoker.devaugmentationastation.displayBar.notZeroShow) or
+						(not TRB.Data.settings.evoker.augmentation.displayBar.notZeroShow) or
 						(TRB.Data.settings.evoker.augmentation.displayBar.notZeroShow and TRB.Data.snapshot.resource == TRB.Data.character.maxResource and TRB.Data.snapshot.resource2 == TRB.Data.character.maxResource2)
 					)
 				)) then

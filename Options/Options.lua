@@ -725,7 +725,7 @@ local function ConstructAddonOptionsPanel()
 	f = controls.checkBoxes.experimentalEvokerAugmentation
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Augmentation Evoker support")
-	f.tooltip = "This will enable experimental Augmentation Evoker support within the bar. If you change this setting and are currently logged in on an Evoker, you'll need to reload your UI before Devastation Evoker configuration options become available."
+	f.tooltip = "This will enable experimental Augmentation Evoker support within the bar. If you change this setting and are currently logged in on an Evoker, you'll need to reload your UI before Augmentation Evoker configuration options become available."
 	f:SetChecked(TRB.Data.settings.core.experimental.specs.evoker.augmentation)
 	f:SetScript("OnClick", function(self, ...)
 		TRB.Data.settings.core.experimental.specs.evoker.augmentation = self:GetChecked()
