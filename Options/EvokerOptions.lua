@@ -23,8 +23,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	TRB.Options.Evoker = {}
 	TRB.Options.Evoker.Devastation = {}
 	TRB.Options.Evoker.Preservation = {}
+	TRB.Options.Evoker.Augmentation = {}
 	TRB.Frames.interfaceSettingsFrameContainer.controls.devastation = {}
 	TRB.Frames.interfaceSettingsFrameContainer.controls.preservation = {}
+	TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = {}
 
 	-- Devastation
 	local function DevastationLoadDefaultBarTextSimpleSettings()
@@ -100,34 +102,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					width=24,
 					height=24
 				},
-				--[[aeratedManaPotionRank1 = {
-					enabled = false, -- 1
-				},
-				aeratedManaPotionRank2 = {
-					enabled = false, -- 2
-				},
-				aeratedManaPotionRank3 = {
-					enabled = true, -- 3
-				},
-				potionOfFrozenFocusRank1 = {
-					enabled = false, -- 4
-				},
-				potionOfFrozenFocusRank2 = {
-					enabled = false, -- 5
-				},
-				potionOfFrozenFocusRank3 = {
-					enabled = true, -- 6
-				},
-				conjuredChillglobe = {
-					enabled = true, -- 7
-					cooldown = true
-				},
-				potionCooldown = {
-					enabled=true,
-					mode="time",
-					gcdsMax=40,
-					timeMax=60
-				},]]
 			},
 			generation = {
 				mode="gcd",
@@ -162,12 +136,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				relativeToName="Above - Middle",
 				fullWidth=true,
 			},
-			--[[endOfSerenity = {
-				enabled=true,
-				mode="gcd",
-				gcdsMax=2,
-				timeMax=3.0
-			},]]
 			colors = {
 				text = {
 					current="FF4D4DFF",
@@ -443,10 +411,185 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		return settings
 	end
 
+
+	-- Devastation
+	local function AugmentationLoadDefaultBarTextSimpleSettings()
+		local textSettings = {
+			fontSizeLock=true,
+			fontFaceLock=true,
+			left={
+				text="",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
+			},
+			middle={
+				text="",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
+			},
+			right={
+				text="{$passive}[$passive + ]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
+			}
+		}
+
+		return textSettings
+	end
+	
+	local function AugmentationLoadDefaultBarTextAdvancedSettings()
+		local textSettings = {
+			fontSizeLock = false,
+			fontFaceLock = true,
+			left = {
+				text = "{$ttd}[||nTTD: $ttd]",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 13
+			},
+			middle = {
+				text="",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 13
+			},
+			right = {
+				text = "$mana",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 22
+			}
+		}
+
+		return textSettings
+	end
+
+	local function AugmentationLoadDefaultSettings()
+		local settings = {
+			hastePrecision=2,
+			thresholds = {
+				width = 2,
+				overlapBorder=true,
+				outOfRange=true,
+				icons = {
+					showCooldown=true,
+					border=2,
+					relativeTo = "BOTTOM",
+					relativeToName = "Below",
+					enabled=true,
+					desaturated=true,
+					xPos=0,
+					yPos=12,
+					width=24,
+					height=24
+				},
+			},
+			generation = {
+				mode="gcd",
+				gcds=1,
+				time=1.5,
+				enabled=true
+			},
+			displayBar = {
+				alwaysShow=false,
+				notZeroShow=true,
+				neverShow=false
+			},
+			bar = {
+				width=555,
+				height=11,
+				xPos=0,
+				yPos=-215,
+				border=1,
+				dragAndDrop=false,
+				pinToPersonalResourceDisplay=false,
+				showPassive=false,
+				showCasting=true
+			},
+			comboPoints = {
+				width=25,
+				height=21,
+				xPos=0,
+				yPos=4,
+				border=2,
+				spacing=14,
+				relativeTo="TOP",
+				relativeToName="Above - Middle",
+				fullWidth=true,
+			},
+			colors = {
+				text = {
+					current="FF4D4DFF",
+					casting="FFFFFFFF",
+					spending="FFFFFFFF",
+					passive="FF8080FF",
+					left="FFFFFFFF",
+					middle="FFFFFFFF",
+					right="FFFFFFFF"
+				},
+				bar = {
+					border="FF000099",
+					background="66000000",
+					base="FF0000FF",
+					passive="FF8080FF",
+				},
+				comboPoints = {
+					border="FF246759",
+					background="66000000",
+					base="FF33937F",
+					penultimate="FFFF9900",
+					final="FFFF0000",
+					sameColor=false
+				},
+				threshold = {
+					under="FFFFFFFF",
+					over="FF00FF00",
+					unusable="FFFF0000",
+					outOfRange="FF440000"
+				}
+			},
+			displayText = {},
+			audio = {
+				overcap={
+					name = "Overcap",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+			},
+			textures = {
+				background="Interface\\Tooltips\\UI-Tooltip-Background",
+				backgroundName="Blizzard Tooltip",
+				border="Interface\\Buttons\\WHITE8X8",
+				borderName="1 Pixel",
+				resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
+				resourceBarName="Blizzard",
+				passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
+				passiveBarName="Blizzard",
+				castingBar="Interface\\TargetingFrame\\UI-StatusBar",
+				castingBarName="Blizzard",
+				textureLock=true,
+				comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+				comboPointsBackgroundName="Blizzard Tooltip",
+				comboPointsBorder="Interface\\Buttons\\WHITE8X8",
+				comboPointsBorderName="1 Pixel",
+				comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
+				comboPointsBarName="Blizzard",
+			}
+		}
+
+		settings.displayText = AugmentationLoadDefaultBarTextSimpleSettings()
+		return settings
+	end
+
 	local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 		settings.evoker.devastation = DevastationLoadDefaultSettings()
 		settings.evoker.preservation = PreservationLoadDefaultSettings()
+		settings.evoker.devastation = AugmentationLoadDefaultSettings()
 
 		return settings
 	end
@@ -1477,6 +1620,415 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	end
 
 
+	
+
+	--[[
+
+	Augmentation Option Menus
+
+	]]
+
+	
+	local function AugmentationConstructResetDefaultsPanel(parent)
+		if parent == nil then
+			return
+		end
+
+		local spec = TRB.Data.settings.evoker.augmentation
+
+		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation
+		local yCoord = 5
+		local f = nil
+
+		local title = ""
+
+		StaticPopupDialogs["TwintopResourceBar_Evoker_Augmentation_Reset"] = {
+			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Augmentation Evoker settings will be changed. This will cause your UI to be reloaded!",
+			button1 = "Yes",
+			button2 = "No",
+			OnAccept = function()
+				TRB.Data.settings.evoker.augmentation = nil
+				C_UI.Reload()
+			end,
+			timeout = 0,
+			whileDead = true,
+			hideOnEscape = true,
+			preferredIndex = 3
+		}
+		StaticPopupDialogs["TwintopResourceBar_Evoker_Augmentation_ResetBarTextSimple"] = {
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Augmentation Evoker settings will be changed. This will cause your UI to be reloaded!",
+			button1 = "Yes",
+			button2 = "No",
+			OnAccept = function()
+				spec.displayText = AugmentationLoadDefaultBarTextSimpleSettings()
+				ReloadUI()
+			end,
+			timeout = 0,
+			whileDead = true,
+			hideOnEscape = true,
+			preferredIndex = 3
+		}
+		StaticPopupDialogs["TwintopResourceBar_Evoker_Augmentation_ResetBarTextAdvanced"] = {
+			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Augmentation Evoker settings will be changed. This will cause your UI to be reloaded!",
+			button1 = "Yes",
+			button2 = "No",
+			OnAccept = function()
+				spec.displayText = AugmentationLoadDefaultBarTextAdvancedSettings()
+				ReloadUI()
+			end,
+			timeout = 0,
+			whileDead = true,
+			hideOnEscape = true,
+			preferredIndex = 3
+		}
+
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
+		controls.resetButton:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Evoker_Augmentation_Reset")
+		end)
+
+		yCoord = yCoord - 40
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
+		controls.resetButton1:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Evoker_Augmentation_ResetBarTextSimple")
+		end)
+		yCoord = yCoord - 40
+
+		controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Full Advanced)", oUi.xCoord, yCoord, 250, 30)
+		controls.resetButton3:SetScript("OnClick", function(self, ...)
+			StaticPopup_Show("TwintopResourceBar_Evoker_Augmentation_ResetBarTextAdvanced")
+		end)
+
+		TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = controls
+	end
+
+	local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
+		if parent == nil then
+			return
+		end
+
+		local spec = TRB.Data.settings.evoker.augmentation
+
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local controls = interfaceSettingsFrame.controls.augmentation
+		local yCoord = 5
+		local f = nil
+
+		local title = ""
+
+		controls.buttons.exportButton_Evoker_Augmentation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Evoker_Augmentation_BarDisplay:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Augmentation Evoker (Bar Display).", 13, 3, true, false, false, false, false)
+		end)
+
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 13, 3, yCoord)
+
+		yCoord = yCoord - 30
+		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 13, 3, yCoord, "Mana", "Essence")
+
+		yCoord = yCoord - 60
+		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 13, 3, yCoord, true, "Essence")
+
+		yCoord = yCoord - 30
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 3, yCoord, "Mana", "notFull", false)
+
+		yCoord = yCoord - 70
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 3, yCoord, "Mana")
+
+		yCoord = yCoord - 30
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
+		end)
+
+		yCoord = yCoord - 40
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 13, 3, yCoord, "Mana", false, false)
+
+		yCoord = yCoord - 40
+		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Essence Colors", 0, yCoord)
+		controls.colors.comboPoints = {}
+
+		yCoord = yCoord - 30
+		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Essence", spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+		f = controls.colors.comboPoints.base
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
+		end)
+
+		controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Essence's border", spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.border
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		end)
+
+		yCoord = yCoord - 30		
+		controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Penultimate Essence", spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
+		f = controls.colors.comboPoints.penultimate
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
+		end)
+
+		controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled Essence background", spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
+		end)
+
+		yCoord = yCoord - 30		
+		controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Final Essence", spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
+		f = controls.colors.comboPoints.final
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.sameColorComboPoint
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Use highest Essence color for all?")
+		f.tooltip = "When checked, the highest Essence's color will be used for all Essence. E.g., if you have maximum 5 Essence and currently have 4, the Penultimate color will be used for all Essence instead of just the second to last."
+		f:SetChecked(spec.comboPoints.sameColor)
+		f:SetScript("OnClick", function(self, ...)
+			spec.comboPoints.sameColor = self:GetChecked()
+		end)		
+
+		TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = controls
+	end
+
+	local function AugmentationConstructFontAndTextPanel(parent)
+		if parent == nil then
+			return
+		end
+
+		local spec = TRB.Data.settings.evoker.augmentation
+
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local controls = interfaceSettingsFrame.controls.augmentation
+		local yCoord = 5
+		local f = nil
+
+		local title = ""
+
+		controls.buttons.exportButton_Evoker_Augmentation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Evoker_Augmentation_FontAndText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Augmentation Evoker (Font & Text).", 13, 3, false, true, false, false, false)
+		end)
+
+		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 13, 3, yCoord)
+
+		yCoord = yCoord - 40
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", 0, yCoord)
+
+		yCoord = yCoord - 30
+		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Mana", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+		f = controls.colors.text.current
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
+		end)
+
+		yCoord = yCoord - 130
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+
+		yCoord = yCoord - 50
+		title = "Haste / Crit / Mastery / Vers Decimal Precision"
+		controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+			self.EditBox:SetText(value)
+			spec.hastePrecision = value
+		end)
+
+		TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = controls
+	end
+
+	local function AugmentationConstructAudioAndTrackingPanel(parent)
+		if parent == nil then
+			return
+		end
+
+		local spec = TRB.Data.settings.evoker.augmentation
+
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local controls = interfaceSettingsFrame.controls.augmentation
+		local yCoord = 5
+		local f = nil
+
+		local title = ""
+
+		controls.buttons.exportButton_Evoker_Augmentation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Evoker_Augmentation_AudioAndTracking:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Augmentation Evoker (Audio & Tracking).", 13, 3, false, false, true, false, false)
+		end)
+
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+
+		TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = controls
+	end
+	
+	local function AugmentationConstructBarTextDisplayPanel(parent, cache)
+		if parent == nil then
+			return
+		end
+
+		local spec = TRB.Data.settings.evoker.augmentation
+
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local controls = interfaceSettingsFrame.controls.augmentation
+		local yCoord = 5
+		local f = nil
+
+		local namePrefix = "Evoker_Augmentation"
+
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		controls.buttons.exportButton_Evoker_Augmentation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Evoker_Augmentation_BarText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Augmentation Evoker (Bar Text).", 13, 3, false, false, false, true, false)
+		end)
+
+		yCoord = yCoord - 30
+		TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
+
+		controls.textbox.left = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
+														430, 60, oUi.xCoord+95, yCoord)
+		f = controls.textbox.left
+		f:SetScript("OnTextChanged", function(self, input)
+			spec.displayText.left.text = self:GetText()
+			TRB.Data.barTextCache = {}
+			TRB.Functions.BarText:IsTtdActive(spec)
+		end)
+
+
+		yCoord = yCoord - 70
+		TRB.Functions.OptionsUi:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
+
+		controls.textbox.middle = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
+														430, 60, oUi.xCoord+95, yCoord)
+		f = controls.textbox.middle
+		f:SetScript("OnTextChanged", function(self, input)
+			spec.displayText.middle.text = self:GetText()
+			TRB.Data.barTextCache = {}
+			TRB.Functions.BarText:IsTtdActive(spec)
+		end)
+
+
+		yCoord = yCoord - 70
+		TRB.Functions.OptionsUi:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
+
+		controls.textbox.right = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
+														430, 60, oUi.xCoord+95, yCoord)
+		f = controls.textbox.right
+		f:SetScript("OnTextChanged", function(self, input)
+			spec.displayText.right.text = self:GetText()
+			TRB.Data.barTextCache = {}
+			TRB.Functions.BarText:IsTtdActive(spec)
+		end)
+
+		yCoord = yCoord - 30
+		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
+		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
+		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
+	end
+
+	local function AugmentationConstructOptionsPanel(cache)
+		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
+		local parent = interfaceSettingsFrame.panel
+		local controls = interfaceSettingsFrame.controls.augmentation or {}
+		local yCoord = 0
+		local f = nil
+
+		controls.colors = {}
+		controls.labels = {}
+		controls.textbox = {}
+		controls.checkBoxes = {}
+		controls.dropDown = {}
+		controls.buttons = controls.buttons or {}
+
+		interfaceSettingsFrame.augmentationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Augmentation", UIParent)
+		interfaceSettingsFrame.augmentationDisplayPanel.name = "Augmentation Evoker"
+---@diagnostic disable-next-line: undefined-field
+		interfaceSettingsFrame.augmentationDisplayPanel.parent = parent.name
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.augmentationDisplayPanel, "Augmentation Evoker")
+		InterfaceOptions_AddCategory(interfaceSettingsFrame.augmentationDisplayPanel)
+
+		parent = interfaceSettingsFrame.augmentationDisplayPanel
+
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Augmentation Evoker", 0, yCoord-5)
+	
+		controls.checkBoxes.augmentationEvokerEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_augmentationEvokerEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.augmentationEvokerEnabled
+		f:SetPoint("TOPLEFT", 320, yCoord-10)		
+		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
+		f.tooltip = "Is Twintop's Resource Bar enabled for the Augmentation Evoker specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		f:SetChecked(TRB.Data.settings.core.enabled.evoker.augmentation)
+		f:SetScript("OnClick", function(self, ...)
+			TRB.Data.settings.core.enabled.evoker.augmentation = self:GetChecked()
+			TRB.Functions.Class:EventRegistration()
+			TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.augmentationEvokerEnabled, TRB.Data.settings.core.enabled.evoker.augmentation, true)
+		end)
+
+		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.augmentationEvokerEnabled, TRB.Data.settings.core.enabled.evoker.augmentation, true)
+
+		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
+		controls.buttons.importButton:SetFrameLevel(10000)
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
+			StaticPopup_Show("TwintopResourceBar_Import")
+		end)
+
+		controls.buttons.exportButton_Evoker_Augmentation_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Evoker_Augmentation_All:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Augmentation Evoker (All).", 13, 3, true, true, true, true, false)
+		end)
+
+		yCoord = yCoord - 52
+
+		local tabs = {}
+		local tabsheets = {}
+
+		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Augmentation_Tab2", "Bar Display", 1, parent, 85)
+		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
+		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Augmentation_Tab3", "Font & Text", 2, parent, 85, tabs[1])
+		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Augmentation_Tab4", "Audio & Tracking", 3, parent, 120, tabs[2])
+		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Augmentation_Tab5", "Bar Text", 4, parent, 60, tabs[3])
+		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Augmentation_Tab1", "Reset Defaults", 5, parent, 100, tabs[4])
+
+		yCoord = yCoord - 15
+
+		for i = 1, 5 do 
+			PanelTemplates_TabResize(tabs[i], 0)
+			PanelTemplates_DeselectTab(tabs[i])
+			tabs[i].Text:SetPoint("TOP", 0, 0)
+			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Evoker_Augmentation_LayoutPanel" .. i, parent)
+			tabsheets[i]:Hide()
+			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
+		end
+
+		tabsheets[1]:Show()
+		tabsheets[1].selected = true
+		tabs[1]:SetNormalFontObject(TRB.Options.fonts.options.tabHighlightSmall)
+		parent.tabs = tabs
+		parent.tabsheets = tabsheets
+		parent.lastTab = tabsheets[1]
+		parent.lastTabId = 1
+
+		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
+		TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = controls
+
+		AugmentationConstructBarColorsAndBehaviorPanel(tabsheets[1].scrollFrame.scrollChild)
+		AugmentationConstructFontAndTextPanel(tabsheets[2].scrollFrame.scrollChild)
+		AugmentationConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
+		AugmentationConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
+		AugmentationConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
+	end
+
 	local function ConstructOptionsPanel(specCache)
 		TRB.Options:ConstructOptionsPanel()
 		if TRB.Data.settings.core.experimental.specs.evoker.devastation == true then
@@ -1485,6 +2037,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		if TRB.Data.settings.core.experimental.specs.evoker.preservation == true then
 			PreservationConstructOptionsPanel(specCache.preservation)
+		end
+
+		if TRB.Data.settings.core.experimental.specs.evoker.augmentation == true then
+			AugmentationConstructOptionsPanel(specCache.augmentation)
 		end
 	end
 	TRB.Options.Evoker.ConstructOptionsPanel = ConstructOptionsPanel

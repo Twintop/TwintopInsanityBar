@@ -52,7 +52,24 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				textures = nil,
 				thresholds = nil
 			}
-		}
+		},
+		augmentation = {
+			snapshot = {},
+			barTextVariables = {
+				icons = {},
+				values = {}
+			},
+			spells = {},
+			talents = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
+			}
+		},
 	}
 
 	local function FillSpecializationCache()
@@ -419,6 +436,52 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			icons = {},
 			values = {}
 		}
+
+
+		-- Augmentation
+		specCache.augmentation.Global_TwintopResourceBar = {
+			ttd = 0,
+			resource = {
+				resource = 0,
+				casting = 0,
+				passive = 0,
+				regen = 0
+			},
+			dots = {
+			},
+			isPvp = false
+		}
+
+		specCache.augmentation.character = {
+			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
+			specGroup = GetActiveSpecGroup(),
+			specId = 1,
+			maxResource = 10000,
+			maxResource2 = 5,
+			maxResource2Resource = 0,
+			maxResource2ResourceMax = 1000,
+			effects = {
+			},
+			items = {}
+		}
+
+		specCache.augmentation.spells = {
+		}
+
+		specCache.augmentation.snapshot.manaRegen = 0
+		specCache.augmentation.snapshot.audio = {
+		}
+		specCache.augmentation.snapshot.targetData = {
+			ttdIsActive = false,
+			currentTargetGuid = nil,
+			targets = {},
+		}
+
+		specCache.augmentation.barTextVariables = {
+			icons = {},
+			values = {}
+		}
 	end
 
 	local function Setup_Devastation()
@@ -439,6 +502,15 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)
 	end
 
+	local function Setup_Augmentation()
+		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
+			return
+		end
+
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "evoker", "augmentation")
+		TRB.Functions.Character:LoadFromSpecializationCache(specCache.augmentation)
+	end
+
 	local function FillSpellData_Devastation()
 		Setup_Devastation()
 		local spells = TRB.Functions.Spell:FillSpellData(specCache.devastation.spells)
@@ -448,29 +520,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			{ variable = "#casting", icon = "", description = "The icon of the Mana generating spell you are currently hardcasting", printInSettings = true },
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
-
-			--[[
-			{ variable = "#blackoutKick", icon = spells.blackoutKick.icon, description = spells.blackoutKick.name, printInSettings = true },
-			{ variable = "#cracklingJadeLightning", icon = spells.cracklingJadeLightning.icon, description = spells.cracklingJadeLightning.name, printInSettings = true },
-			{ variable = "#cjl", icon = spells.cracklingJadeLightning.icon, description = spells.cracklingJadeLightning.name, printInSettings = false },
-			{ variable = "#danceOfChiJi", icon = spells.danceOfChiJi.icon, description = spells.danceOfChiJi.name, printInSettings = true },
-			{ variable = "#detox", icon = spells.detox.icon, description = spells.detox.name, printInSettings = true },
-			{ variable = "#disable", icon = spells.disable.icon, description = spells.disable.name, printInSettings = true },
-			{ variable = "#energizingElixir", icon = spells.energizingElixir.icon, description = spells.energizingElixir.name, printInSettings = true },
-			{ variable = "#expelHarm", icon = spells.expelHarm.icon, description = spells.expelHarm.name, printInSettings = true },
-			{ variable = "#fistsOfFury", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = true },
-			{ variable = "#fof", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = false },
-			{ variable = "#strikeOfTheWindlord", icon = spells.strikeOfTheWindlord.icon, description = spells.strikeOfTheWindlord.name, printInSettings = true },
-			{ variable = "#paralysis", icon = spells.paralysis.icon, description = spells.paralysis.name, printInSettings = true },
-			{ variable = "#risingSunKick", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = true },
-			{ variable = "#rsk", icon = spells.risingSunKick.icon, description = spells.risingSunKick.name, printInSettings = false },
-			{ variable = "#serenity", icon = spells.serenity.icon, description = spells.serenity.name, printInSettings = true },
-			{ variable = "#spinningCraneKick", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = true },
-			{ variable = "#sck", icon = spells.spinningCraneKick.icon, description = spells.spinningCraneKick.name, printInSettings = false },
-			{ variable = "#tigerPalm", icon = spells.tigerPalm.icon, description = spells.tigerPalm.name, printInSettings = true },
-			{ variable = "#touchOfDeath", icon = spells.touchOfDeath.icon, description = spells.touchOfDeath.name, printInSettings = true },
-			{ variable = "#vivify", icon = spells.vivify.icon, description = spells.vivify.name, printInSettings = true },
-		]]
 		}
 		specCache.devastation.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -629,6 +678,65 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		}
 
 		specCache.preservation.spells = spells
+	end	
+
+	local function FillSpellData_Augmentation()
+		Setup_Augmentation()
+		local spells = TRB.Functions.Spell:FillSpellData(specCache.augmentation.spells)
+
+		-- This is done here so that we can get icons for the options menu!
+		specCache.augmentation.barTextVariables.icons = {
+			{ variable = "#casting", icon = "", description = "The icon of the Mana generating spell you are currently hardcasting", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+		}
+		specCache.augmentation.barTextVariables.values = {
+			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
+			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
+			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
+			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
+			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
+			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
+			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
+			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
+			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+
+			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
+			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
+			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
+			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
+			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
+			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
+			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
+			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+
+			{ variable = "$mana", description = "Current Mana", printInSettings = true, color = false },
+			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },
+			{ variable = "$manaMax", description = "Maximum Mana", printInSettings = true, color = false },
+			{ variable = "$resourceMax", description = "Maximum Mana", printInSettings = false, color = false },
+			
+			{ variable = "$essence", description = "Current Essence", printInSettings = true, color = false },
+			{ variable = "$comboPoints", description = "Current Essence", printInSettings = false, color = false },
+			{ variable = "$essenceMax", description = "Maximum Essence", printInSettings = true, color = false },
+			{ variable = "$comboPointsMax", description = "Maximum Essence", printInSettings = false, color = false },
+
+			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+		}
+
+		specCache.augmentation.spells = spells
 	end
 
 	local function CalculateAbilityResourceValue(resource, threshold)
@@ -643,6 +751,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		
 		if specId == 1 then -- Devastation
 		elseif specId == 2 then -- Preservation
+		elseif specId == 3 then -- Augmentation
 		end
 	end
 
@@ -652,6 +761,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			local specId = GetSpecialization()
 			if specId == 1 then
 			elseif specId == 2 then
+			elseif specId == 3 then
 			end
 		end
 	end
@@ -708,11 +818,27 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], TRB.Data.spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.evoker.preservation)
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], TRB.Data.spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.evoker.preservation)
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], TRB.Data.spells.conjuredChillglobe.settingKey, TRB.Data.settings.evoker.preservation)
+		elseif specId == 3 then
+			for k, v in pairs(TRB.Data.spells) do
+				local spell = TRB.Data.spells[k]
+				if spell ~= nil and spell.id ~= nil and spell.mana ~= nil and spell.mana < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+					if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
+						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+					end
+					TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
+					TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
+				end
+			end
 		end
 
 		
 		if (specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation) or
-		(specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation) then
+		(specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation) or
+		(specId == 3 and TRB.Data.settings.core.experimental.specs.evoker.augmentation) then
 			TRB.Frames.resource2ContainerFrame:Show()
 			TRB.Functions.Bar:Construct(settings)
 			TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
@@ -763,16 +889,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		return mana * modifier
 	end
 
-	local function GetGuidPositionInMarkOfTheCraneList(guid)
-		local entries = TRB.Functions.Table:Length(TRB.Data.snapshot.markOfTheCrane.list)
-		for x = 1, entries do
-			if TRB.Data.snapshot.markOfTheCrane.list[x].guid == guid then
-				return x
-			end
-		end
-		return 0
-	end
-
 	local function RefreshLookupData_Devastation()
 		local _
 		--Spec specific implementation
@@ -810,7 +926,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
 		TRB.Data.lookupLogic = lookupLogic
 	end
-
 	
 	local function RefreshLookupData_Preservation()
 		local currentTime = GetTime()
@@ -1042,6 +1157,44 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
+	local function RefreshLookupData_Augmentation()
+		local _
+		--Spec specific implementation
+		local currentTime = GetTime()
+		local normalizedMana = TRB.Data.snapshot.resource / TRB.Data.resourceFactor
+
+		-- This probably needs to be pulled every refresh
+		TRB.Data.snapshot.manaRegen, _ = GetPowerRegen()
+		local currentManaColor = TRB.Data.settings.evoker.augmentation.colors.text.current
+		--$mana
+		local manaPrecision = TRB.Data.settings.evoker.augmentation.manaPrecision or 1
+		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+		----------------------------
+
+		local lookup = TRB.Data.lookup or {}
+		lookup["$manaMax"] = TRB.Data.character.maxResource
+		lookup["$mana"] = currentMana
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$resource"] = currentMana
+		lookup["$essence"] = TRB.Data.character.resource2
+		lookup["$comboPoints"] = TRB.Data.character.resource2
+		lookup["$essenceMax"] = TRB.Data.character.maxResource2Raw
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
+		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$manaMax"] = TRB.Data.character.maxResource
+		lookupLogic["$mana"] = TRB.Data.snapshot.resource
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = TRB.Data.snapshot.resource
+		lookupLogic["$casting"] = TRB.Data.snapshot.casting.resourceFinal
+		lookupLogic["$essence"] = TRB.Data.character.resource2
+		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
+		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2Raw
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
+		TRB.Data.lookupLogic = lookupLogic
+	end
+
 	local function FillSnapshotDataCasting(spell)
 		local currentTime = GetTime()
 		TRB.Data.snapshot.casting.startTime = currentTime
@@ -1108,6 +1261,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					end
 				end
 				return true
+			elseif specId == 3 then
+				--[[if currentSpellName == nil then
+					return true
+				else]]
+					TRB.Functions.Character:ResetCastingSnapshotData()
+					return false
+				--end
 			end
 			TRB.Functions.Character:ResetCastingSnapshotData()
 			return false
@@ -1291,6 +1451,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		else
 			TRB.Data.snapshot.conjuredChillglobe.onCooldown = false
 		end
+	end	
+
+	local function UpdateSnapshot_Augmentation()
+		UpdateSnapshot()
+		
+		local currentTime = GetTime()
+		local _
 	end
 
 	local function UpdateResourceBar()
@@ -1324,17 +1491,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
-
-					--[[
-					local partial = UnitPartialPower("player", Enum.PowerType.Essence) / 1000
-					local totalEssence = math.min(partial + TRB.Data.snapshot.resource2, TRB.Data.character.maxResource2Raw)
-					--print(partial, partial + TRB.Data.snapshot.resource2, TRB.Data.snapshot.resource2)
-
-					TRB.Frames.resource2Frames[1].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.base, true))
-					TRB.Frames.resource2Frames[1].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.border, true))
-					TRB.Frames.resource2Frames[1].containerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true))
-					TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[1].resourceFrame, totalEssence, TRB.Data.character.maxResource2Raw)
-					]]
 					
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 					for x = 1, TRB.Data.character.maxResource2 do
@@ -1540,10 +1696,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					
 					
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
---[[
-					for x = 2, TRB.Data.character.maxResource2 do
-						TRB.Frames.resource2Frames[x]:Hide()
-					end]]
 
 					for x = 1, TRB.Data.character.maxResource2 do
 						local cpBorderColor = specSettings.colors.comboPoints.border
@@ -1574,6 +1726,58 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 				TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 			end
+		elseif specId == 3 then
+			local specSettings = classSettings.augmentation
+			UpdateSnapshot_Augmentation()
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
+
+			if TRB.Data.snapshot.isTracking then
+				TRB.Functions.Bar:HideResourceBar()
+
+				if specSettings.displayBar.neverShow == false then
+					refreshText = true
+					local barColor = specSettings.colors.bar.base
+					local barBorderColor = specSettings.colors.bar.border
+
+					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshot.resource)
+					TRB.Functions.Bar:SetValue(specSettings, castingFrame, 0, 1)
+					TRB.Functions.Bar:SetValue(specSettings, passiveFrame, 0, 1)
+
+					barContainerFrame:SetAlpha(1.0)
+
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
+
+					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
+					
+					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+					for x = 1, TRB.Data.character.maxResource2 do
+						local cpBorderColor = specSettings.colors.comboPoints.border
+						local cpColor = specSettings.colors.comboPoints.base
+						local cpBR = cpBackgroundRed
+						local cpBG = cpBackgroundGreen
+						local cpBB = cpBackgroundBlue
+
+						if TRB.Data.snapshot.resource2 >= x then
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+							if (specSettings.comboPoints.sameColor and TRB.Data.snapshot.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+								cpColor = specSettings.colors.comboPoints.penultimate
+							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshot.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+								cpColor = specSettings.colors.comboPoints.final
+							end
+						elseif TRB.Data.snapshot.resource2+1 == x then
+							local partial = UnitPartialPower("player", Enum.PowerType.Essence)
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
+						else
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+						end
+
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+					end
+				end
+			end
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)		
 		end
 	end
 
@@ -1723,6 +1927,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							UpdateEmeraldCommunion(true)
 						end
 					end
+				elseif specId == 3 and TRB.Data.barConstructedForSpec == "augmentation" then --Augmentation
 				end
 			end
 
@@ -1790,6 +1995,18 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				TRB.Data.barConstructedForSpec = "preservation"
 				ConstructResourceBar(specCache.preservation.settings)
 			end
+		elseif specId == 3 and TRB.Data.settings.core.experimental.specs.evoker.augmentation then
+			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.evoker.augmentation)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.augmentation)
+			specCache.augmentation.talents = TRB.Functions.Talent:GetTalents()
+			FillSpellData_Augmentation()
+			TRB.Functions.Character:LoadFromSpecializationCache(specCache.augmentation)
+			TRB.Functions.RefreshLookupData = RefreshLookupData_Augmentation
+
+			if TRB.Data.barConstructedForSpec ~= "augmentation" then
+				TRB.Data.barConstructedForSpec = "augmentation"
+				ConstructResourceBar(specCache.augmentation.settings)
+			end
 		else
 			TRB.Data.barConstructedForSpec = nil
 		end
@@ -1844,16 +2061,18 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							TRB.Data.barConstructedForSpec = nil
 							TRB.Data.settings.evoker.devastation = TRB.Functions.LibSharedMedia:ValidateLsmValues("Devastation Evoker", TRB.Data.settings.evoker.devastation)
 							TRB.Data.settings.evoker.preservation = TRB.Functions.LibSharedMedia:ValidateLsmValues("Preservation Evoker", TRB.Data.settings.evoker.preservation)
+							TRB.Data.settings.evoker.augmentation = TRB.Functions.LibSharedMedia:ValidateLsmValues("Augmentation Evoker", TRB.Data.settings.evoker.augmentation)
 							FillSpellData_Devastation()
 							FillSpellData_Preservation()
+							FillSpellData_Augmentation()
 
-							if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation then
+							if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation or TRB.Data.settings.core.experimental.specs.evoker.augmentation then
 								SwitchSpec()
 							end
 
 							TRB.Options.Evoker.ConstructOptionsPanel(specCache)
 							
-							if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation then
+							if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation or TRB.Data.settings.core.experimental.specs.evoker.augmentation then
 								-- Reconstruct just in case
 								if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
 									ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
@@ -1865,7 +2084,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				end
 
 				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
-					if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation then
+					if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation or TRB.Data.settings.core.experimental.specs.evoker.augmentation then
 						SwitchSpec()
 					end
 				end
@@ -1927,6 +2146,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Data.character.items.alchemyStone = alchemyStone
 			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
 			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
+		elseif specId == 3 and TRB.Data.settings.core.experimental.specs.evoker.augmentation then
+			settings = TRB.Data.settings.evoker.augmentation
+			TRB.Data.character.specName = "augmentation"
 		end
 		
 		if settings ~= nil then
@@ -1957,6 +2179,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Data.resourceFactor = 1
 			TRB.Data.resource2 = Enum.PowerType.Essence
 			TRB.Data.resourceFactor = 1
+		elseif specId == 3 and TRB.Data.settings.core.enabled.evoker.augmentation then
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.augmentation)
+			TRB.Data.specSupported = true
+			TRB.Data.resource = Enum.PowerType.Mana
+			TRB.Data.resourceFactor = 1
+			TRB.Data.resource2 = Enum.PowerType.Essence
+			TRB.Data.resource2Factor = 1
 		else -- This should never happen
 			--TRB.Data.resource = MANA
 			TRB.Data.specSupported = false
@@ -2025,6 +2254,24 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					TRB.Frames.barContainerFrame:Show()
 				end
 			end
+		elseif specId == 3 then
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
+				(not UnitInVehicle("player")) and (
+					(not TRB.Data.settings.evoker.augmentation.displayBar.alwaysShow) and (
+						(not TRB.Data.settings.evoker.devaugmentationastation.displayBar.notZeroShow) or
+						(TRB.Data.settings.evoker.augmentation.displayBar.notZeroShow and TRB.Data.snapshot.resource == TRB.Data.character.maxResource and TRB.Data.snapshot.resource2 == TRB.Data.character.maxResource2)
+					)
+				)) then
+				TRB.Frames.barContainerFrame:Hide()
+				TRB.Data.snapshot.isTracking = false
+			else
+				TRB.Data.snapshot.isTracking = true
+				if TRB.Data.settings.evoker.augmentation.displayBar.neverShow == true then
+					TRB.Frames.barContainerFrame:Hide()
+				else
+					TRB.Frames.barContainerFrame:Show()
+				end
+			end
 		else
 			TRB.Frames.barContainerFrame:Hide()
 			TRB.Data.snapshot.isTracking = false
@@ -2062,62 +2309,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			settings = TRB.Data.settings.evoker.devastation
 		elseif specId == 2 then
 			settings = TRB.Data.settings.evoker.preservation
+		elseif specId == 3 then
+			settings = TRB.Data.settings.evoker.augmentation
 		end
 
-		if specId == 1 then --Devastation
-			if var == "$casting" then
-				if TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw ~= 0 then
-					valid = true
-				end
-			--[[elseif var == "$passive" then
-				if TRB.Data.snapshot.resource < TRB.Data.character.maxResource and
-					settings.generation.enabled and
-					((settings.generation.mode == "time" and settings.generation.time > 0) or
-					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-					valid = true
-				end]]
-			elseif var == "$resource" or var == "$mana" then
-				if TRB.Data.snapshot.resource > 0 then
-					valid = true
-				end
-			elseif var == "$resourceMax" or var == "$manaMax" then
-				valid = true
-			elseif var == "$resourceTotal" or var == "$manaTotal" then
-				if TRB.Data.snapshot.resource > 0 or
-					(TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw ~= 0)
-					then
-					valid = true
-				end
-			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
-				if TRB.Data.snapshot.resource > 0 or
-					(TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw ~= 0) then
-					valid = true
-				end
-			--[[elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
-				if TRB.Data.snapshot.resource > 0 then
-					valid = true
-				end]]
-			elseif var == "$regen" or var == "$regenMana" or var == "$manaRegen" then
-				if TRB.Data.snapshot.resource < TRB.Data.character.maxResource and
-					((settings.generation.mode == "time" and settings.generation.time > 0) or
-					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-					valid = true
-				end
-			elseif var == "$comboPoints" or var == "$essence" then
-				valid = true
-			elseif var == "$comboPointsMax"or var == "$essenceMax" then
-				valid = true
-			end
+		if specId == 1 then --Devastation			
 		elseif specId == 2 then --Preservation
-			if var == "$resource" or var == "$mana" then
-				valid = true
-			elseif var == "$resourceMax" or var == "$manaMax" then
-				valid = true
-			elseif var == "$resourceTotal" or var == "$manaTotal" then
-				valid = true
-			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
-				valid = true
-			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
+			if var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
 				valid = true
 			elseif var == "$casting" then
 				if TRB.Data.snapshot.casting.resourceRaw ~= nil and (TRB.Data.snapshot.casting.resourceRaw ~= 0) then
@@ -2209,7 +2407,41 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				if TRB.Data.snapshot.potion.onCooldown then
 					valid = true
 				end
+			elseif specId == 3 then --Augmentation
 			end
+		end
+
+		if var == "$casting" then
+			if TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw ~= 0 then
+				valid = true
+			end
+		elseif var == "$resource" or var == "$mana" then
+			if TRB.Data.snapshot.resource > 0 then
+				valid = true
+			end
+		elseif var == "$resourceMax" or var == "$manaMax" then
+			valid = true
+		elseif var == "$resourceTotal" or var == "$manaTotal" then
+			if TRB.Data.snapshot.resource > 0 or
+				(TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw ~= 0)
+				then
+				valid = true
+			end
+		elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
+			if TRB.Data.snapshot.resource > 0 or
+				(TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw ~= 0) then
+				valid = true
+			end
+		elseif var == "$regen" or var == "$regenMana" or var == "$manaRegen" then
+			if TRB.Data.snapshot.resource < TRB.Data.character.maxResource and
+				((settings.generation.mode == "time" and settings.generation.time > 0) or
+				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+				valid = true
+			end
+		elseif var == "$comboPoints" or var == "$essence" then
+			valid = true
+		elseif var == "$comboPointsMax"or var == "$essenceMax" then
+			valid = true
 		end
 
 		return valid
@@ -2220,9 +2452,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 	function TRB.Functions.Class:TriggerResourceBarUpdates()
 		local specId = GetSpecialization()
-		if (specId ~= 1 and specId ~= 2) or
+		if (specId ~= 1 and specId ~= 2 and specId ~= 3) or
 			(specId == 1 and not TRB.Data.settings.core.experimental.specs.evoker.devastation) or
-			(specId == 2 and not TRB.Data.settings.core.experimental.specs.evoker.preservation) then
+			(specId == 2 and not TRB.Data.settings.core.experimental.specs.evoker.preservation) or
+			(specId == 3 and not TRB.Data.settings.core.experimental.specs.evoker.augmentation) then
 			TRB.Functions.Bar:HideResourceBar(true)
 			return
 		end
