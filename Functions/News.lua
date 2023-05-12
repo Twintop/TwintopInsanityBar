@@ -8,10 +8,19 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
-# 10.1.0.2-release (2023-05-09)
+# 10.1.5.0-beta01 (2023-05-12)
+## Evoker
+### Augmentation
+- This feature is EXPERIMENTAL and is not enabled by default. To enable Augmentation Evoker support, go to the main "General" options menu for Twintop's Resource Bar and check "Augmentation Evoker support" under the "Experimental Features" section.<br/>
+- [#312 - EXPERIMENTAL](#312) Minimalist implementation for Augmentation Evoker, tracking Essence and Mana (to a much lesser extent). Presently displays Essence in a similar fashion as Combo Points or Chi, but shows the refill status in the currently regenerating node.
+
+----
+
+# 10.1.0.2-release (2023-05-?? UNRELEASED)
 ## General
 - [#311 - NEW](#311) Add Time To Die overrides for The Lost Dwarves in Uldaman: Legacy of Tyr 
 <br/>&emsp;&ensp;- Olaf, Baelog, and Eric "The Swift" -- 10%
+
 ----
 
 # 10.1.0.2-release (2023-05-09)
