@@ -8,10 +8,17 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
-# 10.1.0.2-release (2023-05-09)
+# 10.1.0.3-release (2023-05-16)
 ## General
+
 - [#311 - NEW](#311) Add Time To Die overrides for The Lost Dwarves in Uldaman: Legacy of Tyr 
 <br/>&emsp;&ensp;- Olaf, Baelog, and Eric "The Swift" -- 10%
+
+## Druid
+### Balance
+
+- [#310 - HOTFIX](#310) T29 4P adjustment: Entering Eclipse makes your next Starsurge or Starfall cost 10 less Astral Power (was 5).
+
 ----
 
 # 10.1.0.2-release (2023-05-09)

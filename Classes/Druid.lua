@@ -338,7 +338,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 394414,
 				name = "",
 				icon = "",
-				astralPowerMod = -5
+				astralPowerMod = -10
 			}
 		}
 		
