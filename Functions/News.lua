@@ -19,6 +19,11 @@ local content = [====[
 
 - [#310 - HOTFIX](#310) T29 4P adjustment: Entering Eclipse makes your next Starsurge or Starfall cost 10 less Astral Power (was 5).
 
+## Priest
+### Shadow
+
+- [#315 - FIX](#315) Use the correct Pandemic refresh time for Shadow Word: Pain when Misery is talented.
+
 ----
 
 # 10.1.0.2-release (2023-05-09)

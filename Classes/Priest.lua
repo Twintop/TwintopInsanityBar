@@ -683,7 +683,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				pandemic = true,
 				pandemicTime = 16 * 0.3,
 				isTalent = false,
-				baseline = true
+				baseline = true,
+				miseryPandemic = 21,
+				miseryPandemicTime = 21 * 0.3,
 			},
 
 
@@ -794,6 +796,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			shadowyApparition = {
 				id = 341491,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+			misery = {
+				id = 238558,
 				name = "",
 				icon = "",
 				isTalent = true
@@ -2188,7 +2196,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		if TRB.Data.settings.priest.shadow.colors.text.dots.enabled and TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].shadowWordPain then
-				if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].shadowWordPainRemaining > TRB.Data.spells.shadowWordPain.pandemicTime then
+				if (not TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.misery) and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].shadowWordPainRemaining > TRB.Data.spells.shadowWordPain.pandemicTime) or
+					(TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.misery) and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].shadowWordPainRemaining > TRB.Data.spells.shadowWordPain.miseryPandemicTime) then
 					shadowWordPainCount = string.format("|c%s%.0f|r", TRB.Data.settings.priest.shadow.colors.text.dots.up, _shadowWordPainCount)
 					shadowWordPainTime = string.format("|c%s%.1f|r", TRB.Data.settings.priest.shadow.colors.text.dots.up, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].shadowWordPainRemaining)
 				else
