@@ -103,66 +103,16 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 	end
 
 	if guid ~= TRB.Data.character.guid and TRB.Data.snapshot.targetData.ttdIsActive and self.ttdSinceLastUpdate >= TRB.Data.settings.core.ttd.sampleRate then -- in seconds
-		local currentTime = GetTime()
-
 		if guid ~= nil then
 			TRB.Functions.Class:InitializeTarget(guid)
 
-			local isDead = UnitIsDeadOrGhost("target")
-			local currentHealth = UnitHealth("target")
-			local maxHealth = UnitHealthMax("target")
-			local healthDelta = 0
-			local timeDelta = 0
-			local dps = 0
-			local ttd = 0
-			local count = 0
-
 			if TRB.Data.snapshot.targetData.targets[guid] ~= nil then
-				count = TRB.Functions.Table:Length(TRB.Data.snapshot.targetData.targets[guid].snapshot)
-				if count > 0 and TRB.Data.snapshot.targetData.targets[guid].snapshot[1] ~= nil then
-					healthDelta = math.max(TRB.Data.snapshot.targetData.targets[guid].snapshot[1].health - currentHealth, 0)
-					timeDelta = math.max(currentTime - TRB.Data.snapshot.targetData.targets[guid].snapshot[1].time, 0)
-				end
-			end
-
-			if isDead then
-				TRB.Functions.Target:RemoveTarget(guid)
-			elseif currentHealth <= 0 or maxHealth <= 0 then
-				dps = 0
-				ttd = 0
-			else
-				if count == 0 or TRB.Data.snapshot.targetData.targets[guid].snapshot[count] == nil or
-					(TRB.Data.snapshot.targetData.targets[guid].snapshot[1].health == currentHealth and count == TRB.Data.settings.core.ttd.numEntries) then
-					dps = 0
-				elseif healthDelta == 0 or timeDelta == 0 then
-					dps = TRB.Data.snapshot.targetData.targets[guid].snapshot[count].dps
+				local isDead = UnitIsDeadOrGhost("target")
+				if isDead then
+					TRB.Functions.Target:RemoveTarget(guid)
 				else
-					dps = healthDelta / timeDelta
+					TRB.Data.snapshot.targetData.targets[guid]:UpdateTimeToDie(currentTime)
 				end
-
-				if dps == nil or dps == 0 then
-					ttd = 0
-				else
-					local deathPercent = TRB.Functions.TimeToDie:GetUnitDeathHealthPercentage("target")
-					local deathHealth = maxHealth * deathPercent
-					ttd = math.max(math.max(currentHealth - deathHealth, 0) / dps, 0)
-				end
-			end
-
-			if not isDead then
-				TRB.Data.snapshot.targetData.targets[guid].lastUpdate = currentTime
-
-				if count >= TRB.Data.settings.core.ttd.numEntries then
-					table.remove(TRB.Data.snapshot.targetData.targets[guid].snapshot, 1)
-				end
-
-				table.insert(TRB.Data.snapshot.targetData.targets[guid].snapshot, {
-					health=currentHealth,
-					time=currentTime,
-					dps=dps
-				})
-
-				TRB.Data.snapshot.targetData.targets[guid].ttd = ttd
 			end
 		end
 		self.ttdSinceLastUpdate = 0

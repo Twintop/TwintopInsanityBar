@@ -42,27 +42,29 @@ Functions\Target.lua
 Functions\Threshold.lua
 Functions\TimeToDie.lua
 
+Classes\Target.lua
+
 Options\OptionsUi.lua
 Options\Options.lua
 
-Classes\DemonHunter.lua
-Classes\Druid.lua
-Classes\Evoker.lua
-Classes\Hunter.lua
-Classes\Monk.lua
-Classes\Priest.lua
-Classes\Rogue.lua
-Classes\Shaman.lua
-Classes\Warrior.lua
+ClassModules\DemonHunter.lua
+ClassModules\Druid.lua
+ClassModules\Evoker.lua
+ClassModules\Hunter.lua
+ClassModules\Monk.lua
+ClassModules\Priest.lua
+ClassModules\Rogue.lua
+ClassModules\Shaman.lua
+ClassModules\Warrior.lua
 
 Functions\News.lua
 
-Options\DemonHunterOptions.lua
-Options\DruidOptions.lua
-Options\EvokerOptions.lua
-Options\HunterOptions.lua
-Options\MonkOptions.lua
-Options\PriestOptions.lua
-Options\RogueOptions.lua
-Options\ShamanOptions.lua
-Options\WarriorOptions.lua
+ClassModules\Options\DemonHunterOptions.lua
+ClassModules\Options\DruidOptions.lua
+ClassModules\Options\EvokerOptions.lua
+ClassModules\Options\HunterOptions.lua
+ClassModules\Options\MonkOptions.lua
+ClassModules\Options\PriestOptions.lua
+ClassModules\Options\RogueOptions.lua
+ClassModules\Options\ShamanOptions.lua
+ClassModules\Options\WarriorOptions.lua

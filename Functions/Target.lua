@@ -20,9 +20,7 @@ end
 function TRB.Functions.Target:InitializeTarget(guid)
 	if guid ~= nil and guid ~= "" then
 		if not TRB.Functions.Target:CheckTargetExists(guid) then
-			TRB.Data.snapshot.targetData.targets[guid] = {}
-			TRB.Data.snapshot.targetData.targets[guid].snapshot = {}
-			TRB.Data.snapshot.targetData.targets[guid].ttd = 0
+			TRB.Data.snapshot.targetData.targets[guid] = TRB.Classes.Target:New(guid)
 		end
 	end
 end
