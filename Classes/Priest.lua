@@ -2334,7 +2334,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local ysStacks = TRB.Data.snapshot.idolOfYoggSaron.stacks or 0
 		--$ysRemainingStacks
 		local ysRemainingStacks = (25 - TRB.Data.snapshot.idolOfYoggSaron.stacks) or 25
-		--$ysTime
+		--$tfbTime
 		local _tfbTime = 0
 		if TRB.Data.snapshot.thingFromBeyond.endTime then
 			_tfbTime = math.abs(TRB.Data.snapshot.thingFromBeyond.endTime - currentTime)
