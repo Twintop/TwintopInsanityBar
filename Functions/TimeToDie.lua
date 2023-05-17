@@ -127,7 +127,7 @@ local unitDeathHealthPercentageList = {
 
     ---- Dragonflight ----
     --- Brackenhide Hollow ---
-    ["186121"] = 0.045, -- Decatriarch Wratheye TODO: verify 5% vs 4.5%
+    ["186121"] = 0.045, -- Decatriarch Wratheye
     --- Uldaman: Legacy of Tyr ---
     ["184580"] = 0.1, -- Olaf
     ["184581"] = 0.1, -- Baelog

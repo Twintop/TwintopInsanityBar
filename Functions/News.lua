@@ -8,6 +8,23 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.1.0.4-release (2023-05-??)
+## Priest
+### Shadow
+
+- [#315 - PR - st-htmn](#317) Add support for Idol of Yogg-Saron.
+<br/>&emsp;&ensp;- Thanks go out to *st-htmn* for adding this functionality!
+<br/>&emsp;&ensp;- Tracks the current stacks and time remaining on the Idol of Yogg-Saron buff and the time left on Thing From Beyond once spawned.
+<br/>&emsp;&ensp;- New bar text icons and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#ys` or `#idolOfYoggSaron` -- Idol of Yogg-Saron buff icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `#tfb` or `#thingFromBeyond` -- Thing From Beyond buff icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$ysTime` -- time remaining on the Idol of Yogg-Saron buff
+<br/>&emsp;&ensp;&emsp;&ensp;- `$ysStacks` -- stacks on the Idol of Yogg-Saron buff
+<br/>&emsp;&ensp;&emsp;&ensp;- `$ysRemainingStacks ` -- stacks required for Idol of Yogg-Saron to spawn a Thing From Beyond
+<br/>&emsp;&ensp;&emsp;&ensp;- `$tfbTime` -- time remaining on a spawned Thing From Beyond
+
+----
+
 # 10.1.0.3-release (2023-05-16)
 ## General
 
@@ -18,6 +35,11 @@ local content = [====[
 ### Balance
 
 - [#310 - HOTFIX](#310) T29 4P adjustment: Entering Eclipse makes your next Starsurge or Starfall cost 10 less Astral Power (was 5).
+
+## Priest
+### Shadow
+
+- [#315 - FIX](#315) Use the correct Pandemic refresh time for Shadow Word: Pain when Misery is talented.
 
 ----
 
