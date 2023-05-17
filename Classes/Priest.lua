@@ -998,7 +998,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				isTalent = true,
-				maxStacks = 24
+				maxStacks = 24,
+				requiredStacks = 25
 			},
 			thingFromBeyond = {
 				id = 373277,
@@ -2333,7 +2334,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$ysStacks
 		local ysStacks = TRB.Data.snapshot.idolOfYoggSaron.stacks or 0
 		--$ysRemainingStacks
-		local ysRemainingStacks = (25 - TRB.Data.snapshot.idolOfYoggSaron.stacks) or 25
+		local ysRemainingStacks = (TRB.Data.spells.idolOfYoggSaron.requiredStacks - TRB.Data.snapshot.idolOfYoggSaron.stacks) or TRB.Data.spells.idolOfYoggSaron.requiredStacks
 		--$tfbTime
 		local _tfbTime = 0
 		if TRB.Data.snapshot.thingFromBeyond.endTime then
