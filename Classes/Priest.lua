@@ -993,6 +993,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				ticks = 15,
 				tickDuration = 1
 			},
+			idolOfYoggSaron = {
+				id = 373276,
+				name = "",
+				icon = "",
+				isTalent = true,
+				maxStacks = 24,
+				requiredStacks = 25
+			},
+			thingFromBeyond = {
+				id = 373277,
+				name = "",
+				icon = "",
+				isTalent = true,
+				duration = 20
+			},
 		}
 
 		specCache.shadow.snapshot.voidform = {
@@ -1102,6 +1117,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			duration = 0,
 			charges = 1,
 			maxCharges = 1
+		}
+		specCache.shadow.snapshot.idolOfYoggSaron = {
+			isActive = false,
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0,
+			stacks = 0
+		}
+		specCache.shadow.snapshot.thingFromBeyond = {
+			isActive = false,
+			spellId = nil,
+			duration = 0,
+			endTime = nil,
+			remainingTime = 0
 		}
 	end
 
@@ -1352,7 +1382,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 																						  
 			{ variable = "#si", icon = spells.shadowyInsight.icon, description = spells.shadowyInsight.name, printInSettings = true },
 			{ variable = "#shadowyInsight", icon = spells.shadowyInsight.icon, description = spells.shadowyInsight.name, printInSettings = false },
-																															  
+
+			{ variable = "#tfb", icon = spells.thingFromBeyond.icon, description = spells.thingFromBeyond.name, printInSettings = true },
+			{ variable = "#thingFromBeyond", icon = spells.thingFromBeyond.icon, description = spells.thingFromBeyond.name, printInSettings = false },
+		
 			{ variable = "#tof", icon = spells.twistOfFate.icon, description = spells.twistOfFate.name, printInSettings = true },
 			{ variable = "#twistOfFate", icon = spells.twistOfFate.icon, description = spells.twistOfFate.name, printInSettings = false },
 
@@ -1366,6 +1399,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			{ variable = "#vt", icon = spells.vampiricTouch.icon, description = spells.vampiricTouch.name, printInSettings = true },
 			{ variable = "#vampiricTouch", icon = spells.vampiricTouch.icon, description = spells.vampiricTouch.name, printInSettings = false },
+
+			{ variable = "#ys", icon = spells.idolOfYoggSaron.icon, description = spells.idolOfYoggSaron.name, printInSettings = true },
+			{ variable = "#idolOfYoggSaron", icon = spells.idolOfYoggSaron.icon, description = spells.idolOfYoggSaron.name, printInSettings = false },
 		}
 		specCache.shadow.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -1448,12 +1484,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			
 			{ variable = "$mindBlastCharges", description = "Current number of Mind Blast charges", printInSettings = true, color = false },
 			{ variable = "$mindBlastMaxCharges", description = "Maximum number of Mind Blast charges", printInSettings = true, color = false },
-			
 
 			{ variable = "$mmTime", description = "Time remaining on Mind Melt buff", printInSettings = true, color = false },
 			{ variable = "$mmStacks", description = "Time remaining on Mind Melt stacks", printInSettings = true, color = false },
 
 			{ variable = "$vfTime", description = "Duration remaining of Voidform", printInSettings = true, color = false },
+	
+			{ variable = "$ysTime", description = "Time remaining on Yogg Saron buff", printInSettings = true, color = false },
+			{ variable = "$ysStacks", description = "Number of Yogg Saron stacks", printInSettings = true, color = false },
+			{ variable = "$ysRemainingStacks", description = "Number of Yogg Saron stacks until next Thing from Beyond", printInSettings = true, color = false },
+			{ variable = "$tfbTime", description = "Time remaining on Thing from Beyond", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -2283,6 +2323,23 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$mmStacks
 		local mmStacks = TRB.Data.snapshot.mindMelt.stacks or 0
 
+		--$ysTime
+		local _ysTime = 0
+		if TRB.Data.snapshot.idolOfYoggSaron.endTime then
+			_ysTime = math.abs(TRB.Data.snapshot.idolOfYoggSaron.endTime - currentTime)
+		end
+		local ysTime = string.format("%.1f", _ysTime)
+		--$ysStacks
+		local ysStacks = TRB.Data.snapshot.idolOfYoggSaron.stacks or 0
+		--$ysRemainingStacks
+		local ysRemainingStacks = (TRB.Data.spells.idolOfYoggSaron.requiredStacks - TRB.Data.snapshot.idolOfYoggSaron.stacks) or TRB.Data.spells.idolOfYoggSaron.requiredStacks
+		--$tfbTime
+		local _tfbTime = 0
+		if TRB.Data.snapshot.thingFromBeyond.endTime then
+			_tfbTime = math.abs(TRB.Data.snapshot.thingFromBeyond.endTime - currentTime)
+		end
+		local tfbTime = string.format("%.1f", _tfbTime)
+
 		--$cttvEquipped
 		local cttvEquipped = TRB.Functions.Class:IsValidVariableForSpec("$cttvEquipped")
 
@@ -2355,6 +2412,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["#shadowyInsight"] = TRB.Data.spells.shadowyInsight.icon
 		lookup["#mm"] = TRB.Data.spells.mindMelt.icon
 		lookup["#mindMelt"] = TRB.Data.spells.mindMelt.icon
+		lookup["#ys"] = TRB.Data.spells.idolOfYoggSaron.icon
+		lookup["#idolOfYoggSaron"] = TRB.Data.spells.idolOfYoggSaron.icon
+		lookup["#tfb"] = TRB.Data.spells.thingFromBeyond.icon
+		lookup["#thingFromBeyond"] = TRB.Data.spells.thingFromBeyond.icon
 		lookup["#md"] = TRB.Data.spells.massDispel.icon
 		lookup["#massDispel"] = TRB.Data.spells.massDispel.icon
 		lookup["#cthun"] = TRB.Data.spells.idolOfCthun.icon
@@ -2377,6 +2438,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$vfTime"] = voidformTime
 		lookup["$mmTime"] = mmTime
 		lookup["$mmStacks"] = mmStacks
+		lookup["$ysTime"] = ysTime
+		lookup["$ysStacks"] = ysStacks
+		lookup["$ysRemainingStacks"] = ysRemainingStacks
+		lookup["$tfbTime"] = tfbTime
 		lookup["$siTime"] = siTime
 		lookup["$mindBlastCharges"] = mindBlastCharges
 		lookup["$mindBlastMaxCharges"] = mindBlastMaxCharges
@@ -2422,6 +2487,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$vfTime"] = _voidformTime
 		lookupLogic["$mmTime"] = _mmTime
 		lookupLogic["$mmStacks"] = mmStacks
+		lookupLogic["$ysTime"] = _ysTime
+		lookupLogic["$ysStacks"] = ysStacks
+		lookupLogic["$ysRemainingStacks"] = ysRemainingStacks
+		lookupLogic["$tfbTime"] = _tfbTime
 		lookupLogic["$siTime"] = _siTime
 		lookupLogic["$mindBlastCharges"] = mindBlastCharges
 		lookupLogic["$mindBlastMaxCharges"] = mindBlastMaxCharges
@@ -3974,6 +4043,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.shadowyInsight)
 					elseif spellId == TRB.Data.spells.mindMelt.id then						
 						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.mindMelt)
+					elseif spellId == TRB.Data.spells.idolOfYoggSaron.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.idolOfYoggSaron)
+					elseif spellId == TRB.Data.spells.thingFromBeyond.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.thingFromBeyond)
 					elseif type == "SPELL_SUMMON" and settings.voidTendrilTracker and (spellId == TRB.Data.spells.idolOfCthun_Tendril.id or spellId == TRB.Data.spells.idolOfCthun_Lasher.id) then
 						InitializeVoidTendril(destGUID)
 						if spellId == TRB.Data.spells.idolOfCthun_Tendril.id then
@@ -4655,6 +4728,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif var == "$mmStacks" then
 				if TRB.Data.snapshot.mindMelt.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$ysTime" then
+				if TRB.Data.snapshot.idolOfYoggSaron.duration > 0 then
+					valid = true
+				end
+			elseif var == "$ysStacks" then
+				if TRB.Data.snapshot.idolOfYoggSaron.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$ysRemainingStacks" then
+				if TRB.Data.snapshot.idolOfYoggSaron.stacks > 0 then
+					valid = true
+				end
+			elseif var == "$tfbTime" then
+				if TRB.Data.snapshot.thingFromBeyond.duration > 0 then
 					valid = true
 				end
 			else
