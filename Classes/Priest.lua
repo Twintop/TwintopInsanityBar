@@ -1131,8 +1131,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spellId = nil,
 			duration = 0,
 			endTime = nil,
-			remainingTime = 0,
-			duration = 0
+			remainingTime = 0
 		}
 	end
 
@@ -1383,7 +1382,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 																						  
 			{ variable = "#si", icon = spells.shadowyInsight.icon, description = spells.shadowyInsight.name, printInSettings = true },
 			{ variable = "#shadowyInsight", icon = spells.shadowyInsight.icon, description = spells.shadowyInsight.name, printInSettings = false },
-																															  
+
+			{ variable = "#tfb", icon = spells.thingFromBeyond.icon, description = spells.thingFromBeyond.name, printInSettings = true },
+			{ variable = "#thingFromBeyond", icon = spells.thingFromBeyond.icon, description = spells.thingFromBeyond.name, printInSettings = false },
+		
 			{ variable = "#tof", icon = spells.twistOfFate.icon, description = spells.twistOfFate.name, printInSettings = true },
 			{ variable = "#twistOfFate", icon = spells.twistOfFate.icon, description = spells.twistOfFate.name, printInSettings = false },
 
@@ -1400,9 +1402,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			{ variable = "#ys", icon = spells.idolOfYoggSaron.icon, description = spells.idolOfYoggSaron.name, printInSettings = true },
 			{ variable = "#idolOfYoggSaron", icon = spells.idolOfYoggSaron.icon, description = spells.idolOfYoggSaron.name, printInSettings = false },
-
-			{ variable = "#tfb", icon = spells.thingFromBeyond.icon, description = spells.thingFromBeyond.name, printInSettings = true },
-			{ variable = "#thingFromBeyond", icon = spells.thingFromBeyond.icon, description = spells.thingFromBeyond.name, printInSettings = false },
 		}
 		specCache.shadow.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -1485,20 +1484,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			
 			{ variable = "$mindBlastCharges", description = "Current number of Mind Blast charges", printInSettings = true, color = false },
 			{ variable = "$mindBlastMaxCharges", description = "Maximum number of Mind Blast charges", printInSettings = true, color = false },
-			
 
 			{ variable = "$mmTime", description = "Time remaining on Mind Melt buff", printInSettings = true, color = false },
 			{ variable = "$mmStacks", description = "Time remaining on Mind Melt stacks", printInSettings = true, color = false },
 
 			{ variable = "$vfTime", description = "Duration remaining of Voidform", printInSettings = true, color = false },
-
-			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true },
-
+	
 			{ variable = "$ysTime", description = "Time remaining on Yogg Saron buff", printInSettings = true, color = false },
 			{ variable = "$ysStacks", description = "Number of Yogg Saron stacks", printInSettings = true, color = false },
 			{ variable = "$ysRemainingStacks", description = "Number of Yogg Saron stacks until next Thing from Beyond", printInSettings = true, color = false },
-			{ variable = "$tfbTime", description = "Time remaining on Thing from Beyond", printInSettings = true, color = false }
+			{ variable = "$tfbTime", description = "Time remaining on Thing from Beyond", printInSettings = true, color = false },
+
+			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
 
 		specCache.shadow.spells = spells
