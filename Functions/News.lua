@@ -15,7 +15,7 @@ local content = [====[
 - [#315 - PR - st-htmn](#317) Add support for Idol of Yogg-Saron.
 <br/>&emsp;&ensp;- Thanks go out to *st-htmn* for adding this functionality!
 <br/>&emsp;&ensp;- Tracks the current stacks and time remaining on the Idol of Yogg-Saron buff and the time left on Thing From Beyond once spawned.
-<br/>&emsp;&ensp;- New bar text icon and variable:
+<br/>&emsp;&ensp;- New bar text icons and variables:
 <br/>&emsp;&ensp;&emsp;&ensp;- `#ys` or `#idolOfYoggSaron` -- Idol of Yogg-Saron buff icon
 <br/>&emsp;&ensp;&emsp;&ensp;- `#tfb` or `#thingFromBeyond` -- Thing From Beyond buff icon
 <br/>&emsp;&ensp;&emsp;&ensp;- `$ysTime` -- time remaining on the Idol of Yogg-Saron buff
