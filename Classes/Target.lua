@@ -70,6 +70,7 @@ end
 ---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
 function TRB.Classes.Target:UpdateTimeToDie(currentTime)
     currentTime = currentTime or GetTime()
+    -- TODO: Look in to hooking in to nameplates to get the info we need for this
     local unitToken = UnitTokenFromGUID(self.guid)
 
     if unitToken ~= nil then

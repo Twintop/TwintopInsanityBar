@@ -2246,8 +2246,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			devouringPlagueTime = string.format("%.1f", 0)
 		end
 
-		if specSettings.colors.text.dots.enabled and snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-			if target ~= nil and target.shadowWordPain then
+		if specSettings.colors.text.dots.enabled and target ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if target.spells[spells.shadowWordPain.id].active then
 				if (not TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.misery) and target.spells[spells.shadowWordPain.id].remainingTime > spells.shadowWordPain.pandemicTime) or
 					(TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.misery) and target.spells[spells.shadowWordPain.id].remainingTime > spells.shadowWordPain.miseryPandemicTime) then
 					shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _shadowWordPainCount)
@@ -2261,7 +2261,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				shadowWordPainTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 			end
 
-			if target ~= nil and target.spells[spells.vampiricTouch.id].active then
+			if target.spells[spells.vampiricTouch.id].active then
 				if target.spells[spells.vampiricTouch.id].remainingTime > spells.vampiricTouch.pandemicTime then
 					vampiricTouchCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _vampiricTouchCount)
 					vampiricTouchTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _vampiricTouchTime)
