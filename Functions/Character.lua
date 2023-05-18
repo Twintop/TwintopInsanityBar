@@ -16,37 +16,43 @@ end
 
 function TRB.Functions.Character:UpdateSnapshot()
 	local _
-	TRB.Data.snapshot.resource = UnitPower("player", TRB.Data.resource, true)
+	local snapshot = TRB.Data.snapshot
+	local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
+
+	if target ~= nil then
+		target:UpdateAllSpellTracking(currentTime)
+	end
+
+	snapshot.resource = UnitPower("player", TRB.Data.resource, true)
 
 	if TRB.Data.resource2 ~= nil then
 		if TRB.Data.resource2 == "CUSTOM" and TRB.Data.resource2Id ~= nil then
 			local _, _, stacks, _, duration, endTime, _, _, _, spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.resource2Id)
-			TRB.Data.snapshot.resource2 = stacks or 0
+			snapshot.resource2 = stacks or 0
 		else
-			TRB.Data.snapshot.resource2 = UnitPower("player", TRB.Data.resource2, true)
+			snapshot.resource2 = UnitPower("player", TRB.Data.resource2, true)
 		end
 	end
 
-	TRB.Data.snapshot.haste = UnitSpellHaste("player")
-	TRB.Data.snapshot.crit = GetCritChance()
-	TRB.Data.snapshot.mastery = GetMasteryEffect()
-	TRB.Data.snapshot.versatilityOffensive = GetCombatRatingBonus(29)
-	TRB.Data.snapshot.versatilityDefensive = GetCombatRatingBonus(31)
+	snapshot.haste = UnitSpellHaste("player")
+	snapshot.crit = GetCritChance()
+	snapshot.mastery = GetMasteryEffect()
+	snapshot.versatilityOffensive = GetCombatRatingBonus(29)
+	snapshot.versatilityDefensive = GetCombatRatingBonus(31)
 
-	TRB.Data.snapshot.hasteRating = GetCombatRating(20)
-	TRB.Data.snapshot.critRating = GetCombatRating(11)
-	TRB.Data.snapshot.masteryRating = GetCombatRating(26)
-	TRB.Data.snapshot.versatilityRating = GetCombatRating(29)
+	snapshot.hasteRating = GetCombatRating(20)
+	snapshot.critRating = GetCombatRating(11)
+	snapshot.masteryRating = GetCombatRating(26)
+	snapshot.versatilityRating = GetCombatRating(29)
 	
----@diagnostic disable-next-line: assign-type-mismatch
-	TRB.Data.snapshot.strength, _, _, _ = UnitStat("player", 1)
 	---@diagnostic disable-next-line: assign-type-mismatch
-	TRB.Data.snapshot.agility, _, _, _ = UnitStat("player", 2)
+	snapshot.strength, _, _, _ = UnitStat("player", 1)
 	---@diagnostic disable-next-line: assign-type-mismatch
-	TRB.Data.snapshot.stamina, _, _, _ = UnitStat("player", 3)
+	snapshot.agility, _, _, _ = UnitStat("player", 2)
 	---@diagnostic disable-next-line: assign-type-mismatch
-	TRB.Data.snapshot.intellect, _, _, _ = UnitStat("player", 4)
-
+	snapshot.stamina, _, _, _ = UnitStat("player", 3)
+	---@diagnostic disable-next-line: assign-type-mismatch
+	snapshot.intellect, _, _, _ = UnitStat("player", 4)
 end
 
 function TRB.Functions.Character:ResetSnapshotData()

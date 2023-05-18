@@ -3115,10 +3115,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		else
 			snapshot.conjuredChillglobe.onCooldown = false
 		end
-
-		if target ~= nil then
-			target:UpdateAllSpellTracking(currentTime)
-		end
 	end
 
 	local function UpdateSnapshot_Shadow()
@@ -3172,10 +3168,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		snapshot.mindBlast.charges, snapshot.mindBlast.maxCharges, snapshot.mindBlast.startTime, snapshot.mindBlast.duration, _ = GetSpellCharges(spells.mindBlast.id)
-
-		if target ~= nil then
-			target:UpdateAllSpellTracking(currentTime)
-		end
 	end
 
 	local function UpdateResourceBar()

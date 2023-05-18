@@ -11,6 +11,7 @@ function TRB.Classes.Target:New(guid)
     self.timeToDie = {
         time = 0,
         lastUpdate = nil,
+        deathPercent = TRB.Functions.TimeToDie:GetDeathHealthPercentage(guid),
         snapshots = {}
     }
     self.spells = {}
@@ -24,18 +25,15 @@ function TRB.Classes.Target:AddSpellTracking(spell, isDot, hasCounter)
 		self.spells[spell.id] = {
 			active = false
 		}
+
+        self.spells[spell.id].isDot = isDot
         if isDot then
-            self.spells[spell.id].isDot = true
             self.spells[spell.id].remainingTime = 0
-        else
-            self.spells[spell.id].isDot = false
         end
 
+        self.spells[spell.id].hasCounter = hasCounter
         if hasCounter then
-            self.spells[spell.id].hasCounter = true
             self.spells[spell.id].count = 0
-        else
-            self.spells[spell.id].hasCounter = false
         end
 	end
 end
@@ -66,7 +64,7 @@ function TRB.Classes.Target:UpdateSpellTracking(spellId, currentTime)
     end
 end
 
----Attempts to update the Time To Die for this target. May fail if this target does not have a current UnitToken.
+---Attempts to update the Time To Die for this creature. May fail if this creature does not have a current UnitToken.
 ---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
 function TRB.Classes.Target:UpdateTimeToDie(currentTime)
     currentTime = currentTime or GetTime()
@@ -103,8 +101,7 @@ function TRB.Classes.Target:UpdateTimeToDie(currentTime)
             if dps == nil or dps == 0 then
                 ttd = 0
             else
-                local deathPercent = TRB.Functions.TimeToDie:GetUnitDeathHealthPercentage(unitToken)
-                local deathHealth = maxHealth * deathPercent
+                local deathHealth = maxHealth * self.timeToDie.deathPercent
                 ttd = math.max(math.max(currentHealth - deathHealth, 0) / dps, 0)
             end
         end

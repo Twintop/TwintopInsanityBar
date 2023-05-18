@@ -137,8 +137,12 @@ local unitDeathHealthPercentageList = {
 function TRB.Functions.TimeToDie:GetUnitDeathHealthPercentage(unit)
     local unitGuid = UnitGUID(unit)
 
-    if select(6, strsplit("-", unitGuid)) ~= nil then
-        local npcId = select(6, strsplit("-", unitGuid))
+    return TRB.Functions.TimeToDie:GetDeathHealthPercentage(unitGuid)
+end
+
+function TRB.Functions.TimeToDie:GetDeathHealthPercentage(guid)
+    if select(6, strsplit("-", guid)) ~= nil then
+        local npcId = select(6, strsplit("-", guid))
         if type(unitDeathHealthPercentageList[npcId]) == "number" then
             return unitDeathHealthPercentageList[npcId] or 0
         elseif type(unitDeathHealthPercentageList[npcId]) == "function" then
