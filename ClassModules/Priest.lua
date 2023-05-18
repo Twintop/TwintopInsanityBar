@@ -4232,13 +4232,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Functions.Character:CheckCharacter()
 		TRB.Data.character.className = "priest"
 		local specId = GetSpecialization()
+		local spells = TRB.Data.spells
 
 		if specId == 1 then
 		elseif specId == 2 then
 			TRB.Data.character.specName = "holy"
 ---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
-			TRB.Functions.Spell:FillSpellDataManaCost(TRB.Data.spells)
+			TRB.Functions.Spell:FillSpellDataManaCost(spells)
 
 			local trinket1ItemLink = GetInventoryItemLink("player", 13)
 			local trinket2ItemLink = GetInventoryItemLink("player", 14)
@@ -4248,9 +4249,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			local conjuredChillglobeVersion = ""
 						
 			if trinket1ItemLink ~= nil then
-				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
+				for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
-						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, spells.alchemistStone.itemIds[x])
 					else
 						break
 					end
@@ -4262,9 +4263,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			if alchemyStone == false and trinket2ItemLink ~= nil then
-				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
+				for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
-						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, spells.alchemistStone.itemIds[x])
 					else
 						break
 					end
@@ -4283,14 +4284,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 ---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Insanity)
 
-			TRB.Data.character.devouringPlagueThreshold = -TRB.Data.spells.devouringPlague.insanity
+			TRB.Data.character.devouringPlagueThreshold = -spells.devouringPlague.insanity
 			
-			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.mindsEye) then
-				TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + TRB.Data.spells.mindsEye.insanityMod
+			if TRB.Functions.Talent:IsTalentActive(spells.mindsEye) then
+				TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + spells.mindsEye.insanityMod
 			end
 			
-			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.distortedReality) then
-				TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + TRB.Data.spells.distortedReality.insanityMod
+			if TRB.Functions.Talent:IsTalentActive(spells.distortedReality) then
+				TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + spells.distortedReality.insanityMod
 			end
 
 			TRB.Frames.resourceFrame.thresholds[4]:Hide()
