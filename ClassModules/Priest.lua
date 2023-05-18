@@ -683,7 +683,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				pandemic = true,
 				pandemicTime = 16 * 0.3,
 				isTalent = false,
-				baseline = true
+				baseline = true,
+				miseryPandemic = 21,
+				miseryPandemicTime = 21 * 0.3,
 			},
 
 
@@ -810,6 +812,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						return 0.8*(num^(-0.8))
 					end
 				end,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+			misery = {
+				id = 238558,
 				name = "",
 				icon = "",
 				isTalent = true
@@ -2240,7 +2248,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		if specSettings.colors.text.dots.enabled and snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 			if target ~= nil and target.shadowWordPain then
-				if target.spells[spells.shadowWordPain.id].remainingTime > spells.shadowWordPain.pandemicTime then
+				if (not TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.misery) and target.spells[spells.shadowWordPain.id].remainingTime > spells.shadowWordPain.pandemicTime) or
+					(TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.misery) and target.spells[spells.shadowWordPain.id].remainingTime > spells.shadowWordPain.miseryPandemicTime) then
 					shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _shadowWordPainCount)
 					shadowWordPainTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _shadowWordPainTime)
 				else

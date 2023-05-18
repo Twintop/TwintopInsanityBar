@@ -66,55 +66,60 @@ function TRB.Classes.Target:UpdateSpellTracking(spellId, currentTime)
     end
 end
 
-
+---Attempts to update the Time To Die for this target. May fail if this target does not have a current UnitToken.
+---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
 function TRB.Classes.Target:UpdateTimeToDie(currentTime)
     currentTime = currentTime or GetTime()
-    local currentHealth = UnitHealth("target")
-    local maxHealth = UnitHealthMax("target")
-    local healthDelta = 0
-    local timeDelta = 0
-    local dps = 0
-    local ttd = 0
-    local count = TRB.Functions.Table:Length(self.timeToDie.snapshots)
+    local unitToken = UnitTokenFromGUID(self.guid)
 
-    if count > 0 and self.timeToDie.snapshots[1] ~= nil then
-        healthDelta = math.max(self.timeToDie.snapshots[1].health - currentHealth, 0)
-        timeDelta = math.max(currentTime - self.timeToDie.snapshots[1].time, 0)
-    end
+    if unitToken ~= nil then
+        local currentHealth = UnitHealth(unitToken)
+        local maxHealth = UnitHealthMax(unitToken)
+        local healthDelta = 0
+        local timeDelta = 0
+        local dps = 0
+        local ttd = 0
+        local count = TRB.Functions.Table:Length(self.timeToDie.snapshots)
 
-    if currentHealth <= 0 or maxHealth <= 0 then
-        dps = 0
-        ttd = 0
-    else
-        if count == 0 or self.timeToDie.snapshots[count] == nil or
-            (self.timeToDie.snapshots[1].health == currentHealth and count == TRB.Data.settings.core.ttd.numEntries) then
-            dps = 0
-        elseif healthDelta == 0 or timeDelta == 0 then
-            dps = self.timeToDie.snapshots[count].dps
-        else
-            dps = healthDelta / timeDelta
+        if count > 0 and self.timeToDie.snapshots[1] ~= nil then
+            healthDelta = math.max(self.timeToDie.snapshots[1].health - currentHealth, 0)
+            timeDelta = math.max(currentTime - self.timeToDie.snapshots[1].time, 0)
         end
 
-        if dps == nil or dps == 0 then
+        if currentHealth <= 0 or maxHealth <= 0 then
+            dps = 0
             ttd = 0
         else
-            local deathPercent = TRB.Functions.TimeToDie:GetUnitDeathHealthPercentage("target")
-            local deathHealth = maxHealth * deathPercent
-            ttd = math.max(math.max(currentHealth - deathHealth, 0) / dps, 0)
+            if count == 0 or self.timeToDie.snapshots[count] == nil or
+                (self.timeToDie.snapshots[1].health == currentHealth and count == TRB.Data.settings.core.ttd.numEntries) then
+                dps = 0
+            elseif healthDelta == 0 or timeDelta == 0 then
+                dps = self.timeToDie.snapshots[count].dps
+            else
+                dps = healthDelta / timeDelta
+            end
+
+            if dps == nil or dps == 0 then
+                ttd = 0
+            else
+                local deathPercent = TRB.Functions.TimeToDie:GetUnitDeathHealthPercentage(unitToken)
+                local deathHealth = maxHealth * deathPercent
+                ttd = math.max(math.max(currentHealth - deathHealth, 0) / dps, 0)
+            end
         end
+
+        self.timeToDie.lastUpdate = currentTime
+
+        if count >= TRB.Data.settings.core.ttd.numEntries then
+            table.remove(self.timeToDie.snapshots, 1)
+        end
+
+        table.insert(self.timeToDie.snapshots, {
+            health=currentHealth,
+            time=currentTime,
+            dps=dps
+        })
+
+        self.timeToDie.time = ttd
     end
-
-    self.timeToDie.lastUpdate = currentTime
-
-    if count >= TRB.Data.settings.core.ttd.numEntries then
-        table.remove(self.timeToDie.snapshots, 1)
-    end
-
-    table.insert(self.timeToDie.snapshots, {
-        health=currentHealth,
-        time=currentTime,
-        dps=dps
-    })
-
-    self.timeToDie.time = ttd
 end

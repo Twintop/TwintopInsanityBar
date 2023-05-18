@@ -690,7 +690,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	local ttd = "--"
 	local ttdTotalSeconds = "0"
 
-	if snapshot.targetData.ttdIsActive and snapshot.targetData.currentTargetGuid ~= nil and target ~= nil and target.timeToDie.time ~= 0 then
+	if target ~= nil and target.timeToDie.time ~= 0 then
 		local ttdMinutes = math.floor(target.timeToDie.time / 60)
 		local ttdSeconds = target.timeToDie.time % 60
 		_ttd = target.timeToDie.time
