@@ -325,8 +325,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		specCache.havoc.snapshot.targetData = {
 			ttdIsActive = false,
 			currentTargetGuid = nil,
-			targets = {},
+			---@type TRB.Classes.Target[]
+			targets = {}
 		}
+		--[[---@type TRB.Classes.Target[]
+		specCache.havoc.snapshot.targetData.targets = {}		]]
 		specCache.havoc.snapshot.bladeDance = {
 			startTime = nil,
 			duration = 0,
@@ -581,8 +584,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
 		local specSettings = TRB.Data.settings.demonhunter.havoc
-		--local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
-		--local currentTime = GetTime()
 		local normalizedFury = snapshot.resource / TRB.Data.resourceFactor
 		--Spec specific implementation
 

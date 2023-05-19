@@ -752,12 +752,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 	local function RefreshLookupData_Devastation()
 		local _
-		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
 		local specSettings = TRB.Data.settings.evoker.devastation
-		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		--Spec specific implementation
-		local currentTime = GetTime()
 		local normalizedMana = TRB.Data.snapshot.resource / TRB.Data.resourceFactor
 
 		-- This probably needs to be pulled every refresh
@@ -797,7 +794,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
 		local specSettings = TRB.Data.settings.evoker.preservation
-		--local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local currentTime = GetTime()
 		local normalizedMana = snapshot.resource / TRB.Data.resourceFactor
 
@@ -1260,11 +1256,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		UpdateManaTideTotem()
 		UpdateMoltenRadiance()
 		
-		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
-		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 
-		local currentTime = GetTime()
 		local _
 
 		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown

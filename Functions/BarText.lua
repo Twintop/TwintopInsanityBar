@@ -640,6 +640,7 @@ end
 function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	--Spec specific implementations also needed. This is general/cross-spec data
 	local snapshot = TRB.Data.snapshot
+	---@type TRB.Classes.Target
 	local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 
 	--$crit

@@ -1783,7 +1783,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			local moonfireTotal = 0
 			local stellarFlareTotal = 0
 			for guid,_ in pairs(snapshot.targetData.targets) do
-				local target = snapshot.targetData.targets[guid]
+				---@type TRB.Classes.Target
+				local target = TRB.Data.snapshot.targetData.targets[guid]
 				if target.lastUpdate == nil or (currentTime - target.lastUpdate) > 10 then
 					target.spells[spells.moonfire.id].active = false
 					target.spells[spells.moonfire.id].remainingTime = 0
@@ -1815,6 +1816,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			local thrashTotal = 0
 			local moonfireTotal = 0
 			for guid,_ in pairs(snapshot.targetData.targets) do
+				---@type TRB.Classes.Target
 				local target = TRB.Data.snapshot.targetData.targets[guid]
 				if target.lastUpdate == nil or (currentTime - target.lastUpdate) > 10 then
 					target.spells[spells.moonfire.id].active = false
@@ -1856,7 +1858,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			local sunfireTotal = 0
 			local moonfireTotal = 0
 			for guid,_ in pairs(snapshot.targetData.targets) do
-				local target = snapshot.targetData.targets[guid]
+				---@type TRB.Classes.Target
+				local target = TRB.Data.snapshot.targetData.targets[guid]
 				if target.lastUpdate == nil or (currentTime - target.lastUpdate) > 10 then
 					target.spells[spells.moonfire.id].active = false
 					target.spells[spells.moonfire.id].remainingTime = 0
@@ -2144,6 +2147,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
 		local specSettings = TRB.Data.settings.druid.balance
+		---@type TRB.Classes.Target
 		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local currentTime = GetTime()
 		local normalizedAstralPower = snapshot.resource / TRB.Data.resourceFactor
@@ -2514,6 +2518,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
 		local specSettings = TRB.Data.settings.druid.feral
+		---@type TRB.Classes.Target
 		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local _
 
@@ -3033,6 +3038,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
 		local specSettings = TRB.Data.settings.druid.restoration
+		---@type TRB.Classes.Target
 		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local currentTime = GetTime()
 		local normalizedMana = snapshot.resource / TRB.Data.resourceFactor
@@ -3641,6 +3647,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.Target
 		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local currentTime = GetTime()
 
@@ -3706,6 +3713,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.Target
 		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local currentTime = GetTime()
 		UpdateBerserkIncomingComboPoints()
@@ -3799,6 +3807,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.Target
 		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local currentTime = GetTime()
 		local _
@@ -5460,26 +5469,27 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
-		local snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.Target[]
+		local targets = TRB.Data.snapshot.targetData.targets
 
 		if guid ~= nil and guid ~= "" then
 			if not TRB.Functions.Target:CheckTargetExists(guid) then
 				TRB.Functions.Target:InitializeTarget(guid)
 				if specId == 1 then -- Balance
-					snapshot.targetData.targets[guid]:AddSpellTracking(spells.moonfire)
-					snapshot.targetData.targets[guid]:AddSpellTracking(spells.stellarFlare)
-					snapshot.targetData.targets[guid]:AddSpellTracking(spells.sunfire)
+					targets[guid]:AddSpellTracking(spells.moonfire)
+					targets[guid]:AddSpellTracking(spells.stellarFlare)
+					targets[guid]:AddSpellTracking(spells.sunfire)
 				elseif specId == 2 then -- Feral
-					snapshot.targetData.targets[guid]:AddSpellTracking(spells.moonfire, true, false, true)
-					snapshot.targetData.targets[guid]:AddSpellTracking(spells.rake, true, false, true)
-					snapshot.targetData.targets[guid]:AddSpellTracking(spells.rip, true, false, true)
-					snapshot.targetData.targets[guid]:AddSpellTracking(spells.thrash, true, false, true)
+					targets[guid]:AddSpellTracking(spells.moonfire, true, false, true)
+					targets[guid]:AddSpellTracking(spells.rake, true, false, true)
+					targets[guid]:AddSpellTracking(spells.rip, true, false, true)
+					targets[guid]:AddSpellTracking(spells.thrash, true, false, true)
 				elseif specId == 4 then -- Restoration
-					snapshot.targetData.targets[guid]:AddSpellTracking(spells.moonfire)
-					snapshot.targetData.targets[guid]:AddSpellTracking(spells.sunfire)
+					targets[guid]:AddSpellTracking(spells.moonfire)
+					targets[guid]:AddSpellTracking(spells.sunfire)
 				end
 			end
-			TRB.Data.snapshot.targetData.targets[guid].lastUpdate = GetTime()
+			targets[guid].lastUpdate = GetTime()
 			return true
 		end
 		return false
@@ -5493,6 +5503,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local specId = GetSpecialization()
 		local snapshot = TRB.Data.snapshot
 		local spells = TRB.Data.spells
+		---@type TRB.Classes.Target
 		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local settings = nil
 		if specId == 1 then

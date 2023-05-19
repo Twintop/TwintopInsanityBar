@@ -25,6 +25,8 @@ Libs\LibMarkdown\LibMarkdown.xml
 
 Init.lua
 
+Classes\Target.lua
+
 Functions\Aura.lua
 Functions\Bar.lua
 Functions\BarText.lua
@@ -41,8 +43,6 @@ Functions\Talent.lua
 Functions\Target.lua
 Functions\Threshold.lua
 Functions\TimeToDie.lua
-
-Classes\Target.lua
 
 Options\OptionsUi.lua
 Options\Options.lua

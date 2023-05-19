@@ -106,12 +106,15 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 		if guid ~= nil then
 			TRB.Functions.Class:InitializeTarget(guid)
 
-			if TRB.Data.snapshot.targetData.targets[guid] ~= nil then
+			---@type TRB.Classes.Target
+			local target = TRB.Data.snapshot.targetData.targets[guid]
+
+			if target ~= nil then
 				local isDead = UnitIsDeadOrGhost("target")
 				if isDead then
 					TRB.Functions.Target:RemoveTarget(guid)
 				else
-					TRB.Data.snapshot.targetData.targets[guid]:UpdateTimeToDie(currentTime)
+					target.timeToDie:Update(currentTime)
 				end
 			end
 		end

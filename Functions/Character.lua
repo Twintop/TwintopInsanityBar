@@ -17,6 +17,7 @@ end
 function TRB.Functions.Character:UpdateSnapshot()
 	local _
 	local snapshot = TRB.Data.snapshot
+	---@type TRB.Classes.Target
 	local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 
 	if target ~= nil then

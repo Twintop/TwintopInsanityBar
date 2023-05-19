@@ -3,7 +3,6 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Target = {}
 
-
 function TRB.Functions.Target:CheckTargetExists(guid)
 	if guid == nil or (not TRB.Data.snapshot.targetData.targets[guid] or TRB.Data.snapshot.targetData.targets[guid] == nil) then
 		return false
@@ -27,12 +26,13 @@ end
 
 function TRB.Functions.Target:TargetsCleanup(clearAll)
 	if clearAll == true then
+		---@type TRB.Classes.Target[]
 		TRB.Data.snapshot.targetData.targets = {}
 	else
 		local currentTime = GetTime()
-		for tguid,count in pairs(TRB.Data.snapshot.targetData.targets) do
-			if (currentTime - TRB.Data.snapshot.targetData.targets[tguid].lastUpdate) > 20 then
-				TRB.Functions.Target:RemoveTarget(tguid)
+		for guid,_ in pairs(TRB.Data.snapshot.targetData.targets) do
+			if (currentTime - TRB.Data.snapshot.targetData.targets[guid].lastUpdate) > 20 then
+				TRB.Functions.Target:RemoveTarget(guid)
 			end
 		end
 	end

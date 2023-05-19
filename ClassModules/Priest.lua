@@ -475,9 +475,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.holy.snapshot.targetData = {
 			ttdIsActive = false,
 			currentTargetGuid = nil,
-			shadowWordPain = 0,
-			targets = {}
+			shadowWordPain = 0
 		}
+		---@type TRB.Classes.Target[]
+		specCache.holy.snapshot.targetData.targets = {}
 		specCache.holy.snapshot.innervate = {
 			isActive = false,
 			spellId = nil,
@@ -1020,9 +1021,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			auspiciousSpiritsGenerate = 0,
 			shadowWordPain = 0,
 			vampiricTouch = 0,
-			devouringPlague = 0,
-			targets = {}
+			devouringPlague = 0
 		}
+		---@type TRB.Classes.Target[]
+		specCache.shadow.snapshot.targetData.targets = {}
 		specCache.shadow.snapshot.shadowfiend = {
 			isActive = false,
 			guid = nil,
@@ -1520,6 +1522,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		if specId == 2 then -- Holy
 			local swpTotal = 0
 			for guid,_ in pairs(snapshot.targetData.targets) do
+				---@type TRB.Classes.Target
 				local target = snapshot.targetData.targets[guid]
 				if target.lastUpdate == nil or (currentTime - target.lastUpdate) > 10 then
 					target.spells[spells.shadowWordPain.id].active = false
@@ -1538,6 +1541,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			local asTotal = 0
 			local dpTotal = 0
 			for guid,_ in pairs(TRB.Data.snapshot.targetData.targets) do
+				---@type TRB.Classes.Target
 				local target = TRB.Data.snapshot.targetData.targets[guid]
 				if target.lastUpdate == nil or (currentTime - target.lastUpdate) > 10 then
 					target.spells[spells.auspiciousSpirits.id].count = 0
@@ -1806,6 +1810,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
 		local specSettings = TRB.Data.settings.priest.holy
+		---@type TRB.Classes.Target
 		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local currentTime = GetTime()
 		local normalizedMana = snapshot.resource / TRB.Data.resourceFactor
@@ -2171,6 +2176,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
 		local specSettings = TRB.Data.settings.priest.shadow
+		---@type TRB.Classes.Target
 		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local currentTime = GetTime()
 		local normalizedInsanity = snapshot.resource / TRB.Data.resourceFactor
@@ -3094,6 +3100,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.Target
 		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 
 		local currentTime = GetTime()
@@ -3165,6 +3172,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateExternalCallToTheVoidValues()
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.Target
 		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 
 		local currentTime = GetTime()
@@ -4430,21 +4438,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
-		local snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.Target[]
+		local targets = TRB.Data.snapshot.targetData.targets
 
 		if guid ~= nil and guid ~= "" then
 			if not TRB.Functions.Target:CheckTargetExists(guid) then
 				TRB.Functions.Target:InitializeTarget(guid)
 				if specId == 2 then
-					snapshot.targetData.targets[guid]:AddSpellTracking(spells.shadowWordPain)
+					targets[guid]:AddSpellTracking(spells.shadowWordPain)
 				elseif specId == 3 then
-					snapshot.targetData.targets[guid]:AddSpellTracking(spells.auspiciousSpirits, false, true)
-					snapshot.targetData.targets[guid]:AddSpellTracking(spells.devouringPlague)
-					snapshot.targetData.targets[guid]:AddSpellTracking(spells.shadowWordPain)
-					snapshot.targetData.targets[guid]:AddSpellTracking(spells.vampiricTouch)
+					targets[guid]:AddSpellTracking(spells.auspiciousSpirits, false, true)
+					targets[guid]:AddSpellTracking(spells.devouringPlague)
+					targets[guid]:AddSpellTracking(spells.shadowWordPain)
+					targets[guid]:AddSpellTracking(spells.vampiricTouch)
 				end
 			end
-			snapshot.targetData.targets[guid].lastUpdate = GetTime()
+			targets[guid].lastUpdate = GetTime()
 			return true
 		end
 		return false
@@ -4458,6 +4467,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local specId = GetSpecialization()
 		local snapshot = TRB.Data.snapshot
 		local spells = TRB.Data.spells
+		---@type TRB.Classes.Target
 		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local settings = nil
 		if specId == 2 then
