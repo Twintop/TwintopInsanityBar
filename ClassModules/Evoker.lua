@@ -751,6 +751,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	end
 
 	local function RefreshLookupData_Devastation()
+		local _
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
 		local specSettings = TRB.Data.settings.evoker.devastation

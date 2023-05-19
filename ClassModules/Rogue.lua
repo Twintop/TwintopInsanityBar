@@ -3169,7 +3169,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
 								if spell.id == TRB.Data.spells.ambush.id then		
-									if TRB.Data.snapshot.subterfuge.isActive or TRB.Data.spells.sepsis.isActive then
+									if TRB.Data.snapshot.subterfuge.isActive or TRB.Data.snapshot.sepsis.isActive then
 										if TRB.Data.snapshot.resource >= -energyAmount then
 											thresholdColor = specSettings.colors.threshold.over
 										else
@@ -3181,7 +3181,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 									else
 										showThreshold = false
 									end
-								elseif TRB.Data.snapshot.subterfuge.isActive or TRB.Data.spells.sepsis.isActive then
+								elseif TRB.Data.snapshot.subterfuge.isActive or TRB.Data.snapshot.sepsis.isActive then
 									if TRB.Data.snapshot.resource >= -energyAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
@@ -3335,7 +3335,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					end
 
 					local barBorderColor = specSettings.colors.bar.border
-					if IsStealthed() or TRB.Data.snapshot.subterfuge.isActive or TRB.Data.spells.sepsis.isActive then
+					if IsStealthed() or TRB.Data.snapshot.subterfuge.isActive or TRB.Data.snapshot.sepsis.isActive then
 						barBorderColor = specSettings.colors.bar.borderStealth
 					elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
@@ -3754,7 +3754,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					elseif spellId == TRB.Data.spells.garrote.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_CAST_SUCCESS" then
-								if not((TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.subterfuge) and IsStealthed()) or TRB.Data.spells.subterfuge.isActive) then
+								if not((TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.subterfuge) and IsStealthed()) or TRB.Data.snapshot.subterfuge.isActive) then
 									TRB.Data.snapshot.garrote.startTime = currentTime
 									TRB.Data.snapshot.garrote.duration = TRB.Data.spells.garrote.cooldown
 								end

@@ -3,7 +3,6 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Aura = {}
 
-
 function TRB.Functions.Aura:FindBuffByName(spellName, onWhom, byWhom)
 	if onWhom == nil then
 		onWhom = "player"
@@ -91,7 +90,21 @@ function TRB.Functions.Aura:FindAuraById(spellId, onWhom, filter, byWhom)
 	end
 end
 
+---@alias trbAuraEventType
+---| '"SPELL_AURA_APPLIED"' # SPELL_AURA_APPLIED
+---| '"SPELL_AURA_REFRESH"' # SPELL_AURA_REFRESH
+---| '"SPELL_AURA_REMOVED"' # SPELL_AURA_REMOVED
+---| '"SPELL_AURA_APPLIED_DOSE"' # SPELL_AURA_APPLIED_DOSE
+---| '"SPELL_AURA_REMOVED_DOSE"' # SPELL_AURA_REMOVED_DOSE
+---| '"SPELL_DISPEL"' # SPELL_DISPEL
+---| '""' # No event type; refresh data and nothing else
+
+---@param spellId number # Spell ID of the aura we are storing details about
+---@param type trbAuraEventType? # Event Type sourced from the combat log event
+---@param snapshot table # Snapshot data associated with this spell
+---@param simple boolean # If true, only determine if the spell `isActive` or not
 function TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot, simple)
+	local currentTime = GetTime()
 	if snapshot == nil then
 		snapshot = {}
 		print("TRB: |cFFFF5555Table missing for spellId |r"..spellId.."Please consider reporting this on GitHub!")
@@ -105,6 +118,7 @@ function TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot, simple)
 		snapshot.isActive = true
 		if not simple then
 			_, _, snapshot.stacks, _, snapshot.duration, snapshot.endTime, _, _, _, snapshot.spellId = TRB.Functions.Aura:FindBuffById(spellId)
+			snapshot.remainingTime = TRB.Functions.Spell:GetRemainingTime(snapshot)
 		end
 	elseif type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
 		if snapshot.stacks ~= nil then
@@ -117,6 +131,15 @@ function TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot, simple)
 			snapshot.duration = 0
 			snapshot.stacks = 0
 			snapshot.endTime = nil
+			snapshot.remainingTime = 0
+		end
+	elseif type == nil or type == "" then
+		_, _, snapshot.stacks, _, snapshot.duration, snapshot.endTime, _, _, _, snapshot.spellId = TRB.Functions.Aura:FindBuffById(spellId)
+		if snapshot.endTime ~= nil and snapshot.endTime > currentTime then
+			snapshot.isActive = true
+			snapshot.remainingTime = TRB.Functions.Spell:GetRemainingTime(snapshot)
+		else
+			snapshot.isActive = false
 		end
 	end
 end

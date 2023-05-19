@@ -18,9 +18,10 @@ function TRB.Classes.Target:New(guid)
     return self
 end
 
-function TRB.Classes.Target:AddSpellTracking(spell, isDot, hasCounter)
+function TRB.Classes.Target:AddSpellTracking(spell, isDot, hasCounter, hasSnapshot)
     isDot = isDot or true
     hasCounter = hasCounter or false
+    hasSnapshot = hasSnapshot or false
     if self.spells[spell.id] == nil then
 		self.spells[spell.id] = {
 			active = false
@@ -34,6 +35,11 @@ function TRB.Classes.Target:AddSpellTracking(spell, isDot, hasCounter)
         self.spells[spell.id].hasCounter = hasCounter
         if hasCounter then
             self.spells[spell.id].count = 0
+        end
+
+        self.spells[spell.id].hasSnapshot = hasSnapshot
+        if hasSnapshot then
+            self.spells[spell.id].snapshot = 0
         end
 	end
 end
