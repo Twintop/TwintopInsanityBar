@@ -25,6 +25,7 @@ Libs\LibMarkdown\LibMarkdown.xml
 
 Init.lua
 
+Classes\TimeToDie.lua
 Classes\Target.lua
 
 Functions\Aura.lua
