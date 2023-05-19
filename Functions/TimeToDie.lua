@@ -6,7 +6,7 @@ TRB.Functions.TimeToDie = {}
 local triggeredCourtOfStars_PatrolCaptainGerdo_FlaskOfSolemnNight = false
 local instanceDifficulty = 0
 local instanceId = 0
-local locale = GetLocale()
+local locale = "enUS"
 
 local ttdEventFrame = CreateFrame("Frame", "TwintopResourceBar_TtdEventFrame", TRB.Frames.barContainerFrame)
 ttdEventFrame:SetScript("OnEvent", function(self, event, arg1, arg2, arg3, ...)
