@@ -2659,7 +2659,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		if specSettings.colors.text.dots.enabled and snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-			if target ~= nil and target.rip then
+			if target ~= nil and target.spells[spells.rip.id].active then
 				local ripColor = specSettings.colors.text.dots.same
 				if _ripPercent > 1 then
 					ripColor = specSettings.colors.text.dots.better
@@ -2682,7 +2682,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				ripTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 			end
 
-			if target ~= nil and target.rake then
+			if target ~= nil and target.spells[spells.rake.id].active then
 				local rakeColor = specSettings.colors.text.dots.same
 				if _rakePercent > 1 then
 					rakeColor = specSettings.colors.text.dots.better
@@ -2705,7 +2705,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				rakeTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 			end
 
-			if target ~= nil and target.thrash then
+			if target ~= nil and target.spells[spells.thrash.id].active then
 				local thrashColor = specSettings.colors.text.dots.same
 				if _thrashPercent > 1 then
 					thrashColor = specSettings.colors.text.dots.better
@@ -2728,7 +2728,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				thrashTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 			end
 
-			if TRB.Functions.Talent:IsTalentActive(spells.lunarInspiration) == true and target ~= nil and target.moonfire then
+			if TRB.Functions.Talent:IsTalentActive(spells.lunarInspiration) == true and target ~= nil and target.spells[spells.moonfire.id].active then
 				local moonfireColor = specSettings.colors.text.dots.same
 				if _moonfirePercent > 1 then
 					moonfireColor = specSettings.colors.text.dots.better
@@ -4881,7 +4881,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								if type == "SPELL_AURA_APPLIED" then
 									snapshot.targetData.moonfire = snapshot.targetData.moonfire + 1
 								end
-								snapshot.targetData.targets[destGUID].moonfireSnapshot = GetCurrentSnapshot(spells.moonfire.bonuses)
+								snapshot.targetData.targets[destGUID].spells[spells.moonfire.id].snapshot = GetCurrentSnapshot(spells.moonfire.bonuses)
 								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
 								snapshot.targetData.targets[destGUID].spells[spells.moonfire.id].active = false
@@ -4899,7 +4899,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								if type == "SPELL_AURA_APPLIED" then
 									snapshot.targetData.rake = snapshot.targetData.rake + 1
 								end
-								snapshot.targetData.targets[destGUID].rakeSnapshot = GetCurrentSnapshot(spells.rake.bonuses)
+								snapshot.targetData.targets[destGUID].spells[spells.rake.id].snapshot = GetCurrentSnapshot(spells.rake.bonuses)
 								snapshot.suddenAmbush.endTimeLeeway = nil
 								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
@@ -4921,7 +4921,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								if type == "SPELL_AURA_APPLIED" then
 									snapshot.targetData.rip = snapshot.targetData.rip + 1
 								end
-								snapshot.targetData.targets[destGUID].ripSnapshot = GetCurrentSnapshot(spells.rip.bonuses)
+								snapshot.targetData.targets[destGUID].spells[spells.rip.id].snapshot = GetCurrentSnapshot(spells.rip.bonuses)
 								
 								if snapshot.bloodtalons.stacks == 0 then
 									snapshot.bloodtalons.endTimeLeeway = nil
@@ -4943,7 +4943,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								if type == "SPELL_AURA_APPLIED" then
 									snapshot.targetData.thrash = snapshot.targetData.thrash + 1
 								end
-								snapshot.targetData.targets[destGUID].thrashSnapshot = GetCurrentSnapshot(spells.thrash.bonuses)
+								snapshot.targetData.targets[destGUID].spells[spells.thrash.id].snapshot = GetCurrentSnapshot(spells.thrash.bonuses)
 								
 								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
