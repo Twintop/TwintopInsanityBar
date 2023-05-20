@@ -1502,7 +1502,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		---@type TRB.Classes.TargetData
 		local targetData = snapshot.targetData
 
-		if specId == 2 then -- Holy			
+		if specId == 2 then -- Holy
 			targetData:UpdateDebuffs(currentTime)
 		elseif specId == 3 then -- Shadow
 			targetData:UpdateDebuffs(currentTime)
@@ -3078,14 +3078,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end
 
-		_, _, _, _, snapshot.resonantWords.duration, snapshot.resonantWords.endTime, _, _, _, snapshot.resonantWords.spellId = TRB.Functions.Aura:FindBuffById(spells.resonantWords.id)
-		snapshot.resonantWords.remainingTime = GetResonantWordsRemainingTime()
-
-		_, _, snapshot.lightweaver.stacks, _, snapshot.lightweaver.duration, snapshot.lightweaver.endTime, _, _, _, snapshot.lightweaver.spellId = TRB.Functions.Aura:FindBuffById(spells.lightweaver.id)
-		snapshot.lightweaver.remainingTime = GetLightweaverRemainingTime()
-
-		_, _, snapshot.surgeOfLight.stacks, _, snapshot.surgeOfLight.duration, snapshot.surgeOfLight.endTime, _, _, _, snapshot.surgeOfLight.spellId = TRB.Functions.Aura:FindBuffById(spells.surgeOfLight.id)
-		snapshot.surgeOfLight.remainingTime = GetSurgeOfLightRemainingTime()
+		TRB.Functions.Aura:SnapshotGenericAura(spells.resonantWords.id, nil, snapshot.resonantWords)
+		TRB.Functions.Aura:SnapshotGenericAura(spells.lightweaver.id, nil, snapshot.lightweaver)
+		TRB.Functions.Aura:SnapshotGenericAura(spells.surgeOfLight.id, nil, snapshot.surgeOfLight)
 
 		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
 		snapshot.potion.startTime, snapshot.potion.duration, _ = GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
@@ -3109,9 +3104,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateExternalCallToTheVoidValues()
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
-		---@type TRB.Classes.Target
-		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
-
 		local currentTime = GetTime()
 		local _
 
@@ -3121,8 +3113,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			snapshot.voidform.duration = 0
 			snapshot.voidform.remainingTime = 0
 		else
-			_, _, _, _, snapshot.voidform.duration, snapshot.voidform.endTime, _, _, _, snapshot.voidform.spellId = TRB.Functions.Aura:FindBuffById(spells.voidform.id)
-			snapshot.voidform.remainingTime = GetVoidformRemainingTime()
+			TRB.Functions.Aura:SnapshotGenericAura(spells.voidform.id, nil, snapshot.voidform)
 		end
 
 		if snapshot.darkAscension.startTime ~= nil and currentTime > (snapshot.darkAscension.startTime + snapshot.darkAscension.duration) then
@@ -3755,7 +3746,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _
 		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
-		local snapshot = TRB.Data.snapshot		
+		local snapshot = TRB.Data.snapshot
 		---@type TRB.Classes.TargetData
 		local targetData = TRB.Data.snapshot.targetData
 
@@ -4393,8 +4384,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 		
 		local currentTime = GetTime()
-		local specId = GetSpecialization()
-		local spells = TRB.Data.spells
 		---@type TRB.Classes.TargetData
 		local targetData = TRB.Data.snapshot.targetData
 		local targets = targetData.targets

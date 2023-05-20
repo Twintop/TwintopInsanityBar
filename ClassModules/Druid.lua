@@ -3663,32 +3663,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Functions.Aura:SnapshotGenericAura(spells.eclipseSolar.id, nil, snapshot.eclipseSolar)
 		TRB.Functions.Aura:SnapshotGenericAura(spells.eclipseLunar.id, nil, snapshot.eclipseLunar)
 
-		if target ~= nil then
-			if target.spells[spells.moonfire.id].active then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(spells.moonfire.id, "target", "player"))
-			
-				if expiration ~= nil then
-					target.spells[spells.moonfire.id].remainingTime = expiration - currentTime
-				end
-			end
-
-			if target.spells[spells.stellarFlare.id].active then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(spells.stellarFlare.id, "target", "player"))
-			
-				if expiration ~= nil then
-					target.spells[spells.stellarFlare.id].remainingTime = expiration - currentTime
-				end
-			end
-
-			if target.spells[spells.sunfire.id].active then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(spells.sunfire.id, "target", "player"))
-			
-				if expiration ~= nil then
-					target.spells[spells.sunfire.id].remainingTime = expiration - currentTime
-				end
-			end
-		end
-
 ---@diagnostic disable-next-line: redundant-parameter, cast-local-type
 		snapshot.newMoon.charges, snapshot.newMoon.maxCharges, snapshot.newMoon.startTime, snapshot.newMoon.duration, _ = GetSpellCharges(spells.newMoon.id)
 
@@ -3749,40 +3723,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 ---@diagnostic disable-next-line: cast-local-type
 		snapshot.tigersFury.cooldown.startTime, snapshot.tigersFury.cooldown.duration, _, _ = GetSpellCooldown(spells.tigersFury.id)
-		
-		if snapshot.targetData.currentTargetGuid ~= nil and target then
-			if target.moonfire then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(spells.moonfire.id, "target", "player"))
-			
-				if expiration ~= nil then
-					target.spells[spells.moonfire.id].remainingTime = expiration - currentTime
-				end
-			end
-			
-			if target.rake then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(spells.rake.id, "target", "player"))
-			
-				if expiration ~= nil then
-					target.spells[spells.rake.id].remainingTime = expiration - currentTime
-				end
-			end
-
-			if target.rip then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(spells.rip.id, "target", "player"))
-			
-				if expiration ~= nil then
-					target.spells[spells.rip.id].remainingTime = expiration - currentTime
-				end
-			end
-			
-			if target.thrash then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(spells.thrash.id, "target", "player"))
-			
-				if expiration ~= nil then
-					target.spells[spells.thrash.id].remainingTime = expiration - currentTime
-				end
-			end
-		end
 	end
 
 	local function UpdateSnapshot_Restoration()
@@ -3819,24 +3759,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Functions.Aura:SnapshotGenericAura(spells.clearcasting.id, nil, snapshot.clearcasting)
 		TRB.Functions.Aura:SnapshotGenericAura(spells.incarnationTreeOfLife.id, nil, snapshot.incarnationTreeOfLife)
 		TRB.Functions.Aura:SnapshotGenericAura(spells.reforestation.id, nil, snapshot.reforestation)
-
-		if target ~= nil then
-			if target.spells[spells.moonfire.id].active then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(spells.moonfire.id, "target", "player"))
-			
-				if expiration ~= nil then
-					target.spells[spells.moonfire.id].remainingTime = expiration - currentTime
-				end
-			end
-
-			if target.spells[spells.sunfire.id].active then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(spells.sunfire.id, "target", "player"))
-			
-				if expiration ~= nil then
-					target.spells[spells.sunfire.id].remainingTime = expiration - currentTime
-				end
-			end
-		end
 	end
 
 	local function UpdateResourceBar()
