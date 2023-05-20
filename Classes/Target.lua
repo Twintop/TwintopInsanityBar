@@ -39,22 +39,22 @@ function TRB.Classes.TargetData:AddSpellTracking(spell, isDot, hasCounter, hasSn
     hasCounter = hasCounter or false
     hasSnapshot = hasSnapshot or false
     if self.trackedSpells[spell.id] == nil then
-		self.trackedSpells[spell.id] = TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot)
+        self.trackedSpells[spell.id] = TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot)
         self.count[spell.id] = 0
-	end
+    end
 end
 
 ---Creates a new entry in the target table for this target if onee does not exist already
 ---@param guid string # GUID of the target we're adding
 function TRB.Classes.TargetData:InitializeTarget(guid)
-	if guid ~= nil and guid ~= "" then
-		if not self:CheckTargetExists(guid) then
-			self.targets[guid] = TRB.Classes.Target:New(guid)
+    if guid ~= nil and guid ~= "" then
+        if not self:CheckTargetExists(guid) then
+            self.targets[guid] = TRB.Classes.Target:New(guid)
             for _, spell in pairs(self.trackedSpells) do
                 self.targets[guid]:AddSpellTracking(spell.spell, spell.isDot, spell.hasCounter, spell.hasSnapshot)
             end
-		end
-	end
+        end
+    end
 end
 
 ---Updates the status of debuffs on the target
@@ -62,14 +62,14 @@ end
 function TRB.Classes.TargetData:UpdateDebuffs(currentTime)
     currentTime = currentTime or GetTime()
     local counts = {}
-    for guid,_ in pairs(self.targets) do
+    for guid, _ in pairs(self.targets) do
         local target = self.targets[guid]
         if target.lastUpdate == nil or (currentTime - target.lastUpdate) > 10 then
-            for spellId,_ in pairs(target.spells) do
+            for spellId, _ in pairs(target.spells) do
                 target.spells[spellId]:Reset()
             end
         else
-            for spellId,_ in pairs(target.spells) do
+            for spellId, _ in pairs(target.spells) do
                 counts[spellId] = counts[spellId] or 0
 
                 if target.spells[spellId].active then
@@ -92,31 +92,31 @@ end
 ---@param guid string # GUID of the target we're checking the existence of
 ---@return boolean # Was the target found
 function TRB.Classes.TargetData:CheckTargetExists(guid)
-	if guid == nil or (not self.targets[guid] or self.targets[guid] == nil) then
-		return false
-	end
-	return true
+    if guid == nil or (not self.targets[guid] or self.targets[guid] == nil) then
+        return false
+    end
+    return true
 end
 
 ---Cleans up target tracking data
 ---@param clearAll boolean # Should we forcibly clean up all target data including targets we may still have active snapshotted data for?
 function TRB.Classes.TargetData:Cleanup(clearAll)
-	if clearAll == true then
-		---@type TRB.Classes.Target[]
-		self.targets = {}
-	else
-		local currentTime = GetTime()
-		for guid,_ in pairs(self.targets) do
-			if (currentTime - self.targets[guid].lastUpdate) > 10 then
-				self:Remove(guid)
-			end
-		end
-	end
+    if clearAll == true then
+        ---@type TRB.Classes.Target[]
+        self.targets = {}
+    else
+        local currentTime = GetTime()
+        for guid, _ in pairs(self.targets) do
+            if (currentTime - self.targets[guid].lastUpdate) > 10 then
+                self:Remove(guid)
+            end
+        end
+    end
 
     for spellId, _ in pairs(self.count) do
         self.count[spellId] = 0
     end
-    
+
     for id, _ in pairs(self.custom) do
         self.count[id] = nil
     end
@@ -125,11 +125,10 @@ end
 ---Removes a target from the targets table
 ---@param guid string # GUID of the target we're removing
 function TRB.Classes.TargetData:Remove(guid)
-	if guid ~= nil and self:CheckTargetExists(guid) then
-		self.targets[guid] = nil
-	end
+    if guid ~= nil and self:CheckTargetExists(guid) then
+        self.targets[guid] = nil
+    end
 end
-
 
 ---@class TRB.Classes.Target
 ---@field public guid string
@@ -159,14 +158,14 @@ function TRB.Classes.Target:AddSpellTracking(spell, isDot, hasCounter, hasSnapsh
     hasCounter = hasCounter or false
     hasSnapshot = hasSnapshot or false
     if self.spells[spell.id] == nil then
-		self.spells[spell.id] = TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot)
-	end
+        self.spells[spell.id] = TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot)
+    end
 end
 
 ---Updates all spells tracked on this target
 ---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
 function TRB.Classes.Target:UpdateAllSpellTracking(currentTime)
-	currentTime = currentTime or GetTime()
+    currentTime = currentTime or GetTime()
     if TRB.Functions.Table:Length(self.spells) > 0 then
         for spellId, _ in pairs(self.spells) do
             if self.spells[spellId] ~= nil then
@@ -178,7 +177,7 @@ end
 
 ---@class TRB.Classes.TargetSpell
 ---@field public id integer
----@field public spell table 
+---@field public spell table
 ---@field public active boolean
 ---@field public remainingTime number
 ---@field public isDot boolean
@@ -213,7 +212,7 @@ end
 ---Updates this spell's snapshotting
 ---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
 function TRB.Classes.TargetSpell:Update(currentTime)
-	currentTime = currentTime or GetTime()
+    currentTime = currentTime or GetTime()
     if self.isDot then
         local expiration = select(6, TRB.Functions.Aura:FindDebuffById(self.id, "target", "player"))
 
