@@ -5151,6 +5151,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			specCache.balance.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Balance()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.balance)
+			
+			local spells = TRB.Data.spells
+			---@type TRB.Classes.TargetData
+			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
+			local targetData = TRB.Data.snapshot.targetData
+			targetData:AddSpellTracking(spells.moonfire)
+			targetData:AddSpellTracking(spells.stellarFlare)
+			targetData:AddSpellTracking(spells.sunfire)
+
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Balance
 
 			if TRB.Data.barConstructedForSpec ~= "balance" then
@@ -5163,6 +5172,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			specCache.feral.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Feral()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.feral)
+			
+			local spells = TRB.Data.spells
+			---@type TRB.Classes.TargetData
+			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
+			local targetData = TRB.Data.snapshot.targetData
+			targetData:AddSpellTracking(spells.moonfire, true, false, true)
+			targetData:AddSpellTracking(spells.rake, true, false, true)
+			targetData:AddSpellTracking(spells.rip, true, false, true)
+			targetData:AddSpellTracking(spells.thrash, true, false, true)
+
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Feral
 
 			if TRB.Data.barConstructedForSpec ~= "feral" then
@@ -5175,6 +5194,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			specCache.restoration.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Restoration()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.restoration)
+			
+			local spells = TRB.Data.spells
+			---@type TRB.Classes.TargetData
+			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
+			local targetData = TRB.Data.snapshot.targetData
+			targetData:AddSpellTracking(spells.moonfire)
+			targetData:AddSpellTracking(spells.sunfire)
+
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Restoration
 
 			if TRB.Data.barConstructedForSpec ~= "restoration" then
@@ -5457,9 +5484,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
 			return false
 		end
-
-		local specId = GetSpecialization()
-		local spells = TRB.Data.spells
 		
 		---@type TRB.Classes.TargetData
 		local targetData = TRB.Data.snapshot.targetData
@@ -5470,19 +5494,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if guid ~= nil and guid ~= "" then
 			if not targetData:CheckTargetExists(guid) then
 				targetData:InitializeTarget(guid)
-				if specId == 1 then -- Balance
-					targets[guid]:AddSpellTracking(spells.moonfire)
-					targets[guid]:AddSpellTracking(spells.stellarFlare)
-					targets[guid]:AddSpellTracking(spells.sunfire)
-				elseif specId == 2 then -- Feral
-					targets[guid]:AddSpellTracking(spells.moonfire, true, false, true)
-					targets[guid]:AddSpellTracking(spells.rake, true, false, true)
-					targets[guid]:AddSpellTracking(spells.rip, true, false, true)
-					targets[guid]:AddSpellTracking(spells.thrash, true, false, true)
-				elseif specId == 4 then -- Restoration
-					targets[guid]:AddSpellTracking(spells.moonfire)
-					targets[guid]:AddSpellTracking(spells.sunfire)
-				end
 			end
 			targets[guid].lastUpdate = GetTime()
 			return true
