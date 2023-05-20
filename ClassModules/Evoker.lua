@@ -1760,6 +1760,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			specCache.devastation.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Devastation()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.devastation)
+			
+			---@type TRB.Classes.TargetData
+			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
+
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Devastation
 
 			if TRB.Data.barConstructedForSpec ~= "devastation" then
@@ -1772,6 +1776,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			specCache.preservation.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Preservation()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)
+			
+			---@type TRB.Classes.TargetData
+			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
+			
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Preservation
 
 			if TRB.Data.barConstructedForSpec ~= "preservation" then
