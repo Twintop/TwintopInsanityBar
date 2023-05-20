@@ -1309,6 +1309,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			specCache.havoc.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Havoc()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.havoc)
+			
+			local spells = TRB.Data.spells
+			---@type TRB.Classes.TargetData
+			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
+			
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Havoc
 
 			if TRB.Data.barConstructedForSpec ~= "havoc" then

@@ -4118,7 +4118,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.priest.holy)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.holy)
 			specCache.holy.talents = TRB.Functions.Talent:GetTalents()
-			FillSpellData_Holy()			
+			FillSpellData_Holy()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.holy)
 			
 			local spells = TRB.Data.spells

@@ -144,7 +144,7 @@ function TRB.Classes.Target:New(guid)
     setmetatable(self, TRB.Classes.Target)
     self.guid = guid
     self.timeToDie = TRB.Classes.TimeToDie:New(guid)
-    self.lastUpdate = nil
+    self.lastUpdate = GetTime()
     self.spells = {}
     return self
 end

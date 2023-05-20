@@ -104,20 +104,19 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 		targetData.currentTargetGuid = guid
 	end
 
-	local target = targetData.targets[targetData.currentTargetGuid]
+	if guid ~= nil then
+		local isDead = UnitIsDeadOrGhost("target")
 
-	if guid ~= TRB.Data.character.guid and targetData.ttdIsActive and target ~= nil and self.ttdSinceLastUpdate >= target.timeToDie.settings.sampleRate then -- in seconds
-		if guid ~= nil then
+		if isDead and targetData.targets[targetData.currentTargetGuid] ~= nil then
+			targetData:Remove(guid)
+		elseif guid ~= TRB.Data.character.guid and targetData.ttdIsActive then
 			targetData:InitializeTarget(guid)
-
-			local isDead = UnitIsDeadOrGhost("target")
-			if isDead then
-				targetData:Remove(guid)
-			else
+			local target = targetData.targets[targetData.currentTargetGuid]
+			if self.ttdSinceLastUpdate >= target.timeToDie.settings.sampleRate then -- in seconds			
 				target.timeToDie:Update(currentTime)
+				self.ttdSinceLastUpdate = 0
 			end
 		end
-		self.ttdSinceLastUpdate = 0
 	end
 end
 
