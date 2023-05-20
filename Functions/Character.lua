@@ -81,11 +81,7 @@ function TRB.Functions.Character:ResetSnapshotData()
 			resourceFinal = 0,
 			icon = ""
 		},
-		targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			targets = {}
-		},
+		targetData = {},
 		audio = {}
 	}
 end

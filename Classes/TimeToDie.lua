@@ -8,7 +8,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public lastUpdate number?
 ---@field public deathPercent number
 ---@field public snapshots TRB.Classes.TimeToDieSnapshot[]
----@field private settings table
+---@field public settings table
 TRB.Classes.TimeToDie = {}
 TRB.Classes.TimeToDie.__index = TRB.Classes.TimeToDie
 

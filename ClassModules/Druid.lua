@@ -1882,28 +1882,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 
 	local function TargetsCleanup(clearAll)
-		TRB.Functions.Target:TargetsCleanup(clearAll)
+		---@type TRB.Classes.TargetData
+		local targetData = TRB.Data.snapshot.targetData
 		local specId = GetSpecialization()
 		local snapshot = TRB.Data.snapshot
 
 		if specId == 1 then
-			if clearAll == true then
-				snapshot.targetData.moonfire = 0
-				snapshot.targetData.stellarFlare = 0
-				snapshot.targetData.sunfire = 0
-			end
+			targetData:Cleanup(clearAll)
 		elseif specId == 2 then
-			if clearAll == true then
-				snapshot.targetData.moonfire = 0
-				snapshot.targetData.rake = 0
-				snapshot.targetData.rip = 0
-				snapshot.targetData.thrash = 0
-			end
+			targetData:Cleanup(clearAll)
 		elseif specId == 4 then
-			if clearAll == true then
-				snapshot.targetData.moonfire = 0
-				snapshot.targetData.sunfire = 0
-			end
+			targetData:Cleanup(clearAll)
 		end
 	end
 
@@ -5115,7 +5104,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.Target:RemoveTarget(destGUID)
+				---@type TRB.Classes.TargetData
+				local targetData = TRB.Data.snapshot.targetData
+				targetData:Remove(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end
@@ -5469,12 +5460,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
+		
+		---@type TRB.Classes.TargetData
+		local targetData = TRB.Data.snapshot.targetData
+
 		---@type TRB.Classes.Target[]
-		local targets = TRB.Data.snapshot.targetData.targets
+		local targets = targetData.targets
 
 		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.Target:CheckTargetExists(guid) then
-				TRB.Functions.Target:InitializeTarget(guid)
+			if not targetData:CheckTargetExists(guid) then
+				targetData:InitializeTarget(guid)
 				if specId == 1 then -- Balance
 					targets[guid]:AddSpellTracking(spells.moonfire)
 					targets[guid]:AddSpellTracking(spells.stellarFlare)

@@ -4,8 +4,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	TRB.Functions.Class = TRB.Functions.Class or {}
 	TRB.Functions.Character:ResetSnapshotData()
 	
-	TRB.Functions.Class = TRB.Functions.Class or {}
-	TRB.Functions.Character:ResetSnapshotData()
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame

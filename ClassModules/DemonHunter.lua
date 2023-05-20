@@ -541,10 +541,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	end
 
 	local function TargetsCleanup(clearAll)
-		TRB.Functions.Target:TargetsCleanup(clearAll)
-		if clearAll == true then
-			TRB.Data.snapshot.targetData.rend = 0
-		end
+		---@type TRB.Classes.TargetData
+		local targetData = TRB.Data.snapshot.targetData
+		targetData:Cleanup(clearAll)
 	end
 
 	local function ConstructResourceBar(settings)
@@ -1263,7 +1262,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.Target:RemoveTarget(destGUID)
+				---@type TRB.Classes.TargetData
+				local targetData = TRB.Data.snapshot.targetData
+				targetData:Remove(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end
@@ -1469,8 +1470,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end
 
 		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.Target:CheckTargetExists(guid) then
-				TRB.Functions.Target:InitializeTarget(guid)
+			---@type TRB.Classes.TargetData
+			local targetData = TRB.Data.snapshot.targetData
+			if not targetData:CheckTargetExists(guid) then
+				targetData:InitializeTarget(guid)
 			end
 			TRB.Data.snapshot.targetData.targets[guid].lastUpdate = GetTime()
 			return true

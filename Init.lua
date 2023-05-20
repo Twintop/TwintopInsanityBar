@@ -83,6 +83,8 @@ if classIndexId == 4 or classIndexId == 7 or classIndexId == 10 or classIndexId 
 end
 
 function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
+	---@type TRB.Classes.TargetData
+	local targetData = TRB.Data.snapshot.targetData
 	local currentTime = GetTime()
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate
@@ -98,24 +100,21 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 	end
 
 	local guid = UnitGUID("target")
-	if TRB.Data.snapshot.targetData.currentTargetGuid ~= guid then
-		TRB.Data.snapshot.targetData.currentTargetGuid = guid
+	if targetData.currentTargetGuid ~= guid then
+		targetData.currentTargetGuid = guid
 	end
 
-	if guid ~= TRB.Data.character.guid and TRB.Data.snapshot.targetData.ttdIsActive and self.ttdSinceLastUpdate >= TRB.Data.settings.core.ttd.sampleRate then -- in seconds
+	local target = targetData.targets[targetData.currentTargetGuid]
+
+	if guid ~= TRB.Data.character.guid and targetData.ttdIsActive and target ~= nil and self.ttdSinceLastUpdate >= target.timeToDie.settings.sampleRate then -- in seconds
 		if guid ~= nil then
-			TRB.Functions.Class:InitializeTarget(guid)
+			targetData:InitializeTarget(guid)
 
-			---@type TRB.Classes.Target
-			local target = TRB.Data.snapshot.targetData.targets[guid]
-
-			if target ~= nil then
-				local isDead = UnitIsDeadOrGhost("target")
-				if isDead then
-					TRB.Functions.Target:RemoveTarget(guid)
-				else
-					target.timeToDie:Update(currentTime)
-				end
+			local isDead = UnitIsDeadOrGhost("target")
+			if isDead then
+				targetData:Remove(guid)
+			else
+				target.timeToDie:Update(currentTime)
 			end
 		end
 		self.ttdSinceLastUpdate = 0

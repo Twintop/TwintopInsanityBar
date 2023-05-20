@@ -472,13 +472,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			surgeOfLightCue = false,
 			surgeOfLight2Cue = false
 		}
-		specCache.holy.snapshot.targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			shadowWordPain = 0
-		}
-		---@type TRB.Classes.Target[]
-		specCache.holy.snapshot.targetData.targets = {}
 		specCache.holy.snapshot.innervate = {
 			isActive = false,
 			spellId = nil,
@@ -1014,17 +1007,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			playedDeathspeakerCue = false,
 			overcapCue = false
 		}
-		specCache.shadow.snapshot.targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			auspiciousSpirits = 0,
-			auspiciousSpiritsGenerate = 0,
-			shadowWordPain = 0,
-			vampiricTouch = 0,
-			devouringPlague = 0
-		}
-		---@type TRB.Classes.Target[]
-		specCache.shadow.snapshot.targetData.targets = {}
 		specCache.shadow.snapshot.shadowfiend = {
 			isActive = false,
 			guid = nil,
@@ -1128,7 +1110,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "priest", "holy")
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.holy)
 	end
 
 	local function FillSpellData_Holy()
@@ -1308,7 +1289,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "priest", "shadow")
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.shadow)
 	end
 
 	local function FillSpellData_Shadow()
@@ -1519,79 +1499,34 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
 
-		if specId == 2 then -- Holy
-			local swpTotal = 0
-			for guid,_ in pairs(snapshot.targetData.targets) do
-				---@type TRB.Classes.Target
-				local target = snapshot.targetData.targets[guid]
-				if target.lastUpdate == nil or (currentTime - target.lastUpdate) > 10 then
-					target.spells[spells.shadowWordPain.id].active = false
-					target.spells[spells.shadowWordPain.id].remainingTime = 0
-				else
-					if target.spells[spells.shadowWordPain.id].active == true then
-						swpTotal = swpTotal + 1
-					end
-				end
-			end
+		---@type TRB.Classes.TargetData
+		local targetData = snapshot.targetData
 
-			TRB.Data.snapshot.targetData.shadowWordPain = swpTotal
+		if specId == 2 then -- Holy			
+			targetData:UpdateDebuffs(currentTime)
 		elseif specId == 3 then -- Shadow
-			local swpTotal = 0
-			local vtTotal = 0
-			local asTotal = 0
-			local dpTotal = 0
-			for guid,_ in pairs(TRB.Data.snapshot.targetData.targets) do
-				---@type TRB.Classes.Target
-				local target = TRB.Data.snapshot.targetData.targets[guid]
-				if target.lastUpdate == nil or (currentTime - target.lastUpdate) > 10 then
-					target.spells[spells.auspiciousSpirits.id].count = 0
-					target.spells[spells.devouringPlague.id].active = false
-					target.spells[spells.devouringPlague.id].remainingTime = 0
-					target.spells[spells.shadowWordPain.id].active = false
-					target.spells[spells.shadowWordPain.id].remainingTime = 0
-					target.spells[spells.vampiricTouch.id].active = false
-					target.spells[spells.vampiricTouch.id].remainingTime = 0
-				else
-					asTotal = asTotal + target.spells[spells.auspiciousSpirits.id].count
-					if target.spells[spells.devouringPlague.id].active == true then
-						dpTotal = dpTotal + 1
-					end
-					if target.spells[spells.shadowWordPain.id].active == true then
-						swpTotal = swpTotal + 1
-					end
-					if target.spells[spells.vampiricTouch.id].active == true then
-						vtTotal = vtTotal + 1
-					end
-				end
-			end
+			targetData:UpdateDebuffs(currentTime)
 
-			snapshot.targetData.auspiciousSpirits = asTotal
+			targetData.count[spells.auspiciousSpirits.id] = targetData.count[spells.auspiciousSpirits.id] or 0
 
-			if snapshot.targetData.auspiciousSpirits < 0 then
-				snapshot.targetData.auspiciousSpirits = 0
-				snapshot.targetData.auspiciousSpiritsGenerate = 0
+			if targetData.count[spells.auspiciousSpirits.id] < 0 then
+				targetData.count[spells.auspiciousSpirits.id] = 0
+				targetData.custom.auspiciousSpiritsGenerate = 0
 			else
-				snapshot.targetData.auspiciousSpiritsGenerate = spells.auspiciousSpirits.targetChance(asTotal) * snapshot.targetData.auspiciousSpirits
+				targetData.custom.auspiciousSpiritsGenerate = spells.auspiciousSpirits.targetChance(targetData.count[spells.auspiciousSpirits.id]) * targetData.count[spells.auspiciousSpirits.id]
 			end
-
-			snapshot.targetData.shadowWordPain = swpTotal
-			snapshot.targetData.vampiricTouch = vtTotal
-			snapshot.targetData.devouringPlague = dpTotal
 		end
 	end
 
 	local function TargetsCleanup(clearAll)
-		TRB.Functions.Target:TargetsCleanup(clearAll)
+		---@type TRB.Classes.TargetData
+		local targetData = TRB.Data.snapshot.targetData
+		targetData:Cleanup(clearAll)
 		if clearAll == true then
 			local specId = GetSpecialization()
 			if specId == 2 then
-				TRB.Data.snapshot.targetData.shadowWordPain = 0
 			elseif specId == 3 then
-				TRB.Data.snapshot.targetData.shadowWordPain = 0
-				TRB.Data.snapshot.targetData.vampiricTouch = 0
-				TRB.Data.snapshot.targetData.devouringPlague = 0
-				TRB.Data.snapshot.targetData.auspiciousSpirits = 0
-				TRB.Data.snapshot.targetData.auspiciousSpiritsGenerate = 0
+				TRB.Data.snapshot.targetData.custom.auspiciousSpiritsGenerate = 0
 			end
 		end
 	end
@@ -1669,6 +1604,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		TRB.Functions.Bar:Construct(settings)
+
 		if specId == 2 or specId == 3 then
 			TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 		end
@@ -1961,7 +1897,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		-----------
 		--$swpCount and $swpTime
-		local _shadowWordPainCount = snapshot.targetData.shadowWordPain or 0
+		local _shadowWordPainCount = snapshot.targetData.count[spells.shadowWordPain.id] or 0
 		local shadowWordPainCount = string.format("%s", _shadowWordPainCount)
 		local _shadowWordPainTime = 0
 		
@@ -2176,8 +2112,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
 		local specSettings = TRB.Data.settings.priest.shadow
-		---@type TRB.Classes.Target
-		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
+		---@type TRB.Classes.TargetData
+		local targetData = snapshot.targetData
+		local target = targetData.targets[targetData.currentTargetGuid]
 		local currentTime = GetTime()
 		local normalizedInsanity = snapshot.resource / TRB.Data.resourceFactor
 		--$vfTime
@@ -2242,10 +2179,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _ecttvCount = snapshot.voidTendrils.numberActive
 		local ecttvCount = string.format("%.0f", _ecttvCount)
 		--$asCount
-		local _asCount = snapshot.targetData.auspiciousSpirits
+		local _asCount = targetData.count[spells.auspiciousSpirits.id] or 0
 		local asCount = string.format("%.0f", _asCount)
 		--$asInsanity
-		local _asInsanity = CalculateInsanityGain(spells.auspiciousSpirits.insanity) * snapshot.targetData.auspiciousSpiritsGenerate
+		local _asInsanity = CalculateInsanityGain(spells.auspiciousSpirits.insanity) * (targetData.custom.auspiciousSpiritsGenerate or 0)
 		local asInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_asInsanity, insanityPrecision, "ceil"))
 		--$passive
 		local _passiveInsanity = _asInsanity + _mbInsanity + _loiInsanity
@@ -2263,7 +2200,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		----------
 		--$swpCount and $swpTime
-		local _shadowWordPainCount = snapshot.targetData.shadowWordPain or 0
+		local _shadowWordPainCount = targetData.count[spells.shadowWordPain.id] or 0
 		local shadowWordPainCount = string.format("%s", _shadowWordPainCount)
 		local _shadowWordPainTime = 0
 		
@@ -2274,7 +2211,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local shadowWordPainTime
 
 		--$vtCount and $vtTime
-		local _vampiricTouchCount = snapshot.targetData.vampiricTouch or 0
+		local _vampiricTouchCount = targetData.count[spells.vampiricTouch.id] or 0
 		local vampiricTouchCount = string.format("%s", _vampiricTouchCount)
 		local _vampiricTouchTime = 0
 		
@@ -2292,7 +2229,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			devouringPlagueTime = string.format("%.1f", 0)
 		end
 
-		if specSettings.colors.text.dots.enabled and snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+		if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 			if target ~= nil and target.spells[spells.shadowWordPain.id].active then
 				if (not TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.misery) and target.spells[spells.shadowWordPain.id].remainingTime > spells.shadowWordPain.pandemicTime) or
 					(TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.misery) and target.spells[spells.shadowWordPain.id].remainingTime > spells.shadowWordPain.miseryPandemicTime) then
@@ -2325,7 +2262,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		--$dpCount
-		local devouringPlagueCount = snapshot.targetData.devouringPlague or 0
+		local devouringPlagueCount = targetData.count[spells.devouringPlague.id] or 0
 
 		--$mdTime
 		local _mdTime = 0
@@ -2411,7 +2348,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		Global_TwintopResourceBar.resource.mindbender = _mbInsanity or 0
 		Global_TwintopResourceBar.resource.ecttv = snapshot.voidTendrils.resourceFinal or 0
 		Global_TwintopResourceBar.auspiciousSpirits = {
-			count = snapshot.targetData.auspiciousSpirits or 0,
+			count = targetData.count[spells.auspiciousSpirits.id] or 0,
 			insanity = _asInsanity
 		}
 		Global_TwintopResourceBar.dots = {
@@ -3576,7 +3513,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						(TRB.Functions.Talent:IsTalentActive(spells.auspiciousSpirits) or
 						(snapshot.shadowfiend.resourceFinal + snapshot.devouredDespair.resourceFinal) > 0 or
 						snapshot.voidTendrils.resourceFinal > 0) then
-						passiveValue = ((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * snapshot.targetData.auspiciousSpiritsGenerate) + snapshot.shadowfiend.resourceFinal + snapshot.devouredDespair.resourceFinal + snapshot.voidTendrils.resourceFinal)
+						passiveValue = ((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * (snapshot.targetData.custom.auspiciousSpiritsGenerate or 0)) + snapshot.shadowfiend.resourceFinal + snapshot.devouredDespair.resourceFinal + snapshot.voidTendrils.resourceFinal)
 						if (snapshot.shadowfiend.resourceFinal + snapshot.devouredDespair.resourceFinal) > 0 and (castingBarValue + (snapshot.shadowfiend.resourceFinal + snapshot.devouredDespair.resourceFinal)) < TRB.Data.character.maxResource then
 							TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (castingBarValue + (snapshot.shadowfiend.resourceFinal + snapshot.devouredDespair.resourceFinal)), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
@@ -3818,7 +3755,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _
 		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
-		local snapshot = TRB.Data.snapshot
+		local snapshot = TRB.Data.snapshot		
+		---@type TRB.Classes.TargetData
+		local targetData = TRB.Data.snapshot.targetData
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName, _, auraType = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
@@ -4013,45 +3952,45 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif spellId == spells.vampiricTouch.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- VT Applied to Target
-								snapshot.targetData.targets[destGUID].spells[spells.vampiricTouch.id].active = true
+								targetData.targets[destGUID].spells[spells.vampiricTouch.id].active = true
 								if type == "SPELL_AURA_APPLIED" then
-									snapshot.targetData.vampiricTouch = snapshot.targetData.vampiricTouch + 1
+									targetData.count[spells.vampiricTouch.id] = targetData.count[spells.vampiricTouch.id] + 1
 								end
 								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
-								snapshot.targetData.targets[destGUID].spells[spells.vampiricTouch.id].active = false
-								snapshot.targetData.targets[destGUID].spells[spells.vampiricTouch.id].remainingTime = 0
-								snapshot.targetData.vampiricTouch = snapshot.targetData.vampiricTouch - 1
+								targetData.targets[destGUID].spells[spells.vampiricTouch.id].active = false
+								targetData.targets[destGUID].spells[spells.vampiricTouch.id].remainingTime = 0
+								targetData.count[spells.vampiricTouch.id] = targetData.count[spells.vampiricTouch.id] - 1
 								triggerUpdate = true
 							end
 						end
 					elseif spellId == spells.devouringPlague.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- DP Applied to Target
-								snapshot.targetData.targets[destGUID].spells[spells.devouringPlague.id].active = true
+								targetData.targets[destGUID].spells[spells.devouringPlague.id].active = true
 								if type == "SPELL_AURA_APPLIED" then
-									snapshot.targetData.devouringPlague = snapshot.targetData.devouringPlague + 1
+									targetData.count[spells.devouringPlague.id] = targetData.count[spells.devouringPlague.id] + 1
 								end
 								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
-								snapshot.targetData.targets[destGUID].spells[spells.devouringPlague.id].active = false
-								snapshot.targetData.targets[destGUID].spells[spells.devouringPlague.id].remainingTime = 0
-								snapshot.targetData.devouringPlague = snapshot.targetData.devouringPlague - 1
+								targetData.targets[destGUID].spells[spells.devouringPlague.id].active = false
+								targetData.targets[destGUID].spells[spells.devouringPlague.id].remainingTime = 0
+								targetData.count[spells.devouringPlague.id] = targetData.count[spells.devouringPlague.id] - 1
 								triggerUpdate = true
 							end
 						end
 					elseif settings.auspiciousSpiritsTracker and TRB.Functions.Talent:IsTalentActive(spells.auspiciousSpirits) and spellId == spells.auspiciousSpirits.idSpawn and type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
-						for guid, _ in pairs(snapshot.targetData.targets) do
-							if snapshot.targetData.targets[guid].spells[spells.vampiricTouch.id].active then
-								snapshot.targetData.targets[guid].spells[spells.auspiciousSpirits.id].count = snapshot.targetData.targets[guid].spells[spells.auspiciousSpirits.id].count + 1
+						for guid, _ in pairs(targetData.targets) do
+							if targetData.targets[guid].spells[spells.vampiricTouch.id].active then
+								targetData.targets[guid].spells[spells.auspiciousSpirits.id].count = targetData.targets[guid].spells[spells.auspiciousSpirits.id].count + 1
 							end
-							snapshot.targetData.auspiciousSpirits = snapshot.targetData.auspiciousSpirits + 1
+							targetData.count[spells.auspiciousSpirits.id] = targetData.count[spells.auspiciousSpirits.id] + 1
 						end
 						triggerUpdate = true
 					elseif settings.auspiciousSpiritsTracker and TRB.Functions.Talent:IsTalentActive(spells.auspiciousSpirits) and spellId == spells.auspiciousSpirits.idImpact and (type == "SPELL_DAMAGE" or type == "SPELL_MISSED" or type == "SPELL_ABSORBED") then --Auspicious Spirit Hit
-						if TRB.Functions.Target:CheckTargetExists(destGUID) then
-							snapshot.targetData.targets[destGUID].spells[spells.auspiciousSpirits.id].count = snapshot.targetData.targets[destGUID].spells[spells.auspiciousSpirits.id].count - 1
-							snapshot.targetData.auspiciousSpirits = snapshot.targetData.auspiciousSpirits - 1
+						if targetData:CheckTargetExists(destGUID) then
+							targetData.targets[destGUID].spells[spells.auspiciousSpirits.id].count = targetData.targets[destGUID].spells[spells.auspiciousSpirits.id].count - 1
+							targetData.count[spells.auspiciousSpirits.id] = targetData.count[spells.auspiciousSpirits.id] - 1
 						end
 						triggerUpdate = true
 					elseif type == "SPELL_ENERGIZE" and spellId == spells.shadowCrash.id then
@@ -4106,15 +4045,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if spellId == spells.shadowWordPain.id then
 					if TRB.Functions.Class:InitializeTarget(destGUID) then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SWP Applied to Target
-							snapshot.targetData.targets[destGUID].spells[spells.shadowWordPain.id].active = true
+							targetData.targets[destGUID].spells[spells.shadowWordPain.id].active = true
 							if type == "SPELL_AURA_APPLIED" then
-								snapshot.targetData.shadowWordPain = snapshot.targetData.shadowWordPain + 1
+								targetData.count[spells.shadowWordPain.id] = targetData.count[spells.shadowWordPain.id] + 1
 							end
 							triggerUpdate = true
 						elseif type == "SPELL_AURA_REMOVED" then
-							snapshot.targetData.targets[destGUID].spells[spells.shadowWordPain.id].active = false
-							snapshot.targetData.targets[destGUID].spells[spells.shadowWordPain.id].remainingTime = 0
-							snapshot.targetData.shadowWordPain = snapshot.targetData.shadowWordPain - 1
+							targetData.targets[destGUID].spells[spells.shadowWordPain.id].active = false
+							targetData.targets[destGUID].spells[spells.shadowWordPain.id].remainingTime = 0
+							targetData.count[spells.shadowWordPain.id] = targetData.count[spells.shadowWordPain.id] - 1
 							triggerUpdate = true
 						--elseif type == "SPELL_PERIODIC_DAMAGE" then
 						end
@@ -4134,7 +4073,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.Target:RemoveTarget(destGUID)
+				targetData:Remove(destGUID)
 				RefreshTargetTracking()
 
 				triggerUpdate = true
@@ -4179,8 +4118,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.priest.holy)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.holy)
 			specCache.holy.talents = TRB.Functions.Talent:GetTalents()
-			FillSpellData_Holy()
+			FillSpellData_Holy()			
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.holy)
+			
+			local spells = TRB.Data.spells
+			---@type TRB.Classes.TargetData
+			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
+			local targetData = TRB.Data.snapshot.targetData
+			targetData:AddSpellTracking(spells.shadowWordPain)
+
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Holy
 
 			if TRB.Data.barConstructedForSpec ~= "holy" then
@@ -4193,6 +4139,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			specCache.shadow.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Shadow()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.shadow)
+			
+			local spells = TRB.Data.spells
+			---@type TRB.Classes.TargetData
+			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
+			local targetData = TRB.Data.snapshot.targetData
+			targetData:AddSpellTracking(spells.auspiciousSpirits, false, true)
+			targetData:AddSpellTracking(spells.devouringPlague)
+			targetData:AddSpellTracking(spells.shadowWordPain)
+			targetData:AddSpellTracking(spells.vampiricTouch)
+
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Shadow
 
 			if TRB.Data.barConstructedForSpec ~= "shadow" then
@@ -4435,25 +4391,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
 			return false
 		end
-
+		
+		local currentTime = GetTime()
 		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Target[]
-		local targets = TRB.Data.snapshot.targetData.targets
+		---@type TRB.Classes.TargetData
+		local targetData = TRB.Data.snapshot.targetData
+		local targets = targetData.targets
 
 		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.Target:CheckTargetExists(guid) then
-				TRB.Functions.Target:InitializeTarget(guid)
-				if specId == 2 then
-					targets[guid]:AddSpellTracking(spells.shadowWordPain)
-				elseif specId == 3 then
-					targets[guid]:AddSpellTracking(spells.auspiciousSpirits, false, true)
-					targets[guid]:AddSpellTracking(spells.devouringPlague)
-					targets[guid]:AddSpellTracking(spells.shadowWordPain)
-					targets[guid]:AddSpellTracking(spells.vampiricTouch)
-				end
+			if not targetData:CheckTargetExists(guid) then
+				targetData:InitializeTarget(guid)
 			end
-			targets[guid].lastUpdate = GetTime()
+			targets[guid].lastUpdate = currentTime
 			return true
 		end
 		return false
@@ -4693,15 +4643,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$asCount" then
-				if snapshot.targetData.auspiciousSpirits > 0 then
+				if snapshot.targetData.count[spells.auspiciousSpirits.id] > 0 then
 					valid = true
 				end
 			elseif var == "$asInsanity" then
-				if snapshot.targetData.auspiciousSpirits > 0 then
+				if snapshot.targetData.count[spells.auspiciousSpirits.id] > 0 then
 					valid = true
 				end
 			elseif var == "$vtCount" then
-				if snapshot.targetData.vampiricTouch > 0 then
+				if snapshot.targetData.count[spells.vampiricTouch.id] > 0 then
 					valid = true
 				end
 			elseif var == "$vtTime" then
@@ -4713,7 +4663,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$dpCount" then
-				if snapshot.targetData.devouringPlague > 0 then
+				if snapshot.targetData.count[spells.devouringPlague.id] > 0 then
 					valid = true
 				end
 			elseif var == "$dpTime" then
@@ -4779,7 +4729,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		-- Spec Agnostic
 		if var == "$swpCount" then
-			if snapshot.targetData.shadowWordPain > 0 then
+			if snapshot.targetData.count[spells.shadowWordPain.id] > 0 then
 				valid = true
 			end
 		elseif var == "$swpTime" then
