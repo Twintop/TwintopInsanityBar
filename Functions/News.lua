@@ -8,7 +8,6 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
-
 # 10.1.5.0-beta02 (2023-05-??)
 
 ----
