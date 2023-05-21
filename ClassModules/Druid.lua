@@ -2189,7 +2189,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		----------
 		--$sunfireCount and $sunfireTime
-		local _sunfireCount = snapshot.targetData.sunfire or 0
+		local _sunfireCount = snapshot.targetData.count[spells.sunfire.id] or 0
 		local sunfireCount = tostring(_sunfireCount)
 		local _sunfireTime = 0
 		
@@ -2200,7 +2200,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local sunfireTime
 
 		--$moonfireCount and $moonfireTime
-		local _moonfireCount = snapshot.targetData.moonfire or 0
+		local _moonfireCount = snapshot.targetData.count[spells.moonfire.id] or 0
 		local moonfireCount = tostring(_moonfireCount)
 		local _moonfireTime = 0
 		
@@ -2211,7 +2211,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local moonfireTime
 
 		--$stellarFlareCount and $stellarFlareTime
-		local _stellarFlareCount = snapshot.targetData.stellarFlare or 0
+		local _stellarFlareCount = snapshot.targetData.count[spells.stellarFlare.id] or 0
 		local stellarFlareCount = tostring(_stellarFlareCount)
 		local _stellarFlareTime = 0
 		
@@ -2594,7 +2594,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 		----------
 		--$ripCount and $ripTime
-		local _ripCount = snapshot.targetData.rip or 0
+		local _ripCount = snapshot.targetData.count[spells.rip.id] or 0
 		local ripCount = tostring(_ripCount)
 		local _ripTime = 0
 		local ripTime
@@ -2605,7 +2605,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local ripCurrent
 
 		--$rakeCount and $rakeTime
-		local _rakeCount = snapshot.targetData.rake or 0
+		local _rakeCount = snapshot.targetData.count[spells.rake.id] or 0
 		local rakeCount = tostring(_rakeCount)
 		local _rakeTime = 0
 		local rakeTime
@@ -2616,7 +2616,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local rakeCurrent
 
 		--$thrashCount and $thrashTime
-		local _thrashCount = snapshot.targetData.thrash or 0
+		local _thrashCount = snapshot.targetData.count[spells.thrash.id] or 0
 		local thrashCount = tostring(_thrashCount)
 		local _thrashTime = 0
 		local thrashTime
@@ -2627,7 +2627,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local thrashCurrent
 
 		--$moonfireCount and $moonfireTime
-		local _moonfireCount = snapshot.targetData.moonfire or 0
+		local _moonfireCount = snapshot.targetData.count[spells.moonfire.id] or 0
 		local moonfireCount = tostring(_moonfireCount)
 		local _moonfireTime = 0
 		local moonfireTime
@@ -3146,7 +3146,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		----------
 		--$sunfireCount and $sunfireTime
-		local _sunfireCount = snapshot.targetData.sunfire or 0
+		local _sunfireCount = snapshot.targetData.count[spells.sunfire.id] or 0
 		local sunfireCount = tostring(_sunfireCount)
 		local _sunfireTime = 0
 		
@@ -3157,7 +3157,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local sunfireTime
 
 		--$moonfireCount and $moonfireTime
-		local _moonfireCount = snapshot.targetData.moonfire or 0
+		local _moonfireCount = snapshot.targetData.count[spells.moonfire.id] or 0
 		local moonfireCount = tostring(_moonfireCount)
 		local _moonfireTime = 0
 		
@@ -5505,7 +5505,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$sunfireCount" then
-				if snapshot.targetData.sunfire > 0 then
+				if snapshot.targetData.count[spells.sunfire.id] > 0 then
 					valid = true
 				end
 			elseif var == "$sunfireTime" then
@@ -5517,7 +5517,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$moonfireCount" then
-				if snapshot.targetData.moonfire > 0 then
+				if snapshot.targetData.count[spells.moonfire.id] > 0 then
 					valid = true
 				end
 			elseif var == "$moonfireTime" then
@@ -5529,7 +5529,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$stellarFlareCount" then
-				if snapshot.targetData.stellarFlare > 0 then
+				if snapshot.targetData.count[spells.stellarFlare.id] > 0 then
 					valid = true
 				end
 			elseif var == "$stellarFlareTime" then
@@ -5670,7 +5670,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			elseif var == "$comboPointsMax" then
 				valid = true
 			elseif var == "$ripCount" then
-				if snapshot.targetData.rip > 0 then
+				if snapshot.targetData.count[spells.rip.id] > 0 then
 					valid = true
 				end
 			elseif var == "$ripCurrent" then
@@ -5700,7 +5700,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$rakeCount" then
-				if snapshot.targetData.rake > 0 then
+				if snapshot.targetData.count[spells.rake.id] > 0 then
 					valid = true
 				end
 			elseif var == "$rakeCurrent" then
@@ -5730,7 +5730,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$thrashCount" then
-				if snapshot.targetData.thrash > 0 then
+				if snapshot.targetData.count[spells.thrash.id] > 0 then
 					valid = true
 				end
 			elseif var == "$thrashCurrent" then
@@ -5760,7 +5760,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$moonfireCount" then
-				if TRB.Functions.Talent:IsTalentActive(spells.lunarInspiration) == true and snapshot.targetData.moonfire > 0 then
+				if TRB.Functions.Talent:IsTalentActive(spells.lunarInspiration) == true and snapshot.targetData.count[spells.moonfire.id] > 0 then
 					valid = true
 				end
 			elseif var == "$moonfireCurrent" then
@@ -5902,7 +5902,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$sunfireCount" then
-				if snapshot.targetData.sunfire > 0 then
+				if snapshot.targetData.count[spells.sunfire.id] > 0 then
 					valid = true
 				end
 			elseif var == "$sunfireTime" then
@@ -5914,7 +5914,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$moonfireCount" then
-				if snapshot.targetData.moonfire > 0 then
+				if snapshot.targetData.count[spells.moonfire.id] > 0 then
 					valid = true
 				end
 			elseif var == "$moonfireTime" then

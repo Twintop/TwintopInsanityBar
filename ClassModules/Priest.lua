@@ -4571,7 +4571,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			elseif var == "$resourceTotal" or var == "$insanityTotal" then
 				if snapshot.resource > 0 or
 					(snapshot.casting.resourceRaw ~= nil and snapshot.casting.resourceRaw > 0) or
-					(((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * snapshot.targetData.auspiciousSpirits) + snapshot.shadowfiend.resourceRaw + snapshot.voidTendrils.resourceFinal) > 0) then
+					(((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * snapshot.targetData.count[spells.auspiciousSpirits.id]) + snapshot.shadowfiend.resourceRaw + snapshot.voidTendrils.resourceFinal) > 0) then
 					valid = true
 				end
 			elseif var == "$resourcePlusCasting" or var == "$insanityPlusCasting" then
@@ -4588,7 +4588,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif var == "$resourcePlusPassive" or var == "$insanityPlusPassive" then
 				if snapshot.resource > 0 or
-					((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * snapshot.targetData.auspiciousSpirits) + snapshot.shadowfiend.resourceRaw + snapshot.voidTendrils.resourceFinal) > 0 then
+					((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * snapshot.targetData.count[spells.auspiciousSpirits.id]) + snapshot.shadowfiend.resourceRaw + snapshot.voidTendrils.resourceFinal) > 0 then
 					valid = true
 				end
 			elseif var == "$casting" then
@@ -4596,7 +4596,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$passive" then
-				if ((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * snapshot.targetData.auspiciousSpirits) + snapshot.shadowfiend.resourceRaw + snapshot.voidTendrils.resourceFinal) > 0 then
+				if ((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * snapshot.targetData.count[spells.auspiciousSpirits.id]) + snapshot.shadowfiend.resourceRaw + snapshot.voidTendrils.resourceFinal) > 0 then
 					valid = true
 				end
 			elseif var == "$mbInsanity" then
