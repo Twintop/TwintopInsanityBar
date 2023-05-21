@@ -8,12 +8,13 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
-# 10.1.0.4-release (2023-05-??)
+# 10.1.0.4-release (2023-05-22)
 ## General
+
 - [#317 - REFACTOR](#317) Overhauled how targets and debuff tracking works to make it more modular and generic.
 
 ## Monk
-## Windwalker
+### Windwalker
 
 - [#318 - FIX](#318) Fix an issue where Mark of the Crane wouldn't be properly tracked from Blackout Kick with the Shadowboxing Treads talent.
 
@@ -30,6 +31,15 @@ local content = [====[
 <br/>&emsp;&ensp;&emsp;&ensp;- `$ysStacks` -- stacks on the Idol of Yogg-Saron buff
 <br/>&emsp;&ensp;&emsp;&ensp;- `$ysRemainingStacks ` -- stacks required for Idol of Yogg-Saron to spawn a Thing From Beyond
 <br/>&emsp;&ensp;&emsp;&ensp;- `$tfbTime` -- time remaining on a spawned Thing From Beyond
+
+## Rogue
+### Assassination
+
+- [#319 - FIX](#319) Update the debuff ID for Serrated Bone Spike.
+
+### Outlaw
+
+- [#320 - FIX](#320) Correct some issues with bar text for poisons.
 
 ## Shaman
 ### Enhancement

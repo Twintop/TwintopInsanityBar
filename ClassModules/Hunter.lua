@@ -2581,6 +2581,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local classSettings = TRB.Data.settings.hunter
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.Target
+		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 
 		if specId == 1 then
 			local specSettings = classSettings.beastMastery
@@ -2651,7 +2653,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == spells.killShot.id then
-									local targetUnitHealth = TRB.Functions.Target:GetUnitHealthPercent("target")
+									local targetUnitHealth
+									if target ~= nil then
+										targetUnitHealth = target:GetHealthPercent()
+									end
+
 									if UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= spells.killShot.healthMinimum then
 										showThreshold = false
 										snapshot.audio.playedKillShotCue = false
@@ -2943,7 +2949,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										snapshot.audio.playedAimedShotCue = true
 									end
 								elseif spell.id == spells.killShot.id then
-									local targetUnitHealth = TRB.Functions.Target:GetUnitHealthPercent("target")
+									local targetUnitHealth
+									if target ~= nil then
+										targetUnitHealth = target:GetHealthPercent()
+									end
+
 									if UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= spells.killShot.healthMinimum then
 										showThreshold = false
 										snapshot.audio.playedKillShotCue = false
@@ -3102,7 +3112,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == spells.killShot.id then
-									local targetUnitHealth = TRB.Functions.Target:GetUnitHealthPercent("target")
+									local targetUnitHealth
+									if target ~= nil then
+										targetUnitHealth = target:GetHealthPercent()
+									end
+									
 									if UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= spells.killShot.healthMinimum then
 										showThreshold = false
 										snapshot.audio.playedKillShotCue = false

@@ -2756,7 +2756,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.Target:RemoveTarget(destGUID)
+				targetData:Remove(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end

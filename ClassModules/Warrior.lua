@@ -1507,6 +1507,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local classSettings = TRB.Data.settings.warrior
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.Target
+		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 
 		if specId == 1 then
 			local specSettings = classSettings.arms
@@ -1577,7 +1579,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								showThreshold = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == spells.execute.id then
-									local targetUnitHealth = TRB.Functions.Target:GetUnitHealthPercent("target")
+									local targetUnitHealth
+									if target ~= nil then
+										targetUnitHealth = target:GetHealthPercent()
+									end
+									
 									local healthMinimum = spells.execute.healthMinimum
 									
 									if TRB.Functions.Talent:IsTalentActive(spells.massacre) then
@@ -1785,7 +1791,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									if TRB.Functions.Talent:IsTalentActive(spells.improvedExecute) then
 										showThreshold = false
 									else
-										local targetUnitHealth = TRB.Functions.Target:GetUnitHealthPercent("target")
+										local targetUnitHealth
+										if target ~= nil then
+											targetUnitHealth = target:GetHealthPercent()
+										end
+										
 										local healthMinimum = spells.execute.healthMinimum
 										
 										if TRB.Functions.Talent:IsTalentActive(spells.massacre) then
@@ -2061,7 +2071,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.Target:RemoveTarget(destGUID)
+				targetData:Remove(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end

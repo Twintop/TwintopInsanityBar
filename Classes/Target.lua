@@ -193,6 +193,22 @@ function TRB.Classes.Target:UpdateAllSpellTracking(currentTime)
     end
 end
 
+---Attempts to get the current health percent for this creature. May fail if this creature does not have a current UnitToken.
+---@return number? # Returns the health percentage if the creature has a valid UnitToken; nil otherwise
+function TRB.Classes.Target:GetHealthPercent()
+    -- TODO: Look in to hooking in to nameplates to get the info we need for this
+    local unitToken = UnitTokenFromGUID(self.guid)
+
+	if unitToken ~= nil then
+		local health = UnitHealth(unitToken)
+		local maxHealth = UnitHealthMax(unitToken)
+		return health / maxHealth
+	else
+		return nil
+	end
+end
+
+
 ---@class TRB.Classes.TargetSpell
 ---@field public id integer
 ---@field public spell table
@@ -253,7 +269,6 @@ function TRB.Classes.TargetSpell:Update(currentTime)
             if expiration ~= nil then
                 self.active = true
                 self.remainingTime = expiration - currentTime
-                return
             end
         end
     end

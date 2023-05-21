@@ -4066,7 +4066,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
 				targetData:Remove(destGUID)
 				RefreshTargetTracking()
-
 				triggerUpdate = true
 			end
 

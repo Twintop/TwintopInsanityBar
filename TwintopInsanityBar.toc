@@ -4,7 +4,7 @@
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 10.1.0.4
 ## X-ReleaseType: release
-## X-ReleaseDate: May 17, 2023
+## X-ReleaseDate: May 22, 2023
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -41,7 +41,6 @@ Functions\Spell.lua
 Functions\String.lua
 Functions\Table.lua
 Functions\Talent.lua
-Functions\Target.lua
 Functions\Threshold.lua
 Functions\TimeToDie.lua
 
