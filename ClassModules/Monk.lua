@@ -1066,12 +1066,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		if listPosition > 0 then
 			snapshot.markOfTheCrane.list[listPosition].startTime = currentTime
 			snapshot.markOfTheCrane.list[listPosition].endTime = currentTime + spells.markOfTheCrane.duration
+			print("refresh", guid, snapshot.markOfTheCrane.list[listPosition].endTime)
 		else
 			snapshot.targetData.count[spells.markOfTheCrane.id] = snapshot.targetData.count[spells.markOfTheCrane.id] + 1
 			table.insert(snapshot.markOfTheCrane.list, {
 				guid = guid,
 				endTime = currentTime + spells.markOfTheCrane.duration
 			})
+			print("new", guid, currentTime + spells.markOfTheCrane.duration)
 		end
 	end
 
@@ -1087,15 +1089,21 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			oldestTime = oldestTime + spells.markOfTheCrane.duration
 		end
 
+		--print("----------------")
+
 		for x = 1, entries do
-			if snapshot.targetData.targets[snapshot.markOfTheCrane.list[x].guid] ~= nil and snapshot.markOfTheCrane.list[x].endTime > currentTime then
-				snapshot.targetData.targets[snapshot.markOfTheCrane.list[x].guid].spells[spells.markOfTheCrane.id].remainingTime = snapshot.markOfTheCrane.list[x].endTime - currentTime
+			local listItem = snapshot.markOfTheCrane.list[x]
+			local target = snapshot.targetData.targets[listItem.guid]
+
+			if target ~= nil and target.spells[spells.markOfTheCrane.id].active and listItem.endTime > currentTime then
+				snapshot.targetData.targets[listItem.guid].spells[spells.markOfTheCrane.id].remainingTime = listItem.endTime - currentTime
 			end
 
-			if snapshot.markOfTheCrane.list[x].endTime == nil or snapshot.markOfTheCrane.list[x].endTime < oldestTime and (not aliveOnly or snapshot.targetData.targets[snapshot.markOfTheCrane.list[x].guid] ~= nil) then
+			if listItem.endTime < oldestTime and (not aliveOnly or target ~= nil) then
 				oldestId = x
-				oldestTime = snapshot.markOfTheCrane.list[x].endTime
+				oldestTime = listItem.endTime
 			end
+			--print(listItem.guid, listItem.guid == snapshot.targetData.currentTargetGuid, listItem.endTime)
 		end
 		return oldestId
 	end
@@ -2499,21 +2507,21 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						end
 					elseif spellId == spells.tigerPalm.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_CAST_SUCCESS" then
+							if type == "SPELL_DAMAGE" then
 								ApplyMarkOfTheCrane(destGUID)
 								triggerUpdate = true
 							end
 						end
 					elseif spellId == spells.blackoutKick.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_CAST_SUCCESS" then
+							if type == "SPELL_DAMAGE" then
 								ApplyMarkOfTheCrane(destGUID)
 								triggerUpdate = true
 							end
 						end
 					elseif spellId == spells.risingSunKick.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_CAST_SUCCESS" then
+							if type == "SPELL_DAMAGE" then
 								ApplyMarkOfTheCrane(destGUID)
 								triggerUpdate = true
 							end
