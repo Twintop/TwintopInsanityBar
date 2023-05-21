@@ -4,7 +4,7 @@
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 10.1.0.4
 ## X-ReleaseType: release
-## X-ReleaseDate: May 17, 2023
+## X-ReleaseDate: May 22, 2023
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -25,6 +25,9 @@ Libs\LibMarkdown\LibMarkdown.xml
 
 Init.lua
 
+Classes\TimeToDie.lua
+Classes\Target.lua
+
 Functions\Aura.lua
 Functions\Bar.lua
 Functions\BarText.lua
@@ -38,31 +41,30 @@ Functions\Spell.lua
 Functions\String.lua
 Functions\Table.lua
 Functions\Talent.lua
-Functions\Target.lua
 Functions\Threshold.lua
 Functions\TimeToDie.lua
 
 Options\OptionsUi.lua
 Options\Options.lua
 
-Classes\DemonHunter.lua
-Classes\Druid.lua
-Classes\Evoker.lua
-Classes\Hunter.lua
-Classes\Monk.lua
-Classes\Priest.lua
-Classes\Rogue.lua
-Classes\Shaman.lua
-Classes\Warrior.lua
+ClassModules\DemonHunter.lua
+ClassModules\Druid.lua
+ClassModules\Evoker.lua
+ClassModules\Hunter.lua
+ClassModules\Monk.lua
+ClassModules\Priest.lua
+ClassModules\Rogue.lua
+ClassModules\Shaman.lua
+ClassModules\Warrior.lua
 
 Functions\News.lua
 
-Options\DemonHunterOptions.lua
-Options\DruidOptions.lua
-Options\EvokerOptions.lua
-Options\HunterOptions.lua
-Options\MonkOptions.lua
-Options\PriestOptions.lua
-Options\RogueOptions.lua
-Options\ShamanOptions.lua
-Options\WarriorOptions.lua
+ClassModules\Options\DemonHunterOptions.lua
+ClassModules\Options\DruidOptions.lua
+ClassModules\Options\EvokerOptions.lua
+ClassModules\Options\HunterOptions.lua
+ClassModules\Options\MonkOptions.lua
+ClassModules\Options\PriestOptions.lua
+ClassModules\Options\RogueOptions.lua
+ClassModules\Options\ShamanOptions.lua
+ClassModules\Options\WarriorOptions.lua
