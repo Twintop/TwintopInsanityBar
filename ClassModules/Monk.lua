@@ -1066,14 +1066,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		if listPosition > 0 then
 			snapshot.markOfTheCrane.list[listPosition].startTime = currentTime
 			snapshot.markOfTheCrane.list[listPosition].endTime = currentTime + spells.markOfTheCrane.duration
-			print("refresh", guid, snapshot.markOfTheCrane.list[listPosition].endTime)
 		else
 			snapshot.targetData.count[spells.markOfTheCrane.id] = snapshot.targetData.count[spells.markOfTheCrane.id] + 1
 			table.insert(snapshot.markOfTheCrane.list, {
 				guid = guid,
 				endTime = currentTime + spells.markOfTheCrane.duration
 			})
-			print("new", guid, currentTime + spells.markOfTheCrane.duration)
 		end
 	end
 
@@ -1088,9 +1086,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		if any then
 			oldestTime = oldestTime + spells.markOfTheCrane.duration
 		end
-
-		--print("----------------")
-
 		for x = 1, entries do
 			local listItem = snapshot.markOfTheCrane.list[x]
 			local target = snapshot.targetData.targets[listItem.guid]
@@ -1103,7 +1098,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				oldestId = x
 				oldestTime = listItem.endTime
 			end
-			--print(listItem.guid, listItem.guid == snapshot.targetData.currentTargetGuid, listItem.endTime)
 		end
 		return oldestId
 	end

@@ -37,7 +37,7 @@ end
 ---@param autoUpdate boolean? # Should this spell's tracked values be automatically updated?
 function TRB.Classes.TargetData:AddSpellTracking(spell, isDot, hasCounter, hasSnapshot, autoUpdate)
     if isDot == nil then
-        isDot = isDot
+        isDot = true
     end
 
     hasCounter = hasCounter or false
@@ -165,7 +165,7 @@ end
 ---@param autoUpdate boolean? # Should this spell's tracked values be automatically updated?
 function TRB.Classes.Target:AddSpellTracking(spell, isDot, hasCounter, hasSnapshot, autoUpdate)
     if isDot == nil then
-        isDot = isDot
+        isDot = true
     end
 
     hasCounter = hasCounter or false
@@ -219,7 +219,7 @@ function TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot, auto
     setmetatable(self, TRB.Classes.TargetSpell)
 
     if isDot == nil then
-        isDot = isDot
+        isDot = true
     end
 
     hasCounter = hasCounter or false
