@@ -347,19 +347,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			playedSfCue = false,
 			playedstarweaverCue = false
 		}
-
-		specCache.balance.snapshot.targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			sunfire = 0,
-			moonfire = 0,
-			stellarFlare = 0,
-			targets = {}
-		}
 		specCache.balance.snapshot.moonkinForm = {
 			isActive = false
 		}
-
 		specCache.balance.snapshot.furyOfElune = {
 			isActive = false,
 			ticksRemaining = 0,
@@ -372,7 +362,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			startTime = nil,
 			astralPower = 0
 		}
-
 		specCache.balance.snapshot.eclipseSolar = {
 			isActive = false,
 			spellId = nil,
@@ -822,17 +811,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		specCache.feral.snapshot.audio = {
 			overcapCue = false
 		}
-		specCache.feral.snapshot.targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			--Bleeds
-			rake = 0,
-			rip = 0,
-			thrash = 0,
-			--Other
-			moonfire = 0,
-			targets = {}
-		}
 		specCache.feral.snapshot.maim = {
 			startTime = nil,
 			duration = 0,
@@ -855,8 +833,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			duration = 0,
 			endTime = nil,
 			remainingTime = 0,
-			stacks = 0,
-			endTimeLeeway = nil
+			stacks = 0
 		}
 		specCache.feral.snapshot.tigersFury = {
 			spellId = nil,
@@ -1190,13 +1167,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		specCache.restoration.snapshot.manaRegen = 0
 		specCache.restoration.snapshot.audio = {
 			innervateCue = false
-		}
-		specCache.restoration.snapshot.targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			sunfire = 0,
-			moonfire = 0,
-			targets = {}
 		}
 		specCache.restoration.snapshot.efflorescence = {
 			endTime = nil
@@ -1776,131 +1746,131 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
 		local specId = GetSpecialization()
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
 
 		if specId == 1 then
 			local sunfireTotal = 0
 			local moonfireTotal = 0
 			local stellarFlareTotal = 0
-			for guid,count in pairs(TRB.Data.snapshot.targetData.targets) do
-				if (currentTime - TRB.Data.snapshot.targetData.targets[guid].lastUpdate) > 10 then
-					TRB.Data.snapshot.targetData.targets[guid].sunfire = false
-					TRB.Data.snapshot.targetData.targets[guid].sunfireRemaining = 0
-					TRB.Data.snapshot.targetData.targets[guid].moonfire = false
-					TRB.Data.snapshot.targetData.targets[guid].moonfireRemaining = 0
-					TRB.Data.snapshot.targetData.targets[guid].stellarFlare = false
-					TRB.Data.snapshot.targetData.targets[guid].stellarFlareRemaining = 0
+			for guid,_ in pairs(snapshot.targetData.targets) do
+				---@type TRB.Classes.Target
+				local target = TRB.Data.snapshot.targetData.targets[guid]
+				if target.lastUpdate == nil or (currentTime - target.lastUpdate) > 10 then
+					target.spells[spells.moonfire.id].active = false
+					target.spells[spells.moonfire.id].remainingTime = 0
+					target.spells[spells.stellarFlare.id].active = false
+					target.spells[spells.stellarFlare.id].remainingTime = 0
+					target.spells[spells.sunfire.id].active = false
+					target.spells[spells.sunfire.id].remainingTime = 0
 				else
-					if TRB.Data.snapshot.targetData.targets[guid].sunfire == true then
-						sunfireTotal = sunfireTotal + 1
-					end
-					
-					if TRB.Data.snapshot.targetData.targets[guid].moonfire == true then
+					if target.spells[spells.moonfire.id].active == true then
 						moonfireTotal = moonfireTotal + 1
 					end
 					
-					if TRB.Data.snapshot.targetData.targets[guid].stellarFlare == true then
+					if target.spells[spells.stellarFlare.id].active == true then
 						stellarFlareTotal = stellarFlareTotal + 1
+					end
+
+					if target.spells[spells.sunfire.id].active == true then
+						sunfireTotal = sunfireTotal + 1
 					end
 				end
 			end
 
-			TRB.Data.snapshot.targetData.sunfire = sunfireTotal
-			TRB.Data.snapshot.targetData.moonfire = moonfireTotal
-			TRB.Data.snapshot.targetData.stellarFlare = stellarFlareTotal
+			snapshot.targetData.sunfire = sunfireTotal
+			snapshot.targetData.moonfire = moonfireTotal
+			snapshot.targetData.stellarFlare = stellarFlareTotal
 		elseif specId == 2 then
 			local rakeTotal = 0
 			local ripTotal = 0
 			local thrashTotal = 0
 			local moonfireTotal = 0
-			for guid,count in pairs(TRB.Data.snapshot.targetData.targets) do
-				if (currentTime - TRB.Data.snapshot.targetData.targets[guid].lastUpdate) > 10 then
-					TRB.Data.snapshot.targetData.targets[guid].rake = false
-					TRB.Data.snapshot.targetData.targets[guid].rakeRemaining = 0
-					TRB.Data.snapshot.targetData.targets[guid].rakeSnapshot = 0
-					TRB.Data.snapshot.targetData.targets[guid].rip = false
-					TRB.Data.snapshot.targetData.targets[guid].ripRemaining = 0
-					TRB.Data.snapshot.targetData.targets[guid].ripSnapshot = 0
-					TRB.Data.snapshot.targetData.targets[guid].thrash = false
-					TRB.Data.snapshot.targetData.targets[guid].thrashRemaining = 0
-					TRB.Data.snapshot.targetData.targets[guid].thrashSnapshot = 0
-					TRB.Data.snapshot.targetData.targets[guid].moonfire = false
-					TRB.Data.snapshot.targetData.targets[guid].moonfireRemaining = 0
-					TRB.Data.snapshot.targetData.targets[guid].moonfireSnapshot = 0
+			for guid,_ in pairs(snapshot.targetData.targets) do
+				---@type TRB.Classes.Target
+				local target = TRB.Data.snapshot.targetData.targets[guid]
+				if target.lastUpdate == nil or (currentTime - target.lastUpdate) > 10 then
+					target.spells[spells.moonfire.id].active = false
+					target.spells[spells.moonfire.id].remainingTime = 0
+					target.spells[spells.moonfire.id].snapshot = 0
+					target.spells[spells.rake.id].active = false
+					target.spells[spells.rake.id].remainingTime = 0
+					target.spells[spells.rake.id].snapshot = 0
+					target.spells[spells.rip.id].active = false
+					target.spells[spells.rip.id].remainingTime = 0
+					target.spells[spells.rip.id].snapshot = 0
+					target.spells[spells.thrash.id].active = false
+					target.spells[spells.thrash.id].remainingTime = 0
+					target.spells[spells.thrash.id].snapshot = 0
 				else
-					if TRB.Data.snapshot.targetData.targets[guid].rake == true then
+					if target.spells[spells.moonfire.id].active == true then
+						moonfireTotal = moonfireTotal + 1
+					end
+
+					if target.spells[spells.rake.id].active == true then
 						rakeTotal = rakeTotal + 1
 					end
 					
-					if TRB.Data.snapshot.targetData.targets[guid].rip == true then
+					if target.spells[spells.rip.id].active == true then
 						ripTotal = ripTotal + 1
 					end
 					
-					if TRB.Data.snapshot.targetData.targets[guid].thrash == true then
+					if target.spells[spells.thrash.id].active == true then
 						thrashTotal = thrashTotal + 1
-					end
-					
-					if TRB.Data.snapshot.targetData.targets[guid].moonfire == true then
-						moonfireTotal = moonfireTotal + 1
 					end
 				end
 			end
 
-			TRB.Data.snapshot.targetData.rake = rakeTotal
-			TRB.Data.snapshot.targetData.rip = ripTotal
-			TRB.Data.snapshot.targetData.thrash = thrashTotal
-			TRB.Data.snapshot.targetData.moonfire = moonfireTotal			
+			snapshot.targetData.rake = rakeTotal
+			snapshot.targetData.rip = ripTotal
+			snapshot.targetData.thrash = thrashTotal
+			snapshot.targetData.moonfire = moonfireTotal
 		elseif specId == 4 then -- Restoration
 			local sunfireTotal = 0
 			local moonfireTotal = 0
-			for guid,count in pairs(TRB.Data.snapshot.targetData.targets) do
-				if (currentTime - TRB.Data.snapshot.targetData.targets[guid].lastUpdate) > 10 then
-					TRB.Data.snapshot.targetData.targets[guid].sunfire = false
-					TRB.Data.snapshot.targetData.targets[guid].sunfireRemaining = 0
-					TRB.Data.snapshot.targetData.targets[guid].moonfire = false
-					TRB.Data.snapshot.targetData.targets[guid].moonfireRemaining = 0
+			for guid,_ in pairs(snapshot.targetData.targets) do
+				---@type TRB.Classes.Target
+				local target = TRB.Data.snapshot.targetData.targets[guid]
+				if target.lastUpdate == nil or (currentTime - target.lastUpdate) > 10 then
+					target.spells[spells.moonfire.id].active = false
+					target.spells[spells.moonfire.id].remainingTime = 0
+					target.spells[spells.sunfire.id].active = false
+					target.spells[spells.sunfire.id].remainingTime = 0
 				else
-					if TRB.Data.snapshot.targetData.targets[guid].sunfire == true then
-						sunfireTotal = sunfireTotal + 1
-					end
-					
-					if TRB.Data.snapshot.targetData.targets[guid].moonfire == true then
+					if target.spells[spells.moonfire.id].active == true then
 						moonfireTotal = moonfireTotal + 1
+					end
+
+					if target.spells[spells.sunfire.id].active == true then
+						sunfireTotal = sunfireTotal + 1
 					end
 				end
 			end
 
-			TRB.Data.snapshot.targetData.sunfire = sunfireTotal
-			TRB.Data.snapshot.targetData.moonfire = moonfireTotal
+			snapshot.targetData.sunfire = sunfireTotal
+			snapshot.targetData.moonfire = moonfireTotal
 		end
 	end
 
 	local function TargetsCleanup(clearAll)
-		TRB.Functions.Target:TargetsCleanup(clearAll)
+		---@type TRB.Classes.TargetData
+		local targetData = TRB.Data.snapshot.targetData
 		local specId = GetSpecialization()
+		local snapshot = TRB.Data.snapshot
 
 		if specId == 1 then
-			if clearAll == true then
-				TRB.Data.snapshot.targetData.sunfire = 0
-				TRB.Data.snapshot.targetData.moonfire = 0
-				TRB.Data.snapshot.targetData.stellarFlare = 0
-			end
+			targetData:Cleanup(clearAll)
 		elseif specId == 2 then
-			if clearAll == true then
-				TRB.Data.snapshot.targetData.rake = 0
-				TRB.Data.snapshot.targetData.rip = 0
-				TRB.Data.snapshot.targetData.thrash = 0
-				TRB.Data.snapshot.targetData.moonfire = 0
-			end
+			targetData:Cleanup(clearAll)
 		elseif specId == 4 then
-			if clearAll == true then
-				TRB.Data.snapshot.targetData.sunfire = 0
-				TRB.Data.snapshot.targetData.moonfire = 0
-			end
+			targetData:Cleanup(clearAll)
 		end
 	end
 
 	local function ConstructResourceBar(settings)
 		local specId = GetSpecialization()
+		local spells = TRB.Data.spells
+
 		local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
 		if entries > 0 then
 			for x = 1, entries do
@@ -1919,14 +1889,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
 			
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.starsurge.settingKey, settings)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.starsurge2.settingKey, settings)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.starsurge3.settingKey, settings)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.starfall.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.starsurge.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.starsurge2.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], spells.starsurge3.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], spells.starfall.settingKey, settings)
 			TRB.Frames.resource2ContainerFrame:Hide()
 		elseif specId == 2 then
-			for k, v in pairs(TRB.Data.spells) do
-				local spell = TRB.Data.spells[k]
+			for k, v in pairs(spells) do
+				local spell = spells[k]
 				if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 					if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
@@ -1961,13 +1931,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.Frames.passiveFrame.thresholds[x]:Hide()
 			end
 			
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.aeratedManaPotionRank1.settingKey, TRB.Data.settings.druid.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.aeratedManaPotionRank2.settingKey, TRB.Data.settings.druid.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.aeratedManaPotionRank3.settingKey, TRB.Data.settings.druid.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.potionOfFrozenFocusRank1.settingKey, TRB.Data.settings.druid.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], TRB.Data.spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.druid.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], TRB.Data.spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.druid.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], TRB.Data.spells.conjuredChillglobe.settingKey, TRB.Data.settings.druid.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.aeratedManaPotionRank1.settingKey, TRB.Data.settings.druid.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.aeratedManaPotionRank2.settingKey, TRB.Data.settings.druid.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], spells.aeratedManaPotionRank3.settingKey, TRB.Data.settings.druid.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], spells.potionOfFrozenFocusRank1.settingKey, TRB.Data.settings.druid.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.druid.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.druid.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], spells.conjuredChillglobe.settingKey, TRB.Data.settings.druid.restoration)
 			TRB.Frames.resource2ContainerFrame:Hide()
 		end
 
@@ -2134,50 +2104,55 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 
 	local function RefreshLookupData_Balance()
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
+		local specSettings = TRB.Data.settings.druid.balance
+		---@type TRB.Classes.Target
+		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local currentTime = GetTime()
-		local normalizedAstralPower = TRB.Data.snapshot.resource / TRB.Data.resourceFactor
+		local normalizedAstralPower = snapshot.resource / TRB.Data.resourceFactor
 
-		--local moonkinFormActive = TRB.Data.snapshot.moonkinForm.isActive
+		--local moonkinFormActive = snapshot.moonkinForm.isActive
 
 		--$overcap
 		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-		local currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.current
-		local castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.casting
+		local currentAstralPowerColor = specSettings.colors.text.current
+		local castingAstralPowerColor = specSettings.colors.text.casting
 
 		local astralPowerThreshold = math.min(TRB.Data.character.starsurgeThreshold, TRB.Data.character.starfallThreshold)
 
 		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-			if TRB.Data.settings.druid.balance.colors.text.overcapEnabled and overcap then 
-				currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap
-				castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overcap
-			elseif TRB.Data.settings.druid.balance.colors.text.overThresholdEnabled and normalizedAstralPower >= astralPowerThreshold then
-				currentAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overThreshold
-				castingAstralPowerColor = TRB.Data.settings.druid.balance.colors.text.overThreshold
+			if specSettings.colors.text.overcapEnabled and overcap then 
+				currentAstralPowerColor = specSettings.colors.text.overcap
+				castingAstralPowerColor = specSettings.colors.text.overcap
+			elseif specSettings.colors.text.overThresholdEnabled and normalizedAstralPower >= astralPowerThreshold then
+				currentAstralPowerColor = specSettings.colors.text.overThreshold
+				castingAstralPowerColor = specSettings.colors.text.overThreshold
 			end
 		end
 
 		--$astralPower
-		local astralPowerPrecision = TRB.Data.settings.druid.balance.astralPowerPrecision or 0
+		local astralPowerPrecision = specSettings.astralPowerPrecision or 0
 		local currentAstralPower = string.format("|c%s%s|r", currentAstralPowerColor, TRB.Functions.Number:RoundTo(normalizedAstralPower, astralPowerPrecision, "floor"))
 		--$casting
-		local castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(TRB.Data.snapshot.casting.resourceFinal, astralPowerPrecision, "floor"))
+		local castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(snapshot.casting.resourceFinal, astralPowerPrecision, "floor"))
 		--$passive
-		local _passiveAstralPower = TRB.Data.snapshot.furyOfElune.astralPower + TRB.Data.snapshot.sunderedFirmament.astralPower
-		if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.naturesBalance) then
+		local _passiveAstralPower = snapshot.furyOfElune.astralPower + snapshot.sunderedFirmament.astralPower
+		if TRB.Functions.Talent:IsTalentActive(spells.naturesBalance) then
 			if UnitAffectingCombat("player") then
-				_passiveAstralPower = _passiveAstralPower + TRB.Data.spells.naturesBalance.astralPower
+				_passiveAstralPower = _passiveAstralPower + spells.naturesBalance.astralPower
 			elseif normalizedAstralPower < 50 then
-				_passiveAstralPower = _passiveAstralPower + TRB.Data.spells.naturesBalance.outOfCombatAstralPower
+				_passiveAstralPower = _passiveAstralPower + spells.naturesBalance.outOfCombatAstralPower
 			end
 		end
 
-		local passiveAstralPower = string.format("|c%s%s|r", TRB.Data.settings.druid.balance.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveAstralPower, astralPowerPrecision, "ceil"))
+		local passiveAstralPower = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveAstralPower, astralPowerPrecision, "ceil"))
 		--$astralPowerTotal
-		local _astralPowerTotal = math.min(_passiveAstralPower + TRB.Data.snapshot.casting.resourceFinal + normalizedAstralPower, TRB.Data.character.maxResource)
+		local _astralPowerTotal = math.min(_passiveAstralPower + snapshot.casting.resourceFinal + normalizedAstralPower, TRB.Data.character.maxResource)
 		local astralPowerTotal = string.format("|c%s%s|r", currentAstralPowerColor, TRB.Functions.Number:RoundTo(_astralPowerTotal, astralPowerPrecision, "floor"))
 		--$astralPowerPlusCasting
-		local _astralPowerPlusCasting = math.min(TRB.Data.snapshot.casting.resourceFinal + normalizedAstralPower, TRB.Data.character.maxResource)
+		local _astralPowerPlusCasting = math.min(snapshot.casting.resourceFinal + normalizedAstralPower, TRB.Data.character.maxResource)
 		local astralPowerPlusCasting = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(_astralPowerPlusCasting, astralPowerPrecision, "floor"))
 		--$astralPowerPlusPassive
 		local _astralPowerPlusPassive = math.min(_passiveAstralPower + normalizedAstralPower, TRB.Data.character.maxResource)
@@ -2185,76 +2160,76 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		----------
 		--$sunfireCount and $sunfireTime
-		local _sunfireCount = TRB.Data.snapshot.targetData.sunfire or 0
+		local _sunfireCount = snapshot.targetData.count[spells.sunfire.id] or 0
 		local sunfireCount = tostring(_sunfireCount)
 		local _sunfireTime = 0
 		
-		if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil then
-			_sunfireTime = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].sunfireRemaining or 0
+		if target ~= nil then
+			_sunfireTime = target.spells[spells.sunfire.id].remainingTime or 0.0
 		end
 
 		local sunfireTime
 
 		--$moonfireCount and $moonfireTime
-		local _moonfireCount = TRB.Data.snapshot.targetData.moonfire or 0
+		local _moonfireCount = snapshot.targetData.count[spells.moonfire.id] or 0
 		local moonfireCount = tostring(_moonfireCount)
 		local _moonfireTime = 0
 		
-		if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil then
-			_moonfireTime = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireRemaining or 0
+		if target ~= nil then
+			_moonfireTime = target.spells[spells.moonfire.id].remainingTime or 0.0
 		end
 
 		local moonfireTime
 
 		--$stellarFlareCount and $stellarFlareTime
-		local _stellarFlareCount = TRB.Data.snapshot.targetData.stellarFlare or 0
+		local _stellarFlareCount = snapshot.targetData.count[spells.stellarFlare.id] or 0
 		local stellarFlareCount = tostring(_stellarFlareCount)
 		local _stellarFlareTime = 0
 		
-		if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil then
-			_stellarFlareTime = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].stellarFlareRemaining or 0
+		if target ~= nil then
+			_stellarFlareTime = target.spells[spells.stellarFlare.id].remainingTime or 0.0
 		end
 
 		local stellarFlareTime
 
-		if TRB.Data.settings.druid.balance.colors.text.dots.enabled and TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].sunfire then
-				if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].sunfireRemaining > (TRB.Data.character.pandemicModifier * TRB.Data.spells.sunfire.pandemicTime) then
-					sunfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.up, _sunfireCount)
-					sunfireTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.balance.colors.text.dots.up, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].sunfireRemaining)
+		if specSettings.colors.text.dots.enabled and snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if target ~= nil and target.spells[spells.moonfire.id].active then
+				if _moonfireTime > (TRB.Data.character.pandemicModifier * spells.moonfire.pandemicTime) then
+					moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _moonfireCount)
+					moonfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _moonfireTime)
 				else
-					sunfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.pandemic, _sunfireCount)
-					sunfireTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.balance.colors.text.dots.pandemic, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].sunfireRemaining)
+					moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _moonfireCount)
+					moonfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _moonfireTime)
 				end
 			else
-				sunfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.down, _sunfireCount)
-				sunfireTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.balance.colors.text.dots.down, 0)
+				moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _moonfireCount)
+				moonfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 			end
 
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfire then
-				if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireRemaining > (TRB.Data.character.pandemicModifier * TRB.Data.spells.moonfire.pandemicTime) then
-					moonfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.up, _moonfireCount)
-					moonfireTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.balance.colors.text.dots.up, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireRemaining)
+			if target ~= nil and target.spells[spells.stellarFlare.id].active then
+				if _stellarFlareTime > (TRB.Data.character.pandemicModifier * spells.stellarFlare.pandemicTime) then
+					stellarFlareCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _stellarFlareCount)
+					stellarFlareTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _stellarFlareTime)
 				else
-					moonfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.pandemic, _moonfireCount)
-					moonfireTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.balance.colors.text.dots.pandemic, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireRemaining)
+					stellarFlareCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _stellarFlareCount)
+					stellarFlareTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _stellarFlareTime)
 				end
 			else
-				moonfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.down, _moonfireCount)
-				moonfireTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.balance.colors.text.dots.down, 0)
+				stellarFlareCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _stellarFlareCount)
+				stellarFlareTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 			end
 
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].stellarFlare then
-				if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].stellarFlareRemaining > (TRB.Data.character.pandemicModifier * TRB.Data.spells.stellarFlare.pandemicTime) then
-					stellarFlareCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.up, _stellarFlareCount)
-					stellarFlareTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.balance.colors.text.dots.up, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].stellarFlareRemaining)
+			if target ~= nil and target.spells[spells.sunfire.id].active then
+				if _sunfireTime > (TRB.Data.character.pandemicModifier * spells.sunfire.pandemicTime) then
+					sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _sunfireCount)
+					sunfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _sunfireTime)
 				else
-					stellarFlareCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.pandemic, _stellarFlareCount)
-					stellarFlareTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.balance.colors.text.dots.pandemic, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].stellarFlareRemaining)
+					sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _sunfireCount)
+					sunfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _sunfireTime)
 				end
 			else
-				stellarFlareCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.balance.colors.text.dots.down, _stellarFlareCount)
-				stellarFlareTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.balance.colors.text.dots.down, 0)
+				sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _sunfireCount)
+				sunfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 			end
 		else
 			sunfireTime = string.format("%.1f", _sunfireTime)
@@ -2265,54 +2240,54 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		--$mdTime
 		local _starweaverTime = 0
-		if TRB.Data.snapshot.starweaversWarp.spellId ~= nil then
-			_starweaverTime = math.abs(TRB.Data.snapshot.starweaversWarp.endTime - currentTime)
-		elseif TRB.Data.snapshot.starweaversWarp.spellId ~= nil then
-			_starweaverTime = math.abs(TRB.Data.snapshot.starweaversWeft.endTime - currentTime)
+		if snapshot.starweaversWarp.spellId ~= nil then
+			_starweaverTime = math.abs(snapshot.starweaversWarp.endTime - currentTime)
+		elseif snapshot.starweaversWarp.spellId ~= nil then
+			_starweaverTime = math.abs(snapshot.starweaversWeft.endTime - currentTime)
 		end
 		local starweaverTime = string.format("%.1f", _starweaverTime)
 
 		----------
 		--$foeAstralPower
-		local foeAstralPower = TRB.Data.snapshot.furyOfElune.astralPower or 0
+		local foeAstralPower = snapshot.furyOfElune.astralPower or 0
 		--$foeTicks
-		local foeTicks = TRB.Data.snapshot.furyOfElune.ticksRemaining or 0
+		local foeTicks = snapshot.furyOfElune.ticksRemaining or 0
 		--$foeTime
 		local _foeTime = GetFuryOfEluneRemainingTime()
 		local foeTime = "0.0"
-		if TRB.Data.snapshot.furyOfElune.startTime ~= nil then
+		if snapshot.furyOfElune.startTime ~= nil then
 			foeTime = string.format("%.1f", _foeTime)
 		end
 		
 		----------
 		--$foeAstralPower
-		local sunderedFirmamentAstralPower = TRB.Data.snapshot.sunderedFirmament.astralPower or 0
+		local sunderedFirmamentAstralPower = snapshot.sunderedFirmament.astralPower or 0
 		--$foeTicks
-		local sunderedFirmamentTicks = TRB.Data.snapshot.sunderedFirmament.ticksRemaining or 0
+		local sunderedFirmamentTicks = snapshot.sunderedFirmament.ticksRemaining or 0
 		--$foeTime
 		local _sunderedFirmamentTime = GetSunderedFirmamentRemainingTime()
 		local sunderedFirmamentTime = "0.0"
-		if TRB.Data.snapshot.sunderedFirmament.startTime ~= nil then
+		if snapshot.sunderedFirmament.startTime ~= nil then
 			sunderedFirmamentTime = string.format("%.1f",_sunderedFirmamentTime)
 		end
 		
 		--New Moon
-		local currentMoonIcon = TRB.Data.spells.newMoon.icon
+		local currentMoonIcon = spells.newMoon.icon
 		--$moonAstralPower
 		local moonAstralPower = 0
 		--$moonCharges
-		local moonCharges = TRB.Data.snapshot.newMoon.charges
+		local moonCharges = snapshot.newMoon.charges
 		--$moonCooldown
 		local _moonCooldown = 0
 		--$moonCooldownTotal
 		local _moonCooldownTotal = 0
-		if TRB.Data.snapshot.newMoon.currentKey ~= "" and TRB.Data.snapshot.newMoon.currentSpellId ~= nil then
-			currentMoonIcon = TRB.Data.spells[TRB.Data.snapshot.newMoon.currentKey].icon
-			moonAstralPower = TRB.Data.spells[TRB.Data.snapshot.newMoon.currentKey].astralPower
+		if snapshot.newMoon.currentKey ~= "" and snapshot.newMoon.currentSpellId ~= nil then
+			currentMoonIcon = spells[snapshot.newMoon.currentKey].icon
+			moonAstralPower = spells[snapshot.newMoon.currentKey].astralPower
 
-			if TRB.Data.snapshot.newMoon.startTime ~= nil and TRB.Data.snapshot.newMoon.charges < TRB.Data.snapshot.newMoon.maxCharges then
-				_moonCooldown = math.max(0, TRB.Data.snapshot.newMoon.startTime + TRB.Data.snapshot.newMoon.duration - currentTime)
-				_moonCooldownTotal = _moonCooldown + ((TRB.Data.snapshot.newMoon.maxCharges - TRB.Data.snapshot.newMoon.charges - 1) * TRB.Data.snapshot.newMoon.duration)
+			if snapshot.newMoon.startTime ~= nil and snapshot.newMoon.charges < snapshot.newMoon.maxCharges then
+				_moonCooldown = math.max(0, snapshot.newMoon.startTime + snapshot.newMoon.duration - currentTime)
+				_moonCooldownTotal = _moonCooldown + ((snapshot.newMoon.maxCharges - snapshot.newMoon.charges - 1) * snapshot.newMoon.duration)
 			end
 		end
 		local moonCooldown = string.format("%.1f", _moonCooldown)
@@ -2327,22 +2302,22 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		--#starweaver
 
-		local starweaverIcon = TRB.Data.spells.starweaversWarp.icon
-		if TRB.Data.snapshot.starweaversWeft.isActive then
-			starweaverIcon = TRB.Data.spells.starweaversWeft.icon
+		local starweaverIcon = spells.starweaversWarp.icon
+		if snapshot.starweaversWeft.isActive then
+			starweaverIcon = spells.starweaversWeft.icon
 		end
 
 		--$pulsar variables
-		local pulsarCollected = TRB.Data.snapshot.primordialArcanicPulsar.currentAstralPower or 0
-		local _pulsarCollectedPercent = pulsarCollected / TRB.Data.spells.primordialArcanicPulsar.maxAstralPower
+		local pulsarCollected = snapshot.primordialArcanicPulsar.currentAstralPower or 0
+		local _pulsarCollectedPercent = pulsarCollected / spells.primordialArcanicPulsar.maxAstralPower
 		local pulsarCollectedPercent = string.format("%.1f", TRB.Functions.Number:RoundTo(_pulsarCollectedPercent * 100, 1))
-		local pulsarRemaining = TRB.Data.spells.primordialArcanicPulsar.maxAstralPower - pulsarCollected
-		local _pulsarRemainingPercent = pulsarRemaining / TRB.Data.spells.primordialArcanicPulsar.maxAstralPower
+		local pulsarRemaining = spells.primordialArcanicPulsar.maxAstralPower - pulsarCollected
+		local _pulsarRemainingPercent = pulsarRemaining / spells.primordialArcanicPulsar.maxAstralPower
 		local pulsarRemainingPercent = string.format("%.1f", TRB.Functions.Number:RoundTo(_pulsarRemainingPercent * 100, 1))
 		--local pulsarNextStarsurge = ""
 		--local pulsarNextStarfall = ""
-		local pulsarStarsurgeCount = TRB.Functions.Number:RoundTo(pulsarRemaining / -TRB.Data.spells.starsurge.astralPower, 0, ceil, true)
-		local pulsarStarfallCount = TRB.Functions.Number:RoundTo(pulsarRemaining / -TRB.Data.spells.starfall.astralPower, 0, ceil, true)
+		local pulsarStarsurgeCount = TRB.Functions.Number:RoundTo(pulsarRemaining / -spells.starsurge.astralPower, 0, ceil, true)
+		local pulsarStarfallCount = TRB.Functions.Number:RoundTo(pulsarRemaining / -spells.starfall.astralPower, 0, ceil, true)
 		
 		----------------------------
 
@@ -2366,41 +2341,41 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		}
 		
 		local lookup = TRB.Data.lookup or {}
-		lookup["#wrath"] = TRB.Data.spells.wrath.icon
-		lookup["#moonkinForm"] = TRB.Data.spells.moonkinForm.icon
-		lookup["#starfire"] = TRB.Data.spells.starfire.icon
-		lookup["#sunfire"] = TRB.Data.spells.sunfire.icon
-		lookup["#moonfire"] = TRB.Data.spells.moonfire.icon
-		lookup["#starsurge"] = TRB.Data.spells.starsurge.icon
-		lookup["#starfall"] = TRB.Data.spells.starfall.icon
-		lookup["#eclipse"] = eclipseIcon or TRB.Data.spells.celestialAlignment.icon
-		lookup["#celestialAlignment"] = TRB.Data.spells.celestialAlignment.icon
-		lookup["#icoe"] = TRB.Data.spells.incarnationChosenOfElune.icon
-		lookup["#coe"] = TRB.Data.spells.incarnationChosenOfElune.icon
-		lookup["#incarnation"] = TRB.Data.spells.incarnationChosenOfElune.icon
-		lookup["#incarnationChosenOfElune"] = TRB.Data.spells.incarnationChosenOfElune.icon
-		lookup["#solar"] = TRB.Data.spells.eclipseSolar.icon
-		lookup["#eclipseSolar"] = TRB.Data.spells.eclipseSolar.icon
-		lookup["#solarEclipse"] = TRB.Data.spells.eclipseSolar.icon
-		lookup["#lunar"] = TRB.Data.spells.eclipseLunar.icon
-		lookup["#eclipseLunar"] = TRB.Data.spells.eclipseLunar.icon
-		lookup["#lunarEclipse"] = TRB.Data.spells.eclipseLunar.icon
-		lookup["#naturesBalance"] = TRB.Data.spells.naturesBalance.icon
-		lookup["#soulOfTheForest"] = TRB.Data.spells.soulOfTheForest.icon
-		lookup["#foe"] = TRB.Data.spells.furyOfElune.icon
-		lookup["#furyOfElune"] = TRB.Data.spells.furyOfElune.icon
-		lookup["#sunderedFirmament"] = TRB.Data.spells.sunderedFirmament.icon
-		lookup["#stellarFlare"] = TRB.Data.spells.stellarFlare.icon
-		lookup["#newMoon"] = TRB.Data.spells.newMoon.icon
-		lookup["#halfMoon"] = TRB.Data.spells.halfMoon.icon
-		lookup["#fullMoon"] = TRB.Data.spells.fullMoon.icon
+		lookup["#wrath"] = spells.wrath.icon
+		lookup["#moonkinForm"] = spells.moonkinForm.icon
+		lookup["#starfire"] = spells.starfire.icon
+		lookup["#sunfire"] = spells.sunfire.icon
+		lookup["#moonfire"] = spells.moonfire.icon
+		lookup["#starsurge"] = spells.starsurge.icon
+		lookup["#starfall"] = spells.starfall.icon
+		lookup["#eclipse"] = eclipseIcon or spells.celestialAlignment.icon
+		lookup["#celestialAlignment"] = spells.celestialAlignment.icon
+		lookup["#icoe"] = spells.incarnationChosenOfElune.icon
+		lookup["#coe"] = spells.incarnationChosenOfElune.icon
+		lookup["#incarnation"] = spells.incarnationChosenOfElune.icon
+		lookup["#incarnationChosenOfElune"] = spells.incarnationChosenOfElune.icon
+		lookup["#solar"] = spells.eclipseSolar.icon
+		lookup["#eclipseSolar"] = spells.eclipseSolar.icon
+		lookup["#solarEclipse"] = spells.eclipseSolar.icon
+		lookup["#lunar"] = spells.eclipseLunar.icon
+		lookup["#eclipseLunar"] = spells.eclipseLunar.icon
+		lookup["#lunarEclipse"] = spells.eclipseLunar.icon
+		lookup["#naturesBalance"] = spells.naturesBalance.icon
+		lookup["#soulOfTheForest"] = spells.soulOfTheForest.icon
+		lookup["#foe"] = spells.furyOfElune.icon
+		lookup["#furyOfElune"] = spells.furyOfElune.icon
+		lookup["#sunderedFirmament"] = spells.sunderedFirmament.icon
+		lookup["#stellarFlare"] = spells.stellarFlare.icon
+		lookup["#newMoon"] = spells.newMoon.icon
+		lookup["#halfMoon"] = spells.halfMoon.icon
+		lookup["#fullMoon"] = spells.fullMoon.icon
 		lookup["#moon"] = currentMoonIcon
 		lookup["#starweaver"] = starweaverIcon
-		lookup["#starweaversWarp"] = TRB.Data.spells.starweaversWarp.icon
-		lookup["#starweaversWeft"] = TRB.Data.spells.starweaversWeft.icon
-		lookup["#pulsar"] = TRB.Data.spells.primordialArcanicPulsar.icon
-		lookup["#pap"] = TRB.Data.spells.primordialArcanicPulsar.icon
-		lookup["#primordialArcanicPulsar"] = TRB.Data.spells.primordialArcanicPulsar.icon
+		lookup["#starweaversWarp"] = spells.starweaversWarp.icon
+		lookup["#starweaversWeft"] = spells.starweaversWeft.icon
+		lookup["#pulsar"] = spells.primordialArcanicPulsar.icon
+		lookup["#pap"] = spells.primordialArcanicPulsar.icon
+		lookup["#primordialArcanicPulsar"] = spells.primordialArcanicPulsar.icon
 		lookup["$pulsarCollected"] = pulsarCollected
 		lookup["$pulsarCollectedPercent"] = pulsarCollectedPercent
 		lookup["$pulsarRemaining"] = pulsarRemaining
@@ -2500,34 +2475,39 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 	
 	local function RefreshLookupData_Feral()
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
+		local specSettings = TRB.Data.settings.druid.feral
+		---@type TRB.Classes.Target
+		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local _
 
 		-- Curren snapshot values if they were applied now
-		local _currentSnapshotRip = TRB.Data.snapshot.snapshots.rip
-		local _currentSnapshotRake = TRB.Data.snapshot.snapshots.rake
-		local _currentSnapshotThrash = TRB.Data.snapshot.snapshots.thrash
-		local _currentSnapshotMoonfire = TRB.Data.snapshot.snapshots.moonfire		
+		local _currentSnapshotRip = snapshot.snapshots.rip
+		local _currentSnapshotRake = snapshot.snapshots.rake
+		local _currentSnapshotThrash = snapshot.snapshots.thrash
+		local _currentSnapshotMoonfire = snapshot.snapshots.moonfire
 
 		--Spec specific implementation
 		local currentTime = GetTime()
 
 		-- This probably needs to be pulled every refresh
-		TRB.Data.snapshot.energyRegen, _ = GetPowerRegen()
+		snapshot.energyRegen, _ = GetPowerRegen()
 
 		--$overcap
 		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-		local currentEnergyColor = TRB.Data.settings.druid.feral.colors.text.current
-		local castingEnergyColor = TRB.Data.settings.druid.feral.colors.text.casting
+		local currentEnergyColor = specSettings.colors.text.current
+		local castingEnergyColor = specSettings.colors.text.casting
 		
 		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-			if TRB.Data.settings.druid.feral.colors.text.overcapEnabled and overcap then
-				currentEnergyColor = TRB.Data.settings.druid.feral.colors.text.overcap
-				castingEnergyColor = TRB.Data.settings.druid.feral.colors.text.overcap
-			elseif TRB.Data.settings.druid.feral.colors.text.overThresholdEnabled then
+			if specSettings.colors.text.overcapEnabled and overcap then
+				currentEnergyColor = specSettings.colors.text.overcap
+				castingEnergyColor = specSettings.colors.text.overcap
+			elseif specSettings.colors.text.overThresholdEnabled then
 				local _overThreshold = false
-				for k, v in pairs(TRB.Data.spells) do
-					local spell = TRB.Data.spells[k]
+				for k, v in pairs(spells) do
+					local spell = spells[k]
 					if	spell ~= nil and spell.thresholdUsable == true then
 						_overThreshold = true
 						break
@@ -2535,20 +2515,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 
 				if _overThreshold then
-					currentEnergyColor = TRB.Data.settings.druid.feral.colors.text.overThreshold
-					castingEnergyColor = TRB.Data.settings.druid.feral.colors.text.overThreshold
+					currentEnergyColor = specSettings.colors.text.overThreshold
+					castingEnergyColor = specSettings.colors.text.overThreshold
 				end
 			end
 		end
 
-		if TRB.Data.snapshot.casting.resourceFinal < 0 then
-			castingEnergyColor = TRB.Data.settings.druid.feral.colors.text.spending
+		if snapshot.casting.resourceFinal < 0 then
+			castingEnergyColor = specSettings.colors.text.spending
 		end
 
 		--$energy
-		local currentEnergy = string.format("|c%s%.0f|r", currentEnergyColor, TRB.Data.snapshot.resource)
+		local currentEnergy = string.format("|c%s%.0f|r", currentEnergyColor, snapshot.resource)
 		--$casting
-		local castingEnergy = string.format("|c%s%.0f|r", castingEnergyColor, TRB.Data.snapshot.casting.resourceFinal)
+		local castingEnergy = string.format("|c%s%.0f|r", castingEnergyColor, snapshot.casting.resourceFinal)
 		--$passive
 		local _regenEnergy = 0
 		local _passiveEnergy
@@ -2556,36 +2536,36 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local _gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
-		if TRB.Data.settings.druid.feral.generation.enabled then
-			if TRB.Data.settings.druid.feral.generation.mode == "time" then
-				_regenEnergy = TRB.Data.snapshot.energyRegen * (TRB.Data.settings.druid.feral.generation.time or 3.0)
+		if specSettings.generation.enabled then
+			if specSettings.generation.mode == "time" then
+				_regenEnergy = snapshot.energyRegen * (specSettings.generation.time or 3.0)
 			else
-				_regenEnergy = TRB.Data.snapshot.energyRegen * ((TRB.Data.settings.druid.feral.generation.gcds or 2) * _gcd)
+				_regenEnergy = snapshot.energyRegen * ((specSettings.generation.gcds or 2) * _gcd)
 			end
 		end
 
 		--$regenEnergy
-		local regenEnergy = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.passive, _regenEnergy)
+		local regenEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _regenEnergy)
 
 		_passiveEnergy = _regenEnergy
 		_passiveEnergyMinusRegen = _passiveEnergy - _regenEnergy
 
-		local passiveEnergy = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.passive, _passiveEnergy)
-		local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.passive, _passiveEnergyMinusRegen)
+		local passiveEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergy)
+		local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergyMinusRegen)
 		--$energyTotal
-		local _energyTotal = math.min(_passiveEnergy + TRB.Data.snapshot.casting.resourceFinal + TRB.Data.snapshot.resource, TRB.Data.character.maxResource)
+		local _energyTotal = math.min(_passiveEnergy + snapshot.casting.resourceFinal + snapshot.resource, TRB.Data.character.maxResource)
 		local energyTotal = string.format("|c%s%.0f|r", currentEnergyColor, _energyTotal)
 		--$energyPlusCasting
-		local _energyPlusCasting = math.min(TRB.Data.snapshot.casting.resourceFinal + TRB.Data.snapshot.resource, TRB.Data.character.maxResource)
+		local _energyPlusCasting = math.min(snapshot.casting.resourceFinal + snapshot.resource, TRB.Data.character.maxResource)
 		local energyPlusCasting = string.format("|c%s%.0f|r", castingEnergyColor, _energyPlusCasting)
 		--$energyPlusPassive
-		local _energyPlusPassive = math.min(_passiveEnergy + TRB.Data.snapshot.resource, TRB.Data.character.maxResource)
+		local _energyPlusPassive = math.min(_passiveEnergy + snapshot.resource, TRB.Data.character.maxResource)
 		local energyPlusPassive = string.format("|c%s%.0f|r", currentEnergyColor, _energyPlusPassive)
 
 		
 		----------
 		--$ripCount and $ripTime
-		local _ripCount = TRB.Data.snapshot.targetData.rip or 0
+		local _ripCount = snapshot.targetData.count[spells.rip.id] or 0
 		local ripCount = tostring(_ripCount)
 		local _ripTime = 0
 		local ripTime
@@ -2596,7 +2576,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local ripCurrent
 
 		--$rakeCount and $rakeTime
-		local _rakeCount = TRB.Data.snapshot.targetData.rake or 0
+		local _rakeCount = snapshot.targetData.count[spells.rake.id] or 0
 		local rakeCount = tostring(_rakeCount)
 		local _rakeTime = 0
 		local rakeTime
@@ -2607,7 +2587,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local rakeCurrent
 
 		--$thrashCount and $thrashTime
-		local _thrashCount = TRB.Data.snapshot.targetData.thrash or 0
+		local _thrashCount = snapshot.targetData.count[spells.thrash.id] or 0
 		local thrashCount = tostring(_thrashCount)
 		local _thrashTime = 0
 		local thrashTime
@@ -2618,7 +2598,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local thrashCurrent
 
 		--$moonfireCount and $moonfireTime
-		local _moonfireCount = TRB.Data.snapshot.targetData.moonfire or 0
+		local _moonfireCount = snapshot.targetData.count[spells.moonfire.id] or 0
 		local moonfireCount = tostring(_moonfireCount)
 		local _moonfireTime = 0
 		local moonfireTime
@@ -2628,30 +2608,30 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local moonfirePercent
 		local moonfireCurrent
 		
-		if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil then
-			_ripTime = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].ripRemaining or 0
-			_ripSnapshot = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].ripSnapshot or 0
-			_ripPercent = (_ripSnapshot / _currentSnapshotRip)
-			_rakeTime = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rakeRemaining or 0
-			_rakeSnapshot = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rakeSnapshot or 0
-			_rakePercent = (_rakeSnapshot / _currentSnapshotRake)
-			_thrashTime = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].thrashRemaining or 0
-			_thrashSnapshot = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].thrashSnapshot or 0
-			_thrashPercent = (_thrashSnapshot / _currentSnapshotThrash)
-			_moonfireTime = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireRemaining or 0
-			_moonfireSnapshot = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireSnapshot or 0
+		if target ~= nil then
+			_moonfireTime = target.spells[spells.moonfire.id].remainingTime or 0
+			_moonfireSnapshot = target.spells[spells.moonfire.id].snapshot or 0
 			_moonfirePercent = (_moonfireSnapshot / _currentSnapshotMoonfire)
+			_ripTime = target.spells[spells.rip.id].remainingTime or 0
+			_ripSnapshot = target.spells[spells.rip.id].snapshot or 0
+			_ripPercent = (_ripSnapshot / _currentSnapshotRip)
+			_rakeTime = target.spells[spells.rake.id].remainingTime or 0
+			_rakeSnapshot = target.spells[spells.rake.id].snapshot or 0
+			_rakePercent = (_rakeSnapshot / _currentSnapshotRake)
+			_thrashTime = target.spells[spells.thrash.id].remainingTime or 0
+			_thrashSnapshot = target.spells[spells.thrash.id].snapshot or 0
+			_thrashPercent = (_thrashSnapshot / _currentSnapshotThrash)
 		end
 
-		if TRB.Data.settings.druid.feral.colors.text.dots.enabled and TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rip then
-				local ripColor = TRB.Data.settings.druid.feral.colors.text.dots.same
+		if specSettings.colors.text.dots.enabled and snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if target ~= nil and target.spells[spells.rip.id].active then
+				local ripColor = specSettings.colors.text.dots.same
 				if _ripPercent > 1 then
-					ripColor = TRB.Data.settings.druid.feral.colors.text.dots.better
+					ripColor = specSettings.colors.text.dots.better
 				elseif _ripPercent < 1 then
-					ripColor = TRB.Data.settings.druid.feral.colors.text.dots.worse
+					ripColor = specSettings.colors.text.dots.worse
 				else
-					ripColor = TRB.Data.settings.druid.feral.colors.text.dots.same
+					ripColor = specSettings.colors.text.dots.same
 				end
 
 				ripCount = string.format("|c%s%.0f|r", ripColor, _ripCount)
@@ -2660,21 +2640,21 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				ripPercent = string.format("|c%s%.0f|r", ripColor, TRB.Functions.Number:RoundTo(100 * _ripPercent, 0, "floor"))
 				ripTime = string.format("|c%s%.1f|r", ripColor, _ripTime)
 			else
-				ripCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, _ripCount)
-				ripSnapshot = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
-				ripCurrent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotRip, 0, "floor"))
-				ripPercent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
-				ripTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
+				ripCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _ripCount)
+				ripSnapshot = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
+				ripCurrent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotRip, 0, "floor"))
+				ripPercent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
+				ripTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 			end
 
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rake then
-				local rakeColor = TRB.Data.settings.druid.feral.colors.text.dots.same
+			if target ~= nil and target.spells[spells.rake.id].active then
+				local rakeColor = specSettings.colors.text.dots.same
 				if _rakePercent > 1 then
-					rakeColor = TRB.Data.settings.druid.feral.colors.text.dots.better
+					rakeColor = specSettings.colors.text.dots.better
 				elseif _rakePercent < 1 then
-					rakeColor = TRB.Data.settings.druid.feral.colors.text.dots.worse
+					rakeColor = specSettings.colors.text.dots.worse
 				else
-					rakeColor = TRB.Data.settings.druid.feral.colors.text.dots.same
+					rakeColor = specSettings.colors.text.dots.same
 				end
 
 				rakeCount = string.format("|c%s%.0f|r", rakeColor, _rakeCount)
@@ -2683,21 +2663,21 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				rakePercent = string.format("|c%s%.0f|r", rakeColor, TRB.Functions.Number:RoundTo(100 * _rakePercent, 0, "floor"))
 				rakeTime = string.format("|c%s%.1f|r", rakeColor, _rakeTime)
 			else
-				rakeCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, _rakeCount)
-				rakeSnapshot = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
-				rakeCurrent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotRake, 0, "floor"))
-				rakePercent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
-				rakeTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
+				rakeCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _rakeCount)
+				rakeSnapshot = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
+				rakeCurrent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotRake, 0, "floor"))
+				rakePercent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
+				rakeTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 			end
 
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].thrash then
-				local thrashColor = TRB.Data.settings.druid.feral.colors.text.dots.same
+			if target ~= nil and target.spells[spells.thrash.id].active then
+				local thrashColor = specSettings.colors.text.dots.same
 				if _thrashPercent > 1 then
-					thrashColor = TRB.Data.settings.druid.feral.colors.text.dots.better
+					thrashColor = specSettings.colors.text.dots.better
 				elseif _thrashPercent < 1 then
-					thrashColor = TRB.Data.settings.druid.feral.colors.text.dots.worse
+					thrashColor = specSettings.colors.text.dots.worse
 				else
-					thrashColor = TRB.Data.settings.druid.feral.colors.text.dots.same
+					thrashColor = specSettings.colors.text.dots.same
 				end
 
 				thrashCount = string.format("|c%s%.0f|r", thrashColor, _thrashCount)
@@ -2706,21 +2686,21 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				thrashPercent = string.format("|c%s%.0f|r", thrashColor, TRB.Functions.Number:RoundTo(100 * _thrashPercent, 0, "floor"))
 				thrashTime = string.format("|c%s%.1f|r", thrashColor, _thrashTime)
 			else
-				thrashCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, _thrashCount)
-				thrashSnapshot = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
-				thrashCurrent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotThrash, 0, "floor"))
-				thrashPercent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
-				thrashTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
+				thrashCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _thrashCount)
+				thrashSnapshot = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
+				thrashCurrent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotThrash, 0, "floor"))
+				thrashPercent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
+				thrashTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 			end
 
-			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfire then
-				local moonfireColor = TRB.Data.settings.druid.feral.colors.text.dots.same
+			if TRB.Functions.Talent:IsTalentActive(spells.lunarInspiration) == true and target ~= nil and target.spells[spells.moonfire.id].active then
+				local moonfireColor = specSettings.colors.text.dots.same
 				if _moonfirePercent > 1 then
-					moonfireColor = TRB.Data.settings.druid.feral.colors.text.dots.better
+					moonfireColor = specSettings.colors.text.dots.better
 				elseif _moonfirePercent < 1 then
-					moonfireColor = TRB.Data.settings.druid.feral.colors.text.dots.worse
+					moonfireColor = specSettings.colors.text.dots.worse
 				else
-					moonfireColor = TRB.Data.settings.druid.feral.colors.text.dots.same
+					moonfireColor = specSettings.colors.text.dots.same
 				end
 
 				moonfireCount = string.format("|c%s%.0f|r", moonfireColor, _moonfireCount)
@@ -2729,11 +2709,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				moonfirePercent = string.format("|c%s%.0f|r", moonfireColor, TRB.Functions.Number:RoundTo(100 * _moonfirePercent, 0, "floor"))
 				moonfireTime = string.format("|c%s%.1f|r", moonfireColor, _moonfireTime)
 			else
-				moonfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, _moonfireCount)
-				moonfireSnapshot = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
-				moonfireCurrent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor"))
-				moonfirePercent = string.format("|c%s%.0f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
-				moonfireTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.feral.colors.text.dots.down, 0)
+				moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _moonfireCount)
+				moonfireSnapshot = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
+				moonfireCurrent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor"))
+				moonfirePercent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
+				moonfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 			end
 		else
 			ripTime = string.format("%.1f", _ripTime)
@@ -2752,7 +2732,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			rakePercent = TRB.Functions.Number:RoundTo(100 * _rakePercent, 0, "floor", true)
 			thrashPercent = TRB.Functions.Number:RoundTo(100 * _thrashPercent, 0, "floor", true)
 
-			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true then
+			if TRB.Functions.Talent:IsTalentActive(spells.lunarInspiration) == true then
 				moonfireTime = string.format("%.1f", _moonfireTime)
 				moonfireSnapshot = TRB.Functions.Number:RoundTo(100 * _moonfireSnapshot, 0, "floor", true)
 				moonfireCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor", true)
@@ -2766,26 +2746,26 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 		
 		--$brutalSlashCharges
-		local brutalSlashCharges = TRB.Data.snapshot.brutalSlash.charges
+		local brutalSlashCharges = snapshot.brutalSlash.charges
 		--$brutalSlashCooldown
 		local _brutalSlashCooldown = 0
 		--$brutalSlashCooldownTotal
 		local _brutalSlashCooldownTotal = 0
 
-		if TRB.Data.snapshot.brutalSlash.startTime ~= nil and TRB.Data.snapshot.brutalSlash.charges < TRB.Data.snapshot.brutalSlash.maxCharges then
-			local _brutalSlashHastedCooldown = (TRB.Data.snapshot.brutalSlash.duration / (1 + (TRB.Data.snapshot.haste / 100)))
-			_brutalSlashCooldown = math.max(0, TRB.Data.snapshot.brutalSlash.startTime + _brutalSlashHastedCooldown - currentTime)
-			_brutalSlashCooldownTotal = _brutalSlashCooldown + ((TRB.Data.snapshot.brutalSlash.maxCharges - TRB.Data.snapshot.brutalSlash.charges - 1) * _brutalSlashHastedCooldown)
+		if snapshot.brutalSlash.startTime ~= nil and snapshot.brutalSlash.charges < snapshot.brutalSlash.maxCharges then
+			local _brutalSlashHastedCooldown = (snapshot.brutalSlash.duration / (1 + (snapshot.haste / 100)))
+			_brutalSlashCooldown = math.max(0, snapshot.brutalSlash.startTime + _brutalSlashHastedCooldown - currentTime)
+			_brutalSlashCooldownTotal = _brutalSlashCooldown + ((snapshot.brutalSlash.maxCharges - snapshot.brutalSlash.charges - 1) * _brutalSlashHastedCooldown)
 		end
 
 		local brutalSlashCooldown = string.format("%.1f", _brutalSlashCooldown)
 		local brutalSlashCooldownTotal = string.format("%.1f", _brutalSlashCooldownTotal)
 		
 		--$bloodtalonsStacks
-		local bloodtalonsStacks = TRB.Data.snapshot.bloodtalons.stacks or 0
+		local bloodtalonsStacks = snapshot.bloodtalons.stacks or 0
 
 		--$bloodtalonsTime
-		local _bloodtalonsTime = TRB.Data.snapshot.bloodtalons.remainingTime or 0
+		local _bloodtalonsTime = snapshot.bloodtalons.remainingTime or 0
 		local bloodtalonsTime = string.format("%.1f", _bloodtalonsTime)
 		
 		--$tigersFuryTime
@@ -2810,10 +2790,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 		
 		--$clearcastingStacks
-		local clearcastingStacks = TRB.Data.snapshot.clearcasting.stacks or 0
+		local clearcastingStacks = snapshot.clearcasting.stacks or 0
 
 		--$clearcastingTime
-		local _clearcastingTime = TRB.Data.snapshot.clearcasting.remainingTime or 0
+		local _clearcastingTime = snapshot.clearcasting.remainingTime or 0
 		local clearcastingTime = string.format("%.1f", _clearcastingTime)
 
 		--$berserkTime (and $incarnationTime)
@@ -2835,10 +2815,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		--$predatorRevealedTicks 
-		local _predatorRevealedTicks = TRB.Data.snapshot.predatorRevealed.ticks
+		local _predatorRevealedTicks = snapshot.predatorRevealed.ticks
 		
 		--$predatorRevealedTickTime
-		local _predatorRevealedTickTime = TRB.Data.snapshot.predatorRevealed.untilNextTick
+		local _predatorRevealedTickTime = snapshot.predatorRevealed.untilNextTick
 		local predatorRevealedTickTime = "0"
 		if _predatorRevealedTickTime ~= nil then
 			predatorRevealedTickTime = string.format("%.1f", _predatorRevealedTickTime)
@@ -2867,32 +2847,32 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		}
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#berserk"] = TRB.Data.spells.berserk.icon
-		lookup["#bloodtalons"] = TRB.Data.spells.bloodtalons.icon
-		lookup["#brutalSlash"] = TRB.Data.spells.brutalSlash.icon
-		lookup["#carnivorousInstinct"] = TRB.Data.spells.carnivorousInstinct.icon
-		lookup["#catForm"] = TRB.Data.spells.catForm.icon
-		lookup["#clearcasting"] = TRB.Data.spells.clearcasting.icon
-		lookup["#feralFrenzy"] = TRB.Data.spells.feralFrenzy.icon
-		lookup["#ferociousBite"] = TRB.Data.spells.ferociousBite.icon
-		lookup["#incarnation"] = TRB.Data.spells.incarnationAvatarOfAshamane.icon
-		lookup["#incarnationAvatarOfAshamane"] = TRB.Data.spells.incarnationAvatarOfAshamane.icon
-		lookup["#lunarInspiration"] = TRB.Data.spells.lunarInspiration.icon
-		lookup["#maim"] = TRB.Data.spells.maim.icon
-		lookup["#moonfire"] = TRB.Data.spells.moonfire.icon
-		lookup["#predatorRevealed"] = TRB.Data.spells.predatorRevealed.icon
-		lookup["#predatorySwiftness"] = TRB.Data.spells.predatorySwiftness.icon
-		lookup["#primalWrath"] = TRB.Data.spells.primalWrath.icon
-		lookup["#prowl"] = TRB.Data.spells.prowl.icon
-		lookup["#stealth"] = TRB.Data.spells.prowl.icon
-		lookup["#rake"] = TRB.Data.spells.rake.icon
-		lookup["#rip"] = TRB.Data.spells.rip.icon
-		lookup["#shadowmeld"] = TRB.Data.spells.shadowmeld.icon
-		lookup["#shred"] = TRB.Data.spells.shred.icon
-		lookup["#suddenAmbush"] = TRB.Data.spells.suddenAmbush.icon
-		lookup["#swipe"] = TRB.Data.spells.swipe.icon
-		lookup["#thrash"] = TRB.Data.spells.thrash.icon
-		lookup["#tigersFury"] = TRB.Data.spells.tigersFury.icon
+		lookup["#berserk"] = spells.berserk.icon
+		lookup["#bloodtalons"] = spells.bloodtalons.icon
+		lookup["#brutalSlash"] = spells.brutalSlash.icon
+		lookup["#carnivorousInstinct"] = spells.carnivorousInstinct.icon
+		lookup["#catForm"] = spells.catForm.icon
+		lookup["#clearcasting"] = spells.clearcasting.icon
+		lookup["#feralFrenzy"] = spells.feralFrenzy.icon
+		lookup["#ferociousBite"] = spells.ferociousBite.icon
+		lookup["#incarnation"] = spells.incarnationAvatarOfAshamane.icon
+		lookup["#incarnationAvatarOfAshamane"] = spells.incarnationAvatarOfAshamane.icon
+		lookup["#lunarInspiration"] = spells.lunarInspiration.icon
+		lookup["#maim"] = spells.maim.icon
+		lookup["#moonfire"] = spells.moonfire.icon
+		lookup["#predatorRevealed"] = spells.predatorRevealed.icon
+		lookup["#predatorySwiftness"] = spells.predatorySwiftness.icon
+		lookup["#primalWrath"] = spells.primalWrath.icon
+		lookup["#prowl"] = spells.prowl.icon
+		lookup["#stealth"] = spells.prowl.icon
+		lookup["#rake"] = spells.rake.icon
+		lookup["#rip"] = spells.rip.icon
+		lookup["#shadowmeld"] = spells.shadowmeld.icon
+		lookup["#shred"] = spells.shred.icon
+		lookup["#suddenAmbush"] = spells.suddenAmbush.icon
+		lookup["#swipe"] = spells.swipe.icon
+		lookup["#thrash"] = spells.thrash.icon
+		lookup["#tigersFury"] = spells.tigersFury.icon
 		lookup["$ripCount"] = ripCount
 		lookup["$ripTime"] = ripTime
 		lookup["$ripSnapshot"] = ripSnapshot
@@ -2995,13 +2975,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
 		lookupLogic["$energyTotal"] = _energyTotal
 		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
-		lookupLogic["$energy"] = TRB.Data.snapshot.resource
+		lookupLogic["$energy"] = snapshot.resource
 		lookupLogic["$resourcePlusCasting"] = _energyPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _energyPlusPassive
 		lookupLogic["$resourceTotal"] = _energyTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-		lookupLogic["$resource"] = TRB.Data.snapshot.resource
-		lookupLogic["$casting"] = TRB.Data.snapshot.casting.resourceFinal
+		lookupLogic["$resource"] = snapshot.resource
+		lookupLogic["$casting"] = snapshot.casting.resourceFinal
 		lookupLogic["$regen"] = _regenEnergy
 		lookupLogic["$regenEnergy"] = _regenEnergy
 		lookupLogic["$energyRegen"] = _regenEnergy
@@ -3015,12 +2995,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 
 	local function RefreshLookupData_Restoration()
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
+		local specSettings = TRB.Data.settings.druid.restoration
+		---@type TRB.Classes.Target
+		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local currentTime = GetTime()
-		local normalizedMana = TRB.Data.snapshot.resource / TRB.Data.resourceFactor
+		local normalizedMana = snapshot.resource / TRB.Data.resourceFactor
 
 		-- This probably needs to be pulled every refresh
 ---@diagnostic disable-next-line: cast-local-type
-		TRB.Data.snapshot.manaRegen, _ = GetPowerRegen()
+		snapshot.manaRegen, _ = GetPowerRegen()
 
 		local currentManaColor = TRB.Data.settings.druid.restoration.colors.text.current
 		local castingManaColor = TRB.Data.settings.druid.restoration.colors.text.casting
@@ -3029,35 +3014,35 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local manaPrecision = TRB.Data.settings.druid.restoration.manaPrecision or 1
 		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 		--$casting
-		local _castingMana = TRB.Data.snapshot.casting.resourceFinal
+		local _castingMana = snapshot.casting.resourceFinal
 		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
 		--$sohMana
-		local _sohMana = TRB.Data.snapshot.symbolOfHope.resourceFinal
+		local _sohMana = snapshot.symbolOfHope.resourceFinal
 		local sohMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor", true))
 		--$sohTicks
-		local _sohTicks = TRB.Data.snapshot.symbolOfHope.ticksRemaining or 0
+		local _sohTicks = snapshot.symbolOfHope.ticksRemaining or 0
 		local sohTicks = string.format("%.0f", _sohTicks)
 		--$sohTime
 		local _sohTime = GetSymbolOfHopeRemainingTime()
 		local sohTime = string.format("%.1f", _sohTime)
 
 		--$innervateMana
-		local _innervateMana = TRB.Data.snapshot.innervate.mana
+		local _innervateMana = snapshot.innervate.mana
 		local innervateMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
 		--$innervateTime
 		local _innervateTime = GetInnervateRemainingTime()
 		local innervateTime = string.format("%.1f", _innervateTime)
 
 		--$mttMana
-		local _mttMana = TRB.Data.snapshot.manaTideTotem.mana
+		local _mttMana = snapshot.manaTideTotem.mana
 		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
 		local _mttTime = GetManaTideTotemRemainingTime()
 		local mttTime = string.format("%.1f", _mttTime)
 
 		--$mrMana
-		local _mrMana = TRB.Data.snapshot.moltenRadiance.mana
+		local _mrMana = snapshot.moltenRadiance.mana
 		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
 		--$mrTime
 		local _mrTime = GetMoltenRadianceRemainingTime()
@@ -3065,8 +3050,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		--$potionCooldownSeconds
 		local _potionCooldown = 0
-		if TRB.Data.snapshot.potion.onCooldown then
-			_potionCooldown = math.abs(TRB.Data.snapshot.potion.startTime + TRB.Data.snapshot.potion.duration - currentTime)
+		if snapshot.potion.onCooldown then
+			_potionCooldown = math.abs(snapshot.potion.startTime + snapshot.potion.duration - currentTime)
 		end
 		local potionCooldownSeconds = string.format("%.1f", _potionCooldown)
 		local _potionCooldownMinutes = math.floor(_potionCooldown / 60)
@@ -3075,17 +3060,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local potionCooldown = string.format("%d:%0.2d", _potionCooldownMinutes, _potionCooldownSeconds)
 
 		--$potionOfChilledClarityMana
-		local _potionOfChilledClarityMana = TRB.Data.snapshot.potionOfChilledClarity.mana
+		local _potionOfChilledClarityMana = snapshot.potionOfChilledClarity.mana
 		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
 		--$potionOfChilledClarityTime
 		local _potionOfChilledClarityTime = GetPotionOfChilledClarityRemainingTime()
 		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
 
 		--$channeledMana
-		local _channeledMana = CalculateManaGain(TRB.Data.snapshot.channeledManaPotion.mana, true)
+		local _channeledMana = CalculateManaGain(snapshot.channeledManaPotion.mana, true)
 		local channeledMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_channeledMana, manaPrecision, "floor", true))
 		--$potionOfFrozenFocusTicks
-		local _potionOfFrozenFocusTicks = TRB.Data.snapshot.channeledManaPotion.ticksRemaining or 0
+		local _potionOfFrozenFocusTicks = snapshot.channeledManaPotion.ticksRemaining or 0
 		local potionOfFrozenFocusTicks = string.format("%.0f", _potionOfFrozenFocusTicks)
 		--$potionOfFrozenFocusTime
 		local _potionOfFrozenFocusTime = GetChanneledPotionRemainingTime()
@@ -3094,10 +3079,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana
 		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.druid.restoration.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 		--$manaTotal
-		local _manaTotal = math.min(_passiveMana + TRB.Data.snapshot.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
+		local _manaTotal = math.min(_passiveMana + snapshot.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 		local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
 		--$manaPlusCasting
-		local _manaPlusCasting = math.min(TRB.Data.snapshot.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
+		local _manaPlusCasting = math.min(snapshot.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 		local manaPlusCasting = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaPlusCasting, manaPrecision, "floor", true))
 		--$manaPlusPassive
 		local _manaPlusPassive = math.min(_passiveMana + normalizedMana, TRB.Data.character.maxResource)
@@ -3120,7 +3105,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local efflorescenceTime = string.format("%.1f", _efflorescenceTime)
 	
 		--$clearcastingTime
-		local _clearcastingTime = TRB.Data.snapshot.clearcasting.remainingTime or 0
+		local _clearcastingTime = snapshot.clearcasting.remainingTime or 0
 		local clearcastingTime = string.format("%.1f", _clearcastingTime)
 
 		--$incarnationTime
@@ -3128,62 +3113,61 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local incarnationTime = string.format("%.1f", _incarnationTime)	
 
 		--$reforestationStacks
-		local reforestationStacks = TRB.Data.snapshot.reforestation.stacks or 0
+		local reforestationStacks = snapshot.reforestation.stacks or 0
 
 		----------
 		--$sunfireCount and $sunfireTime
-		local _sunfireCount = TRB.Data.snapshot.targetData.sunfire or 0
+		local _sunfireCount = snapshot.targetData.count[spells.sunfire.id] or 0
 		local sunfireCount = tostring(_sunfireCount)
 		local _sunfireTime = 0
 		
-		if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil then
-			_sunfireTime = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].sunfireRemaining or 0
+		if target ~= nil then
+			_sunfireTime = target.spells[spells.sunfire.id].remainingTime or 0
 		end
 
 		local sunfireTime
 
 		--$moonfireCount and $moonfireTime
-		local _moonfireCount = TRB.Data.snapshot.targetData.moonfire or 0
+		local _moonfireCount = snapshot.targetData.count[spells.moonfire.id] or 0
 		local moonfireCount = tostring(_moonfireCount)
 		local _moonfireTime = 0
 		
-		if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil then
-			_moonfireTime = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireRemaining or 0
+		if target ~= nil then
+			_moonfireTime = target.spells[spells.moonfire.id].remainingTime or 0
 		end
 
 		local moonfireTime
 
-		if TRB.Data.settings.druid.restoration.colors.text.dots.enabled and TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].sunfire then
-				if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].sunfireRemaining > TRB.Data.spells.sunfire.pandemicTime then
-					sunfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.restoration.colors.text.dots.up, _sunfireCount)
-					sunfireTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.restoration.colors.text.dots.up, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].sunfireRemaining)
+		if specSettings.colors.text.dots.enabled and snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if target ~= nil and target.spells[spells.moonfire.id].active then
+				if _moonfireTime > spells.moonfire.pandemicTime then
+					moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _moonfireCount)
+					moonfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _moonfireTime)
 				else
-					sunfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.restoration.colors.text.dots.pandemic, _sunfireCount)
-					sunfireTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.restoration.colors.text.dots.pandemic, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].sunfireRemaining)
+					moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _moonfireCount)
+					moonfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _moonfireTime)
 				end
 			else
-				sunfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.restoration.colors.text.dots.down, _sunfireCount)
-				sunfireTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.restoration.colors.text.dots.down, 0)
+				moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _moonfireCount)
+				moonfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 			end
 
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfire then
-				if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireRemaining > TRB.Data.spells.moonfire.pandemicTime then
-					moonfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.restoration.colors.text.dots.up, _moonfireCount)
-					moonfireTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.restoration.colors.text.dots.up, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireRemaining)
+			if target ~= nil and target.spells[spells.sunfire.id].active then
+				if _sunfireTime > spells.sunfire.pandemicTime then
+					sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _sunfireCount)
+					sunfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _sunfireTime)
 				else
-					moonfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.restoration.colors.text.dots.pandemic, _moonfireCount)
-					moonfireTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.restoration.colors.text.dots.pandemic, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireRemaining)
+					sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _sunfireCount)
+					sunfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _sunfireTime)
 				end
 			else
-				moonfireCount = string.format("|c%s%.0f|r", TRB.Data.settings.druid.restoration.colors.text.dots.down, _moonfireCount)
-				moonfireTime = string.format("|c%s%.1f|r", TRB.Data.settings.druid.restoration.colors.text.dots.down, 0)
+				sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _sunfireCount)
+				sunfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 			end
 		else
 			sunfireTime = string.format("%.1f", _sunfireTime)
 			moonfireTime = string.format("%.1f", _moonfireTime)
 		end
-
 
 
 		----------
@@ -3196,11 +3180,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		Global_TwintopResourceBar.resource.moltenRadiance = _mrMana or 0
 		Global_TwintopResourceBar.potionOfSpiritualClarity = {
 			mana = _channeledMana,
-			ticks = TRB.Data.snapshot.channeledManaPotion.ticksRemaining or 0
+			ticks = snapshot.channeledManaPotion.ticksRemaining or 0
 		}
 		Global_TwintopResourceBar.symbolOfHope = {
 			mana = _sohMana,
-			ticks = TRB.Data.snapshot.symbolOfHope.ticksRemaining or 0
+			ticks = snapshot.symbolOfHope.ticksRemaining or 0
 		}
 		Global_TwintopResourceBar.dots = {
 			sunfireCount = _sunfireCount or 0,
@@ -3209,25 +3193,25 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#efflorescence"] = TRB.Data.spells.efflorescence.icon
-		lookup["#incarnation"] = TRB.Data.spells.incarnationTreeOfLife.icon
-		lookup["#clearcasting"] = TRB.Data.spells.clearcasting.icon
-		lookup["#sunfire"] = TRB.Data.spells.sunfire.icon
-		lookup["#moonfire"] = TRB.Data.spells.moonfire.icon
-		lookup["#innervate"] = TRB.Data.spells.innervate.icon
-		lookup["#mr"] = TRB.Data.spells.moltenRadiance.icon
-		lookup["#moltenRadiance"] = TRB.Data.spells.moltenRadiance.icon
-		lookup["#mtt"] = TRB.Data.spells.manaTideTotem.icon
-		lookup["#manaTideTotem"] = TRB.Data.spells.manaTideTotem.icon
-		lookup["#soh"] = TRB.Data.spells.symbolOfHope.icon
-		lookup["#symbolOfHope"] = TRB.Data.spells.symbolOfHope.icon
-		lookup["#amp"] = TRB.Data.spells.aeratedManaPotionRank1.icon
-		lookup["#aeratedManaPotion"] = TRB.Data.spells.aeratedManaPotionRank1.icon
-		lookup["#poff"] = TRB.Data.spells.potionOfFrozenFocusRank1.icon
-		lookup["#potionOfFrozenFocus"] = TRB.Data.spells.potionOfFrozenFocusRank1.icon
-		lookup["#pocc"] = TRB.Data.spells.potionOfChilledClarity.icon
-		lookup["#potionOfChilledClarity"] = TRB.Data.spells.potionOfChilledClarity.icon
-		lookup["#reforestation"] = TRB.Data.spells.reforestation.icon
+		lookup["#efflorescence"] = spells.efflorescence.icon
+		lookup["#incarnation"] = spells.incarnationTreeOfLife.icon
+		lookup["#clearcasting"] = spells.clearcasting.icon
+		lookup["#sunfire"] = spells.sunfire.icon
+		lookup["#moonfire"] = spells.moonfire.icon
+		lookup["#innervate"] = spells.innervate.icon
+		lookup["#mr"] = spells.moltenRadiance.icon
+		lookup["#moltenRadiance"] = spells.moltenRadiance.icon
+		lookup["#mtt"] = spells.manaTideTotem.icon
+		lookup["#manaTideTotem"] = spells.manaTideTotem.icon
+		lookup["#soh"] = spells.symbolOfHope.icon
+		lookup["#symbolOfHope"] = spells.symbolOfHope.icon
+		lookup["#amp"] = spells.aeratedManaPotionRank1.icon
+		lookup["#aeratedManaPotion"] = spells.aeratedManaPotionRank1.icon
+		lookup["#poff"] = spells.potionOfFrozenFocusRank1.icon
+		lookup["#potionOfFrozenFocus"] = spells.potionOfFrozenFocusRank1.icon
+		lookup["#pocc"] = spells.potionOfChilledClarity.icon
+		lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
+		lookup["#reforestation"] = spells.reforestation.icon
 		lookup["$manaPlusCasting"] = manaPlusCasting
 		lookup["$manaPlusPassive"] = manaPlusPassive
 		lookup["$manaTotal"] = manaTotal
@@ -3329,6 +3313,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 
 	local function CastingSpell()
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
 		local specId = GetSpecialization()
 		local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
 		local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
@@ -3343,34 +3329,34 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					return false
 					--See druid implementation for handling channeled spells
 				else
-					if currentSpellId == TRB.Data.spells.wrath.id then
-						FillSnapshotDataCasting_Balance(TRB.Data.spells.wrath)
-						if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.wildSurges) then
-							TRB.Data.snapshot.casting.resourceFinal = TRB.Data.snapshot.casting.resourceFinal + TRB.Data.spells.wildSurges.modifier
+					if currentSpellId == spells.wrath.id then
+						FillSnapshotDataCasting_Balance(spells.wrath)
+						if TRB.Functions.Talent:IsTalentActive(spells.wildSurges) then
+							snapshot.casting.resourceFinal = snapshot.casting.resourceFinal + spells.wildSurges.modifier
 						end
-						if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.soulOfTheForest) and TRB.Data.spells.eclipseSolar.isActive then
-							TRB.Data.snapshot.casting.resourceFinal = TRB.Data.snapshot.casting.resourceFinal * (1 + TRB.Data.spells.soulOfTheForest.modifier.wrath)
+						if TRB.Functions.Talent:IsTalentActive(spells.soulOfTheForest) and spells.eclipseSolar.isActive then
+							snapshot.casting.resourceFinal = snapshot.casting.resourceFinal * (1 + spells.soulOfTheForest.modifier.wrath)
 						end
-					elseif currentSpellId == TRB.Data.spells.starfire.id then
-						FillSnapshotDataCasting_Balance(TRB.Data.spells.starfire)
-						if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.wildSurges) then
-							TRB.Data.snapshot.casting.resourceFinal = TRB.Data.snapshot.casting.resourceFinal + TRB.Data.spells.wildSurges.modifier
+					elseif currentSpellId == spells.starfire.id then
+						FillSnapshotDataCasting_Balance(spells.starfire)
+						if TRB.Functions.Talent:IsTalentActive(spells.wildSurges) then
+							snapshot.casting.resourceFinal = snapshot.casting.resourceFinal + spells.wildSurges.modifier
 						end
 						--TODO: Track how many targets were hit by the last Starfire to guess how much bonus AP you'll get?
-						--TRB.Data.snapshot.casting.resourceFinal = TRB.Data.snapshot.casting.resourceFinal * (1 + TRB.Data.spells.soulOfTheForest.modifier.wrath)
+						--snapshot.casting.resourceFinal = snapshot.casting.resourceFinal * (1 + spells.soulOfTheForest.modifier.wrath)
 						--Warrior of Elune logic would go here if it didn't make it instant cast!
-					elseif currentSpellId == TRB.Data.spells.sunfire.id then
-						FillSnapshotDataCasting_Balance(TRB.Data.spells.sunfire)
-					elseif currentSpellId == TRB.Data.spells.moonfire.id then
-						FillSnapshotDataCasting_Balance(TRB.Data.spells.moonfire)
-					elseif currentSpellId == TRB.Data.spells.stellarFlare.id then
-						FillSnapshotDataCasting_Balance(TRB.Data.spells.stellarFlare)
-					elseif currentSpellId == TRB.Data.spells.newMoon.id then
-						FillSnapshotDataCasting_Balance(TRB.Data.spells.newMoon)
-					elseif currentSpellId == TRB.Data.spells.halfMoon.id then
-						FillSnapshotDataCasting_Balance(TRB.Data.spells.halfMoon)
-					elseif currentSpellId == TRB.Data.spells.fullMoon.id then
-						FillSnapshotDataCasting_Balance(TRB.Data.spells.fullMoon)
+					elseif currentSpellId == spells.sunfire.id then
+						FillSnapshotDataCasting_Balance(spells.sunfire)
+					elseif currentSpellId == spells.moonfire.id then
+						FillSnapshotDataCasting_Balance(spells.moonfire)
+					elseif currentSpellId == spells.stellarFlare.id then
+						FillSnapshotDataCasting_Balance(spells.stellarFlare)
+					elseif currentSpellId == spells.newMoon.id then
+						FillSnapshotDataCasting_Balance(spells.newMoon)
+					elseif currentSpellId == spells.halfMoon.id then
+						FillSnapshotDataCasting_Balance(spells.halfMoon)
+					elseif currentSpellId == spells.fullMoon.id then
+						FillSnapshotDataCasting_Balance(spells.fullMoon)
 					else
 						TRB.Functions.Character:ResetCastingSnapshotData()
 						return false
@@ -3396,11 +3382,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if spellId then
 						local manaCost = -TRB.Functions.Spell:GetSpellManaCost(spellId)
 
-						TRB.Data.snapshot.casting.startTime = currentSpellStartTime / 1000
-						TRB.Data.snapshot.casting.endTime = currentSpellEndTime / 1000
-						TRB.Data.snapshot.casting.resourceRaw = manaCost
-						TRB.Data.snapshot.casting.spellId = spellId
-						TRB.Data.snapshot.casting.icon = string.format("|T%s:0|t", spellIcon)
+						snapshot.casting.startTime = currentSpellStartTime / 1000
+						snapshot.casting.endTime = currentSpellEndTime / 1000
+						snapshot.casting.resourceRaw = manaCost
+						snapshot.casting.spellId = spellId
+						snapshot.casting.icon = string.format("|T%s:0|t", spellIcon)
 
 						UpdateCastingResourceFinal_Restoration()
 					else
@@ -3619,165 +3605,95 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function UpdateSnapshot_Balance()
 		UpdateSnapshot()
 
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.Target
+		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local currentTime = GetTime()
 
-		local rattleTheStarsModifier = TRB.Data.snapshot.rattleTheStars.stacks * TRB.Data.spells.rattleTheStars.modifier
+		local rattleTheStarsModifier = snapshot.rattleTheStars.stacks * spells.rattleTheStars.modifier
 		local incarnationChosenOfEluneStarfallModifier = 0
 		local incarnationChosenOfEluneStarsurgeModifier = 0
 
-		if TRB.Data.snapshot.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
-			incarnationChosenOfEluneStarfallModifier = TRB.Data.spells.elunesGuidance.modifierStarfall
-			incarnationChosenOfEluneStarsurgeModifier = TRB.Data.spells.elunesGuidance.modifierStarsurge
+		if snapshot.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(spells.elunesGuidance) then
+			incarnationChosenOfEluneStarfallModifier = spells.elunesGuidance.modifierStarfall
+			incarnationChosenOfEluneStarsurgeModifier = spells.elunesGuidance.modifierStarsurge
 		end
 
-		TRB.Data.character.starsurgeThreshold = (-TRB.Data.spells.starsurge.astralPower + incarnationChosenOfEluneStarsurgeModifier) * (1+rattleTheStarsModifier)
-		TRB.Data.character.starfallThreshold = (-TRB.Data.spells.starfall.astralPower + incarnationChosenOfEluneStarfallModifier) * (1+rattleTheStarsModifier)
+		TRB.Data.character.starsurgeThreshold = (-spells.starsurge.astralPower + incarnationChosenOfEluneStarsurgeModifier) * (1+rattleTheStarsModifier)
+		TRB.Data.character.starfallThreshold = (-spells.starfall.astralPower + incarnationChosenOfEluneStarfallModifier) * (1+rattleTheStarsModifier)
 
-		TRB.Data.snapshot.moonkinForm.isActive = select(10, TRB.Functions.Aura:FindBuffById(TRB.Data.spells.moonkinForm.id))
+		snapshot.moonkinForm.isActive = select(10, TRB.Functions.Aura:FindBuffById(spells.moonkinForm.id))
 
 		UpdateFuryOfElune()
 		UpdateSunderedFirmament()
 		GetCurrentMoonSpell()
 
-		_, _, _, _, _, TRB.Data.snapshot.celestialAlignment.endTime, _, _, _, TRB.Data.snapshot.celestialAlignment.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.celestialAlignment.id)
-		_, _, _, _, _, TRB.Data.snapshot.incarnationChosenOfElune.endTime, _, _, _, TRB.Data.snapshot.incarnationChosenOfElune.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.incarnationChosenOfElune.id)
-		_, _, _, _, _, TRB.Data.snapshot.eclipseSolar.endTime, _, _, _, TRB.Data.snapshot.eclipseSolar.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.eclipseSolar.id)
-		_, _, _, _, _, TRB.Data.snapshot.eclipseLunar.endTime, _, _, _, TRB.Data.snapshot.eclipseLunar.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.eclipseLunar.id)
-
-		if TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] then
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].sunfire then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.sunfire.id, "target", "player"))
-			
-				if expiration ~= nil then
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].sunfireRemaining = expiration - currentTime
-				end
-			end
-
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfire then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.moonfire.id, "target", "player"))
-			
-				if expiration ~= nil then
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireRemaining = expiration - currentTime
-				end
-			end
-
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].stellarFlare then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.stellarFlare.id, "target", "player"))
-			
-				if expiration ~= nil then
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].stellarFlareRemaining = expiration - currentTime
-				end
-			end
-		end
+		TRB.Functions.Aura:SnapshotGenericAura(spells.celestialAlignment.id, nil, snapshot.celestialAlignment)
+		TRB.Functions.Aura:SnapshotGenericAura(spells.incarnationChosenOfElune.id, nil, snapshot.incarnationChosenOfElune)
+		TRB.Functions.Aura:SnapshotGenericAura(spells.eclipseSolar.id, nil, snapshot.eclipseSolar)
+		TRB.Functions.Aura:SnapshotGenericAura(spells.eclipseLunar.id, nil, snapshot.eclipseLunar)
 
 ---@diagnostic disable-next-line: redundant-parameter, cast-local-type
-		TRB.Data.snapshot.newMoon.charges, TRB.Data.snapshot.newMoon.maxCharges, TRB.Data.snapshot.newMoon.startTime, TRB.Data.snapshot.newMoon.duration, _ = GetSpellCharges(TRB.Data.spells.newMoon.id)
+		snapshot.newMoon.charges, snapshot.newMoon.maxCharges, snapshot.newMoon.startTime, snapshot.newMoon.duration, _ = GetSpellCharges(spells.newMoon.id)
 
-		if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
-			TRB.Data.snapshot.primordialArcanicPulsar.currentAstralPower = select(16, TRB.Functions.Aura:FindBuffById(TRB.Data.spells.primordialArcanicPulsar.id))
+		if TRB.Functions.Talent:IsTalentActive(spells.primordialArcanicPulsar) then
+			snapshot.primordialArcanicPulsar.currentAstralPower = select(16, TRB.Functions.Aura:FindBuffById(spells.primordialArcanicPulsar.id))
 		end
 	end
 
 	local function UpdateSnapshot_Feral()
 		UpdateSnapshot()
+		
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.Target
+		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local currentTime = GetTime()
 		UpdateBerserkIncomingComboPoints()
 		UpdatePredatorRevealed()
 		
-		if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.incarnationAvatarOfAshamane) then
+		if TRB.Functions.Talent:IsTalentActive(spells.incarnationAvatarOfAshamane) then
 			-- Incarnation: King of the Jungle doesn't show up in-game as a combat log event. Check for it manually instead.
-			local _, _, _, _, incDuration, incEndTime, _, _, _, incSpellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.incarnationAvatarOfAshamane.id)
-			if incDuration ~= nil then			
-				TRB.Data.snapshot.incarnationAvatarOfAshamane.isActive = true
-				TRB.Data.snapshot.incarnationAvatarOfAshamane.duration = incDuration
-				TRB.Data.snapshot.incarnationAvatarOfAshamane.endTime = incEndTime
-				TRB.Data.snapshot.incarnationAvatarOfAshamane.spellId = incSpellId
-			else
-				TRB.Data.snapshot.incarnationAvatarOfAshamane.isActive = false
-				TRB.Data.snapshot.incarnationAvatarOfAshamane.spellId = nil
-				TRB.Data.snapshot.incarnationAvatarOfAshamane.duration = 0
-				TRB.Data.snapshot.incarnationAvatarOfAshamane.endTime = nil
-			end
+			TRB.Functions.Aura:SnapshotGenericAura(spells.incarnationAvatarOfAshamane.id, nil, snapshot.incarnationAvatarOfAshamane)
 		end
 
-		TRB.Data.snapshot.snapshots.rip = GetCurrentSnapshot(TRB.Data.spells.rip.bonuses)
-		TRB.Data.snapshot.snapshots.rake = GetCurrentSnapshot(TRB.Data.spells.rake.bonuses)
-		TRB.Data.snapshot.snapshots.thrash = GetCurrentSnapshot(TRB.Data.spells.thrash.bonuses)
-		TRB.Data.snapshot.snapshots.moonfire = GetCurrentSnapshot(TRB.Data.spells.moonfire.bonuses)
+		snapshot.snapshots.moonfire = GetCurrentSnapshot(spells.moonfire.bonuses)
+		snapshot.snapshots.rake = GetCurrentSnapshot(spells.rake.bonuses)
+		snapshot.snapshots.rip = GetCurrentSnapshot(spells.rip.bonuses)
+		snapshot.snapshots.thrash = GetCurrentSnapshot(spells.thrash.bonuses)
 
-		if TRB.Data.snapshot.maim.startTime ~= nil and currentTime > (TRB.Data.snapshot.maim.startTime + TRB.Data.snapshot.maim.duration) then
-			TRB.Data.snapshot.maim.startTime = nil
-			TRB.Data.snapshot.maim.duration = 0
+		if snapshot.maim.startTime ~= nil and currentTime > (snapshot.maim.startTime + snapshot.maim.duration) then
+			snapshot.maim.startTime = nil
+			snapshot.maim.duration = 0
 		end
 
-		if TRB.Data.snapshot.feralFrenzy.startTime ~= nil and currentTime > (TRB.Data.snapshot.feralFrenzy.startTime + TRB.Data.snapshot.feralFrenzy.duration) then
-			TRB.Data.snapshot.feralFrenzy.startTime = nil
-			TRB.Data.snapshot.feralFrenzy.duration = 0
+		if snapshot.feralFrenzy.startTime ~= nil and currentTime > (snapshot.feralFrenzy.startTime + snapshot.feralFrenzy.duration) then
+			snapshot.feralFrenzy.startTime = nil
+			snapshot.feralFrenzy.duration = 0
 		end
 
----@diagnostic disable-next-line: redundant-parameter
-		_, _, TRB.Data.snapshot.clearcasting.stacks, _, TRB.Data.snapshot.clearcasting.duration, TRB.Data.snapshot.clearcasting.endTime, _, _, _, TRB.Data.snapshot.clearcasting.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.clearcasting.id)
-		TRB.Data.snapshot.clearcasting.remainingTime = GetClearcastingRemainingTime()
+		TRB.Functions.Aura:SnapshotGenericAura(spells.clearcasting.id, nil, snapshot.clearcasting)
 		
-		if TRB.Data.snapshot.clearcasting.endTimeLeeway ~= nil and TRB.Data.snapshot.clearcasting.endTimeLeeway < currentTime then
-			TRB.Data.snapshot.clearcasting.endTimeLeeway = nil
-		end
-
-		if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.brutalSlash) then
+		if TRB.Functions.Talent:IsTalentActive(spells.brutalSlash) then
 ---@diagnostic disable-next-line: redundant-parameter, cast-local-type
-			TRB.Data.snapshot.brutalSlash.charges, TRB.Data.snapshot.brutalSlash.maxCharges, TRB.Data.snapshot.brutalSlash.startTime, TRB.Data.snapshot.brutalSlash.duration, _ = GetSpellCharges(TRB.Data.spells.brutalSlash.id)
+			snapshot.brutalSlash.charges, snapshot.brutalSlash.maxCharges, snapshot.brutalSlash.startTime, snapshot.brutalSlash.duration, _ = GetSpellCharges(spells.brutalSlash.id)
 		end
 		
-		if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.bloodtalons) then
----@diagnostic disable-next-line: redundant-parameter
-			_, _, TRB.Data.snapshot.bloodtalons.stacks, _, TRB.Data.snapshot.bloodtalons.duration, TRB.Data.snapshot.bloodtalons.endTime, _, _, _, TRB.Data.snapshot.bloodtalons.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.bloodtalons.id)
-			TRB.Data.snapshot.bloodtalons.remainingTime = GetBloodtalonsRemainingTime()
+		if TRB.Functions.Talent:IsTalentActive(spells.bloodtalons) then
+			TRB.Functions.Aura:SnapshotGenericAura(spells.bloodtalons.id, nil, snapshot.bloodtalons)
 			
-			if TRB.Data.snapshot.bloodtalons.endTimeLeeway ~= nil and TRB.Data.snapshot.bloodtalons.endTimeLeeway < currentTime then
-				TRB.Data.snapshot.bloodtalons.endTimeLeeway = nil
+			if snapshot.bloodtalons.endTimeLeeway ~= nil and snapshot.bloodtalons.endTimeLeeway < currentTime then
+				snapshot.bloodtalons.endTimeLeeway = nil
 			end
 		end
 
-		if TRB.Data.snapshot.suddenAmbush.endTimeLeeway ~= nil and TRB.Data.snapshot.suddenAmbush.endTimeLeeway < currentTime then
-			TRB.Data.snapshot.suddenAmbush.endTimeLeeway = nil
+		if snapshot.suddenAmbush.endTimeLeeway ~= nil and snapshot.suddenAmbush.endTimeLeeway < currentTime then
+			snapshot.suddenAmbush.endTimeLeeway = nil
 		end
 
 ---@diagnostic disable-next-line: cast-local-type
-		TRB.Data.snapshot.tigersFury.cooldown.startTime, TRB.Data.snapshot.tigersFury.cooldown.duration, _, _ = GetSpellCooldown(TRB.Data.spells.tigersFury.id)
-		
-		if TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] then
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rip then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.rip.id, "target", "player"))
-			
-				if expiration ~= nil then
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].ripRemaining = expiration - currentTime
-				end
-			end
-			
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rake then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.rake.id, "target", "player"))
-			
-				if expiration ~= nil then
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rakeRemaining = expiration - currentTime
-				end
-			end
-			
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].thrash then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.thrash.id, "target", "player"))
-			
-				if expiration ~= nil then
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].thrashRemaining = expiration - currentTime
-				end
-			end
-
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfire then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.moonfire.id, "target", "player"))
-			
-				if expiration ~= nil then
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireRemaining = expiration - currentTime
-				end
-			end
-		end
+		snapshot.tigersFury.cooldown.startTime, snapshot.tigersFury.cooldown.duration, _, _ = GetSpellCooldown(spells.tigersFury.id)
 	end
 
 	local function UpdateSnapshot_Restoration()
@@ -3789,45 +3705,31 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		UpdateManaTideTotem()
 		UpdateMoltenRadiance()
 
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.Target
+		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local currentTime = GetTime()
 		local _
 
 		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
-		TRB.Data.snapshot.potion.startTime, TRB.Data.snapshot.potion.duration, _ = GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
-		if TRB.Data.snapshot.potion.startTime > 0 and TRB.Data.snapshot.potion.duration > 0 then
-			TRB.Data.snapshot.potion.onCooldown = true
+		snapshot.potion.startTime, snapshot.potion.duration, _ = GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
+		if snapshot.potion.startTime > 0 and snapshot.potion.duration > 0 then
+			snapshot.potion.onCooldown = true
 		else
-			TRB.Data.snapshot.potion.onCooldown = false
+			snapshot.potion.onCooldown = false
 		end
 
-		TRB.Data.snapshot.conjuredChillglobe.startTime, TRB.Data.snapshot.conjuredChillglobe.duration, _ = GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
-		if TRB.Data.snapshot.conjuredChillglobe.startTime > 0 and TRB.Data.snapshot.conjuredChillglobe.duration > 0 then
-			TRB.Data.snapshot.conjuredChillglobe.onCooldown = true
+		snapshot.conjuredChillglobe.startTime, snapshot.conjuredChillglobe.duration, _ = GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
+		if snapshot.conjuredChillglobe.startTime > 0 and snapshot.conjuredChillglobe.duration > 0 then
+			snapshot.conjuredChillglobe.onCooldown = true
 		else
-			TRB.Data.snapshot.conjuredChillglobe.onCooldown = false
-		end
-		
-		if TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] then
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].sunfire then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.sunfire.id, "target", "player"))
-			
-				if expiration ~= nil then
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].sunfireRemaining = expiration - currentTime
-				end
-			end
-
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfire then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.moonfire.id, "target", "player"))
-			
-				if expiration ~= nil then
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireRemaining = expiration - currentTime
-				end
-			end
+			snapshot.conjuredChillglobe.onCooldown = false
 		end
 
-		TRB.Data.snapshot.clearcasting.remainingTime = GetClearcastingRemainingTime()
-		_, _, _, _, _, TRB.Data.snapshot.incarnationTreeOfLife.endTime, _, _, _, TRB.Data.snapshot.incarnationTreeOfLife.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.incarnationTreeOfLife.id)
-		_, _, TRB.Data.snapshot.reforestation.stacks, _, _, _, _, _, _, _ = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.reforestation.id)
+		TRB.Functions.Aura:SnapshotGenericAura(spells.clearcasting.id, nil, snapshot.clearcasting)
+		TRB.Functions.Aura:SnapshotGenericAura(spells.incarnationTreeOfLife.id, nil, snapshot.incarnationTreeOfLife)
+		TRB.Functions.Aura:SnapshotGenericAura(spells.reforestation.id, nil, snapshot.reforestation)
 	end
 
 	local function UpdateResourceBar()
@@ -3836,6 +3738,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local specId = GetSpecialization()
 		local coreSettings = TRB.Data.settings.core
 		local classSettings = TRB.Data.settings.druid
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
 
 		if specId == 1 then
 			local specSettings = classSettings.balance
@@ -3843,7 +3747,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
-			if TRB.Data.snapshot.isTracking then
+			if snapshot.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
@@ -3851,26 +3755,26 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local affectingCombat = UnitAffectingCombat("player")
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local currentResource = TRB.Data.snapshot.resource / TRB.Data.resourceFactor
+					local currentResource = snapshot.resource / TRB.Data.resourceFactor
 					local flashBar = false
 
 					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
 
-						if specSettings.audio.overcap.enabled and TRB.Data.snapshot.audio.overcapCue == false then
-							TRB.Data.snapshot.audio.overcapCue = true
+						if specSettings.audio.overcap.enabled and snapshot.audio.overcapCue == false then
+							snapshot.audio.overcapCue = true
 							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
 						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.border, true))
-						TRB.Data.snapshot.audio.overcapCue = false
+						snapshot.audio.overcapCue = false
 					end
 
 					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentResource)
 
 					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = currentResource + TRB.Data.snapshot.casting.resourceFinal
+						castingBarValue = currentResource + snapshot.casting.resourceFinal
 					else
 						castingBarValue = currentResource
 					end
@@ -3878,20 +3782,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 
 					if specSettings.bar.showPassive then
-						passiveBarValue = currentResource + TRB.Data.snapshot.casting.resourceFinal + TRB.Data.snapshot.furyOfElune.astralPower + TRB.Data.snapshot.sunderedFirmament.astralPower
+						passiveBarValue = currentResource + snapshot.casting.resourceFinal + snapshot.furyOfElune.astralPower + snapshot.sunderedFirmament.astralPower
 
-						if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.naturesBalance) then
+						if TRB.Functions.Talent:IsTalentActive(spells.naturesBalance) then
 							if affectingCombat then
-								passiveBarValue = passiveBarValue + TRB.Data.spells.naturesBalance.astralPower
+								passiveBarValue = passiveBarValue + spells.naturesBalance.astralPower
 							elseif currentResource < 50 then
-								passiveBarValue = passiveBarValue + TRB.Data.spells.naturesBalance.outOfCombatAstralPower
+								passiveBarValue = passiveBarValue + spells.naturesBalance.outOfCombatAstralPower
 							end
 						end
 
-						if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.naturesBalance) and (affectingCombat or (not affectingCombat and currentResource < 50)) then
+						if TRB.Functions.Talent:IsTalentActive(spells.naturesBalance) and (affectingCombat or (not affectingCombat and currentResource < 50)) then
 
 						else
-							passiveBarValue = currentResource + TRB.Data.snapshot.casting.resourceFinal + TRB.Data.snapshot.furyOfElune.astralPower + TRB.Data.snapshot.sunderedFirmament.astralPower
+							passiveBarValue = currentResource + snapshot.casting.resourceFinal + snapshot.furyOfElune.astralPower + snapshot.sunderedFirmament.astralPower
 						end
 					else
 						passiveBarValue = castingBarValue
@@ -3900,11 +3804,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
 
 					local pairOffset = 0
-					for k, v in pairs(TRB.Data.spells) do
-						local spell = TRB.Data.spells[k]
+					for k, v in pairs(spells) do
+						local spell = spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.astralPower ~= nil and spell.astralPower < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							pairOffset = (spell.thresholdId - 1) * 3
-							local resourceAmount = spell.astralPower * (1 + (TRB.Data.snapshot.rattleTheStars.stacks * TRB.Data.spells.rattleTheStars.modifier))
+							local resourceAmount = spell.astralPower * (1 + (snapshot.rattleTheStars.stacks * spells.rattleTheStars.modifier))
 							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
@@ -3912,16 +3816,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 							
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-								if spell.settingKey == TRB.Data.spells.starsurge.settingKey then
+								if spell.settingKey == spells.starsurge.settingKey then
 									local redrawThreshold = false
 
-									if TRB.Data.snapshot.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
-										resourceAmount = resourceAmount - TRB.Data.spells.elunesGuidance.modifierStarsurge
+									if snapshot.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(spells.elunesGuidance) then
+										resourceAmount = resourceAmount - spells.elunesGuidance.modifierStarsurge
 										redrawThreshold = true
 									end
 
-									if TRB.Data.snapshot.touchTheCosmos.isActive then
-										resourceAmount = resourceAmount - TRB.Data.spells.touchTheCosmos.astralPowerMod
+									if snapshot.touchTheCosmos.isActive then
+										resourceAmount = resourceAmount - spells.touchTheCosmos.astralPowerMod
 										redrawThreshold = true
 									end
 
@@ -3931,7 +3835,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
-									elseif TRB.Data.snapshot.starweaversWeft.isActive then
+									elseif snapshot.starweaversWeft.isActive then
 										thresholdColor = specSettings.colors.threshold.over
 									elseif currentResource >= TRB.Data.character.starsurgeThreshold then
 										thresholdColor = specSettings.colors.threshold.over
@@ -3941,32 +3845,32 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									end
 									
 									if showThreshold then
-										if TRB.Data.snapshot.starweaversWeft.isActive and specSettings.audio.starweaversReady.enabled and TRB.Data.snapshot.audio.playedstarweaverCue == false then
-											TRB.Data.snapshot.audio.playedstarweaverCue = true
-											TRB.Data.snapshot.audio.playedSfCue = true
+										if snapshot.starweaversWeft.isActive and specSettings.audio.starweaversReady.enabled and snapshot.audio.playedstarweaverCue == false then
+											snapshot.audio.playedstarweaverCue = true
+											snapshot.audio.playedSfCue = true
 					---@diagnostic disable-next-line: redundant-parameter
 											PlaySoundFile(specSettings.audio.starweaverProc.sound, coreSettings.audio.channel.channel)
-										elseif specSettings.audio.ssReady.enabled and TRB.Data.snapshot.audio.playedSsCue == false then
-											TRB.Data.snapshot.audio.playedSsCue = true
+										elseif specSettings.audio.ssReady.enabled and snapshot.audio.playedSsCue == false then
+											snapshot.audio.playedSsCue = true
 					---@diagnostic disable-next-line: redundant-parameter
 											PlaySoundFile(specSettings.audio.ssReady.sound, coreSettings.audio.channel.channel)
 										end
 									else
-										TRB.Data.snapshot.audio.playedSsCue = false
-										TRB.Data.snapshot.audio.playedstarweaverCue = false
+										snapshot.audio.playedSsCue = false
+										snapshot.audio.playedstarweaverCue = false
 									end
-								elseif spell.settingKey == TRB.Data.spells.starsurge2.settingKey then
+								elseif spell.settingKey == spells.starsurge2.settingKey then
 									local redrawThreshold = false
 									local touchTheCosmosMod = 0
-									if TRB.Data.snapshot.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
-										resourceAmount = resourceAmount - (TRB.Data.spells.elunesGuidance.modifierStarsurge * 2)
+									if snapshot.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(spells.elunesGuidance) then
+										resourceAmount = resourceAmount - (spells.elunesGuidance.modifierStarsurge * 2)
 										redrawThreshold = true
 									end
 
-									if TRB.Data.snapshot.touchTheCosmos.isActive then
-										resourceAmount = resourceAmount - TRB.Data.spells.touchTheCosmos.astralPowerMod
+									if snapshot.touchTheCosmos.isActive then
+										resourceAmount = resourceAmount - spells.touchTheCosmos.astralPowerMod
 										redrawThreshold = true
-										touchTheCosmosMod = TRB.Data.spells.touchTheCosmos.astralPowerMod
+										touchTheCosmosMod = spells.touchTheCosmos.astralPowerMod
 									end
 
 									if redrawThreshold then
@@ -3986,18 +3890,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
-								elseif spell.settingKey == TRB.Data.spells.starsurge3.settingKey then
+								elseif spell.settingKey == spells.starsurge3.settingKey then
 									local redrawThreshold = false
 									local touchTheCosmosMod = 0
-									if TRB.Data.snapshot.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
-										resourceAmount = resourceAmount - (TRB.Data.spells.elunesGuidance.modifierStarsurge * 3)
+									if snapshot.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(spells.elunesGuidance) then
+										resourceAmount = resourceAmount - (spells.elunesGuidance.modifierStarsurge * 3)
 										redrawThreshold = true
 									end
 
-									if TRB.Data.snapshot.touchTheCosmos.isActive then
-										resourceAmount = resourceAmount - TRB.Data.spells.touchTheCosmos.astralPowerMod
+									if snapshot.touchTheCosmos.isActive then
+										resourceAmount = resourceAmount - spells.touchTheCosmos.astralPowerMod
 										redrawThreshold = true
-										touchTheCosmosMod = TRB.Data.spells.touchTheCosmos.astralPowerMod
+										touchTheCosmosMod = spells.touchTheCosmos.astralPowerMod
 									end
 
 									if redrawThreshold then	
@@ -4017,15 +3921,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
-								elseif spell.id == TRB.Data.spells.starfall.id then
+								elseif spell.id == spells.starfall.id then
 									local redrawThreshold = false
-									if TRB.Data.snapshot.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elunesGuidance) then
-										resourceAmount = resourceAmount - TRB.Data.spells.elunesGuidance.modifierStarfall
+									if snapshot.incarnationChosenOfElune.isActive and TRB.Functions.Talent:IsTalentActive(spells.elunesGuidance) then
+										resourceAmount = resourceAmount - spells.elunesGuidance.modifierStarfall
 										redrawThreshold = true
 									end
 
-									if TRB.Data.snapshot.touchTheCosmos.isActive then
-										resourceAmount = resourceAmount - TRB.Data.spells.touchTheCosmos.astralPowerMod
+									if snapshot.touchTheCosmos.isActive then
+										resourceAmount = resourceAmount - spells.touchTheCosmos.astralPowerMod
 										redrawThreshold = true
 									end
 
@@ -4036,7 +3940,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									elseif currentResource >= TRB.Data.character.starfallThreshold then
-										if TRB.Data.snapshot.starfall.isActive and (TRB.Data.snapshot.starfall.endTime - currentTime) > (TRB.Data.character.pandemicModifier * TRB.Data.spells.starfall.pandemicTime) then
+										if snapshot.starfall.isActive and (snapshot.starfall.endTime - currentTime) > (TRB.Data.character.pandemicModifier * spells.starfall.pandemicTime) then
 											thresholdColor = specSettings.colors.threshold.starfallPandemic
 										else
 											thresholdColor = specSettings.colors.threshold.over
@@ -4047,13 +3951,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									end
 
 									if showThreshold then
-										if TRB.Data.snapshot.starweaversWarp.isActive and specSettings.audio.starweaversReady.enabled and TRB.Data.snapshot.audio.playedstarweaverCue == false then
-											TRB.Data.snapshot.audio.playedstarweaverCue = true
-											TRB.Data.snapshot.audio.playedSfCue = true
+										if snapshot.starweaversWarp.isActive and specSettings.audio.starweaversReady.enabled and snapshot.audio.playedstarweaverCue == false then
+											snapshot.audio.playedstarweaverCue = true
+											snapshot.audio.playedSfCue = true
 											---@diagnostic disable-next-line: redundant-parameter
 											PlaySoundFile(specSettings.audio.starweaverProc.sound, coreSettings.audio.channel.channel)
-										elseif specSettings.audio.sfReady.enabled and TRB.Data.snapshot.audio.playedSfCue == false then
-											TRB.Data.snapshot.audio.playedSfCue = true
+										elseif specSettings.audio.sfReady.enabled and snapshot.audio.playedSfCue == false then
+											snapshot.audio.playedSfCue = true
 											---@diagnostic disable-next-line: redundant-parameter
 											PlaySoundFile(specSettings.audio.sfReady.sound, coreSettings.audio.channel.channel)
 										end
@@ -4065,8 +3969,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
-								if (TRB.Data.snapshot[spell.settingKey].charges == nil or TRB.Data.snapshot[spell.settingKey].charges == 0) and
-									(TRB.Data.snapshot[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshot[spell.settingKey].startTime + TRB.Data.snapshot[spell.settingKey].duration)) then
+								if (snapshot[spell.settingKey].charges == nil or snapshot[spell.settingKey].charges == 0) and
+									(snapshot[spell.settingKey].startTime ~= nil and currentTime < (snapshot[spell.settingKey].startTime + snapshot[spell.settingKey].duration)) then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif currentResource >= -resourceAmount then
@@ -4084,7 +3988,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								end
 							end
 
-							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshot[spell.settingKey], specSettings)
+							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot[spell.settingKey], specSettings)
 						end
 					end
 					
@@ -4094,16 +3998,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 					local barColor = specSettings.colors.bar.base
 
-					if not TRB.Data.snapshot.moonkinForm.isActive and affectingCombat then
+					if not snapshot.moonkinForm.isActive and affectingCombat then
 						barColor = specSettings.colors.bar.moonkinFormMissing
 						if specSettings.colors.bar.flashEnabled then
 							flashBar = true
 						end
-					elseif TRB.Data.snapshot.eclipseSolar.isActive or TRB.Data.spells.eclipseLunar.isActive or TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive then
+					elseif snapshot.eclipseSolar.isActive or snapshot.eclipseLunar.isActive or snapshot.celestialAlignment.isActive or snapshot.incarnationChosenOfElune.isActive then
 						local timeThreshold = 0
 						local useEndOfEclipseColor = false
 
-						if specSettings.endOfEclipse.enabled and (not specSettings.endOfEclipse.celestialAlignmentOnly or TRB.Data.snapshot.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive) then
+						if specSettings.endOfEclipse.enabled and (not specSettings.endOfEclipse.celestialAlignmentOnly or snapshot.celestialAlignment.isActive or snapshot.incarnationChosenOfElune.isActive) then
 							useEndOfEclipseColor = true
 							if specSettings.endOfEclipse.mode == "gcd" then
 								local gcd = TRB.Functions.Character:GetCurrentGCDTime()
@@ -4116,9 +4020,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						if useEndOfEclipseColor and GetEclipseRemainingTime() <= timeThreshold then
 							barColor = specSettings.colors.bar.eclipse1GCD
 						else
-							if TRB.Data.snapshot.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive or (TRB.Data.spells.eclipseSolar.isActive and TRB.Data.spells.eclipseLunar.isActive) then
+							if snapshot.celestialAlignment.isActive or snapshot.incarnationChosenOfElune.isActive or (snapshot.eclipseSolar.isActive and snapshot.eclipseLunar.isActive) then
 								barColor = specSettings.colors.bar.celestial
-							elseif TRB.Data.snapshot.eclipseSolar.isActive then
+							elseif snapshot.eclipseSolar.isActive then
 								barColor = specSettings.colors.bar.solar
 							else
 								barColor = specSettings.colors.bar.lunar
@@ -4141,7 +4045,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
-			if TRB.Data.snapshot.isTracking then
+			if snapshot.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
@@ -4154,38 +4058,38 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					if specSettings.bar.showPassive then
 						if specSettings.generation.enabled then
 							if specSettings.generation.mode == "time" then
-								passiveValue = (TRB.Data.snapshot.energyRegen * (specSettings.generation.time or 3.0))
+								passiveValue = (snapshot.energyRegen * (specSettings.generation.time or 3.0))
 							else
-								passiveValue = (TRB.Data.snapshot.energyRegen * ((specSettings.generation.gcds or 2) * gcd))
+								passiveValue = (snapshot.energyRegen * ((specSettings.generation.gcds or 2) * gcd))
 							end
 						end
 					end
 
 					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = TRB.Data.snapshot.resource + TRB.Data.snapshot.casting.resourceFinal
+						castingBarValue = snapshot.resource + snapshot.casting.resourceFinal
 					else
-						castingBarValue = TRB.Data.snapshot.resource
+						castingBarValue = snapshot.resource
 					end
 
-					if castingBarValue < TRB.Data.snapshot.resource then --Using a spender
-						if -TRB.Data.snapshot.casting.resourceFinal > passiveValue then
+					if castingBarValue < snapshot.resource then --Using a spender
+						if -snapshot.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, TRB.Data.snapshot.resource)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, snapshot.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, TRB.Data.snapshot.resource)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, snapshot.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshot.resource)
+						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshot.resource)
 						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
 						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
@@ -4193,8 +4097,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end
 
 					local pairOffset = 0
-					for k, v in pairs(TRB.Data.spells) do
-						local spell = TRB.Data.spells[k]
+					for k, v in pairs(spells) do
+						local spell = spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local energyAmount = CalculateAbilityResourceValue(spell.energy, true, spell.relentlessPredator)
 							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
@@ -4208,15 +4112,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								showThreshold = true
 								overrideOk = false
 
-								if UnitIsDeadOrGhost("target") or not UnitCanAttack("player", "target") or TRB.Data.snapshot.targetData.currentTargetGuid == nil then
+								if UnitIsDeadOrGhost("target") or not UnitCanAttack("player", "target") or snapshot.targetData.currentTargetGuid == nil then
 									thresholdColor = specSettings.colors.text.dots.same
 									frameLevel = TRB.Data.constants.frameLevels.thresholdBleedSame
-								elseif TRB.Data.snapshot.targetData.targets == nil or TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] == nil then
+								elseif snapshot.targetData.targets == nil or snapshot.targetData.targets[snapshot.targetData.currentTargetGuid] == nil then
 									thresholdColor = specSettings.colors.text.dots.down
 									frameLevel = TRB.Data.constants.frameLevels.thresholdBleedDownOrWorse
 								else
-									local snapshotValue = (TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid][spell.settingKey .. "Snapshot"] or 1) / TRB.Data.snapshot.snapshots[spell.settingKey]
-									local bleedUp = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid][spell.settingKey]
+									local snapshotValue = (snapshot.targetData.targets[snapshot.targetData.currentTargetGuid][spell.settingKey .. "Snapshot"] or 1) / snapshot.snapshots[spell.settingKey]
+									local bleedUp = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid][spell.settingKey]
 									
 									if not bleedUp then
 										thresholdColor = specSettings.colors.text.dots.down
@@ -4233,21 +4137,21 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									end
 								end
 
-								if spell.id == TRB.Data.spells.moonfire.id and not TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) then
+								if spell.id == spells.moonfire.id and not TRB.Functions.Talent:IsTalentActive(spells.lunarInspiration) then
 									showThreshold = false
 								end
-							elseif spell.isClearcasting and TRB.Data.snapshot.clearcasting.stacks ~= nil and TRB.Data.snapshot.clearcasting.stacks > 0 then
-								if spell.id == TRB.Data.spells.brutalSlash.id then
-									if not TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.brutalSlash) then
+							elseif spell.isClearcasting and snapshot.clearcasting.stacks ~= nil and snapshot.clearcasting.stacks > 0 then
+								if spell.id == spells.brutalSlash.id then
+									if not TRB.Functions.Talent:IsTalentActive(spells.brutalSlash) then
 										showThreshold = false
-									elseif TRB.Data.snapshot.brutalSlash.charges > 0 then
+									elseif snapshot.brutalSlash.charges > 0 then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									end
-								elseif spell.id == TRB.Data.spells.swipe.id then
-									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.brutalSlash) then
+								elseif spell.id == spells.swipe.id then
+									if TRB.Functions.Talent:IsTalentActive(spells.brutalSlash) then
 										showThreshold = false
 									else
 										thresholdColor = specSettings.colors.threshold.over
@@ -4256,62 +4160,62 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									thresholdColor = specSettings.colors.threshold.over
 								end
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-								if spell.id == TRB.Data.spells.ferociousBite.id and spell.settingKey == "ferociousBite" then
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, math.min(math.max(-energyAmount, TRB.Data.snapshot.resource), -CalculateAbilityResourceValue(TRB.Data.spells.ferociousBite.energyMax, true, true)), TRB.Data.character.maxResource)
+								if spell.id == spells.ferociousBite.id and spell.settingKey == "ferociousBite" then
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, math.min(math.max(-energyAmount, snapshot.resource), -CalculateAbilityResourceValue(spells.ferociousBite.energyMax, true, true)), TRB.Data.character.maxResource)
 									
-									if TRB.Data.snapshot.resource >= -energyAmount or TRB.Data.snapshot.apexPredatorsCraving.isActive == true then
+									if snapshot.resource >= -energyAmount or snapshot.apexPredatorsCraving.isActive == true then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
-								elseif spell.id == TRB.Data.spells.ferociousBiteMinimum.id and spell.settingKey == "ferociousBiteMinimum" then
+								elseif spell.id == spells.ferociousBiteMinimum.id and spell.settingKey == "ferociousBiteMinimum" then
 									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 									
-									if TRB.Data.snapshot.resource >= -energyAmount or TRB.Data.snapshot.apexPredatorsCraving.isActive == true then
+									if snapshot.resource >= -energyAmount or snapshot.apexPredatorsCraving.isActive == true then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
-								elseif spell.id == TRB.Data.spells.ferociousBiteMaximum.id and spell.settingKey == "ferociousBiteMaximum" then
-									if TRB.Data.snapshot.resource >= -energyAmount or TRB.Data.snapshot.apexPredatorsCraving.isActive == true then
+								elseif spell.id == spells.ferociousBiteMaximum.id and spell.settingKey == "ferociousBiteMaximum" then
+									if snapshot.resource >= -energyAmount or snapshot.apexPredatorsCraving.isActive == true then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
-								elseif spell.id == TRB.Data.spells.moonfire.id then
-									if not TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) then
+								elseif spell.id == spells.moonfire.id then
+									if not TRB.Functions.Talent:IsTalentActive(spells.lunarInspiration) then
 										showThreshold = false
-									elseif TRB.Data.snapshot.resource >= -energyAmount then
+									elseif snapshot.resource >= -energyAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
-								elseif spell.id == TRB.Data.spells.swipe.id then
-									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.brutalSlash) then
+								elseif spell.id == spells.swipe.id then
+									if TRB.Functions.Talent:IsTalentActive(spells.brutalSlash) then
 										showThreshold = false
-									elseif TRB.Data.snapshot.resource >= -energyAmount then
+									elseif snapshot.resource >= -energyAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
-								elseif spell.id == TRB.Data.spells.brutalSlash.id then
-									if not TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.brutalSlash) then
+								elseif spell.id == spells.brutalSlash.id then
+									if not TRB.Functions.Talent:IsTalentActive(spells.brutalSlash) then
 										showThreshold = false
-									elseif TRB.Data.snapshot.brutalSlash.charges == 0 then
+									elseif snapshot.brutalSlash.charges == 0 then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif TRB.Data.snapshot.resource >= -energyAmount then
+									elseif snapshot.resource >= -energyAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
-								elseif spell.id == TRB.Data.spells.bloodtalons.id then
+								elseif spell.id == spells.bloodtalons.id then
 									--TODO: How much energy is required to start this? Then do we move it?
 								end
 							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
@@ -4319,18 +4223,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
-								if (TRB.Data.snapshot[spell.settingKey].charges == nil or TRB.Data.snapshot[spell.settingKey].charges == 0) and
-									(TRB.Data.snapshot[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshot[spell.settingKey].startTime + TRB.Data.snapshot[spell.settingKey].duration)) then
+								if (snapshot[spell.settingKey].charges == nil or snapshot[spell.settingKey].charges == 0) and
+									(snapshot[spell.settingKey].startTime ~= nil and currentTime < (snapshot[spell.settingKey].startTime + snapshot[spell.settingKey].duration)) then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif TRB.Data.snapshot.resource >= -energyAmount then
+								elseif snapshot.resource >= -energyAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
-								if TRB.Data.snapshot.resource >= -energyAmount then
+								if snapshot.resource >= -energyAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -4338,12 +4242,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								end
 							end
 
-							if overrideOk == true and spell.comboPoints == true and TRB.Data.snapshot.resource2 == 0 then
+							if overrideOk == true and spell.comboPoints == true and snapshot.resource2 == 0 then
 								thresholdColor = specSettings.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 
-							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshot[spell.settingKey], specSettings)
+							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot[spell.settingKey], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end
@@ -4354,11 +4258,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						barColor = specSettings.colors.bar.clearcasting
 					end
 
-					if (TRB.Data.snapshot.resource2 == 5 and TRB.Data.snapshot.resource >= -CalculateAbilityResourceValue(TRB.Data.spells.ferociousBiteMaximum.energy, true, true)) then
+					if (snapshot.resource2 == 5 and snapshot.resource >= -CalculateAbilityResourceValue(spells.ferociousBiteMaximum.energy, true, true)) then
 						barColor = specSettings.colors.bar.maxBite
 					end
 
-					if TRB.Data.snapshot.apexPredatorsCraving.isActive == true then
+					if snapshot.apexPredatorsCraving.isActive == true then
 						barColor = specSettings.colors.bar.apexPredator
 					end
 
@@ -4368,13 +4272,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
-						if specSettings.audio.overcap.enabled and TRB.Data.snapshot.audio.overcapCue == false then
-							TRB.Data.snapshot.audio.overcapCue = true
+						if specSettings.audio.overcap.enabled and snapshot.audio.overcapCue == false then
+							snapshot.audio.overcapCue = true
 							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
-						TRB.Data.snapshot.audio.overcapCue = false
+						snapshot.audio.overcapCue = false
 					end
 
 					barContainerFrame:SetAlpha(1.0)
@@ -4385,12 +4289,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 
-					local berserkTotalCps = TRB.Data.snapshot.berserk.ticks
-					local berserkNextTick = TRB.Data.spells.berserk.tickRate - TRB.Data.snapshot.berserk.untilNextTick
+					local berserkTotalCps = snapshot.berserk.ticks
+					local berserkNextTick = spells.berserk.tickRate - snapshot.berserk.untilNextTick
 
 					local prTime = GetPredatorRevealedRemainingTime()
-					local prTotalCps = TRB.Data.snapshot.predatorRevealed.ticks
-					local prNextTick = TRB.Data.spells.predatorRevealed.tickRate - TRB.Data.snapshot.predatorRevealed.untilNextTick
+					local prTotalCps = snapshot.predatorRevealed.ticks
+					local prNextTick = spells.predatorRevealed.tickRate - snapshot.predatorRevealed.untilNextTick
 
 					local prTickShown = 0
 					local berserkTickShown = 0
@@ -4402,33 +4306,33 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						local cpBG = cpBackgroundGreen
 						local cpBB = cpBackgroundBlue
 
-						if TRB.Data.snapshot.resource2 >= x then
+						if snapshot.resource2 >= x then
 							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
-							if (specSettings.comboPoints.sameColor and TRB.Data.snapshot.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+							if (specSettings.comboPoints.sameColor and snapshot.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = specSettings.colors.comboPoints.penultimate
-							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshot.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+							elseif (specSettings.comboPoints.sameColor and snapshot.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = specSettings.colors.comboPoints.final
 							end
 						else
-							if specSettings.comboPoints.generation and berserkTickShown == 0 and berserkTotalCps > 0 and (TRB.Data.snapshot.berserk.untilNextTick <= TRB.Data.snapshot.predatorRevealed.untilNextTick or prTickShown > 0 or prTotalCps == 0) then
-								TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, berserkNextTick * 1000, TRB.Data.spells.berserk.tickRate * 1000)
+							if specSettings.comboPoints.generation and berserkTickShown == 0 and berserkTotalCps > 0 and (snapshot.berserk.untilNextTick <= snapshot.predatorRevealed.untilNextTick or prTickShown > 0 or prTotalCps == 0) then
+								TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, berserkNextTick * 1000, spells.berserk.tickRate * 1000)
 								berserkTickShown = 1
 
-								if (specSettings.comboPoints.sameColor and TRB.Data.snapshot.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+								if (specSettings.comboPoints.sameColor and snapshot.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 									cpColor = specSettings.colors.comboPoints.penultimate
-								elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshot.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+								elseif (specSettings.comboPoints.sameColor and snapshot.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 									cpColor = specSettings.colors.comboPoints.final
 								end
-							elseif specSettings.comboPoints.generation and prTime ~= nil and prTime > 0 and x <= (TRB.Data.snapshot.resource2 + prTotalCps) then
-								if x == TRB.Data.snapshot.resource2 + berserkTickShown + 1 then
-									TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, prNextTick * 1000, TRB.Data.spells.predatorRevealed.tickRate * 1000)
+							elseif specSettings.comboPoints.generation and prTime ~= nil and prTime > 0 and x <= (snapshot.resource2 + prTotalCps) then
+								if x == snapshot.resource2 + berserkTickShown + 1 then
+									TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, prNextTick * 1000, spells.predatorRevealed.tickRate * 1000)
 								else
 									TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 								end
 
 								prTickShown = prTickShown + 1
 
-								if specSettings.comboPoints.spec.predatorRevealedColor and x > TRB.Data.snapshot.resource2 and x <= (TRB.Data.snapshot.resource2 + prTotalCps) then
+								if specSettings.comboPoints.spec.predatorRevealedColor and x > snapshot.resource2 and x <= (snapshot.resource2 + prTotalCps) then
 									cpBorderColor = specSettings.colors.comboPoints.predatorRevealed
 	
 									if specSettings.comboPoints.sameColor ~= true then
@@ -4438,9 +4342,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									if not specSettings.comboPoints.consistentUnfilledColor then
 										cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.predatorRevealed, true)
 									end
-								elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshot.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+								elseif (specSettings.comboPoints.sameColor and snapshot.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 									cpColor = specSettings.colors.comboPoints.penultimate
-								elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshot.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+								elseif (specSettings.comboPoints.sameColor and snapshot.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 									cpColor = specSettings.colors.comboPoints.final
 								end
 							else
@@ -4459,27 +4363,27 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			local specSettings = classSettings.restoration
 			UpdateSnapshot_Restoration()
 			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
-			if TRB.Data.snapshot.isTracking then
+			if snapshot.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
 		
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local currentMana = TRB.Data.snapshot.resource / TRB.Data.resourceFactor
+					local currentMana = snapshot.resource / TRB.Data.resourceFactor
 					local barBorderColor = specSettings.colors.bar.border
 		
-					if TRB.Data.snapshot.potionOfChilledClarity.isActive then
+					if snapshot.potionOfChilledClarity.isActive then
 						if specSettings.colors.bar.potionOfChilledClarityBorderChange then
 							barBorderColor = specSettings.colors.bar.potionOfChilledClarity
 						end
-					elseif TRB.Data.snapshot.innervate.isActive then
+					elseif snapshot.innervate.isActive then
 						if specSettings.colors.bar.innervateBorderChange then
 							barBorderColor = specSettings.colors.bar.innervate
 						end
 		
-						if specSettings.audio.innervate.enabled and TRB.Data.snapshot.audio.innervateCue == false then
-							TRB.Data.snapshot.audio.innervateCue = true
+						if specSettings.audio.innervate.enabled and snapshot.audio.innervateCue == false then
+							snapshot.audio.innervateCue = true
 		---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.innervate.sound, coreSettings.audio.channel.channel)
 						end
@@ -4490,19 +4394,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentMana)
 		
 					if CastingSpell() and specSettings.bar.showCasting  then
-						castingBarValue = currentMana + TRB.Data.snapshot.casting.resourceFinal
+						castingBarValue = currentMana + snapshot.casting.resourceFinal
 					else
 						castingBarValue = currentMana
 					end
 		
 					TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 		
-					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, TRB.Data.snapshot.potion, TRB.Data.snapshot.conjuredChillglobe, TRB.Data.character, resourceFrame, CalculateManaGain)
+					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, snapshot.potion, snapshot.conjuredChillglobe, TRB.Data.character, resourceFrame, CalculateManaGain)
 		
 					local passiveValue = 0
 					if specSettings.bar.showPassive then
-						if TRB.Data.snapshot.channeledManaPotion.isActive then
-							passiveValue = passiveValue + TRB.Data.snapshot.channeledManaPotion.mana
+						if snapshot.channeledManaPotion.isActive then
+							passiveValue = passiveValue + snapshot.channeledManaPotion.mana
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -4516,8 +4420,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Frames.passiveFrame.thresholds[1]:Hide()
 						end
 
-						if TRB.Data.snapshot.innervate.mana > 0 or TRB.Data.snapshot.potionOfChilledClarity.mana > 0 then
-							passiveValue = passiveValue + math.max(TRB.Data.snapshot.innervate.mana, TRB.Data.snapshot.potionOfChilledClarity.mana)
+						if snapshot.innervate.mana > 0 or snapshot.potionOfChilledClarity.mana > 0 then
+							passiveValue = passiveValue + math.max(snapshot.innervate.mana, snapshot.potionOfChilledClarity.mana)
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -4531,8 +4435,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Frames.passiveFrame.thresholds[2]:Hide()
 						end
 		
-						if TRB.Data.snapshot.symbolOfHope.resourceFinal > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshot.symbolOfHope.resourceFinal
+						if snapshot.symbolOfHope.resourceFinal > 0 then
+							passiveValue = passiveValue + snapshot.symbolOfHope.resourceFinal
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -4546,8 +4450,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Frames.passiveFrame.thresholds[3]:Hide()
 						end
 		
-						if TRB.Data.snapshot.manaTideTotem.mana > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshot.manaTideTotem.mana
+						if snapshot.manaTideTotem.mana > 0 then
+							passiveValue = passiveValue + snapshot.manaTideTotem.mana
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -4561,8 +4465,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Frames.passiveFrame.thresholds[4]:Hide()
 						end
 
-						if TRB.Data.snapshot.moltenRadiance.mana > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshot.moltenRadiance.mana
+						if snapshot.moltenRadiance.mana > 0 then
+							passiveValue = passiveValue + snapshot.moltenRadiance.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -4584,22 +4488,22 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end
 		
 					passiveBarValue = castingBarValue + passiveValue
-					if castingBarValue < TRB.Data.snapshot.resource then --Using a spender
-						if -TRB.Data.snapshot.casting.resourceFinal > passiveValue then
+					if castingBarValue < snapshot.resource then --Using a spender
+						if -snapshot.casting.resourceFinal > passiveValue then
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, TRB.Data.snapshot.resource)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, snapshot.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, TRB.Data.snapshot.resource)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, snapshot.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshot.resource)
+						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshot.resource)
 						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
 						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
@@ -4610,11 +4514,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 					local affectingCombat = UnitAffectingCombat("player")
 
-					if affectingCombat and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.efflorescence) and GetEfflorescenceRemainingTime() == 0 then
+					if affectingCombat and TRB.Functions.Talent:IsTalentActive(spells.efflorescence) and GetEfflorescenceRemainingTime() == 0 then
 						resourceBarColor = specSettings.colors.bar.noEfflorescence
 					elseif GetClearcastingRemainingTime() > 0 then
 						resourceBarColor = specSettings.colors.bar.clearcasting
-					elseif GetIncarnationTreeOfLifeRemainingTime() > 0 and (TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.cenariusGuidance) or GetClearcastingRemainingTime() == 0) then
+					elseif GetIncarnationTreeOfLifeRemainingTime() > 0 and (TRB.Functions.Talent:IsTalentActive(spells.cenariusGuidance) or GetClearcastingRemainingTime() == 0) then
 						local timeThreshold = 0
 						local useEndOfIncarnationColor = false
 
@@ -4644,6 +4548,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 
 	barContainerFrame:SetScript("OnEvent", function(self, event, ...)
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
 		local currentTime = GetTime()
 		local triggerUpdate = false
 		local _
@@ -4654,74 +4560,74 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			if destGUID == TRB.Data.character.guid then
 				if specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then -- Let's check raid effect mana stuff
-					if type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.symbolOfHope.tickId then
-						TRB.Data.snapshot.symbolOfHope.isActive = true
-						if TRB.Data.snapshot.symbolOfHope.firstTickTime == nil then
-							TRB.Data.snapshot.symbolOfHope.firstTickTime = currentTime
-							TRB.Data.snapshot.symbolOfHope.previousTickTime = currentTime
-							TRB.Data.snapshot.symbolOfHope.ticksRemaining = TRB.Data.spells.symbolOfHope.ticks
-							TRB.Data.snapshot.symbolOfHope.tickRate = (TRB.Data.spells.symbolOfHope.duration / TRB.Data.spells.symbolOfHope.ticks)
-							TRB.Data.snapshot.symbolOfHope.endTime = currentTime + TRB.Data.spells.symbolOfHope.duration
+					if type == "SPELL_ENERGIZE" and spellId == spells.symbolOfHope.tickId then
+						snapshot.symbolOfHope.isActive = true
+						if snapshot.symbolOfHope.firstTickTime == nil then
+							snapshot.symbolOfHope.firstTickTime = currentTime
+							snapshot.symbolOfHope.previousTickTime = currentTime
+							snapshot.symbolOfHope.ticksRemaining = spells.symbolOfHope.ticks
+							snapshot.symbolOfHope.tickRate = (spells.symbolOfHope.duration / spells.symbolOfHope.ticks)
+							snapshot.symbolOfHope.endTime = currentTime + spells.symbolOfHope.duration
 						else
-							if TRB.Data.snapshot.symbolOfHope.ticksRemaining >= 1 then
+							if snapshot.symbolOfHope.ticksRemaining >= 1 then
 								if sourceGUID ~= TRB.Data.character.guid then
-									if not TRB.Data.snapshot.symbolOfHope.tickRateFound then
-										TRB.Data.snapshot.symbolOfHope.tickRate = currentTime - TRB.Data.snapshot.symbolOfHope.previousTickTime
-										TRB.Data.snapshot.symbolOfHope.tickRateFound = true
-										TRB.Data.snapshot.symbolOfHope.endTime = currentTime + (TRB.Data.snapshot.symbolOfHope.tickRate * (TRB.Data.snapshot.symbolOfHope.ticksRemaining - 1))
+									if not snapshot.symbolOfHope.tickRateFound then
+										snapshot.symbolOfHope.tickRate = currentTime - snapshot.symbolOfHope.previousTickTime
+										snapshot.symbolOfHope.tickRateFound = true
+										snapshot.symbolOfHope.endTime = currentTime + (snapshot.symbolOfHope.tickRate * (snapshot.symbolOfHope.ticksRemaining - 1))
 									end
 
-									if TRB.Data.snapshot.symbolOfHope.tickRate > (1.75 * 1.5) then -- Assume if its taken this long for a tick to happen, the rate is really half this and one was missed
-										TRB.Data.snapshot.symbolOfHope.tickRate = TRB.Data.snapshot.symbolOfHope.tickRate / 2
-										TRB.Data.snapshot.symbolOfHope.endTime = currentTime + (TRB.Data.snapshot.symbolOfHope.tickRate * (TRB.Data.snapshot.symbolOfHope.ticksRemaining - 2))
-										TRB.Data.snapshot.symbolOfHope.tickRateFound = false
+									if snapshot.symbolOfHope.tickRate > (1.75 * 1.5) then -- Assume if its taken this long for a tick to happen, the rate is really half this and one was missed
+										snapshot.symbolOfHope.tickRate = snapshot.symbolOfHope.tickRate / 2
+										snapshot.symbolOfHope.endTime = currentTime + (snapshot.symbolOfHope.tickRate * (snapshot.symbolOfHope.ticksRemaining - 2))
+										snapshot.symbolOfHope.tickRateFound = false
 									end
 								end
 							end
-							TRB.Data.snapshot.symbolOfHope.previousTickTime = currentTime
+							snapshot.symbolOfHope.previousTickTime = currentTime
 						end
-						TRB.Data.snapshot.symbolOfHope.resourceRaw = TRB.Data.snapshot.symbolOfHope.ticksRemaining * TRB.Data.spells.symbolOfHope.manaPercent * TRB.Data.character.maxResource
-						TRB.Data.snapshot.symbolOfHope.resourceFinal = CalculateManaGain(TRB.Data.snapshot.symbolOfHope.resourceRaw, false)
-					elseif spellId == TRB.Data.spells.innervate.id then
+						snapshot.symbolOfHope.resourceRaw = snapshot.symbolOfHope.ticksRemaining * spells.symbolOfHope.manaPercent * TRB.Data.character.maxResource
+						snapshot.symbolOfHope.resourceFinal = CalculateManaGain(snapshot.symbolOfHope.resourceRaw, false)
+					elseif spellId == spells.innervate.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							local modifier = 0
-							TRB.Data.snapshot.innervate.isActive = true
-							_, _, _, _, TRB.Data.snapshot.innervate.duration, TRB.Data.snapshot.innervate.endTime, _, _, _, TRB.Data.snapshot.innervate.spellId, _, _, _, _, _, modifier  = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.innervate.id)
-							TRB.Data.snapshot.innervate.modifier = (100 + modifier) / 100
-							TRB.Data.snapshot.audio.innervateCue = false
+							snapshot.innervate.isActive = true
+							_, _, _, _, snapshot.innervate.duration, snapshot.innervate.endTime, _, _, _, snapshot.innervate.spellId, _, _, _, _, _, modifier  = TRB.Functions.Aura:FindBuffById(spells.innervate.id)
+							snapshot.innervate.modifier = (100 + modifier) / 100
+							snapshot.audio.innervateCue = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.innervate.isActive = false
-							TRB.Data.snapshot.innervate.spellId = nil
-							TRB.Data.snapshot.innervate.duration = 0
-							TRB.Data.snapshot.innervate.endTime = nil
-							TRB.Data.snapshot.innervate.modifier = 1
-							TRB.Data.snapshot.audio.innervateCue = false
+							snapshot.innervate.isActive = false
+							snapshot.innervate.spellId = nil
+							snapshot.innervate.duration = 0
+							snapshot.innervate.endTime = nil
+							snapshot.innervate.modifier = 1
+							snapshot.audio.innervateCue = false
 						end
-					elseif spellId == TRB.Data.spells.manaTideTotem.id then
+					elseif spellId == spells.manaTideTotem.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.manaTideTotem.isActive = true
-							TRB.Data.snapshot.manaTideTotem.duration = TRB.Data.spells.manaTideTotem.duration
-							TRB.Data.snapshot.manaTideTotem.endTime = TRB.Data.spells.manaTideTotem.duration + currentTime
-							TRB.Data.snapshot.audio.manaTideTotemCue = false
+							snapshot.manaTideTotem.isActive = true
+							snapshot.manaTideTotem.duration = spells.manaTideTotem.duration
+							snapshot.manaTideTotem.endTime = spells.manaTideTotem.duration + currentTime
+							snapshot.audio.manaTideTotemCue = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.manaTideTotem.isActive = false
-							TRB.Data.snapshot.manaTideTotem.spellId = nil
-							TRB.Data.snapshot.manaTideTotem.duration = 0
-							TRB.Data.snapshot.manaTideTotem.endTime = nil
-							TRB.Data.snapshot.audio.manaTideTotemCue = false
+							snapshot.manaTideTotem.isActive = false
+							snapshot.manaTideTotem.spellId = nil
+							snapshot.manaTideTotem.duration = 0
+							snapshot.manaTideTotem.endTime = nil
+							snapshot.audio.manaTideTotemCue = false
 						end
-					elseif spellId == TRB.Data.spells.moltenRadiance.id then
+					elseif spellId == spells.moltenRadiance.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							local _
-							_, _, _, _, TRB.Data.snapshot.moltenRadiance.duration, TRB.Data.snapshot.moltenRadiance.endTime, _, _, _, TRB.Data.snapshot.moltenRadiance.spellId, _, _, _, _, _, _, _, TRB.Data.snapshot.moltenRadiance.manaPerTick = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.moltenRadiance.id)
-							TRB.Data.snapshot.moltenRadiance.isActive = false
+							_, _, _, _, snapshot.moltenRadiance.duration, snapshot.moltenRadiance.endTime, _, _, _, snapshot.moltenRadiance.spellId, _, _, _, _, _, _, _, snapshot.moltenRadiance.manaPerTick = TRB.Functions.Aura:FindBuffById(spells.moltenRadiance.id)
+							snapshot.moltenRadiance.isActive = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.moltenRadiance.isActive = false
-							TRB.Data.snapshot.moltenRadiance.spellId = nil
-							TRB.Data.snapshot.moltenRadiance.duration = 0
-							TRB.Data.snapshot.moltenRadiance.endTime = nil
-							TRB.Data.snapshot.moltenRadiance.manaPerTick = 0
-							TRB.Data.snapshot.moltenRadiance.mana = 0
+							snapshot.moltenRadiance.isActive = false
+							snapshot.moltenRadiance.spellId = nil
+							snapshot.moltenRadiance.duration = 0
+							snapshot.moltenRadiance.endTime = nil
+							snapshot.moltenRadiance.manaPerTick = 0
+							snapshot.moltenRadiance.mana = 0
 						end
 					end
 				end
@@ -4729,363 +4635,370 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			if sourceGUID == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "balance" then
-					if spellId == TRB.Data.spells.sunfire.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Sunfire Applied to Target
-								TRB.Data.snapshot.targetData.targets[destGUID].sunfire = true
-								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshot.targetData.sunfire = TRB.Data.snapshot.targetData.sunfire + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshot.targetData.targets[destGUID].sunfire = false
-								TRB.Data.snapshot.targetData.targets[destGUID].sunfireRemaining = 0
-								TRB.Data.snapshot.targetData.sunfire = TRB.Data.snapshot.targetData.sunfire - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
-						end
-					elseif spellId == TRB.Data.spells.moonfire.id then
+					if spellId == spells.moonfire.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Moonfire Applied to Target
-								TRB.Data.snapshot.targetData.targets[destGUID].moonfire = true
+								snapshot.targetData.targets[destGUID].spells[spells.moonfire.id].active = true
 								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshot.targetData.moonfire = TRB.Data.snapshot.targetData.moonfire + 1
+									snapshot.targetData.moonfire = snapshot.targetData.moonfire + 1
 								end
 								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshot.targetData.targets[destGUID].moonfire = false
-								TRB.Data.snapshot.targetData.targets[destGUID].moonfireRemaining = 0
-								TRB.Data.snapshot.targetData.moonfire = TRB.Data.snapshot.targetData.moonfire - 1
+								snapshot.targetData.targets[destGUID].spells[spells.moonfire.id].active = false
+								snapshot.targetData.targets[destGUID].spells[spells.moonfire.id].remainingTime = 0
+								snapshot.targetData.targets[destGUID].spells[spells.moonfire.id].snapshot = 0
+								snapshot.targetData.moonfire = snapshot.targetData.moonfire - 1
 								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
 						end
-					elseif spellId == TRB.Data.spells.stellarFlare.id then
+					elseif spellId == spells.stellarFlare.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Stellar Flare Applied to Target
-								TRB.Data.snapshot.targetData.targets[destGUID].stellarFlare = true
+								snapshot.targetData.targets[destGUID].spells[spells.stellarFlare.id].active = true
 								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshot.targetData.stellarFlare = TRB.Data.snapshot.targetData.stellarFlare + 1
+									snapshot.targetData.stellarFlare = snapshot.targetData.stellarFlare + 1
 								end
 								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshot.targetData.targets[destGUID].stellarFlare = false
-								TRB.Data.snapshot.targetData.targets[destGUID].stellarFlareRemaining = 0
-								TRB.Data.snapshot.targetData.stellarFlare = TRB.Data.snapshot.targetData.stellarFlare - 1
+								snapshot.targetData.targets[destGUID].spells[spells.stellarFlare.id].active = false
+								snapshot.targetData.targets[destGUID].spells[spells.stellarFlare.id].remainingTime = 0
+								snapshot.targetData.stellarFlare = snapshot.targetData.stellarFlare - 1
 								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
 						end
-					elseif spellId == TRB.Data.spells.furyOfElune.id then
+					elseif spellId == spells.sunfire.id then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
+							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Sunfire Applied to Target
+								snapshot.targetData.targets[destGUID].spells[spells.sunfire.id].active = true
+								if type == "SPELL_AURA_APPLIED" then
+									snapshot.targetData.sunfire = snapshot.targetData.sunfire + 1
+								end
+								triggerUpdate = true
+							elseif type == "SPELL_AURA_REMOVED" then
+								snapshot.targetData.targets[destGUID].spells[spells.sunfire.id].active = false
+								snapshot.targetData.targets[destGUID].spells[spells.sunfire.id].remainingTime = 0
+								snapshot.targetData.sunfire = snapshot.targetData.sunfire - 1
+								triggerUpdate = true
+							--elseif type == "SPELL_PERIODIC_DAMAGE" then
+							end
+						end
+					elseif spellId == spells.furyOfElune.id then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Fury of Elune
-							TRB.Data.snapshot.furyOfElune.isActive = true
-							TRB.Data.snapshot.furyOfElune.ticksRemaining = TRB.Data.spells.furyOfElune.ticks
-							TRB.Data.snapshot.furyOfElune.astralPower = TRB.Data.snapshot.furyOfElune.ticksRemaining * TRB.Data.spells.furyOfElune.astralPower
-							TRB.Data.snapshot.furyOfElune.startTime = currentTime
+							snapshot.furyOfElune.isActive = true
+							snapshot.furyOfElune.ticksRemaining = spells.furyOfElune.ticks
+							snapshot.furyOfElune.astralPower = snapshot.furyOfElune.ticksRemaining * spells.furyOfElune.astralPower
+							snapshot.furyOfElune.startTime = currentTime
 						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshot.furyOfElune.isActive = false
-							TRB.Data.snapshot.furyOfElune.ticksRemaining = 0
-							TRB.Data.snapshot.furyOfElune.astralPower = 0
-							TRB.Data.snapshot.furyOfElune.startTime = nil
+							snapshot.furyOfElune.isActive = false
+							snapshot.furyOfElune.ticksRemaining = 0
+							snapshot.furyOfElune.astralPower = 0
+							snapshot.furyOfElune.startTime = nil
 						elseif type == "SPELL_PERIODIC_ENERGIZE" then
-							TRB.Data.snapshot.furyOfElune.ticksRemaining = TRB.Data.snapshot.furyOfElune.ticksRemaining - 1
-							TRB.Data.snapshot.furyOfElune.astralPower = TRB.Data.snapshot.furyOfElune.ticksRemaining * TRB.Data.spells.furyOfElune.astralPower
+							snapshot.furyOfElune.ticksRemaining = snapshot.furyOfElune.ticksRemaining - 1
+							snapshot.furyOfElune.astralPower = snapshot.furyOfElune.ticksRemaining * spells.furyOfElune.astralPower
 						end
-					elseif spellId == TRB.Data.spells.sunderedFirmament.buffId then
+					elseif spellId == spells.sunderedFirmament.buffId then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Sundered Firmament
-							TRB.Data.snapshot.sunderedFirmament.isActive = true
-							TRB.Data.snapshot.sunderedFirmament.ticksRemaining = TRB.Data.spells.sunderedFirmament.ticks
-							TRB.Data.snapshot.sunderedFirmament.astralPower = TRB.Data.snapshot.sunderedFirmament.ticksRemaining * TRB.Data.spells.sunderedFirmament.astralPower
-							TRB.Data.snapshot.sunderedFirmament.startTime = currentTime
+							snapshot.sunderedFirmament.isActive = true
+							snapshot.sunderedFirmament.ticksRemaining = spells.sunderedFirmament.ticks
+							snapshot.sunderedFirmament.astralPower = snapshot.sunderedFirmament.ticksRemaining * spells.sunderedFirmament.astralPower
+							snapshot.sunderedFirmament.startTime = currentTime
 						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshot.sunderedFirmament.isActive = false
-							TRB.Data.snapshot.sunderedFirmament.ticksRemaining = 0
-							TRB.Data.snapshot.sunderedFirmament.astralPower = 0
-							TRB.Data.snapshot.sunderedFirmament.startTime = nil
+							snapshot.sunderedFirmament.isActive = false
+							snapshot.sunderedFirmament.ticksRemaining = 0
+							snapshot.sunderedFirmament.astralPower = 0
+							snapshot.sunderedFirmament.startTime = nil
 						elseif type == "SPELL_PERIODIC_ENERGIZE" then
-							TRB.Data.snapshot.sunderedFirmament.ticksRemaining = TRB.Data.snapshot.sunderedFirmament.ticksRemaining - 1
-							TRB.Data.snapshot.sunderedFirmament.astralPower = TRB.Data.snapshot.sunderedFirmament.ticksRemaining * TRB.Data.spells.sunderedFirmament.astralPower
+							snapshot.sunderedFirmament.ticksRemaining = snapshot.sunderedFirmament.ticksRemaining - 1
+							snapshot.sunderedFirmament.astralPower = snapshot.sunderedFirmament.ticksRemaining * spells.sunderedFirmament.astralPower
 						end
-					elseif spellId == TRB.Data.spells.eclipseSolar.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.eclipseSolar)
-					elseif spellId == TRB.Data.spells.eclipseLunar.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.eclipseLunar)
-					elseif spellId == TRB.Data.spells.celestialAlignment.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.celestialAlignment)
-					elseif spellId == TRB.Data.spells.incarnationChosenOfElune.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.incarnationChosenOfElune)
-					elseif spellId == TRB.Data.spells.starfall.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.starfall)
-					elseif spellId == TRB.Data.spells.starweaversWarp.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.starweaversWarp)
-					elseif spellId == TRB.Data.spells.starweaversWeft.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.starweaversWeft)
-					elseif spellId == TRB.Data.spells.rattleTheStars.buffId then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.rattleTheStars)
+					elseif spellId == spells.eclipseSolar.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.eclipseSolar)
+					elseif spellId == spells.eclipseLunar.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.eclipseLunar)
+					elseif spellId == spells.celestialAlignment.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.celestialAlignment)
+					elseif spellId == spells.incarnationChosenOfElune.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.incarnationChosenOfElune)
+					elseif spellId == spells.starfall.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.starfall)
+					elseif spellId == spells.starweaversWarp.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.starweaversWarp)
+					elseif spellId == spells.starweaversWeft.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.starweaversWeft)
+					elseif spellId == spells.rattleTheStars.buffId then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.rattleTheStars)
 						TRB.Functions.Class:CheckCharacter()
 						triggerUpdate = true
-					elseif spellId == TRB.Data.spells.newMoon.id then
+					elseif spellId == spells.newMoon.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshot.newMoon.currentSpellId = TRB.Data.spells.halfMoon.id
-							TRB.Data.snapshot.newMoon.currentKey = "halfMoon"
-							TRB.Data.snapshot.newMoon.checkAfter = currentTime + 20
+							snapshot.newMoon.currentSpellId = spells.halfMoon.id
+							snapshot.newMoon.currentKey = "halfMoon"
+							snapshot.newMoon.checkAfter = currentTime + 20
 						end
-					elseif spellId == TRB.Data.spells.halfMoon.id then
+					elseif spellId == spells.halfMoon.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshot.newMoon.currentSpellId = TRB.Data.spells.fullMoon.id
-							TRB.Data.snapshot.newMoon.currentKey = "fullMoon"
-							TRB.Data.snapshot.newMoon.checkAfter = currentTime + 20
+							snapshot.newMoon.currentSpellId = spells.fullMoon.id
+							snapshot.newMoon.currentKey = "fullMoon"
+							snapshot.newMoon.checkAfter = currentTime + 20
 						end
-					elseif spellId == TRB.Data.spells.fullMoon.id then
+					elseif spellId == spells.fullMoon.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							-- New Moon doesn't like to behave when we do this
-							TRB.Data.snapshot.newMoon.currentSpellId = TRB.Data.spells.newMoon.id
-							TRB.Data.snapshot.newMoon.currentKey = "newMoon"
-							TRB.Data.snapshot.newMoon.checkAfter = currentTime + 20
+							snapshot.newMoon.currentSpellId = spells.newMoon.id
+							snapshot.newMoon.currentKey = "newMoon"
+							snapshot.newMoon.checkAfter = currentTime + 20
 ---@diagnostic disable-next-line: redundant-parameter
-							TRB.Data.spells.newMoon.currentIcon = select(3, GetSpellInfo(202767)) -- Use the old Legion artifact spell ID since New Moon's icon returns incorrect for several seconds after casting Full Moon
+							spells.newMoon.currentIcon = select(3, GetSpellInfo(202767)) -- Use the old Legion artifact spell ID since New Moon's icon returns incorrect for several seconds after casting Full Moon
 						end
-					elseif spellId == TRB.Data.spells.touchTheCosmos.id then
+					elseif spellId == spells.touchTheCosmos.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.touchTheCosmos.isActive = true
-							_, _, _, _, TRB.Data.snapshot.touchTheCosmos.duration, TRB.Data.snapshot.touchTheCosmos.endTime, _, _, _, TRB.Data.snapshot.touchTheCosmos.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.touchTheCosmos.id)
+							TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.touchTheCosmos)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.touchTheCosmos.isActive = false
-							TRB.Data.snapshot.touchTheCosmos.spellId = nil
-							TRB.Data.snapshot.touchTheCosmos.duration = 0
-							TRB.Data.snapshot.touchTheCosmos.endTime = nil
+							snapshot.touchTheCosmos.isActive = false
+							snapshot.touchTheCosmos.spellId = nil
+							snapshot.touchTheCosmos.duration = 0
+							snapshot.touchTheCosmos.endTime = nil
 						end
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "feral" then
-					if spellId == TRB.Data.spells.rip.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rip Applied to Target
-								TRB.Data.snapshot.targetData.targets[destGUID].rip = true
-								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshot.targetData.rip = TRB.Data.snapshot.targetData.rip + 1
-								end
-								TRB.Data.snapshot.targetData.targets[destGUID].ripSnapshot = GetCurrentSnapshot(TRB.Data.spells.rip.bonuses)
-								
-								if TRB.Data.snapshot.bloodtalons.stacks == 0 then
-									TRB.Data.snapshot.bloodtalons.endTimeLeeway = nil
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshot.targetData.targets[destGUID].rip = false
-								TRB.Data.snapshot.targetData.targets[destGUID].ripRemaining = 0
-								TRB.Data.snapshot.targetData.targets[destGUID].ripSnapshot = 0
-								TRB.Data.snapshot.targetData.rip = TRB.Data.snapshot.targetData.rip - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
-						end
-					elseif spellId == TRB.Data.spells.rake.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rake Applied to Target
-								TRB.Data.snapshot.targetData.targets[destGUID].rake = true
-								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshot.targetData.rake = TRB.Data.snapshot.targetData.rake + 1
-								end
-								TRB.Data.snapshot.targetData.targets[destGUID].rakeSnapshot = GetCurrentSnapshot(TRB.Data.spells.rake.bonuses)
-								TRB.Data.snapshot.suddenAmbush.endTimeLeeway = nil
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshot.targetData.targets[destGUID].rake = false
-								TRB.Data.snapshot.targetData.targets[destGUID].rakeRemaining = 0
-								TRB.Data.snapshot.targetData.targets[destGUID].rakeSnapshot = 0
-								TRB.Data.snapshot.targetData.rake = TRB.Data.snapshot.targetData.rake - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
-						end
-					elseif spellId == TRB.Data.spells.thrash.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Thrash Applied to Target
-								TRB.Data.snapshot.targetData.targets[destGUID].thrash = true
-								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshot.targetData.thrash = TRB.Data.snapshot.targetData.thrash + 1
-								end
-								TRB.Data.snapshot.targetData.targets[destGUID].thrashSnapshot = GetCurrentSnapshot(TRB.Data.spells.thrash.bonuses)
-								
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshot.targetData.targets[destGUID].thrash = false
-								TRB.Data.snapshot.targetData.targets[destGUID].thrashRemaining = 0
-								TRB.Data.snapshot.targetData.targets[destGUID].thrashSnapshot = 0
-								TRB.Data.snapshot.targetData.thrash = TRB.Data.snapshot.targetData.thrash - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
-						end
-					elseif spellId == TRB.Data.spells.moonfire.id then
+					if spellId == spells.moonfire.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Moonfire Applied to Target
-								TRB.Data.snapshot.targetData.targets[destGUID].moonfire = true
+								snapshot.targetData.targets[destGUID].spells[spells.moonfire.id].active = true
 								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshot.targetData.moonfire = TRB.Data.snapshot.targetData.moonfire + 1
+									snapshot.targetData.moonfire = snapshot.targetData.moonfire + 1
 								end
-								TRB.Data.snapshot.targetData.targets[destGUID].moonfireSnapshot = GetCurrentSnapshot(TRB.Data.spells.moonfire.bonuses)
+								snapshot.targetData.targets[destGUID].spells[spells.moonfire.id].snapshot = GetCurrentSnapshot(spells.moonfire.bonuses)
 								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshot.targetData.targets[destGUID].moonfire = false
-								TRB.Data.snapshot.targetData.targets[destGUID].moonfireRemaining = 0
-								TRB.Data.snapshot.targetData.targets[destGUID].moonfireSnapshot = 0
-								TRB.Data.snapshot.targetData.moonfire = TRB.Data.snapshot.targetData.moonfire - 1
+								snapshot.targetData.targets[destGUID].spells[spells.moonfire.id].active = false
+								snapshot.targetData.targets[destGUID].spells[spells.moonfire.id].remainingTime = 0
+								snapshot.targetData.targets[destGUID].spells[spells.moonfire.id].snapshot = 0
+								snapshot.targetData.moonfire = snapshot.targetData.moonfire - 1
 								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
 						end
-					elseif spellId == TRB.Data.spells.shadowmeld.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.shadowmeld, true)
-					elseif spellId == TRB.Data.spells.prowl.id or spellId == TRB.Data.spells.prowl.idIncarnation then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.prowl, true)
-					elseif spellId == TRB.Data.spells.suddenAmbush.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.suddenAmbush)
-						if type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshot.suddenAmbush.endTimeLeeway = currentTime + 0.1
+					elseif spellId == spells.rake.id then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
+							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rake Applied to Target
+								snapshot.targetData.targets[destGUID].spells[spells.rake.id].active = true
+								if type == "SPELL_AURA_APPLIED" then
+									snapshot.targetData.rake = snapshot.targetData.rake + 1
+								end
+								snapshot.targetData.targets[destGUID].spells[spells.rake.id].snapshot = GetCurrentSnapshot(spells.rake.bonuses)
+								snapshot.suddenAmbush.endTimeLeeway = nil
+								triggerUpdate = true
+							elseif type == "SPELL_AURA_REMOVED" then
+								snapshot.targetData.targets[destGUID].spells[spells.rake.id].active = false
+								snapshot.targetData.targets[destGUID].spells[spells.rake.id].remainingTime = 0
+								snapshot.targetData.targets[destGUID].spells[spells.rake.id].snapshot = 0
+								snapshot.targetData.targets[destGUID].rake = false
+								snapshot.targetData.targets[destGUID].rakeRemaining = 0
+								snapshot.targetData.targets[destGUID].rakeSnapshot = 0
+								snapshot.targetData.rake = snapshot.targetData.rake - 1
+								triggerUpdate = true
+							--elseif type == "SPELL_PERIODIC_DAMAGE" then
+							end
 						end
-					elseif spellId == TRB.Data.spells.berserk.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.berserk)
+					elseif spellId == spells.rip.id then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
+							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rip Applied to Target
+								snapshot.targetData.targets[destGUID].spells[spells.rip.id].active = true
+								if type == "SPELL_AURA_APPLIED" then
+									snapshot.targetData.rip = snapshot.targetData.rip + 1
+								end
+								snapshot.targetData.targets[destGUID].spells[spells.rip.id].snapshot = GetCurrentSnapshot(spells.rip.bonuses)
+								
+								if snapshot.bloodtalons.stacks == 0 then
+									snapshot.bloodtalons.endTimeLeeway = nil
+								end
+								triggerUpdate = true
+							elseif type == "SPELL_AURA_REMOVED" then
+								snapshot.targetData.targets[destGUID].spells[spells.rip.id].active = false
+								snapshot.targetData.targets[destGUID].spells[spells.rip.id].remainingTime = 0
+								snapshot.targetData.targets[destGUID].spells[spells.rip.id].snapshot = 0
+								snapshot.targetData.rip = snapshot.targetData.rip - 1
+								triggerUpdate = true
+							--elseif type == "SPELL_PERIODIC_DAMAGE" then
+							end
+						end
+					elseif spellId == spells.thrash.id then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
+							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Thrash Applied to Target
+								snapshot.targetData.targets[destGUID].spells[spells.thrash.id].active = true
+								if type == "SPELL_AURA_APPLIED" then
+									snapshot.targetData.thrash = snapshot.targetData.thrash + 1
+								end
+								snapshot.targetData.targets[destGUID].spells[spells.thrash.id].snapshot = GetCurrentSnapshot(spells.thrash.bonuses)
+								
+								triggerUpdate = true
+							elseif type == "SPELL_AURA_REMOVED" then
+								snapshot.targetData.targets[destGUID].spells[spells.thrash.id].active = false
+								snapshot.targetData.targets[destGUID].spells[spells.thrash.id].remainingTime = 0
+								snapshot.targetData.targets[destGUID].spells[spells.thrash.id].snapshot = 0
+								snapshot.targetData.thrash = snapshot.targetData.thrash - 1
+								triggerUpdate = true
+							--elseif type == "SPELL_PERIODIC_DAMAGE" then
+							end
+						end
+					elseif spellId == spells.shadowmeld.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.shadowmeld, true)
+					elseif spellId == spells.prowl.id or spellId == spells.prowl.idIncarnation then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.prowl, true)
+					elseif spellId == spells.suddenAmbush.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.suddenAmbush)
+						if type == "SPELL_AURA_REMOVED" then
+							snapshot.suddenAmbush.endTimeLeeway = currentTime + 0.1
+						end
+					elseif spellId == spells.berserk.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.berserk)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" or type == "SPELL_AURA_REMOVED" then
 							if type == "SPELL_AURA_APPLIED" then						
-								TRB.Data.snapshot.berserk.lastTick = currentTime
+								snapshot.berserk.lastTick = currentTime
 							end
 							UpdateBerserkIncomingComboPoints()
 						end
-					elseif spellId == TRB.Data.spells.incarnationAvatarOfAshamane.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.incarnationAvatarOfAshamane)
+					elseif spellId == spells.incarnationAvatarOfAshamane.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.incarnationAvatarOfAshamane)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" or type == "SPELL_AURA_REMOVED" then
 							if type == "SPELL_AURA_APPLIED" then
-								TRB.Data.snapshot.berserk.lastTick = currentTime
+								snapshot.berserk.lastTick = currentTime
 							end
 							UpdateBerserkIncomingComboPoints()
 						end
-					elseif spellId == TRB.Data.spells.berserk.energizeId then
+					elseif spellId == spells.berserk.energizeId then
 						if type == "SPELL_ENERGIZE" then
-							TRB.Data.snapshot.berserk.lastTick = currentTime
+							snapshot.berserk.lastTick = currentTime
 						end
-					elseif spellId == TRB.Data.spells.clearcasting.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.clearcasting)
-					elseif spellId == TRB.Data.spells.tigersFury.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.tigersFury)
-					elseif spellId == TRB.Data.spells.bloodtalons.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.bloodtalons)
+					elseif spellId == spells.clearcasting.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.clearcasting)
+					elseif spellId == spells.tigersFury.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.tigersFury)
+					elseif spellId == spells.bloodtalons.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.bloodtalons)
 						if type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshot.bloodtalons.endTimeLeeway = currentTime + 0.1
+							snapshot.bloodtalons.endTimeLeeway = currentTime + 0.1
 						end
-					elseif spellId == TRB.Data.spells.apexPredatorsCraving.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.apexPredatorsCraving)
+					elseif spellId == spells.apexPredatorsCraving.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.apexPredatorsCraving)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.enabled then
 								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
-					elseif spellId == TRB.Data.spells.predatorRevealed.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.predatorRevealed)
+					elseif spellId == spells.predatorRevealed.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.predatorRevealed)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" or type == "SPELL_AURA_REMOVED" then
 							if type == "SPELL_AURA_APPLIED" then
-								TRB.Data.snapshot.predatorRevealed.lastTick = currentTime
+								snapshot.predatorRevealed.lastTick = currentTime
 							end
 							UpdatePredatorRevealed()
 						end
-					elseif spellId == TRB.Data.spells.predatorRevealed.energizeId then
+					elseif spellId == spells.predatorRevealed.energizeId then
 						if type == "SPELL_ENERGIZE" then
-							TRB.Data.snapshot.predatorRevealed.lastTick = currentTime
+							snapshot.predatorRevealed.lastTick = currentTime
 						end
 					end
 				elseif specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then
-					if spellId == TRB.Data.spells.symbolOfHope.id then
+					if spellId == spells.symbolOfHope.id then
 						if type == "SPELL_AURA_REMOVED" then -- Lost Symbol of Hope
 							-- Let UpdateSymbolOfHope() clean this up
 							UpdateSymbolOfHope(true)
 						end
-					elseif spellId == TRB.Data.spells.potionOfFrozenFocusRank1.spellId then
+					elseif spellId == spells.potionOfFrozenFocusRank1.spellId then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Potion of Frozen Focus
-							TRB.Data.snapshot.channeledManaPotion.spellKey = "potionOfFrozenFocusRank1"
-							TRB.Data.snapshot.channeledManaPotion.isActive = true
-							TRB.Data.snapshot.channeledManaPotion.ticksRemaining = TRB.Data.spells.potionOfFrozenFocusRank1.ticks
-							TRB.Data.snapshot.channeledManaPotion.mana = TRB.Data.snapshot.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfFrozenFocusRank1.mana, true)
-							TRB.Data.snapshot.channeledManaPotion.endTime = currentTime + TRB.Data.spells.potionOfFrozenFocusRank1.duration
+							snapshot.channeledManaPotion.spellKey = "potionOfFrozenFocusRank1"
+							snapshot.channeledManaPotion.isActive = true
+							snapshot.channeledManaPotion.ticksRemaining = spells.potionOfFrozenFocusRank1.ticks
+							snapshot.channeledManaPotion.mana = snapshot.channeledManaPotion.ticksRemaining * CalculateManaGain(spells.potionOfFrozenFocusRank1.mana, true)
+							snapshot.channeledManaPotion.endTime = currentTime + spells.potionOfFrozenFocusRank1.duration
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Frozen Focus channel
 							-- Let UpdateChanneledManaPotion() clean this up
 							UpdateChanneledManaPotion(true)
 						end
-					elseif spellId == TRB.Data.spells.potionOfFrozenFocusRank2.spellId then
+					elseif spellId == spells.potionOfFrozenFocusRank2.spellId then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Potion of Frozen Focus
-							TRB.Data.snapshot.channeledManaPotion.spellKey = "potionOfFrozenFocusRank2"
-							TRB.Data.snapshot.channeledManaPotion.isActive = true
-							TRB.Data.snapshot.channeledManaPotion.ticksRemaining = TRB.Data.spells.potionOfFrozenFocusRank2.ticks
-							TRB.Data.snapshot.channeledManaPotion.mana = TRB.Data.snapshot.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfFrozenFocusRank2.mana, true)
-							TRB.Data.snapshot.channeledManaPotion.endTime = currentTime + TRB.Data.spells.potionOfFrozenFocusRank2.duration
+							snapshot.channeledManaPotion.spellKey = "potionOfFrozenFocusRank2"
+							snapshot.channeledManaPotion.isActive = true
+							snapshot.channeledManaPotion.ticksRemaining = spells.potionOfFrozenFocusRank2.ticks
+							snapshot.channeledManaPotion.mana = snapshot.channeledManaPotion.ticksRemaining * CalculateManaGain(spells.potionOfFrozenFocusRank2.mana, true)
+							snapshot.channeledManaPotion.endTime = currentTime + spells.potionOfFrozenFocusRank2.duration
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Frozen Focus channel
 							-- Let UpdateChanneledManaPotion() clean this up
 							UpdateChanneledManaPotion(true)
 						end
-					elseif spellId == TRB.Data.spells.potionOfFrozenFocusRank3.spellId then
+					elseif spellId == spells.potionOfFrozenFocusRank3.spellId then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Potion of Frozen Focus
-							TRB.Data.snapshot.channeledManaPotion.spellKey = "potionOfFrozenFocusRank3"
-							TRB.Data.snapshot.channeledManaPotion.isActive = true
-							TRB.Data.snapshot.channeledManaPotion.ticksRemaining = TRB.Data.spells.potionOfFrozenFocusRank3.ticks
-							TRB.Data.snapshot.channeledManaPotion.mana = TRB.Data.snapshot.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfFrozenFocusRank3.mana, true)
-							TRB.Data.snapshot.channeledManaPotion.endTime = currentTime + TRB.Data.spells.potionOfFrozenFocusRank3.duration
+							snapshot.channeledManaPotion.spellKey = "potionOfFrozenFocusRank3"
+							snapshot.channeledManaPotion.isActive = true
+							snapshot.channeledManaPotion.ticksRemaining = spells.potionOfFrozenFocusRank3.ticks
+							snapshot.channeledManaPotion.mana = snapshot.channeledManaPotion.ticksRemaining * CalculateManaGain(spells.potionOfFrozenFocusRank3.mana, true)
+							snapshot.channeledManaPotion.endTime = currentTime + spells.potionOfFrozenFocusRank3.duration
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Frozen Focus channel
 							-- Let UpdateChanneledManaPotion() clean this up
 							UpdateChanneledManaPotion(true)
 						end					
-					elseif spellId == TRB.Data.spells.potionOfChilledClarity.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.potionOfChilledClarity)
+					elseif spellId == spells.potionOfChilledClarity.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.potionOfChilledClarity)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-							TRB.Data.snapshot.potionOfChilledClarity.modifier = 0
+							snapshot.potionOfChilledClarity.modifier = 0
 						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshot.potionOfChilledClarity.modifier = 1
+							snapshot.potionOfChilledClarity.modifier = 1
 						end
-					elseif spellId == TRB.Data.spells.efflorescence.id then
+					elseif spellId == spells.efflorescence.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							TRB.Data.snapshot.efflorescence.endTime = currentTime + TRB.Data.spells.efflorescence.duration
+							snapshot.efflorescence.endTime = currentTime + spells.efflorescence.duration
 						end
-					elseif spellId == TRB.Data.spells.sunfire.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Sunfire Applied to Target
-								TRB.Data.snapshot.targetData.targets[destGUID].sunfire = true
-								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshot.targetData.sunfire = TRB.Data.snapshot.targetData.sunfire + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshot.targetData.targets[destGUID].sunfire = false
-								TRB.Data.snapshot.targetData.targets[destGUID].sunfireRemaining = 0
-								TRB.Data.snapshot.targetData.sunfire = TRB.Data.snapshot.targetData.sunfire - 1
-								triggerUpdate = true
-							end
-						end
-					elseif spellId == TRB.Data.spells.moonfire.id then
+					elseif spellId == spells.moonfire.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Moonfire Applied to Target
-								TRB.Data.snapshot.targetData.targets[destGUID].moonfire = true
+								snapshot.targetData.targets[destGUID].spells[spells.moonfire.id].active = true
 								if type == "SPELL_AURA_APPLIED" then
-									TRB.Data.snapshot.targetData.moonfire = TRB.Data.snapshot.targetData.moonfire + 1
+									snapshot.targetData.moonfire = snapshot.targetData.moonfire + 1
 								end
 								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
-								TRB.Data.snapshot.targetData.targets[destGUID].moonfire = false
-								TRB.Data.snapshot.targetData.targets[destGUID].moonfireRemaining = 0
-								TRB.Data.snapshot.targetData.moonfire = TRB.Data.snapshot.targetData.moonfire - 1
+								snapshot.targetData.targets[destGUID].spells[spells.moonfire.id].active = false
+								snapshot.targetData.targets[destGUID].spells[spells.moonfire.id].remainingTime = 0
+								snapshot.targetData.targets[destGUID].spells[spells.moonfire.id].snapshot = 0
+								snapshot.targetData.moonfire = snapshot.targetData.moonfire - 1
 								triggerUpdate = true
 							--elseif type == "SPELL_PERIODIC_DAMAGE" then
 							end
 						end
-					elseif spellId == TRB.Data.spells.clearcasting.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.clearcasting)
-					elseif spellId == TRB.Data.spells.incarnationTreeOfLife.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.incarnationTreeOfLife)
+					elseif spellId == spells.sunfire.id then
+						if TRB.Functions.Class:InitializeTarget(destGUID) then
+							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Sunfire Applied to Target
+								snapshot.targetData.targets[destGUID].spells[spells.sunfire.id].active = true
+								if type == "SPELL_AURA_APPLIED" then
+									snapshot.targetData.sunfire = snapshot.targetData.sunfire + 1
+								end
+								triggerUpdate = true
+							elseif type == "SPELL_AURA_REMOVED" then
+								snapshot.targetData.targets[destGUID].spells[spells.sunfire.id].active = false
+								snapshot.targetData.targets[destGUID].spells[spells.sunfire.id].remainingTime = 0
+								snapshot.targetData.sunfire = snapshot.targetData.sunfire - 1
+								triggerUpdate = true
+							--elseif type == "SPELL_PERIODIC_DAMAGE" then
+							end
+						end
+					elseif spellId == spells.clearcasting.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.clearcasting)
+					elseif spellId == spells.incarnationTreeOfLife.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.incarnationTreeOfLife)
 					end
 				end
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.Target:RemoveTarget(destGUID)
+				---@type TRB.Classes.TargetData
+				local targetData = TRB.Data.snapshot.targetData
+				targetData:Remove(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end
@@ -5130,6 +5043,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			specCache.balance.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Balance()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.balance)
+			
+			local spells = TRB.Data.spells
+			---@type TRB.Classes.TargetData
+			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
+			local targetData = TRB.Data.snapshot.targetData
+			targetData:AddSpellTracking(spells.moonfire)
+			targetData:AddSpellTracking(spells.stellarFlare)
+			targetData:AddSpellTracking(spells.sunfire)
+
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Balance
 
 			if TRB.Data.barConstructedForSpec ~= "balance" then
@@ -5142,6 +5064,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			specCache.feral.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Feral()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.feral)
+			
+			local spells = TRB.Data.spells
+			---@type TRB.Classes.TargetData
+			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
+			local targetData = TRB.Data.snapshot.targetData
+			targetData:AddSpellTracking(spells.moonfire, true, false, true)
+			targetData:AddSpellTracking(spells.rake, true, false, true)
+			targetData:AddSpellTracking(spells.rip, true, false, true)
+			targetData:AddSpellTracking(spells.thrash, true, false, true)
+
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Feral
 
 			if TRB.Data.barConstructedForSpec ~= "feral" then
@@ -5154,6 +5086,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			specCache.restoration.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Restoration()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.restoration)
+			
+			local spells = TRB.Data.spells
+			---@type TRB.Classes.TargetData
+			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
+			local targetData = TRB.Data.snapshot.targetData
+			targetData:AddSpellTracking(spells.moonfire)
+			targetData:AddSpellTracking(spells.sunfire)
+
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Restoration
 
 			if TRB.Data.barConstructedForSpec ~= "restoration" then
@@ -5364,6 +5304,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 
 	function TRB.Functions.Class:HideResourceBar(force)
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
 		local affectingCombat = UnitAffectingCombat("player")
 		local specId = GetSpecialization()
 
@@ -5373,15 +5315,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					(not TRB.Data.settings.druid.balance.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.druid.balance.displayBar.notZeroShow) or
 						(TRB.Data.settings.druid.balance.displayBar.notZeroShow and
-							((not TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.naturesBalance) and TRB.Data.snapshot.resource == 0) or
-							(TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.naturesBalance) and (TRB.Data.snapshot.resource / TRB.Data.resourceFactor) >= 50))
+							((not TRB.Functions.Talent:IsTalentActive(spells.naturesBalance) and snapshot.resource == 0) or
+							(TRB.Functions.Talent:IsTalentActive(spells.naturesBalance) and (snapshot.resource / TRB.Data.resourceFactor) >= 50))
 						)
 					)
 				) then
 				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshot.isTracking = false
+				snapshot.isTracking = false
 			else
-				TRB.Data.snapshot.isTracking = true
+				snapshot.isTracking = true
 				if TRB.Data.settings.druid.balance.displayBar.neverShow == true then
 					TRB.Frames.barContainerFrame:Hide()
 				else
@@ -5393,13 +5335,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.druid.feral.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.druid.feral.displayBar.notZeroShow) or
-						(TRB.Data.settings.druid.feral.displayBar.notZeroShow and TRB.Data.snapshot.resource == TRB.Data.character.maxResource)
+						(TRB.Data.settings.druid.feral.displayBar.notZeroShow and snapshot.resource == TRB.Data.character.maxResource)
 					)
 				)) then
 				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshot.isTracking = false
+				snapshot.isTracking = false
 			else
-				TRB.Data.snapshot.isTracking = true
+				snapshot.isTracking = true
 				if TRB.Data.settings.druid.feral.displayBar.neverShow == true then
 					TRB.Frames.barContainerFrame:Hide()
 				else
@@ -5411,13 +5353,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.druid.restoration.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.druid.restoration.displayBar.notZeroShow) or
-						(TRB.Data.settings.druid.restoration.displayBar.notZeroShow and TRB.Data.snapshot.resource == TRB.Data.character.maxResource)
+						(TRB.Data.settings.druid.restoration.displayBar.notZeroShow and snapshot.resource == TRB.Data.character.maxResource)
 					)
 				)) then
 				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshot.isTracking = false
+				snapshot.isTracking = false
 			else
-				TRB.Data.snapshot.isTracking = true
+				snapshot.isTracking = true
 				if TRB.Data.settings.druid.restoration.displayBar.neverShow == true then
 					TRB.Frames.barContainerFrame:Hide()
 				else
@@ -5426,7 +5368,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		else
 			TRB.Frames.barContainerFrame:Hide()
-			TRB.Data.snapshot.isTracking = false
+			snapshot.isTracking = false
 		end
 	end
 
@@ -5434,40 +5376,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
 			return false
 		end
+		
+		---@type TRB.Classes.TargetData
+		local targetData = TRB.Data.snapshot.targetData
 
-		local specId = GetSpecialization()
+		---@type TRB.Classes.Target[]
+		local targets = targetData.targets
 
 		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.Target:CheckTargetExists(guid) then
-				TRB.Functions.Target:InitializeTarget(guid)
-				if specId == 1 then -- Balance
-					TRB.Data.snapshot.targetData.targets[guid].sunfire = false
-					TRB.Data.snapshot.targetData.targets[guid].sunfireRemaining = 0
-					TRB.Data.snapshot.targetData.targets[guid].moonfire = false
-					TRB.Data.snapshot.targetData.targets[guid].moonfireRemaining = 0
-					TRB.Data.snapshot.targetData.targets[guid].stellarFlare = false
-					TRB.Data.snapshot.targetData.targets[guid].stellarFlareRemaining = 0
-				elseif specId == 2 then -- Feral
-					TRB.Data.snapshot.targetData.targets[guid].rake = false
-					TRB.Data.snapshot.targetData.targets[guid].rakeRemaining = 0
-					TRB.Data.snapshot.targetData.targets[guid].rakeSnapshot = 0
-					TRB.Data.snapshot.targetData.targets[guid].rip = false
-					TRB.Data.snapshot.targetData.targets[guid].ripRemaining = 0
-					TRB.Data.snapshot.targetData.targets[guid].ripSnapshot = 0
-					TRB.Data.snapshot.targetData.targets[guid].thrash = false
-					TRB.Data.snapshot.targetData.targets[guid].thrashRemaining = 0
-					TRB.Data.snapshot.targetData.targets[guid].thrashSnapshot = 0
-					TRB.Data.snapshot.targetData.targets[guid].moonfire = false
-					TRB.Data.snapshot.targetData.targets[guid].moonfireRemaining = 0
-					TRB.Data.snapshot.targetData.targets[guid].moonfireSnapshot = 0
-				elseif specId == 4 then -- Restoration
-					TRB.Data.snapshot.targetData.targets[guid].sunfire = false
-					TRB.Data.snapshot.targetData.targets[guid].sunfireRemaining = 0
-					TRB.Data.snapshot.targetData.targets[guid].moonfire = false
-					TRB.Data.snapshot.targetData.targets[guid].moonfireRemaining = 0
-				end
+			if not targetData:CheckTargetExists(guid) then
+				targetData:InitializeTarget(guid)
 			end
-			TRB.Data.snapshot.targetData.targets[guid].lastUpdate = GetTime()
+			targets[guid].lastUpdate = GetTime()
 			return true
 		end
 		return false
@@ -5479,6 +5399,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			return valid
 		end
 		local specId = GetSpecialization()
+		local snapshot = TRB.Data.snapshot
+		local spells = TRB.Data.spells
+		---@type TRB.Classes.Target
+		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local settings = nil
 		if specId == 1 then
 			settings = TRB.Data.settings.druid.balance
@@ -5492,226 +5416,223 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		if specId == 1 then -- Balance
 			if var == "$moonkinForm" then
-				if TRB.Data.snapshot.moonkinForm.isActive then
+				if snapshot.moonkinForm.isActive then
 					valid = true
 				end
 			elseif var == "$eclipse" then
-				if TRB.Data.snapshot.eclipseSolar.isActive or TRB.Data.spells.eclipseLunar.isActive or TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive then
+				if snapshot.eclipseSolar.isActive or snapshot.eclipseLunar.isActive or snapshot.celestialAlignment.isActive or snapshot.incarnationChosenOfElune.isActive then
 					valid = true
 				end
 			elseif var == "$solar" or var == "$eclipseSolar" or var == "$solarEclipse" then
-				if TRB.Data.snapshot.eclipseSolar.isActive then
+				if snapshot.eclipseSolar.isActive then
 					valid = true
 				end
 			elseif var == "$lunar" or var == "$eclipseLunar" or var == "$lunarEclipse" then
-				if TRB.Data.snapshot.eclipseLunar.isActive then
+				if snapshot.eclipseLunar.isActive then
 					valid = true
 				end
 			elseif var == "$celestialAlignment" then
-				if TRB.Data.snapshot.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive then
+				if snapshot.celestialAlignment.isActive or snapshot.incarnationChosenOfElune.isActive then
 					valid = true
 				end
 			elseif var == "$eclipseTime" then
-				if TRB.Data.snapshot.eclipseSolar.isActive or TRB.Data.spells.eclipseLunar.isActive or TRB.Data.spells.celestialAlignment.isActive or TRB.Data.spells.incarnationChosenOfElune.isActive then
+				if snapshot.eclipseSolar.isActive or snapshot.eclipseLunar.isActive or snapshot.celestialAlignment.isActive or snapshot.incarnationChosenOfElune.isActive then
 					valid = true
 				end
 			elseif var == "$resource" or var == "$astralPower" then
-				if TRB.Data.snapshot.resource > 0 then
+				if snapshot.resource > 0 then
 					valid = true
 				end
 			elseif var == "$resourceMax" or var == "$astralPowerMax" then
 				valid = true
 			elseif var == "$resourceTotal" or var == "$astralPowerTotal" then
-				if TRB.Data.snapshot.resource > 0 or
-					(TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw > 0) then
+				if snapshot.resource > 0 or
+					(snapshot.casting.resourceRaw ~= nil and snapshot.casting.resourceRaw > 0) then
 					valid = true
 				end
 			elseif var == "$resourcePlusCasting" or var == "$astralPowerPlusCasting" then
-				if TRB.Data.snapshot.resource > 0 or
-					(TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw > 0) then
+				if snapshot.resource > 0 or
+					(snapshot.casting.resourceRaw ~= nil and snapshot.casting.resourceRaw > 0) then
 					valid = true
 				end
 			elseif var == "$overcap" or var == "$astralPowerOvercap" or var == "$resourceOvercap" then
-				local threshold = ((TRB.Data.snapshot.resource / TRB.Data.resourceFactor) + TRB.Data.snapshot.casting.resourceFinal)
+				local threshold = ((snapshot.resource / TRB.Data.resourceFactor) + snapshot.casting.resourceFinal)
 				if settings.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) < threshold then
 					return true
 				elseif settings.overcap.mode == "fixed" and settings.overcap.fixed < threshold then
 					return true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$astralPowerPlusPassive" then
-				if TRB.Data.snapshot.resource > 0 then
+				if snapshot.resource > 0 then
 					valid = true
 				end
 			elseif var == "$casting" then
-				if TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw > 0 then
+				if snapshot.casting.resourceRaw ~= nil and snapshot.casting.resourceRaw > 0 then
 					valid = true
 				end
 			elseif var == "$passive" then
-				if (TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.naturesBalance) and (affectingCombat or (TRB.Data.snapshot.resource / TRB.Data.resourceFactor) < 50)) or TRB.Data.snapshot.furyOfElune.astralPower > 0 or TRB.Data.snapshot.sunderedFirmament.astralPower > 0 then
+				if (TRB.Functions.Talent:IsTalentActive(spells.naturesBalance) and (affectingCombat or (snapshot.resource / TRB.Data.resourceFactor) < 50)) or snapshot.furyOfElune.astralPower > 0 or snapshot.sunderedFirmament.astralPower > 0 then
 					valid = true
 				end
 			elseif var == "$sunfireCount" then
-				if TRB.Data.snapshot.targetData.sunfire > 0 then
+				if snapshot.targetData.count[spells.sunfire.id] > 0 then
 					valid = true
 				end
 			elseif var == "$sunfireTime" then
 				if not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshot.targetData.targets ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].sunfireRemaining > 0 then
+					target ~= nil and
+					target.spells[spells.sunfire.id] ~= nil and
+					target.spells[spells.sunfire.id].remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$moonfireCount" then
-				if TRB.Data.snapshot.targetData.moonfire > 0 then
+				if snapshot.targetData.count[spells.moonfire.id] > 0 then
 					valid = true
 				end
 			elseif var == "$moonfireTime" then
 				if not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshot.targetData.targets ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireRemaining > 0 then
+					target ~= nil and
+					target.spells[spells.moonfire.id] ~= nil and
+					target.spells[spells.moonfire.id].remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$stellarFlareCount" then
-				if TRB.Data.snapshot.targetData.stellarFlare > 0 then
+				if snapshot.targetData.count[spells.stellarFlare.id] > 0 then
 					valid = true
 				end
 			elseif var == "$stellarFlareTime" then
 				if not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshot.targetData.targets ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].stellarFlareRemaining > 0 then
+					target ~= nil and
+					target.spells[spells.stellarFlare.id] ~= nil and
+					target.spells[spells.stellarFlare.id].remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$talentStellarFlare" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.stellarFlare) then
+				if TRB.Functions.Talent:IsTalentActive(spells.stellarFlare) then
 					valid = true
 				end
 			elseif var == "$foeAstralPower" then
-				if TRB.Data.snapshot.furyOfElune.astralPower > 0 then
+				if snapshot.furyOfElune.astralPower > 0 then
 					valid = true
 				end
 			elseif var == "$foeTicks" then
-				if TRB.Data.snapshot.furyOfElune.remainingTicks > 0 then
+				if snapshot.furyOfElune.remainingTicks > 0 then
 					valid = true
 				end
 			elseif var == "$foeTime" then
-				if TRB.Data.snapshot.furyOfElune.startTime ~= nil then
+				if snapshot.furyOfElune.startTime ~= nil then
 					valid = true
 				end
 			elseif var == "$sunderedFirmamentAstralPower" then
-				if TRB.Data.snapshot.sunderedFirmament.astralPower > 0 then
+				if snapshot.sunderedFirmament.astralPower > 0 then
 					valid = true
 				end
 			elseif var == "$sunderedFirmamentTicks" then
-				if TRB.Data.snapshot.sunderedFirmament.remainingTicks > 0 then
+				if snapshot.sunderedFirmament.remainingTicks > 0 then
 					valid = true
 				end
 			elseif var == "$sunderedFirmamentTime" then
-				if TRB.Data.snapshot.sunderedFirmament.startTime ~= nil then
+				if snapshot.sunderedFirmament.startTime ~= nil then
 					valid = true
 				end				
 			elseif var == "$starweaverTime" then
-				if TRB.Data.snapshot.starweaversWarp.isActive or TRB.Data.spells.starweaversWarp.isActive  then
+				if snapshot.starweaversWarp.isActive or snapshot.starweaversWarp.isActive  then
 					valid = true
 				end
 			elseif var == "$starweaversWarp" then
-				if TRB.Data.snapshot.starweaversWarp.isActive then
+				if snapshot.starweaversWarp.isActive then
 					valid = true
 				end
 			elseif var == "$starweaversWeft" then
-				if TRB.Data.snapshot.starweaversWarp.isActive then
+				if snapshot.starweaversWarp.isActive then
 					valid = true
 				end
 			elseif var == "$moonAstralPower" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.newMoon) then
+				if TRB.Functions.Talent:IsTalentActive(spells.newMoon) then
 					valid = true
 				end
 			elseif var == "$moonCharges" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.newMoon) then
-					if TRB.Data.snapshot.newMoon.charges > 0 then
+				if TRB.Functions.Talent:IsTalentActive(spells.newMoon) then
+					if snapshot.newMoon.charges > 0 then
 						valid = true
 					end
 				end
 			elseif var == "$moonCooldown" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.newMoon) then
-					if TRB.Data.snapshot.newMoon.cooldown > 0 then
+				if TRB.Functions.Talent:IsTalentActive(spells.newMoon) then
+					if snapshot.newMoon.cooldown > 0 then
 						valid = true
 					end
 				end
 			elseif var == "$moonCooldownTotal" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.newMoon) then
-					if TRB.Data.snapshot.newMoon.charges < TRB.Data.snapshot.newMoon.maxCharges then
+				if TRB.Functions.Talent:IsTalentActive(spells.newMoon) then
+					if snapshot.newMoon.charges < snapshot.newMoon.maxCharges then
 						valid = true
 					end
 				end
 			elseif var == "$pulsarCollected" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
+				if TRB.Functions.Talent:IsTalentActive(spells.primordialArcanicPulsar) then
 					valid = true
 				end
 			elseif var == "$pulsarCollectedPercent" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
+				if TRB.Functions.Talent:IsTalentActive(spells.primordialArcanicPulsar) then
 					valid = true
 				end
 			elseif var == "$pulsarRemaining" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
+				if TRB.Functions.Talent:IsTalentActive(spells.primordialArcanicPulsar) then
 					valid = true
 				end
 			elseif var == "$pulsarRemainingPercent" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
+				if TRB.Functions.Talent:IsTalentActive(spells.primordialArcanicPulsar) then
 					valid = true
 				end
 			elseif var == "$pulsarStarsurgeCount" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
+				if TRB.Functions.Talent:IsTalentActive(spells.primordialArcanicPulsar) then
 					valid = true
 				end
 			elseif var == "$pulsarStarfallCount" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) then
+				if TRB.Functions.Talent:IsTalentActive(spells.primordialArcanicPulsar) then
 					valid = true
 				end
 			elseif var == "$pulsarNextStarsurge" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) and
-					(((TRB.Data.spells.primordialArcanicPulsar.maxAstralPower or 0) - (TRB.Data.snapshot.primordialArcanicPulsar.currentAstralPower or 0)) <= TRB.Data.character.starsurgeThreshold) then
+				if TRB.Functions.Talent:IsTalentActive(spells.primordialArcanicPulsar) and
+					(((spells.primordialArcanicPulsar.maxAstralPower or 0) - (snapshot.primordialArcanicPulsar.currentAstralPower or 0)) <= TRB.Data.character.starsurgeThreshold) then
 					valid = true
 				end
 			elseif var == "$pulsarNextStarfall" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.primordialArcanicPulsar) and
-					(((TRB.Data.spells.primordialArcanicPulsar.maxAstralPower or 0) - (TRB.Data.snapshot.primordialArcanicPulsar.currentAstralPower or 0)) <= TRB.Data.character.starfallThreshold) then
+				if TRB.Functions.Talent:IsTalentActive(spells.primordialArcanicPulsar) and
+					(((spells.primordialArcanicPulsar.maxAstralPower or 0) - (snapshot.primordialArcanicPulsar.currentAstralPower or 0)) <= TRB.Data.character.starfallThreshold) then
 					valid = true
 				end
 			end
 		elseif specId == 2 then -- Feral
 			if var == "$resource" or var == "$energy" then
-				if TRB.Data.snapshot.resource > 0 then
+				if snapshot.resource > 0 then
 					valid = true
 				end
 			elseif var == "$resourceMax" or var == "$energyMax" then
 				valid = true
 			elseif var == "$resourceTotal" or var == "$energyTotal" then
-				if TRB.Data.snapshot.resource > 0 or
-					(TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw > 0) then
+				if snapshot.resource > 0 or
+					(snapshot.casting.resourceRaw ~= nil and snapshot.casting.resourceRaw > 0) then
 					valid = true
 				end
 			elseif var == "$resourcePlusCasting" or var == "$energyPlusCasting" then
-				if TRB.Data.snapshot.resource > 0 or
-					(TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw > 0) then
+				if snapshot.resource > 0 or
+					(snapshot.casting.resourceRaw ~= nil and snapshot.casting.resourceRaw > 0) then
 					valid = true
 				end
 			elseif var == "$overcap" or var == "$energyOvercap" or var == "$resourceOvercap" then
-				local threshold = ((TRB.Data.snapshot.resource / TRB.Data.resourceFactor) + TRB.Data.snapshot.casting.resourceFinal)
+				local threshold = ((snapshot.resource / TRB.Data.resourceFactor) + snapshot.casting.resourceFinal)
 				if settings.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) < threshold then
 					return true
 				elseif settings.overcap.mode == "fixed" and settings.overcap.fixed < threshold then
 					return true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$energyPlusPassive" then
-				if TRB.Data.snapshot.resource > 0 then
+				if snapshot.resource > 0 then
 					valid = true
 				end
 			elseif var == "$comboPoints" then
@@ -5719,7 +5640,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			elseif var == "$comboPointsMax" then
 				valid = true
 			elseif var == "$ripCount" then
-				if TRB.Data.snapshot.targetData.rip > 0 then
+				if snapshot.targetData.count[spells.rip.id] > 0 then
 					valid = true
 				end
 			elseif var == "$ripCurrent" then
@@ -5727,32 +5648,29 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			elseif var == "$ripTime" then
 				if not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshot.targetData.targets ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].ripRemaining > 0 then
+					target ~= nil and
+					target.spells[spells.rip.id] ~= nil and
+					target.spells[spells.rip.id].remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$ripPercent" then
 				if not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshot.targetData.targets ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].ripSnapshot > 0 then
+					target ~= nil and
+					target.spells[spells.rip.id] ~= nil and
+					target.spells[spells.rip.id].snapshot > 0 then
 					valid = true
 				end
 			elseif var == "$ripSnapshot" then
 				if not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshot.targetData.targets ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].ripSnapshot > 0 then
+					target ~= nil and
+					target.spells[spells.rip.id] ~= nil and
+					target.spells[spells.rip.id].snapshot > 0 then
 					valid = true
 				end
 			elseif var == "$rakeCount" then
-				if TRB.Data.snapshot.targetData.rake > 0 then
+				if snapshot.targetData.count[spells.rake.id] > 0 then
 					valid = true
 				end
 			elseif var == "$rakeCurrent" then
@@ -5760,32 +5678,29 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			elseif var == "$rakeTime" then
 				if not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshot.targetData.targets ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rakeRemaining > 0 then
+					target ~= nil and
+					target.spells[spells.rake.id] ~= nil and
+					target.spells[spells.rake.id].remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$rakePercent" then
 				if not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshot.targetData.targets ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rakeSnapshot > 0 then
+					target ~= nil and
+					target.spells[spells.rake.id] ~= nil and
+					target.spells[spells.rake.id].snapshot > 0 then
 					valid = true
 				end
 			elseif var == "$rakeSnapshot" then
 				if not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshot.targetData.targets ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].rakeSnapshot > 0 then
+					target ~= nil and
+					target.spells[spells.rake.id] ~= nil and
+					target.spells[spells.rake.id].snapshot > 0 then
 					valid = true
 				end
 			elseif var == "$thrashCount" then
-				if TRB.Data.snapshot.targetData.thrash > 0 then
+				if snapshot.targetData.count[spells.thrash.id] > 0 then
 					valid = true
 				end
 			elseif var == "$thrashCurrent" then
@@ -5793,96 +5708,90 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			elseif var == "$thrashTime" then
 				if not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshot.targetData.targets ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].thrashRemaining > 0 then
+					target ~= nil and
+					target.spells[spells.thrash.id] ~= nil and
+					target.spells[spells.thrash.id].remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$thrashPercent" then
 				if not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshot.targetData.targets ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].thrashSnapshot > 0 then
+					target ~= nil and
+					target.spells[spells.thrash.id] ~= nil and
+					target.spells[spells.thrash.id].snapshot > 0 then
 					valid = true
 				end
 			elseif var == "$thrashSnapshot" then
 				if not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshot.targetData.targets ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].thrashSnapshot > 0 then
+					target ~= nil and
+					target.spells[spells.thrash.id] ~= nil and
+					target.spells[spells.thrash.id].snapshot > 0 then
 					valid = true
 				end
 			elseif var == "$moonfireCount" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true and TRB.Data.snapshot.targetData.moonfire > 0 then
+				if TRB.Functions.Talent:IsTalentActive(spells.lunarInspiration) == true and snapshot.targetData.count[spells.moonfire.id] > 0 then
 					valid = true
 				end
 			elseif var == "$moonfireCurrent" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true then
+				if TRB.Functions.Talent:IsTalentActive(spells.lunarInspiration) == true then
 					valid = true
 				end
 			elseif var == "$moonfireTime" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true and
+				if TRB.Functions.Talent:IsTalentActive(spells.lunarInspiration) == true and
 					not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshot.targetData.targets ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireRemaining > 0 then
+					target ~= nil and
+					target.spells[spells.moonfire.id] ~= nil and
+					target.spells[spells.moonfire.id].remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$moonfirePercent" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true and
+				if TRB.Functions.Talent:IsTalentActive(spells.lunarInspiration) == true and
 					not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshot.targetData.targets ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireSnapshot > 0 then
+					target ~= nil and
+					target.spells[spells.moonfire.id] ~= nil and
+					target.spells[spells.moonfire.id].snapshot > 0 then
 					valid = true
 				end
 			elseif var == "$moonfireSnapshot" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true and
+				if TRB.Functions.Talent:IsTalentActive(spells.lunarInspiration) == true and
 					not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshot.targetData.targets ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireSnapshot > 0 then
+					target ~= nil and
+					target.spells[spells.moonfire.id] ~= nil and
+					target.spells[spells.moonfire.id].snapshot > 0 then
 					valid = true
 				end
 			elseif var == "$lunarInspiration" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lunarInspiration) == true then
+				if TRB.Functions.Talent:IsTalentActive(spells.lunarInspiration) == true then
 					valid = true
 				end
 			elseif var == "$brutalSlashCharges" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.brutalSlash) then
-					if TRB.Data.snapshot.brutalSlash.charges > 0 then
+				if TRB.Functions.Talent:IsTalentActive(spells.brutalSlash) then
+					if snapshot.brutalSlash.charges > 0 then
 						valid = true
 					end
 				end
 			elseif var == "$brutalSlashCooldown" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.brutalSlash) then
-					if TRB.Data.snapshot.brutalSlash.cooldown > 0 then
+				if TRB.Functions.Talent:IsTalentActive(spells.brutalSlash) then
+					if snapshot.brutalSlash.cooldown > 0 then
 						valid = true
 					end
 				end
 			elseif var == "$brutalSlashCooldownTotal" then
-				if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.brutalSlash) then
-					if TRB.Data.snapshot.brutalSlash.charges < TRB.Data.snapshot.brutalSlash.maxCharges then
+				if TRB.Functions.Talent:IsTalentActive(spells.brutalSlash) then
+					if snapshot.brutalSlash.charges < snapshot.brutalSlash.maxCharges then
 						valid = true
 					end
 				end
 			elseif var == "$bloodtalonsStacks" then
-				if TRB.Data.snapshot.bloodtalons.stacks > 0 then
+				if snapshot.bloodtalons.stacks > 0 then
 					valid = true
 				end
 			elseif var == "$bloodtalonsTime" then
-				if TRB.Data.snapshot.bloodtalons.remainingTime > 0 then
+				if snapshot.bloodtalons.remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$suddenAmbushTime" then
@@ -5890,11 +5799,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$clearcastingStacks" then
-				if TRB.Data.snapshot.clearcasting.stacks > 0 then
+				if snapshot.clearcasting.stacks > 0 then
 					valid = true
 				end
 			elseif var == "$clearcastingTime" then
-				if TRB.Data.snapshot.clearcastingTime.remainingTime > 0 then
+				if snapshot.clearcastingTime.remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$berserkTime" or var == "$incarnationTime" then
@@ -5906,23 +5815,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$tigersFuryTime" then
-				if TRB.Data.snapshot.tigersFury.duration > 0 then
+				if snapshot.tigersFury.duration > 0 then
 					valid = true
 				end
 			elseif var == "$tigersFuryCooldownTime" then
-				if TRB.Data.snapshot.tigersFury.cooldown.duration > 0 then
+				if snapshot.tigersFury.cooldown.duration > 0 then
 					valid = true
 				end
 			elseif var == "$predatorRevealedTime" then
-				if TRB.Data.snapshot.predatorRevealed.endTime ~= nil then
+				if snapshot.predatorRevealed.endTime ~= nil then
 					valid = true
 				end
 			elseif var == "$predatorRevealedTicks" then
-				if TRB.Data.snapshot.predatorRevealed.endTime ~= nil then
+				if snapshot.predatorRevealed.endTime ~= nil then
 					valid = true
 				end
 			elseif var == "$predatorRevealedTickTime" then
-				if TRB.Data.snapshot.predatorRevealed.endTime ~= nil then
+				if snapshot.predatorRevealed.endTime ~= nil then
 					valid = true
 				end
 			elseif var == "$inStealth" then
@@ -5942,7 +5851,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
 				valid = true
 			elseif var == "$casting" then
-				if TRB.Data.snapshot.casting.resourceRaw ~= nil and (TRB.Data.snapshot.casting.resourceRaw ~= 0) then
+				if snapshot.casting.resourceRaw ~= nil and (snapshot.casting.resourceRaw ~= 0) then
 					valid = true
 				end
 			elseif var == "$passive" then
@@ -5958,86 +5867,84 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				if GetEfflorescenceRemainingTime() > 0 then
 					valid = true
 				end
-			elseif var == "$sunfireCount" then
-				if TRB.Data.snapshot.targetData.sunfire > 0 then
+			elseif var == "$clearcastingTime" then
+				if snapshot.clearcasting.remainingTime > 0 then
 					valid = true
 				end
-			elseif var == "$clearcastingTime" then
-				if TRB.Data.snapshot.clearcasting.remainingTime > 0 then
+			elseif var == "$sunfireCount" then
+				if snapshot.targetData.count[spells.sunfire.id] > 0 then
 					valid = true
 				end
 			elseif var == "$sunfireTime" then
 				if not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshot.targetData.targets ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].sunfireRemaining > 0 then
+					target ~= nil and
+					target.spells[spells.sunfire.id] ~= nil and
+					target.spells[spells.sunfire.id].remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$moonfireCount" then
-				if TRB.Data.snapshot.targetData.moonfire > 0 then
+				if snapshot.targetData.count[spells.moonfire.id] > 0 then
 					valid = true
 				end
 			elseif var == "$moonfireTime" then
 				if not UnitIsDeadOrGhost("target") and
 					UnitCanAttack("player", "target") and
-					TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-					TRB.Data.snapshot.targetData.targets ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].moonfireRemaining > 0 then
+					target ~= nil and
+					target.spells[spells.moonfire.id] ~= nil and
+					target.spells[spells.moonfire.id].remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$sohMana" then
-				if TRB.Data.snapshot.symbolOfHope.resourceRaw > 0 then
+				if snapshot.symbolOfHope.resourceRaw > 0 then
 					valid = true
 				end
 			elseif var == "$sohTime" then
-				if TRB.Data.snapshot.symbolOfHope.isActive then
+				if snapshot.symbolOfHope.isActive then
 					valid = true
 				end
 			elseif var == "$sohTicks" then
-				if TRB.Data.snapshot.symbolOfHope.isActive then
+				if snapshot.symbolOfHope.isActive then
 					valid = true
 				end
 			elseif var == "$innervateMana" then
-				if TRB.Data.snapshot.innervate.mana > 0 then
+				if snapshot.innervate.mana > 0 then
 					valid = true
 				end
 			elseif var == "$innervateTime" then
-				if TRB.Data.snapshot.innervate.remainingTime > 0 then
+				if snapshot.innervate.remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$potionOfChilledClarityMana" then
-				if TRB.Data.snapshot.potionOfChilledClarity.mana > 0 then
+				if snapshot.potionOfChilledClarity.mana > 0 then
 					valid = true
 				end
 			elseif var == "$potionOfChilledClarityTime" then
-				if TRB.Data.snapshot.potionOfChilledClarity.remainingTime > 0 then
+				if snapshot.potionOfChilledClarity.remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$mttMana" then
-				if TRB.Data.snapshot.manaTideTotem.mana > 0 then
+				if snapshot.manaTideTotem.mana > 0 then
 					valid = true
 				end
 			elseif var == "$mttTime" then
-				if TRB.Data.snapshot.manaTideTotem.isActive then
+				if snapshot.manaTideTotem.isActive then
 					valid = true
 				end
 			elseif var == "$mrMana" then
-				if TRB.Data.snapshot.moltenRadiance.mana > 0 then
+				if snapshot.moltenRadiance.mana > 0 then
 					valid = true
 				end
 			elseif var == "$mrTime" then
-				if TRB.Data.snapshot.moltenRadiance.isActive then
+				if snapshot.moltenRadiance.isActive then
 					valid = true
 				end
 			elseif var == "$channeledMana" then
-				if TRB.Data.snapshot.channeledManaPotion.mana > 0 then
+				if snapshot.channeledManaPotion.mana > 0 then
 					valid = true
 				end
 			elseif var == "$potionOfFrozenFocusTicks" then
-				if TRB.Data.snapshot.channeledManaPotion.ticksRemaining > 0 then
+				if snapshot.channeledManaPotion.ticksRemaining > 0 then
 					valid = true
 				end
 			elseif var == "$potionOfFrozenFocusTime" then
@@ -6045,11 +5952,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$potionCooldown" then
-				if TRB.Data.snapshot.potion.onCooldown then
+				if snapshot.potion.onCooldown then
 					valid = true
 				end
 			elseif var == "$potionCooldownSeconds" then
-				if TRB.Data.snapshot.potion.onCooldown then
+				if snapshot.potion.onCooldown then
 					valid = true
 				end
 			elseif var == "$incarnationTime" then
@@ -6057,7 +5964,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$reforestationStacks" then
-				if TRB.Data.snapshot.reforestation.stacks > 0 then
+				if snapshot.reforestation.stacks > 0 then
 					valid = true
 				end
 			end

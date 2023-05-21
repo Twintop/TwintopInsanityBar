@@ -14,7 +14,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
 	
-	local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
 	
@@ -366,12 +365,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			duration = 0,
 			endTime = nil
 		}
-		specCache.elemental.snapshot.targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			flameShock = 0,
-			targets = {}
-		}
 
 		-- Enhancement
 		specCache.enhancement.Global_TwintopResourceBar = {
@@ -426,11 +419,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		specCache.enhancement.snapshot.manaRegen = 0
 		specCache.enhancement.snapshot.audio = {
-		}
-		specCache.enhancement.snapshot.targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			targets = {},
 		}
 		specCache.enhancement.snapshot.ascendance = {
 			spellId = nil,
@@ -683,12 +671,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		specCache.restoration.snapshot.audio = {
 			innervateCue = false
 		}
-		specCache.restoration.snapshot.targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			flameShock = 0,
-			targets = {}
-		}
 		specCache.restoration.snapshot.innervate = {
 			isActive = false,
 			spellId = nil,
@@ -768,7 +750,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "shaman", "elemental")
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.elemental)
 	end
 
 	local function Setup_Enhancement()
@@ -777,7 +758,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "shaman", "enhancement")
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.enhancement)
 	end
 
 	local function Setup_Restoration()
@@ -786,7 +766,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "shaman", "restoration")
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.restoration)
 	end
 
 	local function FillSpellData_Elemental()
@@ -1061,70 +1040,21 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
-		local specId = GetSpecialization()
-
-		if specId == 1 then
-			local fsTotal = 0
-			for guid,count in pairs(TRB.Data.snapshot.targetData.targets) do
-				if (currentTime - TRB.Data.snapshot.targetData.targets[guid].lastUpdate) > 10 then
-					TRB.Data.snapshot.targetData.targets[guid].flameShock = false
-					TRB.Data.snapshot.targetData.targets[guid].flameShockRemaining = 0
-				else
-					if TRB.Data.snapshot.targetData.targets[guid].flameShock == true then
-						fsTotal = fsTotal + 1
-					end
-				end
-			end
-			TRB.Data.snapshot.targetData.flameShock = fsTotal
-		elseif specId == 2 then -- Enhancement
-			local fsTotal = 0
-			for guid,count in pairs(TRB.Data.snapshot.targetData.targets) do
-				if (currentTime - TRB.Data.snapshot.targetData.targets[guid].lastUpdate) > 10 then
-					TRB.Data.snapshot.targetData.targets[guid].flameShock = false
-					TRB.Data.snapshot.targetData.targets[guid].flameShockRemaining = 0
-				else
-					if TRB.Data.snapshot.targetData.targets[guid].flameShock == true then
-						fsTotal = fsTotal + 1
-					end
-				end
-			end
-
-			TRB.Data.snapshot.targetData.flameShock = fsTotal
-		elseif specId == 3 then -- Restoration
-			local fsTotal = 0
-			for guid,count in pairs(TRB.Data.snapshot.targetData.targets) do
-				if (currentTime - TRB.Data.snapshot.targetData.targets[guid].lastUpdate) > 10 then
-					TRB.Data.snapshot.targetData.targets[guid].flameShock = false
-					TRB.Data.snapshot.targetData.targets[guid].flameShockRemaining = 0
-				else
-					if TRB.Data.snapshot.targetData.targets[guid].flameShock == true then
-						fsTotal = fsTotal + 1
-					end
-				end
-			end
-
-			TRB.Data.snapshot.targetData.flameShock = fsTotal
-		end
+		---@type TRB.Classes.TargetData
+		local targetData = TRB.Data.snapshot.targetData
+		targetData:UpdateDebuffs(currentTime)
 	end
 
 	local function TargetsCleanup(clearAll)
-		TRB.Functions.Target:TargetsCleanup(clearAll)
-		local specId = GetSpecialization()
-
-		if specId == 1 then
-			if clearAll == true then
-				TRB.Data.snapshot.targetData.flameShock = 0
-			end
-		elseif specId == 2 then
-		elseif specId == 3 then
-			if clearAll == true then
-				TRB.Data.snapshot.targetData.flameShock = 0
-			end
-		end
+		---@type TRB.Classes.TargetData
+		local targetData = TRB.Data.snapshot.targetData
+		targetData:Cleanup(clearAll)
 	end
 
 	local function ConstructResourceBar(settings)
 		local specId = GetSpecialization()
+		local spells = TRB.Data.spells
+
 		local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
 		if entries > 0 then
 			for x = 1, entries do
@@ -1140,8 +1070,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		if specId == 1 then
-			for k, v in pairs(TRB.Data.spells) do
-				local spell = TRB.Data.spells[k]
+			for k, v in pairs(spells) do
+				local spell = spells[k]
 				if spell ~= nil and spell.id ~= nil and spell.maelstrom ~= nil and spell.maelstrom < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 					if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
@@ -1154,9 +1084,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
 				end
 			end
+			TRB.Frames.resource2ContainerFrame:Hide()
 		elseif specId == 2 then
-			for k, v in pairs(TRB.Data.spells) do
-				local spell = TRB.Data.spells[k]
+			for k, v in pairs(spells) do
+				local spell = spells[k]
 				if spell ~= nil and spell.id ~= nil and spell.maelstrom ~= nil and spell.maelstrom < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 					if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
@@ -1169,6 +1100,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
 				end
 			end
+			TRB.Frames.resource2ContainerFrame:Show()
 		elseif specId == 3 then
 			for x = 1, 7 do
 				if TRB.Frames.resourceFrame.thresholds[x] == nil then
@@ -1190,13 +1122,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.Frames.passiveFrame.thresholds[x]:Hide()
 			end
 			
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.aeratedManaPotionRank1.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.aeratedManaPotionRank2.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.aeratedManaPotionRank3.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.potionOfFrozenFocusRank1.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], TRB.Data.spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], TRB.Data.spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], TRB.Data.spells.conjuredChillglobe.settingKey, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.aeratedManaPotionRank1.settingKey, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.aeratedManaPotionRank2.settingKey, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], spells.aeratedManaPotionRank3.settingKey, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], spells.potionOfFrozenFocusRank1.settingKey, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], spells.conjuredChillglobe.settingKey, TRB.Data.settings.shaman.restoration)
+			TRB.Frames.resource2ContainerFrame:Hide()
 		end
 
 		TRB.Functions.Bar:Construct(settings)
@@ -1254,6 +1187,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function CalculateManaGain(mana, isPotion)
+		local spells = TRB.Data.spells
 		if isPotion == nil then
 			isPotion = false
 		end
@@ -1262,7 +1196,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		if isPotion then
 			if TRB.Data.character.items.alchemyStone then
-				modifier = modifier * TRB.Data.spells.alchemistStone.manaModifier
+				modifier = modifier * spells.alchemistStone.manaModifier
 			end
 		end
 
@@ -1270,69 +1204,74 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function RefreshLookupData_Elemental()
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
+		local specSettings = TRB.Data.settings.shaman.elemental
+		---@type TRB.Classes.Target
+		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		--Spec specific implementation
 		local currentTime = GetTime()
 
 		--$overcap
 		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
 
-		local currentMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.currentMaelstrom
-		local castingMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.castingMaelstrom
+		local currentMaelstromColor = specSettings.colors.text.currentMaelstrom
+		local castingMaelstromColor = specSettings.colors.text.castingMaelstrom
 
 		local maelstromThreshold = TRB.Data.character.earthShockThreshold
 
 		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-			if TRB.Data.settings.shaman.elemental.colors.text.overcapEnabled and overcap then 
-				currentMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom
-				castingMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overcapMaelstrom
-			elseif TRB.Data.settings.shaman.elemental.colors.text.overThresholdEnabled and TRB.Data.snapshot.resource >= maelstromThreshold then
-				currentMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overThreshold
-				castingMaelstromColor = TRB.Data.settings.shaman.elemental.colors.text.overThreshold
+			if specSettings.colors.text.overcapEnabled and overcap then 
+				currentMaelstromColor = specSettings.colors.text.overcapMaelstrom
+				castingMaelstromColor = specSettings.colors.text.overcapMaelstrom
+			elseif specSettings.colors.text.overThresholdEnabled and snapshot.resource >= maelstromThreshold then
+				currentMaelstromColor = specSettings.colors.text.overThreshold
+				castingMaelstromColor = specSettings.colors.text.overThreshold
 			end
 		end
 
 		--$maelstrom
-		local currentMaelstrom = string.format("|c%s%.0f|r", currentMaelstromColor, TRB.Data.snapshot.resource)
+		local currentMaelstrom = string.format("|c%s%.0f|r", currentMaelstromColor, snapshot.resource)
 		--$casting
-		local castingMaelstrom = string.format("|c%s%.0f|r", castingMaelstromColor, TRB.Data.snapshot.casting.resourceFinal)
+		local castingMaelstrom = string.format("|c%s%.0f|r", castingMaelstromColor, snapshot.casting.resourceFinal)
 		--$passive
 		local _passiveMaelstrom = 0
 
-		local passiveMaelstrom = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.passiveMaelstrom, _passiveMaelstrom)
+		local passiveMaelstrom = string.format("|c%s%.0f|r", specSettings.colors.text.passiveMaelstrom, _passiveMaelstrom)
 		--$maelstromTotal
-		local _maelstromTotal = math.min(_passiveMaelstrom + TRB.Data.snapshot.casting.resourceFinal + TRB.Data.snapshot.resource, TRB.Data.character.maxResource)
+		local _maelstromTotal = math.min(_passiveMaelstrom + snapshot.casting.resourceFinal + snapshot.resource, TRB.Data.character.maxResource)
 		local maelstromTotal = string.format("|c%s%.0f|r", currentMaelstromColor, _maelstromTotal)
 		--$maelstromPlusCasting
-		local _maelstromPlusCasting = math.min(TRB.Data.snapshot.casting.resourceFinal + TRB.Data.snapshot.resource, TRB.Data.character.maxResource)
+		local _maelstromPlusCasting = math.min(snapshot.casting.resourceFinal + snapshot.resource, TRB.Data.character.maxResource)
 		local maelstromPlusCasting = string.format("|c%s%.0f|r", castingMaelstromColor, _maelstromPlusCasting)
 		--$maelstromPlusPassive
-		local _maelstromPlusPassive = math.min(_passiveMaelstrom + TRB.Data.snapshot.resource, TRB.Data.character.maxResource)
+		local _maelstromPlusPassive = math.min(_passiveMaelstrom + snapshot.resource, TRB.Data.character.maxResource)
 		local maelstromPlusPassive = string.format("|c%s%.0f|r", currentMaelstromColor, _maelstromPlusPassive)
 
 		----------
 		--$fsCount and $fsTime
-		local _flameShockCount = TRB.Data.snapshot.targetData.flameShock or 0
-		local flameShockCount = tostring(_flameShockCount)
+		local _flameShockCount = snapshot.targetData.count[spells.flameShock.id] or 0
+		local flameShockCount = string.format("%s", _flameShockCount)
 		local _flameShockTime = 0
 		
-		if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil then
-			_flameShockTime = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShockRemaining or 0
+		if target ~= nil then
+			_flameShockTime = target.spells[spells.flameShock.id].remainingTime or 0
 		end
 
 		local flameShockTime
 
-		if TRB.Data.settings.shaman.elemental.colors.text.dots.enabled and TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShock then
-				if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShockRemaining > TRB.Data.spells.flameShock.pandemicTime then
-					flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.up, _flameShockCount)
-					flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.up, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShockRemaining)
+		if specSettings.colors.text.dots.enabled and snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if target ~= nil and target.spells[spells.flameShock.id].active then
+				if _flameShockTime > spells.flameShock.pandemicTime then
+					flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _flameShockCount)
+					flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _flameShockTime)
 				else
-					flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.pandemic, _flameShockCount)
-					flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.pandemic, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShockRemaining)
+					flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _flameShockCount)
+					flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _flameShockTime)
 				end
 			else
-				flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.down, _flameShockCount)
-				flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.down, 0)
+				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _flameShockCount)
+				flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 			end
 		else
 			flameShockTime = string.format("%.1f", _flameShockTime)
@@ -1341,9 +1280,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		----------
 		--Icefury
 		--$ifMaelstrom
-		local icefuryMaelstrom = TRB.Data.snapshot.icefury.maelstrom or 0
+		local icefuryMaelstrom = snapshot.icefury.maelstrom or 0
 		--$ifStacks
-		local icefuryStacks = TRB.Data.snapshot.icefury.stacks or 0
+		local icefuryStacks = snapshot.icefury.stacks or 0
 		--$ifStacks
 		local _icefuryTime = GetIcefuryRemainingTime()
 		local icefuryTime = "0.0"
@@ -1352,7 +1291,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		--$skStacks
-		local stormkeeperStacks = TRB.Data.snapshot.stormkeeper.stacks or 0
+		local stormkeeperStacks = snapshot.stormkeeper.stacks or 0
 		--$skStacks
 		local _stormkeeperTime = GetStormkeeperRemainingTime()
 		local stormkeeperTime = "0.0"
@@ -1377,7 +1316,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		--$ascendanceTime
-		local _ascendanceTime = TRB.Data.snapshot.ascendance.remainingTime
+		local _ascendanceTime = snapshot.ascendance.remainingTime
 		local ascendanceTime = string.format("%.1f", _ascendanceTime)
 
 		----------------------------
@@ -1388,7 +1327,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			fsCount = flameShockCount or 0,
 		}
 		Global_TwintopResourceBar.chainLightning = {
-			targetsHit = TRB.Data.snapshot.chainLightning.targetsHit or 0
+			targetsHit = snapshot.chainLightning.targetsHit or 0
 		}
 		Global_TwintopResourceBar.icefury = {
 			maelstrom = icefuryMaelstrom,
@@ -1397,19 +1336,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		}
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#ascendance"] = TRB.Data.spells.ascendance.icon
-		lookup["#chainLightning"] = TRB.Data.spells.chainLightning.icon
-		lookup["#elementalBlast"] = TRB.Data.spells.elementalBlast.icon
-		lookup["#eogs"] = TRB.Data.spells.echoesOfGreatSundering.icon
-		lookup["#flameShock"] = TRB.Data.spells.flameShock.icon
-		lookup["#frostShock"] = TRB.Data.spells.frostShock.icon
-		lookup["#icefury"] = TRB.Data.spells.icefury.icon
-		lookup["#lavaBeam"] = TRB.Data.spells.lavaBeam.icon
-		lookup["#lavaBurst"] = TRB.Data.spells.lavaBurst.icon
-		lookup["#lightningBolt"] = TRB.Data.spells.lightningBolt.icon
-		lookup["#lightningShield"] = TRB.Data.spells.lightningShield.icon
-		lookup["#primalFracture"] = TRB.Data.spells.primalFracture.icon
-		lookup["#stormkeeper"] = TRB.Data.spells.stormkeeper.icon
+		lookup["#ascendance"] = spells.ascendance.icon
+		lookup["#chainLightning"] = spells.chainLightning.icon
+		lookup["#elementalBlast"] = spells.elementalBlast.icon
+		lookup["#eogs"] = spells.echoesOfGreatSundering.icon
+		lookup["#flameShock"] = spells.flameShock.icon
+		lookup["#frostShock"] = spells.frostShock.icon
+		lookup["#icefury"] = spells.icefury.icon
+		lookup["#lavaBeam"] = spells.lavaBeam.icon
+		lookup["#lavaBurst"] = spells.lavaBurst.icon
+		lookup["#lightningBolt"] = spells.lightningBolt.icon
+		lookup["#lightningShield"] = spells.lightningShield.icon
+		lookup["#primalFracture"] = spells.primalFracture.icon
+		lookup["#stormkeeper"] = spells.stormkeeper.icon
 		lookup["$maelstromPlusCasting"] = maelstromPlusCasting
 		lookup["$maelstromPlusPassive"] = maelstromPlusPassive
 		lookup["$maelstromTotal"] = maelstromTotal
@@ -1442,13 +1381,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookupLogic["$maelstromPlusPassive"] = _maelstromPlusPassive
 		lookupLogic["$maelstromTotal"] = _maelstromTotal
 		lookupLogic["$maelstromMax"] = TRB.Data.character.maxResource
-		lookupLogic["$maelstrom"] = TRB.Data.snapshot.resource
+		lookupLogic["$maelstrom"] = snapshot.resource
 		lookupLogic["$resourcePlusCasting"] = _maelstromPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _maelstromPlusPassive
 		lookupLogic["$resourceTotal"] = _maelstromTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-		lookupLogic["$resource"] = TRB.Data.snapshot.resource
-		lookupLogic["$casting"] = TRB.Data.snapshot.casting.resourceFinal
+		lookupLogic["$resource"] = snapshot.resource
+		lookupLogic["$casting"] = snapshot.casting.resourceFinal
 		lookupLogic["$passive"] = _passiveMaelstrom
 		lookupLogic["$overcap"] = overcap
 		lookupLogic["$resourceOvercap"] = overcap
@@ -1467,49 +1406,54 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function RefreshLookupData_Enhancement()
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
+		local specSettings = TRB.Data.settings.shaman.enhancement
+		---@type TRB.Classes.Target
+		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local _
 		--Spec specific implementation
 		local currentTime = GetTime()
-		local normalizedMana = TRB.Data.snapshot.resource / TRB.Data.resourceFactor
+		local normalizedMana = snapshot.resource / TRB.Data.resourceFactor
 
 		-- This probably needs to be pulled every refresh
-		TRB.Data.snapshot.manaRegen, _ = GetPowerRegen()
-		local currentManaColor = TRB.Data.settings.shaman.enhancement.colors.text.current
+		snapshot.manaRegen, _ = GetPowerRegen()
+		local currentManaColor = specSettings.colors.text.current
 		--$mana
-		local manaPrecision = TRB.Data.settings.shaman.enhancement.manaPrecision or 1
+		local manaPrecision = specSettings.manaPrecision or 1
 		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 
 		----------
 		--$fsCount and $fsTime
-		local _flameShockCount = TRB.Data.snapshot.targetData.flameShock or 0
-		local flameShockCount = tostring(_flameShockCount)
+		local _flameShockCount = snapshot.targetData.count[spells.flameShock.id] or 0
+		local flameShockCount = string.format("%s", _flameShockCount)
 		local _flameShockTime = 0
 		
-		if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil then
-			_flameShockTime = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShockRemaining or 0
+		if target ~= nil then
+			_flameShockTime = target.spells[spells.flameShock.id].remainingTime or 0
 		end
 
 		local flameShockTime
 
-		if TRB.Data.settings.shaman.enhancement.colors.text.dots.enabled and TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShock then
-				if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShockRemaining > TRB.Data.spells.flameShock.pandemicTime then
-					flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.enhancement.colors.text.dots.up, _flameShockCount)
-					flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.enhancement.colors.text.dots.up, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShockRemaining)
+		if specSettings.colors.text.dots.enabled and snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if target ~= nil and target.spells[spells.flameShock.id].active then
+				if _flameShockTime > spells.flameShock.pandemicTime then
+					flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _flameShockCount)
+					flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _flameShockTime)
 				else
-					flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.enhancement.colors.text.dots.pandemic, _flameShockCount)
-					flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.enhancement.colors.text.dots.pandemic, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShockRemaining)
+					flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _flameShockCount)
+					flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _flameShockTime)
 				end
 			else
-				flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.enhancement.colors.text.dots.down, _flameShockCount)
-				flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.enhancement.colors.text.dots.down, 0)
+				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _flameShockCount)
+				flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 			end
 		else
 			flameShockTime = string.format("%.1f", _flameShockTime)
 		end
 
 		--$ascendanceTime
-		local _ascendanceTime = TRB.Data.snapshot.ascendance.remainingTime
+		local _ascendanceTime = snapshot.ascendance.remainingTime
 		local ascendanceTime = string.format("%.1f", _ascendanceTime)
 
 		----------------------------
@@ -1518,8 +1462,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		}
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#ascendance"] = TRB.Data.spells.ascendance.icon
-		lookup["#flameShock"] = TRB.Data.spells.flameShock.icon
+		lookup["#ascendance"] = spells.ascendance.icon
+		lookup["#flameShock"] = spells.flameShock.icon
 		lookup["$manaMax"] = TRB.Data.character.maxResource
 		lookup["$mana"] = currentMana
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
@@ -1535,10 +1479,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
 		lookupLogic["$manaMax"] = TRB.Data.character.maxResource
-		lookupLogic["$mana"] = TRB.Data.snapshot.resource
+		lookupLogic["$mana"] = snapshot.resource
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-		lookupLogic["$resource"] = TRB.Data.snapshot.resource
-		lookupLogic["$casting"] = TRB.Data.snapshot.casting.resourceFinal
+		lookupLogic["$resource"] = snapshot.resource
+		lookupLogic["$casting"] = snapshot.casting.resourceFinal
 		lookupLogic["$essence"] = TRB.Data.character.resource2
 		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
 		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2Raw
@@ -1550,49 +1494,54 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function RefreshLookupData_Restoration()
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
+		local specSettings = TRB.Data.settings.shaman.restoration
+		---@type TRB.Classes.Target
+		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local currentTime = GetTime()
-		local normalizedMana = TRB.Data.snapshot.resource / TRB.Data.resourceFactor
+		local normalizedMana = snapshot.resource / TRB.Data.resourceFactor
 
 		-- This probably needs to be pulled every refresh
 ---@diagnostic disable-next-line: cast-local-type
-		TRB.Data.snapshot.manaRegen, _ = GetPowerRegen()
+		snapshot.manaRegen, _ = GetPowerRegen()
 
-		local currentManaColor = TRB.Data.settings.shaman.restoration.colors.text.current
-		local castingManaColor = TRB.Data.settings.shaman.restoration.colors.text.casting
+		local currentManaColor = specSettings.colors.text.current
+		local castingManaColor = specSettings.colors.text.casting
 
 		--$mana
-		local manaPrecision = TRB.Data.settings.shaman.restoration.manaPrecision or 1
+		local manaPrecision = specSettings.manaPrecision or 1
 		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 		--$casting
-		local _castingMana = TRB.Data.snapshot.casting.resourceFinal
+		local _castingMana = snapshot.casting.resourceFinal
 		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
 		--$sohMana
-		local _sohMana = TRB.Data.snapshot.symbolOfHope.resourceFinal
+		local _sohMana = snapshot.symbolOfHope.resourceFinal
 		local sohMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor", true))
 		--$sohTicks
-		local _sohTicks = TRB.Data.snapshot.symbolOfHope.ticksRemaining or 0
+		local _sohTicks = snapshot.symbolOfHope.ticksRemaining or 0
 		local sohTicks = string.format("%.0f", _sohTicks)
 		--$sohTime
 		local _sohTime = GetSymbolOfHopeRemainingTime()
 		local sohTime = string.format("%.1f", _sohTime)
 
 		--$innervateMana
-		local _innervateMana = TRB.Data.snapshot.innervate.mana
+		local _innervateMana = snapshot.innervate.mana
 		local innervateMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
 		--$innervateTime
 		local _innervateTime = GetInnervateRemainingTime()
 		local innervateTime = string.format("%.1f", _innervateTime)
 
 		--$mttMana
-		local _mttMana = TRB.Data.snapshot.manaTideTotem.mana
+		local _mttMana = snapshot.manaTideTotem.mana
 		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
 		local _mttTime = GetManaTideTotemRemainingTime()
 		local mttTime = string.format("%.1f", _mttTime)
 
 		--$mrMana
-		local _mrMana = TRB.Data.snapshot.moltenRadiance.mana
+		local _mrMana = snapshot.moltenRadiance.mana
 		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
 		--$mrTime
 		local _mrTime = GetMoltenRadianceRemainingTime()
@@ -1600,8 +1549,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		--$potionCooldownSeconds
 		local _potionCooldown = 0
-		if TRB.Data.snapshot.potion.onCooldown then
-			_potionCooldown = math.abs(TRB.Data.snapshot.potion.startTime + TRB.Data.snapshot.potion.duration - currentTime)
+		if snapshot.potion.onCooldown then
+			_potionCooldown = math.abs(snapshot.potion.startTime + snapshot.potion.duration - currentTime)
 		end
 		local potionCooldownSeconds = string.format("%.1f", _potionCooldown)
 		local _potionCooldownMinutes = math.floor(_potionCooldown / 60)
@@ -1610,29 +1559,29 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local potionCooldown = string.format("%d:%0.2d", _potionCooldownMinutes, _potionCooldownSeconds)
 
 		--$potionOfChilledClarityMana
-		local _potionOfChilledClarityMana = TRB.Data.snapshot.potionOfChilledClarity.mana
+		local _potionOfChilledClarityMana = snapshot.potionOfChilledClarity.mana
 		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
 		--$potionOfChilledClarityTime
 		local _potionOfChilledClarityTime = GetPotionOfChilledClarityRemainingTime()
 		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
 
 		--$channeledMana
-		local _channeledMana = CalculateManaGain(TRB.Data.snapshot.channeledManaPotion.mana, true)
+		local _channeledMana = CalculateManaGain(snapshot.channeledManaPotion.mana, true)
 		local channeledMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_channeledMana, manaPrecision, "floor", true))
 		--$potionOfFrozenFocusTicks
-		local _potionOfFrozenFocusTicks = TRB.Data.snapshot.channeledManaPotion.ticksRemaining or 0
+		local _potionOfFrozenFocusTicks = snapshot.channeledManaPotion.ticksRemaining or 0
 		local potionOfFrozenFocusTicks = string.format("%.0f", _potionOfFrozenFocusTicks)
 		--$potionOfFrozenFocusTime
 		local _potionOfFrozenFocusTime = GetChanneledPotionRemainingTime()
 		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
 		--$passive
 		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana
-		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.shaman.restoration.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
+		local passiveMana = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 		--$manaTotal
-		local _manaTotal = math.min(_passiveMana + TRB.Data.snapshot.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
+		local _manaTotal = math.min(_passiveMana + snapshot.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 		local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
 		--$manaPlusCasting
-		local _manaPlusCasting = math.min(TRB.Data.snapshot.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
+		local _manaPlusCasting = math.min(snapshot.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 		local manaPlusCasting = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaPlusCasting, manaPrecision, "floor", true))
 		--$manaPlusPassive
 		local _manaPlusPassive = math.min(_passiveMana + normalizedMana, TRB.Data.character.maxResource)
@@ -1652,35 +1601,35 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		----------
 		--$fsCount and $fsTime
-		local _flameShockCount = TRB.Data.snapshot.targetData.flameShock or 0
-		local flameShockCount = tostring(_flameShockCount)
+		local _flameShockCount = snapshot.targetData.count[spells.flameShock.id] or 0
+		local flameShockCount = string.format("%s", _flameShockCount)
 		local _flameShockTime = 0
 		
-		if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil then
-			_flameShockTime = TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShockRemaining or 0
+		if target ~= nil then
+			_flameShockTime = target.spells[spells.flameShock.id].remainingTime or 0
 		end
 
 		local flameShockTime
 
-		if TRB.Data.settings.shaman.elemental.colors.text.dots.enabled and TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShock then
-				if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShockRemaining > TRB.Data.spells.flameShock.pandemicTime then
-					flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.up, _flameShockCount)
-					flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.up, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShockRemaining)
+		if specSettings.colors.text.dots.enabled and snapshot.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			if target ~= nil and target.spells[spells.flameShock.id].active then
+				if _flameShockTime > spells.flameShock.pandemicTime then
+					flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _flameShockCount)
+					flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _flameShockTime)
 				else
-					flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.pandemic, _flameShockCount)
-					flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.pandemic, TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShockRemaining)
+					flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _flameShockCount)
+					flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _flameShockTime)
 				end
 			else
-				flameShockCount = string.format("|c%s%.0f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.down, _flameShockCount)
-				flameShockTime = string.format("|c%s%.1f|r", TRB.Data.settings.shaman.elemental.colors.text.dots.down, 0)
+				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _flameShockCount)
+				flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 			end
 		else
 			flameShockTime = string.format("%.1f", _flameShockTime)
-		end		
+		end
 
 		--$ascendanceTime
-		local _ascendanceTime = TRB.Data.snapshot.ascendance.remainingTime
+		local _ascendanceTime = snapshot.ascendance.remainingTime
 		local ascendanceTime = string.format("%.1f", _ascendanceTime)
 
 		Global_TwintopResourceBar.resource.passive = _passiveMana
@@ -1691,11 +1640,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		Global_TwintopResourceBar.resource.moltenRadiance = _mrMana or 0
 		Global_TwintopResourceBar.potionOfSpiritualClarity = {
 			mana = _channeledMana,
-			ticks = TRB.Data.snapshot.channeledManaPotion.ticksRemaining or 0
+			ticks = snapshot.channeledManaPotion.ticksRemaining or 0
 		}
 		Global_TwintopResourceBar.symbolOfHope = {
 			mana = _sohMana,
-			ticks = TRB.Data.snapshot.symbolOfHope.ticksRemaining or 0
+			ticks = snapshot.symbolOfHope.ticksRemaining or 0
 		}
 		Global_TwintopResourceBar.dots = {
 			fsCount = flameShockCount or 0,
@@ -1703,22 +1652,22 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#ascendance"] = TRB.Data.spells.ascendance.icon
-		lookup["#flameShock"] = TRB.Data.spells.flameShock.icon
-		lookup["#innervate"] = TRB.Data.spells.innervate.icon
-		lookup["#mtt"] = TRB.Data.spells.manaTideTotem.icon
-		lookup["#manaTideTotem"] = TRB.Data.spells.manaTideTotem.icon
-		lookup["#mr"] = TRB.Data.spells.moltenRadiance.icon
-		lookup["#moltenRadiance"] = TRB.Data.spells.moltenRadiance.icon
-		lookup["#soh"] = TRB.Data.spells.symbolOfHope.icon
-		lookup["#symbolOfHope"] = TRB.Data.spells.symbolOfHope.icon
-		lookup["#potionOfFrozenFocus"] = TRB.Data.spells.potionOfFrozenFocusRank1.icon
-		lookup["#amp"] = TRB.Data.spells.aeratedManaPotionRank1.icon
-		lookup["#aeratedManaPotion"] = TRB.Data.spells.aeratedManaPotionRank1.icon
-		lookup["#pocc"] = TRB.Data.spells.potionOfChilledClarity.icon
-		lookup["#potionOfChilledClarity"] = TRB.Data.spells.potionOfChilledClarity.icon
-		lookup["#poff"] = TRB.Data.spells.potionOfFrozenFocusRank1.icon
-		lookup["#potionOfFrozenFocus"] = TRB.Data.spells.potionOfFrozenFocusRank1.icon
+		lookup["#ascendance"] = spells.ascendance.icon
+		lookup["#flameShock"] = spells.flameShock.icon
+		lookup["#innervate"] = spells.innervate.icon
+		lookup["#mtt"] = spells.manaTideTotem.icon
+		lookup["#manaTideTotem"] = spells.manaTideTotem.icon
+		lookup["#mr"] = spells.moltenRadiance.icon
+		lookup["#moltenRadiance"] = spells.moltenRadiance.icon
+		lookup["#soh"] = spells.symbolOfHope.icon
+		lookup["#symbolOfHope"] = spells.symbolOfHope.icon
+		lookup["#potionOfFrozenFocus"] = spells.potionOfFrozenFocusRank1.icon
+		lookup["#amp"] = spells.aeratedManaPotionRank1.icon
+		lookup["#aeratedManaPotion"] = spells.aeratedManaPotionRank1.icon
+		lookup["#pocc"] = spells.potionOfChilledClarity.icon
+		lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
+		lookup["#poff"] = spells.potionOfFrozenFocusRank1.icon
+		lookup["#potionOfFrozenFocus"] = spells.potionOfFrozenFocusRank1.icon
 		lookup["$fsCount"] = flameShockCount
 		lookup["$fsTime"] = flameShockTime
 		lookup["$manaPlusCasting"] = manaPlusCasting
@@ -1792,34 +1741,40 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function FillSnapshotDataCasting(spell, maelstromMod)
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
+
 		maelstromMod = maelstromMod or 0
 		local maelstromMultMod = 1
 
-		if TRB.Data.snapshot.primalFracture.isActive then
-			if spell.id == TRB.Data.spells.lavaBurst.id or
-				spell.id == TRB.Data.spells.lightningBolt.id or
-				spell.id == TRB.Data.spells.icefury.id or
-				spell.id == TRB.Data.spells.frostShock.id
+		if snapshot.primalFracture.isActive then
+			if spell.id == spells.lavaBurst.id or
+				spell.id == spells.lightningBolt.id or
+				spell.id == spells.icefury.id or
+				spell.id == spells.frostShock.id
 				then
-				maelstromMultMod = TRB.Data.spells.primalFracture.maelstromMod
+				maelstromMultMod = spells.primalFracture.maelstromMod
 			end
 		end
 
 		local currentTime = GetTime()
-		TRB.Data.snapshot.casting.startTime = currentTime
-		TRB.Data.snapshot.casting.resourceRaw = (spell.maelstrom + maelstromMod) * maelstromMultMod
-		TRB.Data.snapshot.casting.resourceFinal = (spell.maelstrom + maelstromMod) * maelstromMultMod
-		TRB.Data.snapshot.casting.spellId = spell.id
-		TRB.Data.snapshot.casting.icon = spell.icon
+		snapshot.casting.startTime = currentTime
+		snapshot.casting.resourceRaw = (spell.maelstrom + maelstromMod) * maelstromMultMod
+		snapshot.casting.resourceFinal = (spell.maelstrom + maelstromMod) * maelstromMultMod
+		snapshot.casting.spellId = spell.id
+		snapshot.casting.icon = spell.icon
 	end
 
 
 	local function UpdateCastingResourceFinal_Restoration()
+		local snapshot = TRB.Data.snapshot
 		-- Do nothing for now
-		TRB.Data.snapshot.casting.resourceFinal = TRB.Data.snapshot.casting.resourceRaw * TRB.Data.snapshot.innervate.modifier * TRB.Data.snapshot.potionOfChilledClarity.modifier
+		snapshot.casting.resourceFinal = snapshot.casting.resourceRaw * snapshot.innervate.modifier * snapshot.potionOfChilledClarity.modifier
 	end
 
 	local function CastingSpell()
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
 		local specId = GetSpecialization()
 		local affectingCombat = UnitAffectingCombat("player")
 		local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
@@ -1835,30 +1790,30 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					return false
 					--See shaman implementation for handling channeled spells
 				else
-					if currentSpellId == TRB.Data.spells.lightningBolt.id then
-						FillSnapshotDataCasting(TRB.Data.spells.lightningBolt, TRB.Data.spells.flowOfPower.maelstromMod.base[TRB.Data.talents[TRB.Data.spells.flowOfPower.id].currentRank].lightningBolt)
+					if currentSpellId == spells.lightningBolt.id then
+						FillSnapshotDataCasting(spells.lightningBolt, spells.flowOfPower.maelstromMod.base[TRB.Data.talents[spells.flowOfPower.id].currentRank].lightningBolt)
 
-						if TRB.Data.snapshot.surgeOfPower.isActive then
-							TRB.Data.snapshot.casting.resourceRaw = TRB.Data.snapshot.casting.resourceRaw + ((TRB.Data.spells.lightningBolt.overload + TRB.Data.spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[TRB.Data.spells.flowOfPower.id].currentRank].lightningBolt) * 2)
-							TRB.Data.snapshot.casting.resourceFinal = TRB.Data.snapshot.casting.resourceFinal + ((TRB.Data.spells.lightningBolt.overload + TRB.Data.spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[TRB.Data.spells.flowOfPower.id].currentRank].lightningBolt) * 2)
+						if snapshot.surgeOfPower.isActive then
+							snapshot.casting.resourceRaw = snapshot.casting.resourceRaw + ((spells.lightningBolt.overload + spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[spells.flowOfPower.id].currentRank].lightningBolt) * 2)
+							snapshot.casting.resourceFinal = snapshot.casting.resourceFinal + ((spells.lightningBolt.overload + spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[spells.flowOfPower.id].currentRank].lightningBolt) * 2)
 						end
 						
-						if TRB.Data.snapshot.powerOfTheMaelstrom.isActive then
-							TRB.Data.snapshot.casting.resourceRaw = TRB.Data.snapshot.casting.resourceRaw + TRB.Data.spells.lightningBolt.overload + TRB.Data.spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[TRB.Data.spells.flowOfPower.id].currentRank].lightningBolt
-							TRB.Data.snapshot.casting.resourceFinal = TRB.Data.snapshot.casting.resourceFinal + TRB.Data.spells.lightningBolt.overload + TRB.Data.spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[TRB.Data.spells.flowOfPower.id].currentRank].lightningBolt
+						if snapshot.powerOfTheMaelstrom.isActive then
+							snapshot.casting.resourceRaw = snapshot.casting.resourceRaw + spells.lightningBolt.overload + spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[spells.flowOfPower.id].currentRank].lightningBolt
+							snapshot.casting.resourceFinal = snapshot.casting.resourceFinal + spells.lightningBolt.overload + spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[spells.flowOfPower.id].currentRank].lightningBolt
 						end
-					elseif currentSpellId == TRB.Data.spells.lavaBurst.id then
-						FillSnapshotDataCasting(TRB.Data.spells.lavaBurst, TRB.Data.spells.flowOfPower.maelstromMod.base[TRB.Data.talents[TRB.Data.spells.flowOfPower.id].currentRank].lavaBurst)
-					elseif currentSpellId == TRB.Data.spells.elementalBlast.id then
-						FillSnapshotDataCasting(TRB.Data.spells.elementalBlast)
-					elseif currentSpellId == TRB.Data.spells.icefury.id then
-						FillSnapshotDataCasting(TRB.Data.spells.icefury)
-					elseif currentSpellId == TRB.Data.spells.chainLightning.id or currentSpellId == TRB.Data.spells.lavaBeam.id then
+					elseif currentSpellId == spells.lavaBurst.id then
+						FillSnapshotDataCasting(spells.lavaBurst, spells.flowOfPower.maelstromMod.base[TRB.Data.talents[spells.flowOfPower.id].currentRank].lavaBurst)
+					elseif currentSpellId == spells.elementalBlast.id then
+						FillSnapshotDataCasting(spells.elementalBlast)
+					elseif currentSpellId == spells.icefury.id then
+						FillSnapshotDataCasting(spells.icefury)
+					elseif currentSpellId == spells.chainLightning.id or currentSpellId == spells.lavaBeam.id then
 						local spell = nil
-						if currentSpellId == TRB.Data.spells.lavaBeam.id then
-							spell = TRB.Data.spells.lavaBeam
+						if currentSpellId == spells.lavaBeam.id then
+							spell = spells.lavaBeam
 						else
-							spell = TRB.Data.spells.chainLightning
+							spell = spells.chainLightning
 						end
 						FillSnapshotDataCasting(spell)
 						
@@ -1866,23 +1821,23 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						local down, up, lagHome, lagWorld = GetNetStats()
 						local latency = lagWorld / 1000
 
-						if TRB.Data.snapshot.chainLightning.hitTime == nil then
-							TRB.Data.snapshot.chainLightning.targetsHit = 1
-							TRB.Data.snapshot.chainLightning.hitTime = currentTime
-							TRB.Data.snapshot.chainLightning.hasStruckTargets = false
-						elseif currentTime > (TRB.Data.snapshot.chainLightning.hitTime + (TRB.Functions.Character:GetCurrentGCDTime(true) * 4) + latency) then
-							TRB.Data.snapshot.chainLightning.targetsHit = 1
+						if snapshot.chainLightning.hitTime == nil then
+							snapshot.chainLightning.targetsHit = 1
+							snapshot.chainLightning.hitTime = currentTime
+							snapshot.chainLightning.hasStruckTargets = false
+						elseif currentTime > (snapshot.chainLightning.hitTime + (TRB.Functions.Character:GetCurrentGCDTime(true) * 4) + latency) then
+							snapshot.chainLightning.targetsHit = 1
 						end
 
-						if TRB.Data.snapshot.powerOfTheMaelstrom.isActive and currentSpellId == TRB.Data.spells.chainLightning.id then
-							TRB.Data.snapshot.casting.resourceRaw = TRB.Data.snapshot.casting.resourceRaw + TRB.Data.spells.chainLightning.overload
-							TRB.Data.snapshot.casting.resourceFinal = TRB.Data.snapshot.casting.resourceFinal + TRB.Data.spells.chainLightning.overload
+						if snapshot.powerOfTheMaelstrom.isActive and currentSpellId == spells.chainLightning.id then
+							snapshot.casting.resourceRaw = snapshot.casting.resourceRaw + spells.chainLightning.overload
+							snapshot.casting.resourceFinal = snapshot.casting.resourceFinal + spells.chainLightning.overload
 						end
 
-						TRB.Data.snapshot.casting.resourceRaw = TRB.Data.snapshot.casting.resourceRaw * TRB.Data.snapshot.chainLightning.targetsHit
-						TRB.Data.snapshot.casting.resourceFinal = TRB.Data.snapshot.casting.resourceFinal * TRB.Data.snapshot.chainLightning.targetsHit
-					elseif currentSpellId == TRB.Data.spells.hex.id and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.inundate) and affectingCombat then
-						FillSnapshotDataCasting(TRB.Data.spells.hex)
+						snapshot.casting.resourceRaw = snapshot.casting.resourceRaw * snapshot.chainLightning.targetsHit
+						snapshot.casting.resourceFinal = snapshot.casting.resourceFinal * snapshot.chainLightning.targetsHit
+					elseif currentSpellId == spells.hex.id and TRB.Functions.Talent:IsTalentActive(spells.inundate) and affectingCombat then
+						FillSnapshotDataCasting(spells.hex)
 					else
 						TRB.Functions.Character:ResetCastingSnapshotData()
 						return false
@@ -1906,11 +1861,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					if spellId then
 						local manaCost = -TRB.Functions.Spell:GetSpellManaCost(spellId)
 
-						TRB.Data.snapshot.casting.startTime = currentSpellStartTime / 1000
-						TRB.Data.snapshot.casting.endTime = currentSpellEndTime / 1000
-						TRB.Data.snapshot.casting.resourceRaw = manaCost
-						TRB.Data.snapshot.casting.spellId = spellId
-						TRB.Data.snapshot.casting.icon = string.format("|T%s:0|t", spellIcon)
+						snapshot.casting.startTime = currentSpellStartTime / 1000
+						snapshot.casting.endTime = currentSpellEndTime / 1000
+						snapshot.casting.resourceRaw = manaCost
+						snapshot.casting.spellId = spellId
+						snapshot.casting.icon = string.format("|T%s:0|t", spellIcon)
 
 						UpdateCastingResourceFinal_Restoration()
 					else
@@ -1926,176 +1881,185 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function UpdateIcefury()
-		if TRB.Data.snapshot.icefury.isActive then
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
+		if snapshot.icefury.isActive then
 			local currentTime = GetTime()
-			if TRB.Data.snapshot.icefury.startTime == nil or currentTime > (TRB.Data.snapshot.icefury.startTime + TRB.Data.spells.icefury.duration) then
-				TRB.Data.snapshot.icefury.stacks = 0
-				TRB.Data.snapshot.icefury.startTime = nil
-				TRB.Data.snapshot.icefury.astralPower = 0
-				TRB.Data.snapshot.icefury.isActive = false
+			if snapshot.icefury.startTime == nil or currentTime > (snapshot.icefury.startTime + spells.icefury.duration) then
+				snapshot.icefury.stacks = 0
+				snapshot.icefury.startTime = nil
+				snapshot.icefury.astralPower = 0
+				snapshot.icefury.isActive = false
 			end
 		end
 	end
 
 	local function UpdateStormkeeper()
-		_, _, TRB.Data.snapshot.stormkeeper.stacks, _, TRB.Data.snapshot.stormkeeper.duration, TRB.Data.snapshot.stormkeeper.endTime, _, _, _, TRB.Data.snapshot.stormkeeper.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.stormkeeper.id)
+		TRB.Functions.Aura:SnapshotGenericAura(TRB.Data.spells.stormkeeper.id, nil, TRB.Data.snapshot.stormkeeper)
 	end
 
 	local function UpdateChanneledManaPotion(forceCleanup)
-		if TRB.Data.snapshot.channeledManaPotion.isActive or forceCleanup then
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
+		if snapshot.channeledManaPotion.isActive or forceCleanup then
 			local currentTime = GetTime()
-			if forceCleanup or TRB.Data.snapshot.channeledManaPotion.endTime == nil or currentTime > TRB.Data.snapshot.channeledManaPotion.endTime then
-				TRB.Data.snapshot.channeledManaPotion.ticksRemaining = 0
-				TRB.Data.snapshot.channeledManaPotion.endTime = nil
-				TRB.Data.snapshot.channeledManaPotion.mana = 0
-				TRB.Data.snapshot.channeledManaPotion.isActive = false
-				TRB.Data.snapshot.channeledManaPotion.spellKey = nil
+			if forceCleanup or snapshot.channeledManaPotion.endTime == nil or currentTime > snapshot.channeledManaPotion.endTime then
+				snapshot.channeledManaPotion.ticksRemaining = 0
+				snapshot.channeledManaPotion.endTime = nil
+				snapshot.channeledManaPotion.mana = 0
+				snapshot.channeledManaPotion.isActive = false
+				snapshot.channeledManaPotion.spellKey = nil
 			else
-				TRB.Data.snapshot.channeledManaPotion.ticksRemaining = math.ceil((TRB.Data.snapshot.channeledManaPotion.endTime - currentTime) / (TRB.Data.spells[TRB.Data.snapshot.channeledManaPotion.spellKey].duration / TRB.Data.spells[TRB.Data.snapshot.channeledManaPotion.spellKey].ticks))
-				local nextTickRemaining = TRB.Data.snapshot.channeledManaPotion.endTime - currentTime - math.floor((TRB.Data.snapshot.channeledManaPotion.endTime - currentTime) / (TRB.Data.spells[TRB.Data.snapshot.channeledManaPotion.spellKey].duration / TRB.Data.spells[TRB.Data.snapshot.channeledManaPotion.spellKey].ticks))
-				TRB.Data.snapshot.channeledManaPotion.mana = TRB.Data.snapshot.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells[TRB.Data.snapshot.channeledManaPotion.spellKey].mana, true) + ((TRB.Data.snapshot.channeledManaPotion.ticksRemaining - 1 + nextTickRemaining) * TRB.Data.snapshot.manaRegen)
+				snapshot.channeledManaPotion.ticksRemaining = math.ceil((snapshot.channeledManaPotion.endTime - currentTime) / (spells[snapshot.channeledManaPotion.spellKey].duration / spells[snapshot.channeledManaPotion.spellKey].ticks))
+				local nextTickRemaining = snapshot.channeledManaPotion.endTime - currentTime - math.floor((snapshot.channeledManaPotion.endTime - currentTime) / (spells[snapshot.channeledManaPotion.spellKey].duration / spells[snapshot.channeledManaPotion.spellKey].ticks))
+				snapshot.channeledManaPotion.mana = snapshot.channeledManaPotion.ticksRemaining * CalculateManaGain(spells[snapshot.channeledManaPotion.spellKey].mana, true) + ((snapshot.channeledManaPotion.ticksRemaining - 1 + nextTickRemaining) * snapshot.manaRegen)
 			end
 		end
 	end
 
 	local function UpdateSymbolOfHope(forceCleanup)
-		if TRB.Data.snapshot.symbolOfHope.isActive or forceCleanup then
+		local snapshot = TRB.Data.snapshot
+		if snapshot.symbolOfHope.isActive or forceCleanup then
+			local spells = TRB.Data.spells
 			local currentTime = GetTime()
-			if forceCleanup or TRB.Data.snapshot.symbolOfHope.endTime == nil or currentTime > TRB.Data.snapshot.symbolOfHope.endTime or currentTime > TRB.Data.snapshot.symbolOfHope.firstTickTime + TRB.Data.spells.symbolOfHope.duration or currentTime > TRB.Data.snapshot.symbolOfHope.firstTickTime + (TRB.Data.spells.symbolOfHope.ticks * TRB.Data.snapshot.symbolOfHope.tickRate) then
-				TRB.Data.snapshot.symbolOfHope.ticksRemaining = 0
-				TRB.Data.snapshot.symbolOfHope.tickRate = 0
-				TRB.Data.snapshot.symbolOfHope.previousTickTime = nil
-				TRB.Data.snapshot.symbolOfHope.firstTickTime = nil
-				TRB.Data.snapshot.symbolOfHope.endTime = nil
-				TRB.Data.snapshot.symbolOfHope.resourceRaw = 0
-				TRB.Data.snapshot.symbolOfHope.resourceFinal = 0
-				TRB.Data.snapshot.symbolOfHope.isActive = false
-				TRB.Data.snapshot.symbolOfHope.tickRateFound = false
+			if forceCleanup or snapshot.symbolOfHope.endTime == nil or currentTime > snapshot.symbolOfHope.endTime or currentTime > snapshot.symbolOfHope.firstTickTime + spells.symbolOfHope.duration or currentTime > snapshot.symbolOfHope.firstTickTime + (spells.symbolOfHope.ticks * snapshot.symbolOfHope.tickRate) then
+				snapshot.symbolOfHope.ticksRemaining = 0
+				snapshot.symbolOfHope.tickRate = 0
+				snapshot.symbolOfHope.previousTickTime = nil
+				snapshot.symbolOfHope.firstTickTime = nil
+				snapshot.symbolOfHope.endTime = nil
+				snapshot.symbolOfHope.resourceRaw = 0
+				snapshot.symbolOfHope.resourceFinal = 0
+				snapshot.symbolOfHope.isActive = false
+				snapshot.symbolOfHope.tickRateFound = false
 			else
-				TRB.Data.snapshot.symbolOfHope.ticksRemaining = math.ceil((TRB.Data.snapshot.symbolOfHope.endTime - currentTime) / TRB.Data.snapshot.symbolOfHope.tickRate)
-				local nextTickRemaining = TRB.Data.snapshot.symbolOfHope.endTime - currentTime - math.floor((TRB.Data.snapshot.symbolOfHope.endTime - currentTime) / TRB.Data.snapshot.symbolOfHope.tickRate)
-				TRB.Data.snapshot.symbolOfHope.resourceRaw = 0
+				snapshot.symbolOfHope.ticksRemaining = math.ceil((snapshot.symbolOfHope.endTime - currentTime) / snapshot.symbolOfHope.tickRate)
+				local nextTickRemaining = snapshot.symbolOfHope.endTime - currentTime - math.floor((snapshot.symbolOfHope.endTime - currentTime) / snapshot.symbolOfHope.tickRate)
+				snapshot.symbolOfHope.resourceRaw = 0
 
-				for x = 1, TRB.Data.snapshot.symbolOfHope.ticksRemaining do
+				for x = 1, snapshot.symbolOfHope.ticksRemaining do
 					local casterRegen = 0
-					if TRB.Data.snapshot.casting.spellId == TRB.Data.spells.symbolOfHope.id then
+					if snapshot.casting.spellId == spells.symbolOfHope.id then
 						if x == 1 then
-							casterRegen = nextTickRemaining * TRB.Data.snapshot.manaRegen
+							casterRegen = nextTickRemaining * snapshot.manaRegen
 						else
-							casterRegen = TRB.Data.snapshot.manaRegen
+							casterRegen = snapshot.manaRegen
 						end
 					end
 
-					local estimatedMana = TRB.Data.character.maxResource + TRB.Data.snapshot.symbolOfHope.resourceRaw + casterRegen - (TRB.Data.snapshot.resource / TRB.Data.resourceFactor)
-					local nextTick = TRB.Data.spells.symbolOfHope.manaPercent * math.max(0, math.min(TRB.Data.character.maxResource, estimatedMana))
-					TRB.Data.snapshot.symbolOfHope.resourceRaw = TRB.Data.snapshot.symbolOfHope.resourceRaw + nextTick + casterRegen
+					local estimatedMana = TRB.Data.character.maxResource + snapshot.symbolOfHope.resourceRaw + casterRegen - (snapshot.resource / TRB.Data.resourceFactor)
+					local nextTick = spells.symbolOfHope.manaPercent * math.max(0, math.min(TRB.Data.character.maxResource, estimatedMana))
+					snapshot.symbolOfHope.resourceRaw = snapshot.symbolOfHope.resourceRaw + nextTick + casterRegen
 				end
 
 				--Revisit if we get mana modifiers added
-				TRB.Data.snapshot.symbolOfHope.resourceFinal = CalculateManaGain(TRB.Data.snapshot.symbolOfHope.resourceRaw, false)
+				snapshot.symbolOfHope.resourceFinal = CalculateManaGain(snapshot.symbolOfHope.resourceRaw, false)
 			end
 		end
 	end
 
 	local function UpdateInnervate()
 		local currentTime = GetTime()
+		local snapshot = TRB.Data.snapshot
 
-		if TRB.Data.snapshot.innervate.endTime ~= nil and currentTime > TRB.Data.snapshot.innervate.endTime then
-			TRB.Data.snapshot.innervate.endTime = nil
-			TRB.Data.snapshot.innervate.duration = 0
-			TRB.Data.snapshot.innervate.remainingTime = 0
-			TRB.Data.snapshot.innervate.mana = 0
-			TRB.Data.snapshot.audio.innervateCue = false
+		if snapshot.innervate.endTime ~= nil and currentTime > snapshot.innervate.endTime then
+			snapshot.innervate.endTime = nil
+			snapshot.innervate.duration = 0
+			snapshot.innervate.remainingTime = 0
+			snapshot.innervate.mana = 0
+			snapshot.audio.innervateCue = false
 		else
-			TRB.Data.snapshot.innervate.remainingTime = GetInnervateRemainingTime()
-			TRB.Data.snapshot.innervate.mana = TRB.Data.snapshot.innervate.remainingTime * TRB.Data.snapshot.manaRegen
+			snapshot.innervate.remainingTime = GetInnervateRemainingTime()
+			snapshot.innervate.mana = snapshot.innervate.remainingTime * snapshot.manaRegen
 		end
 	end
 	
 	local function UpdatePotionOfChilledClarity()
 		local currentTime = GetTime()
+		local snapshot = TRB.Data.snapshot
 
-		if TRB.Data.snapshot.potionOfChilledClarity.endTime ~= nil and currentTime > TRB.Data.snapshot.potionOfChilledClarity.endTime then
-			TRB.Data.snapshot.potionOfChilledClarity.endTime = nil
-			TRB.Data.snapshot.potionOfChilledClarity.duration = 0
-			TRB.Data.snapshot.potionOfChilledClarity.remainingTime = 0
-			TRB.Data.snapshot.potionOfChilledClarity.mana = 0
-			TRB.Data.snapshot.audio.potionOfChilledClarityCue = false
+		if snapshot.potionOfChilledClarity.endTime ~= nil and currentTime > snapshot.potionOfChilledClarity.endTime then
+			snapshot.potionOfChilledClarity.endTime = nil
+			snapshot.potionOfChilledClarity.duration = 0
+			snapshot.potionOfChilledClarity.remainingTime = 0
+			snapshot.potionOfChilledClarity.mana = 0
+			snapshot.audio.potionOfChilledClarityCue = false
 		else
-			TRB.Data.snapshot.potionOfChilledClarity.remainingTime = GetPotionOfChilledClarityRemainingTime()
-			TRB.Data.snapshot.potionOfChilledClarity.mana = TRB.Data.snapshot.potionOfChilledClarity.remainingTime * TRB.Data.snapshot.manaRegen
+			snapshot.potionOfChilledClarity.remainingTime = GetPotionOfChilledClarityRemainingTime()
+			snapshot.potionOfChilledClarity.mana = snapshot.potionOfChilledClarity.remainingTime * snapshot.manaRegen
 		end
 	end
 
 	local function UpdateManaTideTotem(forceCleanup)
 		local currentTime = GetTime()
+		local snapshot = TRB.Data.snapshot
 
-		if forceCleanup or (TRB.Data.snapshot.manaTideTotem.endTime ~= nil and currentTime > TRB.Data.snapshot.manaTideTotem.endTime) then
-			TRB.Data.snapshot.manaTideTotem.endTime = nil
-			TRB.Data.snapshot.manaTideTotem.duration = 0
-			TRB.Data.snapshot.manaTideTotem.remainingTime = 0
-			TRB.Data.snapshot.manaTideTotem.mana = 0
-			TRB.Data.snapshot.audio.manaTideTotemCue = false
+		if forceCleanup or (snapshot.manaTideTotem.endTime ~= nil and currentTime > snapshot.manaTideTotem.endTime) then
+			snapshot.manaTideTotem.endTime = nil
+			snapshot.manaTideTotem.duration = 0
+			snapshot.manaTideTotem.remainingTime = 0
+			snapshot.manaTideTotem.mana = 0
+			snapshot.audio.manaTideTotemCue = false
 		else
-			TRB.Data.snapshot.manaTideTotem.remainingTime = GetManaTideTotemRemainingTime()
-			TRB.Data.snapshot.manaTideTotem.mana = TRB.Data.snapshot.manaTideTotem.remainingTime * (TRB.Data.snapshot.manaRegen / 2) --Only half of this is considered bonus
+			snapshot.manaTideTotem.remainingTime = GetManaTideTotemRemainingTime()
+			snapshot.manaTideTotem.mana = snapshot.manaTideTotem.remainingTime * (snapshot.manaRegen / 2) --Only half of this is considered bonus
 		end
 	end
 
 	local function UpdateMoltenRadiance(forceCleanup)
 		local currentTime = GetTime()
+		local snapshot = TRB.Data.snapshot
 
-		if forceCleanup or (TRB.Data.snapshot.moltenRadiance.endTime ~= nil and currentTime > TRB.Data.snapshot.moltenRadiance.endTime) then
-			TRB.Data.snapshot.moltenRadiance.endTime = nil
-			TRB.Data.snapshot.moltenRadiance.duration = 0
-			TRB.Data.snapshot.moltenRadiance.remainingTime = 0
-			TRB.Data.snapshot.moltenRadiance.mana = 0
-			TRB.Data.snapshot.moltenRadiance.manaPerTick = 0
-		elseif TRB.Data.snapshot.moltenRadiance.endTime ~= nil then
-			TRB.Data.snapshot.moltenRadiance.remainingTime = GetMoltenRadianceRemainingTime()
-			TRB.Data.snapshot.moltenRadiance.mana = TRB.Data.snapshot.moltenRadiance.manaPerTick * TRB.Functions.Number:RoundTo(TRB.Data.snapshot.moltenRadiance.remainingTime, 0, "ceil", true)
+		if forceCleanup or (snapshot.moltenRadiance.endTime ~= nil and currentTime > snapshot.moltenRadiance.endTime) then
+			snapshot.moltenRadiance.endTime = nil
+			snapshot.moltenRadiance.duration = 0
+			snapshot.moltenRadiance.remainingTime = 0
+			snapshot.moltenRadiance.mana = 0
+			snapshot.moltenRadiance.manaPerTick = 0
+		elseif snapshot.moltenRadiance.endTime ~= nil then
+			snapshot.moltenRadiance.remainingTime = GetMoltenRadianceRemainingTime()
+			snapshot.moltenRadiance.mana = snapshot.moltenRadiance.manaPerTick * TRB.Functions.Number:RoundTo(snapshot.moltenRadiance.remainingTime, 0, "ceil", true)
 		end
 	end
 
 	local function UpdateSnapshot()
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.Target
+		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local currentTime = GetTime()
 		TRB.Functions.Character:UpdateSnapshot()
 		
-		if TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] then
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShock then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.flameShock.id, "target", "player"))
+		if snapshot.targetData.currentTargetGuid ~= nil and target then
+			if target.spells[spells.flameShock.id].active then
+				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(spells.flameShock.id, "target", "player"))
 			
 				if expiration ~= nil then
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShockRemaining = expiration - currentTime
+					target.spells[spells.flameShock.id].remainingTime = expiration - currentTime
 				end
 			end
 		end
 
-		if TRB.Data.snapshot.ascendance.startTime ~= nil and currentTime > (TRB.Data.snapshot.ascendance.startTime + TRB.Data.snapshot.ascendance.duration) then
-			TRB.Data.snapshot.ascendance.startTime = nil
-			TRB.Data.snapshot.ascendance.duration = 0
-			TRB.Data.snapshot.ascendance.remainingTime = 0
+		if snapshot.ascendance.startTime ~= nil and currentTime > (snapshot.ascendance.startTime + snapshot.ascendance.duration) then
+			snapshot.ascendance.startTime = nil
+			snapshot.ascendance.duration = 0
+			snapshot.ascendance.remainingTime = 0
 		else
-			_, _, _, _, TRB.Data.snapshot.ascendance.duration, TRB.Data.snapshot.ascendance.endTime, _, _, _, TRB.Data.snapshot.ascendance.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.ascendance.id)
-			TRB.Data.snapshot.ascendance.remainingTime = GetAscendanceRemainingTime()
+			TRB.Functions.Aura:SnapshotGenericAura(spells.ascendance.id, nil, snapshot.ascendance)
 		end
 	end
 
 	local function UpdateSnapshot_Elemental()
 		UpdateSnapshot()
-
-		local currentTime = GetTime()
 		UpdateIcefury()
+		local spells = TRB.Data.spells
 
 		TRB.Data.character.earthShockThreshold = TRB.Data.character.earthShockThreshold
-		TRB.Data.character.earthquakeThreshold = -(TRB.Data.spells.earthquake.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].earthquake)
+		TRB.Data.character.earthquakeThreshold = -(spells.earthquake.maelstrom - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].earthquake)
 	end
 
 	local function UpdateSnapshot_Enhancement()
 		UpdateSnapshot()
-		
-		local currentTime = GetTime()
-		local _
 	end
 
 	local function UpdateSnapshot_Restoration()
@@ -2107,32 +2071,24 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		UpdateManaTideTotem()
 		UpdateMoltenRadiance()
 
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
 		local currentTime = GetTime()
 		local _
 
 		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
-		TRB.Data.snapshot.potion.startTime, TRB.Data.snapshot.potion.duration, _ = GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
-		if TRB.Data.snapshot.potion.startTime > 0 and TRB.Data.snapshot.potion.duration > 0 then
-			TRB.Data.snapshot.potion.onCooldown = true
+		snapshot.potion.startTime, snapshot.potion.duration, _ = GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
+		if snapshot.potion.startTime > 0 and snapshot.potion.duration > 0 then
+			snapshot.potion.onCooldown = true
 		else
-			TRB.Data.snapshot.potion.onCooldown = false
+			snapshot.potion.onCooldown = false
 		end
 
-		TRB.Data.snapshot.conjuredChillglobe.startTime, TRB.Data.snapshot.conjuredChillglobe.duration, _ = GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
-		if TRB.Data.snapshot.conjuredChillglobe.startTime > 0 and TRB.Data.snapshot.conjuredChillglobe.duration > 0 then
-			TRB.Data.snapshot.conjuredChillglobe.onCooldown = true
+		snapshot.conjuredChillglobe.startTime, snapshot.conjuredChillglobe.duration, _ = GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
+		if snapshot.conjuredChillglobe.startTime > 0 and snapshot.conjuredChillglobe.duration > 0 then
+			snapshot.conjuredChillglobe.onCooldown = true
 		else
-			TRB.Data.snapshot.conjuredChillglobe.onCooldown = false
-		end
-				
-		if TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] then
-			if TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShock then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(TRB.Data.spells.flameShock.id, "target", "player"))
-			
-				if expiration ~= nil then
-					TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShockRemaining = expiration - currentTime
-				end
-			end
+			snapshot.conjuredChillglobe.onCooldown = false
 		end
 	end
 
@@ -2142,13 +2098,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local specId = GetSpecialization()
 		local coreSettings = TRB.Data.settings.core
 		local classSettings = TRB.Data.settings.shaman
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
 
 		if specId == 1 then
 			local specSettings = classSettings.elemental
 			UpdateSnapshot_Elemental()
 			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
-			if TRB.Data.snapshot.isTracking then
+			if snapshot.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
@@ -2160,13 +2118,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						local barBorderColor = specSettings.colors.bar.borderOvercap
 
-						if specSettings.audio.overcap.enabled and TRB.Data.snapshot.audio.overcapCue == false then
-							TRB.Data.snapshot.audio.overcapCue = true
+						if specSettings.audio.overcap.enabled and snapshot.audio.overcapCue == false then
+							snapshot.audio.overcapCue = true
 							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
-						TRB.Data.snapshot.audio.overcapCue = false
+						snapshot.audio.overcapCue = false
 					end
 					
 
@@ -2176,12 +2134,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
-					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshot.resource)
+					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshot.resource)
 
 					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = TRB.Data.snapshot.resource + TRB.Data.snapshot.casting.resourceFinal
+						castingBarValue = snapshot.resource + snapshot.casting.resourceFinal
 					else
-						castingBarValue = TRB.Data.snapshot.resource
+						castingBarValue = snapshot.resource
 					end
 
 					TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
@@ -2191,12 +2149,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					local barColor = specSettings.colors.bar.base
 
 					local pairOffset = 0
-					for k, v in pairs(TRB.Data.spells) do
-						local spell = TRB.Data.spells[k]
+					for k, v in pairs(spells) do
+						local spell = spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.maelstrom ~= nil and spell.maelstrom < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							pairOffset = (spell.thresholdId - 1) * 3
 							local resourceAmount = spell.maelstrom
-							local currentResource = TRB.Data.snapshot.resource
+							local currentResource = snapshot.resource
 							--TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
@@ -2204,13 +2162,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 							
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-								if spell.id == TRB.Data.spells.earthShock.id then
+								if spell.id == spells.earthShock.id then
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
-									elseif TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elementalBlast) then
+									elseif TRB.Functions.Talent:IsTalentActive(spells.elementalBlast) then
 										showThreshold = false
 									else
-										resourceAmount = resourceAmount - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].earthShock
+										resourceAmount = resourceAmount - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].earthShock
 										
 										if currentResource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
@@ -2219,11 +2177,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									end
-								elseif spell.id == TRB.Data.spells.elementalBlast.id then
+								elseif spell.id == spells.elementalBlast.id then
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									else
-										resourceAmount = resourceAmount - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].elementalBlast
+										resourceAmount = resourceAmount - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].elementalBlast
 										
 										if currentResource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
@@ -2232,16 +2190,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									end
-								elseif spell.id == TRB.Data.spells.earthquake.id then
+								elseif spell.id == spells.earthquake.id then
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									else
-										resourceAmount = resourceAmount - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].earthquake
+										resourceAmount = resourceAmount - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].earthquake
 
-										if TRB.Data.snapshot.echoesOfGreatSundering.isActive then
+										if snapshot.echoesOfGreatSundering.isActive then
 											thresholdColor = specSettings.colors.threshold.echoesOfGreatSundering
 											frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-										elseif TRB.Data.snapshot.resource >= -resourceAmount then
+										elseif snapshot.resource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
 											frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 										else
@@ -2256,8 +2214,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
-								if (TRB.Data.snapshot[spell.settingKey].charges == nil or TRB.Data.snapshot[spell.settingKey].charges == 0) and
-									(TRB.Data.snapshot[spell.settingKey].startTime ~= nil and currentTime < (TRB.Data.snapshot[spell.settingKey].startTime + TRB.Data.snapshot[spell.settingKey].duration)) then
+								if (snapshot[spell.settingKey].charges == nil or snapshot[spell.settingKey].charges == 0) and
+									(snapshot[spell.settingKey].startTime ~= nil and currentTime < (snapshot[spell.settingKey].startTime + snapshot[spell.settingKey].duration)) then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif currentResource >= -resourceAmount then
@@ -2277,29 +2235,29 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							
 							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
-							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshot[spell.settingKey], specSettings)
+							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot[spell.settingKey], specSettings)
 						end
 					end
 
-					if TRB.Data.snapshot.resource >= TRB.Data.character.earthShockThreshold then
+					if snapshot.resource >= TRB.Data.character.earthShockThreshold then
 						if specSettings.colors.bar.flashEnabled then
 							TRB.Functions.Bar:PulseFrame(barContainerFrame, specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 						else
 							barContainerFrame:SetAlpha(1.0)
 						end
 
-						if specSettings.audio.esReady.enabled and TRB.Data.snapshot.audio.playedEsCue == false then
-							TRB.Data.snapshot.audio.playedEsCue = true
+						if specSettings.audio.esReady.enabled and snapshot.audio.playedEsCue == false then
+							snapshot.audio.playedEsCue = true
 							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.esReady.sound, coreSettings.audio.channel.channel)
 						end
 					else
 						barContainerFrame:SetAlpha(1.0)
-						TRB.Data.snapshot.audio.playedEsCue = false
+						snapshot.audio.playedEsCue = false
 					end
 
-					if TRB.Data.snapshot.ascendance.remainingTime > 0 then
-						local timeLeft = TRB.Data.snapshot.ascendance.remainingTime
+					if snapshot.ascendance.remainingTime > 0 then
+						local timeLeft = snapshot.ascendance.remainingTime
 						local timeThreshold = 0
 						local useEndOfAscendanceColor = false
 
@@ -2329,7 +2287,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			UpdateSnapshot_Enhancement()
 			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
-			if TRB.Data.snapshot.isTracking then
+			if snapshot.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
@@ -2337,7 +2295,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border
 
-					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshot.resource)
+					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshot.resource)
 					TRB.Functions.Bar:SetValue(specSettings, castingFrame, 0, 1)
 					TRB.Functions.Bar:SetValue(specSettings, passiveFrame, 0, 1)
 
@@ -2345,8 +2303,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 					
-					if TRB.Data.snapshot.ascendance.remainingTime > 0 then
-						local timeLeft = TRB.Data.snapshot.ascendance.remainingTime
+					if snapshot.ascendance.remainingTime > 0 then
+						local timeLeft = snapshot.ascendance.remainingTime
 						local timeThreshold = 0
 						local useEndOfAscendanceColor = false
 
@@ -2368,17 +2326,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					end
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
-
-					--[[
-					local partial = UnitPartialPower("player", Enum.PowerType.Essence) / 1000
-					local totalEssence = math.min(partial + TRB.Data.snapshot.resource2, TRB.Data.character.maxResource2Raw)
-					--print(partial, partial + TRB.Data.snapshot.resource2, TRB.Data.snapshot.resource2)
-
-					TRB.Frames.resource2Frames[1].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.base, true))
-					TRB.Frames.resource2Frames[1].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.border, true))
-					TRB.Frames.resource2Frames[1].containerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true))
-					TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[1].resourceFrame, totalEssence, TRB.Data.character.maxResource2Raw)
-					]]
 					
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 					for x = 1, TRB.Data.character.maxResource2 do
@@ -2388,14 +2335,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						local cpBG = cpBackgroundGreen
 						local cpBB = cpBackgroundBlue
 
-						if TRB.Data.snapshot.resource2 >= x then
+						if snapshot.resource2 >= x then
 							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
-							if (specSettings.comboPoints.sameColor and TRB.Data.snapshot.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+							if (specSettings.comboPoints.sameColor and snapshot.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = specSettings.colors.comboPoints.penultimate
-							elseif (specSettings.comboPoints.sameColor and TRB.Data.snapshot.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+							elseif (specSettings.comboPoints.sameColor and snapshot.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = specSettings.colors.comboPoints.final
 							end
-						elseif TRB.Data.snapshot.resource2+1 == x then
+						elseif snapshot.resource2+1 == x then
 							local partial = UnitPartialPower("player", Enum.PowerType.Essence)
 							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
 						else
@@ -2413,27 +2360,27 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			local specSettings = classSettings.restoration
 			UpdateSnapshot_Restoration()
 			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
-			if TRB.Data.snapshot.isTracking then
+			if snapshot.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local currentMana = TRB.Data.snapshot.resource / TRB.Data.resourceFactor
+					local currentMana = snapshot.resource / TRB.Data.resourceFactor
 					local barBorderColor = specSettings.colors.bar.border
 
-					if TRB.Data.snapshot.potionOfChilledClarity.isActive then
+					if snapshot.potionOfChilledClarity.isActive then
 						if specSettings.colors.bar.potionOfChilledClarityBorderChange then
 							barBorderColor = specSettings.colors.bar.potionOfChilledClarity
 						end
-					elseif TRB.Data.snapshot.innervate.isActive then
+					elseif snapshot.innervate.isActive then
 						if specSettings.colors.bar.innervateBorderChange then
 							barBorderColor = specSettings.colors.bar.innervate
 						end
 
-						if specSettings.audio.innervate.enabled and TRB.Data.snapshot.audio.innervateCue == false then
-							TRB.Data.snapshot.audio.innervateCue = true
+						if specSettings.audio.innervate.enabled and snapshot.audio.innervateCue == false then
+							snapshot.audio.innervateCue = true
 ---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.innervate.sound, coreSettings.audio.channel.channel)
 						end
@@ -2444,19 +2391,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentMana)
 
 					if CastingSpell() and specSettings.bar.showCasting  then
-						castingBarValue = currentMana + TRB.Data.snapshot.casting.resourceFinal
+						castingBarValue = currentMana + snapshot.casting.resourceFinal
 					else
 						castingBarValue = currentMana
 					end
 
 					TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 
-					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, TRB.Data.snapshot.potion, TRB.Data.snapshot.conjuredChillglobe, TRB.Data.character, resourceFrame, CalculateManaGain)
+					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, snapshot.potion, snapshot.conjuredChillglobe, TRB.Data.character, resourceFrame, CalculateManaGain)
 
 					local passiveValue = 0
 					if specSettings.bar.showPassive then
-						if TRB.Data.snapshot.channeledManaPotion.isActive then
-							passiveValue = passiveValue + TRB.Data.snapshot.channeledManaPotion.mana
+						if snapshot.channeledManaPotion.isActive then
+							passiveValue = passiveValue + snapshot.channeledManaPotion.mana
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -2470,8 +2417,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Frames.passiveFrame.thresholds[1]:Hide()
 						end
 
-						if TRB.Data.snapshot.innervate.mana > 0 or TRB.Data.snapshot.potionOfChilledClarity.mana > 0 then
-							passiveValue = passiveValue + math.max(TRB.Data.snapshot.innervate.mana, TRB.Data.snapshot.potionOfChilledClarity.mana)
+						if snapshot.innervate.mana > 0 or snapshot.potionOfChilledClarity.mana > 0 then
+							passiveValue = passiveValue + math.max(snapshot.innervate.mana, snapshot.potionOfChilledClarity.mana)
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -2485,8 +2432,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Frames.passiveFrame.thresholds[1]:Hide()
 						end
 
-						if TRB.Data.snapshot.innervate.mana > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshot.innervate.mana
+						if snapshot.innervate.mana > 0 then
+							passiveValue = passiveValue + snapshot.innervate.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -2500,8 +2447,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Frames.passiveFrame.thresholds[2]:Hide()
 						end
 
-						if TRB.Data.snapshot.symbolOfHope.resourceFinal > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshot.symbolOfHope.resourceFinal
+						if snapshot.symbolOfHope.resourceFinal > 0 then
+							passiveValue = passiveValue + snapshot.symbolOfHope.resourceFinal
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -2515,8 +2462,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Frames.passiveFrame.thresholds[3]:Hide()
 						end
 
-						if TRB.Data.snapshot.manaTideTotem.mana > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshot.manaTideTotem.mana
+						if snapshot.manaTideTotem.mana > 0 then
+							passiveValue = passiveValue + snapshot.manaTideTotem.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -2530,8 +2477,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Frames.passiveFrame.thresholds[4]:Hide()
 						end
 
-						if TRB.Data.snapshot.moltenRadiance.mana > 0 then
-							passiveValue = passiveValue + TRB.Data.snapshot.moltenRadiance.mana
+						if snapshot.moltenRadiance.mana > 0 then
+							passiveValue = passiveValue + snapshot.moltenRadiance.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -2553,22 +2500,22 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					end
 
 					passiveBarValue = castingBarValue + passiveValue
-					if castingBarValue < TRB.Data.snapshot.resource then --Using a spender
-						if -TRB.Data.snapshot.casting.resourceFinal > passiveValue then
+					if castingBarValue < snapshot.resource then --Using a spender
+						if -snapshot.casting.resourceFinal > passiveValue then
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, TRB.Data.snapshot.resource)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, snapshot.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, TRB.Data.snapshot.resource)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, snapshot.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, TRB.Data.snapshot.resource)
+						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshot.resource)
 						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
 						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
@@ -2579,8 +2526,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 					resourceBarColor = specSettings.colors.bar.base
 
-					if TRB.Data.snapshot.ascendance.remainingTime > 0 then
-						local timeLeft = TRB.Data.snapshot.ascendance.remainingTime
+					if snapshot.ascendance.remainingTime > 0 then
+						local timeLeft = snapshot.ascendance.remainingTime
 						local timeThreshold = 0
 						local useEndOfAscendanceColor = false
 
@@ -2614,74 +2561,78 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local triggerUpdate = false
 		local _
 		local specId = GetSpecialization()
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.TargetData
+		local targetData = TRB.Data.snapshot.targetData
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 
 			if destGUID == TRB.Data.character.guid then
 				if specId == 3 and TRB.Data.barConstructedForSpec == "restoration" then -- Let's check raid effect mana stuff
-					if type == "SPELL_ENERGIZE" and spellId == TRB.Data.spells.symbolOfHope.tickId then
-						TRB.Data.snapshot.symbolOfHope.isActive = true
-						if TRB.Data.snapshot.symbolOfHope.firstTickTime == nil then
-							TRB.Data.snapshot.symbolOfHope.firstTickTime = currentTime
-							TRB.Data.snapshot.symbolOfHope.previousTickTime = currentTime
-							TRB.Data.snapshot.symbolOfHope.ticksRemaining = TRB.Data.spells.symbolOfHope.ticks
-							TRB.Data.snapshot.symbolOfHope.tickRate = (TRB.Data.spells.symbolOfHope.duration / TRB.Data.spells.symbolOfHope.ticks)
-							TRB.Data.snapshot.symbolOfHope.endTime = currentTime + TRB.Data.spells.symbolOfHope.duration
+					if type == "SPELL_ENERGIZE" and spellId == spells.symbolOfHope.tickId then
+						snapshot.symbolOfHope.isActive = true
+						if snapshot.symbolOfHope.firstTickTime == nil then
+							snapshot.symbolOfHope.firstTickTime = currentTime
+							snapshot.symbolOfHope.previousTickTime = currentTime
+							snapshot.symbolOfHope.ticksRemaining = spells.symbolOfHope.ticks
+							snapshot.symbolOfHope.tickRate = (spells.symbolOfHope.duration / spells.symbolOfHope.ticks)
+							snapshot.symbolOfHope.endTime = currentTime + spells.symbolOfHope.duration
 						else
-							if TRB.Data.snapshot.symbolOfHope.ticksRemaining >= 1 then
+							if snapshot.symbolOfHope.ticksRemaining >= 1 then
 								if sourceGUID ~= TRB.Data.character.guid then
-									if not TRB.Data.snapshot.symbolOfHope.tickRateFound then
-										TRB.Data.snapshot.symbolOfHope.tickRate = currentTime - TRB.Data.snapshot.symbolOfHope.previousTickTime
-										TRB.Data.snapshot.symbolOfHope.tickRateFound = true
-										TRB.Data.snapshot.symbolOfHope.endTime = currentTime + (TRB.Data.snapshot.symbolOfHope.tickRate * (TRB.Data.snapshot.symbolOfHope.ticksRemaining - 1))
+									if not snapshot.symbolOfHope.tickRateFound then
+										snapshot.symbolOfHope.tickRate = currentTime - snapshot.symbolOfHope.previousTickTime
+										snapshot.symbolOfHope.tickRateFound = true
+										snapshot.symbolOfHope.endTime = currentTime + (snapshot.symbolOfHope.tickRate * (snapshot.symbolOfHope.ticksRemaining - 1))
 									end
 
-									if TRB.Data.snapshot.symbolOfHope.tickRate > (1.75 * 1.5) then -- Assume if its taken this long for a tick to happen, the rate is really half this and one was missed
-										TRB.Data.snapshot.symbolOfHope.tickRate = TRB.Data.snapshot.symbolOfHope.tickRate / 2
-										TRB.Data.snapshot.symbolOfHope.endTime = currentTime + (TRB.Data.snapshot.symbolOfHope.tickRate * (TRB.Data.snapshot.symbolOfHope.ticksRemaining - 2))
-										TRB.Data.snapshot.symbolOfHope.tickRateFound = false
+									if snapshot.symbolOfHope.tickRate > (1.75 * 1.5) then -- Assume if its taken this long for a tick to happen, the rate is really half this and one was missed
+										snapshot.symbolOfHope.tickRate = snapshot.symbolOfHope.tickRate / 2
+										snapshot.symbolOfHope.endTime = currentTime + (snapshot.symbolOfHope.tickRate * (snapshot.symbolOfHope.ticksRemaining - 2))
+										snapshot.symbolOfHope.tickRateFound = false
 									end
 								end
 							end
-							TRB.Data.snapshot.symbolOfHope.previousTickTime = currentTime
+							snapshot.symbolOfHope.previousTickTime = currentTime
 						end
-						TRB.Data.snapshot.symbolOfHope.resourceRaw = TRB.Data.snapshot.symbolOfHope.ticksRemaining * TRB.Data.spells.symbolOfHope.manaPercent * TRB.Data.character.maxResource
-						TRB.Data.snapshot.symbolOfHope.resourceFinal = CalculateManaGain(TRB.Data.snapshot.symbolOfHope.resourceRaw, false)
-					elseif spellId == TRB.Data.spells.innervate.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.innervate)
+						snapshot.symbolOfHope.resourceRaw = snapshot.symbolOfHope.ticksRemaining * spells.symbolOfHope.manaPercent * TRB.Data.character.maxResource
+						snapshot.symbolOfHope.resourceFinal = CalculateManaGain(snapshot.symbolOfHope.resourceRaw, false)
+					elseif spellId == spells.innervate.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.innervate)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-							TRB.Data.snapshot.innervate.modifier = 0
-							TRB.Data.snapshot.audio.innervateCue = false
+							snapshot.innervate.modifier = 0
+							snapshot.audio.innervateCue = false
 						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshot.innervate.modifier = 1
-							TRB.Data.snapshot.audio.innervateCue = false
+							snapshot.innervate.modifier = 1
+							snapshot.audio.innervateCue = false
 						end
-					elseif spellId == TRB.Data.spells.manaTideTotem.id then
+					elseif spellId == spells.manaTideTotem.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							TRB.Data.snapshot.manaTideTotem.isActive = true
-							TRB.Data.snapshot.manaTideTotem.duration = TRB.Data.spells.manaTideTotem.duration
-							TRB.Data.snapshot.manaTideTotem.endTime = TRB.Data.spells.manaTideTotem.duration + currentTime
-							TRB.Data.snapshot.audio.manaTideTotemCue = false
+							snapshot.manaTideTotem.isActive = true
+							snapshot.manaTideTotem.duration = spells.manaTideTotem.duration
+							snapshot.manaTideTotem.endTime = spells.manaTideTotem.duration + currentTime
+							snapshot.audio.manaTideTotemCue = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.manaTideTotem.isActive = false
-							TRB.Data.snapshot.manaTideTotem.spellId = nil
-							TRB.Data.snapshot.manaTideTotem.duration = 0
-							TRB.Data.snapshot.manaTideTotem.endTime = nil
-							TRB.Data.snapshot.audio.manaTideTotemCue = false
+							snapshot.manaTideTotem.isActive = false
+							snapshot.manaTideTotem.spellId = nil
+							snapshot.manaTideTotem.duration = 0
+							snapshot.manaTideTotem.endTime = nil
+							snapshot.audio.manaTideTotemCue = false
 						end
-					elseif spellId == TRB.Data.spells.moltenRadiance.id then
+					elseif spellId == spells.moltenRadiance.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							local _
-							_, _, _, _, TRB.Data.snapshot.moltenRadiance.duration, TRB.Data.snapshot.moltenRadiance.endTime, _, _, _, TRB.Data.snapshot.moltenRadiance.spellId, _, _, _, _, _, _, _, TRB.Data.snapshot.moltenRadiance.manaPerTick = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.moltenRadiance.id)
-							TRB.Data.snapshot.moltenRadiance.isActive = false
+							_, _, _, _, snapshot.moltenRadiance.duration, snapshot.moltenRadiance.endTime, _, _, _, snapshot.moltenRadiance.spellId, _, _, _, _, _, _, _, snapshot.moltenRadiance.manaPerTick = TRB.Functions.Aura:FindBuffById(spells.moltenRadiance.id)
+							snapshot.moltenRadiance.isActive = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							TRB.Data.snapshot.moltenRadiance.isActive = false
-							TRB.Data.snapshot.moltenRadiance.spellId = nil
-							TRB.Data.snapshot.moltenRadiance.duration = 0
-							TRB.Data.snapshot.moltenRadiance.endTime = nil
-							TRB.Data.snapshot.moltenRadiance.manaPerTick = 0
-							TRB.Data.snapshot.moltenRadiance.mana = 0
+							snapshot.moltenRadiance.isActive = false
+							snapshot.moltenRadiance.spellId = nil
+							snapshot.moltenRadiance.duration = 0
+							snapshot.moltenRadiance.endTime = nil
+							snapshot.moltenRadiance.manaPerTick = 0
+							snapshot.moltenRadiance.mana = 0
 						end
 					end
 				end
@@ -2689,114 +2640,114 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			if sourceGUID == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "elemental" then
-					if spellId == TRB.Data.spells.chainLightning.id or spellId == TRB.Data.spells.lavaBeam.id then
+					if spellId == spells.chainLightning.id or spellId == spells.lavaBeam.id then
 						if type == "SPELL_DAMAGE" then
-							if TRB.Data.snapshot.chainLightning.hitTime == nil or currentTime > (TRB.Data.snapshot.chainLightning.hitTime + 0.1) then --This is a new hit
-								TRB.Data.snapshot.chainLightning.targetsHit = 0
+							if snapshot.chainLightning.hitTime == nil or currentTime > (snapshot.chainLightning.hitTime + 0.1) then --This is a new hit
+								snapshot.chainLightning.targetsHit = 0
 							end
-							TRB.Data.snapshot.chainLightning.targetsHit = TRB.Data.snapshot.chainLightning.targetsHit + 1
-							TRB.Data.snapshot.chainLightning.hitTime = currentTime
-							TRB.Data.snapshot.chainLightning.hasStruckTargets = true
+							snapshot.chainLightning.targetsHit = snapshot.chainLightning.targetsHit + 1
+							snapshot.chainLightning.hitTime = currentTime
+							snapshot.chainLightning.hasStruckTargets = true
 						end
-					elseif spellId == TRB.Data.spells.icefury.id then
+					elseif spellId == spells.icefury.id then
 						if type == "SPELL_AURA_APPLIED" then -- Icefury
-							TRB.Data.snapshot.icefury.isActive = true
-							TRB.Data.snapshot.icefury.stacks = TRB.Data.spells.icefury.stacks
-							TRB.Data.snapshot.icefury.maelstrom = TRB.Data.snapshot.icefury.stacks * TRB.Data.spells.frostShock.maelstrom
-							TRB.Data.snapshot.icefury.startTime = currentTime
+							snapshot.icefury.isActive = true
+							snapshot.icefury.stacks = spells.icefury.stacks
+							snapshot.icefury.maelstrom = snapshot.icefury.stacks * spells.frostShock.maelstrom
+							snapshot.icefury.startTime = currentTime
 						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshot.icefury.isActive = false
-							TRB.Data.snapshot.icefury.stacks = 0
-							TRB.Data.snapshot.icefury.maelstrom = 0
-							TRB.Data.snapshot.icefury.startTime = nil
+							snapshot.icefury.isActive = false
+							snapshot.icefury.stacks = 0
+							snapshot.icefury.maelstrom = 0
+							snapshot.icefury.startTime = nil
 						elseif type == "SPELL_AURA_REMOVED_DOSE" then
-							TRB.Data.snapshot.icefury.stacks = TRB.Data.snapshot.icefury.stacks - 1
-							TRB.Data.snapshot.icefury.maelstrom = TRB.Data.snapshot.icefury.stacks * TRB.Data.spells.frostShock.maelstrom
+							snapshot.icefury.stacks = snapshot.icefury.stacks - 1
+							snapshot.icefury.maelstrom = snapshot.icefury.stacks * spells.frostShock.maelstrom
 						end
-					elseif spellId == TRB.Data.spells.stormkeeper.id then
+					elseif spellId == spells.stormkeeper.id then
 						if type == "SPELL_AURA_APPLIED" then -- Stormkeeper
-							TRB.Data.snapshot.stormkeeper.isActive = true
+							snapshot.stormkeeper.isActive = true
 							UpdateStormkeeper()
 						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshot.stormkeeper.isActive = false
+							snapshot.stormkeeper.isActive = false
 							UpdateStormkeeper()
 						elseif type == "SPELL_AURA_REMOVED_DOSE" then
 							UpdateStormkeeper()
 						end
-					elseif spellId == TRB.Data.spells.surgeOfPower.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.surgeOfPower, true)
-					elseif spellId == TRB.Data.spells.powerOfTheMaelstrom.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.powerOfTheMaelstrom, true)
-					elseif spellId == TRB.Data.spells.echoesOfGreatSundering.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.echoesOfGreatSundering)
-					elseif spellId == TRB.Data.spells.primalFracture.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.primalFracture)
+					elseif spellId == spells.surgeOfPower.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.surgeOfPower, true)
+					elseif spellId == spells.powerOfTheMaelstrom.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.powerOfTheMaelstrom, true)
+					elseif spellId == spells.echoesOfGreatSundering.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.echoesOfGreatSundering)
+					elseif spellId == spells.primalFracture.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.primalFracture)
 					end					
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "enhancement" then
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "restoration" then
-					if spellId == TRB.Data.spells.symbolOfHope.id then
+					if spellId == spells.symbolOfHope.id then
 						if type == "SPELL_AURA_REMOVED" then -- Lost Symbol of Hope
 							-- Let UpdateSymbolOfHope() clean this up
 							UpdateSymbolOfHope(true)
 						end
-					elseif spellId == TRB.Data.spells.potionOfFrozenFocusRank1.spellId then
+					elseif spellId == spells.potionOfFrozenFocusRank1.spellId then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Potion of Frozen Focus
-							TRB.Data.snapshot.channeledManaPotion.spellKey = "potionOfFrozenFocusRank1"
-							TRB.Data.snapshot.channeledManaPotion.isActive = true
-							TRB.Data.snapshot.channeledManaPotion.ticksRemaining = TRB.Data.spells.potionOfFrozenFocusRank1.ticks
-							TRB.Data.snapshot.channeledManaPotion.mana = TRB.Data.snapshot.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfFrozenFocusRank1.mana, true)
-							TRB.Data.snapshot.channeledManaPotion.endTime = currentTime + TRB.Data.spells.potionOfFrozenFocusRank1.duration
+							snapshot.channeledManaPotion.spellKey = "potionOfFrozenFocusRank1"
+							snapshot.channeledManaPotion.isActive = true
+							snapshot.channeledManaPotion.ticksRemaining = spells.potionOfFrozenFocusRank1.ticks
+							snapshot.channeledManaPotion.mana = snapshot.channeledManaPotion.ticksRemaining * CalculateManaGain(spells.potionOfFrozenFocusRank1.mana, true)
+							snapshot.channeledManaPotion.endTime = currentTime + spells.potionOfFrozenFocusRank1.duration
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Frozen Focus channel
 							-- Let UpdateChanneledManaPotion() clean this up
 							UpdateChanneledManaPotion(true)
 						end
-					elseif spellId == TRB.Data.spells.potionOfFrozenFocusRank2.spellId then
+					elseif spellId == spells.potionOfFrozenFocusRank2.spellId then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Potion of Frozen Focus
-							TRB.Data.snapshot.channeledManaPotion.spellKey = "potionOfFrozenFocusRank2"
-							TRB.Data.snapshot.channeledManaPotion.isActive = true
-							TRB.Data.snapshot.channeledManaPotion.ticksRemaining = TRB.Data.spells.potionOfFrozenFocusRank2.ticks
-							TRB.Data.snapshot.channeledManaPotion.mana = TRB.Data.snapshot.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfFrozenFocusRank2.mana, true)
-							TRB.Data.snapshot.channeledManaPotion.endTime = currentTime + TRB.Data.spells.potionOfFrozenFocusRank2.duration
+							snapshot.channeledManaPotion.spellKey = "potionOfFrozenFocusRank2"
+							snapshot.channeledManaPotion.isActive = true
+							snapshot.channeledManaPotion.ticksRemaining = spells.potionOfFrozenFocusRank2.ticks
+							snapshot.channeledManaPotion.mana = snapshot.channeledManaPotion.ticksRemaining * CalculateManaGain(spells.potionOfFrozenFocusRank2.mana, true)
+							snapshot.channeledManaPotion.endTime = currentTime + spells.potionOfFrozenFocusRank2.duration
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Frozen Focus channel
 							-- Let UpdateChanneledManaPotion() clean this up
 							UpdateChanneledManaPotion(true)
 						end
-					elseif spellId == TRB.Data.spells.potionOfFrozenFocusRank3.spellId then
+					elseif spellId == spells.potionOfFrozenFocusRank3.spellId then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Potion of Frozen Focus
-							TRB.Data.snapshot.channeledManaPotion.spellKey = "potionOfFrozenFocusRank3"
-							TRB.Data.snapshot.channeledManaPotion.isActive = true
-							TRB.Data.snapshot.channeledManaPotion.ticksRemaining = TRB.Data.spells.potionOfFrozenFocusRank3.ticks
-							TRB.Data.snapshot.channeledManaPotion.mana = TRB.Data.snapshot.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells.potionOfFrozenFocusRank3.mana, true)
-							TRB.Data.snapshot.channeledManaPotion.endTime = currentTime + TRB.Data.spells.potionOfFrozenFocusRank3.duration
+							snapshot.channeledManaPotion.spellKey = "potionOfFrozenFocusRank3"
+							snapshot.channeledManaPotion.isActive = true
+							snapshot.channeledManaPotion.ticksRemaining = spells.potionOfFrozenFocusRank3.ticks
+							snapshot.channeledManaPotion.mana = snapshot.channeledManaPotion.ticksRemaining * CalculateManaGain(spells.potionOfFrozenFocusRank3.mana, true)
+							snapshot.channeledManaPotion.endTime = currentTime + spells.potionOfFrozenFocusRank3.duration
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Frozen Focus channel
 							-- Let UpdateChanneledManaPotion() clean this up
 							UpdateChanneledManaPotion(true)
 						end			
-					elseif spellId == TRB.Data.spells.potionOfChilledClarity.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.potionOfChilledClarity)
+					elseif spellId == spells.potionOfChilledClarity.id then
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.potionOfChilledClarity)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-							TRB.Data.snapshot.potionOfChilledClarity.modifier = 0
+							snapshot.potionOfChilledClarity.modifier = 0
 						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshot.potionOfChilledClarity.modifier = 1
+							snapshot.potionOfChilledClarity.modifier = 1
 						end
 					end
 				end
 
 				-- Spec agnostic abilities
-				if spellId == TRB.Data.spells.ascendance.id then
-					TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.ascendance)
-				elseif spellId == TRB.Data.spells.flameShock.id then
+				if spellId == spells.ascendance.id then
+					TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.ascendance)
+				elseif spellId == spells.flameShock.id then
 					if TRB.Functions.Class:InitializeTarget(destGUID) then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- FS Applied to Target
-							TRB.Data.snapshot.targetData.targets[destGUID].flameShock = true
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Flame Shock Applied to Target
+							targetData.targets[destGUID].spells[spells.flameShock.id].active = true
 							if type == "SPELL_AURA_APPLIED" then
-								TRB.Data.snapshot.targetData.flameShock = TRB.Data.snapshot.targetData.flameShock + 1
+								targetData.count[spells.flameShock.id] = targetData.count[spells.flameShock.id] + 1
 							end
 							triggerUpdate = true
 						elseif type == "SPELL_AURA_REMOVED" then
-							TRB.Data.snapshot.targetData.targets[destGUID].flameShock = false
-							TRB.Data.snapshot.targetData.targets[destGUID].flameShockRemaining = 0
-							TRB.Data.snapshot.targetData.flameShock = TRB.Data.snapshot.targetData.flameShock - 1
+							targetData.targets[destGUID].spells[spells.flameShock.id].active = false
+							targetData.targets[destGUID].spells[spells.flameShock.id].remainingTime = 0
+							targetData.count[spells.flameShock.id] = targetData.count[spells.flameShock.id] - 1
 							triggerUpdate = true
 						--elseif type == "SPELL_PERIODIC_DAMAGE" then
 						end
@@ -2805,7 +2756,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				TRB.Functions.Target:RemoveTarget(destGUID)
+				targetData:Remove(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end
@@ -2844,12 +2795,20 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
+
 		if specId == 1 then
 			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.shaman.elemental)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.elemental)
 			specCache.elemental.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Elemental()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.elemental)
+			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
+			
+			local spells = TRB.Data.spells
+			---@type TRB.Classes.TargetData
+			local targetData = TRB.Data.snapshot.targetData
+			targetData:AddSpellTracking(spells.flameShock)
+
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Elemental
 
 			if TRB.Data.barConstructedForSpec ~= "elemental" then
@@ -2862,6 +2821,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			specCache.enhancement.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Enhancement()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.enhancement)
+			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
+			
+			local spells = TRB.Data.spells
+			---@type TRB.Classes.TargetData
+			local targetData = TRB.Data.snapshot.targetData
+			targetData:AddSpellTracking(spells.flameShock)
+
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Enhancement
 
 			if TRB.Data.barConstructedForSpec ~= "enhancement" then
@@ -2874,6 +2840,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			specCache.restoration.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Restoration()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.restoration)
+			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
+			
+			
+			local spells = TRB.Data.spells
+			---@type TRB.Classes.TargetData
+			local targetData = TRB.Data.snapshot.targetData
+			targetData:AddSpellTracking(spells.flameShock)
+
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Restoration
 
 			if TRB.Data.barConstructedForSpec ~= "restoration" then
@@ -2960,6 +2934,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	function TRB.Functions.Class:CheckCharacter()
 		local specId = GetSpecialization()
+		local spells = TRB.Data.spells
 		TRB.Functions.Character:CheckCharacter()
 		TRB.Data.character.className = "shaman"
 		
@@ -2968,13 +2943,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 ---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Maelstrom)
 
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[TRB.Data.spells.earthShock.thresholdId], TRB.Data.spells.earthShock.settingKey, TRB.Data.settings.shaman.elemental)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[TRB.Data.spells.elementalBlast.thresholdId], TRB.Data.spells.elementalBlast.settingKey, TRB.Data.settings.shaman.elemental)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spells.earthShock.thresholdId], spells.earthShock.settingKey, TRB.Data.settings.shaman.elemental)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spells.elementalBlast.thresholdId], spells.elementalBlast.settingKey, TRB.Data.settings.shaman.elemental)
 
-			if (TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.elementalBlast) and TRB.Data.spells.elementalBlast.maelstrom < TRB.Data.character.maxResource) then
-				TRB.Data.character.earthShockThreshold = -(TRB.Data.spells.elementalBlast.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].elementalBlast)
+			if (TRB.Functions.Talent:IsTalentActive(spells.elementalBlast) and spells.elementalBlast.maelstrom < TRB.Data.character.maxResource) then
+				TRB.Data.character.earthShockThreshold = -(spells.elementalBlast.maelstrom - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].elementalBlast)
 			else
-				TRB.Data.character.earthShockThreshold = -(TRB.Data.spells.earthShock.maelstrom - TRB.Data.spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[TRB.Data.spells.eyeOfTheStorm.id].currentRank].earthShock)
+				TRB.Data.character.earthShockThreshold = -(spells.earthShock.maelstrom - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].earthShock)
 			end
 		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
 			TRB.Data.character.specName = "enhancement"
@@ -2987,7 +2962,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.character.specName = "restoration"
 ---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
-			TRB.Functions.Spell:FillSpellDataManaCost(TRB.Data.spells)
+			TRB.Functions.Spell:FillSpellDataManaCost(spells)
 
 			local trinket1ItemLink = GetInventoryItemLink("player", 13)
 			local trinket2ItemLink = GetInventoryItemLink("player", 14)
@@ -2997,9 +2972,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			local conjuredChillglobeVersion = ""
 						
 			if trinket1ItemLink ~= nil then
-				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
+				for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
-						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, spells.alchemistStone.itemIds[x])
 					else
 						break
 					end
@@ -3011,9 +2986,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 
 			if alchemyStone == false and trinket2ItemLink ~= nil then
-				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
+				for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
-						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, TRB.Data.spells.alchemistStone.itemIds[x])
+						alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, spells.alchemistStone.itemIds[x])
 					else
 						break
 					end
@@ -3087,19 +3062,20 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	function TRB.Functions.Class:HideResourceBar(force)
 		local affectingCombat = UnitAffectingCombat("player")
 		local specId = GetSpecialization()
+		local snapshot = TRB.Data.snapshot
 
 		if specId == 1 then
 			if not TRB.Data.specSupported or force or GetSpecialization() ~= 1 or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.shaman.elemental.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.shaman.elemental.displayBar.notZeroShow) or
-						(TRB.Data.settings.shaman.elemental.displayBar.notZeroShow and TRB.Data.snapshot.resource == 0)
+						(TRB.Data.settings.shaman.elemental.displayBar.notZeroShow and snapshot.resource == 0)
 					)
 				)) then
 				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshot.isTracking = false
+				snapshot.isTracking = false
 			else
-				TRB.Data.snapshot.isTracking = true
+				snapshot.isTracking = true
 				if TRB.Data.settings.shaman.elemental.displayBar.neverShow == true then
 					TRB.Frames.barContainerFrame:Hide()
 				else
@@ -3111,13 +3087,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.shaman.enhancement.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.shaman.enhancement.displayBar.notZeroShow) or
-						(TRB.Data.settings.shaman.enhancement.displayBar.notZeroShow and TRB.Data.snapshot.resource == TRB.Data.character.maxResource and TRB.Data.snapshot.resource2 == 0)
+						(TRB.Data.settings.shaman.enhancement.displayBar.notZeroShow and snapshot.resource == TRB.Data.character.maxResource and snapshot.resource2 == 0)
 					)
 				)) then
 				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshot.isTracking = false
+				snapshot.isTracking = false
 			else
-				TRB.Data.snapshot.isTracking = true
+				snapshot.isTracking = true
 				if TRB.Data.settings.shaman.enhancement.displayBar.neverShow == true then
 					TRB.Frames.barContainerFrame:Hide()
 				else
@@ -3129,13 +3105,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.shaman.restoration.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.shaman.restoration.displayBar.notZeroShow) or
-						(TRB.Data.settings.shaman.restoration.displayBar.notZeroShow and TRB.Data.snapshot.resource == TRB.Data.character.maxResource)
+						(TRB.Data.settings.shaman.restoration.displayBar.notZeroShow and snapshot.resource == TRB.Data.character.maxResource)
 					)
 				)) then
 				TRB.Frames.barContainerFrame:Hide()
-				TRB.Data.snapshot.isTracking = false
+				snapshot.isTracking = false
 			else
-				TRB.Data.snapshot.isTracking = true
+				snapshot.isTracking = true
 				if TRB.Data.settings.shaman.restoration.displayBar.neverShow == true then
 					TRB.Frames.barContainerFrame:Hide()
 				else
@@ -3144,7 +3120,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		else
 			TRB.Frames.barContainerFrame:Hide()
-			TRB.Data.snapshot.isTracking = false
+			snapshot.isTracking = false
 		end
 	end
 
@@ -3152,24 +3128,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
 			return false
 		end
-
-		local specId = GetSpecialization()
+		
+		local currentTime = GetTime()
+		---@type TRB.Classes.TargetData
+		local targetData = TRB.Data.snapshot.targetData
+		local targets = targetData.targets
 
 		if guid ~= nil and guid ~= "" then
-			if not TRB.Functions.Target:CheckTargetExists(guid) then
-				TRB.Functions.Target:InitializeTarget(guid)
-				if specId == 1 then -- Elemental
-					TRB.Data.snapshot.targetData.targets[guid].flameShock = false
-					TRB.Data.snapshot.targetData.targets[guid].flameShockRemaining = 0
-				elseif specId == 2 then -- Enhancement
-					TRB.Data.snapshot.targetData.targets[guid].flameShock = false
-					TRB.Data.snapshot.targetData.targets[guid].flameShockRemaining = 0
-				elseif specId == 3 then -- Restoration
-					TRB.Data.snapshot.targetData.targets[guid].flameShock = false
-					TRB.Data.snapshot.targetData.targets[guid].flameShockRemaining = 0
-				end
+			if not targetData:CheckTargetExists(guid) then
+				targetData:InitializeTarget(guid)
 			end
-			TRB.Data.snapshot.targetData.targets[guid].lastUpdate = GetTime()
+			targets[guid].lastUpdate = currentTime
 			return true
 		end
 		return false
@@ -3181,6 +3150,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			return valid
 		end
 		local specId = GetSpecialization()
+		local spells = TRB.Data.spells
+		local snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.Target
+		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local settings = nil
 		if specId == 1 then
 			settings = TRB.Data.settings.shaman.elemental
@@ -3192,55 +3165,55 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		if specId == 1 then
 			if var == "$resource" or var == "$maelstrom" then
-				if TRB.Data.snapshot.resource > 0 then
+				if snapshot.resource > 0 then
 					valid = true
 				end
 			elseif var == "$resourceMax" or var == "$maelstromMax" then
 				valid = true
 			elseif var == "$resourceTotal" or var == "$maelstromTotal" then
-				if TRB.Data.snapshot.resource > 0 or
-					(TRB.Data.snapshot.casting.resourceRaw ~= nil and (TRB.Data.snapshot.casting.resourceRaw > 0 or TRB.Data.snapshot.casting.spellId == TRB.Data.spells.chainLightning.id or TRB.Data.snapshot.casting.spellId == TRB.Data.spells.lavaBeam.id)) then
+				if snapshot.resource > 0 or
+					(snapshot.casting.resourceRaw ~= nil and (snapshot.casting.resourceRaw > 0 or snapshot.casting.spellId == spells.chainLightning.id or snapshot.casting.spellId == spells.lavaBeam.id)) then
 					valid = true
 				end
 			elseif var == "$resourcePlusCasting" or var == "$maelstromPlusCasting" then
-				if TRB.Data.snapshot.resource > 0 or
-					(TRB.Data.snapshot.casting.resourceRaw ~= nil and (TRB.Data.snapshot.casting.resourceRaw > 0 or TRB.Data.snapshot.casting.spellId == TRB.Data.spells.chainLightning.id or TRB.Data.snapshot.casting.spellId == TRB.Data.spells.lavaBeam.id)) then
+				if snapshot.resource > 0 or
+					(snapshot.casting.resourceRaw ~= nil and (snapshot.casting.resourceRaw > 0 or snapshot.casting.spellId == spells.chainLightning.id or snapshot.casting.spellId == spells.lavaBeam.id)) then
 					valid = true
 				end
 			elseif var == "$overcap" or var == "$insanityOvercap" or var == "$resourceOvercap" then
-				local threshold = ((TRB.Data.snapshot.resource / TRB.Data.resourceFactor) + TRB.Data.snapshot.casting.resourceFinal)
+				local threshold = ((snapshot.resource / TRB.Data.resourceFactor) + snapshot.casting.resourceFinal)
 				if settings.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) < threshold then
 					return true
 				elseif settings.overcap.mode == "fixed" and settings.overcap.fixed < threshold then
 					return true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$maelstromPlusPassive" then
-				if TRB.Data.snapshot.resource > 0 then
+				if snapshot.resource > 0 then
 					valid = true
 				end
 			elseif var == "$casting" then
-				if TRB.Data.snapshot.casting.resourceRaw ~= nil and (TRB.Data.snapshot.casting.resourceRaw > 0 or TRB.Data.snapshot.casting.spellId == TRB.Data.spells.chainLightning.id) then
+				if snapshot.casting.resourceRaw ~= nil and (snapshot.casting.resourceRaw > 0 or snapshot.casting.spellId == spells.chainLightning.id) then
 					valid = true
 				end
 			elseif var == "$passive" then
 			elseif var == "$ifMaelstrom" then
-				if TRB.Data.snapshot.icefury.maelstrom > 0 then
+				if snapshot.icefury.maelstrom > 0 then
 					valid = true
 				end
 			elseif var == "$ifStacks" then
-				if TRB.Data.snapshot.icefury.stacks > 0 then
+				if snapshot.icefury.stacks > 0 then
 					valid = true
 				end
 			elseif var == "$ifTime" then
-				if TRB.Data.snapshot.icefury.startTime ~= nil and TRB.Data.snapshot.icefury.startTime > 0 then
+				if snapshot.icefury.startTime ~= nil and snapshot.icefury.startTime > 0 then
 					valid = true
 				end
 			elseif var == "$skStacks" then
-				if TRB.Data.snapshot.stormkeeper.stacks ~= nil and TRB.Data.snapshot.stormkeeper.stacks > 0 then
+				if snapshot.stormkeeper.stacks ~= nil and snapshot.stormkeeper.stacks > 0 then
 					valid = true
 				end
 			elseif var == "$skTime" then
-				if TRB.Data.snapshot.stormkeeper.stacks ~= nil and TRB.Data.snapshot.stormkeeper.stacks > 0 then
+				if snapshot.stormkeeper.stacks ~= nil and snapshot.stormkeeper.stacks > 0 then
 					valid = true
 				end
 			elseif var == "$eogsTime" then
@@ -3254,39 +3227,39 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		elseif specId == 2 then --Enhancement
 			if var == "$casting" then
-				if TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw ~= 0 then
+				if snapshot.casting.resourceRaw ~= nil and snapshot.casting.resourceRaw ~= 0 then
 					valid = true
 				end
 			elseif var == "$passive" then
-				if TRB.Data.snapshot.resource < TRB.Data.character.maxResource and
+				if snapshot.resource < TRB.Data.character.maxResource and
 					settings.generation.enabled and
 					((settings.generation.mode == "time" and settings.generation.time > 0) or
 					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 					valid = true
 				end
 			elseif var == "$resource" or var == "$mana" then
-				if TRB.Data.snapshot.resource > 0 then
+				if snapshot.resource > 0 then
 					valid = true
 				end
 			elseif var == "$resourceMax" or var == "$manaMax" then
 				valid = true
 			elseif var == "$resourceTotal" or var == "$manaTotal" then
-				if TRB.Data.snapshot.resource > 0 or
-					(TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw ~= 0)
+				if snapshot.resource > 0 or
+					(snapshot.casting.resourceRaw ~= nil and snapshot.casting.resourceRaw ~= 0)
 					then
 					valid = true
 				end
 			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
-				if TRB.Data.snapshot.resource > 0 or
-					(TRB.Data.snapshot.casting.resourceRaw ~= nil and TRB.Data.snapshot.casting.resourceRaw ~= 0) then
+				if snapshot.resource > 0 or
+					(snapshot.casting.resourceRaw ~= nil and snapshot.casting.resourceRaw ~= 0) then
 					valid = true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
-				if TRB.Data.snapshot.resource > 0 then
+				if snapshot.resource > 0 then
 					valid = true
 				end
 			elseif var == "$regen" or var == "$regenMana" or var == "$manaRegen" then
-				if TRB.Data.snapshot.resource < TRB.Data.character.maxResource and
+				if snapshot.resource < TRB.Data.character.maxResource and
 					((settings.generation.mode == "time" and settings.generation.time > 0) or
 					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 					valid = true
@@ -3308,7 +3281,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
 				valid = true
 			elseif var == "$casting" then
-				if TRB.Data.snapshot.casting.resourceRaw ~= nil and (TRB.Data.snapshot.casting.resourceRaw ~= 0) then
+				if snapshot.casting.resourceRaw ~= nil and (snapshot.casting.resourceRaw ~= 0) then
 					valid = true
 				end
 			elseif var == "$passive" then
@@ -3321,55 +3294,55 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					valid = true
 				end
 			elseif var == "$sohMana" then
-				if TRB.Data.snapshot.symbolOfHope.resourceRaw > 0 then
+				if snapshot.symbolOfHope.resourceRaw > 0 then
 					valid = true
 				end
 			elseif var == "$sohTime" then
-				if TRB.Data.snapshot.symbolOfHope.isActive then
+				if snapshot.symbolOfHope.isActive then
 					valid = true
 				end
 			elseif var == "$sohTicks" then
-				if TRB.Data.snapshot.symbolOfHope.isActive then
+				if snapshot.symbolOfHope.isActive then
 					valid = true
 				end
 			elseif var == "$innervateMana" then
-				if TRB.Data.snapshot.innervate.mana > 0 then
+				if snapshot.innervate.mana > 0 then
 					valid = true
 				end
 			elseif var == "$innervateTime" then
-				if TRB.Data.snapshot.innervate.remainingTime > 0 then
+				if snapshot.innervate.remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$potionOfChilledClarityMana" then
-				if TRB.Data.snapshot.potionOfChilledClarity.mana > 0 then
+				if snapshot.potionOfChilledClarity.mana > 0 then
 					valid = true
 				end
 			elseif var == "$potionOfChilledClarityTime" then
-				if TRB.Data.snapshot.potionOfChilledClarity.remainingTime > 0 then
+				if snapshot.potionOfChilledClarity.remainingTime > 0 then
 					valid = true
 				end
 			elseif var == "$mttMana" then
-				if TRB.Data.snapshot.manaTideTotem.mana > 0 then
+				if snapshot.manaTideTotem.mana > 0 then
 					valid = true
 				end
 			elseif var == "$mttTime" then
-				if TRB.Data.snapshot.manaTideTotem.isActive then
+				if snapshot.manaTideTotem.isActive then
 					valid = true
 				end
 			elseif var == "$mrMana" then
-				if TRB.Data.snapshot.moltenRadiance.mana > 0 then
+				if snapshot.moltenRadiance.mana > 0 then
 					valid = true
 				end
 			elseif var == "$mrTime" then
-				if TRB.Data.snapshot.moltenRadiance.isActive then
+				if snapshot.moltenRadiance.isActive then
 					valid = true
 				end
 			elseif var == "$channeledMana" then
-				if TRB.Data.snapshot.channeledManaPotion.mana > 0 then
+				if snapshot.channeledManaPotion.mana > 0 then
 					valid = true
 				end
 			elseif var == "$potionOfFrozenFocusTicks" then
-				if TRB.Data.snapshot.channeledManaPotion.ticksRemaining > 0 then
+				if snapshot.channeledManaPotion.ticksRemaining > 0 then
 					valid = true
 				end
 			elseif var == "$potionOfFrozenFocusTime" then
@@ -3377,11 +3350,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					valid = true
 				end
 			elseif var == "$potionCooldown" then
-				if TRB.Data.snapshot.potion.onCooldown then
+				if snapshot.potion.onCooldown then
 					valid = true
 				end
 			elseif var == "$potionCooldownSeconds" then
-				if TRB.Data.snapshot.potion.onCooldown then
+				if snapshot.potion.onCooldown then
 					valid = true
 				end
 			end
@@ -3391,20 +3364,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		
 		-- Spec Agnostic
 		if var == "$fsCount" then
-			if TRB.Data.snapshot.targetData.flameShock > 0 then
+			if snapshot.targetData.flameShock > 0 then
 				valid = true
 			end
 		elseif var == "$fsTime" then
 			if not UnitIsDeadOrGhost("target") and
 				UnitCanAttack("player", "target") and
-				TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and
-				TRB.Data.snapshot.targetData.targets ~= nil and
-				TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and
-				TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].flameShockRemaining > 0 then
+				target ~= nil and
+				target.spells[spells.flameShock.id] ~= nil and
+				target.spells[spells.flameShock.id].remainingTime > 0 then
 				valid = true
 			end
 		elseif var == "$ascendanceTime" then
-			if TRB.Data.snapshot.ascendance.remainingTime ~= nil and TRB.Data.snapshot.ascendance.remainingTime > 0 then
+			if snapshot.ascendance.remainingTime ~= nil and snapshot.ascendance.remainingTime > 0 then
 				valid = true
 			end
 		end
