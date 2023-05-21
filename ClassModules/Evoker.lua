@@ -90,11 +90,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		specCache.devastation.snapshot.manaRegen = 0
 		specCache.devastation.snapshot.audio = {
 		}
-		specCache.devastation.snapshot.targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			targets = {},
-		}
 
 		specCache.devastation.barTextVariables = {
 			icons = {},
@@ -334,11 +329,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		specCache.preservation.snapshot.manaRegen = 0
 		specCache.preservation.snapshot.audio = {
 			innervateCue = false
-		}
-		specCache.preservation.snapshot.targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			targets = {}
 		}
 		specCache.preservation.snapshot.emeraldCommunion = {
 			isActive = false,

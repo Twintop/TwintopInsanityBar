@@ -322,14 +322,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		specCache.havoc.snapshot.audio = {
 			overcapCue = false
 		}
-		specCache.havoc.snapshot.targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			---@type TRB.Classes.Target[]
-			targets = {}
-		}
-		--[[---@type TRB.Classes.Target[]
-		specCache.havoc.snapshot.targetData.targets = {}		]]
 		specCache.havoc.snapshot.bladeDance = {
 			startTime = nil,
 			duration = 0,
@@ -1309,7 +1301,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			specCache.havoc.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Havoc()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.havoc)
-			
+
 			local spells = TRB.Data.spells
 			---@type TRB.Classes.TargetData
 			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()

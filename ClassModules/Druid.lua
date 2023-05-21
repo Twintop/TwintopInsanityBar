@@ -347,19 +347,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			playedSfCue = false,
 			playedstarweaverCue = false
 		}
-
-		specCache.balance.snapshot.targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			sunfire = 0,
-			moonfire = 0,
-			stellarFlare = 0,
-			targets = {}
-		}
 		specCache.balance.snapshot.moonkinForm = {
 			isActive = false
 		}
-
 		specCache.balance.snapshot.furyOfElune = {
 			isActive = false,
 			ticksRemaining = 0,
@@ -372,7 +362,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			startTime = nil,
 			astralPower = 0
 		}
-
 		specCache.balance.snapshot.eclipseSolar = {
 			isActive = false,
 			spellId = nil,
@@ -822,17 +811,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		specCache.feral.snapshot.audio = {
 			overcapCue = false
 		}
-		specCache.feral.snapshot.targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			--Bleeds
-			rake = 0,
-			rip = 0,
-			thrash = 0,
-			--Other
-			moonfire = 0,
-			targets = {}
-		}
 		specCache.feral.snapshot.maim = {
 			startTime = nil,
 			duration = 0,
@@ -1189,13 +1167,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		specCache.restoration.snapshot.manaRegen = 0
 		specCache.restoration.snapshot.audio = {
 			innervateCue = false
-		}
-		specCache.restoration.snapshot.targetData = {
-			ttdIsActive = false,
-			currentTargetGuid = nil,
-			sunfire = 0,
-			moonfire = 0,
-			targets = {}
 		}
 		specCache.restoration.snapshot.efflorescence = {
 			endTime = nil
