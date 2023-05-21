@@ -1395,7 +1395,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				TRB.Data.snapshot.bladestorm.rage = 0
 				TRB.Data.snapshot.bladestorm.isActive = false
 			elseif TRB.Data.snapshot.bladestorm.endTime ~= nil then
-				_, _, _, _, TRB.Data.snapshot.bladestorm.duration, TRB.Data.snapshot.bladestorm.endTime, _, _, _, TRB.Data.snapshot.bladestorm.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.bladestorm.id)
+				TRB.Functions.Aura:SnapshotGenericAura(TRB.Data.spells.bladestorm.id, nil, TRB.Data.snapshot.bladestorm)
 				TRB.Data.snapshot.bladestorm.ticksRemaining = math.ceil((TRB.Data.snapshot.bladestorm.endTime - currentTime) / (TRB.Data.snapshot.bladestorm.originalDuration / TRB.Data.spells.bladestorm.ticks))
 				TRB.Data.snapshot.bladestorm.rage = TRB.Data.snapshot.bladestorm.ticksRemaining * TRB.Data.spells.bladestorm.rage
 				TRB.Data.snapshot.casting.resourceRaw = TRB.Data.snapshot.bladestorm.rage

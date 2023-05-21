@@ -4784,8 +4784,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						end
 					elseif spellId == spells.touchTheCosmos.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							snapshot.touchTheCosmos.isActive = true
-							_, _, _, _, snapshot.touchTheCosmos.duration, snapshot.touchTheCosmos.endTime, _, _, _, snapshot.touchTheCosmos.spellId = TRB.Functions.Aura:FindBuffById(spells.touchTheCosmos.id)
+							TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.touchTheCosmos)
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							snapshot.touchTheCosmos.isActive = false
 							snapshot.touchTheCosmos.spellId = nil

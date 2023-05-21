@@ -2832,8 +2832,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	local function UpdateSnapshot()
 		TRB.Functions.Character:UpdateSnapshot()
 		local currentTime = GetTime()
-
-		_, _, _, _, _, TRB.Data.snapshot.sliceAndDice.endTime, _, _, _, TRB.Data.snapshot.sliceAndDice.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.sliceAndDice.id)
+		
+		TRB.Functions.Aura:SnapshotGenericAura(TRB.Data.spells.sliceAndDice.id, nil, TRB.Data.snapshot.sliceAndDice)
 
 		if TRB.Data.snapshot.distract.startTime ~= nil and currentTime > (TRB.Data.snapshot.distract.startTime + TRB.Data.snapshot.distract.duration) then
 			TRB.Data.snapshot.distract.startTime = nil
@@ -2918,7 +2918,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local _
 
 		if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.improvedGarrote) then
-			_, _, _, _, _, TRB.Data.snapshot.improvedGarrote.endTime, _, _, _, TRB.Data.snapshot.improvedGarrote.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.improvedGarrote.buffId)
+			TRB.Functions.Aura:SnapshotGenericAura(TRB.Data.spells.improvedGarrote.buffId, nil, TRB.Data.snapshot.improvedGarrote)
 		end
 
 		if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.serratedBoneSpike) then
@@ -4069,8 +4069,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					end
 
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Echoing Reprimand Applied to Target
-						TRB.Data.snapshot.echoingReprimand[cpEntry].enabled = true
-						_, _, TRB.Data.snapshot.echoingReprimand[cpEntry].comboPoints, _, TRB.Data.snapshot.echoingReprimand[cpEntry].duration, TRB.Data.snapshot.echoingReprimand[cpEntry].endTime, _, _, _, TRB.Data.snapshot.echoingReprimand[cpEntry].spellId = TRB.Functions.Aura:FindBuffById(spellId)
+						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, TRB.Data.snapshot.echoingReprimand[cpEntry])
 					elseif type == "SPELL_AURA_REMOVED" then
 						TRB.Data.snapshot.echoingReprimand[cpEntry].enabled = false
 						TRB.Data.snapshot.echoingReprimand[cpEntry].spellId = nil

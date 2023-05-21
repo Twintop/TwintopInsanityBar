@@ -2821,8 +2821,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Data.snapshot.shadowfiend.onCooldown = not (GetSpellCooldown(TRB.Data.spells.shadowfiend.id) == 0)
 			end
 			
-			if TRB.Data.snapshot.devouredDespair.isActive and TRB.Data.snapshot.devouredDespair.endTime ~= nil and TRB.Data.snapshot.devouredDespair.endTime > currentTime then
-				_, _, _, _, TRB.Data.snapshot.devouredDespair.duration, TRB.Data.snapshot.devouredDespair.endTime, _, _, _, TRB.Data.snapshot.devouredDespair.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.devouredDespair.id)
+			if TRB.Data.snapshot.devouredDespair.isActive and TRB.Data.snapshot.devouredDespair.endTime ~= nil and TRB.Data.snapshot.devouredDespair.endTime > currentTime then				
+				TRB.Functions.Aura:SnapshotGenericAura(TRB.Data.spells.devouredDespair.id, nil, TRB.Data.snapshot.devouredDespair)
 				TRB.Data.snapshot.devouredDespair.ticks = TRB.Functions.Number:RoundTo(TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.devouredDespair), 0, "ceil", true)
 				TRB.Data.snapshot.devouredDespair.resourceRaw = TRB.Data.snapshot.devouredDespair.ticks * TRB.Data.spells.devouredDespair.insanity
 				TRB.Data.snapshot.devouredDespair.resourceFinal = CalculateInsanityGain(TRB.Data.snapshot.devouredDespair.resourceRaw)
@@ -3129,8 +3129,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			snapshot.mindFlayInsanity.duration = 0
 			snapshot.mindFlayInsanity.stacks = 0
 			snapshot.mindFlayInsanity.spellId = nil
-		elseif snapshot.mindFlayInsanity.spellId ~= nil then
-			_, _, snapshot.mindFlayInsanity.stacks, _, snapshot.mindFlayInsanity.duration, snapshot.mindFlayInsanity.endTime, _, _, _, snapshot.mindFlayInsanity.spellId = TRB.Functions.Aura:FindBuffById(snapshot.mindFlayInsanity.spellId)
+		elseif snapshot.mindFlayInsanity.spellId ~= nil then			
+			TRB.Functions.Aura:SnapshotGenericAura(snapshot.mindFlayInsanity.spellId, nil, snapshot.mindFlayInsanity)
 		end
 
 		if snapshot.deathspeaker.endTime ~= nil and currentTime > (snapshot.deathspeaker.endTime) then

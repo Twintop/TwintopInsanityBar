@@ -861,8 +861,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				TRB.Data.snapshot.metamorphosis.endTime = nil
 				TRB.Data.snapshot.metamorphosis.duration = 0
 				TRB.Data.snapshot.metamorphosis.isActive = false
-			elseif TRB.Data.snapshot.metamorphosis.endTime ~= nil then
-				_, _, _, _, TRB.Data.snapshot.metamorphosis.duration, TRB.Data.snapshot.metamorphosis.endTime, _, _, _, TRB.Data.snapshot.metamorphosis.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.metamorphosis.id)
+			elseif TRB.Data.snapshot.metamorphosis.endTime ~= nil then				
+				TRB.Functions.Aura:SnapshotGenericAura(TRB.Data.spells.metamorphosis.id, nil, TRB.Data.snapshot.metamorphosis)
 			end
 		end
 	end
@@ -1313,7 +1313,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			local spells = TRB.Data.spells
 			---@type TRB.Classes.TargetData
 			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
-			
+
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Havoc
 
 			if TRB.Data.barConstructedForSpec ~= "havoc" then

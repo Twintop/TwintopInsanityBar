@@ -1938,7 +1938,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function UpdateStormkeeper()
-		_, _, TRB.Data.snapshot.stormkeeper.stacks, _, TRB.Data.snapshot.stormkeeper.duration, TRB.Data.snapshot.stormkeeper.endTime, _, _, _, TRB.Data.snapshot.stormkeeper.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.stormkeeper.id)
+		TRB.Functions.Aura:SnapshotGenericAura(TRB.Data.spells.stormkeeper.id, nil, TRB.Data.snapshot.stormkeeper)
 	end
 
 	local function UpdateChanneledManaPotion(forceCleanup)
@@ -2076,8 +2076,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.snapshot.ascendance.duration = 0
 			TRB.Data.snapshot.ascendance.remainingTime = 0
 		else
-			_, _, _, _, TRB.Data.snapshot.ascendance.duration, TRB.Data.snapshot.ascendance.endTime, _, _, _, TRB.Data.snapshot.ascendance.spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.spells.ascendance.id)
-			TRB.Data.snapshot.ascendance.remainingTime = GetAscendanceRemainingTime()
+			TRB.Functions.Aura:SnapshotGenericAura(TRB.Data.spells.ascendance.id, nil, TRB.Data.snapshot.ascendance)
 		end
 	end
 

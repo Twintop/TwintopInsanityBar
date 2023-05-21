@@ -1691,9 +1691,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						end
 					elseif spellId == spells.emeraldCommunion.id then
 						if type == "SPELL_PERIODIC_ENERGIZE" then
-							snapshot.emeraldCommunion.isActive = true
-							if snapshot.emeraldCommunion.firstTickTime == nil then								
-								_, _, _, _, snapshot.emeraldCommunion.duration, snapshot.emeraldCommunion.endTime, _, _, _, snapshot.emeraldCommunion.spellId = TRB.Functions.Aura:FindBuffById(spells.emeraldCommunion.id)
+							if snapshot.emeraldCommunion.firstTickTime == nil then
+								TRB.Functions.Aura:SnapshotGenericAura(spellId, nil, TRB.Data.snapshot.metamorphosis)
 								snapshot.emeraldCommunion.firstTickTime = currentTime
 								snapshot.emeraldCommunion.previousTickTime = currentTime
 								snapshot.emeraldCommunion.ticksRemaining = spells.emeraldCommunion.ticks
@@ -1779,7 +1778,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			
 			---@type TRB.Classes.TargetData
 			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
-			
+
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Preservation
 
 			if TRB.Data.barConstructedForSpec ~= "preservation" then
