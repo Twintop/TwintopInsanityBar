@@ -822,7 +822,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		
 		if (specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation) or
-		(specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation)or
+		(specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation) or
 		(specId == 3 and TRB.Data.settings.core.experimental.specs.evoker.augmentation) then
 			TRB.Frames.resource2ContainerFrame:Show()
 			TRB.Functions.Bar:Construct(settings)
