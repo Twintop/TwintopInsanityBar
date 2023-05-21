@@ -34,12 +34,21 @@ end
 ---@param isDot boolean? # Is this a DoT?
 ---@param hasCounter boolean? # Does this have a counter component to it?
 ---@param hasSnapshot boolean? # Is there any snapshotting required?
-function TRB.Classes.TargetData:AddSpellTracking(spell, isDot, hasCounter, hasSnapshot)
-    isDot = isDot or true
+---@param autoUpdate boolean? # Should this spell's tracked values be automatically updated?
+function TRB.Classes.TargetData:AddSpellTracking(spell, isDot, hasCounter, hasSnapshot, autoUpdate)
+    if isDot == nil then
+        isDot = isDot
+    end
+
     hasCounter = hasCounter or false
     hasSnapshot = hasSnapshot or false
+
+    if autoUpdate == nil then
+        autoUpdate = true
+    end
+
     if self.trackedSpells[spell.id] == nil then
-        self.trackedSpells[spell.id] = TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot)
+        self.trackedSpells[spell.id] = TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot, autoUpdate)
         self.count[spell.id] = 0
     end
 end
@@ -51,7 +60,7 @@ function TRB.Classes.TargetData:InitializeTarget(guid)
         if not self:CheckTargetExists(guid) then
             self.targets[guid] = TRB.Classes.Target:New(guid)
             for _, spell in pairs(self.trackedSpells) do
-                self.targets[guid]:AddSpellTracking(spell.spell, spell.isDot, spell.hasCounter, spell.hasSnapshot)
+                self.targets[guid]:AddSpellTracking(spell.spell, spell.isDot, spell.hasCounter, spell.hasSnapshot, spell.autoUpdate)
             end
         end
     end
@@ -153,12 +162,21 @@ end
 ---@param isDot boolean? # Is this a DoT?
 ---@param hasCounter boolean? # Does this have a counter component to it?
 ---@param hasSnapshot boolean? # Is there any snapshotting required?
-function TRB.Classes.Target:AddSpellTracking(spell, isDot, hasCounter, hasSnapshot)
-    isDot = isDot or true
+---@param autoUpdate boolean? # Should this spell's tracked values be automatically updated?
+function TRB.Classes.Target:AddSpellTracking(spell, isDot, hasCounter, hasSnapshot, autoUpdate)
+    if isDot == nil then
+        isDot = isDot
+    end
+
     hasCounter = hasCounter or false
     hasSnapshot = hasSnapshot or false
+
+    if autoUpdate == nil then
+        autoUpdate = true
+    end
+
     if self.spells[spell.id] == nil then
-        self.spells[spell.id] = TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot)
+        self.spells[spell.id] = TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot, autoUpdate)
     end
 end
 
@@ -185,6 +203,7 @@ end
 ---@field public count integer
 ---@field public hasSnapshot boolean
 ---@field public snapshot number
+---@field public autoUpdate boolean
 TRB.Classes.TargetSpell = {}
 TRB.Classes.TargetSpell.__index = TRB.Classes.TargetSpell
 
@@ -193,10 +212,23 @@ TRB.Classes.TargetSpell.__index = TRB.Classes.TargetSpell
 ---@param isDot boolean? # Is this a DoT?
 ---@param hasCounter boolean? # Does this have a counter component to it?
 ---@param hasSnapshot boolean? # Is there any snapshotting required?
+---@param autoUpdate boolean? # Should this spell's tracked values be automatically updated?
 ---@return TRB.Classes.TargetSpell
-function TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot)
+function TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot, autoUpdate)
     local self = {}
     setmetatable(self, TRB.Classes.TargetSpell)
+
+    if isDot == nil then
+        isDot = isDot
+    end
+
+    hasCounter = hasCounter or false
+    hasSnapshot = hasSnapshot or false
+
+    if autoUpdate == nil then
+        autoUpdate = true
+    end
+
     self.id = spell.id
     self.spell = spell
     self.active = false
@@ -206,6 +238,7 @@ function TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot)
     self.count = 0
     self.hasSnapshot = hasSnapshot
     self.snapshot = 0.0
+    self.autoUpdate = autoUpdate
     return self
 end
 
@@ -213,13 +246,15 @@ end
 ---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
 function TRB.Classes.TargetSpell:Update(currentTime)
     currentTime = currentTime or GetTime()
-    if self.isDot then
-        local expiration = select(6, TRB.Functions.Aura:FindDebuffById(self.id, "target", "player"))
+    if self.autoUpdate then
+        if self.isDot then
+            local expiration = select(6, TRB.Functions.Aura:FindDebuffById(self.id, "target", "player"))
 
-        if expiration ~= nil then
-            self.active = true
-            self.remainingTime = expiration - currentTime
-            return
+            if expiration ~= nil then
+                self.active = true
+                self.remainingTime = expiration - currentTime
+                return
+            end
         end
     end
 end
