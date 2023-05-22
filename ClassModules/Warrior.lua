@@ -1941,35 +1941,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.battlelord)
 					elseif spellId == spells.rend.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rend Applied to Target
-								targetData.targets[destGUID].spells[spells.rend.id].active = true
-								if type == "SPELL_AURA_APPLIED" then
-									targetData.count[spells.rend.id] = targetData.count[spells.rend.id] + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								targetData.targets[destGUID].spells[spells.rend.id].active = false
-								targetData.targets[destGUID].spells[spells.rend.id].remainingTime = 0
-								targetData.count[spells.rend.id] = targetData.count[spells.rend.id] - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
+							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					elseif spellId == spells.deepWounds.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Deep Wounds Applied to Target
-								targetData.targets[destGUID].spells[spells.deepWounds.id].active = true
-								if type == "SPELL_AURA_APPLIED" then
-									targetData.count[spells.deepWounds.id] = targetData.count[spells.deepWounds.id] + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								targetData.targets[destGUID].spells[spells.deepWounds.id].active = false
-								targetData.targets[destGUID].spells[spells.deepWounds.id].remainingTime = 0
-								targetData.count[spells.deepWounds.id] = targetData.count[spells.deepWounds.id] - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
+							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					elseif spellId == spells.whirlwind.id then
 						if type == "SPELL_CAST_SUCCESS" then

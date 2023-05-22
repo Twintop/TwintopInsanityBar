@@ -97,6 +97,29 @@ function TRB.Classes.TargetData:UpdateDebuffs(currentTime)
     end
 end
 
+---Handles updating the targetData and associated target's debuff tracking of a spell
+---@param spellId integer # Spell ID of the debuff we are updating
+---@param type trbAuraEventType # Event Type sourced from the combat log event
+---@param guid any # GUID of the target we are updating
+---@return boolean # Should this trigger a full bar update?
+function TRB.Classes.TargetData:HandleCombatLogDebuff(spellId, type, guid)
+    if self.trackedSpells[spellId] == nil then
+        print("TRB: |cFFFF5555Table missing for spellId |r"..spellId.." on this target tracking. Please consider reporting this on GitHub!")
+        self.trackedSpells[spellId] = TRB.Classes.TargetSpell:New({ id = spellId })
+    end
+
+    local triggerUpdate = self.targets[guid]:HandleCombatLogDebuff(spellId, type)
+    if type == "SPELL_AURA_APPLIED" then
+        self.count[spellId] = self.count[spellId] + 1
+        triggerUpdate = true
+    elseif type == "SPELL_AURA_REMOVED" then
+        self.count[spellId] = self.count[spellId] - 1
+        triggerUpdate = true
+    --elseif type == "SPELL_PERIODIC_DAMAGE" then
+    end
+    return triggerUpdate
+end
+
 ---Checks to see if a target currently exists within the targets table
 ---@param guid string # GUID of the target we're checking the existence of
 ---@return boolean # Was the target found
@@ -177,7 +200,21 @@ function TRB.Classes.Target:AddSpellTracking(spell, isDot, hasCounter, hasSnapsh
 
     if self.spells[spell.id] == nil then
         self.spells[spell.id] = TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot, autoUpdate)
+        self.spells[spell.id]:SetTargetGuid(self.guid)
     end
+end
+
+---Handles updating the target's debuff tracking of a spell
+---@param spellId integer # Spell ID of the debuff we are updating
+---@param type trbAuraEventType # Event Type sourced from the combat log event
+---@return boolean # Should this trigger a full bar update?
+function TRB.Classes.Target:HandleCombatLogDebuff(spellId, type)
+    if self.spells[spellId] == nil then
+        print("TRB: |cFFFF5555Table missing for spellId |r"..spellId.." on this target. Please consider reporting this on GitHub!")
+        self.spells[spellId] = TRB.Classes.TargetSpell:New({ id = spellId })
+    end
+
+    return self.spells[spellId]:HandleCombatLogDebuff(type)
 end
 
 ---Updates all spells tracked on this target
@@ -220,6 +257,7 @@ end
 ---@field public hasSnapshot boolean
 ---@field public snapshot number
 ---@field public autoUpdate boolean
+---@field private guid string
 TRB.Classes.TargetSpell = {}
 TRB.Classes.TargetSpell.__index = TRB.Classes.TargetSpell
 
@@ -255,23 +293,54 @@ function TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot, auto
     self.hasSnapshot = hasSnapshot
     self.snapshot = 0.0
     self.autoUpdate = autoUpdate
+    self.guid = ""
     return self
+end
+
+---Sets the target's GUID that is associated with this instance of a TargetSpell
+---@param guid string # The GUID of the target
+function TRB.Classes.TargetSpell:SetTargetGuid(guid)
+    self.guid = guid
 end
 
 ---Updates this spell's snapshotting
 ---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
 function TRB.Classes.TargetSpell:Update(currentTime)
     currentTime = currentTime or GetTime()
-    if self.autoUpdate then
-        if self.isDot then
-            local expiration = select(6, TRB.Functions.Aura:FindDebuffById(self.id, "target", "player"))
+    -- TODO: Look in to hooking in to nameplates to get the info we need for this
+    local unitToken = UnitTokenFromGUID(self.guid)
 
-            if expiration ~= nil then
-                self.active = true
-                self.remainingTime = expiration - currentTime
+    if unitToken ~= nil then
+        if self.autoUpdate then
+            if self.isDot then
+                local expiration = select(6, TRB.Functions.Aura:FindDebuffById(self.id, unitToken, "player"))
+
+                if expiration ~= nil then
+                    self.active = true
+                    self.remainingTime = expiration - currentTime
+                end
             end
         end
     end
+end
+
+---Handles updating the debuff tracking of a spell
+---@param type trbAuraEventType # Event Type sourced from the combat log event
+---@return boolean # Should this trigger a full bar update?
+function TRB.Classes.TargetSpell:HandleCombatLogDebuff(type)
+    local triggerUpdate = false
+    if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
+        self.active = true
+        triggerUpdate = true
+    elseif type == "SPELL_AURA_REMOVED" then
+        self.active = false
+        if self.isDot and self.autoUpdate then
+            self.remainingTime = 0
+        end
+        triggerUpdate = true
+    --elseif type == "SPELL_PERIODIC_DAMAGE" then
+    end
+    return triggerUpdate
 end
 
 ---Reset's the spell's snapshots

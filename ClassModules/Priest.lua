@@ -3754,7 +3754,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName, _, auraType = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 
 			local settings
-
 			if specId == 2 then
 				settings = TRB.Data.settings.priest.holy
 			elseif specId == 3 then
@@ -3942,33 +3941,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.darkAscension)
 					elseif spellId == spells.vampiricTouch.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- VT Applied to Target
-								targetData.targets[destGUID].spells[spells.vampiricTouch.id].active = true
-								if type == "SPELL_AURA_APPLIED" then
-									targetData.count[spells.vampiricTouch.id] = targetData.count[spells.vampiricTouch.id] + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								targetData.targets[destGUID].spells[spells.vampiricTouch.id].active = false
-								targetData.targets[destGUID].spells[spells.vampiricTouch.id].remainingTime = 0
-								targetData.count[spells.vampiricTouch.id] = targetData.count[spells.vampiricTouch.id] - 1
-								triggerUpdate = true
-							end
+							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					elseif spellId == spells.devouringPlague.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- DP Applied to Target
-								targetData.targets[destGUID].spells[spells.devouringPlague.id].active = true
-								if type == "SPELL_AURA_APPLIED" then
-									targetData.count[spells.devouringPlague.id] = targetData.count[spells.devouringPlague.id] + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								targetData.targets[destGUID].spells[spells.devouringPlague.id].active = false
-								targetData.targets[destGUID].spells[spells.devouringPlague.id].remainingTime = 0
-								targetData.count[spells.devouringPlague.id] = targetData.count[spells.devouringPlague.id] - 1
-								triggerUpdate = true
-							end
+							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					elseif settings.auspiciousSpiritsTracker and TRB.Functions.Talent:IsTalentActive(spells.auspiciousSpirits) and spellId == spells.auspiciousSpirits.idSpawn and type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
 						for guid, _ in pairs(targetData.targets) do
@@ -4035,19 +4012,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				-- Spec agnostic
 				if spellId == spells.shadowWordPain.id then
 					if TRB.Functions.Class:InitializeTarget(destGUID) then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SWP Applied to Target
-							targetData.targets[destGUID].spells[spells.shadowWordPain.id].active = true
-							if type == "SPELL_AURA_APPLIED" then
-								targetData.count[spells.shadowWordPain.id] = targetData.count[spells.shadowWordPain.id] + 1
-							end
-							triggerUpdate = true
-						elseif type == "SPELL_AURA_REMOVED" then
-							targetData.targets[destGUID].spells[spells.shadowWordPain.id].active = false
-							targetData.targets[destGUID].spells[spells.shadowWordPain.id].remainingTime = 0
-							targetData.count[spells.shadowWordPain.id] = targetData.count[spells.shadowWordPain.id] - 1
-							triggerUpdate = true
-						--elseif type == "SPELL_PERIODIC_DAMAGE" then
-						end
+						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 					end
 				end
 			elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" and settings.voidTendrilTracker and (spellId == spells.idolOfCthun_Tendril.idTick or spellId == spells.idolOfCthun_Lasher.idTick) and CheckVoidTendrilExists(sourceGUID) then
