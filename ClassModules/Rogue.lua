@@ -3566,100 +3566,29 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								if snapshot.improvedGarrote.isActiveStealth or snapshot.improvedGarrote.isActiveStealth then
 									snapshot.garrote.startTime = nil
 									snapshot.garrote.duration = 0
-								end
-							elseif type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Garrote Applied to Target
-								snapshot.targetData.targets[destGUID].garrote = true
-								if type == "SPELL_AURA_APPLIED" then
-									snapshot.targetData.count[spells.garrote.id] = snapshot.targetData.count[spells.garrote.id] + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								snapshot.targetData.targets[destGUID].garrote = false
-								snapshot.targetData.targets[destGUID].garroteRemaining = 0
-								snapshot.targetData.count[spells.garrote.id] = snapshot.targetData.count[spells.garrote.id] - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
+								end							
 							end
+							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					elseif spellId == spells.rupture.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Rupture Applied to Target
-								snapshot.targetData.targets[destGUID].rupture = true
-								if type == "SPELL_AURA_APPLIED" then
-									snapshot.targetData.count[spells.rupture.id] = snapshot.targetData.count[spells.rupture.id] + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								snapshot.targetData.targets[destGUID].rupture = false
-								snapshot.targetData.targets[destGUID].ruptureRemaining = 0
-								snapshot.targetData.count[spells.rupture.id] = snapshot.targetData.count[spells.rupture.id] - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
+							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					elseif spellId == spells.internalBleeding.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- IB Applied to Target
-								snapshot.targetData.targets[destGUID].internalBleeding = true
-								if type == "SPELL_AURA_APPLIED" then
-									snapshot.targetData.count[spells.internalBleeding.id] = snapshot.targetData.count[spells.internalBleeding.id] + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								snapshot.targetData.targets[destGUID].internalBleeding = false
-								snapshot.targetData.targets[destGUID].internalBleedingRemaining = 0
-								snapshot.targetData.count[spells.internalBleeding.id] = snapshot.targetData.count[spells.internalBleeding.id] - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
+							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					elseif spellId == spells.crimsonTempest.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- CT Applied to Target
-								snapshot.targetData.targets[destGUID].crimsonTempest = true
-								if type == "SPELL_AURA_APPLIED" then
-									snapshot.targetData.count[spells.crimsonTempest.id] = snapshot.targetData.count[spells.crimsonTempest.id] + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								snapshot.targetData.targets[destGUID].crimsonTempest = false
-								snapshot.targetData.targets[destGUID].crimsonTempestRemaining = 0
-								snapshot.targetData.count[spells.crimsonTempest.id] = snapshot.targetData.count[spells.crimsonTempest.id] - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
+							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					elseif spellId == spells.deadlyPoison.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- DP Applied to Target
-								snapshot.targetData.targets[destGUID].deadlyPoison = true
-								if type == "SPELL_AURA_APPLIED" then
-									snapshot.targetData.count[spells.deadlyPoison.id] = snapshot.targetData.count[spells.deadlyPoison.id] + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								snapshot.targetData.targets[destGUID].deadlyPoison = false
-								snapshot.targetData.targets[destGUID].deadlyPoisonRemaining = 0
-								snapshot.targetData.count[spells.deadlyPoison.id] = snapshot.targetData.count[spells.deadlyPoison.id] - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
+							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					elseif spellId == spells.amplifyingPoison.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Amplifying Poison Applied to Target
-								snapshot.targetData.targets[destGUID].amplifyingPoison = true
-								if type == "SPELL_AURA_APPLIED" then
-									snapshot.targetData.count[spells.amplifyingPoison.id] = snapshot.targetData.count[spells.amplifyingPoison.id] + 1
-								end
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								snapshot.targetData.targets[destGUID].amplifyingPoison = false
-								snapshot.targetData.targets[destGUID].amplifyingPoisonRemaining = 0
-								snapshot.targetData.count[spells.amplifyingPoison.id] = snapshot.targetData.count[spells.amplifyingPoison.id] - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
+							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					elseif spellId == spells.kingsbane.id then
 						if type == "SPELL_CAST_SUCCESS" then
@@ -3673,16 +3602,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						end
 					elseif spellId == spells.serratedBoneSpike.debuffId then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Applied to Target
-								snapshot.targetData.targets[destGUID].spells[spells.serratedBoneSpike.id].active = true
-								print("SBS added")
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								snapshot.targetData.targets[destGUID].spells[spells.serratedBoneSpike.id].active = false
-								snapshot.targetData.serratedBoneSpike = snapshot.targetData.serratedBoneSpike - 1
-								triggerUpdate = true
-							--elseif type == "SPELL_PERIODIC_DAMAGE" then
-							end
+							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					elseif spellId == spells.crimsonVial.id then
 						if type == "SPELL_CAST_SUCCESS" then
@@ -3896,67 +3816,19 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					end
 				elseif spellId == spells.cripplingPoison.id then
 					if TRB.Functions.Class:InitializeTarget(destGUID) then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- CP Applied to Target
-							snapshot.targetData.targets[destGUID].cripplingPoison = true
-							if type == "SPELL_AURA_APPLIED" then
-								snapshot.targetData.count[spells.cripplingPoison.id] = snapshot.targetData.count[spells.cripplingPoison.id] + 1
-							end
-							triggerUpdate = true
-						elseif type == "SPELL_AURA_REMOVED" then
-							snapshot.targetData.targets[destGUID].cripplingPoison = false
-							snapshot.targetData.targets[destGUID].cripplingPoisonRemaining = 0
-							snapshot.targetData.count[spells.cripplingPoison.id] = snapshot.targetData.count[spells.cripplingPoison.id] - 1
-							triggerUpdate = true
-						--elseif type == "SPELL_PERIODIC_DAMAGE" then
-						end
+						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 					end
 				elseif spellId == spells.woundPoison.id then
 					if TRB.Functions.Class:InitializeTarget(destGUID) then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- WP Applied to Target
-							snapshot.targetData.targets[destGUID].woundPoison = true
-							if type == "SPELL_AURA_APPLIED" then
-								snapshot.targetData.count[spells.woundPoison.id] = snapshot.targetData.count[spells.woundPoison.id] + 1
-							end
-							triggerUpdate = true
-						elseif type == "SPELL_AURA_REMOVED" then
-							snapshot.targetData.targets[destGUID].woundPoison = false
-							snapshot.targetData.targets[destGUID].woundPoisonRemaining = 0
-							snapshot.targetData.count[spells.woundPoison.id] = snapshot.targetData.count[spells.woundPoison.id] - 1
-							triggerUpdate = true
-						--elseif type == "SPELL_PERIODIC_DAMAGE" then
-						end
+						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 					end
 				elseif spellId == spells.numbingPoison.id then
 					if TRB.Functions.Class:InitializeTarget(destGUID) then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- NP Applied to Target
-							snapshot.targetData.targets[destGUID].numbingPoison = true
-							if type == "SPELL_AURA_APPLIED" then
-								snapshot.targetData.count[spells.numbingPoison.id] = snapshot.targetData.count[spells.numbingPoison.id] + 1
-							end
-							triggerUpdate = true
-						elseif type == "SPELL_AURA_REMOVED" then
-							snapshot.targetData.targets[destGUID].numbingPoison = false
-							snapshot.targetData.targets[destGUID].numbingPoisonRemaining = 0
-							snapshot.targetData.count[spells.numbingPoison.id] = snapshot.targetData.count[spells.numbingPoison.id] - 1
-							triggerUpdate = true
-						--elseif type == "SPELL_PERIODIC_DAMAGE" then
-						end
+						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 					end
 				elseif spellId == spells.atrophicPoison.id then
 					if TRB.Functions.Class:InitializeTarget(destGUID) then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Atrophic Poison Applied to Target
-							snapshot.targetData.targets[destGUID].atrophicPoison = true
-							if type == "SPELL_AURA_APPLIED" then
-								snapshot.targetData.count[spells.atrophicPoison.id] = snapshot.targetData.count[spells.atrophicPoison.id] + 1
-							end
-							triggerUpdate = true
-						elseif type == "SPELL_AURA_REMOVED" then
-							snapshot.targetData.targets[destGUID].atrophicPoison = false
-							snapshot.targetData.targets[destGUID].atrophicPoisonRemaining = 0
-							snapshot.targetData.count[spells.atrophicPoison.id] = snapshot.targetData.count[spells.atrophicPoison.id] - 1
-							triggerUpdate = true
-						--elseif type == "SPELL_PERIODIC_DAMAGE" then
-						end
+						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 					end
 				elseif spellId == spells.deathFromAbove.id then
 					if type == "SPELL_CAST_SUCCESS" then

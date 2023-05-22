@@ -107,7 +107,7 @@ function TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot, simple,
 	local currentTime = GetTime()
 	if snapshot == nil then
 		snapshot = {}
-		print("TRB: |cFFFF5555Table missing for spellId |r"..spellId.."Please consider reporting this on GitHub!")
+		print("TRB: |cFFFF5555Table missing for spellId |r"..spellId..". Please consider reporting this on GitHub!")
 	end
 
 	simple = simple or false

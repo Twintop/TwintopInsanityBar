@@ -2738,19 +2738,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.ascendance)
 				elseif spellId == spells.flameShock.id then
 					if TRB.Functions.Class:InitializeTarget(destGUID) then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Flame Shock Applied to Target
-							targetData.targets[destGUID].spells[spells.flameShock.id].active = true
-							if type == "SPELL_AURA_APPLIED" then
-								targetData.count[spells.flameShock.id] = targetData.count[spells.flameShock.id] + 1
-							end
-							triggerUpdate = true
-						elseif type == "SPELL_AURA_REMOVED" then
-							targetData.targets[destGUID].spells[spells.flameShock.id].active = false
-							targetData.targets[destGUID].spells[spells.flameShock.id].remainingTime = 0
-							targetData.count[spells.flameShock.id] = targetData.count[spells.flameShock.id] - 1
-							triggerUpdate = true
-						--elseif type == "SPELL_PERIODIC_DAMAGE" then
-						end
+						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 					end
 				end
 			end

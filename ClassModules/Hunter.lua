@@ -3400,19 +3400,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					snapshot.audio.playedKillShotCue = false
 				elseif spellId == spells.serpentSting.id then
 					if TRB.Functions.Class:InitializeTarget(destGUID) then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- SS Applied to Target
-							snapshot.targetData.targets[destGUID].spells[spells.serpentSting.id].active = true
-							if type == "SPELL_AURA_APPLIED" then
-								snapshot.targetData.count[spells.serpentSting.id] = snapshot.targetData.count[spells.serpentSting.id] + 1
-							end
-							triggerUpdate = true
-						elseif type == "SPELL_AURA_REMOVED" then
-							snapshot.targetData.targets[destGUID].spells[spells.serpentSting.id].active = false
-							snapshot.targetData.targets[destGUID].spells[spells.serpentSting.id].remainingTime = 0
-							snapshot.targetData.count[spells.serpentSting.id] = snapshot.targetData.count[spells.serpentSting.id] - 1
-							triggerUpdate = true
-						--elseif type == "SPELL_PERIODIC_DAMAGE" then
-						end
+						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 					end
 				end
 			end

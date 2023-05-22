@@ -2332,10 +2332,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
-			
-			if targetData.targets[destGUID] ~= nil then
-				targetData.targets[destGUID].lastUpdate = currentTime
-			end
 
 			if destGUID == TRB.Data.character.guid then
 				if specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver" then -- Let's check raid effect mana stuff
@@ -2493,10 +2489,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 								ApplyMarkOfTheCrane(destGUID)
 								triggerUpdate = true
 							elseif type == "SPELL_AURA_REMOVED" then
-								snapshot.targetData.targets[destGUID].spells[spells.markOfTheCrane.id].active = false
-								snapshot.targetData.targets[destGUID].spells[spells.markOfTheCrane.id].remainingTime = 0
-								snapshot.targetData.count[spells.markOfTheCrane.id] = snapshot.targetData.count[spells.markOfTheCrane.id] - 1
-								triggerUpdate = true
+								triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 							end
 						end
 					elseif spellId == spells.tigerPalm.id then

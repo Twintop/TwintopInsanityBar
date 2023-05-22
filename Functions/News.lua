@@ -20,10 +20,22 @@ local content = [====[
 
 ----
 
+# 10.1.0.5-release (2023-05-22)
+## General
+
+- [#322 - REFACTOR](#322) Further clean up and standardize how debuff tracking is handled from the combat log.
+
+## Rogue
+### Assassination
+
+- [#319 - FIX](#319) Remove debug printing around Serrated Bone Spike.
+
+----
+
 # 10.1.0.4-release (2023-05-22)
 ## General
 
-- [#317 - REFACTOR](#317) Overhauled how targets and debuff tracking works to make it more modular and generic.
+- [#314 - REFACTOR](#314) Overhauled how targets and debuff tracking works to make it more modular and generic.
 
 ## Monk
 ### Windwalker
@@ -33,7 +45,7 @@ local content = [====[
 ## Priest
 ### Shadow
 
-- [#315 - PR - st-htmn](#317) Add support for Idol of Yogg-Saron.
+- [#317 - PR - st-htmn](#317) Add support for Idol of Yogg-Saron.
 <br/>&emsp;&ensp;- Thanks go out to *st-htmn* for adding this functionality!
 <br/>&emsp;&ensp;- Tracks the current stacks and time remaining on the Idol of Yogg-Saron buff and the time left on Thing From Beyond once spawned.
 <br/>&emsp;&ensp;- New bar text icons and variables:
