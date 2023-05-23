@@ -2601,7 +2601,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			else
 				targetsTimerFrame:SetScript("OnUpdate", nil)
 			end
-			TRB.Data.snapshot.targetData.auspiciousSpirits = 0
 		end)
 
 		yCoord = yCoord - 30
@@ -2616,11 +2615,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(spec.voidTendrilTracker)
 		f:SetScript("OnClick", function(self, ...)
 			spec.voidTendrilTracker = self:GetChecked()
-			TRB.Data.snapshot.voidTendrils.numberActive = 0
-			TRB.Data.snapshot.voidTendrils.resourceRaw = 0
-			TRB.Data.snapshot.voidTendrils.resourceFinal = 0
-			TRB.Data.snapshot.voidTendrils.maxTicksRemaining = 0
-			TRB.Data.snapshot.voidTendrils.activeList = {}
 		end)
 
 		yCoord = yCoord - 30

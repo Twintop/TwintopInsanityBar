@@ -82,9 +82,18 @@ if classIndexId == 4 or classIndexId == 7 or classIndexId == 10 or classIndexId 
 	end
 end
 
-function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
-	---@type TRB.Classes.TargetData
-	local targetData = TRB.Data.snapshot.targetData
+function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)	
+	local targetData
+
+	local _, _, classIndexId = UnitClass("player")
+	if classIndexId == 5 then --Only do this if we're on a Priest!
+		---@type TRB.Classes.TargetData
+		targetData = TRB.Data.snapshotData.targetData
+	else
+		---@type TRB.Classes.TargetData
+		targetData = TRB.Data.snapshot.targetData
+	end
+
 	local currentTime = GetTime()
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate

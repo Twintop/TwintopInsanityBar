@@ -8,6 +8,25 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.1.0.6-release (2023-05-??)
+## General
+
+- [#323 - REFACTOR](#323) Further clean up and standardize how buff, cooldown, and computed data is stored and handled.
+<br/>&emsp;&ensp;- The following specializations are included in this update:
+<br/>&emsp;&ensp;&emsp;&ensp;- **Priest** - Holy, Shadow
+
+
+## Priest
+### Holy
+
+- (FIX) Resolve an issue where settings from the Restoration Druid implementation would be used in stead of from Holy Priest.
+
+### Shadow
+
+- [#322 - FIX](#322) Fix Auspicious Spirits tracking that broke during last refactor.
+
+----
+
 # 10.1.0.5-release (2023-05-22)
 ## General
 
