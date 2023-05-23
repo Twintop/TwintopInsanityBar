@@ -8,7 +8,7 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
-# 10.1.0.6-release (2023-05-??)
+# 10.1.0.6-release (2023-05-24)
 ## General
 
 - [#323 - REFACTOR](#323) Further clean up and standardize how buff, cooldown, and computed data is stored and handled.
