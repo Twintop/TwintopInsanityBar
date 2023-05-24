@@ -8,6 +8,22 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.1.0.8-release (2023-05-25)
+## General
+
+- [#323 - REFACTOR](#323) More enhancements, clean up, and standardize how buff, cooldown, and computed data is stored and handled.
+<br/>&emsp;&ensp;- The following specializations are included in this update:
+<br/>&emsp;&ensp;&emsp;&ensp;- **Priest** - Holy, Shadow
+
+## Priest
+### Holy
+- [#323 - FIX](#323) Fix errors being thrown when a potion threshold line is enabled and is on cooldown.
+- [#323 - FIX](#323) Only show the Shadowfiend threshold line when it matches configured settings.
+- (UPDATE) Improve accuracy of Symbol of Hope predicted mana regen.
+
+### Shadow
+- (FIX) Play the Deathspeaker audio cue more than one time per session if enabled.
+
 # 10.1.0.7-release (2023-05-24)
 ## General
 

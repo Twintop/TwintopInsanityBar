@@ -218,32 +218,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, threshold, showTh
 	end
 end
 
-function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, potionSnapshot, conjuredChillglobeSnapshot, character, resourceFrame, calculateManaGainFunction)
-	local potion
-	local conjuredChillglobe
-	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 5 then --Only do this if we're on a Priest!
-		potion = potionSnapshot
-		potion.startTime = potionSnapshot.buff.startTime
-		potion.endTime = potionSnapshot.buff.endTime
-		potion.duration = potionSnapshot.buff.duration
-		potion.remaining = potionSnapshot.buff.remaining
-		potion.endTimeLeeway = potionSnapshot.buff.endTimeLeeway
-		potion.onCooldown = potionSnapshot.attributes.onCooldown
-		potion.stacks = potionSnapshot.buff.stacks
-
-		conjuredChillglobe = conjuredChillglobeSnapshot
-		conjuredChillglobe.startTime = conjuredChillglobeSnapshot.buff.startTime
-		conjuredChillglobe.endTime = conjuredChillglobeSnapshot.buff.endTime
-		conjuredChillglobe.duration = conjuredChillglobeSnapshot.buff.duration
-		conjuredChillglobe.remaining = conjuredChillglobeSnapshot.buff.remaining
-		conjuredChillglobe.endTimeLeeway = conjuredChillglobeSnapshot.buff.endTimeLeeway
-		conjuredChillglobe.onCooldown = conjuredChillglobeSnapshot.attributes.onCooldown
-		conjuredChillglobe.stacks = conjuredChillglobeSnapshot.buff.stacks
-	else
-		potion = potionSnapshot
-		conjuredChillglobe = conjuredChillglobeSnapshot
-	end
+function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, potion, conjuredChillglobe, character, resourceFrame, calculateManaGainFunction)
 	local currentTime = GetTime()
 	local potionCooldownThreshold = 0
 	local potionThresholdColor = specSettings.colors.threshold.over

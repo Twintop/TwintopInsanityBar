@@ -117,17 +117,17 @@ function TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshotObj, simp
 		---@type TRB.Classes.Snapshot
 		local snapshot = snapshotObj
 		if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" or type == "SPELL_AURA_APPLIED_DOSE" then -- Gained buff
-			snapshot.isActive = true
+			snapshot.buff.isActive = true
 			if not simple then
 				_, _, snapshot.buff.stacks, _, snapshot.buff.duration, snapshot.buff.endTime, _, _, _, snapshot.spellId = TRB.Functions.Aura:FindBuffById(spellId, unit)
 				snapshot.buff:GetRemainingTime()
 			end
 		elseif type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
 			if snapshot.buff.stacks ~= nil then
-				snapshot.buff.stacks = snapshot.stacks - 1
+				snapshot.buff.stacks = snapshot.buff.stacks - 1
 			end
 		elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_DISPEL" then -- Lost buff
-			snapshot.isActive = false
+			snapshot.buff.isActive = false
 			if not simple then
 				snapshot.spellId = nil
 				snapshot.buff.stacks = 0
@@ -138,7 +138,7 @@ function TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshotObj, simp
 		elseif type == nil or type == "" then
 			_, _, snapshot.buff.stacks, _, snapshot.buff.duration, snapshot.buff.endTime, _, _, _, snapshot.spellId = TRB.Functions.Aura:FindBuffById(spellId, unit)
 			if snapshot.buff.endTime ~= nil and snapshot.buff.endTime > currentTime then
-				snapshot.isActive = true
+				snapshot.buff.isActive = true
 				snapshot.buff:GetRemainingTime()
 			else
 				snapshot:Reset()
