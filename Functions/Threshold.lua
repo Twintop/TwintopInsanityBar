@@ -33,7 +33,7 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, thresholdLine, pa
 	end
 
 	if resourceMax == nil or resourceMax == 0 then
-		resourceMax = TRB.Data.character.maxResource		
+		resourceMax = TRB.Data.character.maxResource
 		if resourceMax == 0 then
 			resourceMax = 100
 		end
@@ -254,12 +254,12 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 				local gcd = TRB.Functions.Character:GetCurrentGCDTime()
 				potionCooldownThreshold = gcd * specSettings.thresholds.potionCooldown.gcdsMax
 			elseif specSettings.thresholds.potionCooldown.mode == "time" then
-				potionCooldownThreshold = specSettings.thresholds.potionCooldown.buffMax
+				potionCooldownThreshold = specSettings.thresholds.potionCooldown.timeMax
 			end
 		end
 	end
 
-	if not potion.onCooldown or (potionCooldownThreshold > math.abs(potion.startTime + potion.duration - currentTime))then
+	if not potion.onCooldown or (potionCooldownThreshold > math.abs(potion.startTime + potion.duration - currentTime)) then
 		if potion.onCooldown then
 			potionThresholdColor = specSettings.colors.threshold.unusable
 		end
@@ -273,7 +273,7 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 			resourceFrame.thresholds[1]:Show()
 				
 			if specSettings.thresholds.icons.showCooldown then
-				resourceFrame.thresholds[1].icon.cooldown:SetCooldown(potion.startTime, potion.duration)
+				resourceFrame.thresholds[1].icon.cooldown:SetCooldown(potion.startTime, potio.duration)
 			else
 				resourceFrame.thresholds[1].icon.cooldown:SetCooldown(0, 0)
 			end
