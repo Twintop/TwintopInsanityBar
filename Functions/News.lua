@@ -24,6 +24,8 @@ local content = [====[
 ### Shadow
 - (FIX) Play the Deathspeaker audio cue more than one time per session if enabled.
 
+----
+
 # 10.1.0.7-release (2023-05-24)
 ## General
 
