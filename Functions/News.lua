@@ -8,6 +8,13 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.1.0.7-release (2023-05-24)
+## General
+
+- (FIX) Remove spammy debug printing.
+
+----
+
 # 10.1.0.6-release (2023-05-24)
 ## General
 
@@ -19,7 +26,7 @@ local content = [====[
 ## Priest
 ### Holy
 
-- (FIX) Resolve an issue where settings from the Restoration Druid implementation would be used in stead of from Holy Priest.
+- (FIX) Resolve an issue where settings from the Restoration Druid implementation would be used instead of from Holy Priest.
 
 ### Shadow
 

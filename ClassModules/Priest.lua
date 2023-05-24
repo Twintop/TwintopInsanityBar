@@ -3103,7 +3103,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local currentMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local barBorderColor = specSettings.colors.bar.border
 
-					print(snapshotData.snapshots[spells.lightweaver.id].buff.remaining, snapshotData.snapshots[spells.lightweaver.id].buff.remaining, snapshotData.snapshots[spells.lightweaver.id].buff.stacks)
 					if snapshotData.snapshots[spells.lightweaver.id].buff.remaining ~= nil and snapshotData.snapshots[spells.lightweaver.id].buff.remaining > 0 and snapshotData.snapshots[spells.lightweaver.id].buff.stacks > 0 then
 						if specSettings.colors.bar.lightweaverBorderChange then
 							barBorderColor = specSettings.colors.bar.lightweaver
