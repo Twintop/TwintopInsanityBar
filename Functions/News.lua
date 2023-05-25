@@ -17,11 +17,13 @@ local content = [====[
 
 ## Priest
 ### Holy
+
 - [#323 - FIX](#323) Fix errors being thrown when a potion threshold line is enabled and is on cooldown.
 - [#323 - FIX](#323) Only show the Shadowfiend threshold line when it matches configured settings.
 - (UPDATE) Improve accuracy of Symbol of Hope predicted mana regen.
 
 ### Shadow
+
 - (FIX) Play the Deathspeaker audio cue more than one time per session if enabled.
 
 ----
