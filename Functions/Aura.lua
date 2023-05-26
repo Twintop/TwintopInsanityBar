@@ -102,7 +102,8 @@ end
 ---@param spellId number # Spell ID of the aura we are storing details about
 ---@param type trbAuraEventType? # Event Type sourced from the combat log event
 ---@param snapshotObj table # Snapshot data associated with this spell
----@param simple boolean # If true, only determine if the spell `isActive` or not
+---@param simple? boolean # If true, only determine if the spell `isActive` or not
+---@param unit? UnitId #
 function TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshotObj, simple, unit)
 	local currentTime = GetTime()
 	if snapshotObj == nil then

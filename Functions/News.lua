@@ -8,6 +8,15 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.1.0.9-release (2023-05-27)
+## General
+
+## Priest
+### Shadow
+- (FIX) Update Twist of Fate spellId to enable proper tracking again.
+
+----
+
 # 10.1.0.8-release (2023-05-25)
 ## General
 
