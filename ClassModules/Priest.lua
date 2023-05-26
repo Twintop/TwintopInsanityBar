@@ -2868,14 +2868,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		snapshotData.snapshots[spells.surgeOfLight.id].buff:Refresh()
 
 		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
-		snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown.startTime, snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown.duration, _ = GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
+		snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown.startTime, snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
 		snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown:GetRemainingTime(currentTime)
 
-		snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown.startTime, snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown.duration, _ = GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
+		snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown.startTime, snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
 		snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown:GetRemainingTime(currentTime)
 	end
 
 	local function UpdateSnapshot_Shadow()
+		local _
 		UpdateSnapshot()
 		UpdateShadowfiendValues()
 		UpdateExternalCallToTheVoidValues()

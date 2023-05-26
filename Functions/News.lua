@@ -1,4 +1,4 @@
----@diagnostic disable: undefined-field, undefined-global
+---@diagnostic disable: undefined-field, undefined-global, redundant-parameter
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.News = {}
