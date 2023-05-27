@@ -233,6 +233,8 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime)
 	if remainingTime <= 0 then
 		remainingTime = 0
         self.onCooldown = false
+    elseif self.charges > 0 then
+        self.onCooldown = false
     else
         self.onCooldown = true
 	end

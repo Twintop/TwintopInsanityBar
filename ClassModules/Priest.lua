@@ -807,6 +807,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				isTalent = true,
 				insanityMod = 5
 			},
+			surgeOfInsanity = {
+				id = 391399,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
 			mindFlayInsanity = {
 				id = 391403,
 				name = "",
@@ -981,7 +987,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		---@type TRB.Classes.Snapshot
 		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.mindDevourer.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.mindDevourer)
 		---@type TRB.Classes.Snapshot
-		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.mindFlayInsanity.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.mindFlayInsanity)
+		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.surgeOfInsanity.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.mindFlayInsanity)
 		---@type TRB.Classes.Snapshot
 		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.deathspeaker.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.deathspeaker)
 		---@type TRB.Classes.Snapshot
@@ -2107,11 +2113,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local mdTime = string.format("%.1f", _mdTime)
 		
 		--$mfiTime
-		local _mfiTime = snapshots[spells.mindFlayInsanity.id].buff:GetRemainingTime(currentTime)
+		local _mfiTime = snapshots[spells.surgeOfInsanity.id].buff:GetRemainingTime(currentTime)
 		local mfiTime = string.format("%.1f", _mfiTime)
 
 		--$mfiStacks
-		local _mfiStacks = snapshots[spells.mindFlayInsanity.id].buff.stacks or 0
+		local _mfiStacks = snapshots[spells.surgeOfInsanity.id].buff.stacks or 0
 		local mfiStacks = string.format("%.0f", _mfiStacks)
 		
 		--$deathspeakerTime
@@ -2879,7 +2885,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 		snapshotData.snapshots[spells.voidform.id].buff:Refresh()
 		snapshotData.snapshots[spells.darkAscension.id].buff:GetRemainingTime(currentTime)
-		snapshotData.snapshots[spells.mindFlayInsanity.id].buff:GetRemainingTime(currentTime)
+		snapshotData.snapshots[spells.surgeOfInsanity.id].buff:GetRemainingTime(currentTime)
 		snapshotData.snapshots[spells.deathspeaker.id].buff:GetRemainingTime(currentTime)
 		snapshotData.snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
 
@@ -3572,11 +3578,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
 					if settings.mindbender.enabled and type == "SPELL_ENERGIZE" and (spellId == spells.mindbender.energizeId or spellId == spells.shadowfiend.energizeId) and sourceName == spells.shadowfiend.name then
 						if sourceGUID == snapshotData.snapshots[spells.shadowfiend.id].attributes.guid then
-							if TRB.Functions.Talent:IsTalentActive(spells.mindbender) then
-								snapshotData.snapshots[spells.shadowfiend.id].spell = spells.mindbender
-							else
-								snapshotData.snapshots[spells.shadowfiend.id].spell = spells.shadowfiend
-							end
 							snapshotData.snapshots[spells.shadowfiend.id].attributes.swingTime = currentTime
 							snapshotData.snapshots[spells.shadowfiend.id].cooldown:Refresh()
 						end
@@ -3703,7 +3704,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif spellId == spells.devouredDespair.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.mindFlayInsanity.buffId or spellId == spells.mindSpikeInsanity.buffId then
-						snapshotData.snapshots[spells.mindFlayInsanity.id].buff:Initialize(type)
+						snapshotData.snapshots[spells.surgeOfInsanity.id].buff:Initialize(type)
 					elseif spellId == spells.deathspeaker.buffId then
 						snapshotData.snapshots[spells.deathspeaker.id].buff:Initialize(type)
 						if type == "SPELL_AURA_APPLIED" then
@@ -3987,6 +3988,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			
 			if TRB.Functions.Talent:IsTalentActive(spells.distortedReality) then
 				TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + spells.distortedReality.insanityMod
+			end
+			
+			if TRB.Functions.Talent:IsTalentActive(spells.mindbender) then
+				TRB.Data.snapshotData.snapshots[spells.shadowfiend.id].spell = spells.mindbender
+			else
+				TRB.Data.snapshotData.snapshots[spells.shadowfiend.id].spell = spells.shadowfiend
+			end
+			
+			if TRB.Functions.Talent:IsTalentActive(spells.mindSpike) then
+				TRB.Data.snapshotData.snapshots[spells.surgeOfInsanity.id].spell = spells.mindSpikeInsanity
+			else
+				TRB.Data.snapshotData.snapshots[spells.surgeOfInsanity.id].spell = spells.mindFlayInsanity
 			end
 		end
 	end
@@ -4372,11 +4385,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$mfiTime" then
-				if snapshotData.snapshots[spells.mindFlayInsanity.id].buff.isActive then
+				if snapshotData.snapshots[spells.surgeOfInsanity.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$mfiStacks" then
-				if snapshotData.snapshots[spells.mindFlayInsanity.id].buff.isActive then
+				if snapshotData.snapshots[spells.surgeOfInsanity.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$deathspeakerTime" then
