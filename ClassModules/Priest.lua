@@ -2845,6 +2845,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateMoltenRadiance()
 		UpdateShadowfiendValues()
 		
+		local _
 		local spells = TRB.Data.spells
 		---@type TRB.Classes.SnapshotData
 		local snapshotData = TRB.Data.snapshotData
@@ -3698,7 +3699,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif type == "SPELL_ENERGIZE" and spellId == spells.shadowCrash.id then
 						triggerUpdate = true
 					elseif spellId == spells.mindDevourer.buffId then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
+						snapshotData.snapshots[spells.mindDevourer.id].buff:Initialize(type)
 					elseif spellId == spells.devouredDespair.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.mindFlayInsanity.buffId or spellId == spells.mindSpikeInsanity.buffId then
