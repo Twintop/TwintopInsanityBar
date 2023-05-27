@@ -246,11 +246,18 @@ end
 ---Refreshes the cooldown information for the snapshot
 ---@param force boolean? # Force refresh of the value even if other interal logic would prevent it from doing so
 function TRB.Classes.SnapshotCooldown:Refresh(force)
-    if (force or self.onCooldown) and self.parent.spell ~= nil and self.parent.spell.id ~= nil then
+    if self.parent.spell ~= nil and self.parent.spell.id ~= nil and (force or self.parent.spell.hasCharges or self.onCooldown) then
+        local startTime = nil
+        local duration = 0
         if self.parent.spell.hasCharges == true then
-            self.charges, self.maxCharges, self.startTime, self.duration, _ = GetSpellCharges(self.parent.spell.id)
+            self.charges, self.maxCharges, startTime, duration, _ = GetSpellCharges(self.parent.spell.id)
         else
-            self.startTime, self.duration, _, _ = GetSpellCooldown(self.parent.spell.id)
+            startTime, duration, _, _ = GetSpellCooldown(self.parent.spell.id)
+        end
+
+        if force or self.onCooldown or startTime ~= nil then
+            self.startTime = startTime
+            self.duration = duration
         end
     end
     self:GetRemainingTime()
