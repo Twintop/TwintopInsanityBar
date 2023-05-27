@@ -2535,6 +2535,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return haveTotem, timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed
 	end
 
+	---Update a specific Shadowfiend's values
+	---@param shadowfiend TRB.Classes.Snapshot
 	local function UpdateSpecificShadowfiendValues(shadowfiend)
 		if shadowfiend.attributes.totemId == nil then
 			return
