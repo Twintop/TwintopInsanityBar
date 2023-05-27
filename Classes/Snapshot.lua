@@ -143,8 +143,8 @@ end
 
 ---Refreshes the buff information for the snapshot
 ---@param type trbAuraEventType? # Event type sourced from the combat log event. If not provided, will do a generic buff update
----@param simple? boolean # Just updates isActive. If not provided, defaults to `false`
----@param unit? UnitId # Unit we want to check to update. If not provided, defaults to `player`
+---@param simple boolean? # Just updates isActive. If not provided, defaults to `false`
+---@param unit UnitId? # Unit we want to check to update. If not provided, defaults to `player`
 function TRB.Classes.SnapshotBuff:Refresh(type, simple, unit)
     unit = unit or "player"
     if simple == nil then
@@ -244,8 +244,9 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime)
 end
 
 ---Refreshes the cooldown information for the snapshot
-function TRB.Classes.SnapshotCooldown:Refresh()
-    if self.parent.spell ~= nil and self.parent.spell.id ~= nil then
+---@param force boolean? # Force refresh of the value even if other interal logic would prevent it from doing so
+function TRB.Classes.SnapshotCooldown:Refresh(force)
+    if (force or self.onCooldown) and self.parent.spell ~= nil and self.parent.spell.id ~= nil then
         if self.parent.spell.hasCharges == true then
             self.charges, self.maxCharges, self.startTime, self.duration, _ = GetSpellCharges(self.parent.spell.id)
         else

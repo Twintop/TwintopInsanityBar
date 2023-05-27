@@ -480,21 +480,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			surgeOfLight2Cue = false
 		}
 		---@type TRB.Classes.Snapshot
-		specCache.holy.snapshotData.snapshots[specCache.holy.spells.innervate.id] = TRB.Classes.Snapshot:New({
+		specCache.holy.snapshotData.snapshots[specCache.holy.spells.innervate.id] = TRB.Classes.Snapshot:New(specCache.holy.spells.innervate, {
 			mana = 0,
 			modifier = 1
 		})
 		---@type TRB.Classes.Snapshot
-		specCache.holy.snapshotData.snapshots[specCache.holy.spells.potionOfChilledClarity.id] = TRB.Classes.Snapshot:New({
+		specCache.holy.snapshotData.snapshots[specCache.holy.spells.potionOfChilledClarity.id] = TRB.Classes.Snapshot:New(specCache.holy.spells.potionOfChilledClarity, {
 			mana = 0,
 			modifier = 1
 		})
 		---@type TRB.Classes.Snapshot
-		specCache.holy.snapshotData.snapshots[specCache.holy.spells.manaTideTotem.id] = TRB.Classes.Snapshot:New({
+		specCache.holy.snapshotData.snapshots[specCache.holy.spells.manaTideTotem.id] = TRB.Classes.Snapshot:New(specCache.holy.spells.manaTideTotem, {
 			mana = 0
 		})
 		---@type TRB.Classes.Snapshot
-		specCache.holy.snapshotData.snapshots[specCache.holy.spells.shadowfiend.id] = TRB.Classes.Snapshot:New({
+		specCache.holy.snapshotData.snapshots[specCache.holy.spells.shadowfiend.id] = TRB.Classes.Snapshot:New(specCache.holy.spells.shadowfiend, {
 			guid = nil,
 			totemId = nil,
 			onCooldown = false,
@@ -1667,7 +1667,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
 		
 		--$sfMana
-		local _sfMana = snapshots[spells.shadowfiend.id].attributes.resourceFinal
+		local _sfMana = snapshots[spells.shadowfiend.id].attributes.resourceFinal or 0
 		local sfMana = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_sfMana, manaPrecision, "floor", true))
 		--$sfGcds
 		local _sfGcds = snapshots[spells.shadowfiend.id].attributes.remaining.gcds
@@ -1792,56 +1792,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		}
 
 
-		local lookup = TRB.Data.lookup or {}
-		lookup["#apotheosis"] = spells.apotheosis.icon
-		lookup["#coh"] = spells.circleOfHealing.icon
-		lookup["#circleOfHealing"] = spells.circleOfHealing.icon
-		lookup["#flashHeal"] = spells.flashHeal.icon
-		lookup["#ha"] = spells.harmoniousApparatus.icon
-		lookup["#harmoniousApparatus"] = spells.harmoniousApparatus.icon
-		lookup["#heal"] = spells.heal.icon
-		lookup["#hf"] = spells.holyFire.icon
-		lookup["#holyFire"] = spells.holyFire.icon
-		lookup["#hwChastise"] = spells.holyWordChastise.icon
-		lookup["#chastise"] = spells.holyWordChastise.icon
-		lookup["#holyWordChastise"] = spells.holyWordChastise.icon
-		lookup["#hwSanctify"] = spells.holyWordSanctify.icon
-		lookup["#sanctify"] = spells.holyWordSanctify.icon
-		lookup["#holyWordSanctify"] = spells.holyWordSanctify.icon
-		lookup["#hwSerenity"] = spells.holyWordSerenity.icon
-		lookup["#serenity"] = spells.holyWordSerenity.icon
-		lookup["#holyWordSerenity"] = spells.holyWordSerenity.icon
-		lookup["#lightweaver"] = spells.lightweaver.icon
-		lookup["#rw"] = spells.resonantWords.icon
-		lookup["#resonantWords"] = spells.resonantWords.icon
-		lookup["#innervate"] = spells.innervate.icon
-		lookup["#lotn"] = spells.lightOfTheNaaru.icon
-		lookup["#lightOfTheNaaru"] = spells.lightOfTheNaaru.icon
-		lookup["#mr"] = spells.moltenRadiance.icon
-		lookup["#moltenRadiance"] = spells.moltenRadiance.icon
-		lookup["#mtt"] = spells.manaTideTotem.icon
-		lookup["#manaTideTotem"] = spells.manaTideTotem.icon
-		lookup["#poh"] = spells.prayerOfHealing.icon
-		lookup["#prayerOfHealing"] = spells.prayerOfHealing.icon
-		lookup["#pom"] = spells.prayerOfMending.icon
-		lookup["#prayerOfMending"] = spells.prayerOfMending.icon
-		lookup["#renew"] = spells.renew.icon
-		lookup["#smite"] = spells.smite.icon
-		lookup["#soh"] = spells.symbolOfHope.icon
-		lookup["#symbolOfHope"] = spells.symbolOfHope.icon
-		lookup["#sol"] = spells.surgeOfLight.icon
-		lookup["#surgeOfLight"] = spells.surgeOfLight.icon
-		lookup["#amp"] = spells.aeratedManaPotionRank1.icon
-		lookup["#aeratedManaPotion"] = spells.aeratedManaPotionRank1.icon
-		lookup["#poff"] = spells.potionOfFrozenFocusRank1.icon
-		lookup["#potionOfFrozenFocus"] = spells.potionOfFrozenFocusRank1.icon
-		lookup["#pocc"] = spells.potionOfChilledClarity.icon
-		lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
-		lookup["#swp"] = spells.shadowWordPain.icon
-		lookup["#shadowWordPain"] = spells.shadowWordPain.icon
-		lookup["#shadowfiend"] = spells.shadowfiend.icon
-		lookup["#sf"] = spells.shadowfiend.icon
-
+		local lookup = TRB.Data.lookup
 		lookup["$manaPlusCasting"] = manaPlusCasting
 		lookup["$manaPlusPassive"] = manaPlusPassive
 		lookup["$manaTotal"] = manaTotal
@@ -2194,51 +2145,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			count = snapshots[spells.idolOfCthun.id].attributes.numberActive or 0
 		}
 
-		local lookup = TRB.Data.lookup or {}
-		lookup["#as"] = spells.auspiciousSpirits.icon
-		lookup["#auspiciousSpirits"] = spells.auspiciousSpirits.icon
-		lookup["#sa"] = spells.shadowyApparition.icon
-		lookup["#shadowyApparition"] = spells.shadowyApparition.icon
-		lookup["#mb"] = spells.mindBlast.icon
-		lookup["#mindBlast"] = spells.mindBlast.icon
-		lookup["#mf"] = spells.mindFlay.icon
-		lookup["#mindFlay"] = spells.mindFlay.icon
-		lookup["#mfi"] = spells.mindFlayInsanity.icon
-		lookup["#mindFlayInsanity"] = spells.mindFlayInsanity.icon
-		lookup["#mindgames"] = spells.mindgames.icon
-		lookup["#mindbender"] = spells.mindbender.icon
-		lookup["#shadowfiend"] = spells.shadowfiend.icon
-		lookup["#sf"] = spells.shadowfiend.icon
-		lookup["#vf"] = spells.voidform.icon
-		lookup["#voidform"] = spells.voidform.icon
-		lookup["#vb"] = spells.voidBolt.icon
-		lookup["#voidBolt"] = spells.voidBolt.icon
-		lookup["#vt"] = spells.vampiricTouch.icon
-		lookup["#vampiricTouch"] = spells.vampiricTouch.icon
-		lookup["#swp"] = spells.shadowWordPain.icon
-		lookup["#shadowWordPain"] = spells.shadowWordPain.icon
-		lookup["#dp"] = spells.devouringPlague.icon
-		lookup["#devouringPlague"] = spells.devouringPlague.icon
-		lookup["#mDev"] = spells.mindDevourer.icon
-		lookup["#mindDevourer"] = spells.mindDevourer.icon
-		lookup["#tof"] = spells.twistOfFate.icon
-		lookup["#twistOfFate"] = spells.twistOfFate.icon
-		lookup["#si"] = spells.shadowyInsight.icon
-		lookup["#shadowyInsight"] = spells.shadowyInsight.icon
-		lookup["#mm"] = spells.mindMelt.icon
-		lookup["#mindMelt"] = spells.mindMelt.icon
-		lookup["#ys"] = TRB.Data.spells.idolOfYoggSaron.icon
-		lookup["#idolOfYoggSaron"] = TRB.Data.spells.idolOfYoggSaron.icon
-		lookup["#tfb"] = TRB.Data.spells.thingFromBeyond.icon
-		lookup["#thingFromBeyond"] = TRB.Data.spells.thingFromBeyond.icon
-		lookup["#md"] = spells.massDispel.icon
-		lookup["#massDispel"] = spells.massDispel.icon
-		lookup["#cthun"] = spells.idolOfCthun.icon
-		lookup["#idolOfCthun"] = spells.idolOfCthun.icon
-		lookup["#loi"] = spells.idolOfCthun.icon
-		lookup["#swd"] = spells.deathspeaker.icon
-		lookup["#shadowWordDeath"] = spells.deathspeaker.icon
-		lookup["#deathspeaker"] = spells.deathspeaker.icon
+		local lookup = TRB.Data.lookup
 		lookup["$swpCount"] = shadowWordPainCount
 		lookup["$swpTime"] = shadowWordPainTime
 		lookup["$vtCount"] = vampiricTouchCount
@@ -2791,6 +2698,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		if snapshot.buff.isActive then
 			snapshot.attributes.mana = snapshot.buff:GetRemainingTime() * TRB.Data.snapshotData.attributes.manaRegen
+		else
+			snapshot.attributes.mana = 0
 		end
 	end
 
@@ -2802,6 +2711,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		if snapshot.buff.isActive then
 			snapshot.attributes.mana = snapshot.buff:GetRemainingTime() * TRB.Data.snapshotData.attributes.manaRegen
+		else
+			snapshot.attributes.mana = 0
 		end
 	end
 
@@ -2818,6 +2729,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		if snapshot.buff.isActive then
 			snapshot.attributes.mana = snapshot.buff:GetRemainingTime() * (TRB.Data.snapshotData.attributes.manaRegen / 2) --Only half of this is considered bonus
+		else
+			snapshot.attributes.mana = 0
 		end
 	end
 
@@ -2834,6 +2747,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		if snapshot.buff.isActive then
 			snapshot.attributes.mana = snapshot.attributes.manaPerTick * TRB.Functions.Number:RoundTo(snapshot.buff:GetRemainingTime(), 0, "ceil", true)
+		else
+			snapshot.attributes.mana = 0
 		end
 	end
 
@@ -3111,7 +3026,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Frames.passiveFrame.thresholds[5]:Hide()
 						end
 
-						if shadowfiend.attributes.resourceFinal > 0 then
+						if shadowfiend.buff.isActive then
 							passiveValue = passiveValue + shadowfiend.attributes.resourceFinal
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
@@ -3572,14 +3487,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					elseif settings.shadowfiend.enabled and type == "SPELL_ENERGIZE" and spellId == spells.shadowfiend.energizeId and sourceName == spells.shadowfiend.name then
 						snapshotData.snapshots[spells.shadowfiend.id].attributes.swingTime = currentTime
-						snapshotData.snapshots[spells.shadowfiend.id].cooldown:Refresh()
+						snapshotData.snapshots[spells.shadowfiend.id].cooldown:Refresh(true)
 						triggerUpdate = true
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
 					if settings.mindbender.enabled and type == "SPELL_ENERGIZE" and (spellId == spells.mindbender.energizeId or spellId == spells.shadowfiend.energizeId) and sourceName == spells.shadowfiend.name then
 						if sourceGUID == snapshotData.snapshots[spells.shadowfiend.id].attributes.guid then
 							snapshotData.snapshots[spells.shadowfiend.id].attributes.swingTime = currentTime
-							snapshotData.snapshots[spells.shadowfiend.id].cooldown:Refresh()
+							snapshotData.snapshots[spells.shadowfiend.id].cooldown:Refresh(true)
 						end
 						triggerUpdate = true
 					end
@@ -3647,17 +3562,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif spellId == spells.holyWordSerenity.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Serenity
 ---@diagnostic disable-next-line: redundant-parameter, cast-local-type
-							snapshotData.snapshots[spellId].cooldown:Refresh()
+							snapshotData.snapshots[spellId].cooldown:Refresh(true)
 						end
 					elseif spellId == spells.holyWordSanctify.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Sanctify
 ---@diagnostic disable-next-line: redundant-parameter, cast-local-type
-							snapshotData.snapshots[spellId].cooldown:Refresh()
+							snapshotData.snapshots[spellId].cooldown:Refresh(true)
 						end
 					elseif spellId == spells.holyWordChastise.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Chastise
 ---@diagnostic disable-next-line: redundant-parameter, cast-local-type
-							snapshotData.snapshots[spellId].cooldown:Refresh()
+							snapshotData.snapshots[spellId].cooldown:Refresh(true)
 						end
 					elseif spellId == spells.divineConversation.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type, true)
@@ -3819,6 +3734,58 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.priest.holy)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.holy)
 
+			local lookup = TRB.Data.lookup or {}
+			lookup["#apotheosis"] = spells.apotheosis.icon
+			lookup["#coh"] = spells.circleOfHealing.icon
+			lookup["#circleOfHealing"] = spells.circleOfHealing.icon
+			lookup["#flashHeal"] = spells.flashHeal.icon
+			lookup["#ha"] = spells.harmoniousApparatus.icon
+			lookup["#harmoniousApparatus"] = spells.harmoniousApparatus.icon
+			lookup["#heal"] = spells.heal.icon
+			lookup["#hf"] = spells.holyFire.icon
+			lookup["#holyFire"] = spells.holyFire.icon
+			lookup["#hwChastise"] = spells.holyWordChastise.icon
+			lookup["#chastise"] = spells.holyWordChastise.icon
+			lookup["#holyWordChastise"] = spells.holyWordChastise.icon
+			lookup["#hwSanctify"] = spells.holyWordSanctify.icon
+			lookup["#sanctify"] = spells.holyWordSanctify.icon
+			lookup["#holyWordSanctify"] = spells.holyWordSanctify.icon
+			lookup["#hwSerenity"] = spells.holyWordSerenity.icon
+			lookup["#serenity"] = spells.holyWordSerenity.icon
+			lookup["#holyWordSerenity"] = spells.holyWordSerenity.icon
+			lookup["#lightweaver"] = spells.lightweaver.icon
+			lookup["#rw"] = spells.resonantWords.icon
+			lookup["#resonantWords"] = spells.resonantWords.icon
+			lookup["#innervate"] = spells.innervate.icon
+			lookup["#lotn"] = spells.lightOfTheNaaru.icon
+			lookup["#lightOfTheNaaru"] = spells.lightOfTheNaaru.icon
+			lookup["#mr"] = spells.moltenRadiance.icon
+			lookup["#moltenRadiance"] = spells.moltenRadiance.icon
+			lookup["#mtt"] = spells.manaTideTotem.icon
+			lookup["#manaTideTotem"] = spells.manaTideTotem.icon
+			lookup["#poh"] = spells.prayerOfHealing.icon
+			lookup["#prayerOfHealing"] = spells.prayerOfHealing.icon
+			lookup["#pom"] = spells.prayerOfMending.icon
+			lookup["#prayerOfMending"] = spells.prayerOfMending.icon
+			lookup["#renew"] = spells.renew.icon
+			lookup["#smite"] = spells.smite.icon
+			lookup["#soh"] = spells.symbolOfHope.icon
+			lookup["#symbolOfHope"] = spells.symbolOfHope.icon
+			lookup["#sol"] = spells.surgeOfLight.icon
+			lookup["#surgeOfLight"] = spells.surgeOfLight.icon
+			lookup["#amp"] = spells.aeratedManaPotionRank1.icon
+			lookup["#aeratedManaPotion"] = spells.aeratedManaPotionRank1.icon
+			lookup["#poff"] = spells.potionOfFrozenFocusRank1.icon
+			lookup["#potionOfFrozenFocus"] = spells.potionOfFrozenFocusRank1.icon
+			lookup["#pocc"] = spells.potionOfChilledClarity.icon
+			lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
+			lookup["#swp"] = spells.shadowWordPain.icon
+			lookup["#shadowWordPain"] = spells.shadowWordPain.icon
+			lookup["#shadowfiend"] = spells.shadowfiend.icon
+			lookup["#sf"] = spells.shadowfiend.icon
+			TRB.Data.lookup = lookup
+			TRB.Data.lookupLogic = {}
+
 			if TRB.Data.barConstructedForSpec ~= "holy" then
 				TRB.Data.barConstructedForSpec = "holy"
 				ConstructResourceBar(specCache.holy.settings)
@@ -3827,10 +3794,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			specCache.shadow.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Shadow()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.shadow)
-			
-			--[[
-			---@type TRB.Classes.SnapshotData
-			TRB.Data.snapshotData = specCache.shadow.snapshotData]]
+
 			local spells = TRB.Data.spells
 			---@type TRB.Classes.TargetData
 			TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
@@ -3844,6 +3808,54 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.priest.shadow)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.shadow)
 
+			local lookup = {}
+			lookup["#as"] = spells.auspiciousSpirits.icon
+			lookup["#auspiciousSpirits"] = spells.auspiciousSpirits.icon
+			lookup["#sa"] = spells.shadowyApparition.icon
+			lookup["#shadowyApparition"] = spells.shadowyApparition.icon
+			lookup["#mb"] = spells.mindBlast.icon
+			lookup["#mindBlast"] = spells.mindBlast.icon
+			lookup["#mf"] = spells.mindFlay.icon
+			lookup["#mindFlay"] = spells.mindFlay.icon
+			lookup["#mfi"] = spells.mindFlayInsanity.icon
+			lookup["#mindFlayInsanity"] = spells.mindFlayInsanity.icon
+			lookup["#mindgames"] = spells.mindgames.icon
+			lookup["#mindbender"] = spells.mindbender.icon
+			lookup["#shadowfiend"] = spells.shadowfiend.icon
+			lookup["#sf"] = spells.shadowfiend.icon
+			lookup["#vf"] = spells.voidform.icon
+			lookup["#voidform"] = spells.voidform.icon
+			lookup["#vb"] = spells.voidBolt.icon
+			lookup["#voidBolt"] = spells.voidBolt.icon
+			lookup["#vt"] = spells.vampiricTouch.icon
+			lookup["#vampiricTouch"] = spells.vampiricTouch.icon
+			lookup["#swp"] = spells.shadowWordPain.icon
+			lookup["#shadowWordPain"] = spells.shadowWordPain.icon
+			lookup["#dp"] = spells.devouringPlague.icon
+			lookup["#devouringPlague"] = spells.devouringPlague.icon
+			lookup["#mDev"] = spells.mindDevourer.icon
+			lookup["#mindDevourer"] = spells.mindDevourer.icon
+			lookup["#tof"] = spells.twistOfFate.icon
+			lookup["#twistOfFate"] = spells.twistOfFate.icon
+			lookup["#si"] = spells.shadowyInsight.icon
+			lookup["#shadowyInsight"] = spells.shadowyInsight.icon
+			lookup["#mm"] = spells.mindMelt.icon
+			lookup["#mindMelt"] = spells.mindMelt.icon
+			lookup["#ys"] = TRB.Data.spells.idolOfYoggSaron.icon
+			lookup["#idolOfYoggSaron"] = TRB.Data.spells.idolOfYoggSaron.icon
+			lookup["#tfb"] = TRB.Data.spells.thingFromBeyond.icon
+			lookup["#thingFromBeyond"] = TRB.Data.spells.thingFromBeyond.icon
+			lookup["#md"] = spells.massDispel.icon
+			lookup["#massDispel"] = spells.massDispel.icon
+			lookup["#cthun"] = spells.idolOfCthun.icon
+			lookup["#idolOfCthun"] = spells.idolOfCthun.icon
+			lookup["#loi"] = spells.idolOfCthun.icon
+			lookup["#swd"] = spells.deathspeaker.icon
+			lookup["#shadowWordDeath"] = spells.deathspeaker.icon
+			lookup["#deathspeaker"] = spells.deathspeaker.icon
+			TRB.Data.lookup = lookup
+			TRB.Data.lookupLogic = {}
+
 			if TRB.Data.barConstructedForSpec ~= "shadow" then
 				TRB.Data.barConstructedForSpec = "shadow"
 				ConstructResourceBar(specCache.shadow.settings)
@@ -3851,6 +3863,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		else
 			TRB.Data.barConstructedForSpec = nil
 		end
+		
+		TwintopGlobalSnapshotData = TRB.Data.snapshotData
 		TRB.Functions.Class:EventRegistration()
 	end
 
@@ -4121,7 +4135,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local specId = GetSpecialization()
 		---@type TRB.Classes.SnapshotData
 		local snapshotData = TRB.Data.snapshotData
-		TwintopGlobalSnapshotData = snapshotData
 		local spells = TRB.Data.spells
 		---@type TRB.Classes.Target
 		local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
