@@ -11,8 +11,11 @@ local content = [====[
 # 10.1.0.9-release (2023-05-27)
 ## General
 
+- [#219 - NEW](#219) Add custom Time To Die health percentage for Ragnaros in Firelands at 10% in Normal 10/25 or Timewalking modes.
+
 ## Priest
 ### Shadow
+
 - (FIX) Update Twist of Fate spellId to enable proper tracking again.
 
 ----

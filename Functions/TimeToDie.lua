@@ -53,6 +53,16 @@ ttdPlayerEnteringWorldFrame:SetScript("OnEvent", function(self, event, ...)
     end
 end)
 
+local function Firelands_Ragnaros()
+    if instanceDifficulty == 3 or -- Normal 10 man
+        instanceDifficulty == 4 or -- Normal 25 man
+        instanceDifficulty == 33 then -- Timewalking
+        return 0.1
+    else
+        return 0.0
+    end
+end
+
 local function CourtOfStars_PatrolCaptainGerdo()
     if triggeredCourtOfStars_PatrolCaptainGerdo_FlaskOfSolemnNight then
         return 0.25
@@ -85,6 +95,8 @@ local unitDeathHealthPercentageList = {
     ---- Cataclysm ----
     --- Grim Batol ---
     ["40320"] = 0.2, -- Valiona
+    --- Firelands ---
+    ["52409"] = Firelands_Ragnaros,
 
     ---- Mists of Pandaria ----
     --- Mogu'shan Palace ---
