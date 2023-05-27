@@ -247,7 +247,7 @@ function TRB.Classes.SnapshotCooldown:Refresh()
         if self.parent.spell.hasCharges == true then
             self.charges, self.maxCharges, self.startTime, self.duration, _ = GetSpellCharges(self.parent.spell.id)
         else
-            self.startTime, self.duration, _, _ = GetSpellCooldown(self.parent.spell.spellId)
+            self.startTime, self.duration, _, _ = GetSpellCooldown(self.parent.spell.id)
         end
     end
     self:GetRemainingTime()
