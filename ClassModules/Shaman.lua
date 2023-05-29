@@ -1085,7 +1085,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end
 			end
 			TRB.Frames.resource2ContainerFrame:Hide()
-		elseif specId == 2 then
+		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
 			for k, v in pairs(spells) do
 				local spell = spells[k]
 				if spell ~= nil and spell.id ~= nil and spell.maelstrom ~= nil and spell.maelstrom < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
@@ -2803,7 +2803,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.Data.barConstructedForSpec = "elemental"
 				ConstructResourceBar(specCache.elemental.settings)
 			end
-		elseif specId == 2 then-- and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
+		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
 			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.shaman.enhancement)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.enhancement)
 			specCache.enhancement.talents = TRB.Functions.Talent:GetTalents()

@@ -8,12 +8,18 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
-# 10.1.0.9-release (2023-05-27)
+# 10.1.0.9-release (2023-05-29)
 ## General
 
 - [#219 - NEW](#219) Add custom Time To Die health percentage for Ragnaros in Firelands at 10% in Normal 10/25 or Timewalking modes.
+- [#324 - EXPERIMENTAL](#324) Experimental support for Discipline Priest.
 
 ## Priest
+## Discipline
+
+- This feature is EXPERIMENTAL and is not enabled by default. To enable Discipline Priest support, go to the main "General" options menu for Twintop's Resource Bar and check "Discipline Priest support" under the "Experimental Features" section.
+- [#280 - EXPERIMENTAL](#324) Experimental implementation for Discipline Priest, tracking Mana. Currently supports the same generic healer tracking capabilities as the other supported healing specializations: Innervate, Mana Tide Totem, Symbol of Hope, mana potions, Chillglobe, etc. Additional support has been added for mana regeneration via Shadowfiend/Mindbender, DoT tracking of Shadow Word: Pain/Purge the Wicked, and Surge of Light procs.
+
 ### Shadow
 
 - (FIX) Update Twist of Fate spellId to enable proper tracking again.

@@ -43,7 +43,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.comboPoints = settings.comboPoints
 			end 
 		elseif classId == 5 then -- Priests
-			if specId == 2 then -- Holy
+			if specId == 1 then -- Discipline
+			elseif specId == 2 then -- Holy
 				configuration.endOfApotheosis = settings.endOfApotheosis
 			elseif specId == 3 then -- Shadow
 				configuration.endOfVoidform = settings.endOfVoidform
@@ -122,7 +123,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Outlaw
 			end 
 		elseif classId == 5 then -- Priests
-			if specId == 2 then -- Holy
+			if specId == 1 then -- Discipline
+			elseif specId == 2 then -- Holy
 			elseif specId == 3 then -- Shadow
 				configuration.hasteApproachingThreshold = settings.hasteApproachingThreshold
 				configuration.hasteThreshold = settings.hasteThreshold
@@ -173,7 +175,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.generation = settings.generation
 			end
 		elseif classId == 5 then -- Priests
-			if specId == 2 then -- Holy
+			if specId == 1 then -- Discipline
+				configuration.passiveGeneration = settings.passiveGeneration
+				configuration.shadowfiend = settings.shadowfiend
+			elseif specId == 2 then -- Holy
 				configuration.passiveGeneration = settings.passiveGeneration
 				configuration.shadowfiend = settings.shadowfiend
 			elseif specId == 3 then -- Shadow
@@ -276,6 +281,12 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			end
 		elseif classId == 5 and settings.priest ~= nil then -- Priest
 			configuration.priest = {}
+			
+			if TRB.Data.settings.core.experimental.specs.priest.discipline then
+				if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.priest.discipline) > 0 then -- Discipline
+					configuration.priest.discipline = ExportConfigurationSections(5, 1, settings.priest.discipline, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+				end
+			end
 
 			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.priest.holy) > 0 then -- Holy
 				configuration.priest.holy = ExportConfigurationSections(5, 2, settings.priest.holy, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
@@ -337,7 +348,7 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 				if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.devastation) > 0 then -- Devastation
 					configuration.evoker.devastation = ExportConfigurationSections(13, 1, settings.evoker.devastation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 				end
-			end			
+			end
 			
 			if TRB.Data.settings.core.experimental.specs.evoker.preservation then
 				if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.preservation) > 0 then -- Preservation
@@ -369,6 +380,10 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Priests
+		if TRB.Data.settings.core.experimental.specs.priest.discipline then
+			-- Discipline
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(5, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		end
 		-- Holy
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(5, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Shadow

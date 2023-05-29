@@ -254,6 +254,15 @@ local function LoadDefaultSettings()
 					}
 				},
 				priest = {
+					discipline = {
+						specEnable = false,
+						bar = true,
+						comboPoints = true,
+						displayBar = true,
+						font = true,
+						textures = true,
+						thresholds = true
+					},
 					holy = {
 						specEnable = false,
 						bar = true,
@@ -366,6 +375,7 @@ local function LoadDefaultSettings()
 					windwalker = true
 				},
 				priest = {
+					discipline = true,
 					holy = true,
 					shadow = true
 				},
@@ -388,6 +398,9 @@ local function LoadDefaultSettings()
 					evoker = {
 						devastation = false,
 						preservation = false
+					},
+					priest = {
+						discipline = false
 					},
 					shaman = {
 						enhancement = false
@@ -417,6 +430,7 @@ local function LoadDefaultSettings()
 			windwalker = {}
 		},
 		priest = {
+			discipline = {},
 			holy = {},
 			shadow = {}
 		},
@@ -706,6 +720,17 @@ local function ConstructAddonOptionsPanel()
 	f:SetChecked(TRB.Data.settings.core.experimental.specs.evoker.preservation)
 	f:SetScript("OnClick", function(self, ...)
 		TRB.Data.settings.core.experimental.specs.evoker.preservation = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.experimentalPriestDiscipline = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Priest_Discipline", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.experimentalPriestDiscipline
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText("Discipline Priest support")
+	f.tooltip = "This will enable experimental Discipline Priest support within the bar. If you change this setting and are currently logged in on a Priest, you'll need to reload your UI before Discipline Priest configuration options become available."
+	f:SetChecked(TRB.Data.settings.core.experimental.specs.priest.discipline)
+	f:SetScript("OnClick", function(self, ...)
+		TRB.Data.settings.core.experimental.specs.priest.discipline = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30
@@ -1450,6 +1475,42 @@ local function ConstructImportExportPanel()
 	controls.exportButton_Priest_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Priest specializations (Bar Text).", 5, nil, false, false, false, true, false)
 	end)
+
+	if TRB.Data.settings.core.experimental.specs.priest.discipline then
+		yCoord = yCoord - 25
+		specName = "Discipline"
+		controls.labels.priestDiscipline = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+		
+		buttonOffset = oUi.xCoord + oUi.xPadding + 100
+		controls.buttons.exportButton_Priest_Discipline_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+		controls.buttons.exportButton_Priest_Discipline_All:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Discipline Priest (All).", 5, 1, true, true, true, true, false)
+		end)
+		
+		buttonOffset = buttonOffset + buttonSpacing + 50
+		controls.exportButton_Priest_Discipline_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+		controls.exportButton_Priest_Discipline_BarDisplay:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Discipline Priest (Bar Display).", 5, 1, true, false, false, false, false)
+		end)
+		
+		buttonOffset = buttonOffset + buttonSpacing + 80
+		controls.exportButton_Priest_Discipline_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+		controls.exportButton_Priest_Discipline_FontAndText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Discipline Priest (Font & Text).", 5, 1, false, true, false, false, false)
+		end)
+		
+		buttonOffset = buttonOffset + buttonSpacing + 90
+		controls.exportButton_Priest_Discipline_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+		controls.exportButton_Priest_Discipline_AudioAndTracking:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Discipline Priest (Audio & Tracking).", 5, 1, false, false, true, false, false)
+		end)
+		
+		buttonOffset = buttonOffset + buttonSpacing + 120
+		controls.exportButton_Priest_Discipline_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+		controls.exportButton_Priest_Discipline_BarText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Discipline Priest (Bar Text).", 5, 1, false, false, false, true, false)
+		end)
+	end
 
 	yCoord = yCoord - 25
 	specName = "Holy"

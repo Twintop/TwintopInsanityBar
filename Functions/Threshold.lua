@@ -247,7 +247,7 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 			resourceFrame.thresholds[1].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 			resourceFrame.thresholds[1]:Show()
 				
-			if specSettings.thresholds.icons.showCooldown then
+			if specSettings.thresholds.icons.showCooldown and potion.onCooldown then
 				resourceFrame.thresholds[1].icon.cooldown:SetCooldown(potion.startTime, potio.duration)
 			else
 				resourceFrame.thresholds[1].icon.cooldown:SetCooldown(0, 0)
@@ -265,7 +265,7 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 			resourceFrame.thresholds[2].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 			resourceFrame.thresholds[2]:Show()
 				
-			if specSettings.thresholds.icons.showCooldown then
+			if specSettings.thresholds.icons.showCooldown and potion.onCooldown then
 				resourceFrame.thresholds[2].icon.cooldown:SetCooldown(potion.startTime, potion.duration)
 			else
 				resourceFrame.thresholds[2].icon.cooldown:SetCooldown(0, 0)
@@ -283,7 +283,7 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 			resourceFrame.thresholds[3].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 			resourceFrame.thresholds[3]:Show()
 				
-			if specSettings.thresholds.icons.showCooldown then
+			if specSettings.thresholds.icons.showCooldown and potion.onCooldown then
 				resourceFrame.thresholds[3].icon.cooldown:SetCooldown(potion.startTime, potion.duration)
 			else
 				resourceFrame.thresholds[3].icon.cooldown:SetCooldown(0, 0)
@@ -301,7 +301,7 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 			resourceFrame.thresholds[4].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 			resourceFrame.thresholds[4]:Show()
 				
-			if specSettings.thresholds.icons.showCooldown then
+			if specSettings.thresholds.icons.showCooldown and potion.onCooldown then
 				resourceFrame.thresholds[4].icon.cooldown:SetCooldown(potion.startTime, potion.duration)
 			else
 				resourceFrame.thresholds[4].icon.cooldown:SetCooldown(0, 0)
@@ -319,7 +319,7 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 			resourceFrame.thresholds[5].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 			resourceFrame.thresholds[5]:Show()
 				
-			if specSettings.thresholds.icons.showCooldown then
+			if specSettings.thresholds.icons.showCooldown and potion.onCooldown then
 				resourceFrame.thresholds[5].icon.cooldown:SetCooldown(potion.startTime, potion.duration)
 			else
 				resourceFrame.thresholds[5].icon.cooldown:SetCooldown(0, 0)
@@ -337,7 +337,7 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 			resourceFrame.thresholds[6].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 			resourceFrame.thresholds[6]:Show()
 				
-			if specSettings.thresholds.icons.showCooldown then
+			if specSettings.thresholds.icons.showCooldown and potion.onCooldown then
 				resourceFrame.thresholds[6].icon.cooldown:SetCooldown(potion.startTime, potion.duration)
 			else
 				resourceFrame.thresholds[6].icon.cooldown:SetCooldown(0, 0)
