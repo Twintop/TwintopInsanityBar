@@ -178,6 +178,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			aeratedManaPotionRank1 = {
 				itemId = 191384,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				useSpellIcon = true,
@@ -189,6 +190,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			aeratedManaPotionRank2 = {
 				itemId = 191385,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				useSpellIcon = true,
@@ -200,6 +202,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			aeratedManaPotionRank3 = {
 				itemId = 191386,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				useSpellIcon = true,

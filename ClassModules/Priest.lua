@@ -157,6 +157,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			-- Priest Talent Abilities
 			shadowfiend = {
 				id = 34433,
+				iconName = "spell_shadow_shadowfiend",
 				name = "",
 				icon = "",
 				energizeId = 343727,
@@ -196,6 +197,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			mindbender = {
 				id = 123040,
+				iconName = "spell_shadow_soulleech_3",
 				name = "",
 				icon = "",
 				energizeId = 123051,
@@ -235,6 +237,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 370607,
 				itemId = 191384,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				useSpellIcon = true,
@@ -246,6 +249,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			aeratedManaPotionRank2 = {
 				itemId = 191385,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				useSpellIcon = true,
@@ -257,6 +261,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			aeratedManaPotionRank3 = {
 				itemId = 191386,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				texture = "",
@@ -544,6 +549,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			-- Priest Talent Abilities
 			shadowfiend = {
 				id = 34433,
+				iconName = "spell_shadow_shadowfiend",
 				name = "",
 				icon = "",
 				energizeId = 343727,
@@ -699,6 +705,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 370607,
 				itemId = 191384,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				useSpellIcon = true,
@@ -710,6 +717,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			aeratedManaPotionRank2 = {
 				itemId = 191385,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				useSpellIcon = true,
@@ -721,6 +729,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			aeratedManaPotionRank3 = {
 				itemId = 191386,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				texture = "",
@@ -1013,6 +1022,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			-- Priest Talent Abilities			
 			shadowfiend = {
 				id = 34433,
+				iconName = "spell_shadow_shadowfiend",
 				energizeId = 279420,
 				name = "",
 				icon = "",
@@ -1234,6 +1244,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			mindbender = {
 				id = 200174,
+				iconName = "spell_shadow_soulleech_3",
 				energizeId = 200010,
 				name = "",
 				icon = "",
@@ -5256,7 +5267,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	function TRB.Functions.Class:EventRegistration()
 		local specId = GetSpecialization()
-		if specId == 1 and TRB.Data.settings.core.enabled.priest.discipline == true then
+		if specId == 1 and TRB.Data.settings.core.enabled.priest.discipline == true and TRB.Data.settings.core.experimental.specs.priest.discipline then
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.discipline)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
@@ -5304,9 +5315,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local specId = GetSpecialization()
 		local affectingCombat = UnitAffectingCombat("player")
 		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-		if specId == 1 then
+		if specId == 1 and TRB.Data.settings.core.experimental.specs.priest.discipline then
 			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.priest.discipline.displayBar.alwaysShow) and (

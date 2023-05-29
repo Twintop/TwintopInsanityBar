@@ -209,6 +209,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			aeratedManaPotionRank1 = {
 				itemId = 191384,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				useSpellIcon = true,
@@ -220,6 +221,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			aeratedManaPotionRank2 = {
 				itemId = 191385,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				useSpellIcon = true,
@@ -231,6 +233,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			aeratedManaPotionRank3 = {
 				itemId = 191386,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				useSpellIcon = true,
@@ -1929,14 +1932,14 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 	function TRB.Functions.Class:EventRegistration()
 		local specId = GetSpecialization()
-		if specId == 1 and TRB.Data.settings.core.enabled.evoker.devastation then
+		if specId == 1 and TRB.Data.settings.core.enabled.evoker.devastation and TRB.Data.settings.core.experimental.specs.evoker.devastation then
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.devastation)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
 			TRB.Data.resource2 = Enum.PowerType.Essence
 			TRB.Data.resource2Factor = 1
-		elseif specId == 2 and TRB.Data.settings.core.enabled.evoker.preservation then
+		elseif specId == 2 and TRB.Data.settings.core.enabled.evoker.preservation and TRB.Data.settings.core.experimental.specs.evoker.preservation then
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.preservation)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
@@ -1976,7 +1979,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local specId = GetSpecialization()
 		local snapshot = TRB.Data.snapshot
 
-		if specId == 1 then
+		if specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation then
 			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.evoker.devastation.displayBar.alwaysShow) and (
@@ -1994,7 +1997,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					TRB.Frames.barContainerFrame:Show()
 				end
 			end
-		elseif specId == 2 then
+		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation then
 			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.evoker.preservation.displayBar.alwaysShow) and (

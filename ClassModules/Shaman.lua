@@ -550,6 +550,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			aeratedManaPotionRank1 = {
 				itemId = 191384,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				useSpellIcon = true,
@@ -561,6 +562,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			aeratedManaPotionRank2 = {
 				itemId = 191385,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				useSpellIcon = true,
@@ -572,6 +574,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			aeratedManaPotionRank3 = {
 				itemId = 191386,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				useSpellIcon = true,
@@ -3002,7 +3005,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.resourceFactor = 1
 			TRB.Data.resource2 = nil
 			TRB.Data.resource2Id = nil
-		elseif specId == 2 and TRB.Data.settings.core.enabled.shaman.enhancement then
+		elseif specId == 2 and TRB.Data.settings.core.enabled.shaman.enhancement and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.enhancement)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
@@ -3070,7 +3073,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					TRB.Frames.barContainerFrame:Show()
 				end
 			end
-		elseif specId == 2 then
+		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
 			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.shaman.enhancement.displayBar.alwaysShow) and (

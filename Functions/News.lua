@@ -16,7 +16,9 @@ local content = [====[
 - [#324 - EXPERIMENTAL](#324) Experimental support for Discipline Priest.
 
 ### Healers
+
 - (FIX) Correct some inconsistent behavior around threshold lines and potion usage.
+- (FIX) Ensure threshold icons for potions and items are always rendered if enabled.
 
 ## Priest
 ### Discipline
