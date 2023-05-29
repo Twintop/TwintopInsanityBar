@@ -637,7 +637,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				duration = 4.0, --Hasted
-				manaPercent = 0.05,
+				manaPercent = 0.03,
 				ticks = 3,
 				tickId = 265144,
 				isTalent = true
