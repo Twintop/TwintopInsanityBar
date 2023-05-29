@@ -8,6 +8,13 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.1.0.10-release (2023-05-29)
+## Priest
+
+- (FIX) Fix an issue where bar text would not be updated when tracking Shadow Word: Pain.
+
+----
+
 # 10.1.0.9-release (2023-05-29)
 ## General
 
