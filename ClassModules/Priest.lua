@@ -5744,7 +5744,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				target ~= nil and
 				((target.spells[spells.shadowWordPain.id] ~= nil and
 				target.spells[spells.shadowWordPain.id].remainingTime > 0) or
-				(target.spells[spells.purgeTheWicked.id] ~= nil and
+				(specId == 1 and target.spells[spells.purgeTheWicked.id] ~= nil and
 				target.spells[spells.purgeTheWicked.id].remainingTime > 0)) then
 				valid = true
 			end
