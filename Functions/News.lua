@@ -12,7 +12,7 @@ local content = [====[
 ## Priest
 ### Holy
 
-- (FIX) Fix an issue where another Priest's Symbol of Hope would cause incorrect data to be shown in the passive generation parts of the bar and bar text.diagnostic
+- (FIX) Fix an issue where another Priest's Symbol of Hope would cause incorrect data to be shown in the passive generation parts of the bar and bar text.
 
 ----
 
