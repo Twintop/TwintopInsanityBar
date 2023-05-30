@@ -375,7 +375,7 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 			resourceFrame.thresholds[7].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 			resourceFrame.thresholds[7]:Show()
 				
-			if specSettings.thresholds.icons.showCooldown then
+			if specSettings.thresholds.icons.showCooldown and conjuredChillglobe.onCooldown then
 				resourceFrame.thresholds[7].icon.cooldown:SetCooldown(conjuredChillglobe.startTime, conjuredChillglobe.duration)
 			else
 				resourceFrame.thresholds[7].icon.cooldown:SetCooldown(0, 0)

@@ -8,6 +8,14 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.1.0.11-release (2023-05-30)
+## Priest
+### Holy
+
+- (FIX) Fix an issue where another Priest's Symbol of Hope would cause incorrect data to be shown in the passive generation parts of the bar and bar text.diagnostic
+
+----
+
 # 10.1.0.10-release (2023-05-29)
 ## Priest
 

@@ -3517,49 +3517,56 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local spell = TRB.Data.spells.symbolOfHope
 		---@type TRB.Classes.Snapshot
 		local snapshot = TRB.Data.snapshotData.snapshots[spell.id]
-		if snapshot.buff.isActive or forceCleanup then
-			snapshot.buff:Refresh()
-			local currentTime = GetTime()
-			if forceCleanup or
-				snapshot.buff.isActive and
-				(currentTime > snapshot.buff.endTime or
-				currentTime > snapshot.attributes.firstTickTime + spell.duration or
-				currentTime > snapshot.attributes.firstTickTime + (spell.ticks * snapshot.attributes.tickRate))
-				then
-				snapshot:Reset()
-				snapshot.attributes.ticksRemaining = 0
-				snapshot.attributes.tickRate = 0
-				snapshot.attributes.previousTickTime = nil
-				snapshot.attributes.firstTickTime = nil
-				snapshot.attributes.resourceRaw = 0
-				snapshot.attributes.resourceFinal = 0
-				snapshot.attributes.tickRateFound = false
-			elseif snapshot.buff.isActive then
-				snapshot.buff:GetRemainingTime(currentTime)
-				snapshot.attributes.ticksRemaining = math.ceil((snapshot.buff.remaining) / snapshot.attributes.tickRate)
-				local nextTickRemaining = snapshot.buff.remaining - (math.floor(snapshot.buff.remaining / snapshot.attributes.tickRate) * snapshot.attributes.ticksRemaining)
-				snapshot.attributes.resourceRaw = 0
+		local currentTime = GetTime()
+		snapshot.buff:Refresh(currentTime)
+		if forceCleanup or
+			(snapshot.buff.isActive and
+			(snapshot.attributes.firstTickTime == nil or
+			currentTime > snapshot.buff.endTime or
+			currentTime > snapshot.attributes.firstTickTime + spell.duration or
+			currentTime > snapshot.attributes.firstTickTime + (spell.ticks * snapshot.attributes.tickRate)))
+			then
+			snapshot:Reset()
+			snapshot.attributes.ticksRemaining = 0
+			snapshot.attributes.tickRate = 0
+			snapshot.attributes.previousTickTime = nil
+			snapshot.attributes.firstTickTime = nil
+			snapshot.attributes.resourceRaw = 0
+			snapshot.attributes.resourceFinal = 0
+			snapshot.attributes.tickRateFound = false
+		elseif snapshot.buff.isActive and snapshot.attributes.firstTickTime ~= nil then
+			snapshot.attributes.ticksRemaining = math.ceil((snapshot.buff.remaining) / snapshot.attributes.tickRate)
+			local nextTickRemaining = snapshot.buff.remaining - (math.floor(snapshot.buff.remaining / snapshot.attributes.tickRate) * snapshot.attributes.ticksRemaining)
+			snapshot.attributes.resourceRaw = 0
 
-				for x = 1, snapshot.attributes.ticksRemaining do
-					local casterRegen = 0
-					if TRB.Data.snapshotData.casting.spellId == spell.id then
-						if x == 1 then
-							casterRegen = nextTickRemaining * TRB.Data.snapshotData.attributes.manaRegen
-						else
-							casterRegen = TRB.Data.snapshotData.attributes.manaRegen * snapshot.attributes.tickRate
-						end
+			for x = 1, snapshot.attributes.ticksRemaining do
+				local casterRegen = 0
+				if TRB.Data.snapshotData.casting.spellId == spell.id then
+					if x == 1 then
+						casterRegen = nextTickRemaining * TRB.Data.snapshotData.attributes.manaRegen
+					else
+						casterRegen = TRB.Data.snapshotData.attributes.manaRegen * snapshot.attributes.tickRate
 					end
-
-					local estimatedMana = TRB.Data.character.maxResource - (casterRegen + snapshot.attributes.resourceRaw + (TRB.Data.snapshotData.attributes.resource / TRB.Data.resourceFactor))
-					local nextTick = spell.manaPercent * math.max(0, math.min(TRB.Data.character.maxResource, estimatedMana))
-					snapshot.attributes.resourceRaw = snapshot.attributes.resourceRaw + nextTick + casterRegen
-					--print(x, estimatedMana, nextTick, snapshot.attributes.resourceRaw)
 				end
-				--print(snapshot.attributes.resourceRaw, "+", (TRB.Data.snapshotData.attributes.resource / TRB.Data.resourceFactor), "=", snapshot.attributes.resourceRaw + (TRB.Data.snapshotData.attributes.resource / TRB.Data.resourceFactor))
 
-				--Revisit if we get mana modifiers added
-				snapshot.attributes.resourceFinal = CalculateManaGain(snapshot.attributes.resourceRaw, false)
+				local estimatedMana = TRB.Data.character.maxResource - (casterRegen + snapshot.attributes.resourceRaw + (TRB.Data.snapshotData.attributes.resource / TRB.Data.resourceFactor))
+				local nextTick = spell.manaPercent * math.max(0, math.min(TRB.Data.character.maxResource, estimatedMana))
+				snapshot.attributes.resourceRaw = snapshot.attributes.resourceRaw + nextTick + casterRegen
+				--print(x, estimatedMana, nextTick, snapshot.attributes.resourceRaw)
 			end
+			--print(snapshot.attributes.resourceRaw, "+", (TRB.Data.snapshotData.attributes.resource / TRB.Data.resourceFactor), "=", snapshot.attributes.resourceRaw + (TRB.Data.snapshotData.attributes.resource / TRB.Data.resourceFactor))
+
+			--Revisit if we get mana modifiers added
+			snapshot.attributes.resourceFinal = CalculateManaGain(snapshot.attributes.resourceRaw, false)
+		else
+			snapshot:Reset()
+			snapshot.attributes.ticksRemaining = 0
+			snapshot.attributes.tickRate = 0
+			snapshot.attributes.previousTickTime = nil
+			snapshot.attributes.firstTickTime = nil
+			snapshot.attributes.resourceRaw = 0
+			snapshot.attributes.resourceFinal = 0
+			snapshot.attributes.tickRateFound = false
 		end
 	end
 
@@ -4570,7 +4577,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if destGUID == TRB.Data.character.guid then
 				if (specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (specId == 2 and TRB.Data.barConstructedForSpec == "holy") then -- Let's check raid effect mana stuff
 					if type == "SPELL_ENERGIZE" and spellId == spells.symbolOfHope.tickId then
-						snapshotData.snapshots[spells.symbolOfHope.id].buff.isActive = true
 						if snapshotData.snapshots[spells.symbolOfHope.id].attributes.firstTickTime == nil then
 							snapshotData.snapshots[spells.symbolOfHope.id].attributes.firstTickTime = currentTime
 							snapshotData.snapshots[spells.symbolOfHope.id].attributes.previousTickTime = currentTime
