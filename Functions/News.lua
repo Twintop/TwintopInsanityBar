@@ -8,6 +8,17 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.1.0.12-release (2023-05-31)
+## Priest
+
+- (FIX) Fix some bar text variable logic checks from providing inaccurate values.
+
+### Shadow
+
+- (FIX) Adjust how `$ysRemainingStacks` is determined to be a valid bar text variable, away from stack count and to check if the player is talented in to Idol of Yogg-Saron.
+
+----
+
 # 10.1.0.11-release (2023-05-30)
 ## Priest
 ### Holy

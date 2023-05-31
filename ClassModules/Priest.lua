@@ -1303,6 +1303,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			idolOfYoggSaron = {
 				id = 373276,
+				talentId = 373273,
 				name = "",
 				icon = "",
 				isTalent = true,
@@ -5503,11 +5504,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$solStacks" then
-				if snapshotData.snapshots[spells.surgeOfLight.id].buff.stacks > 0 then
+				if snapshotData.snapshots[spells.surgeOfLight.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$solTime" then
-				if snapshotData.snapshots[spells.surgeOfLight.id].cooldown.remaining > 0 then
+				if snapshotData.snapshots[spells.surgeOfLight.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$sfMana" then
@@ -5551,19 +5552,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$lightweaverTime" then
-				if snapshotData.snapshots[spells.lightweaver.id].buff.remaining > 0 then
+				if snapshotData.snapshots[spells.lightweaver.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$lightweaverStacks" then
-				if snapshotData.snapshots[spells.lightweaver.id].buff.remaining > 0 then
+				if snapshotData.snapshots[spells.lightweaver.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$rwTime" then
-				if snapshotData.snapshots[spells.resonantWords.id].buff.remaining > 0 then
+				if snapshotData.snapshots[spells.resonantWords.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$apotheosisTime" then
-				if snapshotData.snapshots[spells.apotheosis.id].cooldown.remaining > 0 then
+				if snapshotData.snapshots[spells.apotheosis.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$hwChastiseTime" then
@@ -5703,35 +5704,35 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$tofTime" then
-				if snapshotData.snapshots[spells.twistOfFate.id].buff.isActive ~= nil then
+				if snapshotData.snapshots[spells.twistOfFate.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$siTime" then
-				if snapshotData.snapshots[spells.shadowyInsight.id].buff.duration > 0 then
+				if snapshotData.snapshots[spells.shadowyInsight.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$mmTime" then
-				if snapshotData.snapshots[spells.mindMelt.id].buff.duration > 0 then
+				if snapshotData.snapshots[spells.mindMelt.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$mmStacks" then
-				if snapshotData.snapshots[spells.mindMelt.id].buff.stacks > 0 then
+				if snapshotData.snapshots[spells.mindMelt.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$ysTime" then
-				if snapshotData.snapshots[spells.idolOfYoggSaron.id].buff.duration > 0 then
+				if snapshotData.snapshots[spells.idolOfYoggSaron.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$ysStacks" then
-				if snapshotData.snapshots[spells.idolOfYoggSaron.id].buff.stacks > 0 then
+				if snapshotData.snapshots[spells.idolOfYoggSaron.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$ysRemainingStacks" then
-				if snapshotData.snapshots[spells.idolOfYoggSaron.id].buff.stacks > 0 then
+				if TRB.Functions.Talent:IsTalentActive(spells.idolOfYoggSaron) then
 					valid = true
 				end
 			elseif var == "$tfbTime" then
-				if snapshotData.snapshots[spells.thingFromBeyond.id].buff.duration > 0 then
+				if snapshotData.snapshots[spells.thingFromBeyond.id].buff.isActive then
 					valid = true
 				end
 			else
