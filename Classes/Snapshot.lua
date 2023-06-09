@@ -41,7 +41,7 @@ TRB.Classes.Snapshot.__index = TRB.Classes.Snapshot
 
 ---Creates a new Snapshot object
 ---@param spell table # Spell we are snapshotting
----@param attributes table # Custom attributes to be tracked
+---@param attributes table? # Custom attributes to be tracked
 ---@return TRB.Classes.Snapshot
 function TRB.Classes.Snapshot:New(spell, attributes)
     local self = {}
@@ -57,8 +57,9 @@ end
 ---Resets snapshot values to default
 function TRB.Classes.Snapshot:Reset()
     ---@type TRB.Classes.SnapshotBuff
-    TRB.Classes.SnapshotBuff:Reset()
-    TRB.Classes.SnapshotCooldown:Reset()
+    self.buff:Reset()
+    ---@type TRB.Classes.SnapshotCooldown
+    self.cooldown:Reset()
 end
 
 
@@ -69,19 +70,29 @@ end
 ---@field public remaining number
 ---@field public endTimeLeeway number
 ---@field public stacks integer
----@field private parent TRB.Classes.Snapshot
+---@field public customPropertiesDefinitions TRB.Classes.BuffCustomProperty[]
+---@field public customProperties table
+---@field protected parent TRB.Classes.Snapshot
 TRB.Classes.SnapshotBuff = {}
 TRB.Classes.SnapshotBuff.__index = TRB.Classes.SnapshotBuff
 
 ---Creates a new Snapshot object
+---@param parent TRB.Classes.Snapshot
 ---@return TRB.Classes.SnapshotBuff
 function TRB.Classes.SnapshotBuff:New(parent)
     local self = {}
     setmetatable(self, TRB.Classes.SnapshotBuff)
     self:Reset()
     self.parent = parent
+    self.customPropertiesDefinitions = {}
 
     return self
+end
+
+---Sets the list of custom properties to be parsed out of a UnitAura() call when SnapshotBuff:Refresh() is called
+---@param customProperties TRB.Classes.BuffCustomProperty[]
+function TRB.Classes.SnapshotBuff:SetCustomProperties(customProperties)
+    self.customPropertiesDefinitions = customProperties
 end
 
 ---Resets the object to default values
@@ -92,6 +103,7 @@ function TRB.Classes.SnapshotBuff:Reset()
     self.remaining = 0
     self.endTimeLeeway = 0
     self.stacks = 0
+    self.customProperties = {}
 end
 
 ---Computes the time remaining on the Snapshot
@@ -129,51 +141,84 @@ function TRB.Classes.SnapshotBuff:GetRemainingTime(currentTime, useLeeway)
 	return remainingTime
 end
 
----Refreshes the buff information for the snapshot
----@param type trbAuraEventType? # Event type sourced from the combat log event. If not provided, will do a generic buff update
+---Initializes the buff information for the snapshot
+---@param eventType trbAuraEventType? # Event type sourced from the combat log event. If not provided, will do a generic buff update
 ---@param simple? boolean # Just updates isActive. If not provided, defaults to `false`
 ---@param unit? UnitId # Unit we want to check to update. If not provided, defaults to `player`
-function TRB.Classes.SnapshotBuff:Initialize(type, simple, unit)
+function TRB.Classes.SnapshotBuff:Initialize(eventType, simple, unit)
     unit = unit or "player"
     if simple == nil then
         simple = false
     end
-    self:Refresh(type, simple, unit)
+    self:Refresh(eventType, simple, unit)
 end
 
 ---Refreshes the buff information for the snapshot
----@param type trbAuraEventType? # Event type sourced from the combat log event. If not provided, will do a generic buff update
+---@param eventType trbAuraEventType? # Event type sourced from the combat log event. If not provided, will do a generic buff update
 ---@param simple boolean? # Just updates isActive. If not provided, defaults to `false`
 ---@param unit UnitId? # Unit we want to check to update. If not provided, defaults to `player`
-function TRB.Classes.SnapshotBuff:Refresh(type, simple, unit)
+function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
     unit = unit or "player"
     if simple == nil then
         simple = false
+    end
+
+    ---Parse the buff
+    ---@param buff TRB.Classes.SnapshotBuff
+    ---@param ... unknown
+    local function ParseBuffData(buff, ...)
+        local arg
+        arg = select(3, ...)
+        if arg ~= nil and arg ~= "" and (type(arg) == "string" or type(arg) == "number") then
+            buff.stacks = math.floor(tonumber(arg))
+        end
+
+        arg = select(5, ...)
+        if arg ~= nil and arg ~= "" and (type(arg) == "string" or type(arg) == "number") then
+            buff.duration = tonumber(arg)
+        end
+
+        arg = select(6, ...)
+        if arg ~= nil and arg ~= "" and (type(arg) == "string" or type(arg) == "number") then
+            buff.endTime = tonumber(arg)
+        end
+
+        if buff.customPropertiesDefinitions ~= nil then
+            for i, prop in ipairs(buff.customPropertiesDefinitions) do
+                arg = select(prop.index, ...)
+                buff.customProperties[prop.name] = arg
+
+                if buff.customProperties[prop.name] ~= nil then
+                    if prop.dataType == "number" then
+                        buff.customProperties[prop.name] = tonumber(arg)
+                    elseif prop.dataType == "integer" then
+                        buff.customProperties[prop.name] = math.floor(tonumber(arg))
+                    end
+                end
+            end
+        end
     end
 
     local id = self.parent.spell.buffId or self.parent.spell.spellId or self.parent.spell.id or nil
     if id ~= nil then
-        if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" or type == "SPELL_AURA_APPLIED_DOSE" then -- Gained buff
+        if eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REFRESH" or eventType == "SPELL_AURA_APPLIED_DOSE" then -- Gained buff
             self.isActive = true
             if not simple then
-                _, _, self.stacks, _, self.duration, self.endTime, _, _, _, _ = TRB.Functions.Aura:FindBuffById(id, unit)
+                ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
                 self:GetRemainingTime()
             end
-        elseif type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
+        elseif eventType == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
             if self.stacks ~= nil then
                 self.stacks = self.stacks - 1
             end
-        elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_DISPEL" then -- Lost buff
+        elseif eventType == "SPELL_AURA_REMOVED" or eventType == "SPELL_DISPEL" then -- Lost buff
             self.isActive = false
             if not simple then
-                self.stacks = 0
-                self.duration = 0
-                self.endTime = nil
-                self.remaining = 0
+                self:Reset()
             end
-        elseif type == nil or type == "" then
+        elseif eventType == nil or eventType == "" then
             local currentTime = currentTime or GetTime()
-            _, _, self.stacks, _, self.duration, self.endTime, _, _, _, _ = TRB.Functions.Aura:FindBuffById(id, unit)
+            ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
             if self.endTime ~= nil and self.endTime > currentTime then
                 self.isActive = true
                 self:GetRemainingTime()
@@ -294,4 +339,25 @@ function TRB.Classes.SnapshotCasting:Reset()
     self.resourceFinal = 0
     self.icon = ""
     self.spellKey = nil
+end
+
+
+---@class TRB.Classes.BuffCustomProperty
+---@field public index integer
+---@field public dataType string
+---@field public name string
+TRB.Classes.BuffCustomProperty = {}
+TRB.Classes.BuffCustomProperty.__index = TRB.Classes.BuffCustomProperty
+
+
+---Creates a new BuffCustomProperty object
+---@return TRB.Classes.BuffCustomProperty
+function TRB.Classes.BuffCustomProperty:New(index, dataType, name)
+    local self = {}
+    setmetatable(self, TRB.Classes.BuffCustomProperty)
+
+    self.index = index
+    self.dataType = dataType
+    self.name = name
+    return self
 end

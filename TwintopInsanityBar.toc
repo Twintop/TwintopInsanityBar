@@ -2,9 +2,9 @@
 ## Title: Twintop's Resource Bar
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 10.1.0.12
+## Version: 10.1.0.13
 ## X-ReleaseType: release
-## X-ReleaseDate: May 31, 2023
+## X-ReleaseDate: June 10, 2023
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -28,6 +28,8 @@ Init.lua
 Classes\Snapshot.lua
 Classes\TimeToDie.lua
 Classes\Target.lua
+
+ClassModules\Classes\HealerClasses.lua
 
 Functions\Aura.lua
 Functions\Bar.lua

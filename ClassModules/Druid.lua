@@ -1182,7 +1182,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			remainingTime = 0,
 			stacks = 0
 		}
-		specCache.restoration.snapshot.innervate = {
+		specCache.restoration.snapshot.innervate = TRB.Classes.Healer.Innervate:New(specCache.restoration.spells.innervate)
+		--[[{
 			isActive = false,
 			spellId = nil,
 			duration = 0,
@@ -1190,7 +1191,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			remainingTime = 0,
 			mana = 0,
 			modifier = 1
-		}
+		}]]
 		specCache.restoration.snapshot.manaTideTotem = {
 			isActive = false,
 			spellId = nil,
@@ -3448,29 +3449,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 	end
 
-	local function UpdateInnervate()
-		local currentTime = GetTime()
-
-		if TRB.Data.snapshot.innervate.endTime ~= nil and currentTime > TRB.Data.snapshot.innervate.endTime then
-			TRB.Data.snapshot.innervate.endTime = nil
-			TRB.Data.snapshot.innervate.duration = 0
-			TRB.Data.snapshot.innervate.remainingTime = 0
-			TRB.Data.snapshot.innervate.mana = 0
-			TRB.Data.snapshot.audio.innervateCue = false
-		else
-			TRB.Data.snapshot.innervate.remainingTime = GetInnervateRemainingTime()
-			TRB.Data.snapshot.innervate.mana = TRB.Data.snapshot.innervate.remainingTime * TRB.Data.snapshot.manaRegen * (1-TRB.Data.snapshot.innervate.modifier)
-		end
-		
-		if TRB.Data.snapshot.innervate.startTime ~= nil and currentTime > (TRB.Data.snapshot.innervate.startTime + TRB.Data.snapshot.innervate.duration) then
-			TRB.Data.snapshot.innervate.startTime = nil
-			TRB.Data.snapshot.innervate.duration = 0
-			TRB.Data.snapshot.innervate.remainingTime = 0
-		else
-			TRB.Data.snapshot.innervate.remainingTime = GetInnervateRemainingTime()
-		end
-	end
-
 	local function UpdateManaTideTotem(forceCleanup)
 		local currentTime = GetTime()
 
@@ -3603,7 +3581,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		UpdateSnapshot()
 		UpdateSymbolOfHope()
 		UpdateChanneledManaPotion()
-		UpdateInnervate()
+		--UpdateInnervate()
 		UpdatePotionOfChilledClarity()
 		UpdateManaTideTotem()
 		UpdateMoltenRadiance()
@@ -3614,6 +3592,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
 		local currentTime = GetTime()
 		local _
+
+		---@type TRB.Classes.Healer.Innervate
+		local innervate = TRB.Data.snapshot.innervate
+		innervate:Update()
 
 		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
 		snapshot.potion.startTime, snapshot.potion.duration, _ = GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
@@ -4275,12 +4257,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local castingBarValue = 0
 					local currentMana = snapshot.resource / TRB.Data.resourceFactor
 					local barBorderColor = specSettings.colors.bar.border
+					---@type TRB.Classes.Healer.Innervate
+					local innervate = TRB.Data.snapshot.innervate
 		
 					if snapshot.potionOfChilledClarity.isActive then
 						if specSettings.colors.bar.potionOfChilledClarityBorderChange then
 							barBorderColor = specSettings.colors.bar.potionOfChilledClarity
 						end
-					elseif snapshot.innervate.isActive then
+					elseif innervate.buff.isActive then
 						if specSettings.colors.bar.innervateBorderChange then
 							barBorderColor = specSettings.colors.bar.innervate
 						end
@@ -4323,8 +4307,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Frames.passiveFrame.thresholds[1]:Hide()
 						end
 
-						if snapshot.innervate.mana > 0 or snapshot.potionOfChilledClarity.mana > 0 then
-							passiveValue = passiveValue + math.max(snapshot.innervate.mana, snapshot.potionOfChilledClarity.mana)
+						if innervate.mana > 0 or snapshot.potionOfChilledClarity.mana > 0 then
+							passiveValue = passiveValue + math.max(innervate.mana, snapshot.potionOfChilledClarity.mana)
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -4494,7 +4478,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						snapshot.symbolOfHope.resourceRaw = snapshot.symbolOfHope.ticksRemaining * spells.symbolOfHope.manaPercent * TRB.Data.character.maxResource
 						snapshot.symbolOfHope.resourceFinal = CalculateManaGain(snapshot.symbolOfHope.resourceRaw, false)
 					elseif spellId == spells.innervate.id then
+						---@type TRB.Classes.Healer.Innervate
+						local snapshotInnervate = snapshot.innervate
+						snapshotInnervate.buff:Initialize(type)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+							snapshot.audio.innervateCue = false
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+							snapshot.audio.innervateCue = false
+						end
+						--[[if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							local modifier = 0
 							snapshot.innervate.isActive = true
 							_, _, _, _, snapshot.innervate.duration, snapshot.innervate.endTime, _, _, _, snapshot.innervate.spellId, _, _, _, _, _, modifier  = TRB.Functions.Aura:FindBuffById(spells.innervate.id)
@@ -4507,7 +4499,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							snapshot.innervate.endTime = nil
 							snapshot.innervate.modifier = 1
 							snapshot.audio.innervateCue = false
-						end
+						end]]
 					elseif spellId == spells.manaTideTotem.id then
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							snapshot.manaTideTotem.isActive = true
@@ -4913,6 +4905,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		else
 			TRB.Data.barConstructedForSpec = nil
 		end
+		
+		TwintopGlobalSnapshotData = TRB.Data.snapshot
+		TwintopGlobalSettings = TRB.Data.settings
 		TRB.Functions.Class:EventRegistration()
 	end
 
