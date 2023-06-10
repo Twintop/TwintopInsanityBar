@@ -89,8 +89,7 @@ function TRB.Classes.Healer.SymbolOfHope:Reset()
 end
 
 ---Updates SymbolOfHope's values
----@param forceCleanup boolean?
-function TRB.Classes.Healer.SymbolOfHope:Update(forceCleanup)
+function TRB.Classes.Healer.SymbolOfHope:Update()
     self.buff:Refresh(nil, nil, nil)
     if self.buff.isActive then
         if self.buff.ticks <= 0 or self.buff.tickRate == 0 then
@@ -136,7 +135,6 @@ function TRB.Classes.Healer.SymbolOfHope:Update(forceCleanup)
             self.buff.manaRaw = self.buff.manaRaw + nextTick + casterRegen
         end
         
-        --Revisit if we get mana modifiers added
         self.buff.mana = self.buff.CalculateManaGainFunction(self.buff.manaRaw, false)
     end
 end
@@ -211,5 +209,54 @@ function TRB.Classes.Healer.SymbolOfHopeBuff:Refresh(eventType, simple, unit)
                 end
             end
         end
+    end
+end
+
+
+
+---@class TRB.Classes.Healer.MoltenRadiance : TRB.Classes.Snapshot
+---@field public mana number
+---@field public ticks integer
+TRB.Classes.Healer.MoltenRadiance = setmetatable({}, {__index = TRB.Classes.Snapshot})
+TRB.Classes.Healer.MoltenRadiance.__index = TRB.Classes.Healer.MoltenRadiance
+
+---Creates a new MoltenRadiance object
+---@param spell table # Spell we are snapshotting, in this case MoltenRadiance
+---@return TRB.Classes.Healer.MoltenRadiance
+function TRB.Classes.Healer.MoltenRadiance:New(spell)
+    ---@type TRB.Classes.BuffCustomProperty[]
+    local definitions = {
+        {
+            name = "manaPerTick",
+            dataType = "number",
+            index = 18
+        }
+    }
+    ---@type TRB.Classes.Snapshot
+    local snapshot = TRB.Classes.Snapshot
+    local self = setmetatable(snapshot:New(spell), TRB.Classes.Healer.MoltenRadiance)
+    self.buff:SetCustomProperties(definitions)
+    self:Reset()
+    self.attributes = {}
+    return self
+end
+
+---Resets MoltenRadiance's values to default
+function TRB.Classes.Healer.MoltenRadiance:Reset()
+    ---@type TRB.Classes.Snapshot
+    local snapshot = TRB.Classes.Snapshot
+    snapshot.Reset(self)
+    self.mana = 0
+    self.ticks = 0
+end
+
+---Updates MoltenRadiance's values
+function TRB.Classes.Healer.MoltenRadiance:Update()
+    if self.buff.isActive then
+        self.ticks = TRB.Functions.Number:RoundTo(self.buff:GetRemainingTime(), 0, "ceil", true)
+        self.mana = (self.buff.customProperties["manaPerTick"] or 0) * self.ticks
+    else
+        self.ticks = 0
+        self.mana = 0
     end
 end

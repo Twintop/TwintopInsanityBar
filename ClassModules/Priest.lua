@@ -419,11 +419,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.aeratedManaPotionRank1.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.aeratedManaPotionRank1)
 		---@type TRB.Classes.Snapshot
 		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.conjuredChillglobe.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.conjuredChillglobe)
-		---@type TRB.Classes.Snapshot
-		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.moltenRadiance.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.moltenRadiance, {
-			manaPerTick = 0,
-			mana = 0
-		})
+		---@type TRB.Classes.Healer.MoltenRadiance
+		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(specCache.discipline.spells.moltenRadiance)
 		---@type TRB.Classes.Snapshot
 		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.surgeOfLight)
 
@@ -907,11 +904,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.holy.snapshotData.snapshots[specCache.holy.spells.aeratedManaPotionRank1.id] = TRB.Classes.Snapshot:New(specCache.holy.spells.aeratedManaPotionRank1)
 		---@type TRB.Classes.Snapshot
 		specCache.holy.snapshotData.snapshots[specCache.holy.spells.conjuredChillglobe.id] = TRB.Classes.Snapshot:New(specCache.holy.spells.conjuredChillglobe)
-		---@type TRB.Classes.Snapshot
-		specCache.holy.snapshotData.snapshots[specCache.holy.spells.moltenRadiance.id] = TRB.Classes.Snapshot:New(specCache.holy.spells.moltenRadiance, {
-			manaPerTick = 0,
-			mana = 0
-		})
+		---@type TRB.Classes.Healer.MoltenRadiance
+		specCache.holy.snapshotData.snapshots[specCache.holy.spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(specCache.holy.spells.moltenRadiance)
 		---@type TRB.Classes.Snapshot
 		specCache.holy.snapshotData.snapshots[specCache.holy.spells.divineConversation.id] = TRB.Classes.Snapshot:New(specCache.holy.spells.divineConversation)
 		---@type TRB.Classes.Snapshot
@@ -2173,12 +2167,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$mttTime
 		local _mttTime = snapshots[spells.manaTideTotem.id].buff:GetRemainingTime(currentTime)
 		local mttTime = string.format("%.1f", _mttTime)
-
+		
+		---@type TRB.Classes.Healer.MoltenRadiance
+		---@diagnostic disable-next-line: assign-type-mismatch
+		local moltenRadiance = snapshots[spells.moltenRadiance.id]
 		--$mrMana
-		local _mrMana = snapshots[spells.moltenRadiance.id].attributes.mana
+		local _mrMana = moltenRadiance.mana
 		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
 		--$mrTime
-		local _mrTime = snapshots[spells.moltenRadiance.id].buff:GetRemainingTime(currentTime)
+		local _mrTime = moltenRadiance.buff.remaining
 		local mrTime = string.format("%.1f", _mrTime)
 
 		--$potionCooldownSeconds
@@ -2462,12 +2459,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$mttTime
 		local _mttTime = snapshots[spells.manaTideTotem.id].buff:GetRemainingTime(currentTime)
 		local mttTime = string.format("%.1f", _mttTime)
-
+		
+		---@type TRB.Classes.Healer.MoltenRadiance
+		---@diagnostic disable-next-line: assign-type-mismatch
+		local moltenRadiance = snapshots[spells.moltenRadiance.id]
 		--$mrMana
-		local _mrMana = snapshots[spells.moltenRadiance.id].attributes.mana
+		local _mrMana = moltenRadiance.mana
 		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
 		--$mrTime
-		local _mrTime = snapshots[spells.moltenRadiance.id].buff:GetRemainingTime(currentTime)
+		local _mrTime = moltenRadiance.buff.remaining
 		local mrTime = string.format("%.1f", _mrTime)
 
 		--$potionCooldownSeconds
@@ -3549,26 +3549,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 	end
 
-	local function UpdateMoltenRadiance(forceCleanup)
-		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
-		---@type TRB.Classes.Snapshot
-		local snapshot = snapshotData.snapshots[spells.moltenRadiance.id]
-
-		if forceCleanup then
-			snapshot.buff:Reset()
-		else
-			snapshot.buff:Refresh()
-		end
-
-		if snapshot.buff.isActive then
-			snapshot.attributes.mana = snapshot.attributes.manaPerTick * TRB.Functions.Number:RoundTo(snapshot.buff:GetRemainingTime(), 0, "ceil", true)
-		else
-			snapshot.attributes.mana = 0
-		end
-	end
-
 	local function UpdateSnapshot()
 		TRB.Functions.Character:UpdateSnapshot()
 	end
@@ -3578,7 +3558,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateChanneledManaPotion()
 		UpdatePotionOfChilledClarity()
 		UpdateManaTideTotem()
-		UpdateMoltenRadiance()
 		UpdateShadowfiendValues()
 		
 		local _
@@ -3595,6 +3574,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		---@type TRB.Classes.Healer.SymbolOfHope
 		local symbolOfHope = TRB.Data.snapshotData.snapshots[spells.symbolOfHope.id]
 		symbolOfHope:Update()
+
+		---@type TRB.Classes.Healer.MoltenRadiance
+		local moltenRadiance = TRB.Data.snapshotData.snapshots[spells.moltenRadiance.id]
+		moltenRadiance:Update()
 
 		snapshotData.snapshots[spells.surgeOfLight.id].buff:GetRemainingTime(currentTime)
 
@@ -3611,7 +3594,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateChanneledManaPotion()
 		UpdatePotionOfChilledClarity()
 		UpdateManaTideTotem()
-		UpdateMoltenRadiance()
 		UpdateShadowfiendValues()
 		
 		local _
@@ -3628,6 +3610,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		---@type TRB.Classes.Healer.SymbolOfHope
 		local symbolOfHope = TRB.Data.snapshotData.snapshots[spells.symbolOfHope.id]
 		symbolOfHope:Update()
+
+		---@type TRB.Classes.Healer.MoltenRadiance
+		local moltenRadiance = TRB.Data.snapshotData.snapshots[spells.moltenRadiance.id]
+		moltenRadiance:Update()
 
 		snapshotData.snapshots[spells.apotheosis.id].cooldown:GetRemainingTime(currentTime)
 		snapshotData.snapshots[spells.holyWordSerenity.id].cooldown:Refresh()
@@ -3691,6 +3677,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					---@type TRB.Classes.Healer.SymbolOfHope
 					local symbolOfHope = TRB.Data.snapshotData.snapshots[spells.symbolOfHope.id]
+
+					---@type TRB.Classes.Healer.MoltenRadiance
+					local moltenRadiance = TRB.Data.snapshotData.snapshots[spells.moltenRadiance.id]
 
 					if snapshotData.snapshots[spells.surgeOfLight.id].buff.isActive then
 						if snapshotData.snapshots[spells.surgeOfLight.id].buff.stacks == 1 then
@@ -3844,8 +3833,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Frames.passiveFrame.thresholds[4]:Hide()
 						end
 
-						if snapshotData.snapshots[spells.moltenRadiance.id].attributes.mana > 0 then
-							passiveValue = passiveValue + snapshotData.snapshots[spells.moltenRadiance.id].attributes.mana
+						if moltenRadiance.mana > 0 then
+							passiveValue = passiveValue + moltenRadiance.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -3930,6 +3919,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					---@type TRB.Classes.Healer.SymbolOfHope
 					local symbolOfHope = TRB.Data.snapshotData.snapshots[spells.symbolOfHope.id]
+
+					---@type TRB.Classes.Healer.MoltenRadiance
+					local moltenRadiance = TRB.Data.snapshotData.snapshots[spells.moltenRadiance.id]
 
 					if snapshotData.snapshots[spells.lightweaver.id].buff.isActive then
 						if specSettings.colors.bar.lightweaverBorderChange then
@@ -4111,8 +4103,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Frames.passiveFrame.thresholds[4]:Hide()
 						end
 
-						if snapshotData.snapshots[spells.moltenRadiance.id].attributes.mana > 0 then
-							passiveValue = passiveValue + snapshotData.snapshots[spells.moltenRadiance.id].attributes.mana
+						if moltenRadiance.mana > 0 then
+							passiveValue = passiveValue + moltenRadiance.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -4553,11 +4545,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif spellId == spells.manaTideTotem.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.moltenRadiance.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_REMOVED" then
-							snapshotData.snapshots[spellId].attributes.manaPerTick = 0
-							snapshotData.snapshots[spellId].attributes.mana = 0
-						end
+						---@type TRB.Classes.Healer.MoltenRadiance
+						local moltenRadiance = TRB.Data.snapshotData.snapshots[spells.moltenRadiance.id]
+						moltenRadiance.buff:Initialize(type)
 					elseif settings.shadowfiend.enabled and type == "SPELL_ENERGIZE" and spellId == snapshotData.snapshots[spells.shadowfiend.id].spell.energizeId and sourceName == snapshotData.snapshots[spells.shadowfiend.id].spell.name then
 						snapshotData.snapshots[spells.shadowfiend.id].attributes.swingTime = currentTime
 						snapshotData.snapshots[spells.shadowfiend.id].cooldown:Refresh(true)
@@ -5404,11 +5394,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$mrMana" then
-				if snapshotData.snapshots[spells.moltenRadiance.id].attributes.mana > 0 then
+				---@type TRB.Classes.Healer.MoltenRadiance
+				local moltenRadiance = TRB.Data.snapshotData.snapshots[spells.moltenRadiance.id]
+				if moltenRadiance.mana > 0 then
 					valid = true
 				end
 			elseif var == "$mrTime" then
-				if snapshotData.snapshots[spells.moltenRadiance.id].buff.isActive then
+				---@type TRB.Classes.Healer.MoltenRadiance
+				local moltenRadiance = TRB.Data.snapshotData.snapshots[spells.moltenRadiance.id]
+				if moltenRadiance.buff.isActive then
 					valid = true
 				end
 			elseif var == "$channeledMana" then

@@ -742,13 +742,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			endTime = nil,
 			remainingTime = 0
 		}
-		specCache.restoration.snapshot.moltenRadiance = {
-			spellId = nil,
-			startTime = nil,
-			duration = 0,
-			manaPerTick = 0,
-			mana = 0
-		}
+		---@type TRB.Classes.Healer.MoltenRadiance
+		specCache.restoration.snapshot.moltenRadiance = TRB.Classes.Healer.MoltenRadiance:New(specCache.restoration.spells.moltenRadiance)
 
 		specCache.restoration.barTextVariables = {
 			icons = {},
@@ -1532,12 +1527,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		--$mttTime
 		local _mttTime = GetManaTideTotemRemainingTime()
 		local mttTime = string.format("%.1f", _mttTime)
-
+		
+		---@type TRB.Classes.Healer.MoltenRadiance
+		local moltenRadiance = snapshot.moltenRadiance
 		--$mrMana
-		local _mrMana = snapshot.moltenRadiance.mana
+		local _mrMana = moltenRadiance.mana
 		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
 		--$mrTime
-		local _mrTime = GetMoltenRadianceRemainingTime()
+		local _mrTime = moltenRadiance.buff.remaining
 		local mrTime = string.format("%.1f", _mrTime)
 
 		--$potionCooldownSeconds
@@ -1942,22 +1939,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 	end
 
-	local function UpdateMoltenRadiance(forceCleanup)
-		local currentTime = GetTime()
-		local snapshot = TRB.Data.snapshot
-
-		if forceCleanup or (snapshot.moltenRadiance.endTime ~= nil and currentTime > snapshot.moltenRadiance.endTime) then
-			snapshot.moltenRadiance.endTime = nil
-			snapshot.moltenRadiance.duration = 0
-			snapshot.moltenRadiance.remainingTime = 0
-			snapshot.moltenRadiance.mana = 0
-			snapshot.moltenRadiance.manaPerTick = 0
-		elseif snapshot.moltenRadiance.endTime ~= nil then
-			snapshot.moltenRadiance.remainingTime = GetMoltenRadianceRemainingTime()
-			snapshot.moltenRadiance.mana = snapshot.moltenRadiance.manaPerTick * TRB.Functions.Number:RoundTo(snapshot.moltenRadiance.remainingTime, 0, "ceil", true)
-		end
-	end
-
 	local function UpdateSnapshot()
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
@@ -2003,7 +1984,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		UpdateChanneledManaPotion()
 		UpdatePotionOfChilledClarity()
 		UpdateManaTideTotem()
-		UpdateMoltenRadiance()
 		
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
@@ -2017,6 +1997,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		---@type TRB.Classes.Healer.SymbolOfHope
 		local symbolOfHope = TRB.Data.snapshot.symbolOfHope
 		symbolOfHope:Update()
+
+		---@type TRB.Classes.Healer.MoltenRadiance
+		local moltenRadiance = TRB.Data.snapshot.moltenRadiance
+		moltenRadiance:Update()
 
 		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
 		snapshot.potion.startTime, snapshot.potion.duration, _ = GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
@@ -2317,6 +2301,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					---@type TRB.Classes.Healer.SymbolOfHope
 					local symbolOfHope = TRB.Data.snapshot.symbolOfHope
 
+					---@type TRB.Classes.Healer.MoltenRadiance
+					local moltenRadiance = TRB.Data.snapshot.moltenRadiance
+
 					if snapshot.potionOfChilledClarity.isActive then
 						if specSettings.colors.bar.potionOfChilledClarityBorderChange then
 							barBorderColor = specSettings.colors.bar.potionOfChilledClarity
@@ -2424,8 +2411,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Frames.passiveFrame.thresholds[4]:Hide()
 						end
 
-						if snapshot.moltenRadiance.mana > 0 then
-							passiveValue = passiveValue + snapshot.moltenRadiance.mana
+						if moltenRadiance.mana > 0 then
+							passiveValue = passiveValue + moltenRadiance.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -2552,18 +2539,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							snapshot.audio.manaTideTotemCue = false
 						end
 					elseif spellId == spells.moltenRadiance.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-							local _
-							_, _, _, _, snapshot.moltenRadiance.duration, snapshot.moltenRadiance.endTime, _, _, _, snapshot.moltenRadiance.spellId, _, _, _, _, _, _, _, snapshot.moltenRadiance.manaPerTick = TRB.Functions.Aura:FindBuffById(spells.moltenRadiance.id)
-							snapshot.moltenRadiance.isActive = false
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							snapshot.moltenRadiance.isActive = false
-							snapshot.moltenRadiance.spellId = nil
-							snapshot.moltenRadiance.duration = 0
-							snapshot.moltenRadiance.endTime = nil
-							snapshot.moltenRadiance.manaPerTick = 0
-							snapshot.moltenRadiance.mana = 0
-						end
+						---@type TRB.Classes.Healer.MoltenRadiance
+						local moltenRadiance = TRB.Data.snapshot.moltenRadiance
+						moltenRadiance.buff:Initialize(type)
 					end
 				end
 			end
@@ -3253,11 +3231,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					valid = true
 				end
 			elseif var == "$mrMana" then
-				if snapshot.moltenRadiance.mana > 0 then
+				---@type TRB.Classes.Healer.MoltenRadiance
+				local moltenRadiance = TRB.Data.snapshot.moltenRadiance
+				if moltenRadiance.mana > 0 then
 					valid = true
 				end
 			elseif var == "$mrTime" then
-				if snapshot.moltenRadiance.isActive then
+				---@type TRB.Classes.Healer.MoltenRadiance
+				local moltenRadiance = TRB.Data.snapshot.moltenRadiance
+				if moltenRadiance.buff.isActive then
 					valid = true
 				end
 			elseif var == "$channeledMana" then

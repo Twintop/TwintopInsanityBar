@@ -12,7 +12,7 @@ local content = [====[
 ## General
 ### Healers
 
-- [#323 - REFACTOR](#323) Move Symbol of Hope and Innervate implementations to the new shared class system and apply them to all healing specializations for consistancy.
+- [#323 - REFACTOR](#323) Move Innervate, Molten Radiance, and Symbol of Hope implementations to the new shared class system and apply them to all healing specializations for consistancy.
 - [#323 - REFACTOR](#323) Update Symbol of Hope detection and calculations to always use the casting Priest's buff data.
 
 ## Shaman
