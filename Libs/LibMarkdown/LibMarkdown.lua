@@ -911,7 +911,7 @@ function LibMarkdown.encode_alt(self, s)
 end
 
 -- forward declaration for link_db as returned by strip_link_definitions.
--- local self.link_database
+LibMarkdown.link_database = {}
 
 -- handle image references
 function LibMarkdown.images(self, text)
@@ -1006,7 +1006,7 @@ function LibMarkdown.auto_links(self, text)
    end
    local function mail(s)
       s = self:unescape_special_chars(s)
-      local address = encode_email_address("mailto:" .. s)
+      local address = "mailto:" .. s--encode_email_address("mailto:" .. s)
       return self:add_escape("<a href=\"" .. address .. "\">") .. s .. "</a>"
    end
    -- links

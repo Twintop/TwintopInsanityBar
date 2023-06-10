@@ -72,6 +72,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		},
 	}
 
+	local function CalculateManaGain(mana, isPotion)
+		if isPotion == nil then
+			isPotion = false
+		end
+
+		local modifier = 1.0
+
+		if isPotion then
+			if TRB.Data.character.items.alchemyStone then
+				modifier = modifier * TRB.Data.spells.alchemistStone.manaModifier
+			end
+		end
+
+		return mana * modifier
+	end
+
 	local function FillSpecializationCache()
 		-- Devastation
 		specCache.devastation.Global_TwintopResourceBar = {
@@ -206,7 +222,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				icon = "",
 				duration = 4.0, --Hasted
 				manaPercent = 0.03,
-				ticks = 3,
+				ticks = 4,
 				tickId = 265144
 			},
 			innervate = {
@@ -226,6 +242,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			aeratedManaPotionRank1 = {
 				itemId = 191384,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				useSpellIcon = true,
@@ -237,6 +254,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			aeratedManaPotionRank2 = {
 				itemId = 191385,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				useSpellIcon = true,
@@ -248,6 +266,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			aeratedManaPotionRank3 = {
 				itemId = 191386,
 				spellId = 370607,
+				iconName = "inv_10_alchemy_bottle_shape1_blue",
 				name = "",
 				icon = "",
 				useSpellIcon = true,
@@ -359,15 +378,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			resourceRaw = 0,
 			resourceFinal = 0
 		}
-		specCache.preservation.snapshot.innervate = {
-			isActive = false,
-			spellId = nil,
-			duration = 0,
-			endTime = nil,
-			remainingTime = 0,
-			mana = 0,
-			modifier = 1
-		}
+		---@type TRB.Classes.Healer.Innervate
+		specCache.preservation.snapshot.innervate = TRB.Classes.Healer.Innervate:New(specCache.preservation.spells.innervate)
 		specCache.preservation.snapshot.manaTideTotem = {
 			isActive = false,
 			spellId = nil,
@@ -376,17 +388,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			remainingTime = 0,
 			mana = 0
 		}
-		specCache.preservation.snapshot.symbolOfHope = {
-			isActive = false,
-			ticksRemaining = 0,
-			tickRate = 0,
-			tickRateFound = false,
-			previousTickTime = nil,
-			firstTickTime = nil, -- First time we saw a tick.
-			endTime = nil,
-			resourceRaw = 0,
-			resourceFinal = 0
-		}
+		---@type TRB.Classes.Healer.SymbolOfHope
+		specCache.preservation.snapshot.symbolOfHope = TRB.Classes.Healer.SymbolOfHope:New(specCache.preservation.spells.symbolOfHope, CalculateManaGain)
 		specCache.preservation.snapshot.channeledManaPotion = {
 			isActive = false,
 			ticksRemaining = 0,
@@ -413,14 +416,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			startTime = nil,
 			duration = 0
 		}
-		specCache.preservation.snapshot.moltenRadiance = {
-			isActive = false,
-			spellId = nil,
-			startTime = nil,
-			duration = 0,
-			manaPerTick = 0,
-			mana = 0
-		}
+		---@type TRB.Classes.Healer.MoltenRadiance
+		specCache.preservation.snapshot.moltenRadiance = TRB.Classes.Healer.MoltenRadiance:New(specCache.preservation.spells.moltenRadiance)
 
 		specCache.preservation.barTextVariables = {
 			icons = {},
@@ -834,20 +831,12 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.channeledManaPotion)
 	end
 
-	local function GetInnervateRemainingTime()
-		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.innervate)
-	end
-
 	local function GetManaTideTotemRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.manaTideTotem)
 	end
 
 	local function GetMoltenRadianceRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.moltenRadiance)
-	end
-	
-	local function GetSymbolOfHopeRemainingTime()
-		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.symbolOfHope)
 	end
 
 	local function GetEmeraldCommunionRemainingTime()
@@ -856,22 +845,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 	local function GetPotionOfChilledClarityRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.potionOfChilledClarity)
-	end
-
-	local function CalculateManaGain(mana, isPotion)
-		if isPotion == nil then
-			isPotion = false
-		end
-
-		local modifier = 1.0
-
-		if isPotion then
-			if TRB.Data.character.items.alchemyStone then
-				modifier = modifier * TRB.Data.spells.alchemistStone.manaModifier
-			end
-		end
-
-		return mana * modifier
 	end
 
 	local function RefreshLookupData_Devastation()
@@ -944,21 +917,27 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local _ecTime = GetEmeraldCommunionRemainingTime()
 		local ecTime = string.format("%.1f", _ecTime)
 
+		---@type TRB.Classes.Healer.SymbolOfHope
+		---@diagnostic disable-next-line: assign-type-mismatch
+		local symbolOfHope = snapshot.symbolOfHope
 		--$sohMana
-		local _sohMana = snapshot.symbolOfHope.resourceFinal
+		local _sohMana = symbolOfHope.buff.mana
 		local sohMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor", true))
 		--$sohTicks
-		local _sohTicks = snapshot.symbolOfHope.ticksRemaining or 0
+		local _sohTicks = symbolOfHope.buff.ticks or 0
 		local sohTicks = string.format("%.0f", _sohTicks)
 		--$sohTime
-		local _sohTime = GetSymbolOfHopeRemainingTime()
+		local _sohTime = symbolOfHope.buff:GetRemainingTime(currentTime)
 		local sohTime = string.format("%.1f", _sohTime)
-
+		
+		---@type TRB.Classes.Healer.Innervate
+		---@diagnostic disable-next-line: assign-type-mismatch
+		local innervate = snapshot.innervate
 		--$innervateMana
-		local _innervateMana = snapshot.innervate.mana
+		local _innervateMana = innervate.mana
 		local innervateMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
 		--$innervateTime
-		local _innervateTime = GetInnervateRemainingTime()
+		local _innervateTime = innervate.buff:GetRemainingTime(currentTime)
 		local innervateTime = string.format("%.1f", _innervateTime)
 
 		--$mttMana
@@ -967,12 +946,14 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		--$mttTime
 		local _mttTime = GetManaTideTotemRemainingTime()
 		local mttTime = string.format("%.1f", _mttTime)
-
+		
+		---@type TRB.Classes.Healer.MoltenRadiance
+		local moltenRadiance = snapshot.moltenRadiance
 		--$mrMana
-		local _mrMana = snapshot.moltenRadiance.mana
+		local _mrMana = moltenRadiance.mana
 		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
 		--$mrTime
-		local _mrTime = GetMoltenRadianceRemainingTime()
+		local _mrTime = moltenRadiance.buff.remaining
 		local mrTime = string.format("%.1f", _mrTime)
 
 		--$potionCooldownSeconds
@@ -1042,7 +1023,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		}
 		Global_TwintopResourceBar.symbolOfHope = {
 			mana = _sohMana,
-			ticks = snapshot.symbolOfHope.ticksRemaining or 0
+			ticks = _sohTicks
 		}
 		Global_TwintopResourceBar.emeraldCommunion = {
 			mana = _ecMana,
@@ -1304,60 +1285,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			end
 		end
 	end
-
-	local function UpdateSymbolOfHope(forceCleanup)
-		if TRB.Data.snapshot.symbolOfHope.isActive or forceCleanup then
-			local currentTime = GetTime()
-			if forceCleanup or TRB.Data.snapshot.symbolOfHope.endTime == nil or currentTime > TRB.Data.snapshot.symbolOfHope.endTime or currentTime > TRB.Data.snapshot.symbolOfHope.firstTickTime + TRB.Data.spells.symbolOfHope.duration or currentTime > TRB.Data.snapshot.symbolOfHope.firstTickTime + (TRB.Data.spells.symbolOfHope.ticks * TRB.Data.snapshot.symbolOfHope.tickRate) then
-				TRB.Data.snapshot.symbolOfHope.ticksRemaining = 0
-				TRB.Data.snapshot.symbolOfHope.tickRate = 0
-				TRB.Data.snapshot.symbolOfHope.previousTickTime = nil
-				TRB.Data.snapshot.symbolOfHope.firstTickTime = nil
-				TRB.Data.snapshot.symbolOfHope.endTime = nil
-				TRB.Data.snapshot.symbolOfHope.resourceRaw = 0
-				TRB.Data.snapshot.symbolOfHope.resourceFinal = 0
-				TRB.Data.snapshot.symbolOfHope.isActive = false
-				TRB.Data.snapshot.symbolOfHope.tickRateFound = false
-			else
-				TRB.Data.snapshot.symbolOfHope.ticksRemaining = math.ceil((TRB.Data.snapshot.symbolOfHope.endTime - currentTime) / TRB.Data.snapshot.symbolOfHope.tickRate)
-				local nextTickRemaining = TRB.Data.snapshot.symbolOfHope.endTime - currentTime - math.floor((TRB.Data.snapshot.symbolOfHope.endTime - currentTime) / TRB.Data.snapshot.symbolOfHope.tickRate)
-				TRB.Data.snapshot.symbolOfHope.resourceRaw = 0
-
-				for x = 1, TRB.Data.snapshot.symbolOfHope.ticksRemaining do
-					local casterRegen = 0
-					if TRB.Data.snapshot.casting.spellId == TRB.Data.spells.symbolOfHope.id then
-						if x == 1 then
-							casterRegen = nextTickRemaining * TRB.Data.snapshot.manaRegen
-						else
-							casterRegen = TRB.Data.snapshot.manaRegen
-						end
-					end
-
-					local estimatedMana = TRB.Data.character.maxResource + TRB.Data.snapshot.symbolOfHope.resourceRaw + casterRegen - (TRB.Data.snapshot.resource / TRB.Data.resourceFactor)
-					local nextTick = TRB.Data.spells.symbolOfHope.manaPercent * math.max(0, math.min(TRB.Data.character.maxResource, estimatedMana))
-					TRB.Data.snapshot.symbolOfHope.resourceRaw = TRB.Data.snapshot.symbolOfHope.resourceRaw + nextTick + casterRegen
-				end
-
-				--Revisit if we get mana modifiers added
-				TRB.Data.snapshot.symbolOfHope.resourceFinal = CalculateManaGain(TRB.Data.snapshot.symbolOfHope.resourceRaw, false)
-			end
-		end
-	end
-
-	local function UpdateInnervate()
-		local currentTime = GetTime()
-
-		if TRB.Data.snapshot.innervate.endTime ~= nil and currentTime > TRB.Data.snapshot.innervate.endTime then
-			TRB.Data.snapshot.innervate.endTime = nil
-			TRB.Data.snapshot.innervate.duration = 0
-			TRB.Data.snapshot.innervate.remainingTime = 0
-			TRB.Data.snapshot.innervate.mana = 0
-			TRB.Data.snapshot.audio.innervateCue = false
-		else
-			TRB.Data.snapshot.innervate.remainingTime = GetInnervateRemainingTime()
-			TRB.Data.snapshot.innervate.mana = TRB.Data.snapshot.innervate.remainingTime * TRB.Data.snapshot.manaRegen
-		end
-	end
 	
 	local function UpdatePotionOfChilledClarity()
 		local currentTime = GetTime()
@@ -1389,21 +1316,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end
 	end
 
-	local function UpdateMoltenRadiance(forceCleanup)
-		local currentTime = GetTime()
-
-		if forceCleanup or (TRB.Data.snapshot.moltenRadiance.endTime ~= nil and currentTime > TRB.Data.snapshot.moltenRadiance.endTime) then
-			TRB.Data.snapshot.moltenRadiance.endTime = nil
-			TRB.Data.snapshot.moltenRadiance.duration = 0
-			TRB.Data.snapshot.moltenRadiance.remainingTime = 0
-			TRB.Data.snapshot.moltenRadiance.mana = 0
-			TRB.Data.snapshot.moltenRadiance.manaPerTick = 0
-		elseif TRB.Data.snapshot.moltenRadiance.endTime ~= nil then
-			TRB.Data.snapshot.moltenRadiance.remainingTime = GetMoltenRadianceRemainingTime()
-			TRB.Data.snapshot.moltenRadiance.mana = TRB.Data.snapshot.moltenRadiance.manaPerTick * TRB.Functions.Number:RoundTo(TRB.Data.snapshot.moltenRadiance.remainingTime, 0, "ceil", true)
-		end
-	end
-
 	local function UpdateSnapshot()
 		TRB.Functions.Character:UpdateSnapshot()
 		local currentTime = GetTime()
@@ -1418,16 +1330,26 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 	local function UpdateSnapshot_Preservation()
 		UpdateSnapshot()
-		UpdateSymbolOfHope()
 		UpdateChanneledManaPotion()
-		UpdateInnervate()
 		UpdatePotionOfChilledClarity()
 		UpdateManaTideTotem()
-		UpdateMoltenRadiance()
 		
+		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
 
 		local _
+
+		---@type TRB.Classes.Healer.Innervate
+		local innervate = TRB.Data.snapshot.innervate
+		innervate:Update()
+
+		---@type TRB.Classes.Healer.SymbolOfHope
+		local symbolOfHope = TRB.Data.snapshot.symbolOfHope
+		symbolOfHope:Update()
+
+		---@type TRB.Classes.Healer.MoltenRadiance
+		local moltenRadiance = TRB.Data.snapshot.moltenRadiance
+		moltenRadiance:Update()
 
 		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
 		snapshot.potion.startTime, snapshot.potion.duration, _ = GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
@@ -1458,6 +1380,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local specId = GetSpecialization()
 		local coreSettings = TRB.Data.settings.core
 		local classSettings = TRB.Data.settings.evoker
+		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
 
 		if specId == 1 then
@@ -1536,12 +1459,20 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					local castingBarValue = 0
 					local currentMana = snapshot.resource / TRB.Data.resourceFactor
 					local barBorderColor = specSettings.colors.bar.border
+					---@type TRB.Classes.Healer.Innervate
+					local innervate = TRB.Data.snapshot.innervate
+
+					---@type TRB.Classes.Healer.SymbolOfHope
+					local symbolOfHope = TRB.Data.snapshot.symbolOfHope
+
+					---@type TRB.Classes.Healer.MoltenRadiance
+					local moltenRadiance = TRB.Data.snapshot.moltenRadiance
 
 					if snapshot.potionOfChilledClarity.isActive then
 						if specSettings.colors.bar.potionOfChilledClarityBorderChange then
 							barBorderColor = specSettings.colors.bar.potionOfChilledClarity
 						end
-					elseif snapshot.innervate.isActive then
+					elseif innervate.isActive then
 						if specSettings.colors.bar.innervateBorderChange then
 							barBorderColor = specSettings.colors.bar.innervate
 						end
@@ -1584,8 +1515,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							TRB.Frames.passiveFrame.thresholds[1]:Hide()
 						end
 
-						if snapshot.innervate.mana > 0 or snapshot.potionOfChilledClarity.mana > 0 then
-							passiveValue = passiveValue + math.max(snapshot.innervate.mana, snapshot.potionOfChilledClarity.mana)
+						if innervate.mana > 0 or snapshot.potionOfChilledClarity.mana > 0 then
+							passiveValue = passiveValue + math.max(innervate.mana, snapshot.potionOfChilledClarity.mana)
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -1599,8 +1530,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							TRB.Frames.passiveFrame.thresholds[2]:Hide()
 						end
 
-						if snapshot.symbolOfHope.resourceFinal > 0 then
-							passiveValue = passiveValue + snapshot.symbolOfHope.resourceFinal
+						if symbolOfHope.buff.mana > 0 then
+							passiveValue = passiveValue + symbolOfHope.buff.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -1629,8 +1560,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							TRB.Frames.passiveFrame.thresholds[4]:Hide()
 						end
 
-						if snapshot.moltenRadiance.mana > 0 then
-							passiveValue = passiveValue + snapshot.moltenRadiance.mana
+						if moltenRadiance.mana > 0 then
+							passiveValue = passiveValue + moltenRadiance.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -1800,41 +1731,18 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			
 			if destGUID == TRB.Data.character.guid then
 				if specId == 2 and TRB.Data.barConstructedForSpec == "preservation" then -- Let's check raid effect mana stuff
-					if type == "SPELL_ENERGIZE" and spellId == spells.symbolOfHope.tickId then
-						snapshot.symbolOfHope.isActive = true
-						if snapshot.symbolOfHope.firstTickTime == nil then
-							snapshot.symbolOfHope.firstTickTime = currentTime
-							snapshot.symbolOfHope.previousTickTime = currentTime
-							snapshot.symbolOfHope.ticksRemaining = spells.symbolOfHope.ticks
-							snapshot.symbolOfHope.tickRate = (spells.symbolOfHope.duration / spells.symbolOfHope.ticks)
-							snapshot.symbolOfHope.endTime = currentTime + spells.symbolOfHope.duration
-						else
-							if snapshot.symbolOfHope.ticksRemaining >= 1 then
-								if sourceGUID ~= TRB.Data.character.guid then
-									if not snapshot.symbolOfHope.tickRateFound then
-										snapshot.symbolOfHope.tickRate = currentTime - snapshot.symbolOfHope.previousTickTime
-										snapshot.symbolOfHope.tickRateFound = true
-										snapshot.symbolOfHope.endTime = currentTime + (snapshot.symbolOfHope.tickRate * (snapshot.symbolOfHope.ticksRemaining - 1))
-									end
-
-									if snapshot.symbolOfHope.tickRate > (1.75 * 1.5) then -- Assume if its taken this long for a tick to happen, the rate is really half this and one was missed
-										snapshot.symbolOfHope.tickRate = snapshot.symbolOfHope.tickRate / 2
-										snapshot.symbolOfHope.endTime = currentTime + (snapshot.symbolOfHope.tickRate * (snapshot.symbolOfHope.ticksRemaining - 2))
-										snapshot.symbolOfHope.tickRateFound = false
-									end
-								end
-							end
-							snapshot.symbolOfHope.previousTickTime = currentTime
-						end
-						snapshot.symbolOfHope.resourceRaw = snapshot.symbolOfHope.ticksRemaining * spells.symbolOfHope.manaPercent * TRB.Data.character.maxResource
-						snapshot.symbolOfHope.resourceFinal = CalculateManaGain(snapshot.symbolOfHope.resourceRaw, false)
+					if spellId == spells.symbolOfHope.tickId or spellId == spells.symbolOfHope.id then
+						---@type TRB.Classes.Healer.SymbolOfHope
+						local symbolOfHope = TRB.Data.snapshot.symbolOfHope
+						local castByToken = UnitTokenFromGUID(sourceGUID)
+						symbolOfHope.buff:Initialize(type, nil, castByToken)
 					elseif spellId == spells.innervate.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.innervate)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-							snapshot.innervate.modifier = 0
+						---@type TRB.Classes.Healer.Innervate
+						local innervate = snapshot.innervate
+						innervate.buff:Initialize(type)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							snapshot.audio.innervateCue = false
-						elseif type == "SPELL_AURA_REMOVED" then
-							snapshot.innervate.modifier = 1
+						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							snapshot.audio.innervateCue = false
 						end
 					elseif spellId == spells.manaTideTotem.id then
@@ -1851,18 +1759,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							snapshot.audio.manaTideTotemCue = false
 						end
 					elseif spellId == spells.moltenRadiance.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-							local _
-							_, _, _, _, snapshot.moltenRadiance.duration, snapshot.moltenRadiance.endTime, _, _, _, snapshot.moltenRadiance.spellId, _, _, _, _, _, _, _, snapshot.moltenRadiance.manaPerTick = TRB.Functions.Aura:FindBuffById(spells.moltenRadiance.id)
-							snapshot.moltenRadiance.isActive = false
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							snapshot.moltenRadiance.isActive = false
-							snapshot.moltenRadiance.spellId = nil
-							snapshot.moltenRadiance.duration = 0
-							snapshot.moltenRadiance.endTime = nil
-							snapshot.moltenRadiance.manaPerTick = 0
-							snapshot.moltenRadiance.mana = 0
-						end
+						---@type TRB.Classes.Healer.MoltenRadiance
+						local moltenRadiance = TRB.Data.snapshot.moltenRadiance
+						moltenRadiance.buff:Initialize(type)
 					end
 				end
 			end			
@@ -1870,12 +1769,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			if sourceGUID == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "devastation" then --Devastation					
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "preservation" then
-					if spellId == spells.symbolOfHope.id then
-						if type == "SPELL_AURA_REMOVED" then -- Lost Symbol of Hope
-							-- Let UpdateSymbolOfHope() clean this up
-							UpdateSymbolOfHope(true)
-						end
-					elseif spellId == spells.potionOfFrozenFocusRank1.spellId then
+					if spellId == spells.potionOfFrozenFocusRank1.spellId then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Potion of Frozen Focus
 							snapshot.channeledManaPotion.spellKey = "potionOfFrozenFocusRank1"
 							snapshot.channeledManaPotion.isActive = true
@@ -2187,14 +2081,14 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 	function TRB.Functions.Class:EventRegistration()
 		local specId = GetSpecialization()
-		if specId == 1 and TRB.Data.settings.core.enabled.evoker.devastation then
+		if specId == 1 and TRB.Data.settings.core.enabled.evoker.devastation and TRB.Data.settings.core.experimental.specs.evoker.devastation then
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.devastation)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
 			TRB.Data.resource2 = Enum.PowerType.Essence
 			TRB.Data.resource2Factor = 1
-		elseif specId == 2 and TRB.Data.settings.core.enabled.evoker.preservation then
+		elseif specId == 2 and TRB.Data.settings.core.enabled.evoker.preservation and TRB.Data.settings.core.experimental.specs.evoker.preservation then
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.preservation)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
@@ -2241,7 +2135,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local specId = GetSpecialization()
 		local snapshot = TRB.Data.snapshot
 
-		if specId == 1 then
+		if specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation then
 			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.evoker.devastation.displayBar.alwaysShow) and (
@@ -2259,7 +2153,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					TRB.Frames.barContainerFrame:Show()
 				end
 			end
-		elseif specId == 2 then
+		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation then
 			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.evoker.preservation.displayBar.alwaysShow) and (
@@ -2363,23 +2257,33 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					valid = true
 				end
 			elseif var == "$sohMana" then
-				if snapshot.symbolOfHope.resourceRaw > 0 then
+				---@type TRB.Classes.Healer.SymbolOfHope
+				local symbolOfHope = TRB.Data.snapshot.symbolOfHope
+				if symbolOfHope.buff.manaRaw > 0 then
 					valid = true
 				end
 			elseif var == "$sohTime" then
-				if snapshot.symbolOfHope.isActive then
+				---@type TRB.Classes.Healer.SymbolOfHope
+				local symbolOfHope = TRB.Data.snapshot.symbolOfHope
+				if symbolOfHope.buff.isActive then
 					valid = true
 				end
 			elseif var == "$sohTicks" then
-				if snapshot.symbolOfHope.isActive then
+				---@type TRB.Classes.Healer.SymbolOfHope
+				local symbolOfHope = TRB.Data.snapshot.symbolOfHope
+				if symbolOfHope.buff.isActive then
 					valid = true
 				end
 			elseif var == "$innervateMana" then
-				if snapshot.innervate.mana > 0 then
+				---@type TRB.Classes.Healer.Innervate
+				local innervate = TRB.Data.snapshot.innervate
+				if innervate.mana > 0 then
 					valid = true
 				end
 			elseif var == "$innervateTime" then
-				if snapshot.innervate.remainingTime > 0 then
+				---@type TRB.Classes.Healer.Innervate
+				local innervate = TRB.Data.snapshot.innervate
+				if innervate.buff.remaining > 0 then
 					valid = true
 				end
 			elseif var == "$potionOfChilledClarityMana" then
@@ -2399,11 +2303,15 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					valid = true
 				end
 			elseif var == "$mrMana" then
-				if snapshot.moltenRadiance.mana > 0 then
+				---@type TRB.Classes.Healer.MoltenRadiance
+				local moltenRadiance = TRB.Data.snapshot.moltenRadiance
+				if moltenRadiance.mana > 0 then
 					valid = true
 				end
 			elseif var == "$mrTime" then
-				if snapshot.moltenRadiance.isActive then
+				---@type TRB.Classes.Healer.MoltenRadiance
+				local moltenRadiance = TRB.Data.snapshot.moltenRadiance
+				if moltenRadiance.buff.isActive then
 					valid = true
 				end
 			elseif var == "$channeledMana" then

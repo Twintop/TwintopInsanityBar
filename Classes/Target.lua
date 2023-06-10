@@ -85,7 +85,7 @@ function TRB.Classes.TargetData:UpdateDebuffs(currentTime)
                     if target.spells[spellId].isDot then
                         counts[spellId] = counts[spellId] + 1
                     elseif target.spells[spellId].hasCounter then
-                        counts[spellId] = counts[spellId] + target[spellId].count
+                        counts[spellId] = counts[spellId] + target.spells[spellId].count
                     end
                 end
             end
@@ -318,6 +318,13 @@ function TRB.Classes.TargetSpell:Update(currentTime)
                 if expiration ~= nil then
                     self.active = true
                     self.remainingTime = expiration - currentTime
+                end
+            end
+
+            if self.hasCounter then
+                if self.count <= 0 then
+                    self.count = 0
+                    self.active = false
                 end
             end
         end

@@ -39,7 +39,12 @@ function TRB.Functions.Bar:ShowResourceBar()
 		TRB.Functions.Class:EventRegistration()
 	end
 
-	TRB.Data.snapshot.isTracking = true
+	local _, _, classIndexId = UnitClass("player")
+	if classIndexId == 5 then --Only do this if we're on a Priest!
+		TRB.Data.snapshotData.attributes.isTracking = true
+	else
+		TRB.Data.snapshot.isTracking = true
+	end
 	TRB.Functions.Bar:HideResourceBar()
 end
 

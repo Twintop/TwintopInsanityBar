@@ -639,9 +639,19 @@ end
 
 function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	--Spec specific implementations also needed. This is general/cross-spec data
-	local snapshot = TRB.Data.snapshot
-	---@type TRB.Classes.Target
-	local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
+	local snapshot
+	local target
+	
+	local _, _, classIndexId = UnitClass("player")
+	if classIndexId == 5 then --Only do this if we're on a Priest!
+		snapshot = TRB.Data.snapshotData.attributes
+		---@type TRB.Classes.Target
+		target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
+	else
+		snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.Target
+		target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
+	end
 
 	--$crit
 	local critPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshot.crit, settings.hastePrecision))
@@ -700,7 +710,17 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	end
 
 	--#castingIcon
-	local castingIcon = snapshot.casting.icon or ""
+	local castingIcon
+	local castingAmount
+	
+	if classIndexId == 5 then --Only do this if we're on a Priest!
+		castingIcon = TRB.Data.snapshotData.casting.icon or ""
+		castingAmount = TRB.Data.snapshotData.casting.resourceFinal or 0
+	else
+		castingIcon = snapshot.casting.icon or ""
+		castingAmount = snapshot.casting.resourceFinal or 0
+	end
+
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#casting"] = castingIcon
@@ -788,22 +808,35 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 		},
 		resource = {
 			resource = snapshot.resource or 0,
-			casting = snapshot.casting.resourceFinal or 0
+			casting = castingAmount
 		}
 	}
 end
 
 function TRB.Functions.BarText:IsTtdActive(settings)
+	local _, _, classIndexId = UnitClass("player")
 	if settings ~= nil and settings.displayText ~= nil then
 		if string.find(settings.displayText.left.text, "$ttd") or
 			string.find(settings.displayText.middle.text, "$ttd") or
 			string.find(settings.displayText.right.text, "$ttd") then
-			TRB.Data.snapshot.targetData.ttdIsActive = true
+			if classIndexId == 5 then --Only do this if we're on a Priest!
+				TRB.Data.snapshotData.targetData.ttdIsActive = true
+			else
+				TRB.Data.snapshot.targetData.ttdIsActive = true
+			end
+		else
+			if classIndexId == 5 then --Only do this if we're on a Priest!
+				TRB.Data.snapshotData.targetData.ttdIsActive = false
+			else
+				TRB.Data.snapshot.targetData.ttdIsActive = false
+			end	
+		end
+	else
+		if classIndexId == 5 then --Only do this if we're on a Priest!
+			TRB.Data.snapshotData.targetData.ttdIsActive = false
 		else
 			TRB.Data.snapshot.targetData.ttdIsActive = false
 		end
-	else
-		TRB.Data.snapshot.targetData.ttdIsActive = false
 	end
 end
 
@@ -887,8 +920,15 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 	elseif var == "$stam" or var == "$stamina" then
 		valid = true
 	elseif var == "$ttd" or var == "$ttdSeconds" then
-		if TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].timeToDie.time > 0 then
-			valid = true
+		local _, _, classIndexId = UnitClass("player")
+		if classIndexId == 5 then --Only do this if we're on a Priest!
+			if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].timeToDie.time > 0 then
+				valid = true
+			end
+		else
+			if TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].timeToDie.time > 0 then
+				valid = true
+			end
 		end
 	elseif var == "$inCombat" then
 		if UnitAffectingCombat("player") then

@@ -8,7 +8,7 @@ TRB.Details.addonAuthor = C_AddOns.GetAddOnMetadata(addonName, "Author")
 TRB.Details.addonAuthorServer = C_AddOns.GetAddOnMetadata(addonName, "X-AuthorServer")
 TRB.Details.addonTitle = C_AddOns.GetAddOnMetadata(addonName, "Title")
 TRB.Details.addonReleaseDate = C_AddOns.GetAddOnMetadata(addonName, "X-ReleaseDate")
-TRB.Details.supportedSpecs = "|cFFA330C9Demon Hunter|r - Havoc\n|cFFFF7C0ADruid|r - Balance, Feral, Restoration\n|cFF33937FEvoker|r - Devastation (Experimental/Minimal), Preservation (Experimental)\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFF00FF98Monk|r - Mistweaver, Windwalker\n|cFFFFFFFFPriest|r - Holy, Shadow\n|cFFFFF468Rogue|r - Assassination, Outlaw\n|cFF0070DDShaman|r - Elemental, Enhancement (Experimental/Minimal), Restoration\n|cFFC69B6DWarrior|r - Arms, Fury"
+TRB.Details.supportedSpecs = "|cFFA330C9Demon Hunter|r - Havoc\n|cFFFF7C0ADruid|r - Balance, Feral, Restoration\n|cFF33937FEvoker|r - Devastation (Experimental/Minimal), Preservation (Experimental)\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFF00FF98Monk|r - Mistweaver, Windwalker\n|cFFFFFFFFPriest|r - Discipline (Experimental), Holy, Shadow\n|cFFFFF468Rogue|r - Assassination, Outlaw\n|cFF0070DDShaman|r - Elemental, Enhancement (Experimental/Minimal), Restoration\n|cFFC69B6DWarrior|r - Arms, Fury"
 
 local addonData = {
 	loaded = false,
@@ -82,9 +82,18 @@ if classIndexId == 4 or classIndexId == 7 or classIndexId == 10 or classIndexId 
 	end
 end
 
-function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
-	---@type TRB.Classes.TargetData
-	local targetData = TRB.Data.snapshot.targetData
+function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)	
+	local targetData
+
+	local _, _, classIndexId = UnitClass("player")
+	if classIndexId == 5 then --Only do this if we're on a Priest!
+		---@type TRB.Classes.TargetData
+		targetData = TRB.Data.snapshotData.targetData
+	else
+		---@type TRB.Classes.TargetData
+		targetData = TRB.Data.snapshot.targetData
+	end
+
 	local currentTime = GetTime()
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate

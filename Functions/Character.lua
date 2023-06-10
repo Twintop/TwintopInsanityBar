@@ -15,10 +15,20 @@ function TRB.Functions.Character:CheckCharacter()
 end
 
 function TRB.Functions.Character:UpdateSnapshot()
-	local _
-	local snapshot = TRB.Data.snapshot
-	---@type TRB.Classes.Target
-	local target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
+	local snapshot
+	local target
+
+	local _, _, classIndexId = UnitClass("player")
+	if classIndexId == 5 then --Only do this if we're on a Priest!
+		---@type TRB.Classes.SnapshotData
+		snapshot = TRB.Data.snapshotData.attributes
+		---@type TRB.Classes.Target
+		target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
+	else
+		snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.Target
+		target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
+	end
 
 	if target ~= nil then
 		target:UpdateAllSpellTracking(currentTime)
@@ -57,33 +67,38 @@ function TRB.Functions.Character:UpdateSnapshot()
 end
 
 function TRB.Functions.Character:ResetSnapshotData()
-	TRB.Data.snapshot = {
-		resource = 0,
-		haste = 0,
-		crit = 0,
-		mastery = 0,
-		versatilityOffensive = 0,
-		versatilityDefensive = 0,
-		hasteRating = 0,
-		critRating = 0,
-		masteryRating = 0,
-		versatilityRating = 0,
-		intellect = 0,
-		strength = 0,
-		agility = 0,
-		stamina = 0,
-		isTracking = false,
-		casting = {
-			spellId = nil,
-			startTime = nil,
-			endTime = nil,
-			resourceRaw = 0,
-			resourceFinal = 0,
-			icon = ""
-		},
-		targetData = {},
-		audio = {}
-	}
+	local _, _, classIndexId = UnitClass("player")
+	if classIndexId == 5 then --Only do this if we're on a Priest!
+		--TRB.Data.snapshotData = TRB.Classes.SnapshotData:New()
+	else
+		TRB.Data.snapshot = {
+			resource = 0,
+			haste = 0,
+			crit = 0,
+			mastery = 0,
+			versatilityOffensive = 0,
+			versatilityDefensive = 0,
+			hasteRating = 0,
+			critRating = 0,
+			masteryRating = 0,
+			versatilityRating = 0,
+			intellect = 0,
+			strength = 0,
+			agility = 0,
+			stamina = 0,
+			isTracking = false,
+			casting = {
+				spellId = nil,
+				startTime = nil,
+				endTime = nil,
+				resourceRaw = 0,
+				resourceFinal = 0,
+				icon = ""
+			},
+			targetData = {},
+			audio = {}
+		}
+	end
 end
 
 function TRB.Functions.Character:LoadFromSpecializationCache(cache)
@@ -96,7 +111,13 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.barTextVariables.values = cache.barTextVariables.values
 
 	TRB.Functions.Character:ResetSnapshotData()
-	TRB.Data.snapshot = TRB.Functions.Table:Merge(TRB.Data.snapshot, cache.snapshot)
+
+	local _, _, classIndexId = UnitClass("player")
+	if classIndexId == 5 then --Only do this if we're on a Priest!
+		TRB.Data.snapshotData = cache.snapshotData
+	else
+		TRB.Data.snapshot = TRB.Functions.Table:Merge(TRB.Data.snapshot, cache.snapshot)
+	end
 
 ---@diagnostic disable-next-line: missing-parameter
 	TRB.Data.character.specGroup = GetActiveSpecGroup()
@@ -189,13 +210,20 @@ function TRB.Functions.Character:GetCurrentGCDTime(floor)
 end
 
 function TRB.Functions.Character:ResetCastingSnapshotData()
-	TRB.Data.snapshot.casting.spellId = nil
-	TRB.Data.snapshot.casting.startTime = nil
-	TRB.Data.snapshot.casting.endTime = nil
-	TRB.Data.snapshot.casting.resourceRaw = 0
-	TRB.Data.snapshot.casting.resourceFinal = 0
-	TRB.Data.snapshot.casting.icon = ""
-	TRB.Data.snapshot.casting.spellKey = nil
+	local _, _, classIndexId = UnitClass("player")
+	if classIndexId == 5 then --Only do this if we're on a Priest!
+		---@type TRB.Classes.SnapshotCasting
+		local casting = TRB.Data.snapshotData.casting
+		casting:Reset()
+	else
+		TRB.Data.snapshot.casting.spellId = nil
+		TRB.Data.snapshot.casting.startTime = nil
+		TRB.Data.snapshot.casting.endTime = nil
+		TRB.Data.snapshot.casting.resourceRaw = 0
+		TRB.Data.snapshot.casting.resourceFinal = 0
+		TRB.Data.snapshot.casting.icon = ""
+		TRB.Data.snapshot.casting.spellKey = nil
+	end
 end
 
 function TRB.Functions.Character:GetLatency()
