@@ -15,6 +15,11 @@ local content = [====[
 - [#323 - REFACTOR](#323) Move Symbol of Hope and Innervate implementations to the new shared class system and apply them to all healing specializations for consistancy.
 - [#323 - REFACTOR](#323) Update Symbol of Hope detection and calculations to always use the casting Priest's buff data.
 
+## Shaman
+### Restoration
+
+- (NEW) Add Resonant Waters detection to Mana Tide Totem when used by the player.
+
 ----
 
 # 10.1.0.12-release (2023-05-31)
