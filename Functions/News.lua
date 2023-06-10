@@ -8,6 +8,15 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.1.0.13-release (2023-06-10)
+## General
+### Healers
+
+- [#323 - REFACTOR](#323) Move Symbol of Hope and Innervate implementations to the new shared class system and apply them to all healing specializations for consistancy.
+- [#323 - REFACTOR](#323) Update Symbol of Hope detection and calculations to always use the casting Priest's buff data.
+
+----
+
 # 10.1.0.12-release (2023-05-31)
 ## Priest
 
