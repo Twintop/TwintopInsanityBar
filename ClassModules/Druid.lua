@@ -2919,7 +2919,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
 					
 		---@type TRB.Classes.Healer.ChanneledManaPotion
-		local channeledManaPotion = TRB.Data.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id]
+		local channeledManaPotion = TRB.Data.snapshot.channeledManaPotion
 		--$channeledMana
 		local _channeledMana = channeledManaPotion.mana
 		local channeledMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_channeledMana, manaPrecision, "floor", true))
@@ -3479,7 +3479,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		potionOfChilledClarity:Update()
 					
 		---@type TRB.Classes.Healer.ChanneledManaPotion
-		local channeledManaPotion = TRB.Data.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id]
+		local channeledManaPotion = TRB.Data.snapshot.channeledManaPotion
 		channeledManaPotion:Update()
 
 		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
@@ -4155,7 +4155,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local potionOfChilledClarity = TRB.Data.snapshot.potionOfChilledClarity
 					
 					---@type TRB.Classes.Healer.ChanneledManaPotion
-					local channeledManaPotion = TRB.Data.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id]
+					local channeledManaPotion = TRB.Data.snapshot.channeledManaPotion
 		
 					if potionOfChilledClarity.buff.isActive then
 						if specSettings.colors.bar.potionOfChilledClarityBorderChange then
@@ -4585,7 +4585,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				elseif specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then
 					if spellId == spells.potionOfFrozenFocusRank1.spellId or spellId == spells.potionOfFrozenFocusRank2.spellId or spellId == spells.potionOfFrozenFocusRank3.spellId then
 						---@type TRB.Classes.Healer.ChanneledManaPotion
-						local channeledManaPotion = TRB.Data.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id]
+						local channeledManaPotion = TRB.Data.snapshot.channeledManaPotion
 						channeledManaPotion.buff:Initialize(type)
 					elseif spellId == spells.potionOfChilledClarity.id then
 						---@type TRB.Classes.Healer.PotionOfChilledClarity
@@ -5578,19 +5578,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 			elseif var == "$channeledMana" then
 				---@type TRB.Classes.Healer.ChanneledManaPotion
-				local channeledManaPotion = TRB.Data.snapshotData.snapshots[specCache.discipline.spells.potionOfFrozenFocusRank1.id]
+				local channeledManaPotion = TRB.Data.snapshot.potionOfFrozenFocusRank1
 				if channeledManaPotion.mana > 0 then
 					valid = true
 				end
 			elseif var == "$potionOfFrozenFocusTicks" then
 				---@type TRB.Classes.Healer.ChanneledManaPotion
-				local channeledManaPotion = TRB.Data.snapshotData.snapshots[specCache.discipline.spells.potionOfFrozenFocusRank1.id]
+				local channeledManaPotion = TRB.Data.snapshot.potionOfFrozenFocusRank1
 				if channeledManaPotion.ticks > 0 then
 					valid = true
 				end
 			elseif var == "$potionOfFrozenFocusTime" then
 				---@type TRB.Classes.Healer.ChanneledManaPotion
-				local channeledManaPotion = TRB.Data.snapshotData.snapshots[specCache.discipline.spells.potionOfFrozenFocusRank1.id]
+				local channeledManaPotion = TRB.Data.snapshot.potionOfFrozenFocusRank1
 				if channeledManaPotion.buff.remaining > 0 then
 					valid = true
 				end
