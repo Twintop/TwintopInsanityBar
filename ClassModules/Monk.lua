@@ -328,14 +328,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			endTime = nil,
 			remainingTime = 0
 		}
-		specCache.mistweaver.snapshot.manaTideTotem = {
-			isActive = false,
-			spellId = nil,
-			duration = 0,
-			endTime = nil,
-			remainingTime = 0,
-			mana = 0
-		}
+		---@type TRB.Classes.Healer.ManaTideTotem
+		specCache.mistweaver.snapshot.manaTideTotem = TRB.Classes.Healer.ManaTideTotem:New(specCache.mistweaver.spells.manaTideTotem)
 		---@type TRB.Classes.Healer.SymbolOfHope
 		specCache.mistweaver.snapshot.symbolOfHope = TRB.Classes.Healer.SymbolOfHope:New(specCache.mistweaver.spells.symbolOfHope, CalculateManaGain)
 		---@type TRB.Classes.Healer.ChanneledManaPotion
@@ -975,10 +969,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.danceOfChiJi)
 	end
 
-	local function GetManaTideTotemRemainingTime()
-		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.manaTideTotem)
-	end
-
 	local function GetManaTeaRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.manaTea)
 	end
@@ -1119,12 +1109,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		--$innervateTime
 		local _innervateTime = innervate.buff:GetRemainingTime(currentTime)
 		local innervateTime = string.format("%.1f", _innervateTime)
-
+		
+		---@type TRB.Classes.Healer.ManaTideTotem
+		---@diagnostic disable-next-line: assign-type-mismatch
+		local manaTideTotem = snapshot.manaTideTotem
 		--$mttMana
-		local _mttMana = snapshot.manaTideTotem.mana
+		local _mttMana = manaTideTotem.mana
 		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
-		local _mttTime = GetManaTideTotemRemainingTime()
+		local _mttTime = manaTideTotem.buff:GetRemainingTime(currentTime)
 		local mttTime = string.format("%.1f", _mttTime)
 		
 		--$mtTime
@@ -1755,22 +1748,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end
 	end
 
-	local function UpdateManaTideTotem(forceCleanup)
-		local currentTime = GetTime()
-		local snapshot = TRB.Data.snapshot
-
-		if forceCleanup or (snapshot.manaTideTotem.endTime ~= nil and currentTime > snapshot.manaTideTotem.endTime) then
-			snapshot.manaTideTotem.endTime = nil
-			snapshot.manaTideTotem.duration = 0
-			snapshot.manaTideTotem.remainingTime = 0
-			snapshot.manaTideTotem.mana = 0
-			snapshot.audio.manaTideTotemCue = false
-		else
-			snapshot.manaTideTotem.remainingTime = GetManaTideTotemRemainingTime()
-			snapshot.manaTideTotem.mana = snapshot.manaTideTotem.remainingTime * (snapshot.manaRegen / 2) --Only half of this is considered bonus
-		end
-	end
-
 	local function UpdateSnapshot()
 		TRB.Functions.Character:UpdateSnapshot()
 		local currentTime = GetTime()
@@ -1780,7 +1757,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		UpdateSnapshot()
 		UpdateChanneledManaPotion()
 		UpdateSoulfangInfusion()
-		UpdateManaTideTotem()
 		
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
@@ -1789,6 +1765,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		---@type TRB.Classes.Healer.Innervate
 		local innervate = TRB.Data.snapshot.innervate
 		innervate:Update()
+
+		---@type TRB.Classes.Healer.ManaTideTotem
+		local manaTideTotem = TRB.Data.snapshot.manaTideTotem
+		manaTideTotem:Update()
 
 		---@type TRB.Classes.Healer.SymbolOfHope
 		local symbolOfHope = TRB.Data.snapshot.symbolOfHope
@@ -1869,8 +1849,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					local castingBarValue = 0
 					local currentMana = snapshot.resource / TRB.Data.resourceFactor
 					local barBorderColor = specSettings.colors.bar.border
+
 					---@type TRB.Classes.Healer.Innervate
 					local innervate = TRB.Data.snapshot.innervate
+
+					---@type TRB.Classes.Healer.ManaTideTotem
+					local manaTideTotem = TRB.Data.snapshot.manaTideTotem
 
 					---@type TRB.Classes.Healer.SymbolOfHope
 					local symbolOfHope = TRB.Data.snapshot.symbolOfHope
@@ -1961,8 +1945,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							TRB.Frames.passiveFrame.thresholds[3]:Hide()
 						end
 
-						if snapshot.manaTideTotem.mana > 0 then
-							passiveValue = passiveValue + snapshot.manaTideTotem.mana
+						if manaTideTotem.mana > 0 then
+							passiveValue = passiveValue + manaTideTotem.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -2251,18 +2235,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							snapshot.audio.innervateCue = false
 						end
 					elseif spellId == spells.manaTideTotem.id then
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							snapshot.manaTideTotem.isActive = true
-							snapshot.manaTideTotem.duration = spells.manaTideTotem.duration
-							snapshot.manaTideTotem.endTime = spells.manaTideTotem.duration + currentTime
-							snapshot.audio.manaTideTotemCue = false
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							snapshot.manaTideTotem.isActive = false
-							snapshot.manaTideTotem.spellId = nil
-							snapshot.manaTideTotem.duration = 0
-							snapshot.manaTideTotem.endTime = nil
-							snapshot.audio.manaTideTotemCue = false
-						end
+						---@type TRB.Classes.Healer.ManaTideTotem
+						local manaTideTotem = TRB.Data.snapshot.manaTideTotem
+						manaTideTotem:Initialize(type)
 					elseif spellId == spells.moltenRadiance.id then
 						---@type TRB.Classes.Healer.MoltenRadiance
 						local moltenRadiance = TRB.Data.snapshot.moltenRadiance
@@ -2785,11 +2760,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					valid = true
 				end
 			elseif var == "$mttMana" then
-				if snapshot.manaTideTotem.mana > 0 then
+				---@type TRB.Classes.Healer.ManaTideTotem
+				local manaTideTotem = TRB.Data.snapshot.manaTideTotem
+				if manaTideTotem.mana > 0 then
 					valid = true
 				end
 			elseif var == "$mttTime" then
-				if snapshot.manaTideTotem.isActive then
+				---@type TRB.Classes.Healer.ManaTideTotem
+				local manaTideTotem = TRB.Data.snapshot.manaTideTotem
+				if manaTideTotem.buff.isActive then
 					valid = true
 				end
 			elseif var == "$mtTime" or var == "$manaTeaTime" then
