@@ -65,6 +65,82 @@ end
 
 
 --[[
+    ***************************
+    ***** Mana Tide Totem *****
+    ***************************
+    ]]
+
+---@class TRB.Classes.Healer.ManaTideTotem : TRB.Classes.Snapshot
+---@field public mana number
+TRB.Classes.Healer.ManaTideTotem = setmetatable({}, {__index = TRB.Classes.Snapshot})
+TRB.Classes.Healer.ManaTideTotem.__index = TRB.Classes.Healer.ManaTideTotem
+
+---Creates a new ManaTideTotem object
+---@param spell table # Spell we are snapshotting, in this case ManaTideTotem
+---@return TRB.Classes.Healer.ManaTideTotem
+function TRB.Classes.Healer.ManaTideTotem:New(spell)
+    ---@type TRB.Classes.BuffCustomProperty[]
+    local definitions = {
+        {
+            name = "manaPerTick",
+            dataType = "number",
+            index = 16
+        }
+    }
+    ---@type TRB.Classes.Snapshot
+    local snapshot = TRB.Classes.Snapshot
+    local self = setmetatable(snapshot:New(spell), TRB.Classes.Healer.ManaTideTotem)
+    self.buff:SetCustomProperties(definitions)
+    self:Reset()
+    self.attributes = {}
+    return self
+end
+
+---Initializes the spell, then the buff, information for the snapshot
+---@param eventType trbAuraEventType? # Event type sourced from the combat log event. If not provided, will do a generic buff update
+---@param duration? number # Expected duration of the totem
+function TRB.Classes.Healer.ManaTideTotem:Initialize(eventType, duration)
+    if (eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REFRESH") then
+        if duration ~= nil then
+            self.buff.duration = duration
+        else
+            self.buff.duration = self.spell.duration
+        end
+
+        local currentTime = GetTime()
+        self.buff.endTime = currentTime + self.buff.duration
+        self.buff.isActive = true
+    else
+        self.buff:Initialize(eventType)
+    end
+end
+
+---Resets ManaTideTotem's values to default
+function TRB.Classes.Healer.ManaTideTotem:Reset()
+    ---@type TRB.Classes.Snapshot
+    local snapshot = TRB.Classes.Snapshot
+    snapshot.Reset(self)
+    self.mana = 0
+end
+
+---Updates ManaTideTotem's values
+function TRB.Classes.Healer.ManaTideTotem:Update()
+    if self.buff.isActive then
+        local manaRegen = 0
+        if TRB.Data.snapshotData ~= nil then
+            manaRegen = TRB.Data.snapshotData.attributes.manaRegen
+        else
+            manaRegen = TRB.Data.snapshot.manaRegen
+        end
+
+        self.mana = self.buff:GetRemainingTime() * manaRegen / 2
+    else
+        self.mana = 0
+    end
+end
+
+
+--[[
     **************************
     ***** Symbol of Hope *****
     **************************

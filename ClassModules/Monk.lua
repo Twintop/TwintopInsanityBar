@@ -2810,19 +2810,19 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				end
 			elseif var == "$channeledMana" then
 				---@type TRB.Classes.Healer.ChanneledManaPotion
-				local channeledManaPotion = TRB.Data.snapshot.potionOfFrozenFocusRank1
+				local channeledManaPotion = TRB.Data.snapshot.channeledManaPotion
 				if channeledManaPotion.mana > 0 then
 					valid = true
 				end
 			elseif var == "$potionOfFrozenFocusTicks" then
 				---@type TRB.Classes.Healer.ChanneledManaPotion
-				local channeledManaPotion = TRB.Data.snapshot.potionOfFrozenFocusRank1
+				local channeledManaPotion = TRB.Data.snapshot.channeledManaPotion
 				if channeledManaPotion.ticks > 0 then
 					valid = true
 				end
 			elseif var == "$potionOfFrozenFocusTime" then
 				---@type TRB.Classes.Healer.ChanneledManaPotion
-				local channeledManaPotion = TRB.Data.snapshot.potionOfFrozenFocusRank1
+				local channeledManaPotion = TRB.Data.snapshot.channeledManaPotion
 				if channeledManaPotion.buff.remaining > 0 then
 					valid = true
 				end
