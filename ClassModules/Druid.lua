@@ -1043,8 +1043,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			innervate = { -- Technically a talent but we can get it from outside/don't do any talent checks with it
 				id = 29166,
 				name = "",
-				icon = "",
-				duration = 10
+				icon = ""
 			},
 			symbolOfHope = {
 				id = 64901,

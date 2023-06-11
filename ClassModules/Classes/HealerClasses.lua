@@ -3,6 +3,13 @@ local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.Healer = TRB.Classes.Healer or {}
 
+
+--[[
+    *********************
+    ***** Innervate *****
+    *********************
+    ]]
+
 ---@class TRB.Classes.Healer.Innervate : TRB.Classes.Snapshot
 ---@field public mana number
 ---@field public modifier number
@@ -57,7 +64,11 @@ function TRB.Classes.Healer.Innervate:Update()
 end
 
 
-
+--[[
+    **************************
+    ***** Symbol of Hope *****
+    **************************
+    ]]
 
 ---@class TRB.Classes.Healer.SymbolOfHope : TRB.Classes.Snapshot
 ---@field public buff TRB.Classes.Healer.SymbolOfHopeBuff
@@ -213,6 +224,71 @@ function TRB.Classes.Healer.SymbolOfHopeBuff:Refresh(eventType, simple, unit)
 end
 
 
+--[[
+    *************************************
+    ***** Potion of Chilled Clarity *****
+    *************************************
+    ]]
+
+---@class TRB.Classes.Healer.PotionOfChilledClarity : TRB.Classes.Snapshot
+---@field public mana number
+---@field public modifier number
+TRB.Classes.Healer.PotionOfChilledClarity = setmetatable({}, {__index = TRB.Classes.Snapshot})
+TRB.Classes.Healer.PotionOfChilledClarity.__index = TRB.Classes.Healer.PotionOfChilledClarity
+
+---Creates a new PotionOfChilledClarity object
+---@param spell table # Spell we are snapshotting, in this case PotionOfChilledClarity
+---@return TRB.Classes.Healer.PotionOfChilledClarity
+function TRB.Classes.Healer.PotionOfChilledClarity:New(spell)
+    ---@type TRB.Classes.BuffCustomProperty[]
+    local definitions = {
+        {
+            name = "modifier",
+            dataType = "number",
+            index = 17
+        }
+    }
+    ---@type TRB.Classes.Snapshot
+    local snapshot = TRB.Classes.Snapshot
+    local self = setmetatable(snapshot:New(spell), TRB.Classes.Healer.PotionOfChilledClarity)
+    self.buff:SetCustomProperties(definitions)
+    self:Reset()
+    self.attributes = {}
+    return self
+end
+
+---Resets PotionOfChilledClarity's values to default
+function TRB.Classes.Healer.PotionOfChilledClarity:Reset()
+    ---@type TRB.Classes.Snapshot
+    local snapshot = TRB.Classes.Snapshot
+    snapshot.Reset(self)
+    self.mana = 0
+    self.modifier = 1
+end
+
+---Updates PotionOfChilledClarity's values
+function TRB.Classes.Healer.PotionOfChilledClarity:Update()
+    if self.buff.isActive then
+        local manaRegen = 0
+
+        if TRB.Data.snapshotData ~= nil then
+            manaRegen = TRB.Data.snapshotData.attributes.manaRegen
+        else
+            manaRegen = TRB.Data.snapshot.manaRegen
+        end
+        self.modifier = (100 + (self.buff.customProperties["modifier"] or 100)) / 100
+        self.mana = self.buff:GetRemainingTime() * manaRegen * (1 - self.modifier)
+    else
+        self.mana = 0
+    end
+end
+
+
+--[[
+    ***************************
+    ***** Molten Radiance *****
+    ***************************
+    ]]
 
 ---@class TRB.Classes.Healer.MoltenRadiance : TRB.Classes.Snapshot
 ---@field public mana number

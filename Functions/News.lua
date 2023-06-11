@@ -8,11 +8,11 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
-# 10.1.0.13-release (2023-06-10)
+# 10.1.0.13-release (2023-06-11)
 ## General
 ### Healers
 
-- [#323 - REFACTOR](#323) Move Innervate, Molten Radiance, and Symbol of Hope implementations to the new shared class system and apply them to all healing specializations for consistancy.
+- [#323 - REFACTOR](#323) Move Innervate, Molten Radiance, Potion of Chilled Clarity, and Symbol of Hope implementations to the new shared class system and apply them to all healing specializations for consistancy.
 - [#323 - REFACTOR](#323) Update Symbol of Hope detection and calculations to always use the casting Priest's buff data.
 
 ## Shaman
