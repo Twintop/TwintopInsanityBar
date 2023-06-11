@@ -1220,15 +1220,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			onCooldown = false,
 			startTime = nil,
 			duration = 0
-		}		
-		specCache.restoration.snapshot.potionOfChilledClarity = {
-			spellId = nil,
-			duration = 0,
-			endTime = nil,
-			remainingTime = 0,
-			mana = 0,
-			modifier = 1
 		}
+		---@type TRB.Classes.Healer.PotionOfChilledClarity
+		specCache.restoration.snapshot.potionOfChilledClarity = TRB.Classes.Healer.PotionOfChilledClarity:New(specCache.restoration.spells.potionOfChilledClarity)
 		specCache.restoration.snapshot.conjuredChillglobe = {
 			onCooldown = false,
 			startTime = nil,
@@ -1927,10 +1921,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function GetManaTideTotemRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.manaTideTotem)
 	end
-
-	local function GetMoltenRadianceRemainingTime()
-		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.moltenRadiance)
-	end
 	
 	local function GetFuryOfEluneRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.furyOfElune)
@@ -1942,10 +1932,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function GetEfflorescenceRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.efflorescence)
-	end
-
-	local function GetPotionOfChilledClarityRemainingTime()
-		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.potionOfChilledClarity)
 	end
 
 	local function GetCurrentSnapshot(bonuses)
@@ -2939,12 +2925,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local _potionCooldownSeconds = _potionCooldown % 60
 		--$potionCooldown
 		local potionCooldown = string.format("%d:%0.2d", _potionCooldownMinutes, _potionCooldownSeconds)
-
+		
+		---@type TRB.Classes.Healer.PotionOfChilledClarity
+		---@diagnostic disable-next-line: assign-type-mismatch
+		local potionOfChilledClarity = snapshot.potionOfChilledClarity
 		--$potionOfChilledClarityMana
-		local _potionOfChilledClarityMana = snapshot.potionOfChilledClarity.mana
+		local _potionOfChilledClarityMana = potionOfChilledClarity.mana
 		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
 		--$potionOfChilledClarityTime
-		local _potionOfChilledClarityTime = GetPotionOfChilledClarityRemainingTime()
+		local _potionOfChilledClarityTime = potionOfChilledClarity.buff:GetRemainingTime(currentTime)
 		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
 
 		--$channeledMana
@@ -3190,7 +3179,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function UpdateCastingResourceFinal_Restoration()
 		-- Do nothing for now
-		TRB.Data.snapshot.casting.resourceFinal = TRB.Data.snapshot.casting.resourceRaw * TRB.Data.snapshot.innervate.modifier * TRB.Data.snapshot.potionOfChilledClarity.modifier
+		local spells = TRB.Data.spells
+		---@type TRB.Classes.Healer.Innervate
+		---@diagnostic disable-next-line: assign-type-mismatch
+		local innervate = TRB.Data.snapshot.innervate
+
+		---@type TRB.Classes.Healer.PotionOfChilledClarity
+		---@diagnostic disable-next-line: assign-type-mismatch
+		local potionOfChilledClarity = TRB.Data.snapshot.potionOfChilledClarity
+		-- Do nothing for now
+		TRB.Data.snapshot.casting.resourceFinal = TRB.Data.snapshot.casting.resourceRaw * innervate.modifier * potionOfChilledClarity.modifier
 	end
 
 	local function CastingSpell()
@@ -3370,21 +3368,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.Data.snapshot.channeledManaPotion.mana = TRB.Data.snapshot.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells[TRB.Data.snapshot.channeledManaPotion.spellKey].mana, true) + ((TRB.Data.snapshot.channeledManaPotion.ticksRemaining - 1 + nextTickRemaining) * TRB.Data.snapshot.manaRegen)
 			end
 		end
-	end	
-	
-	local function UpdatePotionOfChilledClarity()
-		local currentTime = GetTime()
-
-		if TRB.Data.snapshot.potionOfChilledClarity.endTime ~= nil and currentTime > TRB.Data.snapshot.potionOfChilledClarity.endTime then
-			TRB.Data.snapshot.potionOfChilledClarity.endTime = nil
-			TRB.Data.snapshot.potionOfChilledClarity.duration = 0
-			TRB.Data.snapshot.potionOfChilledClarity.remainingTime = 0
-			TRB.Data.snapshot.potionOfChilledClarity.mana = 0
-			TRB.Data.snapshot.audio.potionOfChilledClarityCue = false
-		else
-			TRB.Data.snapshot.potionOfChilledClarity.remainingTime = GetPotionOfChilledClarityRemainingTime()
-			TRB.Data.snapshot.potionOfChilledClarity.mana = TRB.Data.snapshot.potionOfChilledClarity.remainingTime * TRB.Data.snapshot.manaRegen
-		end
 	end
 
 	local function UpdateManaTideTotem(forceCleanup)
@@ -3503,7 +3486,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function UpdateSnapshot_Restoration()
 		UpdateSnapshot()
 		UpdateChanneledManaPotion()
-		UpdatePotionOfChilledClarity()
 		UpdateManaTideTotem()
 
 		local spells = TRB.Data.spells
@@ -3524,6 +3506,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		---@type TRB.Classes.Healer.MoltenRadiance
 		local moltenRadiance = TRB.Data.snapshot.moltenRadiance
 		moltenRadiance:Update()
+		
+		---@type TRB.Classes.Healer.PotionOfChilledClarity
+		local potionOfChilledClarity = TRB.Data.snapshot.potionOfChilledClarity
+		potionOfChilledClarity:Update()
 
 		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
 		snapshot.potion.startTime, snapshot.potion.duration, _ = GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
@@ -4194,7 +4180,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					---@type TRB.Classes.Healer.MoltenRadiance
 					local moltenRadiance = TRB.Data.snapshot.moltenRadiance
 		
-					if snapshot.potionOfChilledClarity.isActive then
+					---@type TRB.Classes.Healer.PotionOfChilledClarity
+					local potionOfChilledClarity = TRB.Data.snapshot.potionOfChilledClarity
+		
+					if potionOfChilledClarity.isActive then
 						if specSettings.colors.bar.potionOfChilledClarityBorderChange then
 							barBorderColor = specSettings.colors.bar.potionOfChilledClarity
 						end
@@ -4241,8 +4230,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							TRB.Frames.passiveFrame.thresholds[1]:Hide()
 						end
 
-						if innervate.mana > 0 or snapshot.potionOfChilledClarity.mana > 0 then
-							passiveValue = passiveValue + math.max(innervate.mana, snapshot.potionOfChilledClarity.mana)
+						if innervate.mana > 0 or potionOfChilledClarity.mana > 0 then
+							passiveValue = passiveValue + math.max(innervate.mana, potionOfChilledClarity.mana)
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -4654,12 +4643,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							UpdateChanneledManaPotion(true)
 						end
 					elseif spellId == spells.potionOfChilledClarity.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.potionOfChilledClarity)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-							snapshot.potionOfChilledClarity.modifier = 0
-						elseif type == "SPELL_AURA_REMOVED" then
-							snapshot.potionOfChilledClarity.modifier = 1
-						end
+						---@type TRB.Classes.Healer.PotionOfChilledClarity
+						local potionOfChilledClarity = snapshot.potionOfChilledClarity
+						potionOfChilledClarity.buff:Initialize(type)
 					elseif spellId == spells.efflorescence.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							snapshot.efflorescence.endTime = currentTime + spells.efflorescence.duration
@@ -5614,11 +5600,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$potionOfChilledClarityMana" then
-				if snapshot.potionOfChilledClarity.mana > 0 then
+				---@type TRB.Classes.Healer.PotionOfChilledClarity
+				local potionOfChilledClarity = snapshot.potionOfChilledClarity
+				if potionOfChilledClarity.mana > 0 then
 					valid = true
 				end
 			elseif var == "$potionOfChilledClarityTime" then
-				if snapshot.potionOfChilledClarity.remainingTime > 0 then
+				---@type TRB.Classes.Healer.PotionOfChilledClarity
+				local potionOfChilledClarity = snapshot.potionOfChilledClarity
+				if potionOfChilledClarity.buff.remaining > 0 then
 					valid = true
 				end
 			elseif var == "$mttMana" then

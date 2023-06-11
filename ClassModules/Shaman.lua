@@ -723,14 +723,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			startTime = nil,
 			duration = 0
 		}
-		specCache.restoration.snapshot.potionOfChilledClarity = {
-			spellId = nil,
-			duration = 0,
-			endTime = nil,
-			remainingTime = 0,
-			mana = 0,
-			modifier = 1
-		}
+		---@type TRB.Classes.Healer.PotionOfChilledClarity
+		specCache.restoration.snapshot.potionOfChilledClarity = TRB.Classes.Healer.PotionOfChilledClarity:New(specCache.restoration.spells.potionOfChilledClarity)
 		specCache.restoration.snapshot.conjuredChillglobe = {
 			onCooldown = false,
 			startTime = nil,
@@ -1173,16 +1167,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.channeledManaPotion)
 	end
 
-	local function GetPotionOfChilledClarityRemainingTime()
-		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.potionOfChilledClarity)
-	end
-
 	local function GetManaTideTotemRemainingTime()
 		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.manaTideTotem)
-	end
-
-	local function GetMoltenRadianceRemainingTime()
-		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.moltenRadiance)
 	end
 
 	local function RefreshLookupData_Elemental()
@@ -1547,12 +1533,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local _potionCooldownSeconds = _potionCooldown % 60
 		--$potionCooldown
 		local potionCooldown = string.format("%d:%0.2d", _potionCooldownMinutes, _potionCooldownSeconds)
-
+		
+		---@type TRB.Classes.Healer.PotionOfChilledClarity
+		---@diagnostic disable-next-line: assign-type-mismatch
+		local potionOfChilledClarity = snapshot.potionOfChilledClarity
 		--$potionOfChilledClarityMana
-		local _potionOfChilledClarityMana = snapshot.potionOfChilledClarity.mana
+		local _potionOfChilledClarityMana = potionOfChilledClarity.mana
 		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
 		--$potionOfChilledClarityTime
-		local _potionOfChilledClarityTime = GetPotionOfChilledClarityRemainingTime()
+		local _potionOfChilledClarityTime = potionOfChilledClarity.buff:GetRemainingTime(currentTime)
 		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
 
 		--$channeledMana
@@ -1757,9 +1746,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 
 	local function UpdateCastingResourceFinal_Restoration()
-		local snapshot = TRB.Data.snapshot
 		-- Do nothing for now
-		snapshot.casting.resourceFinal = snapshot.casting.resourceRaw * snapshot.innervate.modifier * snapshot.potionOfChilledClarity.modifier
+		local spells = TRB.Data.spells
+		---@type TRB.Classes.Healer.Innervate
+		---@diagnostic disable-next-line: assign-type-mismatch
+		local innervate = TRB.Data.snapshot.innervate
+
+		---@type TRB.Classes.Healer.PotionOfChilledClarity
+		---@diagnostic disable-next-line: assign-type-mismatch
+		local potionOfChilledClarity = TRB.Data.snapshot.potionOfChilledClarity
+		-- Do nothing for now
+		TRB.Data.snapshot.casting.resourceFinal = TRB.Data.snapshot.casting.resourceRaw * innervate.modifier * potionOfChilledClarity.modifier
 	end
 
 	local function CastingSpell()
@@ -1906,22 +1903,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			end
 		end
 	end
-	
-	local function UpdatePotionOfChilledClarity()
-		local currentTime = GetTime()
-		local snapshot = TRB.Data.snapshot
-
-		if snapshot.potionOfChilledClarity.endTime ~= nil and currentTime > snapshot.potionOfChilledClarity.endTime then
-			snapshot.potionOfChilledClarity.endTime = nil
-			snapshot.potionOfChilledClarity.duration = 0
-			snapshot.potionOfChilledClarity.remainingTime = 0
-			snapshot.potionOfChilledClarity.mana = 0
-			snapshot.audio.potionOfChilledClarityCue = false
-		else
-			snapshot.potionOfChilledClarity.remainingTime = GetPotionOfChilledClarityRemainingTime()
-			snapshot.potionOfChilledClarity.mana = snapshot.potionOfChilledClarity.remainingTime * snapshot.manaRegen
-		end
-	end
 
 	local function UpdateManaTideTotem(forceCleanup)
 		local currentTime = GetTime()
@@ -1982,7 +1963,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function UpdateSnapshot_Restoration()
 		UpdateSnapshot()
 		UpdateChanneledManaPotion()
-		UpdatePotionOfChilledClarity()
 		UpdateManaTideTotem()
 		
 		local spells = TRB.Data.spells
@@ -2001,6 +1981,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		---@type TRB.Classes.Healer.MoltenRadiance
 		local moltenRadiance = TRB.Data.snapshot.moltenRadiance
 		moltenRadiance:Update()
+		
+		---@type TRB.Classes.Healer.PotionOfChilledClarity
+		local potionOfChilledClarity = TRB.Data.snapshot.potionOfChilledClarity
+		potionOfChilledClarity:Update()
 
 		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
 		snapshot.potion.startTime, snapshot.potion.duration, _ = GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
@@ -2303,8 +2287,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 					---@type TRB.Classes.Healer.MoltenRadiance
 					local moltenRadiance = TRB.Data.snapshot.moltenRadiance
+		
+					---@type TRB.Classes.Healer.PotionOfChilledClarity
+					local potionOfChilledClarity = TRB.Data.snapshot.potionOfChilledClarity
 
-					if snapshot.potionOfChilledClarity.isActive then
+					if potionOfChilledClarity.isActive then
 						if specSettings.colors.bar.potionOfChilledClarityBorderChange then
 							barBorderColor = specSettings.colors.bar.potionOfChilledClarity
 						end
@@ -2351,8 +2338,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							TRB.Frames.passiveFrame.thresholds[1]:Hide()
 						end
 
-						if innervate.mana > 0 or snapshot.potionOfChilledClarity.mana > 0 then
-							passiveValue = passiveValue + math.max(innervate.mana, snapshot.potionOfChilledClarity.mana)
+						if innervate.mana > 0 or potionOfChilledClarity.mana > 0 then
+							passiveValue = passiveValue + math.max(innervate.mana, potionOfChilledClarity.mana)
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -2625,14 +2612,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Frozen Focus channel
 							-- Let UpdateChanneledManaPotion() clean this up
 							UpdateChanneledManaPotion(true)
-						end			
-					elseif spellId == spells.potionOfChilledClarity.id then
-						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.potionOfChilledClarity)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-							snapshot.potionOfChilledClarity.modifier = 0
-						elseif type == "SPELL_AURA_REMOVED" then
-							snapshot.potionOfChilledClarity.modifier = 1
 						end
+					elseif spellId == spells.potionOfChilledClarity.id then
+						---@type TRB.Classes.Healer.PotionOfChilledClarity
+						local potionOfChilledClarity = snapshot.potionOfChilledClarity
+						potionOfChilledClarity.buff:Initialize(type)
 					end
 				end
 
@@ -3215,11 +3199,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					valid = true
 				end
 			elseif var == "$potionOfChilledClarityMana" then
-				if snapshot.potionOfChilledClarity.mana > 0 then
+				---@type TRB.Classes.Healer.PotionOfChilledClarity
+				local potionOfChilledClarity = snapshot.potionOfChilledClarity
+				if potionOfChilledClarity.mana > 0 then
 					valid = true
 				end
 			elseif var == "$potionOfChilledClarityTime" then
-				if snapshot.potionOfChilledClarity.remainingTime > 0 then
+				---@type TRB.Classes.Healer.PotionOfChilledClarity
+				local potionOfChilledClarity = snapshot.potionOfChilledClarity
+				if potionOfChilledClarity.buff.remaining > 0 then
 					valid = true
 				end
 			elseif var == "$mttMana" then
