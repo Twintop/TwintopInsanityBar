@@ -270,15 +270,78 @@ end
 function TRB.Classes.Healer.PotionOfChilledClarity:Update()
     if self.buff.isActive then
         local manaRegen = 0
-
         if TRB.Data.snapshotData ~= nil then
             manaRegen = TRB.Data.snapshotData.attributes.manaRegen
         else
             manaRegen = TRB.Data.snapshot.manaRegen
         end
+
         self.modifier = (100 + (self.buff.customProperties["modifier"] or 100)) / 100
         self.mana = self.buff:GetRemainingTime() * manaRegen * (1 - self.modifier)
     else
+        self.mana = 0
+    end
+end
+
+
+--[[
+    *********************************
+    ***** Channeled Mana Potion *****
+    *********************************
+    ]]
+
+---@class TRB.Classes.Healer.ChanneledManaPotion : TRB.Classes.Snapshot
+---@field public mana number
+---@field public ticks integer
+---@field public CalculateManaGainFunction function
+TRB.Classes.Healer.ChanneledManaPotion = setmetatable({}, {__index = TRB.Classes.Snapshot})
+TRB.Classes.Healer.ChanneledManaPotion.__index = TRB.Classes.Healer.ChanneledManaPotion
+
+---Creates a new ChanneledManaPotion object
+---@param spell table # Spell we are snapshotting, in this case ChanneledManaPotion
+---@return TRB.Classes.Healer.ChanneledManaPotion
+function TRB.Classes.Healer.ChanneledManaPotion:New(spell, calculateManaGainFunction)
+    ---@type TRB.Classes.BuffCustomProperty[]
+    local definitions = {
+        {
+            name = "manaPerTick",
+            dataType = "number",
+            index = 16
+        }
+    }
+    ---@type TRB.Classes.Snapshot
+    local snapshot = TRB.Classes.Snapshot
+    local self = setmetatable(snapshot:New(spell), TRB.Classes.Healer.ChanneledManaPotion)
+    self.CalculateManaGainFunction = calculateManaGainFunction
+    self.buff:SetCustomProperties(definitions)
+    self:Reset()
+    self.attributes = {}
+    return self
+end
+
+---Resets ChanneledManaPotion's values to default
+function TRB.Classes.Healer.ChanneledManaPotion:Reset()
+    ---@type TRB.Classes.Snapshot
+    local snapshot = TRB.Classes.Snapshot
+    snapshot.Reset(self)
+    self.mana = 0
+    self.ticks = 0
+end
+
+---Updates ChanneledManaPotion's values
+function TRB.Classes.Healer.ChanneledManaPotion:Update()
+    if self.buff.isActive then
+        local manaRegen = 0
+        if TRB.Data.snapshotData ~= nil then
+            manaRegen = TRB.Data.snapshotData.attributes.manaRegen
+        else
+            manaRegen = TRB.Data.snapshot.manaRegen
+        end
+
+        self.ticks = TRB.Functions.Number:RoundTo(self.buff:GetRemainingTime(), 0, "ceil", true)
+        self.mana = self.ticks * self.CalculateManaGainFunction(self.buff.customProperties["manaPerTick"] or 0, true) + (self.buff:GetRemainingTime() * manaRegen)
+    else
+        self.ticks = 0
         self.mana = 0
     end
 end
