@@ -31,7 +31,6 @@ end
 
 ---@class TRB.Classes.Snapshot
 ---@field public spell? table
----@field public isActive boolean
 ---@field public buff TRB.Classes.SnapshotBuff
 ---@field public cooldown TRB.Classes.SnapshotCooldown
 ---@field public stacks integer
