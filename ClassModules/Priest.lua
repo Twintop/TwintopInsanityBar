@@ -4463,12 +4463,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			if destGUID == TRB.Data.character.guid then
 				if (specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (specId == 2 and TRB.Data.barConstructedForSpec == "holy") then -- Let's check raid effect mana stuff
-					if spellId == spells.symbolOfHope.tickId or spellId == spells.symbolOfHope.id then
+					if settings.passiveGeneration.symbolOfHope and (spellId == spells.symbolOfHope.tickId or spellId == spells.symbolOfHope.id) then
 						---@type TRB.Classes.Healer.SymbolOfHope
 						local symbolOfHope = TRB.Data.snapshotData.snapshots[spells.symbolOfHope.id]
 						local castByToken = UnitTokenFromGUID(sourceGUID)
 						symbolOfHope.buff:Initialize(type, nil, castByToken)
-					elseif spellId == spells.innervate.id then
+					elseif settings.passiveGeneration.innervate and spellId == spells.innervate.id then
 						---@type TRB.Classes.Healer.Innervate
 						local snapshot = TRB.Data.snapshotData.snapshots[spells.innervate.id]
 						snapshot.buff:Initialize(type)
@@ -4477,14 +4477,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							snapshotData.audio.innervateCue = false
 						end
-					elseif spellId == spells.potionOfChilledClarity.id then		
-						---@type TRB.Classes.Healer.PotionOfChilledClarity
-						local potionOfChilledClarity = TRB.Data.snapshotData.snapshots[spells.potionOfChilledClarity.id]
-						potionOfChilledClarity.buff:Initialize(type)
-					elseif spellId == spells.manaTideTotem.id then
+					elseif settings.passiveGeneration.manaTideTotem and spellId == spells.manaTideTotem.id then
 						---@type TRB.Classes.Healer.ManaTideTotem
 						local manaTideTotem = TRB.Data.snapshot.manaTideTotem
 						manaTideTotem:Initialize(type)
+					elseif spellId == spells.potionOfChilledClarity.id then
+						---@type TRB.Classes.Healer.PotionOfChilledClarity
+						local potionOfChilledClarity = TRB.Data.snapshotData.snapshots[spells.potionOfChilledClarity.id]
+						potionOfChilledClarity.buff:Initialize(type)
 					elseif spellId == spells.moltenRadiance.id then
 						---@type TRB.Classes.Healer.MoltenRadiance
 						local moltenRadiance = TRB.Data.snapshotData.snapshots[spells.moltenRadiance.id]

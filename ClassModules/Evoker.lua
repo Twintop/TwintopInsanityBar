@@ -1429,14 +1429,21 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 			
+			local settings
+			if specId == 1 then
+				settings = TRB.Data.settings.evoker.devastation
+			elseif specId == 2 then
+				settings = TRB.Data.settings.evoker.preservation
+			end
+
 			if destGUID == TRB.Data.character.guid then
 				if specId == 2 and TRB.Data.barConstructedForSpec == "preservation" then -- Let's check raid effect mana stuff
-					if spellId == spells.symbolOfHope.tickId or spellId == spells.symbolOfHope.id then
+					if settings.passiveGeneration.symbolOfHope and (spellId == spells.symbolOfHope.tickId or spellId == spells.symbolOfHope.id) then
 						---@type TRB.Classes.Healer.SymbolOfHope
 						local symbolOfHope = TRB.Data.snapshot.symbolOfHope
 						local castByToken = UnitTokenFromGUID(sourceGUID)
 						symbolOfHope.buff:Initialize(type, nil, castByToken)
-					elseif spellId == spells.innervate.id then
+					elseif settings.passiveGeneration.innervate and spellId == spells.innervate.id then
 						---@type TRB.Classes.Healer.Innervate
 						local innervate = snapshot.innervate
 						innervate.buff:Initialize(type)
@@ -1445,7 +1452,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							snapshot.audio.innervateCue = false
 						end
-					elseif spellId == spells.manaTideTotem.id then
+					elseif settings.passiveGeneration.manaTideTotem and spellId == spells.manaTideTotem.id then
 						---@type TRB.Classes.Healer.ManaTideTotem
 						local manaTideTotem = TRB.Data.snapshot.manaTideTotem
 						manaTideTotem:Initialize(type)

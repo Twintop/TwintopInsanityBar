@@ -1303,8 +1303,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.symbolOfHopeRegen = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_SymbolOfHopePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.symbolOfHopeRegen
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Track mana regen from another Priest's Symbol of Hope")
-		f.tooltip = "Show the regeneration of mana from another Priest's Symbol of Hope channel. This does not hide the mana regeneration from your own channeling of Symbol of Hope."
+		getglobal(f:GetName() .. 'Text'):SetText("Track mana regen from a Priest's Symbol of Hope")
+		f.tooltip = "Show the regeneration of mana from another Priest's Symbol of Hope channel."
 		f:SetChecked(spec.passiveGeneration.symbolOfHope)
 		f:SetScript("OnClick", function(self, ...)
 			spec.passiveGeneration.symbolOfHope = self:GetChecked()
@@ -2425,8 +2425,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.symbolOfHopeRegen = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_SymbolOfHopePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.symbolOfHopeRegen
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Track mana regen from another Priest's Symbol of Hope")
-		f.tooltip = "Show the regeneration of mana from another Priest's Symbol of Hope channel. This does not hide the mana regeneration from your own channeling of Symbol of Hope."
+		getglobal(f:GetName() .. 'Text'):SetText("Track mana regen from Symbol of Hope")
+		f.tooltip = "Show the regeneration of mana from Symbol of Hope channel. This will hide regen from both your own or another Priest's Symbol of Hope."
 		f:SetChecked(spec.passiveGeneration.symbolOfHope)
 		f:SetScript("OnClick", function(self, ...)
 			spec.passiveGeneration.symbolOfHope = self:GetChecked()

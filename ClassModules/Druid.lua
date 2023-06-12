@@ -4329,14 +4329,23 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
 
+			local settings
+			if specId == 1 then
+				settings = TRB.Data.settings.druid.balance
+			elseif specId == 2 then
+				settings = TRB.Data.settings.druid.feral
+			elseif specId == 4 then
+				settings = TRB.Data.settings.druid.restoration
+			end
+
 			if destGUID == TRB.Data.character.guid then
 				if specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then -- Let's check raid effect mana stuff
-					if spellId == spells.symbolOfHope.tickId or spellId == spells.symbolOfHope.id then
+					if settings.passiveGeneration.symbolOfHope and (spellId == spells.symbolOfHope.tickId or spellId == spells.symbolOfHope.id) then
 						---@type TRB.Classes.Healer.SymbolOfHope
 						local symbolOfHope = TRB.Data.snapshot.symbolOfHope
 						local castByToken = UnitTokenFromGUID(sourceGUID)
 						symbolOfHope.buff:Initialize(type, nil, castByToken)
-					elseif spellId == spells.innervate.id then
+					elseif settings.passiveGeneration.innervate and spellId == spells.innervate.id then
 						---@type TRB.Classes.Healer.Innervate
 						local innervate = snapshot.innervate
 						innervate.buff:Initialize(type)
@@ -4345,7 +4354,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							snapshot.audio.innervateCue = false
 						end
-					elseif spellId == spells.manaTideTotem.id then
+					elseif settings.passiveGeneration.manaTideTotem and spellId == spells.manaTideTotem.id then
 						---@type TRB.Classes.Healer.ManaTideTotem
 						local manaTideTotem = TRB.Data.snapshot.manaTideTotem
 						manaTideTotem:Initialize(type)
@@ -4540,9 +4549,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					elseif spellId == spells.apexPredatorsCraving.id then
 						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.apexPredatorsCraving)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-							if TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.enabled then
+							if settings.audio.apexPredatorsCraving.enabled then
 								---@diagnostic disable-next-line: redundant-parameter
-								PlaySoundFile(TRB.Data.settings.druid.feral.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
+								PlaySoundFile(settings.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
 					elseif spellId == spells.predatorRevealed.id then

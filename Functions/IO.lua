@@ -190,20 +190,24 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			if specId == 1 then -- Elemental
 			elseif specId == 2 then -- Enhancement
 			elseif specId == 3 then -- Restoration
+				configuration.passiveGeneration = settings.passiveGeneration
 			end
 		elseif classId == 10 then -- Monk
 			if specId == 2 then -- Mistweaver
+				configuration.passiveGeneration = settings.passiveGeneration
 			elseif specId == 3 then -- Windwalker
 			end
 		elseif classId == 11 then -- Druid
 			if specId == 1 then -- Balance
 			elseif specId == 2 then -- Feral
 			elseif specId == 4 then -- Restoration
+				configuration.passiveGeneration = settings.passiveGeneration
 			end
 		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
 		elseif classId == 13 then -- Evoker
 			if specId == 1 then -- Devastation
 			elseif specId == 2 then -- Preservation
+				configuration.passiveGeneration = settings.passiveGeneration
 			end
 		end
 	end
