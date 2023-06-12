@@ -59,6 +59,7 @@ function TRB.Classes.Healer.Innervate:Update()
         self.modifier = (100 + (self.buff.customProperties["modifier"] or 100)) / 100
         self.mana = self.buff:GetRemainingTime() * manaRegen * (1 - self.modifier)
     else
+        self.modifier = 1
         self.mana = 0
     end
 end
@@ -204,7 +205,7 @@ function TRB.Classes.Healer.SymbolOfHope:Update()
         else
             casting = TRB.Data.snapshot.casting
             manaRegen = TRB.Data.snapshot.manaRegen
-            resource = TRB.Data.snapshotData.attributes.resource
+            resource = TRB.Data.snapshot.resource
         end
 
         for x = 1, self.buff.ticks do
@@ -355,6 +356,7 @@ function TRB.Classes.Healer.PotionOfChilledClarity:Update()
         self.modifier = (100 + (self.buff.customProperties["modifier"] or 100)) / 100
         self.mana = self.buff:GetRemainingTime() * manaRegen * (1 - self.modifier)
     else
+        self.modifier = 1
         self.mana = 0
     end
 end

@@ -1056,23 +1056,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end
 	end
 
-	local function UpdateChanneledManaPotion(forceCleanup)
-		if TRB.Data.snapshot.channeledManaPotion.isActive or forceCleanup then
-			local currentTime = GetTime()
-			if forceCleanup or TRB.Data.snapshot.channeledManaPotion.endTime == nil or currentTime > TRB.Data.snapshot.channeledManaPotion.endTime then
-				TRB.Data.snapshot.channeledManaPotion.ticksRemaining = 0
-				TRB.Data.snapshot.channeledManaPotion.endTime = nil
-				TRB.Data.snapshot.channeledManaPotion.mana = 0
-				TRB.Data.snapshot.channeledManaPotion.isActive = false
-				TRB.Data.snapshot.channeledManaPotion.spellKey = nil
-			else
-				TRB.Data.snapshot.channeledManaPotion.ticksRemaining = math.ceil((TRB.Data.snapshot.channeledManaPotion.endTime - currentTime) / (TRB.Data.spells[TRB.Data.snapshot.channeledManaPotion.spellKey].duration / TRB.Data.spells[TRB.Data.snapshot.channeledManaPotion.spellKey].ticks))
-				local nextTickRemaining = TRB.Data.snapshot.channeledManaPotion.endTime - currentTime - math.floor((TRB.Data.snapshot.channeledManaPotion.endTime - currentTime) / (TRB.Data.spells[TRB.Data.snapshot.channeledManaPotion.spellKey].duration / TRB.Data.spells[TRB.Data.snapshot.channeledManaPotion.spellKey].ticks))
-				TRB.Data.snapshot.channeledManaPotion.mana = TRB.Data.snapshot.channeledManaPotion.ticksRemaining * CalculateManaGain(TRB.Data.spells[TRB.Data.snapshot.channeledManaPotion.spellKey].mana, true) + ((TRB.Data.snapshot.channeledManaPotion.ticksRemaining - 1 + nextTickRemaining) * TRB.Data.snapshot.manaRegen)
-			end
-		end
-	end
-
 	local function UpdateSnapshot()
 		TRB.Functions.Character:UpdateSnapshot()
 		local currentTime = GetTime()
@@ -1087,7 +1070,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 	local function UpdateSnapshot_Preservation()
 		UpdateSnapshot()
-		UpdateChanneledManaPotion()
 		
 		local spells = TRB.Data.spells
 		local snapshot = TRB.Data.snapshot
@@ -1109,6 +1091,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		---@type TRB.Classes.Healer.MoltenRadiance
 		local moltenRadiance = TRB.Data.snapshot.moltenRadiance
 		moltenRadiance:Update()
+					
+		---@type TRB.Classes.Healer.ChanneledManaPotion
+		local channeledManaPotion = TRB.Data.snapshot.channeledManaPotion
+		channeledManaPotion:Update()
 		
 		---@type TRB.Classes.Healer.PotionOfChilledClarity
 		local potionOfChilledClarity = TRB.Data.snapshot.potionOfChilledClarity

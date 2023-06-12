@@ -1712,25 +1712,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		snapshot.markOfTheCrane.maxEndTime = maxEndTime
 	end
 
-	local function UpdateChanneledManaPotion(forceCleanup)
-		local snapshot = TRB.Data.snapshot
-		if snapshot.channeledManaPotion.isActive or forceCleanup then
-			local spells = TRB.Data.spells
-			local currentTime = GetTime()
-			if forceCleanup or snapshot.channeledManaPotion.endTime == nil or currentTime > snapshot.channeledManaPotion.endTime then
-				snapshot.channeledManaPotion.ticksRemaining = 0
-				snapshot.channeledManaPotion.endTime = nil
-				snapshot.channeledManaPotion.mana = 0
-				snapshot.channeledManaPotion.isActive = false
-				snapshot.channeledManaPotion.spellKey = nil
-			else
-				snapshot.channeledManaPotion.ticksRemaining = math.ceil((snapshot.channeledManaPotion.endTime - currentTime) / (spells[snapshot.channeledManaPotion.spellKey].duration / spells[snapshot.channeledManaPotion.spellKey].ticks))
-				local nextTickRemaining = snapshot.channeledManaPotion.endTime - currentTime - math.floor((snapshot.channeledManaPotion.endTime - currentTime) / (spells[snapshot.channeledManaPotion.spellKey].duration / spells[snapshot.channeledManaPotion.spellKey].ticks))
-				snapshot.channeledManaPotion.mana = snapshot.channeledManaPotion.ticksRemaining * CalculateManaGain(spells[snapshot.channeledManaPotion.spellKey].mana, true) + ((snapshot.channeledManaPotion.ticksRemaining - 1 + nextTickRemaining) * snapshot.manaRegen)
-			end
-		end
-	end
-
 	local function UpdateSoulfangInfusion(forceCleanup)
 		local snapshot = TRB.Data.snapshot
 		if snapshot.soulfangInfusion.isActive or forceCleanup then
@@ -1755,7 +1736,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 	local function UpdateSnapshot_Mistweaver()
 		UpdateSnapshot()
-		UpdateChanneledManaPotion()
 		UpdateSoulfangInfusion()
 		
 		local spells = TRB.Data.spells
@@ -1777,6 +1757,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		---@type TRB.Classes.Healer.MoltenRadiance
 		local moltenRadiance = TRB.Data.snapshot.moltenRadiance
 		moltenRadiance:Update()
+					
+		---@type TRB.Classes.Healer.ChanneledManaPotion
+		local channeledManaPotion = TRB.Data.snapshot.channeledManaPotion
+		channeledManaPotion:Update()
 		
 		---@type TRB.Classes.Healer.PotionOfChilledClarity
 		local potionOfChilledClarity = TRB.Data.snapshot.potionOfChilledClarity
@@ -2423,6 +2407,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		else
 			TRB.Data.barConstructedForSpec = nil
 		end
+		
+		TwintopGlobalSnapshotData = TRB.Data.snapshot
+		TwintopGlobalSettings = TRB.Data.settings
 		TRB.Functions.Class:EventRegistration()
 	end
 
