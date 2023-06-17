@@ -4940,6 +4940,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							FillSpellData_Discipline()
 							FillSpellData_Holy()
 							FillSpellData_Shadow()
+							
 							TRB.Data.barConstructedForSpec = nil
 							SwitchSpec()
 							TRB.Options.Priest.ConstructOptionsPanel(specCache)

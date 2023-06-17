@@ -41,12 +41,13 @@ TRB.Classes.Snapshot.__index = TRB.Classes.Snapshot
 ---Creates a new Snapshot object
 ---@param spell table # Spell we are snapshotting
 ---@param attributes table? # Custom attributes to be tracked
+---@param alwaysSimpleBuff boolean? # Should the buff tracking always run in simple mode?
 ---@return TRB.Classes.Snapshot
-function TRB.Classes.Snapshot:New(spell, attributes)
+function TRB.Classes.Snapshot:New(spell, attributes, alwaysSimpleBuff)
     local self = {}
     setmetatable(self, TRB.Classes.Snapshot)
     self.spell = spell
-    self.buff = TRB.Classes.SnapshotBuff:New(self)
+    self.buff = TRB.Classes.SnapshotBuff:New(self, alwaysSimpleBuff)
     self.cooldown = TRB.Classes.SnapshotCooldown:New(self)
     self:Reset()
     self.attributes = attributes or {}
@@ -71,6 +72,7 @@ end
 ---@field public stacks integer
 ---@field public customPropertiesDefinitions TRB.Classes.BuffCustomProperty[]
 ---@field public customProperties table
+---@field public alwaysSimple boolean?
 ---@field protected parent TRB.Classes.Snapshot
 TRB.Classes.SnapshotBuff = {}
 TRB.Classes.SnapshotBuff.__index = TRB.Classes.SnapshotBuff
@@ -78,9 +80,16 @@ TRB.Classes.SnapshotBuff.__index = TRB.Classes.SnapshotBuff
 ---Creates a new Snapshot object
 ---@param parent TRB.Classes.Snapshot
 ---@return TRB.Classes.SnapshotBuff
-function TRB.Classes.SnapshotBuff:New(parent)
+function TRB.Classes.SnapshotBuff:New(parent, alwaysSimpleBuff)
     local self = {}
     setmetatable(self, TRB.Classes.SnapshotBuff)
+
+    if alwaysSimpleBuff ~= nil then
+        self.alwaysSimple = alwaysSimpleBuff
+    else
+        self.alwaysSimple = false
+    end
+
     self:Reset()
     self.parent = parent
     self.customPropertiesDefinitions = {}
@@ -125,8 +134,6 @@ function TRB.Classes.SnapshotBuff:GetRemainingTime(currentTime, useLeeway)
 
 	if endTime ~= nil and endTime > currentTime then
 		remainingTime = endTime - currentTime
-	elseif self.startTime ~= nil and self.duration ~= nil and self.duration > 0 then
-		remainingTime = self.duration - (currentTime - self.startTime)
 	end
 
 	if remainingTime <= 0 then
@@ -163,8 +170,9 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
     end
 
     ---Parse the buff
-    ---@param buff TRB.Classes.SnapshotBuff
-    ---@param ... unknown
+    ---@param buff TRB.Classes.SnapshotBuff # The snapshot buff we are updating
+    ---@param ... unknown # Tuple of data returned from FindBuffById
+    ---@return integer? # The SpellID of the buff, if found
     local function ParseBuffData(buff, ...)
         local arg
         arg = select(3, ...)
@@ -172,14 +180,16 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
             buff.stacks = math.floor(tonumber(arg))
         end
 
-        arg = select(5, ...)
-        if arg ~= nil and arg ~= "" and (type(arg) == "string" or type(arg) == "number") then
-            buff.duration = tonumber(arg)
-        end
+        if not buff.alwaysSimple then
+            arg = select(5, ...)
+            if arg ~= nil and arg ~= "" and (type(arg) == "string" or type(arg) == "number") then
+                buff.duration = tonumber(arg)
+            end
 
-        arg = select(6, ...)
-        if arg ~= nil and arg ~= "" and (type(arg) == "string" or type(arg) == "number") then
-            buff.endTime = tonumber(arg)
+            arg = select(6, ...)
+            if arg ~= nil and arg ~= "" and (type(arg) == "string" or type(arg) == "number") then
+                buff.endTime = tonumber(arg)
+            end
         end
 
         if buff.customPropertiesDefinitions ~= nil then
@@ -193,16 +203,24 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
                     elseif prop.dataType == "integer" then
                         buff.customProperties[prop.name] = math.floor(tonumber(arg))
                     end
+                else
+                    if prop.dataType == "number" then
+                        buff.customProperties[prop.name] = 0
+                    elseif prop.dataType == "integer" then
+                        buff.customProperties[prop.name] = 0
+                    end
                 end
             end
         end
+
+        return select(10, ...)
     end
 
     local id = self.parent.spell.buffId or self.parent.spell.spellId or self.parent.spell.id or nil
     if id ~= nil then
         if eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REFRESH" or eventType == "SPELL_AURA_APPLIED_DOSE" then -- Gained buff
             self.isActive = true
-            if not simple then
+            if not simple and not self.alwaysSimple then
                 ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
                 self:GetRemainingTime()
             end
@@ -212,17 +230,22 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
             end
         elseif eventType == "SPELL_AURA_REMOVED" or eventType == "SPELL_DISPEL" then -- Lost buff
             self.isActive = false
-            if not simple then
+            if not simple and not self.alwaysSimple then
                 self:Reset()
             end
         elseif eventType == nil or eventType == "" then
             local currentTime = currentTime or GetTime()
-            ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
-            if self.endTime ~= nil and self.endTime > currentTime then
-                self.isActive = true
-                self:GetRemainingTime()
+            local foundId = ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
+            if simple or self.alwaysSimple then
+                self.isActive = foundId == id
             else
-                self:Reset()
+                ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
+                if self.endTime ~= nil and self.endTime > currentTime then
+                    self.isActive = true
+                    self:GetRemainingTime()
+                else
+                    self:Reset()
+                end
             end
         end
     end
@@ -233,6 +256,7 @@ end
 ---@field public startTime number?
 ---@field public duration number
 ---@field public remaining number
+---@field public remainingTotal number
 ---@field public onCooldown boolean
 ---@field public charges integer
 ---@field public maxCharges integer
@@ -257,6 +281,7 @@ function TRB.Classes.SnapshotCooldown:Reset()
     self.startTime = nil
     self.duration = 0
     self.remaining = 0
+    self.remainingTotal = 0
     self.onCooldown = false
     self.charges = 0
     self.maxCharges = 0
@@ -264,9 +289,14 @@ end
 
 ---Computes the time remaining on the Snapshot
 ---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
+---@param totalTime boolean? # Return the total remaining time of all charges on the Snapshot
 ---@return number # Cooldown duration remaining on the Snapshot
-function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime)
-	currentTime = currentTime or GetTime()
+function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
+	if totalTime == nil then
+        totalTime = false
+    end
+    
+    currentTime = currentTime or GetTime()
 
     local remainingTime = 0
 
@@ -284,7 +314,18 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime)
 	end
 
     self.remaining = remainingTime
-	return remainingTime
+    
+    if self.onCooldown and self.maxCharges > 1 then
+        self.remainingTotal = self.remaining +  ((self.maxCharges - self.charges - 1) * self.duration)
+    else
+        self.remainingTotal = 0
+    end
+
+    if totalTime then
+        return self.remainingTotal
+    else
+        return self.remaining
+    end
 end
 
 ---Refreshes the cooldown information for the snapshot
