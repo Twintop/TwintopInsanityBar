@@ -4097,7 +4097,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 					local affectingCombat = UnitAffectingCombat("player")
 
-					if affectingCombat and TRB.Functions.Talent:IsTalentActive(spells.efflorescence) and snapshotData.snapshots[spells.efflorescence.id].buff.isActive then
+					if affectingCombat and TRB.Functions.Talent:IsTalentActive(spells.efflorescence) and not snapshotData.snapshots[spells.efflorescence.id].buff.isActive then
 						resourceBarColor = specSettings.colors.bar.noEfflorescence
 					elseif snapshotData.snapshots[spells.clearcasting.id].buff.isActive then
 						resourceBarColor = specSettings.colors.bar.clearcasting
