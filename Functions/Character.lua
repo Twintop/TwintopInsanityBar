@@ -56,13 +56,13 @@ function TRB.Functions.Character:UpdateSnapshot()
 	snapshot.masteryRating = GetCombatRating(26)
 	snapshot.versatilityRating = GetCombatRating(29)
 	
-	---@diagnostic disable-next-line: assign-type-mismatch
+	---@diagnostic disable-next-line: assign-type-mismatch, cast-local-type
 	snapshot.strength, _, _, _ = UnitStat("player", 1)
-	---@diagnostic disable-next-line: assign-type-mismatch
+	---@diagnostic disable-next-line: assign-type-mismatch, cast-local-type
 	snapshot.agility, _, _, _ = UnitStat("player", 2)
-	---@diagnostic disable-next-line: assign-type-mismatch
+	---@diagnostic disable-next-line: assign-type-mismatch, cast-local-type
 	snapshot.stamina, _, _, _ = UnitStat("player", 3)
-	---@diagnostic disable-next-line: assign-type-mismatch
+	---@diagnostic disable-next-line: assign-type-mismatch, cast-local-type
 	snapshot.intellect, _, _, _ = UnitStat("player", 4)
 end
 
