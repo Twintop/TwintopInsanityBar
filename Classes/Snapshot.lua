@@ -315,9 +315,11 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
 
     self.remaining = remainingTime
     
-    if self.onCooldown and self.maxCharges > 1 then
+    if self.maxCharges > 1 and self.charges < self.maxCharges then
         self.remainingTotal = self.remaining +  ((self.maxCharges - self.charges - 1) * self.duration)
-    else
+    elseif self.maxCharges > 1 and self.maxCharges == self.charges then
+        self.startTime = nil
+        self.duration = 0
         self.remainingTotal = 0
     end
 

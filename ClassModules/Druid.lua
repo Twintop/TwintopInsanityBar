@@ -635,7 +635,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				modifier = 1.15,
-				cooldown = 30,
+				hasCooldown = true,
 				isTalent = true
 			},
 			omenOfClarity = {
@@ -727,7 +727,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				isTalent = true,
 				hasCooldown = true,
 				thresholdUsable = false,
-				isClearcasting = true
+				isClearcasting = true,
+				hasCharges = true
 			},
 			carnivorousInstinct = {
 				id = 390902,
@@ -841,12 +842,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			untilNextTick = 0,
 			ticks = 0
 		})
-		specCache.feral.snapshotData.bleeds = {
-			rake = 100,
-			rip = 100,
-			thrash = 100,
-			moonfire = 100
-		}
 
 		-- Restoration
 		specCache.restoration.Global_TwintopResourceBar = {
@@ -1806,6 +1801,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		if bonuses.bloodtalons == true and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.bloodtalons) == true and ((snapshotData.snapshots[spells.bloodtalons.id].buff.stacks ~= nil and snapshotData.snapshots[spells.bloodtalons.id].buff.stacks > 0) or snapshotData.snapshots[spells.bloodtalons.id].buff:GetRemainingTime(nil, true) > 0) then
 			snapshotValue = snapshotValue * TRB.Data.spells.bloodtalons.modifier
 		end
+
 		if bonuses.stealth == true and (
 			snapshotData.snapshots[spells.shadowmeld.id].buff.isActive or
 			snapshotData.snapshots[spells.prowl.id].buff.isActive or
@@ -3115,7 +3111,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local remainingTime = buffSnapshot.buff.remaining
 
 		if remainingTime > 0 then
-			local untilNextTick = spell.tickRate - (currentTime - cpSnapshot.attributes.lastTick)
+			local untilNextTick = spell.tickRate - (currentTime - (cpSnapshot.attributes.lastTick or currentTime))
 			local totalCps = TRB.Functions.Number:RoundTo(remainingTime / spell.tickRate, 0, "ceil", true) or 0
 
 			if buffSnapshot.buff.endTime < currentTime then
@@ -3229,7 +3225,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff:Refresh()
 		end
 
-		snapshotData.snapshots[spells.tigersFury.id].cooldown:Refresh()
+		snapshotData.snapshots[spells.tigersFury.id].buff:Refresh()
+		snapshotData.snapshots[spells.tigersFury.id].cooldown:Refresh(true)
 		
 		if TRB.Functions.Talent:IsTalentActive(spells.brutalSlash) then
 			snapshotData.snapshots[spells.brutalSlash.id].cooldown:Refresh()
@@ -3677,8 +3674,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									thresholdColor = specSettings.colors.text.dots.down
 									frameLevel = TRB.Data.constants.frameLevels.thresholdBleedDownOrWorse
 								else
-									local snapshotValue = (snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid][spell.settingKey .. "Snapshot"] or 1) / TRB.Data.snapshotData.bleeds[spell.settingKey]
-									local bleedUp = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid][spell.settingKey]
+									local snapshotValue = (snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid].spells[spell.id].snapshot or 1) / TRB.Data.snapshotData.attributes.bleeds[spell.settingKey]
+									local bleedUp = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid].spells[spell.id].active
 									
 									if not bleedUp then
 										thresholdColor = specSettings.colors.text.dots.down
@@ -4343,9 +4340,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.tigersFury.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
+						if type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[spellId].cooldown:Refresh(true)
+						end
 					elseif spellId == spells.bloodtalons.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_REMOVED" then
+						if type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[spellId].cooldown:Refresh(true)
+						elseif type == "SPELL_AURA_REMOVED" then
 							snapshotData.snapshots[spellId].attributes.endTimeLeeway = currentTime + 0.1
 						end
 					elseif spellId == spells.apexPredatorsCraving.id then
@@ -4359,7 +4361,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					elseif spellId == spells.predatorRevealed.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" or type == "SPELL_AURA_REMOVED" then
-							if type == "SPELL_AURA_APPLIED" then
+							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 								snapshotData.snapshots[spells.predatorRevealed.id].attributes.lastTick = currentTime
 							end
 							UpdatePredatorRevealed()
@@ -4367,6 +4369,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					elseif spellId == spells.predatorRevealed.energizeId then
 						if type == "SPELL_ENERGIZE" then
 							snapshotData.snapshots[spells.predatorRevealed.id].attributes.lastTick = currentTime
+						end
+					elseif spellId == spells.brutalSlash.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[spellId].cooldown:Refresh(true)
 						end
 					end
 				elseif specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then
