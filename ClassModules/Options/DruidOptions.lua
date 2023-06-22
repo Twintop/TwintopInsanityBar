@@ -3191,7 +3191,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f = controls.checkBoxes.symbolOfHopeRegen
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Track mana regen from a Priest's Symbol of Hope")
-		f.tooltip = "Show the regeneration of mana from a Priest's Symbol of Hope channel. This does not hide the mana regeneration from your own channeling of Symbol of Hope."
+		f.tooltip = "Show the regeneration of mana from a Priest's Symbol of Hope channel."
 		f:SetChecked(spec.passiveGeneration.symbolOfHope)
 		f:SetScript("OnClick", function(self, ...)
 			spec.passiveGeneration.symbolOfHope = self:GetChecked()

@@ -248,7 +248,7 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 			resourceFrame.thresholds[1]:Show()
 				
 			if specSettings.thresholds.icons.showCooldown and potion.onCooldown then
-				resourceFrame.thresholds[1].icon.cooldown:SetCooldown(potion.startTime, potio.duration)
+				resourceFrame.thresholds[1].icon.cooldown:SetCooldown(potion.startTime, potion.duration)
 			else
 				resourceFrame.thresholds[1].icon.cooldown:SetCooldown(0, 0)
 			end

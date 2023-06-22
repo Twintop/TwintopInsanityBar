@@ -115,7 +115,6 @@ function TRB.Classes.TargetData:HandleCombatLogDebuff(spellId, type, guid)
     elseif type == "SPELL_AURA_REMOVED" then
         self.count[spellId] = self.count[spellId] - 1
         triggerUpdate = true
-    --elseif type == "SPELL_PERIODIC_DAMAGE" then
     end
     return triggerUpdate
 end

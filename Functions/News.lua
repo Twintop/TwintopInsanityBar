@@ -8,11 +8,8 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
-# 10.1.5.0-beta02 (2023-05-??)
+# 10.1.5.0-release (2023-07-11)
 
-----
-
-# 10.1.5.0-beta01 (2023-05-12)
 ## Evoker
 ### Augmentation
 - This feature is EXPERIMENTAL and is not enabled by default. To enable Augmentation Evoker support, go to the main "General" options menu for Twintop's Resource Bar and check "Augmentation Evoker support" under the "Experimental Features" section.<br/>
@@ -24,7 +21,7 @@ local content = [====[
 ## General
 ### Healers
 
-- [#323 - REFACTOR](#323) Move Innervate, Molten Radiance, and Symbol of Hope implementations to the new shared class system and apply them to all healing specializations for consistancy.
+- [#323 - REFACTOR](#323) Move Innervate, Mana Tide Totem, Molten Radiance, Potion of Chilled Clarity, Potion of Frozen Focus, and Symbol of Hope implementations to the new shared class system and apply them to all healing specializations for consistancy.
 - [#323 - REFACTOR](#323) Update Symbol of Hope detection and calculations to always use the casting Priest's buff data.
 
 ## Shaman

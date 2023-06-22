@@ -19,7 +19,7 @@ function TRB.Functions.Character:UpdateSnapshot()
 	local target
 
 	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 5 then --Only do this if we're on a Priest!
+	if classIndexId == 5 or classIndexId == 11 then --Only do this if we're on a Druid or Priest!
 		---@type TRB.Classes.SnapshotData
 		snapshot = TRB.Data.snapshotData.attributes
 		---@type TRB.Classes.Target
@@ -56,19 +56,19 @@ function TRB.Functions.Character:UpdateSnapshot()
 	snapshot.masteryRating = GetCombatRating(26)
 	snapshot.versatilityRating = GetCombatRating(29)
 	
-	---@diagnostic disable-next-line: assign-type-mismatch
+	---@diagnostic disable-next-line: assign-type-mismatch, cast-local-type
 	snapshot.strength, _, _, _ = UnitStat("player", 1)
-	---@diagnostic disable-next-line: assign-type-mismatch
+	---@diagnostic disable-next-line: assign-type-mismatch, cast-local-type
 	snapshot.agility, _, _, _ = UnitStat("player", 2)
-	---@diagnostic disable-next-line: assign-type-mismatch
+	---@diagnostic disable-next-line: assign-type-mismatch, cast-local-type
 	snapshot.stamina, _, _, _ = UnitStat("player", 3)
-	---@diagnostic disable-next-line: assign-type-mismatch
+	---@diagnostic disable-next-line: assign-type-mismatch, cast-local-type
 	snapshot.intellect, _, _, _ = UnitStat("player", 4)
 end
 
 function TRB.Functions.Character:ResetSnapshotData()
 	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 5 then --Only do this if we're on a Priest!
+	if classIndexId == 5 or classIndexId == 11 then --Only do this if we're on a Druid or Priest!
 		--TRB.Data.snapshotData = TRB.Classes.SnapshotData:New()
 	else
 		TRB.Data.snapshot = {
@@ -113,7 +113,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Functions.Character:ResetSnapshotData()
 
 	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 5 then --Only do this if we're on a Priest!
+	if classIndexId == 5 or classIndexId == 11 then --Only do this if we're on a Priest or Druid!
 		TRB.Data.snapshotData = cache.snapshotData
 	else
 		TRB.Data.snapshot = TRB.Functions.Table:Merge(TRB.Data.snapshot, cache.snapshot)
@@ -211,7 +211,7 @@ end
 
 function TRB.Functions.Character:ResetCastingSnapshotData()
 	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 5 then --Only do this if we're on a Priest!
+	if classIndexId == 5 or classIndexId == 11 then --Only do this if we're on a Druid or Priest!
 		---@type TRB.Classes.SnapshotCasting
 		local casting = TRB.Data.snapshotData.casting
 		casting:Reset()
