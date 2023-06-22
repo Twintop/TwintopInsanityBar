@@ -410,6 +410,9 @@ local function LoadDefaultSettings()
 						preservation = false,
 						augmentation = false
 					},
+					priest = {
+						discipline = false
+					},
 					shaman = {
 						enhancement = false
 					}
