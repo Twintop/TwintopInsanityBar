@@ -288,9 +288,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				isTalent = true
 			},
 			primordialArcanicPulsar = {
-				id = 393960,
+				id = 393961,
 				name = "",
 				icon = "",
+				talentId = 393960,
 				maxAstralPower = 600,
 				isTalent = true
 			},
