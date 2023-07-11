@@ -1974,16 +1974,12 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Data.character.items.alchemyStone = alchemyStone
 			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
 			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
-		elseif specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.augmentation then
+		elseif specId == 3 and TRB.Data.settings.core.experimental.specs.evoker.augmentation then
 			settings = TRB.Data.settings.evoker.augmentation
 			TRB.Data.character.specName = "augmentation"
 		end
 		
 		if settings ~= nil then
-			--[[if maxComboPoints ~= TRB.Data.character.maxResource2Raw then
-				TRB.Data.character.maxResource2Raw = maxComboPoints
-				TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
-			end]]
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
 				TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
