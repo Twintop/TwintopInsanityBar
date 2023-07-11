@@ -5,7 +5,10 @@ TRB.Functions.Talent = {}
 
 
 function TRB.Functions.Talent:GetTalents(baselineTalents)
-	local talents = {}
+	local talents = {
+		bySpellId = {},
+		byNodeId = {}
+	}
 	baselineTalents = baselineTalents or {}
 	local _, name, icon, iconString
 	local configId = C_ClassTalents.GetActiveConfigID()
@@ -43,17 +46,21 @@ function TRB.Functions.Talent:GetTalents(baselineTalents)
 								name, _, icon = GetSpellInfo(spellId)
 								iconString = string.format("|T%s:0|t", icon)
 
-								talents[spellId] = {
+								local talent = {
 									id = spellId,
 									name = name,
 									icon = iconString,
 									currentRank = node.ranksPurchased,
 									maxRank = node.maxRanks,
+									nodeId = nodeId
 								}
 
 								if baselineTalents[spellId] ~= nil then
-									talents[spellId].currentRank = talents[spellId].maxRank
+									talent.currentRank = talents.bySpellId[spellId].maxRank
 								end
+								
+								talents.bySpellId[spellId] = talent
+								talents.byNodeId[nodeId] = talent
 							end
 						end
 					end
@@ -67,8 +74,9 @@ end
 
 function TRB.Functions.Talent:IsTalentActive(spell)
 	return spell.baseline == true or
-		(TRB.Data.talents[spell.id] ~= nil and TRB.Data.talents[spell.id].currentRank > 0) or
-		(TRB.Data.talents[spell.talentId] ~= nil and TRB.Data.talents[spell.talentId].currentRank > 0) or
+		(TRB.Data.talents.byNodeId[spell.nodeId] ~= nil and TRB.Data.talents.byNodeId[spell.id].currentRank > 0) or
+		(TRB.Data.talents.bySpellId[spell.id] ~= nil and TRB.Data.talents.bySpellId[spell.id].currentRank > 0) or
+		(TRB.Data.talents.bySpellId[spell.talentId] ~= nil and TRB.Data.talents.bySpellId[spell.talentId].currentRank > 0) or
 		(spell.isPvp and IsPlayerSpell(spell.id))
 end
 

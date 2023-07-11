@@ -1756,19 +1756,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					--See shaman implementation for handling channeled spells
 				else
 					if currentSpellId == spells.lightningBolt.id then
-						FillSnapshotDataCasting(spells.lightningBolt, spells.flowOfPower.maelstromMod.base[TRB.Data.talents[spells.flowOfPower.id].currentRank].lightningBolt)
+						FillSnapshotDataCasting(spells.lightningBolt, spells.flowOfPower.maelstromMod.base[TRB.Data.talents.bySpellId[spells.flowOfPower.id].currentRank].lightningBolt)
 
 						if snapshot.surgeOfPower.isActive then
-							snapshot.casting.resourceRaw = snapshot.casting.resourceRaw + ((spells.lightningBolt.overload + spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[spells.flowOfPower.id].currentRank].lightningBolt) * 2)
-							snapshot.casting.resourceFinal = snapshot.casting.resourceFinal + ((spells.lightningBolt.overload + spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[spells.flowOfPower.id].currentRank].lightningBolt) * 2)
+							snapshot.casting.resourceRaw = snapshot.casting.resourceRaw + ((spells.lightningBolt.overload + spells.flowOfPower.maelstromMod.overload[TRB.Data.talents.bySpellId[spells.flowOfPower.id].currentRank].lightningBolt) * 2)
+							snapshot.casting.resourceFinal = snapshot.casting.resourceFinal + ((spells.lightningBolt.overload + spells.flowOfPower.maelstromMod.overload[TRB.Data.talents.bySpellId[spells.flowOfPower.id].currentRank].lightningBolt) * 2)
 						end
 						
 						if snapshot.powerOfTheMaelstrom.isActive then
-							snapshot.casting.resourceRaw = snapshot.casting.resourceRaw + spells.lightningBolt.overload + spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[spells.flowOfPower.id].currentRank].lightningBolt
-							snapshot.casting.resourceFinal = snapshot.casting.resourceFinal + spells.lightningBolt.overload + spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[spells.flowOfPower.id].currentRank].lightningBolt
+							snapshot.casting.resourceRaw = snapshot.casting.resourceRaw + spells.lightningBolt.overload + spells.flowOfPower.maelstromMod.overload[TRB.Data.talents.bySpellId[spells.flowOfPower.id].currentRank].lightningBolt
+							snapshot.casting.resourceFinal = snapshot.casting.resourceFinal + spells.lightningBolt.overload + spells.flowOfPower.maelstromMod.overload[TRB.Data.talents.bySpellId[spells.flowOfPower.id].currentRank].lightningBolt
 						end
 					elseif currentSpellId == spells.lavaBurst.id then
-						FillSnapshotDataCasting(spells.lavaBurst, spells.flowOfPower.maelstromMod.base[TRB.Data.talents[spells.flowOfPower.id].currentRank].lavaBurst)
+						FillSnapshotDataCasting(spells.lavaBurst, spells.flowOfPower.maelstromMod.base[TRB.Data.talents.bySpellId[spells.flowOfPower.id].currentRank].lavaBurst)
 					elseif currentSpellId == spells.elementalBlast.id then
 						FillSnapshotDataCasting(spells.elementalBlast)
 					elseif currentSpellId == spells.icefury.id then
@@ -1896,7 +1896,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local spells = TRB.Data.spells
 
 		TRB.Data.character.earthShockThreshold = TRB.Data.character.earthShockThreshold
-		TRB.Data.character.earthquakeThreshold = -(spells.earthquake.maelstrom - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].earthquake)
+		TRB.Data.character.earthquakeThreshold = -(spells.earthquake.maelstrom - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents.bySpellId[spells.eyeOfTheStorm.id].currentRank].earthquake)
 	end
 
 	local function UpdateSnapshot_Enhancement()
@@ -2027,7 +2027,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 									elseif TRB.Functions.Talent:IsTalentActive(spells.elementalBlast) then
 										showThreshold = false
 									else
-										resourceAmount = resourceAmount - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].earthShock
+										resourceAmount = resourceAmount - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents.bySpellId[spells.eyeOfTheStorm.id].currentRank].earthShock
 										
 										if currentResource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
@@ -2040,7 +2040,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									else
-										resourceAmount = resourceAmount - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].elementalBlast
+										resourceAmount = resourceAmount - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents.bySpellId[spells.eyeOfTheStorm.id].currentRank].elementalBlast
 										
 										if currentResource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
@@ -2053,7 +2053,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									else
-										resourceAmount = resourceAmount - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].earthquake
+										resourceAmount = resourceAmount - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents.bySpellId[spells.eyeOfTheStorm.id].currentRank].earthquake
 
 										if snapshot.echoesOfGreatSundering.isActive then
 											thresholdColor = specSettings.colors.threshold.echoesOfGreatSundering
@@ -2747,9 +2747,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spells.elementalBlast.thresholdId], spells.elementalBlast.settingKey, TRB.Data.settings.shaman.elemental)
 
 			if (TRB.Functions.Talent:IsTalentActive(spells.elementalBlast) and spells.elementalBlast.maelstrom < TRB.Data.character.maxResource) then
-				TRB.Data.character.earthShockThreshold = -(spells.elementalBlast.maelstrom - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].elementalBlast)
+				TRB.Data.character.earthShockThreshold = -(spells.elementalBlast.maelstrom - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents.bySpellId[spells.eyeOfTheStorm.id].currentRank].elementalBlast)
 			else
-				TRB.Data.character.earthShockThreshold = -(spells.earthShock.maelstrom - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].earthShock)
+				TRB.Data.character.earthShockThreshold = -(spells.earthShock.maelstrom - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents.bySpellId[spells.eyeOfTheStorm.id].currentRank].earthShock)
 			end
 		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
 			TRB.Data.character.specName = "enhancement"

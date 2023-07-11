@@ -494,6 +494,180 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		return settings
 	end
 	
+	local function GuardianLoadDefaultBarTextSimpleSettings()
+		local textSettings = {
+			fontSizeLock=true,
+			fontFaceLock=true,
+			left={
+				text="",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
+			},
+			middle={
+				text="",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
+			},
+			right={
+				text="{$casting}[$casting + ]{$passive}[$passive + ]$resource",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18
+			}
+		}
+	
+		return textSettings
+	end
+	
+	local function GuardianLoadDefaultBarTextAdvancedSettings()
+		local textSettings = {
+			fontSizeLock = false,
+			fontFaceLock = true,
+			left = {
+				text = "",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 13
+			},
+			middle = {
+				text="",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 13
+			},
+			right = {
+				text = "{$casting}[#casting$casting+]$resource",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 22
+			}
+		}
+	
+		return textSettings
+	end
+	
+	local function GuardianLoadDefaultSettings()
+		local settings = {
+			hastePrecision=2,
+			thresholds = {
+				width = 2,
+				overlapBorder=true,
+				outOfRange=true,
+				bleedColors=true,
+				icons = {
+					showCooldown=true,
+					border=2,
+					relativeTo = "BOTTOM",
+					relativeToName = "Below",
+					enabled=true,
+					desaturated=true,
+					xPos=0,
+					yPos=12,
+					width=24,
+					height=24
+				},
+				rebirth = {
+					enabled = true, -- 1
+				},
+				frenziedRegeneration = {
+					enabled = true, -- 2
+				},
+				ironfur = {
+					enabled = true, -- 3
+				},
+				maul = {
+					enabled = true, -- 4
+				},
+				raze = {
+					enabled = true, -- 5
+				}
+			},
+			overcap={
+				mode="relative",
+				relative=0,
+				fixed=100
+			},
+			displayBar = {
+				alwaysShow=false,
+				notZeroShow=true,
+				neverShow=false
+			},
+			bar = {
+				width=555,
+				height=34,
+				xPos=0,
+				yPos=-200,
+				border=4,
+				dragAndDrop=false,
+				pinToPersonalResourceDisplay=false,
+				showPassive=true,
+				showCasting=true
+			},
+			colors = {
+				text = {
+					current="FFFFFF00",
+					casting="FFFFFFFF",
+					spending="FF555555",
+					passive="FFD59900",
+					overcap="FFFF0000",
+					overThreshold="FF00FF00",
+					overThresholdEnabled=false,
+					overcapEnabled=true,
+					left="FFFFFFFF",
+					middle="FFFFFFFF",
+					right="FFFFFFFF"
+				},
+				bar = {
+					border="FFFF7C0A",
+					borderOvercap="FFFF0000",
+					borderStealth="FF000000",
+					background="66000000",
+					base="FFFFFF00",
+					clearcasting="FF4A95CE",
+					maxBite="FF009900",
+					apexPredator="FFE75480",
+					casting="FFFFFFFF",
+					spending="FF555555",
+					passive="FF9F4500",
+					overcapEnabled=true,
+				},
+				threshold = {
+					under="FFFFFFFF",
+					over="FF00FF00",
+					unusable="FFFF0000",
+					outOfRange="FF440000"
+				}
+			},
+			displayText = {},
+			audio = {
+				overcap={
+					name = "Overcap",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				}
+			},
+			textures = {
+				background="Interface\\Tooltips\\UI-Tooltip-Background",
+				backgroundName="Blizzard Tooltip",
+				border="Interface\\Buttons\\WHITE8X8",
+				borderName="1 Pixel",
+				resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
+				resourceBarName="Blizzard",
+				passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
+				passiveBarName="Blizzard",
+				castingBar="Interface\\TargetingFrame\\UI-StatusBar",
+				castingBarName="Blizzard",
+				textureLock=true
+			}
+		}
+		settings.displayText = GuardianLoadDefaultBarTextSimpleSettings()
+		return settings
+	end
+
+
 	-- Restoration
 	local function RestorationLoadDefaultBarTextSimpleSettings()
 		local textSettings = {
@@ -694,6 +868,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		settings.druid.balance = BalanceLoadDefaultSettings()
 		settings.druid.feral = FeralLoadDefaultSettings()
+		settings.druid.guardian = GuardianLoadDefaultSettings()
 		settings.druid.restoration = RestorationLoadDefaultSettings()
 		return settings
 	end

@@ -1196,8 +1196,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							local felfireHeartTicksMod = 0
 							
 							if TRB.Functions.Talent:IsTalentActive(spells.felfireHeart) then
-								felfireHeartDurationMod = spells.felfireHeart.duration * TRB.Data.talents[spells.felfireHeart.id].currentRank
-								felfireHeartTicksMod = spells.felfireHeart.ticks * TRB.Data.talents[spells.felfireHeart.id].currentRank
+								felfireHeartDurationMod = spells.felfireHeart.duration * TRB.Data.talents.bySpellId[spells.felfireHeart.id].currentRank
+								felfireHeartTicksMod = spells.felfireHeart.ticks * TRB.Data.talents.bySpellId[spells.felfireHeart.id].currentRank
 							end
 
 							snapshot.immolationAura.isActive = true

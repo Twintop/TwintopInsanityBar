@@ -174,6 +174,15 @@ local function LoadDefaultSettings()
 						textures = true,
 						thresholds = true
 					},
+					guardian = {
+						specEnable = false,
+						bar = true,
+						comboPoints = true,
+						displayBar = true,
+						font = true,
+						textures = true,
+						thresholds = true
+					},
 					restoration = {
 						specEnable = false,
 						bar = true,
@@ -359,6 +368,7 @@ local function LoadDefaultSettings()
 				druid = {
 					balance = true,
 					feral = true,
+					guardian = true,
 					restoration = true
 				},
 				evoker = {
@@ -395,6 +405,9 @@ local function LoadDefaultSettings()
 			},
 			experimental = {
 				specs = {
+					druid = {
+						guardian = true,
+					},
 					evoker = {
 						devastation = false,
 						preservation = false
@@ -414,6 +427,7 @@ local function LoadDefaultSettings()
 		druid = {
 			balance = {},
 			feral = {},
+			guardian = {},
 			restoration = {}
 		},
 		evoker = {
