@@ -1911,7 +1911,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				end
 
 				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
-					if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation then
+					if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation or TRB.Data.settings.core.experimental.specs.evoker.augmentation then
 						SwitchSpec()
 					end
 				end
@@ -2007,8 +2007,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Data.resourceFactor = 1
 			TRB.Data.resource2 = Enum.PowerType.Essence
 			TRB.Data.resourceFactor = 1
-		elseif specId == 3 and TRB.Data.settings.core.enabled.augmentation.devastation then
-			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.augmentation.devastation)
+		elseif specId == 3 and TRB.Data.settings.core.enabled.evoker.augmentation and TRB.Data.settings.core.experimental.specs.evoker.augmentation then
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.augmentation)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
