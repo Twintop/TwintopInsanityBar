@@ -15,6 +15,10 @@ local content = [====[
 - This feature is EXPERIMENTAL and is not enabled by default. To enable Augmentation Evoker support, go to the main "General" options menu for Twintop's Resource Bar and check "Augmentation Evoker support" under the "Experimental Features" section.<br/>
 - [#312 - EXPERIMENTAL](#312) Minimalist implementation for Augmentation Evoker, tracking Essence and Mana (to a much lesser extent). Presently displays Essence in a similar fashion as Combo Points or Chi, but shows the refill status in the currently regenerating node.
 
+## Druid
+### Balance
+- (FIX) Update Primordial Arcanic Pulsar spell IDs.
+
 ---
 
 # 10.1.0.13-release (2023-06-10)
