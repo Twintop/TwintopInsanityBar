@@ -4479,15 +4479,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					elseif settings.passiveGeneration.manaTideTotem and spellId == spells.manaTideTotem.id then
 						---@type TRB.Classes.Healer.ManaTideTotem
-						local manaTideTotem = TRB.Data.snapshot.manaTideTotem
+						---@diagnostic disable-next-line: assign-type-mismatch
+						local manaTideTotem = snapshotData.snapshots[spells.manaTideTotem.id]
 						manaTideTotem:Initialize(type)
 					elseif spellId == spells.potionOfChilledClarity.id then
 						---@type TRB.Classes.Healer.PotionOfChilledClarity
-						local potionOfChilledClarity = TRB.Data.snapshotData.snapshots[spells.potionOfChilledClarity.id]
+						---@diagnostic disable-next-line: assign-type-mismatch
+						local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id]
 						potionOfChilledClarity.buff:Initialize(type)
 					elseif spellId == spells.moltenRadiance.id then
 						---@type TRB.Classes.Healer.MoltenRadiance
-						local moltenRadiance = TRB.Data.snapshotData.snapshots[spells.moltenRadiance.id]
+						---@diagnostic disable-next-line: assign-type-mismatch
+						local moltenRadiance = snapshotData.snapshots[spells.moltenRadiance.id]
 						moltenRadiance.buff:Initialize(type)
 					elseif settings.shadowfiend.enabled and type == "SPELL_ENERGIZE" and spellId == snapshotData.snapshots[spells.shadowfiend.id].spell.energizeId and sourceName == snapshotData.snapshots[spells.shadowfiend.id].spell.name then
 						snapshotData.snapshots[spells.shadowfiend.id].attributes.swingTime = currentTime

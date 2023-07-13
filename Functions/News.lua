@@ -8,8 +8,14 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
-# 10.1.5.0-release (2023-07-11)
+# 10.1.5.0-release (2023-07-13)
+## Priest
+### Discipline and Holy
+- (FIX) Correct a LUA error when Mana Tide Totem is used by a party or raid member.
 
+----
+
+# 10.1.5.0-release (2023-07-11)
 ## Evoker
 ### Augmentation
 - This feature is EXPERIMENTAL and is not enabled by default. To enable Augmentation Evoker support, go to the main "General" options menu for Twintop's Resource Bar and check "Augmentation Evoker support" under the "Experimental Features" section.<br/>
