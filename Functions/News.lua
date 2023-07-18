@@ -8,11 +8,18 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
-# 10.1.5.0-release (2023-07-13)
+# 10.1.5.2-release (2023-07-19)
+## Druid
+### Balance
+- (FIX) Remove spammy debug output to chat whenever Starfall has a combat log event.
+
+----
+
+# 10.1.5.1-release (2023-07-13)
 ## Priest
 ### Discipline and Holy
 - (FIX) Correct a LUA error when Mana Tide Totem is used by a party or raid member.
-
+    
 ----
 
 # 10.1.5.0-release (2023-07-11)

@@ -4229,7 +4229,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					elseif spellId == spells.incarnationChosenOfElune.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.starfall.id then
-						print("type", type)
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.starweaversWarp.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
