@@ -8,6 +8,13 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.1.5.3-release (2023-07-??)
+## General
+- [#219 - UPDATE] Add Time To Die override for Iridikron in Dawn of the Infinite. 
+<br/>&emsp;&ensp;- Iridikron -- 85%
+
+----
+
 # 10.1.5.2-release (2023-07-19)
 ## Druid
 ### Balance
