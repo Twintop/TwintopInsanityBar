@@ -13,6 +13,10 @@ local content = [====[
 - [#219 - UPDATE] Add Time To Die override for Iridikron in Dawn of the Infinite. 
 <br/>&emsp;&ensp;- Iridikron -- 85%
 
+## Priest
+### Healers
+- (NEW) Add support for extra passive mana regen by Imbued Frostweave Slippers. While equipped, mana regen used for determining things like mana regenerated while channeling Symbol of Hope.
+
 ----
 
 # 10.1.5.2-release (2023-07-19)
@@ -367,6 +371,7 @@ local isConstructed = false
 function TRB.Functions.News:BuildNewsPopup()
     isConstructed = true
     TRB.Functions.News:Hide()
+    ---@diagnostic disable-next-line: missing-fields
 	newsFrame:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile =  "Interface\\Tooltips\\UI-Tooltip-Border",

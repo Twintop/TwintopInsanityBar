@@ -17,6 +17,7 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 	f:EnableMouseWheel(true)
 	f:SetObeyStepOnDrag(true)
 	f:SetOrientation("Horizontal")
+	---@diagnostic disable-next-line: missing-fields
 	f:SetBackdrop({
 	   bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
 	   edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
@@ -74,6 +75,7 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 ---@diagnostic disable-next-line: param-type-mismatch
 	eb:SetPoint("Top", f, "Bottom", 0, -1)
 	eb:SetTextInsets(4, 4, 0, 0)
+	---@diagnostic disable-next-line: missing-fields
 	eb:SetBackdrop({
 		bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
 		edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
@@ -164,6 +166,7 @@ function TRB.Functions.OptionsUi:BuildTextBox(parent, text, maxLetters, width, h
 	f:SetFontObject(GameFontHighlight)
 	f:SetSize(width, height)
 	f:SetTextInsets(4, 4, 0, 0)
+	---@diagnostic disable-next-line: missing-fields
 	f:SetBackdrop({
 		bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
 		edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
@@ -271,6 +274,7 @@ function TRB.Functions.OptionsUi:BuildColorPicker(parent, description, settingsE
 	local f = CreateFrame("Button", nil, parent, "BackdropTemplate")
 	f:SetSize(sizeFrame, sizeFrame)
 	f:SetPoint("TOPLEFT", posX, posY)
+	---@diagnostic disable-next-line: missing-fields
 	f:SetBackdrop({
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", 
 		tile = true, 
@@ -424,6 +428,7 @@ function TRB.Functions.OptionsUi:CreateTabFrameContainer(name, parent, width, he
 	width = width or 652
 	height = height or 523
 	local cf = CreateFrame("Frame", name, parent, "BackdropTemplate")
+---@diagnostic disable-next-line: missing-fields
 	cf:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile =  "Interface\\Tooltips\\UI-Tooltip-Border",

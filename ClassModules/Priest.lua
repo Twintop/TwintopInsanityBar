@@ -361,6 +361,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 409898,
 				name = "",
 				icon = "",
+			},
+
+			-- Imbued Frostweave Slippers
+			imbuedFrostweaveSlippers = {
+				id = 419273,
+				name = "",
+				icon = "",
+				itemId = 207817,
+				manaModifier = 0.0006
 			}
 		}
 
@@ -797,6 +806,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 409898,
 				name = "",
 				icon = "",
+			},
+
+			-- Imbued Frostweave Slippers
+			imbuedFrostweaveSlippers = {
+				id = 419273,
+				name = "",
+				icon = "",
+				itemId = 207817,
+				manaModifier = 0.0006
 			},
 
 			-- Set Bonuses
@@ -1275,7 +1293,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.voidform.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.voidform)
 		---@type TRB.Classes.Snapshot
 		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.darkAscension.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.darkAscension)
-		---@type TRB.Classes.Snapshot
 		specCache.shadow.snapshotData.audio = {
 			playedDpCue = false,
 			playedMdCue = false,
@@ -2081,6 +2098,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		-- This probably needs to be pulled every refresh
 ---@diagnostic disable-next-line: cast-local-type
 		snapshotData.attributes.manaRegen, _ = GetPowerRegen()
+		
+		if TRB.Data.character.items.imbuedFrostweaveSlippers then
+			snapshotData.attributes.manaRegen = snapshotData.attributes.manaRegen + (TRB.Data.character.maxResource * spells.imbuedFrostweaveSlippers.manaModifier)
+		end
 
 		local currentManaColor = specSettings.colors.text.current
 		local castingManaColor = specSettings.colors.text.casting
@@ -2381,6 +2402,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		-- This probably needs to be pulled every refresh
 ---@diagnostic disable-next-line: cast-local-type
 		snapshotData.attributes.manaRegen, _ = GetPowerRegen()
+		
+		if TRB.Data.character.items.imbuedFrostweaveSlippers then
+			snapshotData.attributes.manaRegen = snapshotData.attributes.manaRegen + (TRB.Data.character.maxResource * spells.imbuedFrostweaveSlippers.manaModifier)
+		end
 
 		local currentManaColor = specSettings.colors.text.current
 		local castingManaColor = specSettings.colors.text.casting
@@ -4976,13 +5001,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
 			TRB.Functions.Spell:FillSpellDataManaCost(spells)
 
+			local bootsItemLink = GetInventoryItemLink("player", 8)
 			local trinket1ItemLink = GetInventoryItemLink("player", 13)
 			local trinket2ItemLink = GetInventoryItemLink("player", 14)
 
 			local alchemyStone = false
 			local conjuredChillglobe = false
 			local conjuredChillglobeVersion = ""
-						
+			local imbuedFrostweaveSlippers = false
+			
+			if bootsItemLink ~= nil then
+				imbuedFrostweaveSlippers = TRB.Functions.Item:DoesItemLinkMatchId(bootsItemLink, spells.imbuedFrostweaveSlippers.itemId)
+			end
+
 			if trinket1ItemLink ~= nil then
 				for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
@@ -5014,7 +5045,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.character.items.alchemyStone = alchemyStone
 			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
 			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
-			
+			TRB.Data.character.items.imbuedFrostweaveSlippers = imbuedFrostweaveSlippers
+
 			if TRB.Functions.Talent:IsTalentActive(spells.mindbender) then
 				TRB.Data.snapshotData.snapshots[spells.shadowfiend.id].spell = spells.mindbender
 			else
@@ -5026,12 +5058,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
 			TRB.Functions.Spell:FillSpellDataManaCost(spells)
 
+			local bootsItemLink = GetInventoryItemLink("player", 8)
 			local trinket1ItemLink = GetInventoryItemLink("player", 13)
 			local trinket2ItemLink = GetInventoryItemLink("player", 14)
 
 			local alchemyStone = false
 			local conjuredChillglobe = false
 			local conjuredChillglobeVersion = ""
+			local imbuedFrostweaveSlippers = false
+			
+			if bootsItemLink ~= nil then
+				imbuedFrostweaveSlippers = TRB.Functions.Item:DoesItemLinkMatchId(bootsItemLink, spells.imbuedFrostweaveSlippers.itemId)
+			end
 						
 			if trinket1ItemLink ~= nil then
 				for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.itemIds) do
@@ -5064,6 +5102,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.character.items.alchemyStone = alchemyStone
 			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
 			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
+			TRB.Data.character.items.imbuedFrostweaveSlippers = imbuedFrostweaveSlippers
 		elseif specId == 3 then
 			TRB.Data.character.specName = "shadow"
 ---@diagnostic disable-next-line: missing-parameter

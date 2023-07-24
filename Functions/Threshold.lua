@@ -125,15 +125,19 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 		threshold.icon.cooldown:SetFrameStrata(TRB.Data.settings.core.strata.level)
 
 		if settings.thresholds.icons.border < 1 then
+---@diagnostic disable-next-line: missing-fields
 			threshold.icon:SetBackdrop({
+---@diagnostic disable-next-line: missing-fields
 				insets = {0, 0, 0, 0}
 			})
 		else
+---@diagnostic disable-next-line: missing-fields
 			threshold.icon:SetBackdrop({
 				edgeFile = "Interface\\Buttons\\WHITE8X8",
 				tile = true,
 				tileSize = 4,
 				edgeSize = settings.thresholds.icons.border,
+---@diagnostic disable-next-line: missing-fields
 				insets = {0, 0, 0, 0}
 			})
 		end
