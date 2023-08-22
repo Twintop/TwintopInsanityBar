@@ -4310,7 +4310,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					elseif spellId == spells.shadowmeld.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.prowl.id or spellId == spells.prowl.idIncarnation then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
+						snapshotData.snapshots[spells.prowl.id].buff:Initialize(type)
 					elseif spellId == spells.suddenAmbush.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 						if type == "SPELL_AURA_REMOVED" then
