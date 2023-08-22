@@ -7,6 +7,15 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 ----
+# 10.1.5.4-release (2023-08-23)
+## General
+- [#219 - FIX](#219) Fix NPC Id for Iridikron in Dawn of the Infinite. 
+
+## Druid
+### Feral
+- (FIX) Fix LUA error when entering Prowl from Incarnation being used.
+
+----
 
 # 10.1.5.3-release (2023-07-25)
 ## General
