@@ -7,7 +7,7 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 ----
-# 10.1.5.4-release (2023-08-23)
+# 10.1.5.4-release (2023-08-26)
 ## General
 - [#219 - FIX](#219) Fix NPC Id for Iridikron in Dawn of the Infinite. 
 
