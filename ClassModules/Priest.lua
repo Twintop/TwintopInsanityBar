@@ -95,6 +95,25 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function FillSpecializationCache()
 		-- Discipline
+		specCache.discipline.Global_TwintopResourceBar = {
+			ttd = 0,
+			resource = {
+				resource = 0,
+				casting = 0,
+				passive = 0,
+				channeledPotion = 0,
+				manaTideTotem = 0,
+				innervate = 0,
+				potionOfChilledClarity = 0,
+				symbolOfHope = 0,
+				shadowfiend = 0,
+			},
+			dots = {
+				swpCount = 0
+			},
+			isPvp = false
+		}
+
 		specCache.discipline.character = {
 			guid = UnitGUID("player"),
 ---@diagnostic disable-next-line: missing-parameter
@@ -373,7 +392,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			}
 		}
 
-		specCache.discipline.snapshotData.manaRegen = 0
+		specCache.discipline.snapshotData.attributes.manaRegen = 0
 		specCache.discipline.snapshotData.audio = {
 			innervateCue = false,
 			surgeOfLightCue = false,
@@ -4570,17 +4589,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.holyWordSerenity.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Serenity
----@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							snapshotData.snapshots[spellId].cooldown:Refresh(true)
 						end
 					elseif spellId == spells.holyWordSanctify.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Sanctify
----@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							snapshotData.snapshots[spellId].cooldown:Refresh(true)
 						end
 					elseif spellId == spells.holyWordChastise.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Chastise
----@diagnostic disable-next-line: redundant-parameter, cast-local-type
 							snapshotData.snapshots[spellId].cooldown:Refresh(true)
 						end
 					elseif spellId == spells.divineConversation.id then
@@ -5282,6 +5298,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			settings = TRB.Data.settings.priest.holy
 		elseif specId == 3 then
 			settings = TRB.Data.settings.priest.shadow
+		else
+			return false
 		end
 
 		if specId == 1 or specId == 2 then

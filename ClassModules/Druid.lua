@@ -803,7 +803,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		}
 
 		specCache.feral.snapshotData.attributes.energyRegen = 0
-		specCache.feral.snapshotData.comboPoints = 0
+		specCache.feral.snapshotData.attributes.comboPoints = 0
 		specCache.feral.snapshotData.audio = {
 			overcapCue = false
 		}
@@ -1106,7 +1106,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		}
 
-		specCache.restoration.snapshotData.manaRegen = 0
+		specCache.restoration.snapshotData.attributes.manaRegen = 0
 		specCache.restoration.snapshotData.audio = {
 			innervateCue = false
 		}
@@ -3131,7 +3131,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				cpSnapshot.attributes.lastTick = nil
 				cpSnapshot.attributes.ticks = 0
 				cpSnapshot.attributes.nextTick = nil
-				cpSnapshot.attributesuntilNextTick = 0
+				cpSnapshot.attributes.untilNextTick = 0
 			end
 		else
 			buffSnapshot.buff:Reset()
@@ -3521,7 +3521,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
-								if (snapshotData.snapshots[spell.id].cooldown.charges == nil or snapshotData.snapshots[spell.id].cooldown.charges == 0) and	snapshotData.snapshots[spell.id].cooldown.remaining then
+								if (snapshotData.snapshots[spell.id].cooldown.charges == nil or snapshotData.snapshots[spell.id].cooldown.charges == 0) and	snapshotData.snapshots[spell.id].cooldown.onCooldown then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif currentResource >= -resourceAmount then
@@ -3779,7 +3779,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
-								if (snapshotData.snapshots[spell.id].cooldown.charges == nil or snapshotData.snapshots[spell.id].cooldown.charges == 0) and	snapshotData.snapshots[spell.id].cooldown.remaining then
+								if (snapshotData.snapshots[spell.id].cooldown.charges == nil or snapshotData.snapshots[spell.id].cooldown.charges == 0) and	snapshotData.snapshots[spell.id].cooldown.onCooldown then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif snapshotData.attributes.resource >= -energyAmount then
@@ -4518,8 +4518,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.barConstructedForSpec = nil
 		end
 		
-		TwintopGlobalSnapshotData = TRB.Data.snapshotData
-		TwintopGlobalSettings = TRB.Data.settings
 		TRB.Functions.Class:EventRegistration()
 	end
 
@@ -4829,6 +4827,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			settings = TRB.Data.settings.druid.feral
 		elseif specId == 4 then
 			settings = TRB.Data.settings.druid.restoration
+		else
+			return false
 		end
 
 		local affectingCombat = UnitAffectingCombat("player")

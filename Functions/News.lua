@@ -415,10 +415,11 @@ function TRB.Functions.News:BuildNewsPopup()
         TRB.Functions.News:Hide()
     end)
 
-    local showAgainCheckbox = CreateFrame("CheckButton", "TwintopResourceBar_News_ShowAgain", newsFrame, "ChatConfigCheckButtonTemplate")
-    local f = showAgainCheckbox
+    ---@type CheckButton
+    local f = CreateFrame("CheckButton", "TwintopResourceBar_News_ShowAgain", newsFrame, "ChatConfigCheckButtonTemplate")
     f:SetPoint("BOTTOMLEFT", 5, 5)
     getglobal(f:GetName() .. 'Text'):SetText("Show on new version release")
+---@diagnostic disable-next-line: inject-field
     f.tooltip = "Show this update popup whenever a new version of Twintop's Resource Bar is released."
     f:SetChecked(TRB.Data.settings.core.news.enabled)
     f:SetScript("OnClick", function(self, ...)

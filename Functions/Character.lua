@@ -19,8 +19,7 @@ function TRB.Functions.Character:UpdateSnapshot()
 	local target
 
 	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 5 or classIndexId == 11 then --Only do this if we're on a Druid or Priest!
-		---@type TRB.Classes.SnapshotData
+	if classIndexId == 5 or classIndexId == 11 or classIndexId == 12 then --Only do this if we're on a Demon Hunter, Druid, or Priest!
 		snapshot = TRB.Data.snapshotData.attributes
 		---@type TRB.Classes.Target
 		target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
@@ -68,7 +67,7 @@ end
 
 function TRB.Functions.Character:ResetSnapshotData()
 	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 5 or classIndexId == 11 then --Only do this if we're on a Druid or Priest!
+	if classIndexId == 5 or classIndexId == 11 or classIndexId == 12 then --Only do this if we're on a Demon Hunter, Druid, or Priest!
 		--TRB.Data.snapshotData = TRB.Classes.SnapshotData:New()
 	else
 		TRB.Data.snapshot = {
@@ -113,7 +112,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Functions.Character:ResetSnapshotData()
 
 	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 5 or classIndexId == 11 then --Only do this if we're on a Priest or Druid!
+	if classIndexId == 5 or classIndexId == 11 or classIndexId == 12 then --Only do this if we're on a Demon Hunter, Druid, or Priest!
 		TRB.Data.snapshotData = cache.snapshotData
 	else
 		TRB.Data.snapshot = TRB.Functions.Table:Merge(TRB.Data.snapshot, cache.snapshot)
@@ -211,7 +210,7 @@ end
 
 function TRB.Functions.Character:ResetCastingSnapshotData()
 	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 5 or classIndexId == 11 then --Only do this if we're on a Druid or Priest!
+	if classIndexId == 5 or classIndexId == 11 or classIndexId == 12 then --Only do this if we're on a Demon Hunter, Druid, or Priest!
 		---@type TRB.Classes.SnapshotCasting
 		local casting = TRB.Data.snapshotData.casting
 		casting:Reset()
