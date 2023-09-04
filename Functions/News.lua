@@ -7,6 +7,14 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 ----
+# 10.1.7.0-release (2023-09-05)
+## General
+- [#323 - REFACTOR](#323) More enhancements, clean up, and standardize how buff, cooldown, and computed data is stored and handled.
+<br/>&emsp;&ensp;- The following specializations are included in this update:
+<br/>&emsp;&ensp;&emsp;&ensp;- **Demon Hunter** - Havoc
+
+----
+
 # 10.1.5.4-release (2023-08-26)
 ## General
 - [#219 - FIX](#219) Fix NPC Id for Iridikron in Dawn of the Infinite. 
