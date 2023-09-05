@@ -3608,7 +3608,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 		snapshotData.snapshots[spells.voidform.id].buff:Refresh()
 		snapshotData.snapshots[spells.darkAscension.id].buff:GetRemainingTime(currentTime)
-		snapshotData.snapshots[spells.surgeOfInsanity.id].buff:GetRemainingTime(currentTime)
+		snapshotData.snapshots[spells.surgeOfInsanity.id].buff:Refresh()
 		snapshotData.snapshots[spells.deathspeaker.id].buff:GetRemainingTime(currentTime)
 		snapshotData.snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
 

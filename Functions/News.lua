@@ -13,6 +13,10 @@ local content = [====[
 <br/>&emsp;&ensp;- The following specializations are included in this update:
 <br/>&emsp;&ensp;&emsp;&ensp;- **Demon Hunter** - Havoc
 
+## Priest
+### Shadow
+- (FIX) Fix an issue with Mind Flay: Insanity/Mind Spike: Insanity buff duration being shorter than expected.
+
 ----
 
 # 10.1.5.4-release (2023-08-26)
