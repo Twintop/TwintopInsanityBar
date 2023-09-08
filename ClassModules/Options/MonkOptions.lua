@@ -1665,8 +1665,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.audio.overcap.enabled = self:GetChecked()
 
 			if spec.audio.overcap.enabled then
-				---@diagnostic disable-next-line: redundant-parameter
-
 				PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
