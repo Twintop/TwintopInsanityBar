@@ -114,12 +114,11 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 		threshold.icon = threshold.icon or CreateFrame("Frame", nil, threshold, "BackdropTemplate")
 		threshold.icon:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
 		threshold.icon:SetFrameStrata(TRB.Data.settings.core.strata.level)
+---@diagnostic disable-next-line: inject-field
 		threshold.icon.texture = threshold.icon.texture or threshold.icon:CreateTexture(nil, "BACKGROUND")
----@diagnostic disable-next-line: param-type-mismatch
 		threshold.icon.texture:SetAllPoints(threshold.icon)
----@diagnostic disable-next-line: param-type-mismatch
+---@diagnostic disable-next-line: inject-field
 		threshold.icon.cooldown = threshold.icon.cooldown or CreateFrame("Cooldown", nil, threshold.icon, "CooldownFrameTemplate")
----@diagnostic disable-next-line: param-type-mismatch
 		threshold.icon.cooldown:SetAllPoints(threshold.icon)
 		threshold.icon.cooldown:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
 		threshold.icon.cooldown:SetFrameStrata(TRB.Data.settings.core.strata.level)

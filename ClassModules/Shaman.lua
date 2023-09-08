@@ -1979,7 +1979,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 						if specSettings.audio.overcap.enabled and snapshot.audio.overcapCue == false then
 							snapshot.audio.overcapCue = true
-							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
@@ -2107,7 +2106,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 						if specSettings.audio.esReady.enabled and snapshot.audio.playedEsCue == false then
 							snapshot.audio.playedEsCue = true
-							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.esReady.sound, coreSettings.audio.channel.channel)
 						end
 					else
@@ -2258,7 +2256,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 						if specSettings.audio.innervate.enabled and snapshot.audio.innervateCue == false then
 							snapshot.audio.innervateCue = true
----@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.innervate.sound, coreSettings.audio.channel.channel)
 						end
 					end
@@ -2961,6 +2958,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			settings = TRB.Data.settings.shaman.enhancement
 		elseif specId == 3 then
 			settings = TRB.Data.settings.shaman.restoration
+		else
+			return false
 		end
 
 		if specId == 1 then

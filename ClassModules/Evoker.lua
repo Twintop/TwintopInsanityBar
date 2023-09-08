@@ -1425,7 +1425,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 						if specSettings.audio.innervate.enabled and snapshot.audio.innervateCue == false then
 							snapshot.audio.innervateCue = true
----@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.innervate.sound, coreSettings.audio.channel.channel)
 						end
 					end
@@ -2138,6 +2137,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			settings = TRB.Data.settings.evoker.devastation
 		elseif specId == 2 then
 			settings = TRB.Data.settings.evoker.preservation
+		elseif specId == 3 then
+			settings = TRB.Data.settings.evoker.augmentation
+		else
+			return false
 		end
 
 		if specId == 1 then --Devastation			

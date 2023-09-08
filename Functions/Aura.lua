@@ -115,7 +115,6 @@ function TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshotObj, simp
 	unit = unit or "player"
 
 	if snapshotObj.buff ~= nil then -- New Snapshot class
-		---@type TRB.Classes.Snapshot
 		local snapshot = snapshotObj
 		if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" or type == "SPELL_AURA_APPLIED_DOSE" then -- Gained buff
 			snapshot.buff.isActive = true

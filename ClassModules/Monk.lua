@@ -1861,7 +1861,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 						if specSettings.audio.innervate.enabled and snapshot.audio.innervateCue == false then
 							snapshot.audio.innervateCue = true
----@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.innervate.sound, coreSettings.audio.channel.channel)
 						end
 					elseif snapshot.manaTea.isActive then
@@ -2146,7 +2145,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 						if specSettings.audio.overcap.enabled and snapshot.audio.overcapCue == false then
 							snapshot.audio.overcapCue = true
-							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
@@ -2275,7 +2273,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.enabled and not TRB.Data.snapshot.audio.playedDanceOfChiJiCue then
 								TRB.Data.snapshot.audio.playedDanceOfChiJiCue = true
-								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						elseif type == "SPELL_AURA_REMOVED" then
@@ -2685,6 +2682,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			settings = TRB.Data.settings.monk.mistweaver
 		elseif specId == 3 then
 			settings = TRB.Data.settings.monk.windwalker
+		else
+			return false
 		end
 
 		if specId == 2 then --Mistweaver

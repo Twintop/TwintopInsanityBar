@@ -2668,7 +2668,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									elseif snapshot.resource >= -focusAmount then
 										if specSettings.audio.killShot.enabled and not snapshot.audio.playedKillShotCue then
 											snapshot.audio.playedKillShotCue = true
-											---@diagnostic disable-next-line: redundant-parameter
 											PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
 										end
 										thresholdColor = specSettings.colors.threshold.over
@@ -2784,7 +2783,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 						if specSettings.audio.overcap.enabled and snapshot.audio.overcapCue == false then
 							snapshot.audio.overcapCue = true
-							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
@@ -2830,7 +2828,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 						if specSettings.audio.overcap.enabled and snapshot.audio.overcapCue == false then
 							snapshot.audio.overcapCue = true
-							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
@@ -2942,7 +2939,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 										if snapshot.aimedShot.charges == 2 or timeThreshold >= remainingCd then
 											snapshot.audio.playedAimedShotCue = true
-											---@diagnostic disable-next-line: redundant-parameter
 											PlaySoundFile(specSettings.audio.aimedShot.sound, coreSettings.audio.channel.channel)
 										end
 									elseif snapshot.aimedShot.charges == 2 then
@@ -2965,7 +2961,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										thresholdColor = specSettings.colors.threshold.over
 										if specSettings.audio.killShot.enabled and not snapshot.audio.playedKillShotCue then
 											snapshot.audio.playedKillShotCue = true
-											---@diagnostic disable-next-line: redundant-parameter
 											PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
 										end
 									else
@@ -3047,7 +3042,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 						if specSettings.audio.overcap.enabled and snapshot.audio.overcapCue == false then
 							snapshot.audio.overcapCue = true
-							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
@@ -3127,7 +3121,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									elseif snapshot.resource >= -focusAmount then
 										if specSettings.audio.killShot.enabled and not snapshot.audio.playedKillShotCue then
 											snapshot.audio.playedKillShotCue = true
-											---@diagnostic disable-next-line: redundant-parameter
 											PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
 										end
 										thresholdColor = specSettings.colors.threshold.over
@@ -3202,7 +3195,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						if specSettings.audio.overcap.enabled and snapshot.audio.overcapCue == false then
 							snapshot.audio.overcapCue = true
-							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
@@ -3335,7 +3327,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.lockAndLoad)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.enabled then
-								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
@@ -3749,6 +3740,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			settings = TRB.Data.settings.hunter.marksmanship
 		elseif specId == 3 then
 			settings = TRB.Data.settings.hunter.survival
+		else
+			return false
 		end
 
 		if specId == 1 then --Beast Mastery

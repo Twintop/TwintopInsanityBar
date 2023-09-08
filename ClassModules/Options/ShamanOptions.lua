@@ -1201,6 +1201,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			if spec.audio.overcap.enabled then
 				---@diagnostic disable-next-line: redundant-parameter
+
 				PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2341,7 +2342,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.audio.innervate.enabled = self:GetChecked()
 
 			if spec.audio.innervate.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)

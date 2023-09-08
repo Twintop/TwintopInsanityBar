@@ -3147,7 +3147,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 						if specSettings.audio.overcap.enabled and snapshot.audio.overcapCue == false then
 							snapshot.audio.overcapCue = true
-							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
@@ -3473,7 +3472,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 						if specSettings.audio.overcap.enabled and snapshot.audio.overcapCue == false then
 							snapshot.audio.overcapCue = true
-							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
@@ -3549,7 +3547,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.blindside)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.rogue.assassination.audio.blindside.enabled then
-								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
@@ -3649,7 +3646,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.opportunity)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.rogue.outlaw.audio.opportunity.enabled then
-								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(TRB.Data.settings.rogue.outlaw.audio.opportunity.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
@@ -3810,7 +3806,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					TRB.Functions.Aura:SnapshotGenericAura(spellId, type, snapshot.sepsis, true)
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 						if TRB.Data.settings.rogue.assassination.audio.sepsis.enabled then
-							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					end
@@ -4162,6 +4157,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			settings = TRB.Data.settings.rogue.assassination
 		elseif specId == 2 then
 			settings = TRB.Data.settings.rogue.outlaw
+		else
+			return false
 		end
 
 		if specId == 1 then --Assassination

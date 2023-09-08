@@ -475,8 +475,9 @@ local function ConstructAddonOptionsPanel()
 	local title = ""
 
 	interfaceSettingsFrame.optionsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_General", UIParent)
+	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.optionsPanel.name = "Global Options"
----@diagnostic disable-next-line: undefined-field
+	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.optionsPanel.parent = parent.name
 	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.optionsPanel, "Global Options")
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
@@ -485,6 +486,7 @@ local function ConstructAddonOptionsPanel()
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Global Options", 0, yCoord)
 
 	yCoord = yCoord - 30
+	---@diagnostic disable-next-line: inject-field
 	parent.panel = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Options_General_LayoutPanel", parent, 652, 555)
 	parent.panel:SetPoint("TOPLEFT", 0, yCoord)
 	parent.panel:Show()
@@ -716,7 +718,9 @@ local function ConstructAddonOptionsPanel()
 	controls.checkBoxes.experimentalEvokerDevastation = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Evoker_Devastation", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.experimentalEvokerDevastation
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+---@diagnostic disable-next-line: undefined-field
 	getglobal(f:GetName() .. 'Text'):SetText("Devastation Evoker support")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will enable experimental Devastation Evoker support within the bar. If you change this setting and are currently logged in on an Evoker, you'll need to reload your UI before Devastation Evoker configuration options become available."
 	f:SetChecked(TRB.Data.settings.core.experimental.specs.evoker.devastation)
 	f:SetScript("OnClick", function(self, ...)
@@ -727,7 +731,9 @@ local function ConstructAddonOptionsPanel()
 	controls.checkBoxes.experimentalEvokerPreservation = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Evoker_Preservation", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.experimentalEvokerPreservation
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	---@diagnostic disable-next-line: undefined-field
 	getglobal(f:GetName() .. 'Text'):SetText("Preservation Evoker support")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will enable experimental Preservation Evoker support within the bar. If you change this setting and are currently logged in on an Evoker, you'll need to reload your UI before Preservation Evoker configuration options become available."
 	f:SetChecked(TRB.Data.settings.core.experimental.specs.evoker.preservation)
 	f:SetScript("OnClick", function(self, ...)
@@ -738,7 +744,9 @@ local function ConstructAddonOptionsPanel()
 	controls.checkBoxes.experimentalEvokerAugmentation = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Evoker_Augmentation", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.experimentalEvokerAugmentation
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	---@diagnostic disable-next-line: undefined-field
 	getglobal(f:GetName() .. 'Text'):SetText("Augmentation Evoker support")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will enable experimental Augmentation Evoker support within the bar. If you change this setting and are currently logged in on an Evoker, you'll need to reload your UI before Augmentation Evoker configuration options become available."
 	f:SetChecked(TRB.Data.settings.core.experimental.specs.evoker.augmentation)
 	f:SetScript("OnClick", function(self, ...)
@@ -749,7 +757,9 @@ local function ConstructAddonOptionsPanel()
 	controls.checkBoxes.experimentalPriestDiscipline = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Priest_Discipline", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.experimentalPriestDiscipline
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	---@diagnostic disable-next-line: undefined-field
 	getglobal(f:GetName() .. 'Text'):SetText("Discipline Priest support")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will enable experimental Discipline Priest support within the bar. If you change this setting and are currently logged in on a Priest, you'll need to reload your UI before Discipline Priest configuration options become available."
 	f:SetChecked(TRB.Data.settings.core.experimental.specs.priest.discipline)
 	f:SetScript("OnClick", function(self, ...)
@@ -760,7 +770,9 @@ local function ConstructAddonOptionsPanel()
 	controls.checkBoxes.experimentalShamanEnhancement = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Shaman_Enhancement", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.experimentalShamanEnhancement
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	---@diagnostic disable-next-line: undefined-field
 	getglobal(f:GetName() .. 'Text'):SetText("Enhancement Shaman support")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will enable experimental Enhancement Shaman support within the bar. If you change this setting and are currently logged in on a Shaman, you'll need to reload your UI before Enhancement Shaman configuration options become available."
 	f:SetChecked(TRB.Data.settings.core.experimental.specs.shaman.enhancement)
 	f:SetScript("OnClick", function(self, ...)
@@ -786,8 +798,9 @@ local function ConstructImportExportPanel()
 
 
 	interfaceSettingsFrame.importExportPanel = CreateFrame("Frame", "TwintopResourceBar_Options_ImportExport", UIParent)
+	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.importExportPanel.name = "Import/Export"
----@diagnostic disable-next-line: undefined-field
+	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.importExportPanel.parent = parent.name
 	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.importExportPanel, "Import/Export")
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.importExportPanel)
@@ -798,6 +811,7 @@ local function ConstructImportExportPanel()
 	controls.buttons = controls.buttons or {}
 
 	yCoord = yCoord - 30
+	---@diagnostic disable-next-line: inject-field
 	parent.panel = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Options_General_LayoutPanel", parent, 652, 555)
 	parent.panel:SetPoint("TOPLEFT", 0, yCoord)
 	parent.panel:Show()
@@ -1997,7 +2011,8 @@ function TRB.Options:ConstructOptionsPanel()
 	controls.checkBoxes = {}
 	controls.dropDown = {}
 
-	interfaceSettingsFrame.panel = CreateFrame("Frame", "TwintopResourceBarPanel")--, UIParent)
+	interfaceSettingsFrame.panel = CreateFrame("Frame", "TwintopResourceBarPanel")
+	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.panel.name = "Twintop's Resource Bar"
 	interfaceSettingsFrame.panel:HookScript("OnShow", function(self)
 	end)
@@ -2023,6 +2038,7 @@ function TRB.Options:ConstructOptionsPanel()
 	interfaceSettingsFrame.controls.labels.infoSupport = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "Supported Specs (Dragonflight):", TRB.Details.supportedSpecs, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 450, 15, 300)
 
 
+	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.panel.yCoord = yCoord
 	local layout
 	TRB.Details.addonCategory, layout = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.panel, "Twintop's Resource Bar")

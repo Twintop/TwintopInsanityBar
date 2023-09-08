@@ -1292,7 +1292,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			spec.audio.ssReady.enabled = self:GetChecked()
 
 			if spec.audio.ssReady.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.ssReady.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -1359,7 +1358,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			spec.audio.sfReady.enabled = self:GetChecked()
 
 			if spec.audio.sfReady.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.sfReady.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -1426,7 +1424,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			spec.audio.starweaversReady.enabled = self:GetChecked()
 
 			if spec.audio.starweaversReady.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.starweaversReady.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -1494,7 +1491,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			spec.audio.overcap.enabled = self:GetChecked()
 
 			if spec.audio.overcap.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2352,7 +2348,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			spec.audio.apexPredatorsCraving.enabled = self:GetChecked()
 
 			if spec.audio.apexPredatorsCraving.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2417,7 +2412,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			spec.audio.overcap.enabled = self:GetChecked()
 
 			if spec.audio.overcap.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -3107,7 +3101,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			spec.audio.innervate.enabled = self:GetChecked()
 
 			if spec.audio.innervate.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)

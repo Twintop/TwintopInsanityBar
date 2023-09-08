@@ -73,6 +73,7 @@ end
 ---@field public customPropertiesDefinitions TRB.Classes.BuffCustomProperty[]
 ---@field public customProperties table
 ---@field public alwaysSimple boolean?
+---@field public isCustom boolean
 ---@field protected parent TRB.Classes.Snapshot
 TRB.Classes.SnapshotBuff = {}
 TRB.Classes.SnapshotBuff.__index = TRB.Classes.SnapshotBuff
@@ -111,6 +112,7 @@ function TRB.Classes.SnapshotBuff:Reset()
     self.remaining = 0
     self.endTimeLeeway = 0
     self.stacks = 0
+    self.isCustom = false
     self.customProperties = {}
 end
 
@@ -159,11 +161,27 @@ function TRB.Classes.SnapshotBuff:Initialize(eventType, simple, unit)
     self:Refresh(eventType, simple, unit)
 end
 
+---Initializes the buff with custom endTime and duration values
+---@param duration number # How long the buff will last
+function TRB.Classes.SnapshotBuff:InitializeCustom(duration)
+    local currentTime = GetTime()
+    self.duration = duration
+    self.endTime = currentTime + duration
+    self.isCustom = true
+    self:GetRemainingTime()
+end
+
 ---Refreshes the buff information for the snapshot
 ---@param eventType trbAuraEventType? # Event type sourced from the combat log event. If not provided, will do a generic buff update
 ---@param simple boolean? # Just updates isActive. If not provided, defaults to `false`
 ---@param unit UnitId? # Unit we want to check to update. If not provided, defaults to `player`
 function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
+    -- If this is a custom buff, don't do any of the following checks and instead just update the remaining time.
+    if self.isCustom then
+        self:GetRemainingTime()
+        return
+    end
+    
     unit = unit or "player"
     if simple == nil then
         simple = false

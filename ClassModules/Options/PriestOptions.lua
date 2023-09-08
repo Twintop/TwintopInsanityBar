@@ -1088,7 +1088,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.audio.innervate.enabled = self:GetChecked()
 
 			if spec.audio.innervate.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -1154,7 +1153,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.audio.surgeOfLight.enabled = self:GetChecked()
 
 			if spec.audio.surgeOfLight.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -1220,7 +1218,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.audio.surgeOfLight2.enabled = self:GetChecked()
 
 			if spec.audio.surgeOfLight2.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2080,7 +2077,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.audio.innervate.enabled = self:GetChecked()
 
 			if spec.audio.innervate.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2146,7 +2142,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.audio.surgeOfLight.enabled = self:GetChecked()
 
 			if spec.audio.surgeOfLight.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.surgeOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2212,7 +2207,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.audio.surgeOfLight2.enabled = self:GetChecked()
 
 			if spec.audio.surgeOfLight2.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.surgeOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2277,7 +2271,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.audio.resonantWords.enabled = self:GetChecked()
 
 			if spec.audio.resonantWords.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.resonantWords.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2342,7 +2335,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.audio.lightweaver.enabled = self:GetChecked()
 
 			if spec.audio.lightweaver.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.lightweaver.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -3351,7 +3343,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.audio.dpReady.enabled = self:GetChecked()
 
 			if spec.audio.dpReady.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.dpReady.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -3417,7 +3408,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.audio.mdProc.enabled = self:GetChecked()
 
 			if spec.audio.mdProc.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.mdProc.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -3483,7 +3473,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.audio.overcap.enabled = self:GetChecked()
 
 			if spec.audio.overcap.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -3550,7 +3539,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.audio.deathspeaker.enabled = self:GetChecked()
 
 			if spec.audio.deathspeaker.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.deathspeaker.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)

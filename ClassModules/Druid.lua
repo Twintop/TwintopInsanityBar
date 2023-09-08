@@ -3242,45 +3242,41 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		UpdateSnapshot()
 
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
-		local currentTime = GetTime()
 		local _
 
-		---@type TRB.Classes.Healer.Innervate
-		local innervate = TRB.Data.snapshotData.snapshots[spells.innervate.id]
+		---@type TRB.Classes.Snapshot[]
+		local snapshots = TRB.Data.snapshotData.snapshots
+
+		local currentTime = GetTime()
+		
+		local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		innervate:Update()
 
-		---@type TRB.Classes.Healer.ManaTideTotem
-		local manaTideTotem = TRB.Data.snapshotData.snapshots[spells.manaTideTotem.id]
+		local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 		manaTideTotem:Update()
 
-		---@type TRB.Classes.Healer.SymbolOfHope
-		local symbolOfHope = TRB.Data.snapshotData.snapshots[spells.symbolOfHope.id]
+		local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 		symbolOfHope:Update()
 
-		---@type TRB.Classes.Healer.MoltenRadiance
-		local moltenRadiance = TRB.Data.snapshotData.snapshots[spells.moltenRadiance.id]
+		local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 		moltenRadiance:Update()
 		
-		---@type TRB.Classes.Healer.PotionOfChilledClarity
-		local potionOfChilledClarity = TRB.Data.snapshotData.snapshots[spells.potionOfChilledClarity.id]
+		local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		potionOfChilledClarity:Update()
-					
-		---@type TRB.Classes.Healer.ChanneledManaPotion
-		local channeledManaPotion = TRB.Data.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id]
+
+		local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 		channeledManaPotion:Update()
 
 		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
-		snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown.startTime, snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
-		snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown:GetRemainingTime(currentTime)
+		snapshots[spells.aeratedManaPotionRank1.id].cooldown.startTime, snapshots[spells.aeratedManaPotionRank1.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
+		snapshots[spells.aeratedManaPotionRank1.id].cooldown:GetRemainingTime(currentTime)
 
-		snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown.startTime, snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
-		snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown:GetRemainingTime(currentTime)
+		snapshots[spells.conjuredChillglobe.id].cooldown.startTime, snapshots[spells.conjuredChillglobe.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
+		snapshots[spells.conjuredChillglobe.id].cooldown:GetRemainingTime(currentTime)
 
-		snapshotData.snapshots[spells.clearcasting.id].buff:GetRemainingTime(currentTime)
-		snapshotData.snapshots[spells.incarnationTreeOfLife.id].buff:GetRemainingTime(currentTime)
-		snapshotData.snapshots[spells.reforestation.id].buff:GetRemainingTime(currentTime)
+		snapshots[spells.clearcasting.id].buff:GetRemainingTime(currentTime)
+		snapshots[spells.incarnationTreeOfLife.id].buff:GetRemainingTime(currentTime)
+		snapshots[spells.reforestation.id].buff:GetRemainingTime(currentTime)
 	end
 
 	local function UpdateResourceBar()
@@ -3315,7 +3311,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 						if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
 							snapshotData.audio.overcapCue = true
-							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
@@ -3400,11 +3395,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										if snapshotData.snapshots[spells.starweaversWeft.id].buff.isActive and specSettings.audio.starweaversReady.enabled and snapshotData.audio.playedstarweaverCue == false then
 											snapshotData.audio.playedstarweaverCue = true
 											snapshotData.audio.playedSfCue = true
-					---@diagnostic disable-next-line: redundant-parameter
 											PlaySoundFile(specSettings.audio.starweaverProc.sound, coreSettings.audio.channel.channel)
 										elseif specSettings.audio.ssReady.enabled and snapshotData.audio.playedSsCue == false then
 											snapshotData.audio.playedSsCue = true
-					---@diagnostic disable-next-line: redundant-parameter
 											PlaySoundFile(specSettings.audio.ssReady.sound, coreSettings.audio.channel.channel)
 										end
 									else
@@ -3506,11 +3499,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										if snapshotData.snapshots[spells.starweaversWarp.id].buff.isActive and specSettings.audio.starweaversReady.enabled and snapshotData.audio.playedstarweaverCue == false then
 											snapshotData.audio.playedstarweaverCue = true
 											snapshotData.audio.playedSfCue = true
-											---@diagnostic disable-next-line: redundant-parameter
 											PlaySoundFile(specSettings.audio.starweaverProc.sound, coreSettings.audio.channel.channel)
 										elseif specSettings.audio.sfReady.enabled and snapshotData.audio.playedSfCue == false then
 											snapshotData.audio.playedSfCue = true
-											---@diagnostic disable-next-line: redundant-parameter
 											PlaySoundFile(specSettings.audio.sfReady.sound, coreSettings.audio.channel.channel)
 										end
 									end
@@ -3834,7 +3825,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 						if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
 							snapshotData.audio.overcapCue = true
-							---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
@@ -3933,29 +3923,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local currentMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local barBorderColor = specSettings.colors.bar.border
 
-					---@type TRB.Classes.Healer.Innervate
-					---@diagnostic disable-next-line: assign-type-mismatch
-					local innervate = snapshotData.snapshots[spells.innervate.id]
-
-					---@type TRB.Classes.Healer.ManaTideTotem
-					---@diagnostic disable-next-line: assign-type-mismatch
-					local manaTideTotem = snapshotData.snapshots[spells.manaTideTotem.id]
-
-					---@type TRB.Classes.Healer.SymbolOfHope
-					---@diagnostic disable-next-line: assign-type-mismatch
-					local symbolOfHope = snapshotData.snapshots[spells.symbolOfHope.id]
-
-					---@type TRB.Classes.Healer.MoltenRadiance
-					---@diagnostic disable-next-line: assign-type-mismatch
-					local moltenRadiance = snapshotData.snapshots[spells.moltenRadiance.id]
-		
-					---@type TRB.Classes.Healer.PotionOfChilledClarity
-					---@diagnostic disable-next-line: assign-type-mismatch
-					local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id]
-					
-					---@type TRB.Classes.Healer.ChanneledManaPotion
-					---@diagnostic disable-next-line: assign-type-mismatch
-					local channeledManaPotion = snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id]
+					local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
+					local manaTideTotem = snapshotData.snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
+					local symbolOfHope = snapshotData.snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
+					local moltenRadiance = snapshotData.snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
+					local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
+					local channeledManaPotion = snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 		
 					if potionOfChilledClarity.buff.isActive then
 						if specSettings.colors.bar.potionOfChilledClarityBorderChange then
@@ -3968,7 +3941,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 						if specSettings.audio.innervate.enabled and snapshotData.audio.innervateCue == false then
 							snapshotData.audio.innervateCue = true
-		---@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.innervate.sound, coreSettings.audio.channel.channel)
 						end
 					end
@@ -4354,7 +4326,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							if settings.audio.apexPredatorsCraving.enabled then
-								---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(settings.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end

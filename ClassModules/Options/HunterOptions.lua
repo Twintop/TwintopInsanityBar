@@ -1355,7 +1355,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.audio.killShot.enabled = self:GetChecked()
 
 			if spec.audio.killShot.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -1421,7 +1420,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.audio.overcap.enabled = self:GetChecked()
 
 			if spec.audio.overcap.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2425,7 +2423,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.audio.aimedShot.enabled = self:GetChecked()
 
 			if spec.audio.aimedShot.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.aimedShot.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2542,7 +2539,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.audio.lockAndLoad.enabled = self:GetChecked()
 
 			if spec.audio.lockAndLoad.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2608,7 +2604,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.audio.killShot.enabled = self:GetChecked()
 
 			if spec.audio.killShot.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2674,7 +2669,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.audio.overcap.enabled = self:GetChecked()
 
 			if spec.audio.overcap.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2739,7 +2733,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.audio.secretsOfTheUnblinkingVigil.enabled = self:GetChecked()
 
 			if spec.audio.secretsOfTheUnblinkingVigil.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.secretsOfTheUnblinkingVigil.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -3607,7 +3600,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.audio.killShot.enabled = self:GetChecked()
 
 			if spec.audio.killShot.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -3674,7 +3666,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.audio.overcap.enabled = self:GetChecked()
 
 			if spec.audio.overcap.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)

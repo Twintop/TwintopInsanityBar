@@ -1018,8 +1018,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
-							snapshotData.audio.overcapCue = true
-							---@diagnostic disable-next-line: redundant-parameter
+							snapshotData.audio.overcapCue = true			
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else

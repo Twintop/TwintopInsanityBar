@@ -1364,7 +1364,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			spec.audio.innervate.enabled = self:GetChecked()
 
 			if spec.audio.innervate.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
