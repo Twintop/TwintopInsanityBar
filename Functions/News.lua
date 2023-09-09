@@ -11,6 +11,7 @@ local content = [====[
 ## General
 - [#323 - REFACTOR](#323) More enhancements, clean up, and standardize how buff, cooldown, and computed data is stored and handled.
 <br/>&emsp;&ensp;- The following specializations are included in this update:
+<br/>&emsp;&ensp;&emsp;&ensp;- **Evoker** - Devastation, Preservation, Augmentation
 <br/>&emsp;&ensp;&emsp;&ensp;- **Warrior** - Arms, Fury
 - [#323 - REFACTOR](#323) General linting and cleanups.
 
