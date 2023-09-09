@@ -83,7 +83,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 	local targetData
 
 	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 1 or classIndexId == 5 or classIndexId == 11 or classIndexId == 12 then --Only do this if we're on a Warrior, Priest, Druid, or Demon Hunter!
+	if classIndexId == 1 or classIndexId == 5 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Druid, Demon Hunter, or Evoker!
 		---@type TRB.Classes.TargetData
 		targetData = TRB.Data.snapshotData.targetData
 	else
