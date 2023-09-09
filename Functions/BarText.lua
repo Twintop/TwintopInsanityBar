@@ -643,7 +643,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	local target
 	
 	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 1 or classIndexId == 5 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Druid, Demon Hunter, or Evoker!
+	if classIndexId == 1 or classIndexId == 5 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Monk, Druid, Demon Hunter, or Evoker!
 		snapshot = TRB.Data.snapshotData.attributes
 		---@type TRB.Classes.Target
 		target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
@@ -713,7 +713,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	local castingIcon
 	local castingAmount
 	
-	if classIndexId == 1 or classIndexId == 5 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Druid, Demon Hunter, or Evoker!
+	if classIndexId == 1 or classIndexId == 5 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Monk, Druid, Demon Hunter, or Evoker!
 		castingIcon = TRB.Data.snapshotData.casting.icon or ""
 		castingAmount = TRB.Data.snapshotData.casting.resourceFinal or 0
 	else
@@ -819,20 +819,20 @@ function TRB.Functions.BarText:IsTtdActive(settings)
 		if string.find(settings.displayText.left.text, "$ttd") or
 			string.find(settings.displayText.middle.text, "$ttd") or
 			string.find(settings.displayText.right.text, "$ttd") then
-			if classIndexId == 1 or classIndexId == 5 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Druid, Demon Hunter, or Evoker!
+			if classIndexId == 1 or classIndexId == 5 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Monk, Druid, Demon Hunter, or Evoker!
 				TRB.Data.snapshotData.targetData.ttdIsActive = true
 			else
 				TRB.Data.snapshot.targetData.ttdIsActive = true
 			end
 		else
-			if classIndexId == 1 or classIndexId == 5 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Druid, Demon Hunter, or Evoker!
+			if classIndexId == 1 or classIndexId == 5 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Monk, Druid, Demon Hunter, or Evoker!
 				TRB.Data.snapshotData.targetData.ttdIsActive = false
 			else
 				TRB.Data.snapshot.targetData.ttdIsActive = false
 			end	
 		end
 	else
-		if classIndexId == 1 or classIndexId == 5 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Druid, Demon Hunter, or Evoker!
+		if classIndexId == 1 or classIndexId == 5 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Monk, Druid, Demon Hunter, or Evoker!
 			TRB.Data.snapshotData.targetData.ttdIsActive = false
 		else
 			TRB.Data.snapshot.targetData.ttdIsActive = false
@@ -921,7 +921,7 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 		valid = true
 	elseif var == "$ttd" or var == "$ttdSeconds" then
 		local _, _, classIndexId = UnitClass("player")
-		if classIndexId == 1 or classIndexId == 5 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Druid, Demon Hunter, or Evoker!
+		if classIndexId == 1 or classIndexId == 5 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Monk, Druid, Demon Hunter, or Evoker!
 			if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].timeToDie.time > 0 then
 				valid = true
 			end

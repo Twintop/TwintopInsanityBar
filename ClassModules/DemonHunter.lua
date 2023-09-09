@@ -1197,8 +1197,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Data.barConstructedForSpec = nil
 		end
 		
-		TwintopGlobalSnapshotData = TRB.Data.snapshotData
-		TwintopGlobalSettings = TRB.Data.settings
 		TRB.Functions.Class:EventRegistration()
 	end
 
