@@ -286,7 +286,7 @@ function TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot, auto
         autoUpdate = true
     end
 
-    self.id = spell.debuffId or spell.spellId or spell.id or nil
+    self.id = spell.debuffId or spell.spellId or spell.id
     self.spell = spell
     self.active = false
     self.isDot = isDot
