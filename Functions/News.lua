@@ -13,6 +13,7 @@ local content = [====[
 <br/>&emsp;&ensp;- The following specializations are included in this update:
 <br/>&emsp;&ensp;&emsp;&ensp;- **Evoker** - Devastation, Preservation, Augmentation
 <br/>&emsp;&ensp;&emsp;&ensp;- **Monk** - Mistweaver, Windwalker
+<br/>&emsp;&ensp;&emsp;&ensp;- **Rogue** - Assassination, Outlaw
 <br/>&emsp;&ensp;&emsp;&ensp;- **Shaman** - Elemental, Enhancement, Restoration
 <br/>&emsp;&ensp;&emsp;&ensp;- **Warrior** - Arms, Fury
 

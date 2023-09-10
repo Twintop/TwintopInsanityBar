@@ -368,6 +368,18 @@ function TRB.Classes.SnapshotCooldown:Refresh(force)
     self:GetRemainingTime()
 end
 
+---Determines if the cooldown is unusable, either by virtue of being completely off on cooldown or having no charges to spend
+---@return boolean
+function TRB.Classes.SnapshotCooldown:IsUnusable()
+    return (self.charges == nil or self.charges == 0) and self.onCooldown
+end
+
+---Determines if the cooldown is usable, either by virtue of being completely off of cooldown or having charges to spend
+---@return boolean
+function TRB.Classes.SnapshotCooldown:IsUsable()
+    return not self.onCooldown
+end
+
 
 ---@class TRB.Classes.SnapshotCasting
 ---@field public spellId integer?

@@ -1308,15 +1308,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 		}
 
-		---@type TRB.Classes.Snapshot
-		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.voidform.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.voidform)
-		---@type TRB.Classes.Snapshot
-		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.darkAscension.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.darkAscension)
 		specCache.shadow.snapshotData.audio = {
 			playedDpCue = false,
 			playedMdCue = false,
 			overcapCue = false
 		}
+		---@type TRB.Classes.Snapshot
+		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.voidform.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.voidform)
+		---@type TRB.Classes.Snapshot
+		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.darkAscension.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.darkAscension)
 		---@type TRB.Classes.Snapshot
 		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.shadowfiend.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.shadowfiend, {
 			guid = nil,
@@ -2104,10 +2104,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function RefreshLookupData_Discipline()
+		local specSettings = TRB.Data.settings.priest.discipline
 		local spells = TRB.Data.spells
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
-		local specSettings = TRB.Data.settings.priest.discipline
 		local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 		local currentTime = GetTime()
 		local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
@@ -3659,11 +3659,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					if TRB.Functions.Talent:IsTalentActive(spells.shadowfiend) and not shadowfiend.buff.isActive then
 						local shadowfiendThresholdColor = specSettings.colors.threshold.over
-						if specSettings.thresholds.shadowfiend.enabled and (not shadowfiend.cooldown.onCooldown or specSettings.thresholds.shadowfiend.cooldown) then
+						if specSettings.thresholds.shadowfiend.enabled and (not shadowfiend.cooldown:IsUnusable() or specSettings.thresholds.shadowfiend.cooldown) then
 							local haveTotem, timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = GetMaximumShadowfiendResults()
 							local shadowfiendMana = swingsRemaining * shadowfiend.spell.manaPercent * TRB.Data.character.maxResource
 
-							if shadowfiend.cooldown.onCooldown then
+							if shadowfiend.cooldown:IsUnusable() then
 								shadowfiendThresholdColor = specSettings.colors.threshold.unusable
 							end
 
@@ -3923,11 +3923,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					if TRB.Functions.Talent:IsTalentActive(spells.shadowfiend) and not shadowfiend.buff.isActive then
 						local shadowfiendThresholdColor = specSettings.colors.threshold.over
-						if specSettings.thresholds.shadowfiend.enabled and (not shadowfiend.cooldown.onCooldown or specSettings.thresholds.shadowfiend.cooldown) then
+						if specSettings.thresholds.shadowfiend.enabled and (not shadowfiend.cooldown:IsUnusable() or specSettings.thresholds.shadowfiend.cooldown) then
 							local haveTotem, timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = GetMaximumShadowfiendResults()
 							local shadowfiendMana = swingsRemaining * shadowfiend.spell.manaPercent * TRB.Data.character.maxResource
 
-							if shadowfiend.cooldown.onCooldown then
+							if shadowfiend.cooldown:IsUnusable() then
 								shadowfiendThresholdColor = specSettings.colors.threshold.unusable
 							end
 
@@ -4291,7 +4291,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
-								if (snapshotData.snapshots[spell.id].cooldown.charges == nil or snapshotData.snapshots[spell.id].cooldown.charges == 0) and	snapshotData.snapshots[spell.id].cooldown.onCooldown then
+								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif snapshotData.attributes.resource >= -resourceAmount then
@@ -5296,11 +5296,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$potionCooldown" then
-				if snapshots[spells.aeratedManaPotionRank1.id].cooldown.onCooldown then
+				if snapshots[spells.aeratedManaPotionRank1.id].cooldown:IsUnusable() then
 					valid = true
 				end
 			elseif var == "$potionCooldownSeconds" then
-				if snapshots[spells.aeratedManaPotionRank1.id].cooldown.onCooldown then
+				if snapshots[spells.aeratedManaPotionRank1.id].cooldown:IsUnusable() then
 					valid = true
 				end
 			elseif var == "$solStacks" then

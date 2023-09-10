@@ -1487,7 +1487,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == spells.impendingVictory.id then
-									if snapshots[spell.id].cooldown.onCooldown then
+									if snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif currentRage >= -rageAmount or snapshots[spells.victoryRush.id].buff.isActive then
@@ -1502,7 +1502,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 									end
 
-									if snapshots[spell.id].cooldown.onCooldown then
+									if snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif currentRage >= -rageAmount then
@@ -1517,7 +1517,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 									end
 
-									if snapshots[spell.id].cooldown.onCooldown then
+									if snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif currentRage >= -rageAmount then
@@ -1531,7 +1531,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										rageAmount = rageAmount + spells.stormOfSwords.rageMod
 									end 
 									
-									if snapshots[spell.id].cooldown.onCooldown then
+									if snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif currentRage >= -rageAmount or snapshots[spells.victoryRush.id].buff.isActive then
@@ -1544,7 +1544,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 								end
 							elseif spell.hasCooldown then
-								if (snapshots[spell.id].cooldown.charges == nil or snapshots[spell.id].cooldown.charges == 0) and snapshots[spell.id].cooldown.onCooldown then
+								if snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif currentRage >= -rageAmount then
@@ -1687,7 +1687,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 												TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, math.min(math.max(-rageAmount, normalizedRage), -spells.execute.rageMax), TRB.Data.character.maxResource)
 											end
 
-											if snapshots[spell.id].cooldown.onCooldown then
+											if snapshots[spell.id].cooldown:IsUnusable() then
 												thresholdColor = specSettings.colors.threshold.unusable
 											elseif currentRage >= -rageAmount then
 												thresholdColor = specSettings.colors.threshold.over
@@ -1698,7 +1698,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										end
 									end
 								elseif spell.id == spells.impendingVictory.id then
-									if snapshots[spell.id].cooldown.onCooldown then
+									if snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif currentRage >= -rageAmount or snapshots[spells.victoryRush.id].buff.isActive then
@@ -1709,7 +1709,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									end
 								end
 							elseif spell.hasCooldown then
-								if (snapshots[spell.id].cooldown.charges == nil or snapshots[spell.id].cooldown.charges == 0) and snapshots[spell.id].cooldown.onCooldown then
+								if snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif currentRage >= -rageAmount then

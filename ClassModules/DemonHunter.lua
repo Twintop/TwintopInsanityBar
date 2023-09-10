@@ -931,7 +931,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -furyAmount, TRB.Data.character.maxResource)
 
-									if snapshotData.snapshots[spells.chaosNova.id].cooldown.onCooldown then
+									if snapshotData.snapshots[spells.chaosNova.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									elseif currentFury >= -furyAmount then
@@ -967,7 +967,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 									end
 								end
 							elseif spell.hasCooldown then
-								if (snapshotData.snapshots[spell.id].cooldown.charges == nil or snapshotData.snapshots[spell.id].cooldown.charges == 0) and	snapshotData.snapshots[spell.id].cooldown.onCooldown then
+								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif currentFury >= -furyAmount then

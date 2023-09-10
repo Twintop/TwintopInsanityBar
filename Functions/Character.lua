@@ -19,7 +19,7 @@ function TRB.Functions.Character:UpdateSnapshot()
 	local target
 
 	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 1 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
+	if classIndexId == 1 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Rogue, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
 		snapshot = TRB.Data.snapshotData.attributes
 		---@type TRB.Classes.Target
 		target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
@@ -67,7 +67,7 @@ end
 
 function TRB.Functions.Character:ResetSnapshotData()
 	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 1 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
+	if classIndexId == 1 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Rogue, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
 		--TRB.Data.snapshotData = TRB.Classes.SnapshotData:New()
 	else
 		TRB.Data.snapshot = {
@@ -112,7 +112,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Functions.Character:ResetSnapshotData()
 
 	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 1 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
+	if classIndexId == 1 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Rogue, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
 		TRB.Data.snapshotData = cache.snapshotData
 	else
 		TRB.Data.snapshot = TRB.Functions.Table:Merge(TRB.Data.snapshot, cache.snapshot)
@@ -210,7 +210,7 @@ end
 
 function TRB.Functions.Character:ResetCastingSnapshotData()
 	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 1 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
+	if classIndexId == 1 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Rogue, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
 		---@type TRB.Classes.SnapshotCasting
 		local casting = TRB.Data.snapshotData.casting
 		casting:Reset()

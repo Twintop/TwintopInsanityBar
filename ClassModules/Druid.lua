@@ -3494,7 +3494,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
-								if (snapshotData.snapshots[spell.id].cooldown.charges == nil or snapshotData.snapshots[spell.id].cooldown.charges == 0) and	snapshotData.snapshots[spell.id].cooldown.onCooldown then
+								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif currentResource >= -resourceAmount then
@@ -3752,7 +3752,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
-								if (snapshotData.snapshots[spell.id].cooldown.charges == nil or snapshotData.snapshots[spell.id].cooldown.charges == 0) and	snapshotData.snapshots[spell.id].cooldown.onCooldown then
+								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif snapshotData.attributes.resource >= -energyAmount then
@@ -5168,7 +5168,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$tigersFuryCooldownTime" then
-				if snapshots[spells.tigersFury.id].cooldown.onCooldown then
+				if snapshots[spells.tigersFury.id].cooldown:IsUnusable() then
 					valid = true
 				end
 			elseif var == "$predatorRevealedTime" then
@@ -5315,11 +5315,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$potionCooldown" then
-				if snapshots[spells.aeratedManaPotionRank1.id].cooldown.onCooldown then
+				if snapshots[spells.aeratedManaPotionRank1.id].cooldown:IsUnusable() then
 					valid = true
 				end
 			elseif var == "$potionCooldownSeconds" then
-				if snapshots[spells.aeratedManaPotionRank1.id].cooldown.onCooldown then
+				if snapshots[spells.aeratedManaPotionRank1.id].cooldown:IsUnusable() then
 					valid = true
 				end
 			elseif var == "$incarnationTime" then

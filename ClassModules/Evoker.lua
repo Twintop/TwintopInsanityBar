@@ -2208,11 +2208,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					valid = true
 				end
 			elseif var == "$potionCooldown" then
-				if snapshots[spells.aeratedManaPotionRank1.id].cooldown.onCooldown then
+				if snapshots[spells.aeratedManaPotionRank1.id].cooldown:IsUnusable() then
 					valid = true
 				end
 			elseif var == "$potionCooldownSeconds" then
-				if snapshots[spells.aeratedManaPotionRank1.id].cooldown.onCooldown then
+				if snapshots[spells.aeratedManaPotionRank1.id].cooldown:IsUnusable() then
 					valid = true
 				end
 			end
