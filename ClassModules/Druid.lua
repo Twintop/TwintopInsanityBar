@@ -2993,8 +2993,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function UpdateCastingResourceFinal_Restoration()
 		-- Do nothing for now
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		-- Do nothing for now
@@ -3002,9 +3001,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 
 	local function CastingSpell()
-		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local spells = TRB.Data.spells		
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local specId = GetSpecialization()
 		local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
 		local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")

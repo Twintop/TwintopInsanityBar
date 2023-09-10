@@ -2482,6 +2482,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$potionOfFrozenFocusTime
 		local _potionOfFrozenFocusTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
 		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
+		
 		--$sfMana
 		local _sfMana = snapshots[spells.shadowfiend.id].attributes.resourceFinal or 0
 		local sfMana = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_sfMana, manaPrecision, "floor", true))
@@ -2718,12 +2719,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function RefreshLookupData_Shadow()
+		local specSettings = TRB.Data.settings.priest.shadow
 		local spells = TRB.Data.spells
 		---@type TRB.Classes.SnapshotData
 		local snapshotData = TRB.Data.snapshotData
 		local snapshots = snapshotData.snapshots
-		local specSettings = TRB.Data.settings.priest.shadow
-		---@type TRB.Classes.TargetData
 		local targetData = snapshotData.targetData
 		local target = targetData.targets[targetData.currentTargetGuid]
 		local currentTime = GetTime()
@@ -4175,7 +4175,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						passiveValue = ((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * (snapshotData.targetData.custom.auspiciousSpiritsGenerate or 0)) + snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal + snapshots[spells.idolOfCthun.id].attributes.resourceFinal)
 						if (snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal) > 0 and (castingBarValue + (snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)) < TRB.Data.character.maxResource then
 							TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (castingBarValue + (snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
 							TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 							TRB.Frames.passiveFrame.thresholds[1]:Show()
 						else

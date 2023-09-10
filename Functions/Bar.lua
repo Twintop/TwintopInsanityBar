@@ -40,7 +40,7 @@ function TRB.Functions.Bar:ShowResourceBar()
 	end
 
 	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 1 or classIndexId == 5 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Monk, Druid, Demon Hunter, or Evoker!
+	if classIndexId == 1 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
 		TRB.Data.snapshotData.attributes.isTracking = true
 	else
 		TRB.Data.snapshot.isTracking = true
