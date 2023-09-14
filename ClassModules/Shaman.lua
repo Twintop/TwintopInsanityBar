@@ -2,7 +2,6 @@ local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 7 then --Only do this if we're on a Shaman!
 	TRB.Functions.Class = TRB.Functions.Class or {}
-	TRB.Functions.Character:ResetSnapshotData()
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
@@ -1779,19 +1778,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local spells = TRB.Data.spells
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
-		local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 		local currentTime = GetTime()
 		TRB.Functions.Character:UpdateSnapshot()
-		
-		if snapshotData.targetData.currentTargetGuid ~= nil and target then
-			if target.spells[spells.flameShock.id].active then
-				local expiration = select(6, TRB.Functions.Aura:FindDebuffById(spells.flameShock.id, "target", "player"))
-			
-				if expiration ~= nil then
-					target.spells[spells.flameShock.id].remainingTime = expiration - currentTime
-				end
-			end
-		end
 
 		snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
 	end

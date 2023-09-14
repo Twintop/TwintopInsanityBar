@@ -2,6 +2,7 @@
 local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
 
+
 ---@class TRB.Classes.SnapshotData
 ---@field public targetData TRB.Classes.TargetData
 ---@field public snapshots TRB.Classes.Snapshot[]

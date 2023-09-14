@@ -639,34 +639,24 @@ end
 
 function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	--Spec specific implementations also needed. This is general/cross-spec data
-	local snapshot
-	local target
-	
-	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 1 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Rogue, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
-		snapshot = TRB.Data.snapshotData.attributes
-		---@type TRB.Classes.Target
-		target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
-	else
-		snapshot = TRB.Data.snapshot
-		---@type TRB.Classes.Target
-		target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
-	end
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local targetData = snapshotData.targetData
+	local target = targetData.targets[targetData.currentTargetGuid]
 
 	--$crit
-	local critPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshot.crit, settings.hastePrecision))
+	local critPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.crit, settings.hastePrecision))
 
 	--$critRating
-	local critRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshot.critRating, settings.hastePrecision, "floor", true))
+	local critRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.critRating, settings.hastePrecision, "floor", true))
 
 	--$mastery
-	local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshot.mastery, settings.hastePrecision))
+	local masteryPercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.mastery, settings.hastePrecision))
 
 	--$masteryRating
-	local masteryRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshot.masteryRating, settings.hastePrecision, "floor", true))
+	local masteryRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.masteryRating, settings.hastePrecision, "floor", true))
 
 	--$gcd
-	local _gcd = 1.5 / (1 + (snapshot.haste/100))
+	local _gcd = 1.5 / (1 + (snapshotData.attributes.haste/100))
 	if _gcd > 1.5 then
 		_gcd = 1.5
 	elseif _gcd < 0.75 then
@@ -675,26 +665,26 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	local gcd = string.format("%.2f", _gcd)
 
 	--$haste
-	local hastePercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshot.haste, settings.hastePrecision))
+	local hastePercent = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.haste, settings.hastePrecision))
 	
 	--$hasteRating
-	local hasteRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshot.hasteRating, settings.hastePrecision, "floor", true))
+	local hasteRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.hasteRating, settings.hastePrecision, "floor", true))
 
 	--$vers
-	local versOff = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshot.versatilityOffensive, settings.hastePrecision))
-	local versDef = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshot.versatilityDefensive, settings.hastePrecision))
+	local versOff = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.versatilityOffensive, settings.hastePrecision))
+	local versDef = string.format("%." .. settings.hastePrecision .. "f", TRB.Functions.Number:RoundTo(snapshotData.attributes.versatilityDefensive, settings.hastePrecision))
 
 	--$versRating
-	local versRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshot.versatilityRating, settings.hastePrecision, "floor", true))
+	local versRating = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.versatilityRating, settings.hastePrecision, "floor", true))
 	
 	--$int
-	local int = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshot.intellect, settings.hastePrecision, "floor", true))
+	local int = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.intellect, settings.hastePrecision, "floor", true))
 	--$agi
-	local agi = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshot.agility, settings.hastePrecision, "floor", true))
+	local agi = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.agility, settings.hastePrecision, "floor", true))
 	--$str
-	local str = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshot.strength, settings.hastePrecision, "floor", true))
+	local str = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.strength, settings.hastePrecision, "floor", true))
 	--$stam
-	local stam = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshot.stamina, settings.hastePrecision, "floor", true))
+	local stam = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(snapshotData.attributes.stamina, settings.hastePrecision, "floor", true))
 
 	--$ttd
 	local _ttd = 0
@@ -710,17 +700,8 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	end
 
 	--#castingIcon
-	local castingIcon
-	local castingAmount
-	
-	if classIndexId == 1 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Rogue, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
-		castingIcon = TRB.Data.snapshotData.casting.icon or ""
-		castingAmount = TRB.Data.snapshotData.casting.resourceFinal or 0
-	else
-		castingIcon = snapshot.casting.icon or ""
-		castingAmount = snapshot.casting.resourceFinal or 0
-	end
-
+	local castingIcon = snapshotData.casting.icon or ""
+	local castingAmount = snapshotData.casting.resourceFinal or 0
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#casting"] = castingIcon
@@ -765,35 +746,35 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 
 
 	local lookupLogic = TRB.Data.lookupLogic or {}
-	lookupLogic["$haste"] = snapshot.haste
-	lookupLogic["$hastePercent"] = snapshot.haste
-	lookupLogic["$crit"] = snapshot.crit
-	lookupLogic["$critPercent"] = snapshot.crit
-	lookupLogic["$mastery"] = snapshot.mastery
-	lookupLogic["$masteryPercent"] = snapshot.mastery
-	lookupLogic["$vers"] = snapshot.versatilityOffensive
-	lookupLogic["$versPercent"] = snapshot.versatilityOffensive
-	lookupLogic["$versatility"] = snapshot.versatilityOffensive
-	lookupLogic["$versatilityPercent"] = snapshot.versatilityOffensive
-	lookupLogic["$oVers"] = snapshot.versatilityOffensive
-	lookupLogic["$oVersPercent"] = snapshot.versatilityOffensive
-	lookupLogic["$dVers"] = snapshot.versatilityDefensive
-	lookupLogic["$dVersPercent"] = snapshot.versatilityDefensive
+	lookupLogic["$haste"] = snapshotData.attributes.haste
+	lookupLogic["$hastePercent"] = snapshotData.attributes.haste
+	lookupLogic["$crit"] = snapshotData.attributes.crit
+	lookupLogic["$critPercent"] = snapshotData.attributes.crit
+	lookupLogic["$mastery"] = snapshotData.attributes.mastery
+	lookupLogic["$masteryPercent"] = snapshotData.attributes.mastery
+	lookupLogic["$vers"] = snapshotData.attributes.versatilityOffensive
+	lookupLogic["$versPercent"] = snapshotData.attributes.versatilityOffensive
+	lookupLogic["$versatility"] = snapshotData.attributes.versatilityOffensive
+	lookupLogic["$versatilityPercent"] = snapshotData.attributes.versatilityOffensive
+	lookupLogic["$oVers"] = snapshotData.attributes.versatilityOffensive
+	lookupLogic["$oVersPercent"] = snapshotData.attributes.versatilityOffensive
+	lookupLogic["$dVers"] = snapshotData.attributes.versatilityDefensive
+	lookupLogic["$dVersPercent"] = snapshotData.attributes.versatilityDefensive
 
-	lookupLogic["$hasteRating"] = snapshot.hasteRating
-	lookupLogic["$critRating"] = snapshot.critRating
-	lookupLogic["$masteryRating"] = snapshot.masteryRating
-	lookupLogic["$versRating"] = snapshot.versatilityRating
-	lookupLogic["$versatilityRating"] = snapshot.versatilityRating
+	lookupLogic["$hasteRating"] = snapshotData.attributes.hasteRating
+	lookupLogic["$critRating"] = snapshotData.attributes.critRating
+	lookupLogic["$masteryRating"] = snapshotData.attributes.masteryRating
+	lookupLogic["$versRating"] = snapshotData.attributes.versatilityRating
+	lookupLogic["$versatilityRating"] = snapshotData.attributes.versatilityRating
 
-	lookupLogic["$int"] = snapshot.intellect
-	lookupLogic["$intellect"] = snapshot.intellect
-	lookupLogic["$str"] = snapshot.strength
-	lookupLogic["$strength"] = snapshot.strength
-	lookupLogic["$agi"] = snapshot.agility
-	lookupLogic["$agility"] = snapshot.agility
-	lookupLogic["$stam"] = snapshot.stamina
-	lookupLogic["$stamina"] = snapshot.stamina
+	lookupLogic["$int"] = snapshotData.attributes.intellect
+	lookupLogic["$intellect"] = snapshotData.attributes.intellect
+	lookupLogic["$str"] = snapshotData.attributes.strength
+	lookupLogic["$strength"] = snapshotData.attributes.strength
+	lookupLogic["$agi"] = snapshotData.attributes.agility
+	lookupLogic["$agility"] = snapshotData.attributes.agility
+	lookupLogic["$stam"] = snapshotData.attributes.stamina
+	lookupLogic["$stamina"] = snapshotData.attributes.stamina
 
 	lookupLogic["$gcd"] = _gcd
 	lookupLogic["$ttd"] = _ttd
@@ -807,36 +788,24 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 			seconds = ttdTotalSeconds or 0
 		},
 		resource = {
-			resource = snapshot.resource or 0,
+			resource = snapshotData.attributes.resource or 0,
 			casting = castingAmount
 		}
 	}
 end
 
 function TRB.Functions.BarText:IsTtdActive(settings)
-	local _, _, classIndexId = UnitClass("player")
+	local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
 	if settings ~= nil and settings.displayText ~= nil then
 		if string.find(settings.displayText.left.text, "$ttd") or
 			string.find(settings.displayText.middle.text, "$ttd") or
 			string.find(settings.displayText.right.text, "$ttd") then
-			if classIndexId == 1 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Rogue, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
-				TRB.Data.snapshotData.targetData.ttdIsActive = true
-			else
-				TRB.Data.snapshot.targetData.ttdIsActive = true
-			end
+			targetData.ttdIsActive = true
 		else
-			if classIndexId == 1 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Rogue, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
-				TRB.Data.snapshotData.targetData.ttdIsActive = false
-			else
-				TRB.Data.snapshot.targetData.ttdIsActive = false
-			end	
+			targetData.ttdIsActive = false
 		end
 	else
-		if classIndexId == 1 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Rogue, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
-			TRB.Data.snapshotData.targetData.ttdIsActive = false
-		else
-			TRB.Data.snapshot.targetData.ttdIsActive = false
-		end
+		targetData.ttdIsActive = false
 	end
 end
 
@@ -920,15 +889,9 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 	elseif var == "$stam" or var == "$stamina" then
 		valid = true
 	elseif var == "$ttd" or var == "$ttdSeconds" then
-		local _, _, classIndexId = UnitClass("player")
-		if classIndexId == 1 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Rogue, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
-			if TRB.Data.snapshotData.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid].timeToDie.time > 0 then
-				valid = true
-			end
-		else
-			if TRB.Data.snapshot.targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid] ~= nil and TRB.Data.snapshot.targetData.targets[TRB.Data.snapshot.targetData.currentTargetGuid].timeToDie.time > 0 then
-				valid = true
-			end
+		local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
+		if targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and target ~= nil and target.timeToDie.time > 0 then
+			valid = true
 		end
 	elseif var == "$inCombat" then
 		if UnitAffectingCombat("player") then

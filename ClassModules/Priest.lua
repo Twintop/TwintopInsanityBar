@@ -2,7 +2,6 @@ local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 5 then --Only do this if we're on a Priest!
 	TRB.Functions.Class = TRB.Functions.Class or {}
-	TRB.Functions.Character:ResetSnapshotData()
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
@@ -4087,7 +4086,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Functions.Talent:IsTalentActive(spells[spells[snapshotData.casting.spellKey].holyWordKey]) then
 
 							local castTimeRemains = snapshotData.casting.endTime - currentTime
-							local holyWordCooldownRemaining = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshots[spells[spells[snapshotData.casting.spellKey].holyWordKey].id])
+							local holyWordCooldownRemaining = GetHolyWordCooldownTimeRemaining(snapshots[spells[spells[snapshotData.casting.spellKey].holyWordKey].id])
 
 							if (holyWordCooldownRemaining - CalculateHolyWordCooldown(spells[snapshotData.casting.spellKey].holyWordReduction, spells[snapshotData.casting.spellKey].id) - castTimeRemains) <= 0 and specSettings.bar[spells[snapshotData.casting.spellKey].holyWordKey .. "Enabled"] then
 								resourceBarColor = specSettings.colors.bar[spells[snapshotData.casting.spellKey].holyWordKey]
@@ -4309,7 +4308,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								end
 							end
 
-							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshots[spells[spell.settingKey].id], specSettings)
+							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spells[spell.settingKey].id], specSettings)
 						end
 					end
 

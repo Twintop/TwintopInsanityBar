@@ -7,11 +7,12 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 ----
-# 10.1.7.1-release (2023-09-10)
+# 10.1.7.1-release (2023-09-15)
 ## General
 - [#323 - REFACTOR](#323) More enhancements, clean up, and standardize how buff, cooldown, and computed data is stored and handled.
 <br/>&emsp;&ensp;- The following specializations are included in this update:
 <br/>&emsp;&ensp;&emsp;&ensp;- **Evoker** - Devastation, Preservation, Augmentation
+<br/>&emsp;&ensp;&emsp;&ensp;- **Hunter** - Beast Mastery, Marksmanship, Survival
 <br/>&emsp;&ensp;&emsp;&ensp;- **Monk** - Mistweaver, Windwalker
 <br/>&emsp;&ensp;&emsp;&ensp;- **Rogue** - Assassination, Outlaw
 <br/>&emsp;&ensp;&emsp;&ensp;- **Shaman** - Elemental, Enhancement, Restoration

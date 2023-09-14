@@ -2,7 +2,6 @@ local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 1 then --Only do this if we're on a Warrior!
 	TRB.Functions.Class = TRB.Functions.Class or {}
-	TRB.Functions.Character:ResetSnapshotData()
 
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
@@ -620,12 +619,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		---@type TRB.Classes.Snapshot
 		specCache.fury.snapshotData.snapshots[specCache.fury.spells.ravager.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.ravager, {
 			rage = 0,
-			ticksRemaining = 0,
-			totalDuration = 0
+			ticksRemaining = 0
 		})
 		---@type TRB.Classes.Snapshot
 		specCache.fury.snapshotData.snapshots[specCache.fury.spells.bladestorm.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.bladestorm, {
-			originalDuration = 0,
 			ticksRemaining = 0,
 			rage = 0
 		})
@@ -1282,7 +1279,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local ravager = TRB.Data.snapshotData.snapshots[spells.ravager.id]
 		ravager.buff:GetRemainingTime(currentTime)
 		if ravager.buff.isActive then
-			local ticksRemaining = math.ceil((ravager.buff.remaining) / (ravager.attributes.totalDuration / spells.ravager.ticks))
+			local ticksRemaining = math.ceil((ravager.buff.remaining) / (spells.ravager.duration / spells.ravager.ticks))
 
 			if ticksRemaining < ravager.attributes.ticksRemaining then
 				ravager.attributes.ticksRemaining = ticksRemaining
@@ -1295,7 +1292,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		else
 			ravager.attributes.rage = 0
 			ravager.attributes.ticksRemaining = 0
-			ravager.attributes.totalDuration = 0
 		end
 	end
 
@@ -1308,7 +1304,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local bladestorm = TRB.Data.snapshotData.snapshots[spells.bladestorm.id]
 		bladestorm.buff:GetRemainingTime(currentTime)
 		if bladestorm.buff.isActive then
-			local ticksRemaining = math.ceil((bladestorm.buff.remaining) / (bladestorm.attributes.totalDuration / spells.bladestorm.ticks))
+			local ticksRemaining = math.ceil((bladestorm.buff.remaining) / (spells.bladestorm.duration / spells.bladestorm.ticks))
 
 			if ticksRemaining < bladestorm.attributes.ticksRemaining then
 				bladestorm.attributes.ticksRemaining = ticksRemaining
@@ -1321,7 +1317,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		else
 			bladestorm.attributes.rage = 0
 			bladestorm.attributes.ticksRemaining = 0
-			bladestorm.attributes.totalDuration = 0
 		end
 	end
 
@@ -1818,21 +1813,19 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "fury" then
 					if spellId == spells.bladestorm.id then
-						snapshots[spells.bladestorm.id].buff:Initialize()
+						snapshots[spellId].buff:Initialize()
 						if type == "SPELL_AURA_APPLIED" then
-							local ticksRemaining = math.ceil((snapshots[spells.bladestorm.id].buff.remaining) / (snapshots[spells.bladestorm.id].attributes.totalDuration / spells.ravager.ticks))
+							local ticksRemaining = math.ceil((snapshots[spellId].buff.remaining) / (spells.bladestorm.duration / spells.ravager.ticks))
 							local rage = ticksRemaining * spells.bladestorm.rage
-							snapshots[spells.bladestorm.id].attributes.ticksRemaining = ticksRemaining
-							snapshots[spells.bladestorm.id].attributes.rage = rage
-							snapshots[spells.bladestorm.id].attributes.bladestorm.originalDuration = snapshots[spells.bladestorm.id].buff.duration
+							snapshots[spellId].attributes.ticksRemaining = ticksRemaining
+							snapshots[spellId].attributes.rage = rage
 
-							snapshotData.casting.spellId = spells.bladestorm.id
+							snapshotData.casting.spellId = spellId
 							snapshotData.casting.icon = spells.bladestorm.icon
 							UpdateBladestorm()
 						elseif type == "SPELL_AURA_REMOVED" then
-							snapshots[spells.bladestorm.id].attributes.ticksRemaining = 0
-							snapshots[spells.bladestorm.id].attributes.rage = 0
-							snapshots[spells.bladestorm.id].attributes.bladestorm.originalDuration = 0
+							snapshots[spellId].attributes.ticksRemaining = 0
+							snapshots[spellId].attributes.rage = 0
 						end
 					elseif spellId == spells.enrage.id then
 						snapshots[spellId].buff:Initialize(type)
@@ -1850,18 +1843,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					elseif spellId == spells.ravager.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Ravager used
 							local duration = spells.ravager.duration * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)
-							snapshots[spells.ravager.id].buff:InitializeCustom(duration)
+							snapshots[spellId].buff:InitializeCustom(duration)
 							
 							local ravagerRage = spells.ravager.rage
 							if TRB.Functions.Talent:IsTalentActive(spells.stormOfSteel) then
 								ravagerRage = ravagerRage + spells.stormOfSteel.rage
 							end
 							
-							snapshots[spells.ravager.id].attributes.ticksRemaining = spells.ravager.ticks
-							snapshots[spells.ravager.id].attributes.lastTick = currentTime
-							snapshots[spells.ravager.id].attributes.rage = snapshots[spells.ravager.id].attributes.ticksRemaining * ravagerRage
-							if snapshots[spells.ravager.id].attributes.rage < 0 then
-								snapshots[spells.ravager.id].attributes.rage = 0
+							snapshots[spellId].attributes.ticksRemaining = spells.ravager.ticks
+							snapshots[spellId].attributes.rage = snapshots[spellId].attributes.ticksRemaining * ravagerRage
+							if snapshots[spellId].attributes.rage < 0 then
+								snapshots[spellId].attributes.rage = 0
 							end
 						end
 					elseif spellId == spells.ravager.energizeId then
@@ -1870,7 +1862,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								if snapshots[spells.ravager.id].attributes.ticksRemaining == 1 then
 									snapshots[spells.ravager.id].buff:Reset()
 									snapshots[spells.ravager.id].attributes.ticksRemaining = 0
-									snapshots[spells.ravager.id].attributes.lastTick = nil
 									snapshots[spells.ravager.id].attributes.rage = 0
 								else
 									local ravagerRage = spells.ravager.rage
@@ -1879,7 +1870,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									end
 									
 									snapshots[spells.ravager.id].attributes.ticksRemaining = snapshots[spells.ravager.id].attributes.ticksRemaining - 1
-									snapshots[spells.ravager.id].attributes.lastTick = currentTime
 									snapshots[spells.ravager.id].attributes.rage = snapshots[spells.ravager.id].attributes.ticksRemaining * ravagerRage
 									if snapshots[spells.ravager.id].attributes.rage < 0 then
 										snapshots[spells.ravager.id].attributes.rage = 0

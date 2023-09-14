@@ -15,111 +15,53 @@ function TRB.Functions.Character:CheckCharacter()
 end
 
 function TRB.Functions.Character:UpdateSnapshot()
-	local snapshot
-	local target
-
-	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 1 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Rogue, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
-		snapshot = TRB.Data.snapshotData.attributes
-		---@type TRB.Classes.Target
-		target = TRB.Data.snapshotData.targetData.targets[TRB.Data.snapshotData.targetData.currentTargetGuid]
-	else
-		snapshot = TRB.Data.snapshot
-		---@type TRB.Classes.Target
-		target = snapshot.targetData.targets[snapshot.targetData.currentTargetGuid]
-	end
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local targetData = snapshotData.targetData
+	local target = targetData.targets[targetData.currentTargetGuid]
 
 	if target ~= nil then
 		target:UpdateAllSpellTracking(currentTime)
 	end
 
-	snapshot.resource = UnitPower("player", TRB.Data.resource, true)
+	snapshotData.attributes.resource = UnitPower("player", TRB.Data.resource, true)
 
 	if TRB.Data.resource2 ~= nil then
 		if TRB.Data.resource2 == "CUSTOM" and TRB.Data.resource2Id ~= nil then
 			local _, _, stacks, _, duration, endTime, _, _, _, spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.resource2Id)
-			snapshot.resource2 = stacks or 0
+			snapshotData.attributes.resource2 = stacks or 0
 		else
-			snapshot.resource2 = UnitPower("player", TRB.Data.resource2, true)
+			snapshotData.attributes.resource2 = UnitPower("player", TRB.Data.resource2, true)
 		end
 	end
 
-	snapshot.haste = UnitSpellHaste("player")
-	snapshot.crit = GetCritChance()
-	snapshot.mastery = GetMasteryEffect()
-	snapshot.versatilityOffensive = GetCombatRatingBonus(29)
-	snapshot.versatilityDefensive = GetCombatRatingBonus(31)
+	snapshotData.attributes.haste = UnitSpellHaste("player")
+	snapshotData.attributes.crit = GetCritChance()
+	snapshotData.attributes.mastery = GetMasteryEffect()
+	snapshotData.attributes.versatilityOffensive = GetCombatRatingBonus(29)
+	snapshotData.attributes.versatilityDefensive = GetCombatRatingBonus(31)
 
-	snapshot.hasteRating = GetCombatRating(20)
-	snapshot.critRating = GetCombatRating(11)
-	snapshot.masteryRating = GetCombatRating(26)
-	snapshot.versatilityRating = GetCombatRating(29)
+	snapshotData.attributes.hasteRating = GetCombatRating(20)
+	snapshotData.attributes.critRating = GetCombatRating(11)
+	snapshotData.attributes.masteryRating = GetCombatRating(26)
+	snapshotData.attributes.versatilityRating = GetCombatRating(29)
 	
-	---@diagnostic disable-next-line: assign-type-mismatch, cast-local-type
-	snapshot.strength, _, _, _ = UnitStat("player", 1)
-	---@diagnostic disable-next-line: assign-type-mismatch, cast-local-type
-	snapshot.agility, _, _, _ = UnitStat("player", 2)
-	---@diagnostic disable-next-line: assign-type-mismatch, cast-local-type
-	snapshot.stamina, _, _, _ = UnitStat("player", 3)
-	---@diagnostic disable-next-line: assign-type-mismatch, cast-local-type
-	snapshot.intellect, _, _, _ = UnitStat("player", 4)
-end
-
-function TRB.Functions.Character:ResetSnapshotData()
-	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 1 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Rogue, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
-		--TRB.Data.snapshotData = TRB.Classes.SnapshotData:New()
-	else
-		TRB.Data.snapshot = {
-			resource = 0,
-			haste = 0,
-			crit = 0,
-			mastery = 0,
-			versatilityOffensive = 0,
-			versatilityDefensive = 0,
-			hasteRating = 0,
-			critRating = 0,
-			masteryRating = 0,
-			versatilityRating = 0,
-			intellect = 0,
-			strength = 0,
-			agility = 0,
-			stamina = 0,
-			isTracking = false,
-			casting = {
-				spellId = nil,
-				startTime = nil,
-				endTime = nil,
-				resourceRaw = 0,
-				resourceFinal = 0,
-				icon = ""
-			},
-			targetData = {},
-			audio = {}
-		}
-	end
+	snapshotData.attributes.strength, _, _, _ = UnitStat("player", 1)
+	snapshotData.attributes.agility, _, _, _ = UnitStat("player", 2)
+	snapshotData.attributes.stamina, _, _, _ = UnitStat("player", 3)
+	snapshotData.attributes.intellect, _, _, _ = UnitStat("player", 4)
 end
 
 function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	Global_TwintopResourceBar = cache.Global_TwintopResourceBar
 
 	TRB.Data.character = cache.character
+	TRB.Data.character.specGroup = GetActiveSpecGroup()
 	TRB.Data.spells = cache.spells
 	TRB.Data.talents = cache.talents
 	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons
 	TRB.Data.barTextVariables.values = cache.barTextVariables.values
+	TRB.Data.snapshotData = cache.snapshotData
 
-	TRB.Functions.Character:ResetSnapshotData()
-
-	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 1 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Rogue, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
-		TRB.Data.snapshotData = cache.snapshotData
-	else
-		TRB.Data.snapshot = TRB.Functions.Table:Merge(TRB.Data.snapshot, cache.snapshot)
-	end
-
----@diagnostic disable-next-line: missing-parameter
-	TRB.Data.character.specGroup = GetActiveSpecGroup()
 end
 
 function TRB.Functions.Character:FillSpecializationCacheSettings(settings, cache, className, specName)
@@ -209,20 +151,9 @@ function TRB.Functions.Character:GetCurrentGCDTime(floor)
 end
 
 function TRB.Functions.Character:ResetCastingSnapshotData()
-	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 1 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Rogue, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
-		---@type TRB.Classes.SnapshotCasting
-		local casting = TRB.Data.snapshotData.casting
-		casting:Reset()
-	else
-		TRB.Data.snapshot.casting.spellId = nil
-		TRB.Data.snapshot.casting.startTime = nil
-		TRB.Data.snapshot.casting.endTime = nil
-		TRB.Data.snapshot.casting.resourceRaw = 0
-		TRB.Data.snapshot.casting.resourceFinal = 0
-		TRB.Data.snapshot.casting.icon = ""
-		TRB.Data.snapshot.casting.spellKey = nil
-	end
+	---@type TRB.Classes.SnapshotCasting
+	local casting = TRB.Data.snapshotData.casting
+	casting:Reset()
 end
 
 function TRB.Functions.Character:GetLatency()

@@ -2,7 +2,6 @@ local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 4 then --Only do this if we're on a Rogue!
 	TRB.Functions.Class = TRB.Functions.Class or {}
-	TRB.Functions.Character:ResetSnapshotData()
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resource2Frame = TRB.Frames.resource2Frame
@@ -78,7 +77,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		specCache.assassination.character = {
 			guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
 			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,

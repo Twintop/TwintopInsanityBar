@@ -80,16 +80,8 @@ if classIndexId == 4 or classIndexId == 7 or classIndexId == 10 or classIndexId 
 end
 
 function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
-	local targetData
-
-	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 1 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then --Only do this if we're on a Warrior, Rogue, Priest, Shaman, Monk, Druid, Demon Hunter, or Evoker!
-		---@type TRB.Classes.TargetData
-		targetData = TRB.Data.snapshotData.targetData
-	else
-		---@type TRB.Classes.TargetData
-		targetData = TRB.Data.snapshot.targetData
-	end
+	---@type TRB.Classes.TargetData
+	local targetData = TRB.Data.snapshotData.targetData
 
 	local currentTime = GetTime()	
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
