@@ -7,7 +7,7 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 ----
-# 10.1.7.1-release (2023-09-17)
+# 10.1.7.1-release (2023-09-16)
 ## General
 
 - [#54 - NEW](#54) Don't show the resource bar when you are in an active Pet Battle or on a Flight Path.
