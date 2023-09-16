@@ -20,6 +20,7 @@ local content = [====[
 <br/>&emsp;&ensp;&emsp;&ensp;- **Shaman** - Elemental, Enhancement, Restoration
 <br/>&emsp;&ensp;&emsp;&ensp;- **Warrior** - Arms, Fury
 - [#323 - REFACTOR](#323) General linting and cleanups.
+- [#323 - REFACTOR](#323) Favor a standardized tick-based resource generation class instead of custom solutions. Some abilities (Barbed Shot, Idol of C'Thun, Rapid Fire, and Eye Beam) continue to use their own special solutions.
 - [#323 - FIX](#323) Restore cooldown progress swirl on threshold icons.
 - [#323 - FIX](#323) Don't trigger threshold cooldown coloring and icon progress swirl from GCD locked abilities.
 
