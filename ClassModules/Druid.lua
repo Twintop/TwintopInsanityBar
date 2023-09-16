@@ -4378,12 +4378,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								end
 							end
 
-							local snapshotCooldown = nil
-							if snapshotData.snapshots[spell.id] ~= nil then
-								snapshotCooldown = snapshotData.snapshots[spell.id].cooldown
-							end
-
-							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshotCooldown, specSettings)
+							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshotData.snapshots[spell.id], specSettings)
 						end
 					end
 					
@@ -4915,12 +4910,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							end
 						end
 
-						local snapshotCooldown = nil
-						if snapshotData.snapshots[spell.id] ~= nil then
-							snapshotCooldown = snapshotData.snapshots[spell.id].cooldown
-						end
-
-						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshotCooldown, specSettings)
+						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshotData.snapshots[spell.id], specSettings)
 					end
 					pairOffset = pairOffset + 3
 				end
@@ -4929,7 +4919,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 					if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
 						snapshotData.audio.overcapCue = true
-						---@diagnostic disable-next-line: redundant-parameter
 						PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 					end
 				else
