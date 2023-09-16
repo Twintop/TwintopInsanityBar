@@ -1,3 +1,4 @@
+---@diagnostic disable: inject-field
 -- lua implementation of markdown originally from https://github.com/mpeterv/markdown
 
 local  MARKDOWN10 = "LibMarkdown-1.0";

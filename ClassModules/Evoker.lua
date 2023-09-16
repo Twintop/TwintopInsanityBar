@@ -1,8 +1,7 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
-if classIndexId == 13 then --Only do this if we're on a Evoker!
+if classIndexId == 13 then --Only do this if we're on an Evoker!
 	TRB.Functions.Class = TRB.Functions.Class or {}
-	TRB.Functions.Character:ResetSnapshotData()
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resource2Frame = TRB.Frames.resource2Frame
@@ -52,8 +51,34 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				textures = nil,
 				thresholds = nil
 			}
-		}
+		},
+		augmentation = {
+			snapshot = {},
+			barTextVariables = {
+				icons = {},
+				values = {}
+			},
+			spells = {},
+			talents = {},
+			settings = {
+				bar = nil,
+				comboPoints = nil,
+				displayBar = nil,
+				font = nil,
+				textures = nil,
+				thresholds = nil
+			}
+		},
 	}
+
+	---@type TRB.Classes.SnapshotData
+	specCache.devastation.snapshotData = TRB.Classes.SnapshotData:New()
+
+	---@type TRB.Classes.SnapshotData
+	specCache.preservation.snapshotData = TRB.Classes.SnapshotData:New()
+	
+	---@type TRB.Classes.SnapshotData
+	specCache.augmentation.snapshotData = TRB.Classes.SnapshotData:New()
 
 	local function CalculateManaGain(mana, isPotion)
 		if isPotion == nil then
@@ -103,8 +128,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		specCache.devastation.spells = {
 		}
 
-		specCache.devastation.snapshot.manaRegen = 0
-		specCache.devastation.snapshot.audio = {
+		specCache.devastation.snapshotData.attributes.manaRegen = 0
+		specCache.devastation.snapshotData.audio = {
 		}
 
 		specCache.devastation.barTextVariables = {
@@ -194,8 +219,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				name = "",
 				icon = "",
 				duration = 5.0, --Hasted
-				manaPercent = 0.02,
-				ticks = 5
+				resourcePerTick = 0.02,
+				tickRate = 1
 			},
 
 			-- External mana
@@ -223,6 +248,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 			-- Potions
 			aeratedManaPotionRank1 = {
+				id = 370607,
 				itemId = 191384,
 				spellId = 370607,
 				iconName = "inv_10_alchemy_bottle_shape1_blue",
@@ -259,6 +285,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				thresholdUsable = false
 			},
 			potionOfFrozenFocusRank1 = {
+				id = 371033,
 				itemId = 191363,
 				spellId = 371033,
 				name = "",
@@ -299,6 +326,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 			-- Conjured Chillglobe
 			conjuredChillglobe = {
+				id = 396391,
 				itemId = 194300,
 				spellId = 396391,
 				name = "",
@@ -336,46 +364,71 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		}
 
-		specCache.preservation.snapshot.manaRegen = 0
-		specCache.preservation.snapshot.audio = {
+		specCache.preservation.snapshotData.attributes.manaRegen = 0
+		specCache.preservation.snapshotData.audio = {
 			innervateCue = false
 		}
-		specCache.preservation.snapshot.emeraldCommunion = {
-			isActive = false,
-			duration = 0,
-			endTime = nil,
-			spellId = nil,
-			firstTickTime = nil,
-			previousTickTime = nil,
-			ticksRemaining = 0,
-			tickRate = 0,
-			resourceRaw = 0,
-			resourceFinal = 0
-		}
+		
 		---@type TRB.Classes.Healer.Innervate
-		specCache.preservation.snapshot.innervate = TRB.Classes.Healer.Innervate:New(specCache.preservation.spells.innervate)
-		---@type TRB.Classes.Healer.ManaTideTotem
-		specCache.preservation.snapshot.manaTideTotem = TRB.Classes.Healer.ManaTideTotem:New(specCache.preservation.spells.manaTideTotem)
-		---@type TRB.Classes.Healer.SymbolOfHope
-		specCache.preservation.snapshot.symbolOfHope = TRB.Classes.Healer.SymbolOfHope:New(specCache.preservation.spells.symbolOfHope, CalculateManaGain)
-		---@type TRB.Classes.Healer.ChanneledManaPotion
-		specCache.preservation.snapshot.channeledManaPotion = TRB.Classes.Healer.ChanneledManaPotion:New(specCache.preservation.spells.potionOfFrozenFocusRank1, CalculateManaGain)
-		specCache.preservation.snapshot.potion = {
-			onCooldown = false,
-			startTime = nil,
-			duration = 0
-		}
+		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.innervate.id] = TRB.Classes.Healer.Innervate:New(specCache.preservation.spells.innervate)
 		---@type TRB.Classes.Healer.PotionOfChilledClarity
-		specCache.preservation.snapshot.potionOfChilledClarity = TRB.Classes.Healer.PotionOfChilledClarity:New(specCache.preservation.spells.potionOfChilledClarity)
-		specCache.preservation.snapshot.conjuredChillglobe = {
-			onCooldown = false,
-			startTime = nil,
-			duration = 0
-		}
+		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.potionOfChilledClarity.id] = TRB.Classes.Healer.PotionOfChilledClarity:New(specCache.preservation.spells.potionOfChilledClarity)
+		---@type TRB.Classes.Healer.ManaTideTotem
+		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.manaTideTotem.id] = TRB.Classes.Healer.ManaTideTotem:New(specCache.preservation.spells.manaTideTotem)
+		---@type TRB.Classes.Healer.SymbolOfHope
+		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.symbolOfHope.id] = TRB.Classes.Healer.SymbolOfHope:New(specCache.preservation.spells.symbolOfHope, CalculateManaGain)
+		---@type TRB.Classes.Healer.ChanneledManaPotion
+		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.potionOfFrozenFocusRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(specCache.preservation.spells.potionOfFrozenFocusRank1, CalculateManaGain)
+		---@type TRB.Classes.Snapshot
+		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.aeratedManaPotionRank1.id] = TRB.Classes.Snapshot:New(specCache.preservation.spells.aeratedManaPotionRank1)
+		---@type TRB.Classes.Snapshot
+		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.conjuredChillglobe.id] = TRB.Classes.Snapshot:New(specCache.preservation.spells.conjuredChillglobe)
 		---@type TRB.Classes.Healer.MoltenRadiance
-		specCache.preservation.snapshot.moltenRadiance = TRB.Classes.Healer.MoltenRadiance:New(specCache.preservation.spells.moltenRadiance)
+		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(specCache.preservation.spells.moltenRadiance)
+		---@type TRB.Classes.Snapshot
+		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.emeraldCommunion.id] = TRB.Classes.Snapshot:New(specCache.preservation.spells.emeraldCommunion)
 
 		specCache.preservation.barTextVariables = {
+			icons = {},
+			values = {}
+		}
+
+		-- Augmentation
+		specCache.augmentation.Global_TwintopResourceBar = {
+			ttd = 0,
+			resource = {
+				resource = 0,
+				casting = 0,
+				passive = 0,
+				regen = 0
+			},
+			dots = {
+			},
+			isPvp = false
+		}
+
+		specCache.augmentation.character = {
+			guid = UnitGUID("player"),
+---@diagnostic disable-next-line: missing-parameter
+			specGroup = GetActiveSpecGroup(),
+			specId = 1,
+			maxResource = 10000,
+			maxResource2 = 5,
+			maxResource2Resource = 0,
+			maxResource2ResourceMax = 1000,
+			effects = {
+			},
+			items = {}
+		}
+
+		specCache.augmentation.spells = {
+		}
+
+		specCache.augmentation.snapshotData.attributes.manaRegen = 0
+		specCache.augmentation.snapshotData.audio = {
+		}
+
+		specCache.augmentation.barTextVariables = {
 			icons = {},
 			values = {}
 		}
@@ -397,6 +450,14 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "evoker", "preservation")
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)
+	end
+
+	local function Setup_Augmentation()
+		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
+			return
+		end
+
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "evoker", "augmentation")
 	end
 
 	local function FillSpellData_Devastation()
@@ -568,6 +629,65 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		specCache.preservation.spells = spells
 	end
 
+	local function FillSpellData_Augmentation()
+		Setup_Augmentation()
+		local spells = TRB.Functions.Spell:FillSpellData(specCache.augmentation.spells)
+
+		-- This is done here so that we can get icons for the options menu!
+		specCache.augmentation.barTextVariables.icons = {
+			{ variable = "#casting", icon = "", description = "The icon of the Mana generating spell you are currently hardcasting", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+		}
+		specCache.augmentation.barTextVariables.values = {
+			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
+			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
+			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
+			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
+			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
+			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
+			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
+			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
+			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+
+			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
+			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
+			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
+			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
+			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
+			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
+			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
+			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+
+			{ variable = "$mana", description = "Current Mana", printInSettings = true, color = false },
+			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },
+			{ variable = "$manaMax", description = "Maximum Mana", printInSettings = true, color = false },
+			{ variable = "$resourceMax", description = "Maximum Mana", printInSettings = false, color = false },
+
+			{ variable = "$essence", description = "Current Essence", printInSettings = true, color = false },
+			{ variable = "$comboPoints", description = "Current Essence", printInSettings = false, color = false },
+			{ variable = "$essenceMax", description = "Maximum Essence", printInSettings = true, color = false },
+			{ variable = "$comboPointsMax", description = "Maximum Essence", printInSettings = false, color = false },
+
+			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+		}
+
+		specCache.augmentation.spells = spells
+	end
+
 	local function CalculateAbilityResourceValue(resource, threshold)
 		local modifier = 1.0
 
@@ -580,17 +700,19 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		
 		if specId == 1 then -- Devastation
 		elseif specId == 2 then -- Preservation
+		elseif specId == 3 then -- Augmentation
 		end
 	end
 
 	local function TargetsCleanup(clearAll)
 		---@type TRB.Classes.TargetData
-		local targetData = TRB.Data.snapshot.targetData
+		local targetData = TRB.Data.snapshotData.targetData
 		targetData:Cleanup(clearAll)
 		if clearAll == true then
 			local specId = GetSpecialization()
 			if specId == 1 then
 			elseif specId == 2 then
+			elseif specId == 3 then
 			end
 		end
 	end
@@ -647,29 +769,44 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], TRB.Data.spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.evoker.preservation)
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], TRB.Data.spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.evoker.preservation)
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], TRB.Data.spells.conjuredChillglobe.settingKey, TRB.Data.settings.evoker.preservation)
+		elseif specId == 3 then
+			for k, v in pairs(TRB.Data.spells) do
+				local spell = TRB.Data.spells[k]
+				if spell ~= nil and spell.id ~= nil and spell.mana ~= nil and spell.mana < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+					if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
+						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+					end
+					TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
+					TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
+					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
+				end
+			end
 		end
 
 		
 		if (specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation) or
-		(specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation) then
+		(specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation) or
+		(specId == 3 and TRB.Data.settings.core.experimental.specs.evoker.augmentation) then
 			TRB.Frames.resource2ContainerFrame:Show()
 			TRB.Functions.Bar:Construct(settings)
 			TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 		end
 	end
 
-	local function GetEmeraldCommunionRemainingTime()
-		return TRB.Functions.Spell:GetRemainingTime(TRB.Data.snapshot.emeraldCommunion)
-	end
 	local function RefreshLookupData_Devastation()
-		local _
-		local snapshot = TRB.Data.snapshot
+		local spells = TRB.Data.spells
+		---@type TRB.Classes.SnapshotData
+		local snapshotData = TRB.Data.snapshotData
+		local snapshots = snapshotData.snapshots
 		local specSettings = TRB.Data.settings.evoker.devastation
 		--Spec specific implementation
-		local normalizedMana = TRB.Data.snapshot.resource / TRB.Data.resourceFactor
+		local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 		-- This probably needs to be pulled every refresh
-		TRB.Data.snapshot.manaRegen, _ = GetPowerRegen()
+		snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 		local currentManaColor = specSettings.colors.text.current
 		--$mana
 		local manaPrecision = specSettings.manaPrecision or 1
@@ -689,28 +826,28 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
 		lookupLogic["$manaMax"] = TRB.Data.character.maxResource
-		lookupLogic["$mana"] = snapshot.resource
+		lookupLogic["$mana"] = snapshotData.attributes.resource
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-		lookupLogic["$resource"] = snapshot.resource
-		lookupLogic["$casting"] = snapshot.casting.resourceFinal
+		lookupLogic["$resource"] = snapshotData.attributes.resource
+		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 		lookupLogic["$essence"] = TRB.Data.character.resource2
 		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
 		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2Raw
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
 		TRB.Data.lookupLogic = lookupLogic
 	end
-
 	
 	local function RefreshLookupData_Preservation()
 		local spells = TRB.Data.spells
-		local snapshot = TRB.Data.snapshot
+		---@type TRB.Classes.SnapshotData
+		local snapshotData = TRB.Data.snapshotData
+		local snapshots = snapshotData.snapshots
 		local specSettings = TRB.Data.settings.evoker.preservation
 		local currentTime = GetTime()
-		local normalizedMana = snapshot.resource / TRB.Data.resourceFactor
+		local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 		-- This probably needs to be pulled every refresh
----@diagnostic disable-next-line: cast-local-type
-		snapshot.manaRegen, _ = GetPowerRegen()
+		snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 
 		local currentManaColor = specSettings.colors.text.current
 		local castingManaColor = specSettings.colors.text.casting
@@ -719,22 +856,19 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local manaPrecision = specSettings.manaPrecision or 1
 		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 		--$casting
-		local _castingMana = snapshot.casting.resourceFinal
+		local _castingMana = snapshotData.casting.resourceFinal
 		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
 		--$ecMana
-		local _ecMana = snapshot.emeraldCommunion.resourceFinal
+		local _ecMana = snapshots[spells.emeraldCommunion.id].buff.resource
 		local ecMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_ecMana, manaPrecision, "floor", true))
 		--$ecTicks
-		local _ecTicks = snapshot.emeraldCommunion.ticksRemaining or 0
+		local _ecTicks = snapshots[spells.emeraldCommunion.id].buff.ticks
 		local ecTicks = string.format("%.0f", _ecTicks)
 		--$ecTime
-		local _ecTime = GetEmeraldCommunionRemainingTime()
+		local _ecTime = snapshots[spells.emeraldCommunion.id].buff:GetRemainingTime(currentTime)
 		local ecTime = string.format("%.1f", _ecTime)
-
-		---@type TRB.Classes.Healer.SymbolOfHope
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local symbolOfHope = snapshot.symbolOfHope
+		local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 		--$sohMana
 		local _sohMana = symbolOfHope.buff.mana
 		local sohMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor", true))
@@ -744,20 +878,24 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		--$sohTime
 		local _sohTime = symbolOfHope.buff:GetRemainingTime(currentTime)
 		local sohTime = string.format("%.1f", _sohTime)
-		
-		---@type TRB.Classes.Healer.Innervate
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local innervate = snapshot.innervate
+
+		local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		--$innervateMana
 		local _innervateMana = innervate.mana
 		local innervateMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
 		--$innervateTime
 		local _innervateTime = innervate.buff:GetRemainingTime(currentTime)
 		local innervateTime = string.format("%.1f", _innervateTime)
+
+		local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
+		--$potionOfChilledClarityMana
+		local _potionOfChilledClarityMana = potionOfChilledClarity.mana
+		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
+		--$potionOfChilledClarityTime
+		local _potionOfChilledClarityTime = potionOfChilledClarity.buff:GetRemainingTime(currentTime)
+		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
 		
-		---@type TRB.Classes.Healer.ManaTideTotem
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local manaTideTotem = snapshot.manaTideTotem
+		local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 		--$mttMana
 		local _mttMana = manaTideTotem.mana
 		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
@@ -765,8 +903,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local _mttTime = manaTideTotem.buff:GetRemainingTime(currentTime)
 		local mttTime = string.format("%.1f", _mttTime)
 		
-		---@type TRB.Classes.Healer.MoltenRadiance
-		local moltenRadiance = snapshot.moltenRadiance
+		local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 		--$mrMana
 		local _mrMana = moltenRadiance.mana
 		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
@@ -775,28 +912,14 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local mrTime = string.format("%.1f", _mrTime)
 
 		--$potionCooldownSeconds
-		local _potionCooldown = 0
-		if snapshot.potion.onCooldown then
-			_potionCooldown = math.abs(snapshot.potion.startTime + snapshot.potion.duration - currentTime)
-		end
+		local _potionCooldown = snapshots[spells.aeratedManaPotionRank1.id].cooldown.remaining
 		local potionCooldownSeconds = string.format("%.1f", _potionCooldown)
 		local _potionCooldownMinutes = math.floor(_potionCooldown / 60)
 		local _potionCooldownSeconds = _potionCooldown % 60
 		--$potionCooldown
 		local potionCooldown = string.format("%d:%0.2d", _potionCooldownMinutes, _potionCooldownSeconds)
 		
-		---@type TRB.Classes.Healer.PotionOfChilledClarity
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local potionOfChilledClarity = snapshot.potionOfChilledClarity
-		--$potionOfChilledClarityMana
-		local _potionOfChilledClarityMana = potionOfChilledClarity.mana
-		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
-		--$potionOfChilledClarityTime
-		local _potionOfChilledClarityTime = potionOfChilledClarity.buff:GetRemainingTime(currentTime)
-		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
-					
-		---@type TRB.Classes.Healer.ChanneledManaPotion
-		local channeledManaPotion = TRB.Data.snapshot.channeledManaPotion
+		local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 		--$channeledMana
 		local _channeledMana = channeledManaPotion.mana
 		local channeledMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_channeledMana, manaPrecision, "floor", true))
@@ -811,10 +934,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local _passiveMana = _ecMana + _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana
 		local passiveMana = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 		--$manaTotal
-		local _manaTotal = math.min(_passiveMana + snapshot.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
+		local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 		local manaTotal = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaTotal, manaPrecision, "floor", true))
 		--$manaPlusCasting
-		local _manaPlusCasting = math.min(snapshot.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
+		local _manaPlusCasting = math.min(snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
 		local manaPlusCasting = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_manaPlusCasting, manaPrecision, "floor", true))
 		--$manaPlusPassive
 		local _manaPlusPassive = math.min(_passiveMana + normalizedMana, TRB.Data.character.maxResource)
@@ -835,15 +958,15 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		----------
 
 		Global_TwintopResourceBar.resource.passive = _passiveMana
-		Global_TwintopResourceBar.resource.potionOfSpiritualClarity = _channeledMana or 0
+		Global_TwintopResourceBar.resource.channeledPotion = _channeledMana or 0
 		Global_TwintopResourceBar.resource.manaTideTotem = _mttMana or 0
 		Global_TwintopResourceBar.resource.innervate = _innervateMana or 0
+		Global_TwintopResourceBar.resource.potionOfChilledClarity = _potionOfChilledClarityMana or 0
 		Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
 		Global_TwintopResourceBar.resource.moltenRadiance = _mrMana or 0
-		Global_TwintopResourceBar.resource.emeraldCommunion = _ecMana or 0
-		Global_TwintopResourceBar.potionOfSpiritualClarity = {
+		Global_TwintopResourceBar.channeledPotion = {
 			mana = _channeledMana,
-			ticks = snapshot.channeledManaPotion.ticksRemaining or 0
+			ticks = _potionOfFrozenFocusTicks
 		}
 		Global_TwintopResourceBar.symbolOfHope = {
 			mana = _sohMana,
@@ -851,7 +974,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		}
 		Global_TwintopResourceBar.emeraldCommunion = {
 			mana = _ecMana,
-			ticks = snapshot.emeraldCommunion.ticksRemaining or 0
+			ticks = _ecTicks
 		}
 
 
@@ -951,35 +1074,75 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
+	local function RefreshLookupData_Augmentation()
+		local spells = TRB.Data.spells
+		---@type TRB.Classes.SnapshotData
+		local snapshotData = TRB.Data.snapshotData
+		local snapshots = snapshotData.snapshots
+		local specSettings = TRB.Data.settings.evoker.augmentation
+		--Spec specific implementation
+		local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
+
+		-- This probably needs to be pulled every refresh
+		snapshotData.attributes.manaRegen, _ = GetPowerRegen()
+		local currentManaColor = specSettings.colors.text.current
+		--$mana
+		local manaPrecision = specSettings.manaPrecision or 1
+		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+		----------------------------
+
+		local lookup = TRB.Data.lookup or {}
+		lookup["$manaMax"] = TRB.Data.character.maxResource
+		lookup["$mana"] = currentMana
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$resource"] = currentMana
+		lookup["$essence"] = TRB.Data.character.resource2
+		lookup["$comboPoints"] = TRB.Data.character.resource2
+		lookup["$essenceMax"] = TRB.Data.character.maxResource2Raw
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
+		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$manaMax"] = TRB.Data.character.maxResource
+		lookupLogic["$mana"] = snapshotData.attributes.resource
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = snapshotData.attributes.resource
+		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
+		lookupLogic["$essence"] = TRB.Data.character.resource2
+		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
+		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2Raw
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
+		TRB.Data.lookupLogic = lookupLogic
+	end
+
 	local function FillSnapshotDataCasting(spell)
 		local currentTime = GetTime()
-		TRB.Data.snapshot.casting.startTime = currentTime
-		TRB.Data.snapshot.casting.resourceRaw = spell.mana
-		TRB.Data.snapshot.casting.resourceFinal = CalculateAbilityResourceValue(spell.mana)
-		TRB.Data.snapshot.casting.spellId = spell.id
-		TRB.Data.snapshot.casting.icon = spell.icon
+		TRB.Data.snapshotData.casting.startTime = currentTime
+		TRB.Data.snapshotData.casting.resourceRaw = spell.mana
+		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.mana)
+		TRB.Data.snapshotData.casting.spellId = spell.id
+		TRB.Data.snapshotData.casting.icon = spell.icon
 	end
 
 	local function UpdateCastingResourceFinal()
-		TRB.Data.snapshot.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshot.casting.resourceRaw)
+		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
 	end
 
 	local function UpdateCastingResourceFinal_Preservation()
 		-- Do nothing for now
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Healer.Innervate
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local innervate = TRB.Data.snapshot.innervate
-
-		---@type TRB.Classes.Healer.PotionOfChilledClarity
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local potionOfChilledClarity = TRB.Data.snapshot.potionOfChilledClarity
+		---@type TRB.Classes.SnapshotData
+		local snapshotData = TRB.Data.snapshotData
+		local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
+		local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		-- Do nothing for now
-		TRB.Data.snapshot.casting.resourceFinal = TRB.Data.snapshot.casting.resourceRaw * innervate.modifier * potionOfChilledClarity.modifier
+		snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw * innervate.modifier * potionOfChilledClarity.modifier
 	end
 
 	local function CastingSpell()
-		local snapshot = TRB.Data.snapshot
+		local spells = TRB.Data.spells
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local casting = snapshotData.casting
 		local currentTime = GetTime()
 		local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
 		local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
@@ -998,12 +1161,12 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				--end
 			elseif specId == 2 then
 				if currentSpellName == nil then
-					if currentChannelId == TRB.Data.spells.emeraldCommunion.id then
-						snapshot.casting.spellId = TRB.Data.spells.emeraldCommunion.id
-						snapshot.casting.startTime = currentChannelStartTime / 1000
-						snapshot.casting.endTime = currentChannelEndTime / 1000
-						snapshot.casting.resourceRaw = 0
-						snapshot.casting.icon = TRB.Data.spells.emeraldCommunion.icon
+					if currentChannelId == spells.emeraldCommunion.id then
+						casting.spellId = spells.emeraldCommunion.id
+						casting.startTime = currentChannelStartTime / 1000
+						casting.endTime = currentChannelEndTime / 1000
+						casting.resourceRaw = 0
+						casting.icon = spells.emeraldCommunion.icon
 					else
 						TRB.Functions.Character:ResetCastingSnapshotData()
 						return false
@@ -1014,11 +1177,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					if spellId then
 						local manaCost = -TRB.Functions.Spell:GetSpellManaCost(spellId)
 
-						snapshot.casting.startTime = currentSpellStartTime / 1000
-						snapshot.casting.endTime = currentSpellEndTime / 1000
-						snapshot.casting.resourceRaw = manaCost
-						snapshot.casting.spellId = spellId
-						snapshot.casting.icon = string.format("|T%s:0|t", spellIcon)
+						casting.startTime = currentSpellStartTime / 1000
+						casting.endTime = currentSpellEndTime / 1000
+						casting.resourceRaw = manaCost
+						casting.spellId = spellId
+						casting.icon = string.format("|T%s:0|t", spellIcon)
 
 						UpdateCastingResourceFinal_Preservation()
 					else
@@ -1027,32 +1190,16 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					end
 				end
 				return true
+			elseif specId == 3 then
+				--[[if currentSpellName == nil then
+					return true
+				else]]
+					TRB.Functions.Character:ResetCastingSnapshotData()
+					return false
+				--end
 			end
 			TRB.Functions.Character:ResetCastingSnapshotData()
 			return false
-		end
-	end
-
-	local function UpdateEmeraldCommunion(forceCleanup)
-		if TRB.Data.snapshot.emeraldCommunion.isActive or forceCleanup then
-			local currentTime = GetTime()
-			if forceCleanup or TRB.Data.snapshot.emeraldCommunion.endTime == nil or currentTime > TRB.Data.snapshot.channeledManaPotion.endTime then
-				TRB.Data.snapshot.emeraldCommunion.isActive = false
-				TRB.Data.snapshot.emeraldCommunion.duration = 0
-				TRB.Data.snapshot.emeraldCommunion.endTime = nil
-				TRB.Data.snapshot.emeraldCommunion.spellId = nil
-				TRB.Data.snapshot.emeraldCommunion.firstTickTime = nil
-				TRB.Data.snapshot.emeraldCommunion.previousTickTime = nil
-				TRB.Data.snapshot.emeraldCommunion.ticksRemaining = 0
-				TRB.Data.snapshot.emeraldCommunion.tickRate = 0
-				TRB.Data.snapshot.emeraldCommunion.resourceRaw = 0
-				TRB.Data.snapshot.emeraldCommunion.resourceFinal = 0
-			else
-				local regenRemaining = (TRB.Data.snapshot.emeraldCommunion.endTime - currentTime) * TRB.Data.snapshot.manaRegen
-				local incomingMana = (TRB.Data.snapshot.emeraldCommunion.ticksRemaining * TRB.Data.spells.emeraldCommunion.manaPercent * TRB.Data.character.maxResource) + regenRemaining
-				TRB.Data.snapshot.emeraldCommunion.resourceRaw = incomingMana
-				TRB.Data.snapshot.emeraldCommunion.resourceFinal = CalculateManaGain(TRB.Data.snapshot.emeraldCommunion.resourceRaw, false)
-			end
 		end
 	end
 
@@ -1069,51 +1216,47 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	end
 
 	local function UpdateSnapshot_Preservation()
+		local currentTime = GetTime()
 		UpdateSnapshot()
 		
-		local spells = TRB.Data.spells
-		local snapshot = TRB.Data.snapshot
-
 		local _
-
-		---@type TRB.Classes.Healer.Innervate
-		local innervate = TRB.Data.snapshot.innervate
+		local spells = TRB.Data.spells
+		---@type TRB.Classes.Snapshot[]
+		local snapshots = TRB.Data.snapshotData.snapshots
+		
+		local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		innervate:Update()
 
-		---@type TRB.Classes.Healer.ManaTideTotem
-		local manaTideTotem = TRB.Data.snapshot.manaTideTotem
+		local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 		manaTideTotem:Update()
 
-		---@type TRB.Classes.Healer.SymbolOfHope
-		local symbolOfHope = TRB.Data.snapshot.symbolOfHope
+		local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 		symbolOfHope:Update()
 
-		---@type TRB.Classes.Healer.MoltenRadiance
-		local moltenRadiance = TRB.Data.snapshot.moltenRadiance
+		local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 		moltenRadiance:Update()
-					
-		---@type TRB.Classes.Healer.ChanneledManaPotion
-		local channeledManaPotion = TRB.Data.snapshot.channeledManaPotion
-		channeledManaPotion:Update()
 		
-		---@type TRB.Classes.Healer.PotionOfChilledClarity
-		local potionOfChilledClarity = TRB.Data.snapshot.potionOfChilledClarity
+		local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		potionOfChilledClarity:Update()
 
-		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
-		snapshot.potion.startTime, snapshot.potion.duration, _ = GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
-		if snapshot.potion.startTime > 0 and snapshot.potion.duration > 0 then
-			snapshot.potion.onCooldown = true
-		else
-			snapshot.potion.onCooldown = false
-		end
+		local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
+		channeledManaPotion:Update()
 
-		snapshot.conjuredChillglobe.startTime, snapshot.conjuredChillglobe.duration, _ = GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
-		if snapshot.conjuredChillglobe.startTime > 0 and snapshot.conjuredChillglobe.duration > 0 then
-			snapshot.conjuredChillglobe.onCooldown = true
-		else
-			snapshot.conjuredChillglobe.onCooldown = false
-		end
+		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
+		snapshots[spells.aeratedManaPotionRank1.id].cooldown.startTime, snapshots[spells.aeratedManaPotionRank1.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
+		snapshots[spells.aeratedManaPotionRank1.id].cooldown:GetRemainingTime(currentTime)
+
+		snapshots[spells.conjuredChillglobe.id].cooldown.startTime, snapshots[spells.conjuredChillglobe.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
+		snapshots[spells.conjuredChillglobe.id].cooldown:GetRemainingTime(currentTime)
+
+		snapshots[spells.emeraldCommunion.id].buff:UpdateTicks(currentTime)
+	end
+
+	local function UpdateSnapshot_Augmentation()
+		UpdateSnapshot()
+		
+		local currentTime = GetTime()
+		local _
 	end
 
 	local function UpdateResourceBar()
@@ -1123,14 +1266,15 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local coreSettings = TRB.Data.settings.core
 		local classSettings = TRB.Data.settings.evoker
 		local spells = TRB.Data.spells
-		local snapshot = TRB.Data.snapshot
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local snapshots = snapshotData.snapshots
 
 		if specId == 1 then
 			local specSettings = classSettings.devastation
 			UpdateSnapshot_Devastation()
 			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
 
-			if snapshot.isTracking then
+			if snapshotData.attributes.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
@@ -1138,7 +1282,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border
 
-					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshot.resource)
+					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
 					TRB.Functions.Bar:SetValue(specSettings, castingFrame, 0, 1)
 					TRB.Functions.Bar:SetValue(specSettings, passiveFrame, 0, 1)
 
@@ -1167,14 +1311,14 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						local cpBG = cpBackgroundGreen
 						local cpBB = cpBackgroundBlue
 
-						if snapshot.resource2 >= x then
+						if snapshotData.attributes.resource2 >= x then
 							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
-							if (specSettings.comboPoints.sameColor and snapshot.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+							if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = specSettings.colors.comboPoints.penultimate
-							elseif (specSettings.comboPoints.sameColor and snapshot.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+							elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = specSettings.colors.comboPoints.final
 							end
-						elseif snapshot.resource2+1 == x then
+						elseif snapshotData.attributes.resource2+1 == x then
 							local partial = UnitPartialPower("player", Enum.PowerType.Essence)
 							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
 						else
@@ -1192,33 +1336,23 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			local specSettings = classSettings.preservation
 			UpdateSnapshot_Preservation()
 			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
-			if snapshot.isTracking then
+			if snapshotData.attributes.isTracking then
 				TRB.Functions.Bar:HideResourceBar()
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local currentMana = snapshot.resource / TRB.Data.resourceFactor
+					local currentMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local barBorderColor = specSettings.colors.bar.border
 
-					---@type TRB.Classes.Healer.Innervate
-					local innervate = TRB.Data.snapshot.innervate
-
-					---@type TRB.Classes.Healer.ManaTideTotem
-					local manaTideTotem = TRB.Data.snapshot.manaTideTotem
-
-					---@type TRB.Classes.Healer.SymbolOfHope
-					local symbolOfHope = TRB.Data.snapshot.symbolOfHope
-
-					---@type TRB.Classes.Healer.MoltenRadiance
-					local moltenRadiance = TRB.Data.snapshot.moltenRadiance
-		
-					---@type TRB.Classes.Healer.PotionOfChilledClarity
-					local potionOfChilledClarity = TRB.Data.snapshot.potionOfChilledClarity
-					
-					---@type TRB.Classes.Healer.ChanneledManaPotion
-					local channeledManaPotion = TRB.Data.snapshot.channeledManaPotion
+					local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
+					local manaTideTotem = snapshotData.snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
+					local symbolOfHope = snapshotData.snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
+					local moltenRadiance = snapshotData.snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
+					local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
+					local channeledManaPotion = snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
+					local emeraldCommunion = snapshotData.snapshots[spells.emeraldCommunion.id]
 
 					if potionOfChilledClarity.buff.isActive then
 						if specSettings.colors.bar.potionOfChilledClarityBorderChange then
@@ -1229,9 +1363,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							barBorderColor = specSettings.colors.bar.innervate
 						end
 
-						if specSettings.audio.innervate.enabled and snapshot.audio.innervateCue == false then
-							snapshot.audio.innervateCue = true
----@diagnostic disable-next-line: redundant-parameter
+						if specSettings.audio.innervate.enabled and snapshotData.audio.innervateCue == false then
+							snapshotData.audio.innervateCue = true
 							PlaySoundFile(specSettings.audio.innervate.sound, coreSettings.audio.channel.channel)
 						end
 					end
@@ -1241,23 +1374,23 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentMana)
 
 					if CastingSpell() and specSettings.bar.showCasting  then
-						castingBarValue = currentMana + snapshot.casting.resourceFinal
+						castingBarValue = currentMana + snapshotData.casting.resourceFinal
 					else
 						castingBarValue = currentMana
 					end
 
 					TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 
-					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, snapshot.potion, snapshot.conjuredChillglobe, TRB.Data.character, resourceFrame, CalculateManaGain)
+					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown, snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown, TRB.Data.character, resourceFrame, CalculateManaGain)
 
 					local passiveValue = 0
 					if specSettings.bar.showPassive then
 						if channeledManaPotion.buff.isActive then
 							passiveValue = passiveValue + channeledManaPotion.mana
-
+		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
+		---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[1]:Show()
 							else
@@ -1271,8 +1404,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							passiveValue = passiveValue + math.max(innervate.mana, potionOfChilledClarity.mana)
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+		---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[2]:Show()
 							else
@@ -1281,13 +1414,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						else
 							TRB.Frames.passiveFrame.thresholds[2]:Hide()
 						end
-
+		
 						if symbolOfHope.buff.mana > 0 then
 							passiveValue = passiveValue + symbolOfHope.buff.mana
-
+		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
+		---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[3]:Show()
 							else
@@ -1296,13 +1429,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						else
 							TRB.Frames.passiveFrame.thresholds[3]:Hide()
 						end
-
+		
 						if manaTideTotem.mana > 0 then
 							passiveValue = passiveValue + manaTideTotem.mana
-
+		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
+		---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[4]:Show()
 							else
@@ -1327,8 +1460,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							TRB.Frames.passiveFrame.thresholds[5]:Hide()
 						end
 
-						if snapshot.emeraldCommunion.resourceFinal > 0 then
-							passiveValue = passiveValue + snapshot.emeraldCommunion.resourceFinal
+						if emeraldCommunion.buff.resource > 0 then
+							passiveValue = passiveValue + emeraldCommunion.buff.resource
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[6], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -1349,24 +1482,24 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						TRB.Frames.passiveFrame.thresholds[5]:Hide()
 						TRB.Frames.passiveFrame.thresholds[6]:Hide()
 					end
-
+		
 					passiveBarValue = castingBarValue + passiveValue
-					if castingBarValue < snapshot.resource then --Using a spender
-						if -snapshot.casting.resourceFinal > passiveValue then
+					if castingBarValue < snapshotData.attributes.resource then --Using a spender
+						if -snapshotData.casting.resourceFinal > passiveValue then
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, snapshot.resource)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, snapshotData.attributes.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, snapshot.resource)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, snapshotData.attributes.resource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshot.resource)
+						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
 						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
 						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
@@ -1393,14 +1526,14 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 						local cpBG = cpBackgroundGreen
 						local cpBB = cpBackgroundBlue
 
-						if snapshot.resource2 >= x then
+						if snapshotData.attributes.resource2 >= x then
 							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
-							if (specSettings.comboPoints.sameColor and snapshot.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+							if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
 								cpColor = specSettings.colors.comboPoints.penultimate
-							elseif (specSettings.comboPoints.sameColor and snapshot.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+							elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = specSettings.colors.comboPoints.final
 							end
-						elseif snapshot.resource2+1 == x then
+						elseif snapshotData.attributes.resource2+1 == x then
 							local partial = UnitPartialPower("player", Enum.PowerType.Essence)
 							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
 						else
@@ -1415,6 +1548,58 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 				TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 			end
+		elseif specId == 3 then
+			local specSettings = classSettings.augmentation
+			UpdateSnapshot_Devastation()
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
+
+			if snapshotData.attributes.isTracking then
+				TRB.Functions.Bar:HideResourceBar()
+
+				if specSettings.displayBar.neverShow == false then
+					refreshText = true
+					local barColor = specSettings.colors.bar.base
+					local barBorderColor = specSettings.colors.bar.border
+
+					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
+					TRB.Functions.Bar:SetValue(specSettings, castingFrame, 0, 1)
+					TRB.Functions.Bar:SetValue(specSettings, passiveFrame, 0, 1)
+
+					barContainerFrame:SetAlpha(1.0)
+
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
+
+					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
+					
+					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+					for x = 1, TRB.Data.character.maxResource2 do
+						local cpBorderColor = specSettings.colors.comboPoints.border
+						local cpColor = specSettings.colors.comboPoints.base
+						local cpBR = cpBackgroundRed
+						local cpBG = cpBackgroundGreen
+						local cpBB = cpBackgroundBlue
+
+						if snapshotData.attributes.resource2 >= x then
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+							if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+								cpColor = specSettings.colors.comboPoints.penultimate
+							elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+								cpColor = specSettings.colors.comboPoints.final
+							end
+						elseif snapshotData.attributes.resource2+1 == x then
+							local partial = UnitPartialPower("player", Enum.PowerType.Essence)
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
+						else
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+						end
+
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+					end
+				end
+			end
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 		end
 	end
 
@@ -1424,7 +1609,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local _
 		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
-		local snapshot = TRB.Data.snapshot
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local targetData = snapshotData.targetData
+		local snapshots = snapshotData.snapshots
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
@@ -1439,26 +1626,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			if destGUID == TRB.Data.character.guid then
 				if specId == 2 and TRB.Data.barConstructedForSpec == "preservation" then -- Let's check raid effect mana stuff
 					if settings.passiveGeneration.symbolOfHope and (spellId == spells.symbolOfHope.tickId or spellId == spells.symbolOfHope.id) then
-						---@type TRB.Classes.Healer.SymbolOfHope
-						local symbolOfHope = TRB.Data.snapshot.symbolOfHope
+						local symbolOfHope = snapshotData.snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 						local castByToken = UnitTokenFromGUID(sourceGUID)
 						symbolOfHope.buff:Initialize(type, nil, castByToken)
 					elseif settings.passiveGeneration.innervate and spellId == spells.innervate.id then
-						---@type TRB.Classes.Healer.Innervate
-						local innervate = snapshot.innervate
+						local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 						innervate.buff:Initialize(type)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
-							snapshot.audio.innervateCue = false
+							snapshotData.audio.innervateCue = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
-							snapshot.audio.innervateCue = false
+							snapshotData.audio.innervateCue = false
 						end
 					elseif settings.passiveGeneration.manaTideTotem and spellId == spells.manaTideTotem.id then
-						---@type TRB.Classes.Healer.ManaTideTotem
-						local manaTideTotem = TRB.Data.snapshot.manaTideTotem
+						local manaTideTotem = snapshotData.snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 						manaTideTotem:Initialize(type)
 					elseif spellId == spells.moltenRadiance.id then
-						---@type TRB.Classes.Healer.MoltenRadiance
-						local moltenRadiance = TRB.Data.snapshot.moltenRadiance
+						local moltenRadiance = snapshotData.snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 						moltenRadiance.buff:Initialize(type)
 					end
 				end
@@ -1468,38 +1651,26 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				if specId == 1 and TRB.Data.barConstructedForSpec == "devastation" then --Devastation					
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "preservation" then
 					if spellId == spells.potionOfFrozenFocusRank1.spellId or spellId == spells.potionOfFrozenFocusRank2.spellId or spellId == spells.potionOfFrozenFocusRank3.spellId then
-						---@type TRB.Classes.Healer.ChanneledManaPotion
-						local channeledManaPotion = TRB.Data.snapshot.channeledManaPotion
+						local channeledManaPotion = snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 						channeledManaPotion.buff:Initialize(type)
 					elseif spellId == spells.potionOfChilledClarity.id then
-						---@type TRB.Classes.Healer.PotionOfChilledClarity
-						local potionOfChilledClarity = snapshot.potionOfChilledClarity
+						local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 						potionOfChilledClarity.buff:Initialize(type)
 					elseif spellId == spells.emeraldCommunion.id then
 						if type == "SPELL_PERIODIC_ENERGIZE" then
-							if snapshot.emeraldCommunion.firstTickTime == nil then
-								TRB.Functions.Aura:SnapshotGenericAura(spellId, nil, TRB.Data.snapshot.metamorphosis)
-								snapshot.emeraldCommunion.firstTickTime = currentTime
-								snapshot.emeraldCommunion.previousTickTime = currentTime
-								snapshot.emeraldCommunion.ticksRemaining = spells.emeraldCommunion.ticks
-								snapshot.emeraldCommunion.tickRate = (snapshot.emeraldCommunion.duration / spells.emeraldCommunion.ticks)
-							else
-								snapshot.emeraldCommunion.previousTickTime = currentTime
-								snapshot.emeraldCommunion.ticksRemaining = snapshot.emeraldCommunion.ticksRemaining - 1
+							if not snapshots[spellId].buff.isActive then
+								local duration = spells.emeraldCommunion.duration * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)								
+								snapshots[spellId].buff:InitializeCustom(duration)
+								snapshots[spellId].buff:SetTickData(true, CalculateManaGain(spells.emeraldCommunion.resourcePerTick * TRB.Data.character.maxResource, false), spells.emeraldCommunion.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
 							end
-							snapshot.emeraldCommunion.resourceRaw = snapshot.emeraldCommunion.ticksRemaining * spells.emeraldCommunion.manaPercent * TRB.Data.character.maxResource
-							snapshot.emeraldCommunion.resourceFinal = CalculateManaGain(snapshot.emeraldCommunion.resourceRaw, false)
-						elseif type == "SPELL_AURA_REMOVED" then
-							-- Let UpdateEmeraldCommunion() handle this
-							UpdateEmeraldCommunion(true)
+							snapshots[spellId].buff:UpdateTicks(currentTime)
 						end
 					end
+				elseif specId == 3 and TRB.Data.barConstructedForSpec == "augmentation" then --Augmentation
 				end
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				---@type TRB.Classes.TargetData
-				local targetData = TRB.Data.snapshot.targetData
 				targetData:Remove(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
@@ -1540,40 +1711,57 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation then
-			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.evoker.devastation)
-			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.devastation)
 			specCache.devastation.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Devastation()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.devastation)
 			
 			---@type TRB.Classes.TargetData
-			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
+			TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Devastation
+			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.evoker.devastation)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.devastation)
 
 			if TRB.Data.barConstructedForSpec ~= "devastation" then
 				TRB.Data.barConstructedForSpec = "devastation"
 				ConstructResourceBar(specCache.devastation.settings)
 			end
 		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation then
-			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.evoker.preservation)
-			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.preservation)
 			specCache.preservation.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Preservation()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)
-			
+
 			---@type TRB.Classes.TargetData
-			TRB.Data.snapshot.targetData = TRB.Classes.TargetData:New()
+			TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Preservation
+			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.evoker.preservation)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.preservation)
 
 			if TRB.Data.barConstructedForSpec ~= "preservation" then
 				TRB.Data.barConstructedForSpec = "preservation"
 				ConstructResourceBar(specCache.preservation.settings)
 			end
+		elseif specId == 3 and TRB.Data.settings.core.experimental.specs.evoker.augmentation then
+			specCache.augmentation.talents = TRB.Functions.Talent:GetTalents()
+			FillSpellData_Augmentation()
+			TRB.Functions.Character:LoadFromSpecializationCache(specCache.augmentation)
+			
+			---@type TRB.Classes.TargetData
+			TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
+			
+			TRB.Functions.RefreshLookupData = RefreshLookupData_Augmentation
+			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.evoker.augmentation)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.augmentation)
+
+			if TRB.Data.barConstructedForSpec ~= "augmentation" then
+				TRB.Data.barConstructedForSpec = "augmentation"
+				ConstructResourceBar(specCache.augmentation.settings)
+			end
 		else
 			TRB.Data.barConstructedForSpec = nil
 		end
+
 		TRB.Functions.Class:EventRegistration()
 	end
 
@@ -1625,16 +1813,18 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 							TRB.Data.barConstructedForSpec = nil
 							TRB.Data.settings.evoker.devastation = TRB.Functions.LibSharedMedia:ValidateLsmValues("Devastation Evoker", TRB.Data.settings.evoker.devastation)
 							TRB.Data.settings.evoker.preservation = TRB.Functions.LibSharedMedia:ValidateLsmValues("Preservation Evoker", TRB.Data.settings.evoker.preservation)
+							TRB.Data.settings.evoker.augmentation = TRB.Functions.LibSharedMedia:ValidateLsmValues("Augmentation Evoker", TRB.Data.settings.evoker.augmentation)
 							FillSpellData_Devastation()
 							FillSpellData_Preservation()
+							FillSpellData_Augmentation()
 
-							if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation then
+							if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation or TRB.Data.settings.core.experimental.specs.evoker.augmentation then
 								SwitchSpec()
 							end
 
 							TRB.Options.Evoker.ConstructOptionsPanel(specCache)
 							
-							if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation then
+							if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation or TRB.Data.settings.core.experimental.specs.evoker.augmentation then
 								-- Reconstruct just in case
 								if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
 									ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
@@ -1646,7 +1836,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				end
 
 				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
-					if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation then
+					if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation or TRB.Data.settings.core.experimental.specs.evoker.augmentation then
 						SwitchSpec()
 					end
 				end
@@ -1709,13 +1899,12 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Data.character.items.alchemyStone = alchemyStone
 			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
 			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
+		elseif specId == 3 and TRB.Data.settings.core.experimental.specs.evoker.augmentation then
+			settings = TRB.Data.settings.evoker.augmentation
+			TRB.Data.character.specName = "augmentation"
 		end
 		
 		if settings ~= nil then
-			--[[if maxComboPoints ~= TRB.Data.character.maxResource2Raw then
-				TRB.Data.character.maxResource2Raw = maxComboPoints
-				TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
-			end]]
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
 				TRB.Data.character.maxResource2 = maxComboPoints
 				TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
@@ -1739,17 +1928,15 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Data.resourceFactor = 1
 			TRB.Data.resource2 = Enum.PowerType.Essence
 			TRB.Data.resourceFactor = 1
+		elseif specId == 3 and TRB.Data.settings.core.enabled.evoker.augmentation and TRB.Data.settings.core.experimental.specs.evoker.augmentation then
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.augmentation)
+			TRB.Data.specSupported = true
+			TRB.Data.resource = Enum.PowerType.Mana
+			TRB.Data.resourceFactor = 1
+			TRB.Data.resource2 = Enum.PowerType.Essence
+			TRB.Data.resource2Factor = 1
 		else -- This should never happen
-			--TRB.Data.resource = MANA
 			TRB.Data.specSupported = false
-			targetsTimerFrame:SetScript("OnUpdate", nil)
-			timerFrame:SetScript("OnUpdate", nil)
-			barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
-			barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
-			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
-			TRB.Details.addonData.registered = false
-			barContainerFrame:Hide()
 		end
 
 		if TRB.Data.specSupported then
@@ -1763,27 +1950,38 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 
 			TRB.Details.addonData.registered = true
+		else -- This should never happen
+			targetsTimerFrame:SetScript("OnUpdate", nil)
+			timerFrame:SetScript("OnUpdate", nil)
+			barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
+			barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			combatFrame:UnregisterEvent("PLAYER_REGEN_DISABLED")
+			combatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+			TRB.Details.addonData.registered = false
+			barContainerFrame:Hide()
 		end
+
 		TRB.Functions.Bar:HideResourceBar()
 	end
 
 	function TRB.Functions.Class:HideResourceBar(force)
 		local affectingCombat = UnitAffectingCombat("player")
+		---@type TRB.Classes.SnapshotData
+		local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 		local specId = GetSpecialization()
-		local snapshot = TRB.Data.snapshot
 
 		if specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation then
 			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.evoker.devastation.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.evoker.devastation.displayBar.notZeroShow) or
-						(TRB.Data.settings.evoker.devastation.displayBar.notZeroShow and snapshot.resource == TRB.Data.character.maxResource and snapshot.resource2 == TRB.Data.character.maxResource2)
+						(TRB.Data.settings.evoker.devastation.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource and snapshotData.attributes.resource2 == TRB.Data.character.maxResource2)
 					)
 				)) then
 				TRB.Frames.barContainerFrame:Hide()
-				snapshot.isTracking = false
+				snapshotData.attributes.isTracking = false
 			else
-				snapshot.isTracking = true
+				snapshotData.attributes.isTracking = true
 				if TRB.Data.settings.evoker.devastation.displayBar.neverShow == true then
 					TRB.Frames.barContainerFrame:Hide()
 				else
@@ -1795,14 +1993,32 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.evoker.preservation.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.evoker.preservation.displayBar.notZeroShow) or
-						(TRB.Data.settings.evoker.preservation.displayBar.notZeroShow and snapshot.resource == TRB.Data.character.maxResource and snapshot.resource2 == TRB.Data.character.maxResource2)
+						(TRB.Data.settings.evoker.preservation.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource and snapshotData.attributes.resource2 == TRB.Data.character.maxResource2)
 					)
 				)) then
 				TRB.Frames.barContainerFrame:Hide()
-				snapshot.isTracking = false
+				snapshotData.attributes.isTracking = false
 			else
-				snapshot.isTracking = true
+				snapshotData.attributes.isTracking = true
 				if TRB.Data.settings.evoker.preservation.displayBar.neverShow == true then
+					TRB.Frames.barContainerFrame:Hide()
+				else
+					TRB.Frames.barContainerFrame:Show()
+				end
+			end
+		elseif specId == 3 then
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
+				(not UnitInVehicle("player")) and (
+					(not TRB.Data.settings.evoker.augmentation.displayBar.alwaysShow) and (
+						(not TRB.Data.settings.evoker.augmentation.displayBar.notZeroShow) or
+						(TRB.Data.settings.evoker.augmentation.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource and snapshotData.attributes.resource2 == TRB.Data.character.maxResource2)
+					)
+				)) then
+				TRB.Frames.barContainerFrame:Hide()
+				snapshotData.attributes.isTracking = false
+			else
+				snapshotData.attributes.isTracking = true
+				if TRB.Data.settings.evoker.augmentation.displayBar.neverShow == true then
 					TRB.Frames.barContainerFrame:Hide()
 				else
 					TRB.Frames.barContainerFrame:Show()
@@ -1810,7 +2026,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			end
 		else
 			TRB.Frames.barContainerFrame:Hide()
-			snapshot.isTracking = false
+			snapshotData.attributes.isTracking = false
 		end
 	end
 	
@@ -1818,19 +2034,15 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
 			return false
 		end
-
-		local specId = GetSpecialization()
 		
 		if guid ~= nil and guid ~= "" then
-			---@type TRB.Classes.TargetData
-			local targetData = TRB.Data.snapshot.targetData
+			local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
+			local targets = targetData.targets
+
 			if not targetData:CheckTargetExists(guid) then
 				targetData:InitializeTarget(guid)
-				if specId == 1 then
-				elseif specId == 2 then
-				end
 			end
-			TRB.Data.snapshot.targetData.targets[guid].lastUpdate = GetTime()
+			targets[guid].lastUpdate = GetTime()
 			return true
 		end
 		return false
@@ -1842,75 +2054,24 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			return valid
 		end
 		local specId = GetSpecialization()
-		local snapshot = TRB.Data.snapshot
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local snapshots = snapshotData.snapshots
 		local spells = TRB.Data.spells
+		local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 		local settings = nil
 		if specId == 1 then
 			settings = TRB.Data.settings.evoker.devastation
 		elseif specId == 2 then
 			settings = TRB.Data.settings.evoker.preservation
+		elseif specId == 3 then
+			settings = TRB.Data.settings.evoker.augmentation
+		else
+			return false
 		end
 
-		if specId == 1 then --Devastation
-			if var == "$casting" then
-				if snapshot.casting.resourceRaw ~= nil and snapshot.casting.resourceRaw ~= 0 then
-					valid = true
-				end
-			--[[elseif var == "$passive" then
-				if snapshot.resource < TRB.Data.character.maxResource and
-					settings.generation.enabled and
-					((settings.generation.mode == "time" and settings.generation.time > 0) or
-					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-					valid = true
-				end]]
-			elseif var == "$resource" or var == "$mana" then
-				if snapshot.resource > 0 then
-					valid = true
-				end
-			elseif var == "$resourceMax" or var == "$manaMax" then
-				valid = true
-			elseif var == "$resourceTotal" or var == "$manaTotal" then
-				if snapshot.resource > 0 or
-					(snapshot.casting.resourceRaw ~= nil and snapshot.casting.resourceRaw ~= 0)
-					then
-					valid = true
-				end
-			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
-				if snapshot.resource > 0 or
-					(snapshot.casting.resourceRaw ~= nil and snapshot.casting.resourceRaw ~= 0) then
-					valid = true
-				end
-			--[[elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
-				if snapshot.resource > 0 then
-					valid = true
-				end]]
-			elseif var == "$regen" or var == "$regenMana" or var == "$manaRegen" then
-				if snapshot.resource < TRB.Data.character.maxResource and
-					((settings.generation.mode == "time" and settings.generation.time > 0) or
-					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-					valid = true
-				end
-			elseif var == "$comboPoints" or var == "$essence" then
-				valid = true
-			elseif var == "$comboPointsMax"or var == "$essenceMax" then
-				valid = true
-			end
+		if specId == 1 then --Devastation			
 		elseif specId == 2 then --Preservation
-			if var == "$resource" or var == "$mana" then
-				valid = true
-			elseif var == "$resourceMax" or var == "$manaMax" then
-				valid = true
-			elseif var == "$resourceTotal" or var == "$manaTotal" then
-				valid = true
-			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
-				valid = true
-			elseif var == "$resourcePlusPassive" or var == "$manaPlusPassive" then
-				valid = true
-			elseif var == "$casting" then
-				if snapshot.casting.resourceRaw ~= nil and (snapshot.casting.resourceRaw ~= 0) then
-					valid = true
-				end
-			elseif var == "$passive" then
+			if var == "$passive" then
 				if TRB.Functions.Class:IsValidVariableForSpec("$channeledMana") or
 					TRB.Functions.Class:IsValidVariableForSpec("$ecMana") or
 					TRB.Functions.Class:IsValidVariableForSpec("$sohMana") or
@@ -1921,110 +2082,131 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					valid = true
 				end
 			elseif var == "$ecMana" then
-				if snapshot.emeraldCommunion.resourceRaw > 0 then
+				if snapshots[spells.emeraldCommunion.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$ecTime" then
-				if snapshot.emeraldCommunion.isActive then
+				if snapshots[spells.emeraldCommunion.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$ecTicks" then
-				if snapshot.emeraldCommunion.isActive then
+				if snapshots[spells.emeraldCommunion.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$sohMana" then
-				---@type TRB.Classes.Healer.SymbolOfHope
-				local symbolOfHope = TRB.Data.snapshot.symbolOfHope
-				if symbolOfHope.buff.manaRaw > 0 then
+				local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
+				if symbolOfHope.buff.isActive then
 					valid = true
 				end
 			elseif var == "$sohTime" then
-				---@type TRB.Classes.Healer.SymbolOfHope
-				local symbolOfHope = TRB.Data.snapshot.symbolOfHope
+				local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 				if symbolOfHope.buff.isActive then
 					valid = true
 				end
 			elseif var == "$sohTicks" then
-				---@type TRB.Classes.Healer.SymbolOfHope
-				local symbolOfHope = TRB.Data.snapshot.symbolOfHope
+				local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 				if symbolOfHope.buff.isActive then
 					valid = true
 				end
 			elseif var == "$innervateMana" then
-				---@type TRB.Classes.Healer.Innervate
-				local innervate = TRB.Data.snapshot.innervate
-				if innervate.mana > 0 then
+				local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
+				if innervate.buff.isActive then
 					valid = true
 				end
 			elseif var == "$innervateTime" then
-				---@type TRB.Classes.Healer.Innervate
-				local innervate = TRB.Data.snapshot.innervate
-				if innervate.buff.remaining > 0 then
+				local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
+				if innervate.buff.isActive then
 					valid = true
 				end
 			elseif var == "$potionOfChilledClarityMana" then
-				---@type TRB.Classes.Healer.PotionOfChilledClarity
-				local potionOfChilledClarity = snapshot.potionOfChilledClarity
-				if potionOfChilledClarity.mana > 0 then
+				local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
+				if potionOfChilledClarity.buff.isActive then
 					valid = true
 				end
 			elseif var == "$potionOfChilledClarityTime" then
-				---@type TRB.Classes.Healer.PotionOfChilledClarity
-				local potionOfChilledClarity = snapshot.potionOfChilledClarity
-				if potionOfChilledClarity.buff.remaining > 0 then
+				local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
+				if potionOfChilledClarity.buff.isActive then
 					valid = true
 				end
 			elseif var == "$mttMana" then
-				---@type TRB.Classes.Healer.ManaTideTotem
-				local manaTideTotem = TRB.Data.snapshot.manaTideTotem
-				if manaTideTotem.mana > 0 then
+				local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
+				if manaTideTotem.buff.isActive then
 					valid = true
 				end
 			elseif var == "$mttTime" then
-				---@type TRB.Classes.Healer.ManaTideTotem
-				local manaTideTotem = TRB.Data.snapshot.manaTideTotem
+				local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 				if manaTideTotem.buff.isActive then
 					valid = true
 				end
 			elseif var == "$mrMana" then
-				---@type TRB.Classes.Healer.MoltenRadiance
-				local moltenRadiance = TRB.Data.snapshot.moltenRadiance
-				if moltenRadiance.mana > 0 then
+				local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
+				if moltenRadiance.buff.isActive then
 					valid = true
 				end
 			elseif var == "$mrTime" then
-				---@type TRB.Classes.Healer.MoltenRadiance
-				local moltenRadiance = TRB.Data.snapshot.moltenRadiance
+				local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 				if moltenRadiance.buff.isActive then
 					valid = true
 				end
 			elseif var == "$channeledMana" then
-				---@type TRB.Classes.Healer.ChanneledManaPotion
-				local channeledManaPotion = TRB.Data.snapshot.channeledManaPotion
-				if channeledManaPotion.mana > 0 then
+				local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
+				if channeledManaPotion.buff.isActive then
 					valid = true
 				end
 			elseif var == "$potionOfFrozenFocusTicks" then
-				---@type TRB.Classes.Healer.ChanneledManaPotion
-				local channeledManaPotion = TRB.Data.snapshot.channeledManaPotion
-				if channeledManaPotion.ticks > 0 then
+				local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
+				if channeledManaPotion.buff.isActive then
 					valid = true
 				end
 			elseif var == "$potionOfFrozenFocusTime" then
-				---@type TRB.Classes.Healer.ChanneledManaPotion
-				local channeledManaPotion = TRB.Data.snapshot.channeledManaPotion
-				if channeledManaPotion.buff.remaining > 0 then
+				local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
+				if channeledManaPotion.buff.isActive then
 					valid = true
 				end
 			elseif var == "$potionCooldown" then
-				if snapshot.potion.onCooldown then
+				if snapshots[spells.aeratedManaPotionRank1.id].cooldown:IsUnusable() then
 					valid = true
 				end
 			elseif var == "$potionCooldownSeconds" then
-				if snapshot.potion.onCooldown then
+				if snapshots[spells.aeratedManaPotionRank1.id].cooldown:IsUnusable() then
 					valid = true
 				end
 			end
+		elseif specId == 3 then -- Augmentation
+		end
+
+		--Spec agnostic
+		if var == "$casting" then
+			if snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0 then
+				valid = true
+			end
+		elseif var == "$resource" or var == "$mana" then
+			if snapshotData.attributes.resource > 0 then
+				valid = true
+			end
+		elseif var == "$resourceMax" or var == "$manaMax" then
+			valid = true
+		elseif var == "$resourceTotal" or var == "$manaTotal" then
+			if snapshotData.attributes.resource > 0 or
+				(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0)
+				then
+				valid = true
+			end
+		elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
+			if snapshotData.attributes.resource > 0 or
+				(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0) then
+				valid = true
+			end
+		elseif var == "$regen" or var == "$regenMana" or var == "$manaRegen" then
+			if snapshotData.attributes.resource < TRB.Data.character.maxResource and
+				((settings.generation.mode == "time" and settings.generation.time > 0) or
+				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+				valid = true
+			end
+		elseif var == "$comboPoints" or var == "$essence" then
+			valid = true
+		elseif var == "$comboPointsMax"or var == "$essenceMax" then
+			valid = true
 		end
 
 		return valid
@@ -2035,9 +2217,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 	function TRB.Functions.Class:TriggerResourceBarUpdates()
 		local specId = GetSpecialization()
-		if (specId ~= 1 and specId ~= 2) or
+		if (specId ~= 1 and specId ~= 2 and specId ~= 3) or
 			(specId == 1 and not TRB.Data.settings.core.experimental.specs.evoker.devastation) or
-			(specId == 2 and not TRB.Data.settings.core.experimental.specs.evoker.preservation) then
+			(specId == 2 and not TRB.Data.settings.core.experimental.specs.evoker.preservation) or
+			(specId == 3 and not TRB.Data.settings.core.experimental.specs.evoker.augmentation) then
 			TRB.Functions.Bar:HideResourceBar(true)
 			return
 		end

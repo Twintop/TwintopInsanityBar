@@ -114,26 +114,29 @@ function TRB.Functions.Threshold:ResetThresholdLine(threshold, settings, hasIcon
 		threshold.icon = threshold.icon or CreateFrame("Frame", nil, threshold, "BackdropTemplate")
 		threshold.icon:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetIcon)
 		threshold.icon:SetFrameStrata(TRB.Data.settings.core.strata.level)
+---@diagnostic disable-next-line: inject-field
 		threshold.icon.texture = threshold.icon.texture or threshold.icon:CreateTexture(nil, "BACKGROUND")
----@diagnostic disable-next-line: param-type-mismatch
 		threshold.icon.texture:SetAllPoints(threshold.icon)
----@diagnostic disable-next-line: param-type-mismatch
+---@diagnostic disable-next-line: inject-field
 		threshold.icon.cooldown = threshold.icon.cooldown or CreateFrame("Cooldown", nil, threshold.icon, "CooldownFrameTemplate")
----@diagnostic disable-next-line: param-type-mismatch
 		threshold.icon.cooldown:SetAllPoints(threshold.icon)
 		threshold.icon.cooldown:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase-TRB.Data.constants.frameLevels.thresholdOffsetCooldown)
 		threshold.icon.cooldown:SetFrameStrata(TRB.Data.settings.core.strata.level)
 
 		if settings.thresholds.icons.border < 1 then
+---@diagnostic disable-next-line: missing-fields
 			threshold.icon:SetBackdrop({
+---@diagnostic disable-next-line: missing-fields
 				insets = {0, 0, 0, 0}
 			})
 		else
+---@diagnostic disable-next-line: missing-fields
 			threshold.icon:SetBackdrop({
 				edgeFile = "Interface\\Buttons\\WHITE8X8",
 				tile = true,
 				tileSize = 4,
 				edgeSize = settings.thresholds.icons.border,
+---@diagnostic disable-next-line: missing-fields
 				insets = {0, 0, 0, 0}
 			})
 		end
@@ -172,6 +175,15 @@ function TRB.Functions.Threshold:RedrawThresholdLines(settings)
 	TRB.Frames.passiveFrame = passiveFrame
 end
 
+---Adjusts the display level, color, and cooldown status of a threshold and its icon.
+---@param spell table
+---@param threshold table
+---@param showThreshold boolean
+---@param currentFrameLevel integer
+---@param pairOffset integer
+---@param thresholdColor string
+---@param snapshot TRB.Classes.Snapshot
+---@param settings table
 function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings)
 	TwintopTempSettings = settings
 	if settings.thresholds[spell.settingKey].enabled and showThreshold then
@@ -208,8 +220,8 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, threshold, showTh
 			threshold.icon.texture:SetDesaturated(not spell.thresholdUsable or outOfRange)
 		end
 		
-		if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshot.startTime ~= nil and currentTime < (snapshot.startTime + snapshot.duration) and (snapshot.maxCharges == nil or snapshot.charges < snapshot.maxCharges) then
-			threshold.icon.cooldown:SetCooldown(snapshot.startTime, snapshot.duration)
+		if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshot.cooldown:GetRemainingTime(currentTime) > 0 and (snapshot.maxCharges == nil or snapshot.charges < snapshot.maxCharges) then
+			threshold.icon.cooldown:SetCooldown(snapshot.cooldown.startTime, snapshot.cooldown.duration)
 		else
 			threshold.icon.cooldown:SetCooldown(0, 0)
 		end

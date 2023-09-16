@@ -980,7 +980,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			spec.audio.overcap.enabled = self:GetChecked()
 
 			if spec.audio.overcap.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -1045,7 +1044,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			spec.audio.suddenDeath.enabled = self:GetChecked()
 
 			if spec.audio.suddenDeath.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -1717,7 +1715,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			spec.audio.overcap.enabled = self:GetChecked()
 
 			if spec.audio.overcap.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -1783,7 +1780,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			spec.audio.suddenDeath.enabled = self:GetChecked()
 
 			if spec.audio.suddenDeath.enabled then
----@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)

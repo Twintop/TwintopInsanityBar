@@ -2,7 +2,6 @@ local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 5 then --Only do this if we're on a Priest!
 	TRB.Functions.Class = TRB.Functions.Class or {}
-	TRB.Functions.Character:ResetSnapshotData()
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
 	local resourceFrame = TRB.Frames.resourceFrame
@@ -95,6 +94,25 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function FillSpecializationCache()
 		-- Discipline
+		specCache.discipline.Global_TwintopResourceBar = {
+			ttd = 0,
+			resource = {
+				resource = 0,
+				casting = 0,
+				passive = 0,
+				channeledPotion = 0,
+				manaTideTotem = 0,
+				innervate = 0,
+				potionOfChilledClarity = 0,
+				symbolOfHope = 0,
+				shadowfiend = 0,
+			},
+			dots = {
+				swpCount = 0
+			},
+			isPvp = false
+		}
+
 		specCache.discipline.character = {
 			guid = UnitGUID("player"),
 ---@diagnostic disable-next-line: missing-parameter
@@ -361,10 +379,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 409898,
 				name = "",
 				icon = "",
+			},
+
+			-- Imbued Frostweave Slippers
+			imbuedFrostweaveSlippers = {
+				id = 419273,
+				name = "",
+				icon = "",
+				itemId = 207817,
+				manaModifier = 0.0006
 			}
 		}
 
-		specCache.discipline.snapshotData.manaRegen = 0
+		specCache.discipline.snapshotData.attributes.manaRegen = 0
 		specCache.discipline.snapshotData.audio = {
 			innervateCue = false,
 			surgeOfLightCue = false,
@@ -376,6 +403,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.potionOfChilledClarity.id] = TRB.Classes.Healer.PotionOfChilledClarity:New(specCache.discipline.spells.potionOfChilledClarity)
 		---@type TRB.Classes.Healer.ManaTideTotem
 		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.manaTideTotem.id] = TRB.Classes.Healer.ManaTideTotem:New(specCache.discipline.spells.manaTideTotem)
+		---@type TRB.Classes.Healer.SymbolOfHope
+		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.symbolOfHope.id] = TRB.Classes.Healer.SymbolOfHope:New(specCache.discipline.spells.symbolOfHope, CalculateManaGain)
+		---@type TRB.Classes.Healer.ChanneledManaPotion
+		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.potionOfFrozenFocusRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(specCache.discipline.spells.potionOfFrozenFocusRank1, CalculateManaGain)
+		---@type TRB.Classes.Snapshot
+		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.aeratedManaPotionRank1.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.aeratedManaPotionRank1)
+		---@type TRB.Classes.Snapshot
+		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.conjuredChillglobe.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.conjuredChillglobe)
+		---@type TRB.Classes.Healer.MoltenRadiance
+		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(specCache.discipline.spells.moltenRadiance)
 		---@type TRB.Classes.Snapshot
 		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.shadowfiend.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.shadowfiend, {
 			guid = nil,
@@ -390,16 +427,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			resourceRaw = 0,
 			resourceFinal = 0
 		})
-		---@type TRB.Classes.Healer.SymbolOfHope
-		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.symbolOfHope.id] = TRB.Classes.Healer.SymbolOfHope:New(specCache.discipline.spells.symbolOfHope, CalculateManaGain)
-		---@type TRB.Classes.Healer.ChanneledManaPotion
-		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.potionOfFrozenFocusRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(specCache.discipline.spells.potionOfFrozenFocusRank1, CalculateManaGain)
-		---@type TRB.Classes.Snapshot
-		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.aeratedManaPotionRank1.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.aeratedManaPotionRank1)
-		---@type TRB.Classes.Snapshot
-		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.conjuredChillglobe.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.conjuredChillglobe)
-		---@type TRB.Classes.Healer.MoltenRadiance
-		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(specCache.discipline.spells.moltenRadiance)
 		---@type TRB.Classes.Snapshot
 		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.surgeOfLight)
 
@@ -797,6 +824,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 409898,
 				name = "",
 				icon = "",
+			},
+
+			-- Imbued Frostweave Slippers
+			imbuedFrostweaveSlippers = {
+				id = 419273,
+				name = "",
+				icon = "",
+				itemId = 207817,
+				manaModifier = 0.0006
 			},
 
 			-- Set Bonuses
@@ -1271,16 +1307,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 		}
 
-		---@type TRB.Classes.Snapshot
-		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.voidform.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.voidform)
-		---@type TRB.Classes.Snapshot
-		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.darkAscension.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.darkAscension)
-		---@type TRB.Classes.Snapshot
 		specCache.shadow.snapshotData.audio = {
 			playedDpCue = false,
 			playedMdCue = false,
 			overcapCue = false
 		}
+		---@type TRB.Classes.Snapshot
+		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.voidform.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.voidform)
+		---@type TRB.Classes.Snapshot
+		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.darkAscension.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.darkAscension)
 		---@type TRB.Classes.Snapshot
 		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.shadowfiend.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.shadowfiend, {
 			guid = nil,
@@ -1913,7 +1948,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end
 
-		local entries = TRB.Functions.Table:Length(passiveFrame.thresholds)
+		entries = TRB.Functions.Table:Length(passiveFrame.thresholds)
 		if entries > 0 then
 			for x = 1, entries do
 				passiveFrame.thresholds[x]:Hide()
@@ -2018,44 +2053,32 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 	end
 
-	local function GetHolyWordCooldownTimeRemaining(holyWord)
-		local currentTime = GetTime()
-		local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
-		local remainingTime = 0
-
-		if holyWord.buff.duration == gcd or holyWord.buff.startTime == nil or holyWord.buff.startTime == 0 or holyWord.buff.duration == 0 then
-			remainingTime = 0
-		else
-			remainingTime = (holyWord.buff.startTime + holyWord.buff.duration) - currentTime
-		end
-
-		return remainingTime
-	end
-
 	local function CalculateHolyWordCooldown(base, spellId)
 		local spells = TRB.Data.spells
+		---@type TRB.Classes.Snapshot[]
+		local snapshots = TRB.Data.snapshotData.snapshots
 		local mod = 1
 		local divineConversationValue = 0
 		local prayerFocusValue = 0
 
-		if TRB.Data.snapshotData.snapshots[spells.divineConversation.id].buff.isActive then
+		if snapshots[spells.divineConversation.id].buff.isActive then
 			if TRB.Data.character.isPvp then
-				divineConversationValue = TRB.Data.spells.divineConversation.reductionPvp
+				divineConversationValue = spells.divineConversation.reductionPvp
 			else
-				divineConversationValue = TRB.Data.spells.divineConversation.reduction
+				divineConversationValue = spells.divineConversation.reduction
 			end
 		end
 
-		if TRB.Data.snapshotData.snapshots[spells.prayerFocus.id].buff.isActive and (spellId == TRB.Data.spells.heal.id or spellId == TRB.Data.spells.prayerOfHealing.id) then
-			prayerFocusValue = TRB.Data.spells.prayerFocus.holyWordReduction
+		if snapshots[spells.prayerFocus.id].buff.isActive and (spellId == spells.heal.id or spellId == spells.prayerOfHealing.id) then
+			prayerFocusValue = spells.prayerFocus.holyWordReduction
 		end
 
-		if TRB.Data.snapshotData.snapshots[spells.apotheosis.id].buff.isActive then
-			mod = mod * TRB.Data.spells.apotheosis.holyWordModifier
+		if snapshots[spells.apotheosis.id].buff.isActive then
+			mod = mod * spells.apotheosis.holyWordModifier
 		end
 
-		if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lightOfTheNaaru) then
-			mod = mod * (1 + (TRB.Data.spells.lightOfTheNaaru.holyWordModifier * TRB.Data.talents.bySpellId[TRB.Data.spells.lightOfTheNaaru.id].currentRank))
+		if TRB.Functions.Talent:IsTalentActive(spells.lightOfTheNaaru) then
+			mod = mod * (1 + (spells.lightOfTheNaaru.holyWordModifier * TRB.Data.talents[spells.lightOfTheNaaru.id].currentRank))
 		end
 
 		return mod * (base + prayerFocusValue) + divineConversationValue
@@ -2068,19 +2091,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function RefreshLookupData_Discipline()
-		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
-		local snapshots = snapshotData.snapshots
 		local specSettings = TRB.Data.settings.priest.discipline
-		---@type TRB.Classes.Target
+		local spells = TRB.Data.spells
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local snapshots = snapshotData.snapshots
 		local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 		local currentTime = GetTime()
 		local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 		-- This probably needs to be pulled every refresh
----@diagnostic disable-next-line: cast-local-type
 		snapshotData.attributes.manaRegen, _ = GetPowerRegen()
+		
+		if TRB.Data.character.items.imbuedFrostweaveSlippers then
+			snapshotData.attributes.manaRegen = snapshotData.attributes.manaRegen + (TRB.Data.character.maxResource * spells.imbuedFrostweaveSlippers.manaModifier)
+		end
 
 		local currentManaColor = specSettings.colors.text.current
 		local castingManaColor = specSettings.colors.text.casting
@@ -2092,9 +2116,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _castingMana = snapshotData.casting.resourceFinal
 		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
-		---@type TRB.Classes.Healer.SymbolOfHope
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local symbolOfHope = snapshots[spells.symbolOfHope.id]
+		local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 		--$sohMana
 		local _sohMana = symbolOfHope.buff.mana
 		local sohMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor", true))
@@ -2105,9 +2127,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _sohTime = symbolOfHope.buff:GetRemainingTime(currentTime)
 		local sohTime = string.format("%.1f", _sohTime)
 
-		---@type TRB.Classes.Healer.Innervate
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local innervate = snapshots[spells.innervate.id]
+		local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		--$innervateMana
 		local _innervateMana = innervate.mana
 		local innervateMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
@@ -2115,9 +2135,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _innervateTime = innervate.buff:GetRemainingTime(currentTime)
 		local innervateTime = string.format("%.1f", _innervateTime)
 
-		---@type TRB.Classes.Healer.PotionOfChilledClarity
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id]
+		local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		--$potionOfChilledClarityMana
 		local _potionOfChilledClarityMana = potionOfChilledClarity.mana
 		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
@@ -2125,9 +2143,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _potionOfChilledClarityTime = potionOfChilledClarity.buff:GetRemainingTime(currentTime)
 		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
 		
-		---@type TRB.Classes.Healer.ManaTideTotem
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local manaTideTotem = snapshots[spells.manaTideTotem.id]
+		local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 		--$mttMana
 		local _mttMana = manaTideTotem.mana
 		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
@@ -2135,9 +2151,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _mttTime = manaTideTotem.buff:GetRemainingTime(currentTime)
 		local mttTime = string.format("%.1f", _mttTime)
 		
-		---@type TRB.Classes.Healer.MoltenRadiance
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local moltenRadiance = snapshots[spells.moltenRadiance.id]
+		local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 		--$mrMana
 		local _mrMana = moltenRadiance.mana
 		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
@@ -2152,9 +2166,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _potionCooldownSeconds = _potionCooldown % 60
 		--$potionCooldown
 		local potionCooldown = string.format("%d:%0.2d", _potionCooldownMinutes, _potionCooldownSeconds)
-					
-		---@type TRB.Classes.Healer.ChanneledManaPotion
-		local channeledManaPotion = TRB.Data.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id]
+		
+		local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 		--$channeledMana
 		local _channeledMana = channeledManaPotion.mana
 		local channeledMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_channeledMana, manaPrecision, "floor", true))
@@ -2379,8 +2392,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 		-- This probably needs to be pulled every refresh
----@diagnostic disable-next-line: cast-local-type
 		snapshotData.attributes.manaRegen, _ = GetPowerRegen()
+		
+		if TRB.Data.character.items.imbuedFrostweaveSlippers then
+			snapshotData.attributes.manaRegen = snapshotData.attributes.manaRegen + (TRB.Data.character.maxResource * spells.imbuedFrostweaveSlippers.manaModifier)
+		end
 
 		local currentManaColor = specSettings.colors.text.current
 		local castingManaColor = specSettings.colors.text.casting
@@ -2392,9 +2408,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _castingMana = snapshotData.casting.resourceFinal
 		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
-		---@type TRB.Classes.Healer.SymbolOfHope
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local symbolOfHope = snapshots[spells.symbolOfHope.id]
+		local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 		--$sohMana
 		local _sohMana = symbolOfHope.buff.mana
 		local sohMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor", true))
@@ -2405,9 +2419,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _sohTime = symbolOfHope.buff:GetRemainingTime(currentTime)
 		local sohTime = string.format("%.1f", _sohTime)
 
-		---@type TRB.Classes.Healer.Innervate
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local innervate = snapshots[spells.innervate.id]
+		local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		--$innervateMana
 		local _innervateMana = innervate.mana
 		local innervateMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
@@ -2415,9 +2427,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _innervateTime = innervate.buff:GetRemainingTime(currentTime)
 		local innervateTime = string.format("%.1f", _innervateTime)
 
-		---@type TRB.Classes.Healer.PotionOfChilledClarity
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id]
+		local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		--$potionOfChilledClarityMana
 		local _potionOfChilledClarityMana = potionOfChilledClarity.mana
 		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
@@ -2425,9 +2435,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _potionOfChilledClarityTime = potionOfChilledClarity.buff:GetRemainingTime(currentTime)
 		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
 		
-		---@type TRB.Classes.Healer.ManaTideTotem
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local manaTideTotem = snapshots[spells.manaTideTotem.id]
+		local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 		--$mttMana
 		local _mttMana = manaTideTotem.mana
 		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
@@ -2435,9 +2443,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _mttTime = manaTideTotem.buff:GetRemainingTime(currentTime)
 		local mttTime = string.format("%.1f", _mttTime)
 		
-		---@type TRB.Classes.Healer.MoltenRadiance
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local moltenRadiance = snapshots[spells.moltenRadiance.id]
+		local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 		--$mrMana
 		local _mrMana = moltenRadiance.mana
 		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
@@ -2452,9 +2458,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _potionCooldownSeconds = _potionCooldown % 60
 		--$potionCooldown
 		local potionCooldown = string.format("%d:%0.2d", _potionCooldownMinutes, _potionCooldownSeconds)
-					
-		---@type TRB.Classes.Healer.ChanneledManaPotion
-		local channeledManaPotion = TRB.Data.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id]
+		
+		local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 		--$channeledMana
 		local _channeledMana = channeledManaPotion.mana
 		local channeledMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_channeledMana, manaPrecision, "floor", true))
@@ -2701,12 +2706,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function RefreshLookupData_Shadow()
+		local specSettings = TRB.Data.settings.priest.shadow
 		local spells = TRB.Data.spells
 		---@type TRB.Classes.SnapshotData
 		local snapshotData = TRB.Data.snapshotData
 		local snapshots = snapshotData.snapshots
-		local specSettings = TRB.Data.settings.priest.shadow
-		---@type TRB.Classes.TargetData
 		local targetData = snapshotData.targetData
 		local target = targetData.targets[targetData.currentTargetGuid]
 		local currentTime = GetTime()
@@ -3057,29 +3061,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function UpdateCastingResourceFinal_Discipline()
 		-- Do nothing for now
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Healer.Innervate
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local innervate = TRB.Data.snapshotData.snapshots[spells.innervate.id]
-
-		---@type TRB.Classes.Healer.PotionOfChilledClarity
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local potionOfChilledClarity = TRB.Data.snapshotData.snapshots[spells.potionOfChilledClarity.id]
-
-		TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceRaw * innervate.modifier * potionOfChilledClarity.modifier
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
+		local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
+		-- Do nothing for now
+		snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw * innervate.modifier * potionOfChilledClarity.modifier
 	end
 
 	local function UpdateCastingResourceFinal_Holy()
 		-- Do nothing for now
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Healer.Innervate
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local innervate = TRB.Data.snapshotData.snapshots[spells.innervate.id]
-
-		---@type TRB.Classes.Healer.PotionOfChilledClarity
-		---@diagnostic disable-next-line: assign-type-mismatch
-		local potionOfChilledClarity = TRB.Data.snapshotData.snapshots[spells.potionOfChilledClarity.id]
-
-		TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceRaw * innervate.modifier * potionOfChilledClarity.modifier
+		---@type TRB.Classes.SnapshotData
+		local snapshotData = TRB.Data.snapshotData
+		local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
+		local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
+		-- Do nothing for now
+		snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw * innervate.modifier * potionOfChilledClarity.modifier
 	end
 
 	local function UpdateCastingResourceFinal_Shadow()
@@ -3088,8 +3085,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function CastingSpell()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local currentTime = GetTime()
 		local affectingCombat = UnitAffectingCombat("player")
 		local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
@@ -3484,50 +3480,43 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function UpdateSnapshot()
 		TRB.Functions.Character:UpdateSnapshot()
+		UpdateShadowfiendValues()
 	end
 
 	local function UpdateSnapshot_Healers()
-		UpdateShadowfiendValues()
-		
 		local _
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		---@type TRB.Classes.Snapshot[]
+		local snapshots = TRB.Data.snapshotData.snapshots
 
 		local currentTime = GetTime()
 		
-		---@type TRB.Classes.Healer.Innervate
-		local innervate = TRB.Data.snapshotData.snapshots[spells.innervate.id]
+		local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		innervate:Update()
 
-		---@type TRB.Classes.Healer.ManaTideTotem
-		local manaTideTotem = TRB.Data.snapshotData.snapshots[spells.manaTideTotem.id]
+		local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 		manaTideTotem:Update()
 
-		---@type TRB.Classes.Healer.SymbolOfHope
-		local symbolOfHope = TRB.Data.snapshotData.snapshots[spells.symbolOfHope.id]
+		local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 		symbolOfHope:Update()
 
-		---@type TRB.Classes.Healer.MoltenRadiance
-		local moltenRadiance = TRB.Data.snapshotData.snapshots[spells.moltenRadiance.id]
+		local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 		moltenRadiance:Update()
 		
-		---@type TRB.Classes.Healer.PotionOfChilledClarity
-		local potionOfChilledClarity = TRB.Data.snapshotData.snapshots[spells.potionOfChilledClarity.id]
+		local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		potionOfChilledClarity:Update()
-					
-		---@type TRB.Classes.Healer.ChanneledManaPotion
-		local channeledManaPotion = TRB.Data.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id]
+
+		local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 		channeledManaPotion:Update()
 
-		snapshotData.snapshots[spells.surgeOfLight.id].buff:GetRemainingTime(currentTime)
+		snapshots[spells.surgeOfLight.id].buff:GetRemainingTime(currentTime)
 
 		-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
-		snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown.startTime, snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
-		snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown:GetRemainingTime(currentTime)
+		snapshots[spells.aeratedManaPotionRank1.id].cooldown.startTime, snapshots[spells.aeratedManaPotionRank1.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
+		snapshots[spells.aeratedManaPotionRank1.id].cooldown:GetRemainingTime(currentTime)
 
-		snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown.startTime, snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
-		snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown:GetRemainingTime(currentTime)
+		snapshots[spells.conjuredChillglobe.id].cooldown.startTime, snapshots[spells.conjuredChillglobe.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
+		snapshots[spells.conjuredChillglobe.id].cooldown:GetRemainingTime(currentTime)
 	end
 
 	local function UpdateSnapshot_Discipline()
@@ -3542,33 +3531,32 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 		local _
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		---@type TRB.Classes.Snapshot[]
+		local snapshots = TRB.Data.snapshotData.snapshots
 
-		snapshotData.snapshots[spells.apotheosis.id].cooldown:GetRemainingTime(currentTime)
-		snapshotData.snapshots[spells.holyWordSerenity.id].cooldown:Refresh()
-		snapshotData.snapshots[spells.holyWordSanctify.id].cooldown:Refresh()
-		snapshotData.snapshots[spells.holyWordChastise.id].cooldown:Refresh()
-		snapshotData.snapshots[spells.resonantWords.id].buff:GetRemainingTime(currentTime)
-		snapshotData.snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime)
+		snapshots[spells.holyWordSerenity.id].cooldown:Refresh()
+		snapshots[spells.holyWordSanctify.id].cooldown:Refresh()
+		snapshots[spells.holyWordChastise.id].cooldown:Refresh()
+		snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
+		snapshots[spells.resonantWords.id].buff:GetRemainingTime(currentTime)
+		snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime)
 	end
 
 	local function UpdateSnapshot_Shadow()
 		local currentTime = GetTime()
 		UpdateSnapshot()
-		UpdateShadowfiendValues()
 		UpdateExternalCallToTheVoidValues()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		---@type TRB.Classes.Snapshot[]
+		local snapshots = TRB.Data.snapshotData.snapshots
 		
-		snapshotData.snapshots[spells.voidform.id].buff:Refresh()
-		snapshotData.snapshots[spells.darkAscension.id].buff:GetRemainingTime(currentTime)
-		snapshotData.snapshots[spells.surgeOfInsanity.id].buff:GetRemainingTime(currentTime)
-		snapshotData.snapshots[spells.deathspeaker.id].buff:GetRemainingTime(currentTime)
-		snapshotData.snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
+		snapshots[spells.voidform.id].buff:Refresh()
+		snapshots[spells.darkAscension.id].buff:GetRemainingTime(currentTime)
+		snapshots[spells.surgeOfInsanity.id].buff:Refresh()
+		snapshots[spells.deathspeaker.id].buff:GetRemainingTime(currentTime)
+		snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
 
-		snapshotData.snapshots[spells.mindBlast.id].cooldown:Refresh()
+		snapshots[spells.mindBlast.id].cooldown:Refresh()
 	end
 
 	local function UpdateResourceBar()
@@ -3578,8 +3566,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local coreSettings = TRB.Data.settings.core
 		local classSettings = TRB.Data.settings.priest
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local snapshots = snapshotData.snapshots
 
 		if specId == 1 then
 			local specSettings = classSettings.discipline
@@ -3595,45 +3583,32 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local currentMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local barBorderColor = specSettings.colors.bar.border
 
-					---@type TRB.Classes.Healer.Innervate
-					local innervate = TRB.Data.snapshotData.snapshots[spells.innervate.id]
+					local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
+					local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
+					local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
+					local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
+					local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
+					local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 
-					---@type TRB.Classes.Healer.ManaTideTotem
-					local manaTideTotem = TRB.Data.snapshotData.snapshots[spells.manaTideTotem.id]
-
-					---@type TRB.Classes.Healer.SymbolOfHope
-					local symbolOfHope = TRB.Data.snapshotData.snapshots[spells.symbolOfHope.id]
-
-					---@type TRB.Classes.Healer.MoltenRadiance
-					local moltenRadiance = TRB.Data.snapshotData.snapshots[spells.moltenRadiance.id]
-		
-					---@type TRB.Classes.Healer.PotionOfChilledClarity
-					local potionOfChilledClarity = TRB.Data.snapshotData.snapshots[spells.potionOfChilledClarity.id]
-					
-					---@type TRB.Classes.Healer.ChanneledManaPotion
-					local channeledManaPotion = TRB.Data.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id]
-
-					if snapshotData.snapshots[spells.surgeOfLight.id].buff.isActive then
-						if snapshotData.snapshots[spells.surgeOfLight.id].buff.stacks == 1 then
+					if snapshots[spells.surgeOfLight.id].buff.isActive then
+						if snapshots[spells.surgeOfLight.id].buff.stacks == 1 then
 							if specSettings.colors.bar.surgeOfLightBorderChange1 then
 								barBorderColor = specSettings.colors.bar.surgeOfLight1
 							end
 
 							if specSettings.audio.surgeOfLight.enabled and not snapshotData.audio.surgeOfLightCue then
 								snapshotData.audio.surgeOfLightCue = true
-	---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(specSettings.audio.surgeOfLight.sound, coreSettings.audio.channel.channel)
 							end
 						end
 
-						if snapshotData.snapshots[spells.surgeOfLight.id].buff.stacks == 2 then
+						if snapshots[spells.surgeOfLight.id].buff.stacks == 2 then
 							if specSettings.colors.bar.surgeOfLightBorderChange2 then
 								barBorderColor = specSettings.colors.bar.surgeOfLight2
 							end
 
 							if specSettings.audio.surgeOfLight2.enabled and not snapshotData.audio.surgeOfLight2Cue then
 								snapshotData.audio.surgeOfLight2Cue = true
-	---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(specSettings.audio.surgeOfLight2.sound, coreSettings.audio.channel.channel)
 							end
 						end
@@ -3650,7 +3625,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 						if specSettings.audio.innervate.enabled and snapshotData.audio.innervateCue == false then
 							snapshotData.audio.innervateCue = true
----@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.innervate.sound, coreSettings.audio.channel.channel)
 						end
 					end
@@ -3666,17 +3640,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 					
-					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown, snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown, TRB.Data.character, resourceFrame, CalculateManaGain)
+					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, snapshots[spells.aeratedManaPotionRank1.id].cooldown, snapshots[spells.conjuredChillglobe.id].cooldown, TRB.Data.character, resourceFrame, CalculateManaGain)
 
-					local shadowfiend = snapshotData.snapshots[spells.shadowfiend.id]
+					local shadowfiend = snapshots[spells.shadowfiend.id]
 
 					if TRB.Functions.Talent:IsTalentActive(spells.shadowfiend) and not shadowfiend.buff.isActive then
 						local shadowfiendThresholdColor = specSettings.colors.threshold.over
-						if specSettings.thresholds.shadowfiend.enabled and (not shadowfiend.cooldown.onCooldown or specSettings.thresholds.shadowfiend.cooldown) then
+						if specSettings.thresholds.shadowfiend.enabled and (not shadowfiend.cooldown:IsUnusable() or specSettings.thresholds.shadowfiend.cooldown) then
 							local haveTotem, timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = GetMaximumShadowfiendResults()
 							local shadowfiendMana = swingsRemaining * shadowfiend.spell.manaPercent * TRB.Data.character.maxResource
 
-							if shadowfiend.cooldown.onCooldown then
+							if shadowfiend.cooldown:IsUnusable() then
 								shadowfiendThresholdColor = specSettings.colors.threshold.unusable
 							end
 
@@ -3847,73 +3821,58 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local currentMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local barBorderColor = specSettings.colors.bar.border
 
-					---@type TRB.Classes.Healer.Innervate
-					local innervate = TRB.Data.snapshotData.snapshots[spells.innervate.id]
+					local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
+					local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
+					local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
+					local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
+					local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
+					local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 
-					---@type TRB.Classes.Healer.ManaTideTotem
-					local manaTideTotem = TRB.Data.snapshotData.snapshots[spells.manaTideTotem.id]
-
-					---@type TRB.Classes.Healer.SymbolOfHope
-					local symbolOfHope = TRB.Data.snapshotData.snapshots[spells.symbolOfHope.id]
-
-					---@type TRB.Classes.Healer.MoltenRadiance
-					local moltenRadiance = TRB.Data.snapshotData.snapshots[spells.moltenRadiance.id]
-		
-					---@type TRB.Classes.Healer.PotionOfChilledClarity
-					local potionOfChilledClarity = TRB.Data.snapshotData.snapshots[spells.potionOfChilledClarity.id]
-					
-					---@type TRB.Classes.Healer.ChanneledManaPotion
-					local channeledManaPotion = TRB.Data.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id]
-
-					if snapshotData.snapshots[spells.lightweaver.id].buff.isActive then
+					if snapshots[spells.lightweaver.id].buff.isActive then
 						if specSettings.colors.bar.lightweaverBorderChange then
 							barBorderColor = specSettings.colors.bar.lightweaver
 						end
 
 						if specSettings.audio.lightweaver.enabled and snapshotData.audio.lightweaverCue == false then
 							snapshotData.audio.lightweaverCue = true
----@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.lightweaver.sound, coreSettings.audio.channel.channel)
 						end
 					else
 						snapshotData.audio.lightweaverCue = false
 					end
 
-					if snapshotData.snapshots[spells.resonantWords.id].buff.isActive then
+					if snapshots[spells.resonantWords.id].buff.isActive then
 						if specSettings.colors.bar.resonantWordsBorderChange then
 							barBorderColor = specSettings.colors.bar.resonantWords
 						end
 
 						if specSettings.audio.resonantWords.enabled and snapshotData.audio.resonantWordsCue == false then
 							snapshotData.audio.resonantWordsCue = true
----@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.resonantWords.sound, coreSettings.audio.channel.channel)
 						end
 					else
 						snapshotData.audio.resonantWordsCue = false
 					end
 
-					if snapshotData.snapshots[spells.surgeOfLight.id].buff.isActive then
-						if snapshotData.snapshots[spells.surgeOfLight.id].buff.stacks == 1 then
+					if snapshots[spells.surgeOfLight.id].buff.isActive then
+						if snapshots[spells.surgeOfLight.id].buff.stacks == 1 then
 							if specSettings.colors.bar.surgeOfLightBorderChange1 then
 								barBorderColor = specSettings.colors.bar.surgeOfLight1
 							end
 
 							if specSettings.audio.surgeOfLight.enabled and not snapshotData.audio.surgeOfLightCue then
 								snapshotData.audio.surgeOfLightCue = true
-	---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(specSettings.audio.surgeOfLight.sound, coreSettings.audio.channel.channel)
 							end
 						end
 
-						if snapshotData.snapshots[spells.surgeOfLight.id].buff.stacks == 2 then
+						if snapshots[spells.surgeOfLight.id].buff.stacks == 2 then
 							if specSettings.colors.bar.surgeOfLightBorderChange2 then
 								barBorderColor = specSettings.colors.bar.surgeOfLight2
 							end
 
 							if specSettings.audio.surgeOfLight2.enabled and not snapshotData.audio.surgeOfLight2Cue then
 								snapshotData.audio.surgeOfLight2Cue = true
-	---@diagnostic disable-next-line: redundant-parameter
 								PlaySoundFile(specSettings.audio.surgeOfLight2.sound, coreSettings.audio.channel.channel)
 							end
 						end
@@ -3930,7 +3889,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 						if specSettings.audio.innervate.enabled and snapshotData.audio.innervateCue == false then
 							snapshotData.audio.innervateCue = true
----@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.innervate.sound, coreSettings.audio.channel.channel)
 						end
 					end
@@ -3946,17 +3904,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 					
-					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown, snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown, TRB.Data.character, resourceFrame, CalculateManaGain)
+					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, snapshots[spells.aeratedManaPotionRank1.id].cooldown, snapshots[spells.conjuredChillglobe.id].cooldown, TRB.Data.character, resourceFrame, CalculateManaGain)
 
-					local shadowfiend = snapshotData.snapshots[spells.shadowfiend.id]
+					local shadowfiend = snapshots[spells.shadowfiend.id]
 
 					if TRB.Functions.Talent:IsTalentActive(spells.shadowfiend) and not shadowfiend.buff.isActive then
 						local shadowfiendThresholdColor = specSettings.colors.threshold.over
-						if specSettings.thresholds.shadowfiend.enabled and (not shadowfiend.cooldown.onCooldown or specSettings.thresholds.shadowfiend.cooldown) then
+						if specSettings.thresholds.shadowfiend.enabled and (not shadowfiend.cooldown:IsUnusable() or specSettings.thresholds.shadowfiend.cooldown) then
 							local haveTotem, timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = GetMaximumShadowfiendResults()
 							local shadowfiendMana = swingsRemaining * shadowfiend.spell.manaPercent * TRB.Data.character.maxResource
 
-							if shadowfiend.cooldown.onCooldown then
+							if shadowfiend.cooldown:IsUnusable() then
 								shadowfiendThresholdColor = specSettings.colors.threshold.unusable
 							end
 
@@ -4116,7 +4074,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Functions.Talent:IsTalentActive(spells[spells[snapshotData.casting.spellKey].holyWordKey]) then
 
 							local castTimeRemains = snapshotData.casting.endTime - currentTime
-							local holyWordCooldownRemaining = GetHolyWordCooldownTimeRemaining(TRB.Data.snapshotData.snapshots[spells[spells[snapshotData.casting.spellKey].holyWordKey].id])
+							local holyWordCooldownRemaining = snapshots[spells[spells[snapshotData.casting.spellKey].holyWordKey].id].cooldown:GetRemainingTime(currentTime)
 
 							if (holyWordCooldownRemaining - CalculateHolyWordCooldown(spells[snapshotData.casting.spellKey].holyWordReduction, spells[snapshotData.casting.spellKey].id) - castTimeRemains) <= 0 and specSettings.bar[spells[snapshotData.casting.spellKey].holyWordKey .. "Enabled"] then
 								resourceBarColor = specSettings.colors.bar[spells[snapshotData.casting.spellKey].holyWordKey]
@@ -4124,7 +4082,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					end
 
-					if snapshotData.snapshots[spells.apotheosis.id].buff.isActive and resourceBarColor == nil then
+					if snapshots[spells.apotheosis.id].buff.isActive and resourceBarColor == nil then
 						local timeThreshold = 0
 						local useEndOfApotheosisColor = false
 
@@ -4138,7 +4096,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							end
 						end
 
-						if useEndOfApotheosisColor and snapshotData.snapshots[spells.apotheosis.id].buff.remaining <= timeThreshold then
+						if useEndOfApotheosisColor and snapshots[spells.apotheosis.id].buff.remaining <= timeThreshold then
 							resourceBarColor = specSettings.colors.bar.apotheosisEnd
 						else
 							resourceBarColor = specSettings.colors.bar.apotheosis
@@ -4174,7 +4132,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						barBorderColor = specSettings.colors.bar.borderOvercap
 						if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
 							snapshotData.audio.overcapCue = true
----@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
 						end
 					else
@@ -4200,12 +4157,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 					if specSettings.bar.showPassive and
 						(TRB.Functions.Talent:IsTalentActive(spells.auspiciousSpirits) or
-						(snapshotData.snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshotData.snapshots[spells.devouredDespair.id].attributes.resourceFinal) > 0 or
-						snapshotData.snapshots[spells.idolOfCthun.id].attributes.resourceFinal > 0) then
-						passiveValue = ((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * (snapshotData.targetData.custom.auspiciousSpiritsGenerate or 0)) + snapshotData.snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshotData.snapshots[spells.devouredDespair.id].attributes.resourceFinal + snapshotData.snapshots[spells.idolOfCthun.id].attributes.resourceFinal)
-						if (snapshotData.snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshotData.snapshots[spells.devouredDespair.id].attributes.resourceFinal) > 0 and (castingBarValue + (snapshotData.snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshotData.snapshots[spells.devouredDespair.id].attributes.resourceFinal)) < TRB.Data.character.maxResource then
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (castingBarValue + (snapshotData.snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshotData.snapshots[spells.devouredDespair.id].attributes.resourceFinal)), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
+						(snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal) > 0 or
+						snapshots[spells.idolOfCthun.id].attributes.resourceFinal > 0) then
+						passiveValue = ((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * (snapshotData.targetData.custom.auspiciousSpiritsGenerate or 0)) + snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal + snapshots[spells.idolOfCthun.id].attributes.resourceFinal)
+						if (snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal) > 0 and (castingBarValue + (snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)) < TRB.Data.character.maxResource then
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (castingBarValue + (snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)), TRB.Data.character.maxResource)
 							TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 							TRB.Frames.passiveFrame.thresholds[1]:Show()
 						else
@@ -4245,7 +4201,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										showThreshold = false
 									elseif resourceAmount >= TRB.Data.character.maxResource then
 										showThreshold = false
-									elseif snapshotData.snapshots[spells.mindDevourer.id].buff.endTime ~= nil and currentTime < snapshotData.snapshots[spells.mindDevourer.id].buff.endTime then
+									elseif snapshots[spells.mindDevourer.id].buff.endTime ~= nil and currentTime < snapshots[spells.mindDevourer.id].buff.endTime then
 										thresholdColor = specSettings.colors.threshold.over
 									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
@@ -4271,8 +4227,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										showThreshold = false
 									elseif -resourceAmount >= TRB.Data.character.maxResource then
 										showThreshold = false
-									elseif snapshotData.snapshots[spells.mindDevourer.id].buff.endTime ~= nil and
-										currentTime < snapshotData.snapshots[spells.mindDevourer.id].buff.endTime and
+									elseif snapshots[spells.mindDevourer.id].buff.endTime ~= nil and
+										currentTime < snapshots[spells.mindDevourer.id].buff.endTime and
 										currentResource >= -previousResourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									elseif specSettings.thresholds.devouringPlagueThresholdOnlyOverShow and
@@ -4302,8 +4258,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										showThreshold = false
 									elseif -resourceAmount >= TRB.Data.character.maxResource then
 										showThreshold = false
-									elseif snapshotData.snapshots[spells.mindDevourer.id].buff.endTime ~= nil and
-										currentTime < snapshotData.snapshots[spells.mindDevourer.id].buff.endTime and
+									elseif snapshots[spells.mindDevourer.id].buff.endTime ~= nil and
+										currentTime < snapshots[spells.mindDevourer.id].buff.endTime and
 										currentResource >= -previousResourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									elseif specSettings.thresholds.devouringPlagueThresholdOnlyOverShow and
@@ -4322,18 +4278,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
-								if (TRB.Data.snapshotData.snapshots[spells[spell.settingKey].id].cooldown.charges == nil or TRB.Data.snapshotData.snapshots[spells[spell.settingKey].id].cooldown.charges == 0) and
-									(TRB.Data.snapshotData.snapshots[spells[spell.settingKey].id].cooldown.startTime ~= nil and currentTime < (TRB.Data.snapshotData.snapshots[spells[spell.settingKey].id].cooldown.startTime + TRB.Data.snapshotData.snapshots[spells[spell.settingKey].id].cooldown.duration)) then
+								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif currentResource >= -resourceAmount then
+								elseif snapshotData.attributes.resource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
-								if currentResource >= -resourceAmount then
+								if snapshotData.attributes.resource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -4341,25 +4296,23 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								end
 							end
 
-							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, TRB.Data.snapshotData.snapshots[spells[spell.settingKey].id], specSettings)
+							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spells[spell.settingKey].id], specSettings)
 						end
 					end
 
-					if snapshotData.snapshots[spells.mindDevourer.id].buff.isActive or currentInsanity >= TRB.Data.character.devouringPlagueThreshold or snapshotData.snapshots[spells.mindDevourer.id].buff.isActive then
+					if snapshots[spells.mindDevourer.id].buff.isActive or currentInsanity >= TRB.Data.character.devouringPlagueThreshold or snapshots[spells.mindDevourer.id].buff.isActive then
 						if specSettings.colors.bar.flashEnabled then
 							TRB.Functions.Bar:PulseFrame(barContainerFrame, specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 						else
 							barContainerFrame:SetAlpha(1.0)
 						end
 
-						if snapshotData.snapshots[spells.mindDevourer.id].buff.isActive and specSettings.audio.mdProc.enabled and snapshotData.audio.playedMdCue == false then
+						if snapshots[spells.mindDevourer.id].buff.isActive and specSettings.audio.mdProc.enabled and snapshotData.audio.playedMdCue == false then
 							snapshotData.audio.playedDpCue = true
 							snapshotData.audio.playedMdCue = true
----@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.mdProc.sound, coreSettings.audio.channel.channel)
 						elseif specSettings.audio.dpReady.enabled and snapshotData.audio.playedDpCue == false then
 							snapshotData.audio.playedDpCue = true
----@diagnostic disable-next-line: redundant-parameter
 							PlaySoundFile(specSettings.audio.dpReady.sound, coreSettings.audio.channel.channel)
 						end
 					else
@@ -4391,18 +4344,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
-					if snapshotData.snapshots[spells.mindDevourer.id].buff.isActive or currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
+					if snapshots[spells.mindDevourer.id].buff.isActive or currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.devouringPlagueUsableCasting, true))
 					else
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 					end
 					
-					if specSettings.colors.bar.instantMindBlast.enabled and snapshotData.snapshots[spells.mindBlast.id].cooldown.charges > 0 and snapshotData.snapshots[spells.shadowyInsight.id].buff.isActive then
+					if specSettings.colors.bar.instantMindBlast.enabled and snapshots[spells.mindBlast.id].cooldown.charges > 0 and snapshots[spells.shadowyInsight.id].buff.isActive then
 						barColor = specSettings.colors.bar.instantMindBlast.color
-					elseif snapshotData.snapshots[spells.voidform.id].buff.isActive or snapshotData.snapshots[spells.darkAscension.id].buff.isActive then
-						local timeLeft = snapshotData.snapshots[spells.voidform.id].buff.remaining
-						if snapshotData.snapshots[spells.darkAscension.id].buff.isActive then
-							timeLeft = snapshotData.snapshots[spells.darkAscension.id].buff.remaining
+					elseif snapshots[spells.voidform.id].buff.isActive or snapshots[spells.darkAscension.id].buff.isActive then
+						local timeLeft = snapshots[spells.voidform.id].buff.remaining
+						if snapshots[spells.darkAscension.id].buff.isActive then
+							timeLeft = snapshots[spells.darkAscension.id].buff.remaining
 						end
 						local timeThreshold = 0
 						local useEndOfVoidformColor = false
@@ -4419,13 +4372,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 						if useEndOfVoidformColor and timeLeft <= timeThreshold then
 							barColor = specSettings.colors.bar.inVoidform1GCD
-						elseif snapshotData.snapshots[spells.mindDevourer.id].buff.isActive or currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
+						elseif snapshots[spells.mindDevourer.id].buff.isActive or currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
 							barColor = specSettings.colors.bar.devouringPlagueUsable
 						else
 							barColor = specSettings.colors.bar.inVoidform
 						end
 					else
-						if snapshotData.snapshots[spells.mindDevourer.id].buff.isActive or currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
+						if snapshots[spells.mindDevourer.id].buff.isActive or currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
 							barColor = specSettings.colors.bar.devouringPlagueUsable
 						else
 							barColor = specSettings.colors.bar.base
@@ -4444,10 +4397,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _
 		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
-		---@type TRB.Classes.TargetData
-		local targetData = TRB.Data.snapshotData.targetData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local snapshots = snapshotData.snapshots
+		local targetData = snapshotData.targetData
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName, _, auraType = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
@@ -4464,41 +4416,36 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if destGUID == TRB.Data.character.guid then
 				if (specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (specId == 2 and TRB.Data.barConstructedForSpec == "holy") then -- Let's check raid effect mana stuff
 					if settings.passiveGeneration.symbolOfHope and (spellId == spells.symbolOfHope.tickId or spellId == spells.symbolOfHope.id) then
-						---@type TRB.Classes.Healer.SymbolOfHope
-						local symbolOfHope = TRB.Data.snapshotData.snapshots[spells.symbolOfHope.id]
 						local castByToken = UnitTokenFromGUID(sourceGUID)
+						local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 						symbolOfHope.buff:Initialize(type, nil, castByToken)
 					elseif settings.passiveGeneration.innervate and spellId == spells.innervate.id then
-						---@type TRB.Classes.Healer.Innervate
-						local snapshot = TRB.Data.snapshotData.snapshots[spells.innervate.id]
-						snapshot.buff:Initialize(type)
+						local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
+						innervate.buff:Initialize(type)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							snapshotData.audio.innervateCue = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
 							snapshotData.audio.innervateCue = false
 						end
 					elseif settings.passiveGeneration.manaTideTotem and spellId == spells.manaTideTotem.id then
-						---@type TRB.Classes.Healer.ManaTideTotem
-						local manaTideTotem = TRB.Data.snapshot.manaTideTotem
-						manaTideTotem:Initialize(type)
+						local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
+						manaTideTotem.buff:Initialize(type)
 					elseif spellId == spells.potionOfChilledClarity.id then
-						---@type TRB.Classes.Healer.PotionOfChilledClarity
-						local potionOfChilledClarity = TRB.Data.snapshotData.snapshots[spells.potionOfChilledClarity.id]
+						local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 						potionOfChilledClarity.buff:Initialize(type)
 					elseif spellId == spells.moltenRadiance.id then
-						---@type TRB.Classes.Healer.MoltenRadiance
-						local moltenRadiance = TRB.Data.snapshotData.snapshots[spells.moltenRadiance.id]
+						local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 						moltenRadiance.buff:Initialize(type)
-					elseif settings.shadowfiend.enabled and type == "SPELL_ENERGIZE" and spellId == snapshotData.snapshots[spells.shadowfiend.id].spell.energizeId and sourceName == snapshotData.snapshots[spells.shadowfiend.id].spell.name then
-						snapshotData.snapshots[spells.shadowfiend.id].attributes.swingTime = currentTime
-						snapshotData.snapshots[spells.shadowfiend.id].cooldown:Refresh(true)
+					elseif settings.shadowfiend.enabled and type == "SPELL_ENERGIZE" and spellId == snapshots[spells.shadowfiend.id].spell.energizeId and sourceName == snapshots[spells.shadowfiend.id].spell.name then
+						snapshots[spells.shadowfiend.id].attributes.swingTime = currentTime
+						snapshots[spells.shadowfiend.id].cooldown:Refresh(true)
 						triggerUpdate = true
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
 					if settings.mindbender.enabled and type == "SPELL_ENERGIZE" and (spellId == spells.mindbender.energizeId or spellId == spells.shadowfiend.energizeId) and sourceName == spells.shadowfiend.name then
-						if sourceGUID == snapshotData.snapshots[spells.shadowfiend.id].attributes.guid then
-							snapshotData.snapshots[spells.shadowfiend.id].attributes.swingTime = currentTime
-							snapshotData.snapshots[spells.shadowfiend.id].cooldown:Refresh(true)
+						if sourceGUID == snapshots[spells.shadowfiend.id].attributes.guid then
+							snapshots[spells.shadowfiend.id].attributes.swingTime = currentTime
+							snapshots[spells.shadowfiend.id].cooldown:Refresh(true)
 						end
 						triggerUpdate = true
 					end
@@ -4508,11 +4455,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if sourceGUID == TRB.Data.character.guid then
 				if (specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (specId == 2 and TRB.Data.barConstructedForSpec == "holy") then -- Let's check raid effect mana stuff
 					if spellId == spells.potionOfFrozenFocusRank1.spellId or spellId == spells.potionOfFrozenFocusRank2.spellId or spellId == spells.potionOfFrozenFocusRank3.spellId then
-						---@type TRB.Classes.Healer.ChanneledManaPotion
-						local channeledManaPotion = TRB.Data.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id]
+						local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 						channeledManaPotion.buff:Initialize(type)
 					elseif spellId == spells.surgeOfLight.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
+						snapshots[spellId].buff:Initialize(type)
 						if type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
 							snapshotData.audio.surgeOfLight2Cue = false
 						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
@@ -4520,7 +4466,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							snapshotData.audio.surgeOfLight2Cue = false
 						end
 					elseif type == "SPELL_SUMMON" and (spellId == spells.shadowfiend.id or (specId == 1 and spellId == spells.mindbender.id)) then
-						local currentSf = snapshotData.snapshots[spells.shadowfiend.id].attributes
+						local currentSf = snapshots[spells.shadowfiend.id].attributes
 						local totemId = 1
 						currentSf.guid = sourceGUID
 						currentSf.totemId = totemId
@@ -4535,36 +4481,33 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "holy" then
 					if spellId == spells.apotheosis.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
+						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.lightweaver.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
+						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.resonantWords.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
+						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.holyWordSerenity.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Serenity
----@diagnostic disable-next-line: redundant-parameter, cast-local-type
-							snapshotData.snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.holyWordSanctify.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Sanctify
----@diagnostic disable-next-line: redundant-parameter, cast-local-type
-							snapshotData.snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.holyWordChastise.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Chastise
----@diagnostic disable-next-line: redundant-parameter, cast-local-type
-							snapshotData.snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.divineConversation.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type, true)
+						snapshots[spellId].buff:Initialize(type, true)
 					elseif spellId == spells.prayerFocus.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type, true)
+						snapshots[spellId].buff:Initialize(type, true)
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
 					if spellId == spells.voidform.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
+						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.darkAscension.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
+						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.vampiricTouch.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
@@ -4591,44 +4534,44 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif type == "SPELL_ENERGIZE" and spellId == spells.shadowCrash.id then
 						triggerUpdate = true
 					elseif spellId == spells.mindDevourer.buffId then
-						snapshotData.snapshots[spells.mindDevourer.id].buff:Initialize(type)
+						snapshots[spells.mindDevourer.id].buff:Initialize(type)
 					elseif spellId == spells.devouredDespair.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
+						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.mindFlayInsanity.buffId or spellId == spells.mindSpikeInsanity.buffId then
-						snapshotData.snapshots[spells.surgeOfInsanity.id].buff:Initialize(type)
+						snapshots[spells.surgeOfInsanity.id].buff:Initialize(type)
 					elseif spellId == spells.deathspeaker.buffId then
-						snapshotData.snapshots[spells.deathspeaker.id].buff:Initialize(type)
+						snapshots[spells.deathspeaker.id].buff:Initialize(type)
 						if type == "SPELL_AURA_APPLIED" then
 							if TRB.Data.settings.priest.shadow.audio.deathspeaker.enabled then
 								PlaySoundFile(TRB.Data.settings.priest.shadow.audio.deathspeaker.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
 					elseif spellId == spells.twistOfFate.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
+						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.shadowyInsight.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
+						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.mindMelt.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
+						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.idolOfYoggSaron.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
+						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.thingFromBeyond.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
+						snapshots[spellId].buff:Initialize(type)
 					elseif type == "SPELL_SUMMON" and settings.voidTendrilTracker and (spellId == spells.idolOfCthun_Tendril.id or spellId == spells.idolOfCthun_Lasher.id) then
 						InitializeVoidTendril(destGUID)
 						if spellId == spells.idolOfCthun_Tendril.id then
-							snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].type = "Tendril"
+							snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].type = "Tendril"
 						elseif spellId == spells.idolOfCthun_Lasher.id then
-							snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].type = "Lasher"
-							snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].targetsHit = 0
-							snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].hasStruckTargets = true
+							snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].type = "Lasher"
+							snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].targetsHit = 0
+							snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].hasStruckTargets = true
 						end
 
-						snapshotData.snapshots[spells.idolOfCthun.id].attributes.numberActive = snapshotData.snapshots[spells.idolOfCthun.id].attributes.numberActive + 1
-						snapshotData.snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining = snapshotData.snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining + spells.lashOfInsanity_Tendril.ticks
-						snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].startTime = currentTime
-						snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].tickTime = currentTime
+						snapshots[spells.idolOfCthun.id].attributes.numberActive = snapshots[spells.idolOfCthun.id].attributes.numberActive + 1
+						snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining = snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining + spells.lashOfInsanity_Tendril.ticks
+						snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].startTime = currentTime
+						snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].tickTime = currentTime
 					elseif type == "SPELL_SUMMON" and settings.mindbender.enabled and (spellId == spells.shadowfiend.id or spellId == spells.mindbender.id) then
-						local currentSf = snapshotData.snapshots[spells.shadowfiend.id].attributes
+						local currentSf = snapshots[spells.shadowfiend.id].attributes
 						local totemId = 1
 						currentSf.guid = sourceGUID
 						currentSf.totemId = totemId
@@ -4643,14 +4586,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" and settings.voidTendrilTracker and (spellId == spells.idolOfCthun_Tendril.idTick or spellId == spells.idolOfCthun_Lasher.idTick) and CheckVoidTendrilExists(sourceGUID) then
 				if spellId == spells.idolOfCthun_Lasher.idTick and type == "SPELL_DAMAGE" then
-					if currentTime > (snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].tickTime + 0.1) then --This is a new tick
-						snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].targetsHit = 0
+					if currentTime > (snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].tickTime + 0.1) then --This is a new tick
+						snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].targetsHit = 0
 					end
-					snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].targetsHit = snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].targetsHit + 1
-					snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].tickTime = currentTime
-					snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].hasStruckTargets = true
+					snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].targetsHit = snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].targetsHit + 1
+					snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].tickTime = currentTime
+					snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].hasStruckTargets = true
 				else
-					snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].tickTime = currentTime
+					snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].tickTime = currentTime
 				end
 			end
 
@@ -4883,8 +4826,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.barConstructedForSpec = nil
 		end
 		
-		TwintopGlobalSnapshotData = TRB.Data.snapshotData
-		TwintopGlobalSettings = TRB.Data.settings
 		TRB.Functions.Class:EventRegistration()
 	end
 
@@ -4966,6 +4907,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.character.className = "priest"
 		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
+		---@type TRB.Classes.Snapshot[]
+		local snapshots = TRB.Data.snapshotData.snapshots
 
 		if specId == 1 and TRB.Data.settings.core.experimental.specs.priest.discipline then
 			TRB.Data.character.specName = "discipline"
@@ -4973,13 +4916,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
 			TRB.Functions.Spell:FillSpellDataManaCost(spells)
 
+			local bootsItemLink = GetInventoryItemLink("player", 8)
 			local trinket1ItemLink = GetInventoryItemLink("player", 13)
 			local trinket2ItemLink = GetInventoryItemLink("player", 14)
 
 			local alchemyStone = false
 			local conjuredChillglobe = false
 			local conjuredChillglobeVersion = ""
-						
+			local imbuedFrostweaveSlippers = false
+			
+			if bootsItemLink ~= nil then
+				imbuedFrostweaveSlippers = TRB.Functions.Item:DoesItemLinkMatchId(bootsItemLink, spells.imbuedFrostweaveSlippers.itemId)
+			end
+
 			if trinket1ItemLink ~= nil then
 				for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.itemIds) do
 					if alchemyStone == false then
@@ -5011,11 +4960,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.character.items.alchemyStone = alchemyStone
 			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
 			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
-			
+			TRB.Data.character.items.imbuedFrostweaveSlippers = imbuedFrostweaveSlippers
+
 			if TRB.Functions.Talent:IsTalentActive(spells.mindbender) then
-				TRB.Data.snapshotData.snapshots[spells.shadowfiend.id].spell = spells.mindbender
+				snapshots[spells.shadowfiend.id].spell = spells.mindbender
 			else
-				TRB.Data.snapshotData.snapshots[spells.shadowfiend.id].spell = spells.shadowfiend
+				snapshots[spells.shadowfiend.id].spell = spells.shadowfiend
 			end
 		elseif specId == 2 then
 			TRB.Data.character.specName = "holy"
@@ -5023,12 +4973,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
 			TRB.Functions.Spell:FillSpellDataManaCost(spells)
 
+			local bootsItemLink = GetInventoryItemLink("player", 8)
 			local trinket1ItemLink = GetInventoryItemLink("player", 13)
 			local trinket2ItemLink = GetInventoryItemLink("player", 14)
 
 			local alchemyStone = false
 			local conjuredChillglobe = false
 			local conjuredChillglobeVersion = ""
+			local imbuedFrostweaveSlippers = false
+			
+			if bootsItemLink ~= nil then
+				imbuedFrostweaveSlippers = TRB.Functions.Item:DoesItemLinkMatchId(bootsItemLink, spells.imbuedFrostweaveSlippers.itemId)
+			end
 						
 			if trinket1ItemLink ~= nil then
 				for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.itemIds) do
@@ -5061,6 +5017,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.character.items.alchemyStone = alchemyStone
 			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
 			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
+			TRB.Data.character.items.imbuedFrostweaveSlippers = imbuedFrostweaveSlippers
 		elseif specId == 3 then
 			TRB.Data.character.specName = "shadow"
 ---@diagnostic disable-next-line: missing-parameter
@@ -5077,15 +5034,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			
 			if TRB.Functions.Talent:IsTalentActive(spells.mindbender) then
-				TRB.Data.snapshotData.snapshots[spells.shadowfiend.id].spell = spells.mindbender
+				snapshots[spells.shadowfiend.id].spell = spells.mindbender
 			else
-				TRB.Data.snapshotData.snapshots[spells.shadowfiend.id].spell = spells.shadowfiend
+				snapshots[spells.shadowfiend.id].spell = spells.shadowfiend
 			end
 			
 			if TRB.Functions.Talent:IsTalentActive(spells.mindSpike) then
-				TRB.Data.snapshotData.snapshots[spells.surgeOfInsanity.id].spell = spells.mindSpikeInsanity
+				snapshots[spells.surgeOfInsanity.id].spell = spells.mindSpikeInsanity
 			else
-				TRB.Data.snapshotData.snapshots[spells.surgeOfInsanity.id].spell = spells.mindFlayInsanity
+				snapshots[spells.surgeOfInsanity.id].spell = spells.mindFlayInsanity
 			end
 		end
 	end
@@ -5122,8 +5079,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 			TRB.Details.addonData.registered = true
 		else
-			--TRB.Data.resource = MANA
-			TRB.Data.specSupported = false
 			targetsTimerFrame:SetScript("OnUpdate", nil)
 			timerFrame:SetScript("OnUpdate", nil)
 			TRB.Frames.barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
@@ -5208,8 +5163,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 		
 		local currentTime = GetTime()
-		---@type TRB.Classes.TargetData
-		local targetData = TRB.Data.snapshotData.targetData
+		local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
 		local targets = targetData.targets
 
 		if guid ~= nil and guid ~= "" then
@@ -5228,11 +5182,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			return valid
 		end
 		local specId = GetSpecialization()
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
-		local spells = TRB.Data.spells
-		---@type TRB.Classes.Target
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local snapshots = snapshotData.snapshots
 		local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
+		local spells = TRB.Data.spells
 		local settings = nil
 		if specId == 1 then
 			settings = TRB.Data.settings.priest.discipline
@@ -5240,6 +5193,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			settings = TRB.Data.settings.priest.holy
 		elseif specId == 3 then
 			settings = TRB.Data.settings.priest.shadow
+		else
+			return false
 		end
 
 		if specId == 1 or specId == 2 then
@@ -5258,119 +5213,105 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$sohMana" then
-				---@type TRB.Classes.Healer.SymbolOfHope
-				local symbolOfHope = TRB.Data.snapshotData.snapshots[spells.symbolOfHope.id]
-				if symbolOfHope.buff.manaRaw > 0 then
+				local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
+				if symbolOfHope.buff.isActive then
 					valid = true
 				end
 			elseif var == "$sohTime" then
-				---@type TRB.Classes.Healer.SymbolOfHope
-				local symbolOfHope = TRB.Data.snapshotData.snapshots[spells.symbolOfHope.id]
+				local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 				if symbolOfHope.buff.isActive then
 					valid = true
 				end
 			elseif var == "$sohTicks" then
-				---@type TRB.Classes.Healer.SymbolOfHope
-				local symbolOfHope = TRB.Data.snapshotData.snapshots[spells.symbolOfHope.id]
+				local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 				if symbolOfHope.buff.isActive then
 					valid = true
 				end
 			elseif var == "$innervateMana" then
-				---@type TRB.Classes.Healer.Innervate
-				local innervate = TRB.Data.snapshotData.snapshots[spells.innervate.id]
-				if innervate.mana > 0 then
+				local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
+				if innervate.buff.isActive then
 					valid = true
 				end
 			elseif var == "$innervateTime" then
-				---@type TRB.Classes.Healer.Innervate
-				local innervate = TRB.Data.snapshotData.snapshots[spells.innervate.id]
-				if innervate.buff.remaining > 0 then
+				local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
+				if innervate.buff.isActive then
 					valid = true
 				end
 			elseif var == "$potionOfChilledClarityMana" then
-				---@type TRB.Classes.Healer.PotionOfChilledClarity
-				local potionOfChilledClarity = TRB.Data.snapshotData.snapshots[spells.potionOfChilledClarity.id]
-				if potionOfChilledClarity.mana > 0 then
+				local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
+				if potionOfChilledClarity.buff.isActive then
 					valid = true
 				end
 			elseif var == "$potionOfChilledClarityTime" then
-				---@type TRB.Classes.Healer.PotionOfChilledClarity
-				local potionOfChilledClarity = TRB.Data.snapshotData.snapshots[spells.potionOfChilledClarity.id]
-				if potionOfChilledClarity.buff.remaining > 0 then
+				local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
+				if potionOfChilledClarity.buff.isActive then
 					valid = true
 				end
 			elseif var == "$mttMana" then
-				---@type TRB.Classes.Healer.ManaTideTotem
-				local manaTideTotem = TRB.Data.snapshotData.snapshots[spells.manaTideTotem.id]
-				if manaTideTotem.mana > 0 then
+				local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
+				if manaTideTotem.buff.isActive then
 					valid = true
 				end
 			elseif var == "$mttTime" then
-				---@type TRB.Classes.Healer.ManaTideTotem
-				local manaTideTotem = TRB.Data.snapshotData.snapshots[spells.manaTideTotem.id]
+				local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 				if manaTideTotem.buff.isActive then
 					valid = true
 				end
 			elseif var == "$mrMana" then
-				---@type TRB.Classes.Healer.MoltenRadiance
-				local moltenRadiance = TRB.Data.snapshotData.snapshots[spells.moltenRadiance.id]
-				if moltenRadiance.mana > 0 then
+				local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
+				if moltenRadiance.buff.isActive then
 					valid = true
 				end
 			elseif var == "$mrTime" then
-				---@type TRB.Classes.Healer.MoltenRadiance
-				local moltenRadiance = TRB.Data.snapshotData.snapshots[spells.moltenRadiance.id]
+				local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 				if moltenRadiance.buff.isActive then
 					valid = true
 				end
 			elseif var == "$channeledMana" then
-				---@type TRB.Classes.Healer.ChanneledManaPotion
-				local channeledManaPotion = TRB.Data.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id]
-				if channeledManaPotion.mana > 0 then
+				local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
+				if channeledManaPotion.buff.isActive then
 					valid = true
 				end
 			elseif var == "$potionOfFrozenFocusTicks" then
-				---@type TRB.Classes.Healer.ChanneledManaPotion
-				local channeledManaPotion = TRB.Data.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id]
-				if channeledManaPotion.ticks > 0 then
+				local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
+				if channeledManaPotion.buff.isActive then
 					valid = true
 				end
 			elseif var == "$potionOfFrozenFocusTime" then
-				---@type TRB.Classes.Healer.ChanneledManaPotion
-				local channeledManaPotion = TRB.Data.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id]
-				if channeledManaPotion.buff.remaining > 0 then
+				local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
+				if channeledManaPotion.buff.isActive then
 					valid = true
 				end
 			elseif var == "$potionCooldown" then
-				if snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown.onCooldown then
+				if snapshots[spells.aeratedManaPotionRank1.id].cooldown:IsUnusable() then
 					valid = true
 				end
 			elseif var == "$potionCooldownSeconds" then
-				if snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown.onCooldown then
+				if snapshots[spells.aeratedManaPotionRank1.id].cooldown:IsUnusable() then
 					valid = true
 				end
 			elseif var == "$solStacks" then
-				if snapshotData.snapshots[spells.surgeOfLight.id].buff.isActive then
+				if snapshots[spells.surgeOfLight.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$solTime" then
-				if snapshotData.snapshots[spells.surgeOfLight.id].buff.isActive then
+				if snapshots[spells.surgeOfLight.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$sfMana" then
-				if snapshotData.snapshots[spells.shadowfiend.id].attributes.resourceRaw > 0 then
+				if snapshots[spells.shadowfiend.id].attributes.resourceRaw > 0 then
 					valid = true
 				end
 			elseif var == "$sfGcds" then
-				if snapshotData.snapshots[spells.shadowfiend.id].attributes.remaining.gcds > 0 then
+				if snapshots[spells.shadowfiend.id].attributes.remaining.gcds > 0 then
 					valid = true
 				end
 			elseif var == "$sfSwings" then
-				if snapshotData.snapshots[spells.shadowfiend.id].attributes.remaining.swings > 0 then
+				if snapshots[spells.shadowfiend.id].attributes.remaining.swings > 0 then
 					valid = true
 				end
 			elseif var == "$sfTime" then
-				if snapshotData.snapshots[spells.shadowfiend.id].attributes.remaining.time > 0 then
+				if snapshots[spells.shadowfiend.id].attributes.remaining.time > 0 then
 					valid = true
 				end
 			end
@@ -5398,38 +5339,38 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$lightweaverTime" then
-				if snapshotData.snapshots[spells.lightweaver.id].buff.isActive then
+				if snapshots[spells.lightweaver.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$lightweaverStacks" then
-				if snapshotData.snapshots[spells.lightweaver.id].buff.isActive then
+				if snapshots[spells.lightweaver.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$rwTime" then
-				if snapshotData.snapshots[spells.resonantWords.id].buff.isActive then
+				if snapshots[spells.resonantWords.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$apotheosisTime" then
-				if snapshotData.snapshots[spells.apotheosis.id].buff.isActive then
+				if snapshots[spells.apotheosis.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$hwChastiseTime" then
-				if snapshotData.snapshots[spells.holyWordChastise.id].cooldown.remaining > 0 then
+				if snapshots[spells.holyWordChastise.id].cooldown.remaining > 0 then
 					valid = true
 				end
 			elseif var == "$hwSerenityTime" then
-				if snapshotData.snapshots[spells.holyWordSerenity.id].cooldown.remaining > 0 then
+				if snapshots[spells.holyWordSerenity.id].cooldown.remaining > 0 then
 					valid = true
 				end
 			elseif var == "$hwSanctifyTime" then
-				if snapshotData.snapshots[spells.holyWordSanctify.id].cooldown.remaining > 0 then
+				if snapshots[spells.holyWordSanctify.id].cooldown.remaining > 0 then
 					valid = true
 				end
 			end
 		elseif specId == 3 then
 			if var == "$vfTime" then
-				if (snapshotData.snapshots[spells.voidform.id].buff.remaining ~= nil and snapshotData.snapshots[spells.voidform.id].buff.remaining > 0) or
-					(snapshotData.snapshots[spells.darkAscension.id].buff.remaining ~= nil and snapshotData.snapshots[spells.darkAscension.id].buff.remaining > 0) then
+				if (snapshots[spells.voidform.id].buff.remaining ~= nil and snapshots[spells.voidform.id].buff.remaining > 0) or
+					(snapshots[spells.darkAscension.id].buff.remaining ~= nil and snapshots[spells.darkAscension.id].buff.remaining > 0) then
 					valid = true
 				end
 			elseif var == "$resource" or var == "$insanity" then
@@ -5441,7 +5382,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			elseif var == "$resourceTotal" or var == "$insanityTotal" then
 				if snapshotData.attributes.resource > 0 or
 					(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw > 0) or
-					(((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + snapshotData.snapshots[spells.shadowfiend.id].attributes.resourceRaw + snapshotData.snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0) then
+					(((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + snapshots[spells.shadowfiend.id].attributes.resourceRaw + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0) then
 					valid = true
 				end
 			elseif var == "$resourcePlusCasting" or var == "$insanityPlusCasting" then
@@ -5458,7 +5399,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif var == "$resourcePlusPassive" or var == "$insanityPlusPassive" then
 				if snapshotData.attributes.resource > 0 or
-					((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + snapshotData.snapshots[spells.shadowfiend.id].attributes.resourceRaw + snapshotData.snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0 then
+					((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + snapshots[spells.shadowfiend.id].attributes.resourceRaw + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0 then
 					valid = true
 				end
 			elseif var == "$casting" then
@@ -5466,31 +5407,31 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$passive" then
-				if ((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + snapshotData.snapshots[spells.shadowfiend.id].attributes.resourceRaw + snapshotData.snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0 then
+				if ((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + snapshots[spells.shadowfiend.id].attributes.resourceRaw + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0 then
 					valid = true
 				end
 			elseif var == "$mbInsanity" then
-				if snapshotData.snapshots[spells.shadowfiend.id].attributes.resourceRaw > 0 then
+				if snapshots[spells.shadowfiend.id].attributes.resourceRaw > 0 then
 					valid = true
 				end
 			elseif var == "$mbGcds" then
-				if snapshotData.snapshots[spells.shadowfiend.id].attributes.remaining.gcds > 0 then
+				if snapshots[spells.shadowfiend.id].attributes.remaining.gcds > 0 then
 					valid = true
 				end
 			elseif var == "$mbSwings" then
-				if snapshotData.snapshots[spells.shadowfiend.id].attributes.remaining.swings > 0 then
+				if snapshots[spells.shadowfiend.id].attributes.remaining.swings > 0 then
 					valid = true
 				end
 			elseif var == "$mbTime" then
-				if snapshotData.snapshots[spells.shadowfiend.id].attributes.remaining.time > 0 then
+				if snapshots[spells.shadowfiend.id].attributes.remaining.time > 0 then
 					valid = true
 				end
 			elseif var == "$loiInsanity" then
-				if snapshotData.snapshots[spells.idolOfCthun.id].attributes.resourceFinal > 0 then
+				if snapshots[spells.idolOfCthun.id].attributes.resourceFinal > 0 then
 					valid = true
 				end
 			elseif var == "$loiTicks" then
-				if snapshotData.snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining > 0 then
+				if snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining > 0 then
 					valid = true
 				end
 			elseif var == "$cttvEquipped" then
@@ -5498,7 +5439,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$ecttvCount" then
-				if TRB.Data.settings.priest.shadow.voidTendrilTracker and snapshotData.snapshots[spells.idolOfCthun.id].attributes.numberActive > 0 then
+				if TRB.Data.settings.priest.shadow.voidTendrilTracker and snapshots[spells.idolOfCthun.id].attributes.numberActive > 0 then
 					valid = true
 				end
 			elseif var == "$asCount" then
@@ -5534,43 +5475,43 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$mdTime" then
-				if snapshotData.snapshots[spells.mindDevourer.id].buff.isActive then
+				if snapshots[spells.mindDevourer.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$mfiTime" then
-				if snapshotData.snapshots[spells.surgeOfInsanity.id].buff.isActive then
+				if snapshots[spells.surgeOfInsanity.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$mfiStacks" then
-				if snapshotData.snapshots[spells.surgeOfInsanity.id].buff.isActive then
+				if snapshots[spells.surgeOfInsanity.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$deathspeakerTime" then
-				if snapshotData.snapshots[spells.deathspeaker.id].buff.isActive then
+				if snapshots[spells.deathspeaker.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$tofTime" then
-				if snapshotData.snapshots[spells.twistOfFate.id].buff.isActive then
+				if snapshots[spells.twistOfFate.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$siTime" then
-				if snapshotData.snapshots[spells.shadowyInsight.id].buff.isActive then
+				if snapshots[spells.shadowyInsight.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$mmTime" then
-				if snapshotData.snapshots[spells.mindMelt.id].buff.isActive then
+				if snapshots[spells.mindMelt.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$mmStacks" then
-				if snapshotData.snapshots[spells.mindMelt.id].buff.isActive then
+				if snapshots[spells.mindMelt.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$ysTime" then
-				if snapshotData.snapshots[spells.idolOfYoggSaron.id].buff.isActive then
+				if snapshots[spells.idolOfYoggSaron.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$ysStacks" then
-				if snapshotData.snapshots[spells.idolOfYoggSaron.id].buff.isActive then
+				if snapshots[spells.idolOfYoggSaron.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$ysRemainingStacks" then
@@ -5578,7 +5519,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$tfbTime" then
-				if snapshotData.snapshots[spells.thingFromBeyond.id].buff.isActive then
+				if snapshots[spells.thingFromBeyond.id].buff.isActive then
 					valid = true
 				end
 			else

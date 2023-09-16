@@ -82,6 +82,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Preservation
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
+			elseif specId == 3 then -- Augmentation
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
 			end
 		end
 	end
@@ -149,6 +152,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 13 then -- Evoker
 			if specId == 1 then -- Devastation
 			elseif specId == 2 then -- Preservation
+			elseif specId == 3 then -- Augmentation
 			end
 		end
 	end
@@ -208,6 +212,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			if specId == 1 then -- Devastation
 			elseif specId == 2 then -- Preservation
 				configuration.passiveGeneration = settings.passiveGeneration
+			elseif specId == 3 then -- Augmentation
 			end
 		end
 	end
@@ -359,6 +364,12 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 					configuration.evoker.preservation = ExportConfigurationSections(13, 2, settings.evoker.preservation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 				end
 			end
+			
+			if TRB.Data.settings.core.experimental.specs.evoker.augmentation then
+				if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.augmentation) > 0 then -- Augmentation
+					configuration.evoker.augmentation = ExportConfigurationSections(13, 1, settings.evoker.augmentation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+				end
+			end	
 		end
 	elseif classId == nil and specId == nil then -- Everything
 		-- Instead of just dumping the whole table, let's clean it up
@@ -431,6 +442,11 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			-- Preservation
 			configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		end
+
+		if TRB.Data.settings.core.experimental.specs.evoker.augmentation then
+			-- Augmentation
+			configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		end
 	end
 
 	if includeCore then
@@ -485,7 +501,7 @@ function TRB.Functions.IO:Import(input)
 			configuration.shaman.restoration ~= nil or
 			(TRB.Data.settings.core.experimental.specs.shaman.enhancement and configuration.shaman.enhancement ~= nil))) or
 		(configuration.druid ~= nil and (configuration.druid.balance ~= nil or configuration.druid.feral ~= nil)) or
-		(configuration.evoker ~= nil and (TRB.Data.settings.core.experimental.specs.evoker.devastation and configuration.evoker.devastation ~= nil) or (TRB.Data.settings.core.experimental.specs.evoker.preservation and configuration.evoker.preservation ~= nil))) then
+		(configuration.evoker ~= nil and (TRB.Data.settings.core.experimental.specs.evoker.devastation and configuration.evoker.devastation ~= nil) or (TRB.Data.settings.core.experimental.specs.evoker.preservation and configuration.evoker.preservation ~= nil) or (TRB.Data.settings.core.experimental.specs.evoker.augmentation and configuration.evoker.augmentation ~= nil))) then
 		return -3
 	end
 

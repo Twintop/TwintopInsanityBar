@@ -1360,7 +1360,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.audio.blindside.enabled = self:GetChecked()
 
 			if spec.audio.blindside.enabled then
-				---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -1426,7 +1425,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.audio.overcap.enabled = self:GetChecked()
 
 			if spec.audio.overcap.enabled then
-				---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -1492,7 +1490,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.audio.sepsis.enabled = self:GetChecked()
 
 			if spec.audio.sepsis.enabled then
-				---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2501,7 +2498,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.audio.opportunity.enabled = self:GetChecked()
 
 			if spec.audio.opportunity.enabled then
-				---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.opportunity.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2566,7 +2562,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.audio.overcap.enabled = self:GetChecked()
 
 			if spec.audio.overcap.enabled then
-				---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)
@@ -2632,7 +2627,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.audio.sepsis.enabled = self:GetChecked()
 
 			if spec.audio.sepsis.enabled then
-				---@diagnostic disable-next-line: redundant-parameter
 				PlaySoundFile(spec.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
 			end
 		end)

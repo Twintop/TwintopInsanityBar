@@ -39,17 +39,17 @@ function TRB.Functions.Bar:ShowResourceBar()
 		TRB.Functions.Class:EventRegistration()
 	end
 
-	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 5 or classIndexId == 11 then --Only do this if we're on a Druid or Priest!
-		TRB.Data.snapshotData.attributes.isTracking = true
-	else
-		TRB.Data.snapshot.isTracking = true
-	end
+	TRB.Data.snapshotData.attributes.isTracking = true
 	TRB.Functions.Bar:HideResourceBar()
 end
 
 function TRB.Functions.Bar:HideResourceBar(force)
 	force = force or false
+	
+	if TRB.Data.character.inPetBattle or TRB.Data.character.onTaxi then
+		force = true
+	end
+
 	TRB.Functions.Class:HideResourceBar(force)
 end
 

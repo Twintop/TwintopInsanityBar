@@ -211,6 +211,15 @@ local function LoadDefaultSettings()
 						font = true,
 						textures = true,
 						thresholds = true
+					},
+					augmentation = {
+						specEnable = false,
+						bar = true,
+						comboPoints = true,
+						displayBar = true,
+						font = true,
+						textures = true,
+						thresholds = true
 					}
 				},
 				hunter = {
@@ -374,6 +383,7 @@ local function LoadDefaultSettings()
 				evoker = {
 					devastation = true,
 					preservation = true,
+					augmentation = true
 				},
 				hunter = {
 					beastMastery = true,
@@ -410,7 +420,8 @@ local function LoadDefaultSettings()
 					},
 					evoker = {
 						devastation = false,
-						preservation = false
+						preservation = false,
+						augmentation = false
 					},
 					priest = {
 						discipline = false
@@ -432,7 +443,8 @@ local function LoadDefaultSettings()
 		},
 		evoker = {
 			devastation = {},
-			preservation = {}
+			preservation = {},
+			augmentation = {}
 		},
 		hunter = {
 			beastMastery = {},
@@ -477,8 +489,9 @@ local function ConstructAddonOptionsPanel()
 	local title = ""
 
 	interfaceSettingsFrame.optionsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_General", UIParent)
+	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.optionsPanel.name = "Global Options"
----@diagnostic disable-next-line: undefined-field
+	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.optionsPanel.parent = parent.name
 	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.optionsPanel, "Global Options")
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
@@ -487,6 +500,7 @@ local function ConstructAddonOptionsPanel()
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Global Options", 0, yCoord)
 
 	yCoord = yCoord - 30
+	---@diagnostic disable-next-line: inject-field
 	parent.panel = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Options_General_LayoutPanel", parent, 652, 555)
 	parent.panel:SetPoint("TOPLEFT", 0, yCoord)
 	parent.panel:Show()
@@ -718,7 +732,9 @@ local function ConstructAddonOptionsPanel()
 	controls.checkBoxes.experimentalEvokerDevastation = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Evoker_Devastation", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.experimentalEvokerDevastation
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+---@diagnostic disable-next-line: undefined-field
 	getglobal(f:GetName() .. 'Text'):SetText("Devastation Evoker support")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will enable experimental Devastation Evoker support within the bar. If you change this setting and are currently logged in on an Evoker, you'll need to reload your UI before Devastation Evoker configuration options become available."
 	f:SetChecked(TRB.Data.settings.core.experimental.specs.evoker.devastation)
 	f:SetScript("OnClick", function(self, ...)
@@ -729,7 +745,9 @@ local function ConstructAddonOptionsPanel()
 	controls.checkBoxes.experimentalEvokerPreservation = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Evoker_Preservation", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.experimentalEvokerPreservation
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	---@diagnostic disable-next-line: undefined-field
 	getglobal(f:GetName() .. 'Text'):SetText("Preservation Evoker support")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will enable experimental Preservation Evoker support within the bar. If you change this setting and are currently logged in on an Evoker, you'll need to reload your UI before Preservation Evoker configuration options become available."
 	f:SetChecked(TRB.Data.settings.core.experimental.specs.evoker.preservation)
 	f:SetScript("OnClick", function(self, ...)
@@ -737,10 +755,25 @@ local function ConstructAddonOptionsPanel()
 	end)
 
 	yCoord = yCoord - 30
+	controls.checkBoxes.experimentalEvokerAugmentation = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Evoker_Augmentation", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.experimentalEvokerAugmentation
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	---@diagnostic disable-next-line: undefined-field
+	getglobal(f:GetName() .. 'Text'):SetText("Augmentation Evoker support")
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = "This will enable experimental Augmentation Evoker support within the bar. If you change this setting and are currently logged in on an Evoker, you'll need to reload your UI before Augmentation Evoker configuration options become available."
+	f:SetChecked(TRB.Data.settings.core.experimental.specs.evoker.augmentation)
+	f:SetScript("OnClick", function(self, ...)
+		TRB.Data.settings.core.experimental.specs.evoker.augmentation = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 30
 	controls.checkBoxes.experimentalPriestDiscipline = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Priest_Discipline", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.experimentalPriestDiscipline
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	---@diagnostic disable-next-line: undefined-field
 	getglobal(f:GetName() .. 'Text'):SetText("Discipline Priest support")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will enable experimental Discipline Priest support within the bar. If you change this setting and are currently logged in on a Priest, you'll need to reload your UI before Discipline Priest configuration options become available."
 	f:SetChecked(TRB.Data.settings.core.experimental.specs.priest.discipline)
 	f:SetScript("OnClick", function(self, ...)
@@ -751,7 +784,9 @@ local function ConstructAddonOptionsPanel()
 	controls.checkBoxes.experimentalShamanEnhancement = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Shaman_Enhancement", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.experimentalShamanEnhancement
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	---@diagnostic disable-next-line: undefined-field
 	getglobal(f:GetName() .. 'Text'):SetText("Enhancement Shaman support")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will enable experimental Enhancement Shaman support within the bar. If you change this setting and are currently logged in on a Shaman, you'll need to reload your UI before Enhancement Shaman configuration options become available."
 	f:SetChecked(TRB.Data.settings.core.experimental.specs.shaman.enhancement)
 	f:SetScript("OnClick", function(self, ...)
@@ -777,8 +812,9 @@ local function ConstructImportExportPanel()
 
 
 	interfaceSettingsFrame.importExportPanel = CreateFrame("Frame", "TwintopResourceBar_Options_ImportExport", UIParent)
+	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.importExportPanel.name = "Import/Export"
----@diagnostic disable-next-line: undefined-field
+	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.importExportPanel.parent = parent.name
 	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.importExportPanel, "Import/Export")
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.importExportPanel)
@@ -789,6 +825,7 @@ local function ConstructImportExportPanel()
 	controls.buttons = controls.buttons or {}
 
 	yCoord = yCoord - 30
+	---@diagnostic disable-next-line: inject-field
 	parent.panel = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Options_General_LayoutPanel", parent, 652, 555)
 	parent.panel:SetPoint("TOPLEFT", 0, yCoord)
 	parent.panel:Show()
@@ -1110,10 +1147,12 @@ local function ConstructImportExportPanel()
 		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Bar Text).", 11, 4, false, false, false, true, false)
 	end)
 
-	if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation then
+	if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation or TRB.Data.settings.core.experimental.specs.evoker.augmentation then
 		yCoord = yCoord - 35
 		controls.labels.evoker = TRB.Functions.OptionsUi:BuildLabel(parent, "Evoker", oUi.xCoord, yCoord, 110, 20)
-		if TRB.Data.settings.core.experimental.specs.evoker.devastation and TRB.Data.settings.core.experimental.specs.evoker.preservation then
+		if (TRB.Data.settings.core.experimental.specs.evoker.devastation and TRB.Data.settings.core.experimental.specs.evoker.preservation) or
+		(TRB.Data.settings.core.experimental.specs.evoker.devastation and TRB.Data.settings.core.experimental.specs.evoker.augmentation) or
+		(TRB.Data.settings.core.experimental.specs.evoker.preservation and TRB.Data.settings.core.experimental.specs.evoker.augmentation) then
 			buttonOffset = oUi.xCoord + oUi.xPadding + 100
 			controls.buttons.exportButton_Evoker_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
 			controls.buttons.exportButton_Evoker_All:SetScript("OnClick", function(self, ...)
@@ -1214,6 +1253,42 @@ local function ConstructImportExportPanel()
 			controls.exportButton_Evoker_Preservation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
 			controls.exportButton_Evoker_Preservation_BarText:SetScript("OnClick", function(self, ...)
 				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (Bar Text).", 13, 2, false, false, false, true, false)
+			end)
+		end
+
+		if TRB.Data.settings.core.experimental.specs.evoker.augmentation then
+			yCoord = yCoord - 25
+			specName = "Augmentation"
+			controls.labels.druidAugmentation = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+
+			buttonOffset = oUi.xCoord + oUi.xPadding + 100
+			controls.buttons.exportButton_Evoker_Augmentation_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+			controls.buttons.exportButton_Evoker_Augmentation_All:SetScript("OnClick", function(self, ...)
+				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (All).", 13, 3, true, true, true, true, false)
+			end)
+
+			buttonOffset = buttonOffset + buttonSpacing + 50
+			controls.exportButton_Evoker_Augmentation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+			controls.exportButton_Evoker_Augmentation_BarDisplay:SetScript("OnClick", function(self, ...)
+				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (Bar Display).", 13, 3, true, false, false, false, false)
+			end)
+
+			buttonOffset = buttonOffset + buttonSpacing + 80
+			controls.exportButton_Evoker_Augmentation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+			controls.exportButton_Evoker_Augmentation_FontAndText:SetScript("OnClick", function(self, ...)
+				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (Font & Text).", 13, 3, false, true, false, false, false)
+			end)
+
+			buttonOffset = buttonOffset + buttonSpacing + 90
+			controls.exportButton_Evoker_Augmentation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+			controls.exportButton_Evoker_Augmentation_AudioAndTracking:SetScript("OnClick", function(self, ...)
+				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (Audio & Tracking).", 13, 3, false, false, true, false, false)
+			end)
+
+			buttonOffset = buttonOffset + buttonSpacing + 120
+			controls.exportButton_Evoker_Augmentation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+			controls.exportButton_Evoker_Augmentation_BarText:SetScript("OnClick", function(self, ...)
+				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (Bar Text).", 13, 3, false, false, false, true, false)
 			end)
 		end
 	end
@@ -1950,7 +2025,8 @@ function TRB.Options:ConstructOptionsPanel()
 	controls.checkBoxes = {}
 	controls.dropDown = {}
 
-	interfaceSettingsFrame.panel = CreateFrame("Frame", "TwintopResourceBarPanel")--, UIParent)
+	interfaceSettingsFrame.panel = CreateFrame("Frame", "TwintopResourceBarPanel")
+	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.panel.name = "Twintop's Resource Bar"
 	interfaceSettingsFrame.panel:HookScript("OnShow", function(self)
 	end)
@@ -1976,6 +2052,7 @@ function TRB.Options:ConstructOptionsPanel()
 	interfaceSettingsFrame.controls.labels.infoSupport = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "Supported Specs (Dragonflight):", TRB.Details.supportedSpecs, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 450, 15, 300)
 
 
+	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.panel.yCoord = yCoord
 	local layout
 	TRB.Details.addonCategory, layout = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.panel, "Twintop's Resource Bar")

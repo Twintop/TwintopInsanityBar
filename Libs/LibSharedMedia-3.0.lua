@@ -1,3 +1,4 @@
+---@diagnostic disable: inject-field, duplicate-set-field
 --[[
 Name: LibSharedMedia-3.0
 Revision: $Revision: 114 $

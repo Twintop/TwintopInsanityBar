@@ -8,7 +8,7 @@ local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
 function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
 	local f = CreateFrame("Slider", nil, parent, "BackdropTemplate")
-	---@diagnostic disable-next-line: param-type-mismatch
+---@diagnostic disable-next-line: inject-field
 	f.EditBox = CreateFrame("EditBox", nil, f, "BackdropTemplate")
 	f:SetPoint("TOPLEFT", posX+18, posY)
 	f:SetMinMaxValues(minValue, maxValue)
@@ -17,6 +17,7 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 	f:EnableMouseWheel(true)
 	f:SetObeyStepOnDrag(true)
 	f:SetOrientation("Horizontal")
+	---@diagnostic disable-next-line: missing-fields
 	f:SetBackdrop({
 	   bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
 	   edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
@@ -35,30 +36,31 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 	f:SetScript("OnValueChanged", function(self, value)
 		self.EditBox:SetText(value)
 	end)
+	---@diagnostic disable-next-line: inject-field
 	f.MinLabel = f:CreateFontString(nil, "OVERLAY")
 	f.MinLabel:SetFontObject(GameFontHighlightSmall)
 	f.MinLabel:SetSize(0, 14)
 	---@diagnostic disable-next-line: redundant-parameter
 	f.MinLabel:SetWordWrap(false)
----@diagnostic disable-next-line: param-type-mismatch
 	f.MinLabel:SetPoint("TopLeft", f, "BottomLeft", 0, -1)
 	f.MinLabel:SetText(minValue)
+	---@diagnostic disable-next-line: inject-field
 	f.MaxLabel = f:CreateFontString(nil, "OVERLAY")
 	f.MaxLabel:SetFontObject(GameFontHighlightSmall)
 	f.MaxLabel:SetSize(0, 14)
 	---@diagnostic disable-next-line: redundant-parameter
 	f.MaxLabel:SetWordWrap(false)
----@diagnostic disable-next-line: param-type-mismatch
 	f.MaxLabel:SetPoint("TopRight", f, "BottomRight", 0, -1)
 	f.MaxLabel:SetText(maxValue)
+	---@diagnostic disable-next-line: inject-field
 	f.Title = f:CreateFontString(nil, "OVERLAY")
 	f.Title:SetFontObject(GameFontNormal)
 	f.Title:SetSize(0, 14)
 	---@diagnostic disable-next-line: redundant-parameter
 	f.Title:SetWordWrap(false)
----@diagnostic disable-next-line: param-type-mismatch
 	f.Title:SetPoint("Bottom", f, "Top")
 	f.Title:SetText(title)
+	---@diagnostic disable-next-line: inject-field
 	f.Thumb = f:CreateTexture(nil, "ARTWORK")
 	f.Thumb:SetSize(32, 32)
 	f.Thumb:SetTexture("Interface\\Buttons\\UI-SliderBar-Button-Horizontal")
@@ -74,6 +76,7 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 ---@diagnostic disable-next-line: param-type-mismatch
 	eb:SetPoint("Top", f, "Bottom", 0, -1)
 	eb:SetTextInsets(4, 4, 0, 0)
+	---@diagnostic disable-next-line: missing-fields
 	eb:SetBackdrop({
 		bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
 		edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
@@ -123,11 +126,10 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 	eb:SetScript("OnEditFocusGained", function(self)
 		self:HighlightText(0, -1)
 	end)
----@diagnostic disable-next-line: param-type-mismatch
+	---@diagnostic disable-next-line: inject-field
 	f.Plus = CreateFrame("Button", nil, f)
 	f.Plus:SetSize(18, 18)
 	f.Plus:RegisterForClicks("AnyUp")
----@diagnostic disable-next-line: param-type-mismatch
 	f.Plus:SetPoint("Left", f, "Right", 0, 0)
 	f.Plus:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
 	f.Plus:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
@@ -135,11 +137,10 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 	f.Plus:SetScript("OnClick", function(self)
 		f:SetValue(f:GetValue() + f:GetValueStep())
 	end)
----@diagnostic disable-next-line: param-type-mismatch
+	---@diagnostic disable-next-line: inject-field
 	f.Minus = CreateFrame("Button", nil, f)
 	f.Minus:SetSize(18, 18)
 	f.Minus:RegisterForClicks("AnyUp")
----@diagnostic disable-next-line: param-type-mismatch
 	f.Minus:SetPoint("Right", f, "Left", 0, 0)
 	f.Minus:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up")
 	f.Minus:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down")
@@ -164,6 +165,7 @@ function TRB.Functions.OptionsUi:BuildTextBox(parent, text, maxLetters, width, h
 	f:SetFontObject(GameFontHighlight)
 	f:SetSize(width, height)
 	f:SetTextInsets(4, 4, 0, 0)
+	---@diagnostic disable-next-line: missing-fields
 	f:SetBackdrop({
 		bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
 		edgeFile = "Interface\\ChatFrame\\ChatFrameBackground",
@@ -215,7 +217,6 @@ end
 function TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
 	local r, g, b, a
 	if color then
----@diagnostic disable-next-line: deprecated
 		r, g, b, a = unpack(color)
 	else
 		r, g, b = ColorPickerFrame:GetColorRGB()
@@ -267,24 +268,24 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, colorTable, colorC
 end
 
 function TRB.Functions.OptionsUi:BuildColorPicker(parent, description, settingsEntry, sizeTotal, sizeFrame, posX, posY)
-	local settings = TRB.Data.settings
 	local f = CreateFrame("Button", nil, parent, "BackdropTemplate")
 	f:SetSize(sizeFrame, sizeFrame)
 	f:SetPoint("TOPLEFT", posX, posY)
 	f:SetBackdrop({
-		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", 
+		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
 		tile = true, 
 		tileSize=4, 
 		edgeSize=12
 	})
+	---@diagnostic disable-next-line: inject-field
 	f.Texture = f:CreateTexture(nil)
 	f.Texture:ClearAllPoints()
 	f.Texture:SetPoint("TOPLEFT", 4, -4)
 	f.Texture:SetPoint("BOTTOMRIGHT", -4, 4)
 	f.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settingsEntry, true))
 	f:EnableMouse(true)
+	---@diagnostic disable-next-line: inject-field
 	f.Font = f:CreateFontString(nil)
----@diagnostic disable-next-line: param-type-mismatch
 	f.Font:SetPoint("LEFT", f, "RIGHT", 10, 0)
 	f.Font:SetFontObject(GameFontHighlight)
 	f.Font:SetText(description)
@@ -296,7 +297,6 @@ function TRB.Functions.OptionsUi:BuildColorPicker(parent, description, settingsE
 end
 
 function TRB.Functions.OptionsUi:BuildSectionHeader(parent, title, posX, posY)
-	local settings = TRB.Data.settings
 	local f = CreateFrame("Frame", nil, parent)
 	f:ClearAllPoints()
 	f:SetPoint("TOPLEFT", parent)
@@ -331,6 +331,7 @@ function TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, var, desc, po
 	f.font:SetSize(offset, height)
 	f.font:SetText(var)
 
+---@diagnostic disable-next-line: inject-field
 	f.description = CreateFrame("Frame", nil, parent)
 	local fd = f.description
 	fd:ClearAllPoints()
@@ -359,19 +360,25 @@ function TRB.Functions.OptionsUi:BuildButton(parent, text, posX, posY, width, he
 	f:SetHeight(height)
 	f:SetText(text)
 	f:SetNormalFontObject("GameFontNormal")
+	---@diagnostic disable-next-line: inject-field
 	f.ntex = f:CreateTexture()
 	f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 	f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
+---@diagnostic disable-next-line: missing-parameter
 	f.ntex:SetAllPoints()
 	f:SetNormalTexture(f.ntex)
+	---@diagnostic disable-next-line: inject-field
 	f.htex = f:CreateTexture()
 	f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 	f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
+	---@diagnostic disable-next-line: missing-parameter
 	f.htex:SetAllPoints()
 	f:SetHighlightTexture(f.htex)
+	---@diagnostic disable-next-line: inject-field
 	f.ptex = f:CreateTexture()
 	f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 	f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
+	---@diagnostic disable-next-line: missing-parameter
 	f.ptex:SetAllPoints()
 	f:SetPushedTexture(f.ptex)
 
@@ -410,8 +417,10 @@ function TRB.Functions.OptionsUi:CreateScrollFrameContainer(name, parent, width,
 	sf:SetWidth(width)
 	sf:SetHeight(height)
 	if scrollChild then
+		---@diagnostic disable-next-line: inject-field
 		sf.scrollChild = scrollChild
 	else
+		---@diagnostic disable-next-line: inject-field
 		sf.scrollChild = CreateFrame("Frame")
 	end
 	sf.scrollChild:SetWidth(width)
@@ -443,8 +452,8 @@ function TRB.Functions.OptionsUi:CreateTabFrameContainer(name, parent, width, he
 	cf:SetPoint("TOPLEFT", 0, 0)
 
 	if not isManualScrollFrame then
+		---@diagnostic disable-next-line: inject-field
 		cf.scrollFrame = TRB.Functions.OptionsUi:CreateScrollFrameContainer(name .. "ScrollFrame", cf, width - 30, height - 8)
----@diagnostic disable-next-line: param-type-mismatch
 		cf.scrollFrame:SetPoint("TOPLEFT", cf, "TOPLEFT", 5, -5)
 	end
 	return cf
@@ -464,7 +473,8 @@ end
 
 function TRB.Functions.OptionsUi:CreateTab(name, displayText, id, parent, width, rightOf)
 	width = width or 100
-	local tab = CreateFrame("Button", name, parent, "PanelTopTabButtonTemplate")-- "TabButtonTemplate")
+	local tab = CreateFrame("Button", name, parent, "PanelTopTabButtonTemplate")
+	---@diagnostic disable-next-line: inject-field
 	tab.id = id
 	tab:SetSize(width, 16)
 	tab:SetText(displayText)
@@ -498,7 +508,7 @@ function TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, name, text, wid
 	s:SetSize(width, height)
 	s:SetPoint("TOPLEFT", parent, "TOPLEFT", xPos, yPos)
 	
----@diagnostic disable-next-line: param-type-mismatch
+---@diagnostic disable-next-line: inject-field
 	s.ScrollFrame = CreateFrame("EditBox", nil, s, "BackdropTemplate")
 	local e = s.ScrollFrame
 	e:SetTextInsets(4, 4, 0, 0)
@@ -536,7 +546,6 @@ function TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, name, text, wid
 	e:SetText(text)
 	e:SetAutoFocus(false)
 
----@diagnostic disable-next-line: param-type-mismatch
 	s:SetScrollChild(e)
 	return e
 end
@@ -589,11 +598,9 @@ end
 
 function TRB.Functions.OptionsUi:ToggleCheckboxEnabled(checkbox, enable)
 	if enable then
----@diagnostic disable-next-line: undefined-field
 		checkbox:Enable()
 		getglobal(checkbox:GetName().."Text"):SetTextColor(1, 1, 1)
 	else
----@diagnostic disable-next-line: undefined-field
 		checkbox:Disable()
 		getglobal(checkbox:GetName().."Text"):SetTextColor(0.5, 0.5, 0.5)
 	end
@@ -769,6 +776,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	f = controls.checkBoxes.lockPosition
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
 	f:SetChecked(spec.bar.dragAndDrop)
 	f:SetScript("OnClick", function(self, ...)
@@ -783,6 +791,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	f = controls.checkBoxes.pinToPRD
 	f:SetPoint("TOPLEFT", 0, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
 	f:SetChecked(spec.bar.pinToPersonalResourceDisplay)
 	f:SetScript("OnClick", function(self, ...)
@@ -902,8 +911,6 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 
 		if GetSpecialization() == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
-
-			--TRB.Functions.Bar:SetMinMax(spec)
 		end
 
 		local minsliderWidth = math.max(spec.comboPoints.border*2, 1)
@@ -984,6 +991,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	f = controls.checkBoxes.comboPointsFullWidth
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-30)
 	getglobal(f:GetName() .. 'Text'):SetText(secondaryResourceString .. " are full bar width?")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "Makes the "..secondaryResourceString.." bars take up the same total width of the bar, spaced according to "..secondaryResourceString.." Spacing (above). The horizontal position adjustment will be ignored and the width of "..secondaryResourceString.." bars will be automatically calculated and will ignore the value set above."
 	f:SetChecked(spec.comboPoints.fullWidth)
 	f:SetScript("OnClick", function(self, ...)
@@ -1103,6 +1111,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	f:SetChecked(spec.textures.textureLock)
 	getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will lock the texture for each part of the bar to be the same."
 
 	f:SetScript("OnClick", function(self, ...)
@@ -1218,7 +1227,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		spec.textures.backgroundName = newName
 
 		if GetSpecialization() == specId then
-			TRB.Frames.barContainerFrame:SetBackdrop({ 
+			TRB.Frames.barContainerFrame:SetBackdrop({
 				bgFile = spec.textures.background,
 				tile = true,
 				tileSize = spec.bar.width,
@@ -1353,6 +1362,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		f = controls.checkBoxes.textureLock
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars, borders, and backgrounds (respectively)")
+		---@diagnostic disable-next-line: inject-field
 		f.tooltip = "This will lock the texture for each type of texture to be the same for all parts of the bar. E.g.: All bar textures will be the same, all border textures will be the same, and all background textures will be the same."
 	else
 		yCoord = yCoord - 30
@@ -1398,6 +1408,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Always show bar")
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
 	f:SetChecked(spec.displayBar.alwaysShow)
 	f:SetScript("OnClick", function(self, ...)
@@ -1418,12 +1429,15 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 
 	if showWhenCategory == "notFull" then
 		getglobal(f:GetName() .. 'Text'):SetText("Show bar when "..primaryResourceString.." is not full")
+		---@diagnostic disable-next-line: inject-field
 		f.tooltip = "This will make the Resource Bar show out of combat only if "..primaryResourceString.." is not full, hidden otherwise when out of combat."
 	elseif showWhenCategory == "balance" then
 		getglobal(f:GetName() .. 'Text'):SetText("Show bar when AP > 0 (or < 50 w/NB)")
+		---@diagnostic disable-next-line: inject-field
 		f.tooltip = "This will make the Resource Bar show out of combat only if Astral Power > 0 (or < 50 with Nature's Balance), hidden otherwise when out of combat."
 	else
 		getglobal(f:GetName() .. 'Text'):SetText("Show bar when "..primaryResourceString.." > 0")
+		---@diagnostic disable-next-line: inject-field
 		f.tooltip = "This will make the Resource Bar show out of combat only if "..primaryResourceString.." > 0, hidden otherwise when out of combat."
 	end
 
@@ -1444,6 +1458,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 	getglobal(f:GetName() .. 'Text'):SetText("Only show bar in combat")
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
 	f:SetChecked((not spec.displayBar.alwaysShow) and (not spec.displayBar.notZeroShow) and (not spec.displayBar.neverShow))
 	f:SetScript("OnClick", function(self, ...)
@@ -1462,6 +1477,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-45)
 	getglobal(f:GetName() .. 'Text'):SetText("Never show bar (run in background)")
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
 	f:SetChecked(spec.displayBar.neverShow)
 	f:SetScript("OnClick", function(self, ...)
@@ -1482,6 +1498,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		f = controls.checkBoxes.flashEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
 		getglobal(f:GetName() .. 'Text'):SetText("Flash bar when "..flashAlphaNameShort.." is usable")
+		---@diagnostic disable-next-line: inject-field
 		f.tooltip = "This will flash the bar when "..flashAlphaName.." can be cast."
 		f:SetChecked(spec.colors.bar.flashEnabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1549,6 +1566,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	f = controls.checkBoxes.thresholdIconEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
 	f:SetChecked(spec.thresholds.icons.enabled)
 	f:SetScript("OnClick", function(self, ...)
@@ -1563,6 +1581,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	f = controls.checkBoxes.thresholdIconDesaturated
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding*2, yCoord-50)
 	getglobal(f:GetName() .. 'Text'):SetText("Desaturate icons when not usable")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "When checked, icons will be desaturated when an ability is not usable (on cooldown, below minimum resource, lacking other requirements, etc.)."
 	f:SetChecked(spec.thresholds.icons.desaturated)
 	f:SetScript("OnClick", function(self, ...)
@@ -1686,6 +1705,7 @@ function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(pa
 	f = controls.checkBoxes.potionCooldown
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Show potion threshold lines when potion is on cooldown")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "Shows the potion threshold lines while potion use is still on cooldown. Configure below how far in advance to have the lines be visible, between 0 - 300 seconds (300 being effectively 'always visible')."
 	f:SetChecked(spec.thresholds.potionCooldown.enabled)
 	f:SetScript("OnClick", function(self, ...)
@@ -1698,6 +1718,7 @@ function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(pa
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("GCDs left on Potion cooldown")
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "Show potion threshold lines based on how many GCDs remain on potion cooldown."
 	if spec.thresholds.potionCooldown.mode == "gcd" then
 		f:SetChecked(true)
@@ -1723,6 +1744,7 @@ function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(pa
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Time left on Potion cooldown")
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "Change the bar color based on how many seconds remain until potions will come off cooldown."
 	if spec.thresholds.potionCooldown.mode == "time" then
 		f:SetChecked(true)
@@ -1777,6 +1799,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	f = controls.checkBoxes.thresholdOverlapBorder
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-90)
 	getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 	f:SetChecked(spec.thresholds.overlapBorder)
 	f:SetScript("OnClick", function(self, ...)
@@ -1791,6 +1814,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	f = controls.checkBoxes.aeratedManaPotionRank3ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. "27,600 mana")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8) .. " (27,600 mana)"
 	f:SetChecked(spec.thresholds.aeratedManaPotionRank3.enabled)
 	f:SetScript("OnClick", function(self, ...)
@@ -1802,6 +1826,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	f = controls.checkBoxes.aeratedManaPotionRank2ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. "24,000 mana")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8) .. " (24,000 mana)"
 	f:SetChecked(spec.thresholds.aeratedManaPotionRank2.enabled)
 	f:SetScript("OnClick", function(self, ...)
@@ -1813,6 +1838,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	f = controls.checkBoxes.aeratedManaPotionRank1ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. "20,869 mana")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8) .. " (20,869 mana)"
 	f:SetChecked(spec.thresholds.aeratedManaPotionRank1.enabled)
 	f:SetScript("OnClick", function(self, ...)
@@ -1827,6 +1853,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	f = controls.checkBoxes.potionOfFrozenFocusRank3ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. "48,300 mana + regen")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8) .. " (48,300 mana + regen)"
 	f:SetChecked(spec.thresholds.potionOfFrozenFocusRank3.enabled)
 	f:SetScript("OnClick", function(self, ...)
@@ -1838,6 +1865,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	f = controls.checkBoxes.potionOfFrozenFocusRank2ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. "42,000 mana + regen")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8) .. " (42,000 mana + regen)"
 	f:SetChecked(spec.thresholds.potionOfFrozenFocusRank2.enabled)
 	f:SetScript("OnClick", function(self, ...)
@@ -1849,6 +1877,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	f = controls.checkBoxes.potionOfFrozenFocusRank1ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. "36,531 mana + regen")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8) .. " (36,531 mana + regen)"
 	f:SetChecked(spec.thresholds.potionOfFrozenFocusRank1.enabled)
 	f:SetScript("OnClick", function(self, ...)
@@ -1865,6 +1894,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		f = controls.checkBoxes.shadowfiendThresholdShowCooldown
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
 		getglobal(f:GetName() .. 'Text'):SetText("Show while on cooldown?")
+		---@diagnostic disable-next-line: inject-field
 		f.tooltip = "Show the Shadowfiend threshold line when the ability is on cooldown."
 		f:SetChecked(spec.thresholds.shadowfiend.cooldown)
 		f:SetScript("OnClick", function(self, ...)
@@ -1877,6 +1907,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		f = controls.checkBoxes.shadowfiendThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Shadowfiend")
+		---@diagnostic disable-next-line: inject-field
 		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use Shadowfiend."
 		f:SetChecked(spec.thresholds.shadowfiend.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1895,6 +1926,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	f = controls.checkBoxes.conjuredChillglobeThresholdShowCooldown
 	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
 	getglobal(f:GetName() .. 'Text'):SetText("Show while on cooldown?")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "Show the Conjured Chillglobe threshold line when the item is on cooldown."
 	f:SetChecked(spec.thresholds.conjuredChillglobe.cooldown)
 	f:SetScript("OnClick", function(self, ...)
@@ -1907,6 +1939,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	f = controls.checkBoxes.conjuredChillglobeThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Conjured Chillglobe")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use the Conjured Chillglobe trinket. Only shown below 65% mana."
 	f:SetChecked(spec.thresholds.conjuredChillglobe.enabled)
 	f:SetScript("OnClick", function(self, ...)
@@ -1954,6 +1987,7 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 		f = controls.checkBoxes.overcapEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
+		---@diagnostic disable-next-line: inject-field
 		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping "..primaryResourceString.." (as configured)."
 		f:SetChecked(spec.colors.bar.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1973,6 +2007,7 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 		f = controls.checkBoxes.innervateBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Innervate")
+		---@diagnostic disable-next-line: inject-field
 		f.tooltip = "This will change the bar border color when you have Innervate."
 		f:SetChecked(spec.colors.bar.innervateBorderChange)
 		f:SetScript("OnClick", function(self, ...)
@@ -1990,6 +2025,7 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 		f = controls.checkBoxes.potionOfChilledClarityBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Potion of Chilled Clarity")
+		---@diagnostic disable-next-line: inject-field
 		f.tooltip = "This will change the bar border color when you have Potion of Chilled Clarity's effect."
 		f:SetChecked(spec.colors.bar.potionOfChilledClarityBorderChange)
 		f:SetScript("OnClick", function(self, ...)
@@ -2022,6 +2058,7 @@ function TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Relative offset from maximum")
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "Set the overcap to be some relative value below your current maximum "..primaryResourceString..". Example: when the maximum "..primaryResourceString.." is "..primaryResourceMax..", setting this to "..exampleMinus.." will cause overcapping to occur at "..exampleDiff.." "..primaryResourceString.."."
 	if spec.overcap.mode == "relative" then
 		f:SetChecked(true)
@@ -2048,6 +2085,7 @@ function TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Fixed value")
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "Set the overcap to be at an exact value, regardless of maximum "..primaryResourceString.."."
 	if spec.overcap.mode == "fixed" then
 		f:SetChecked(true)
@@ -2291,6 +2329,7 @@ function TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, cla
 	f = controls.checkBoxes.fontFaceLock
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
 	f:SetChecked(spec.displayText.fontFaceLock)
 	f:SetScript("OnClick", function(self, ...)
@@ -2336,6 +2375,7 @@ function TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, cla
 	f = controls.checkBoxes.fontSizeLock
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
+	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
 	f:SetChecked(spec.displayText.fontSizeLock)
 	f:SetScript("OnClick", function(self, ...)

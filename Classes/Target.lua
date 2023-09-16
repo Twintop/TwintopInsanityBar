@@ -47,9 +47,11 @@ function TRB.Classes.TargetData:AddSpellTracking(spell, isDot, hasCounter, hasSn
         autoUpdate = true
     end
 
-    if self.trackedSpells[spell.id] == nil then
-        self.trackedSpells[spell.id] = TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot, autoUpdate)
-        self.count[spell.id] = 0
+    local id = spell.debuffId or spell.spellId or spell.id or nil
+
+    if id ~= nil and self.trackedSpells[id] == nil then
+        self.trackedSpells[id] = TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot, autoUpdate)
+        self.count[id] = 0
     end
 end
 
@@ -197,9 +199,11 @@ function TRB.Classes.Target:AddSpellTracking(spell, isDot, hasCounter, hasSnapsh
         autoUpdate = true
     end
 
-    if self.spells[spell.id] == nil then
-        self.spells[spell.id] = TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot, autoUpdate)
-        self.spells[spell.id]:SetTargetGuid(self.guid)
+    local id = spell.debuffId or spell.spellId or spell.id or nil
+
+    if id ~= nil and self.spells[id] == nil then
+        self.spells[id] = TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot, autoUpdate)
+        self.spells[id]:SetTargetGuid(self.guid)
     end
 end
 
@@ -282,7 +286,7 @@ function TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot, auto
         autoUpdate = true
     end
 
-    self.id = spell.id
+    self.id = spell.debuffId or spell.spellId or spell.id
     self.spell = spell
     self.active = false
     self.isDot = isDot

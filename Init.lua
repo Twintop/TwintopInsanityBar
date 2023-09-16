@@ -8,7 +8,7 @@ TRB.Details.addonAuthor = C_AddOns.GetAddOnMetadata(addonName, "Author")
 TRB.Details.addonAuthorServer = C_AddOns.GetAddOnMetadata(addonName, "X-AuthorServer")
 TRB.Details.addonTitle = C_AddOns.GetAddOnMetadata(addonName, "Title")
 TRB.Details.addonReleaseDate = C_AddOns.GetAddOnMetadata(addonName, "X-ReleaseDate")
-TRB.Details.supportedSpecs = "|cFFA330C9Demon Hunter|r - Havoc\n|cFFFF7C0ADruid|r - Balance, Feral, Restoration\n|cFF33937FEvoker|r - Devastation (Experimental/Minimal), Preservation (Experimental)\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFF00FF98Monk|r - Mistweaver, Windwalker\n|cFFFFFFFFPriest|r - Discipline (Experimental), Holy, Shadow\n|cFFFFF468Rogue|r - Assassination, Outlaw\n|cFF0070DDShaman|r - Elemental, Enhancement (Experimental/Minimal), Restoration\n|cFFC69B6DWarrior|r - Arms, Fury"
+TRB.Details.supportedSpecs = "|cFFA330C9Demon Hunter|r - Havoc\n|cFFFF7C0ADruid|r - Balance, Feral, Restoration\n|cFF33937FEvoker|r - Devastation (Experimental/Minimal), Preservation (Experimental), Augmentation (Experimental/Minimal)\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFF00FF98Monk|r - Mistweaver, Windwalker\n|cFFFFFFFFPriest|r - Discipline (Experimental), Holy, Shadow\n|cFFFFF468Rogue|r - Assassination, Outlaw\n|cFF0070DDShaman|r - Elemental, Enhancement (Experimental/Minimal), Restoration\n|cFFC69B6DWarrior|r - Arms, Fury"
 
 local addonData = {
 	loaded = false,
@@ -16,16 +16,11 @@ local addonData = {
 	libs = {}
 }
 addonData.libs.SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
----@diagnostic disable-next-line: undefined-field
 addonData.libs.SharedMedia:Register("sound", "TRB: Wilhelm Scream", "Interface\\Addons\\TwintopInsanityBar\\Sounds\\wilhelm.ogg")
----@diagnostic disable-next-line: undefined-field
 addonData.libs.SharedMedia:Register("sound", "TRB: Boxing Arena Gong", "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg")
----@diagnostic disable-next-line: undefined-field
 addonData.libs.SharedMedia:Register("sound", "TRB: Air Horn", "Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg")
 
----@diagnostic disable-next-line: undefined-field
 if not addonData.libs.SharedMedia:IsValid("border", "1 Pixel") then
-	---@diagnostic disable-next-line: undefined-field
 	addonData.libs.SharedMedia:Register("border", "1 Pixel", "Interface\\Buttons\\WHITE8X8")
 end
 
@@ -34,24 +29,25 @@ TRB.Details.addonData = addonData
 -- Frames
 TRB.Frames = {}
 
+---@type Frame
 TRB.Frames.barContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame", UIParent, "BackdropTemplate")
----@diagnostic disable-next-line: param-type-mismatch
+---@type Frame
 TRB.Frames.resourceFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
----@diagnostic disable-next-line: param-type-mismatch
+---@class Frame
 TRB.Frames.castingFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
----@diagnostic disable-next-line: param-type-mismatch
+---@class Frame
 TRB.Frames.passiveFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
----@diagnostic disable-next-line: param-type-mismatch
+---@class Frame
 TRB.Frames.barBorderFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
 
 TRB.Frames.passiveFrame.thresholds = {}
 TRB.Frames.resourceFrame.thresholds = {}
 
----@diagnostic disable-next-line: param-type-mismatch
+---@class Frame
 TRB.Frames.leftTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
----@diagnostic disable-next-line: param-type-mismatch
+---@class Frame
 TRB.Frames.middleTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
----@diagnostic disable-next-line: param-type-mismatch
+---@class Frame
 TRB.Frames.rightTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
 
 TRB.Frames.leftTextFrame.font = TRB.Frames.leftTextFrame:CreateFontString(nil, "BACKGROUND")
@@ -61,6 +57,7 @@ TRB.Frames.rightTextFrame.font = TRB.Frames.rightTextFrame:CreateFontString(nil,
 TRB.Frames.targetsTimerFrame = CreateFrame("Frame")
 TRB.Frames.targetsTimerFrame.sinceLastUpdate = 0
 
+---@class Frame
 TRB.Frames.timerFrame = CreateFrame("Frame")
 TRB.Frames.timerFrame.sinceLastUpdate = 0
 TRB.Frames.timerFrame.ttdSinceLastUpdate = 0
@@ -82,19 +79,11 @@ if classIndexId == 4 or classIndexId == 7 or classIndexId == 10 or classIndexId 
 	end
 end
 
-function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)	
-	local targetData
+function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
+	---@type TRB.Classes.TargetData
+	local targetData = TRB.Data.snapshotData.targetData
 
-	local _, _, classIndexId = UnitClass("player")
-	if classIndexId == 5 or classIndexId == 11 then --Only do this if we're on a Druid or Priest!
-		---@type TRB.Classes.TargetData
-		targetData = TRB.Data.snapshotData.targetData
-	else
-		---@type TRB.Classes.TargetData
-		targetData = TRB.Data.snapshot.targetData
-	end
-
-	local currentTime = GetTime()
+	local currentTime = GetTime()	
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate
 	self.characterCheckSinceLastUpdate  = self.characterCheckSinceLastUpdate  + sinceLastUpdate

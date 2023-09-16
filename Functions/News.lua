@@ -7,8 +7,112 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 ----
+# 10.1.7.1-release (2023-09-16)
+## General
 
-# 10.1.0.13-release (2023-06-12)
+- [#54 - NEW](#54) Don't show the resource bar when you are in an active Pet Battle or on a Flight Path.
+- [#323 - REFACTOR](#323) More enhancements, clean up, and standardize how buff, cooldown, and computed data is stored and handled.
+<br/>&emsp;&ensp;- The following specializations are included in this update:
+<br/>&emsp;&ensp;&emsp;&ensp;- **Evoker** - Devastation, Preservation, Augmentation
+<br/>&emsp;&ensp;&emsp;&ensp;- **Hunter** - Beast Mastery, Marksmanship, Survival
+<br/>&emsp;&ensp;&emsp;&ensp;- **Monk** - Mistweaver, Windwalker
+<br/>&emsp;&ensp;&emsp;&ensp;- **Rogue** - Assassination, Outlaw
+<br/>&emsp;&ensp;&emsp;&ensp;- **Shaman** - Elemental, Enhancement, Restoration
+<br/>&emsp;&ensp;&emsp;&ensp;- **Warrior** - Arms, Fury
+- [#323 - REFACTOR](#323) General linting and cleanups.
+- [#323 - REFACTOR](#323) Favor a standardized tick-based resource generation class instead of custom solutions. Some abilities (Barbed Shot, Idol of C'Thun, Rapid Fire, and Eye Beam) continue to use their own special solutions.
+- [#323 - FIX](#323) Restore cooldown progress swirl on threshold icons.
+- [#323 - FIX](#323) Don't trigger threshold cooldown coloring and icon progress swirl from GCD locked abilities.
+
+## Druid
+### Balance
+
+- (FIX) Update Touch the Cosmos's Astral Power reduction to be -5.
+
+## Warrior
+
+- (NEW) Add Blood and Thunder support for Thunder Clap.
+- (CLEANUP) Remove Victory Rush spell data.
+
+### Arms
+
+- (FIX) Correct Whirlwind's base Rage cost.
+
+### Fury
+
+- (CLEANUP) Remove obsolete Bladestorm code.
+
+----
+# 10.1.7.0-release (2023-09-05)
+## General
+
+- [#323 - REFACTOR](#323) More enhancements, clean up, and standardize how buff, cooldown, and computed data is stored and handled.
+<br/>&emsp;&ensp;- The following specializations are included in this update:
+<br/>&emsp;&ensp;&emsp;&ensp;- **Demon Hunter** - Havoc
+
+## Priest
+### Shadow
+
+- (FIX) Fix an issue with Mind Flay: Insanity/Mind Spike: Insanity buff duration being shorter than expected.
+
+----
+
+# 10.1.5.4-release (2023-08-26)
+## General
+
+- [#219 - FIX](#219) Fix NPC Id for Iridikron in Dawn of the Infinite. 
+
+## Druid
+### Feral
+
+- (FIX) Fix LUA error when entering Prowl from Incarnation being used.
+
+----
+
+# 10.1.5.3-release (2023-07-25)
+## General
+
+- [#219 - UPDATE](#219) Add Time To Die override for Iridikron in Dawn of the Infinite. 
+<br/>&emsp;&ensp;- Iridikron -- 85%
+
+## Priest
+### Healers
+
+- [#328 - NEW](#328) Add support for extra passive mana regen by Imbued Frostweave Slippers. While equipped, mana regen used for determining things like mana regenerated while channeling Symbol of Hope.
+
+----
+
+# 10.1.5.2-release (2023-07-19)
+## Druid
+### Balance
+
+- (FIX) Remove spammy debug output to chat whenever Starfall has a combat log event.
+
+----
+
+# 10.1.5.1-release (2023-07-13)
+## Priest
+### Discipline and Holy
+
+- (FIX) Correct a LUA error when Mana Tide Totem is used by a party or raid member.
+    
+----
+
+# 10.1.5.0-release (2023-07-11)
+## Evoker
+### Augmentation
+
+- This feature is EXPERIMENTAL and is not enabled by default. To enable Augmentation Evoker support, go to the main "General" options menu for Twintop's Resource Bar and check "Augmentation Evoker support" under the "Experimental Features" section.<br/>
+- [#312 - EXPERIMENTAL](#312) Minimalist implementation for Augmentation Evoker, tracking Essence and Mana (to a much lesser extent). Presently displays Essence in a similar fashion as Combo Points or Chi, but shows the refill status in the currently regenerating node.
+
+## Druid
+### Balance
+
+- (FIX) Update Primordial Arcanic Pulsar spell IDs.
+
+---
+
+# 10.1.0.13-release (2023-06-10)
 ## General
 ### Healers
 
@@ -185,11 +289,6 @@ local content = [====[
 
 - [#310 - HOTFIX](#310) T29 4P adjustment: Entering Eclipse makes your next Starsurge or Starfall cost 10 less Astral Power (was 5).
 
-## Priest
-### Shadow
-
-- [#315 - FIX](#315) Use the correct Pandemic refresh time for Shadow Word: Pain when Misery is talented.
-
 ----
 
 # 10.1.0.2-release (2023-05-09)
@@ -339,6 +438,7 @@ local isConstructed = false
 function TRB.Functions.News:BuildNewsPopup()
     isConstructed = true
     TRB.Functions.News:Hide()
+    ---@diagnostic disable-next-line: missing-fields
 	newsFrame:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile =  "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -373,10 +473,11 @@ function TRB.Functions.News:BuildNewsPopup()
         TRB.Functions.News:Hide()
     end)
 
-    local showAgainCheckbox = CreateFrame("CheckButton", "TwintopResourceBar_News_ShowAgain", newsFrame, "ChatConfigCheckButtonTemplate")
-    local f = showAgainCheckbox
+    ---@type CheckButton
+    local f = CreateFrame("CheckButton", "TwintopResourceBar_News_ShowAgain", newsFrame, "ChatConfigCheckButtonTemplate")
     f:SetPoint("BOTTOMLEFT", 5, 5)
     getglobal(f:GetName() .. 'Text'):SetText("Show on new version release")
+---@diagnostic disable-next-line: inject-field
     f.tooltip = "Show this update popup whenever a new version of Twintop's Resource Bar is released."
     f:SetChecked(TRB.Data.settings.core.news.enabled)
     f:SetScript("OnClick", function(self, ...)
