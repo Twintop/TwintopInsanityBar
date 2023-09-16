@@ -2053,44 +2053,32 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 	end
 
-	local function GetHolyWordCooldownTimeRemaining(holyWord)
-		local currentTime = GetTime()
-		local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
-		local remainingTime = 0
-
-		if holyWord.buff.duration == gcd or holyWord.buff.startTime == nil or holyWord.buff.startTime == 0 or holyWord.buff.duration == 0 then
-			remainingTime = 0
-		else
-			remainingTime = (holyWord.buff.startTime + holyWord.buff.duration) - currentTime
-		end
-
-		return remainingTime
-	end
-
 	local function CalculateHolyWordCooldown(base, spellId)
 		local spells = TRB.Data.spells
+		---@type TRB.Classes.Snapshot[]
+		local snapshots = TRB.Data.snapshotData.snapshots
 		local mod = 1
 		local divineConversationValue = 0
 		local prayerFocusValue = 0
 
-		if TRB.Data.snapshotData.snapshots[spells.divineConversation.id].buff.isActive then
+		if snapshots[spells.divineConversation.id].buff.isActive then
 			if TRB.Data.character.isPvp then
-				divineConversationValue = TRB.Data.spells.divineConversation.reductionPvp
+				divineConversationValue = spells.divineConversation.reductionPvp
 			else
-				divineConversationValue = TRB.Data.spells.divineConversation.reduction
+				divineConversationValue = spells.divineConversation.reduction
 			end
 		end
 
-		if TRB.Data.snapshotData.snapshots[spells.prayerFocus.id].buff.isActive and (spellId == TRB.Data.spells.heal.id or spellId == TRB.Data.spells.prayerOfHealing.id) then
-			prayerFocusValue = TRB.Data.spells.prayerFocus.holyWordReduction
+		if snapshots[spells.prayerFocus.id].buff.isActive and (spellId == spells.heal.id or spellId == spells.prayerOfHealing.id) then
+			prayerFocusValue = spells.prayerFocus.holyWordReduction
 		end
 
-		if TRB.Data.snapshotData.snapshots[spells.apotheosis.id].buff.isActive then
-			mod = mod * TRB.Data.spells.apotheosis.holyWordModifier
+		if snapshots[spells.apotheosis.id].buff.isActive then
+			mod = mod * spells.apotheosis.holyWordModifier
 		end
 
-		if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.lightOfTheNaaru) then
-			mod = mod * (1 + (TRB.Data.spells.lightOfTheNaaru.holyWordModifier * TRB.Data.talents[TRB.Data.spells.lightOfTheNaaru.id].currentRank))
+		if TRB.Functions.Talent:IsTalentActive(spells.lightOfTheNaaru) then
+			mod = mod * (1 + (spells.lightOfTheNaaru.holyWordModifier * TRB.Data.talents[spells.lightOfTheNaaru.id].currentRank))
 		end
 
 		return mod * (base + prayerFocusValue) + divineConversationValue
@@ -4086,7 +4074,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							TRB.Functions.Talent:IsTalentActive(spells[spells[snapshotData.casting.spellKey].holyWordKey]) then
 
 							local castTimeRemains = snapshotData.casting.endTime - currentTime
-							local holyWordCooldownRemaining = GetHolyWordCooldownTimeRemaining(snapshots[spells[spells[snapshotData.casting.spellKey].holyWordKey].id])
+							local holyWordCooldownRemaining = snapshots[spells[spells[snapshotData.casting.spellKey].holyWordKey].id].cooldown:GetRemainingTime(currentTime)
 
 							if (holyWordCooldownRemaining - CalculateHolyWordCooldown(spells[snapshotData.casting.spellKey].holyWordReduction, spells[snapshotData.casting.spellKey].id) - castTimeRemains) <= 0 and specSettings.bar[spells[snapshotData.casting.spellKey].holyWordKey .. "Enabled"] then
 								resourceBarColor = specSettings.colors.bar[spells[snapshotData.casting.spellKey].holyWordKey]
@@ -4500,15 +4488,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.holyWordSerenity.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Serenity
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.holyWordSanctify.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Sanctify
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.holyWordChastise.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Chastise
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.divineConversation.id then
 						snapshots[spellId].buff:Initialize(type, true)

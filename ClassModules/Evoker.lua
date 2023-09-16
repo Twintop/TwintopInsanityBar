@@ -219,8 +219,8 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				name = "",
 				icon = "",
 				duration = 5.0, --Hasted
-				manaPercent = 0.02,
-				ticks = 5
+				resourcePerTick = 0.02,
+				tickRate = 1
 			},
 
 			-- External mana
@@ -386,14 +386,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		---@type TRB.Classes.Healer.MoltenRadiance
 		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(specCache.preservation.spells.moltenRadiance)
 		---@type TRB.Classes.Snapshot
-		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.emeraldCommunion.id] = TRB.Classes.Snapshot:New(specCache.preservation.spells.emeraldCommunion, {
-			firstTickTime = nil,
-			previousTickTime = nil,
-			ticksRemaining = 0,
-			tickRate = 0,
-			resourceRaw = 0,
-			resourceFinal = 0
-		})
+		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.emeraldCommunion.id] = TRB.Classes.Snapshot:New(specCache.preservation.spells.emeraldCommunion)
 
 		specCache.preservation.barTextVariables = {
 			icons = {},
@@ -867,10 +860,10 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local castingMana = string.format("|c%s%s|r", castingManaColor, TRB.Functions.String:ConvertToShortNumberNotation(_castingMana, manaPrecision, "floor", true))
 
 		--$ecMana
-		local _ecMana = snapshots[spells.emeraldCommunion.id].attributes.resourceFinal
+		local _ecMana = snapshots[spells.emeraldCommunion.id].buff.resource
 		local ecMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_ecMana, manaPrecision, "floor", true))
 		--$ecTicks
-		local _ecTicks = snapshots[spells.emeraldCommunion.id].attributes.ticksRemaining or 0
+		local _ecTicks = snapshots[spells.emeraldCommunion.id].buff.ticks
 		local ecTicks = string.format("%.0f", _ecTicks)
 		--$ecTime
 		local _ecTime = snapshots[spells.emeraldCommunion.id].buff:GetRemainingTime(currentTime)
@@ -1210,35 +1203,6 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		end
 	end
 
-	---Updates Emerald Communion
-	---@param currentTime number? # Timestamp to use for calculations
-	---@param forceCleanup boolean? # Should we force the cleanup even if the buff hasn't expired
-	local function UpdateEmeraldCommunion(currentTime, forceCleanup)
-		currentTime = currentTime or GetTime()
-		local spells = TRB.Data.spells
-		local emeraldCommunion = TRB.Data.snapshotData.snapshots[spells.emeraldCommunion.id] --[[@as TRB.Classes.Snapshot]]
-
-		if forceCleanup then
-			emeraldCommunion.buff:Reset()
-		else
-			emeraldCommunion.buff:GetRemainingTime(currentTime)
-		end
-
-		if emeraldCommunion.buff.isActive then
-			local regenRemaining = emeraldCommunion.buff:GetRemainingTime(currentTime) * TRB.Data.snapshotData.attributes.manaRegen
-			local incomingMana = (emeraldCommunion.attributes.ticksRemaining * TRB.Data.spells.emeraldCommunion.manaPercent * TRB.Data.character.maxResource) + regenRemaining
-			emeraldCommunion.attributes.resourceRaw = incomingMana
-			emeraldCommunion.attributes.resourceFinal = CalculateManaGain(emeraldCommunion.attributes.resourceRaw)
-		else
-			emeraldCommunion.attributes.resourceRaw = 0
-			emeraldCommunion.attributes.resourceFinal = 0
-			emeraldCommunion.attributes.firstTickTime = nil
-			emeraldCommunion.attributes.previousTickTime = nil
-			emeraldCommunion.attributes.ticksRemaining = 0
-			emeraldCommunion.attributes.tickRate = 0
-		end
-	end
-
 	local function UpdateSnapshot()
 		TRB.Functions.Character:UpdateSnapshot()
 		local currentTime = GetTime()
@@ -1254,7 +1218,6 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 	local function UpdateSnapshot_Preservation()
 		local currentTime = GetTime()
 		UpdateSnapshot()
-		UpdateEmeraldCommunion(currentTime)
 		
 		local _
 		local spells = TRB.Data.spells
@@ -1285,6 +1248,8 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		snapshots[spells.conjuredChillglobe.id].cooldown.startTime, snapshots[spells.conjuredChillglobe.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
 		snapshots[spells.conjuredChillglobe.id].cooldown:GetRemainingTime(currentTime)
+
+		snapshots[spells.emeraldCommunion.id].buff:UpdateTicks(currentTime)
 	end
 
 	local function UpdateSnapshot_Augmentation()
@@ -1495,8 +1460,8 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							TRB.Frames.passiveFrame.thresholds[5]:Hide()
 						end
 
-						if emeraldCommunion.attributes.resourceFinal > 0 then
-							passiveValue = passiveValue + emeraldCommunion.attributes.resourceFinal
+						if emeraldCommunion.buff.resource > 0 then
+							passiveValue = passiveValue + emeraldCommunion.buff.resource
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[6], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -1693,20 +1658,12 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 						potionOfChilledClarity.buff:Initialize(type)
 					elseif spellId == spells.emeraldCommunion.id then
 						if type == "SPELL_PERIODIC_ENERGIZE" then
-							if snapshots[spellId].attributes.firstTickTime == nil then
-								snapshots[spellId].buff:Initialize()
-								snapshots[spellId].attributes.firstTickTime = currentTime
-								snapshots[spellId].attributes.previousTickTime = currentTime
-								snapshots[spellId].attributes.ticksRemaining = spells.emeraldCommunion.ticks
-								snapshots[spellId].attributes.tickRate = (snapshots[spellId].buff.duration / spells.emeraldCommunion.ticks)
-							else
-								snapshots[spellId].attributes.previousTickTime = currentTime
-								snapshots[spellId].attributes.ticksRemaining = snapshots[spellId].attributes.ticksRemaining - 1
+							if not snapshots[spellId].buff.isActive then
+								local duration = spells.emeraldCommunion.duration * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)								
+								snapshots[spellId].buff:InitializeCustom(duration)
+								snapshots[spellId].buff:SetTickData(true, CalculateManaGain(spells.emeraldCommunion.resourcePerTick * TRB.Data.character.maxResource, false), spells.emeraldCommunion.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
 							end
-							snapshots[spellId].attributes.resourceRaw = snapshots[spellId].attributes.ticksRemaining * spells.emeraldCommunion.manaPercent * TRB.Data.character.maxResource
-							snapshots[spellId].attributes.resourceFinal = CalculateManaGain(snapshots[spellId].attributes.resourceRaw, false)
-						elseif type == "SPELL_AURA_REMOVED" then
-							UpdateEmeraldCommunion(nil, true)
+							snapshots[spellId].buff:UpdateTicks(currentTime)
 						end
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "augmentation" then --Augmentation

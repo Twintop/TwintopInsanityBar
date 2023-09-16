@@ -3336,7 +3336,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				if specId == 1 and TRB.Data.barConstructedForSpec == "assassination" then --Assassination
 					if spellId == spells.exsanguinate.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.blindside.id then
 						snapshots[spellId].buff:Initialize(type)
@@ -3351,7 +3351,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_CAST_SUCCESS" then
 								if not((TRB.Functions.Talent:IsTalentActive(spells.subterfuge) and IsStealthed()) or snapshots[spells.subterfuge.id].buff.isActive) then
-									snapshots[spellId].cooldown:Refresh(true)
+									snapshots[spellId].cooldown:Initialize()
 								end
 
 								if snapshots[spells.improvedGarrote.id].attributes.isActiveStealth or snapshots[spells.improvedGarrote.id].attributes.isActiveStealth then									
@@ -3382,11 +3382,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						end
 					elseif spellId == spells.kingsbane.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.serratedBoneSpike.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.serratedBoneSpike.debuffId then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
@@ -3394,7 +3394,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						end
 					elseif spellId == spells.crimsonVial.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.improvedGarrote.stealthBuffId then
 						snapshots[spells.improvedGarrote.id].buff:Initialize(type, true)
@@ -3404,27 +3404,27 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "outlaw" then
 					if spellId == spells.betweenTheEyes.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.bladeFlurry.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.dreadblades.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.ghostlyStrike.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.gouge.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.rollTheBones.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.opportunity.id then
 						snapshots[spellId].buff:Initialize(type)
@@ -3471,25 +3471,25 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				-- Spec agnostic
 				if spellId == spells.crimsonVial.id then
 					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					end
 				elseif spellId == spells.sliceAndDice.id then
 					snapshots[spellId].buff:Initialize(type)
 				elseif spellId == spells.distract.id then
 					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					end
 				elseif spellId == spells.feint.id then
 					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					end
 				elseif spellId == spells.kidneyShot.id then
 					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					end
 				elseif spellId == spells.shiv.id then
 					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					end
 				elseif spellId == spells.adrenalineRush.id then
 					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REMOVED" then -- For right now, just redo the CheckCharacter() to get update Energy values
@@ -3497,13 +3497,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					end
 				elseif spellId == spells.echoingReprimand.id then
 					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					end
 				elseif spellId == spells.echoingReprimand_2CP.id or spellId == spells.echoingReprimand_3CP.id or spellId == spells.echoingReprimand_4CP.id or spellId == spells.echoingReprimand_4CP2.id or spellId == spells.echoingReprimand_5CP.id then
 					snapshots[spellId].buff:Initialize(type)
 				elseif spellId == spells.sepsis.id then
 					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					end
 				elseif spellId == spells.sepsis.buffId then
 					snapshots[spellId].buff:Initialize(type)
@@ -3530,11 +3530,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					end
 				elseif spellId == spells.deathFromAbove.id then
 					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					end
 				elseif spellId == spells.dismantle.id then
 					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					end
 				end
 			end

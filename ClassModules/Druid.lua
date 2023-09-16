@@ -324,9 +324,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 202770,
 				name = "",
 				icon = "",
-				astralPower = 2.5,
 				duration = 8,
-				ticks = 16,
+				resourcePerTick = 2.5,
+				hasTicks = true,
 				tickRate = 0.5,
 				isTalent = true
 			},
@@ -355,9 +355,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				buffId = 394108,
-				astralPower = 0.5,
-				duration = 8,
-				ticks = 16,
+				hasTicks = true,
+				resourcePerTick = 0.5,
 				tickRate = 0.5,
 				isTalent = true
 			},
@@ -365,7 +364,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				id = 394414,
 				name = "",
 				icon = "",
-				astralPowerMod = -10
+				astralPowerMod = -5
 			}
 		}
 		
@@ -377,15 +376,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		---@type TRB.Classes.Snapshot
 		specCache.balance.snapshotData.snapshots[specCache.balance.spells.moonkinForm.id] = TRB.Classes.Snapshot:New(specCache.balance.spells.moonkinForm, nil, true)
 		---@type TRB.Classes.Snapshot
-		specCache.balance.snapshotData.snapshots[specCache.balance.spells.furyOfElune.id] = TRB.Classes.Snapshot:New(specCache.balance.spells.furyOfElune, {
-			ticksRemaining = 0,
-			astralPower = 0
-		})
+		specCache.balance.snapshotData.snapshots[specCache.balance.spells.furyOfElune.id] = TRB.Classes.Snapshot:New(specCache.balance.spells.furyOfElune)
 		---@type TRB.Classes.Snapshot
-		specCache.balance.snapshotData.snapshots[specCache.balance.spells.sunderedFirmament.id] = TRB.Classes.Snapshot:New(specCache.balance.spells.sunderedFirmament, {
-			ticksRemaining = 0,
-			astralPower = 0
-		})
+		specCache.balance.snapshotData.snapshots[specCache.balance.spells.sunderedFirmament.id] = TRB.Classes.Snapshot:New(specCache.balance.spells.sunderedFirmament)
 		---@type TRB.Classes.Snapshot
 		specCache.balance.snapshotData.snapshots[specCache.balance.spells.eclipseSolar.id] = TRB.Classes.Snapshot:New(specCache.balance.spells.eclipseSolar)
 		---@type TRB.Classes.Snapshot
@@ -1850,7 +1843,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		--$casting
 		local castingAstralPower = string.format("|c%s%s|r", castingAstralPowerColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, astralPowerPrecision, "floor"))
 		--$passive
-		local _passiveAstralPower = snapshotData.snapshots[spells.furyOfElune.id].attributes.astralPower + snapshotData.snapshots[spells.sunderedFirmament.id].attributes.astralPower
+		local _passiveAstralPower = snapshotData.snapshots[spells.furyOfElune.id].buff.resource + snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource
 		if TRB.Functions.Talent:IsTalentActive(spells.naturesBalance) then
 			if UnitAffectingCombat("player") then
 				_passiveAstralPower = _passiveAstralPower + spells.naturesBalance.astralPower
@@ -1961,18 +1954,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		----------
 		--$foeAstralPower
-		local foeAstralPower = snapshotData.snapshots[spells.furyOfElune.id].attributes.astralPower or 0
+		local foeAstralPower = snapshotData.snapshots[spells.furyOfElune.id].buff.resource
 		--$foeTicks
-		local foeTicks = snapshotData.snapshots[spells.furyOfElune.id].attributes.ticksRemaining or 0
+		local foeTicks = snapshotData.snapshots[spells.furyOfElune.id].buff.ticks
 		--$foeTime
 		local _foeTime = snapshotData.snapshots[spells.furyOfElune.id].buff:GetRemainingTime(currentTime)
 		local foeTime = string.format("%.1f", _foeTime)
 		
 		----------
 		--$foeAstralPower
-		local sunderedFirmamentAstralPower = snapshotData.snapshots[spells.sunderedFirmament.id].attributes.astralPower or 0
+		local sunderedFirmamentAstralPower = snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource
 		--$foeTicks
-		local sunderedFirmamentTicks = snapshotData.snapshots[spells.sunderedFirmament.id].attributes.ticksRemaining or 0
+		local sunderedFirmamentTicks = snapshotData.snapshots[spells.sunderedFirmament.id].buff.ticks
 		--$foeTime
 		local _sunderedFirmamentTime = snapshotData.snapshots[spells.sunderedFirmament.id].buff:GetRemainingTime(currentTime)
 		local sunderedFirmamentTime = string.format("%.1f",_sunderedFirmamentTime)
@@ -2702,7 +2695,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local _sohMana = symbolOfHope.buff.mana
 		local sohMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_sohMana, manaPrecision, "floor", true))
 		--$sohTicks
-		local _sohTicks = symbolOfHope.buff.ticks or 0
+		local _sohTicks = symbolOfHope.buff.ticks
 		local sohTicks = string.format("%.0f", _sohTicks)
 		--$sohTime
 		local _sohTime = symbolOfHope.buff:GetRemainingTime(currentTime)
@@ -3169,8 +3162,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		TRB.Data.character.starfallThreshold = (-spells.starfall.astralPower + incarnationChosenOfEluneStarfallModifier) * (1+rattleTheStarsModifier)
 
 		snapshotData.snapshots[spells.moonkinForm.id].buff:Refresh()
-		snapshotData.snapshots[spells.furyOfElune.id].buff:GetRemainingTime(currentTime)
-		snapshotData.snapshots[spells.sunderedFirmament.id].buff:GetRemainingTime(currentTime)
+		snapshotData.snapshots[spells.furyOfElune.id].buff:UpdateTicks(currentTime)
+		snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
 		snapshotData.snapshots[spells.celestialAlignment.id].buff:Refresh()
 		snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff:Refresh()
 		snapshotData.snapshots[spells.eclipseSolar.id].buff:Refresh()
@@ -3197,8 +3190,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		snapshotData.attributes.bleeds.rip = GetCurrentSnapshot(spells.rip.bonuses)
 		snapshotData.attributes.bleeds.thrash = GetCurrentSnapshot(spells.thrash.bonuses)
 
-		snapshotData.snapshots[spells.maim.id].buff:GetRemainingTime(currentTime)
-		snapshotData.snapshots[spells.feralFrenzy.id].buff:GetRemainingTime(currentTime)
 		snapshotData.snapshots[spells.clearcasting.id].buff:GetRemainingTime(currentTime)
 		snapshotData.snapshots[spells.suddenAmbush.id].buff:GetRemainingTime(currentTime)
 		
@@ -3209,6 +3200,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		snapshotData.snapshots[spells.tigersFury.id].buff:Refresh()
 		snapshotData.snapshots[spells.tigersFury.id].cooldown:Refresh(true)
+
+		snapshotData.snapshots[spells.feralFrenzy.id].cooldown:Refresh()
+		snapshotData.snapshots[spells.maim.id].cooldown:Refresh()
 		
 		if TRB.Functions.Talent:IsTalentActive(spells.brutalSlash) then
 			snapshotData.snapshots[spells.brutalSlash.id].cooldown:Refresh()
@@ -3310,7 +3304,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 
 					if specSettings.bar.showPassive then
-						passiveBarValue = currentResource + snapshotData.casting.resourceFinal + snapshotData.snapshots[spells.furyOfElune.id].attributes.astralPower + snapshotData.snapshots[spells.sunderedFirmament.id].attributes.astralPower
+						passiveBarValue = currentResource + snapshotData.casting.resourceFinal + snapshotData.snapshots[spells.furyOfElune.id].buff.resource + snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource
 
 						if TRB.Functions.Talent:IsTalentActive(spells.naturesBalance) then
 							if affectingCombat then
@@ -3323,7 +3317,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						if TRB.Functions.Talent:IsTalentActive(spells.naturesBalance) and (affectingCombat or (not affectingCombat and currentResource < 50)) then
 
 						else
-							passiveBarValue = currentResource + snapshotData.casting.resourceFinal + snapshotData.snapshots[spells.furyOfElune.id].attributes.astralPower + snapshotData.snapshots[spells.sunderedFirmament.id].attributes.astralPower
+							passiveBarValue = currentResource + snapshotData.casting.resourceFinal + snapshotData.snapshots[spells.furyOfElune.id].buff.resource + snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource
 						end
 					else
 						passiveBarValue = castingBarValue
@@ -3774,12 +3768,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 							end
 
-							local snapshotCooldown = nil
-							if snapshotData.snapshots[spell.id] ~= nil then
-								snapshotCooldown = snapshotData.snapshots[spell.id].cooldown
-							end
-
-							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshotCooldown, specSettings)
+							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshotData.snapshots[spell.id], specSettings)
 						end
 						pairOffset = pairOffset + 3
 					end
@@ -4144,24 +4133,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					elseif spellId == spells.furyOfElune.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
 						if type == "SPELL_AURA_APPLIED" then -- Gain Fury of Elune
-							snapshotData.snapshots[spellId].attributes.isActive = true
-							snapshotData.snapshots[spellId].attributes.ticksRemaining = spells.furyOfElune.ticks
-							snapshotData.snapshots[spellId].attributes.astralPower = snapshotData.snapshots[spellId].attributes.ticksRemaining * spells.furyOfElune.astralPower
+							snapshotData.snapshots[spellId].buff:InitializeCustom(spells.furyOfElune.duration)
+							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
+							print(snapshotData.snapshots[spellId].buff.ticks, snapshotData.snapshots[spellId].buff.resource)
 						elseif type == "SPELL_PERIODIC_ENERGIZE" then
-							snapshotData.snapshots[spellId].attributes.ticksRemaining = snapshotData.snapshots[spellId].attributes.ticksRemaining - 1
-							snapshotData.snapshots[spellId].attributes.astralPower = snapshotData.snapshots[spellId].attributes.ticksRemaining * spells.furyOfElune.astralPower
+							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
 						end
 					elseif spellId == spells.sunderedFirmament.buffId then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
+						snapshotData.snapshots[spells.sunderedFirmament.id].buff:Initialize(type)
 						if type == "SPELL_AURA_APPLIED" then -- Gain Fury of Elune
-							snapshotData.snapshots[spellId].attributes.isActive = true
-							snapshotData.snapshots[spellId].attributes.ticksRemaining = spells.sunderedFirmament.ticks
-							snapshotData.snapshots[spellId].attributes.astralPower = snapshotData.snapshots[spellId].attributes.ticksRemaining * spells.sunderedFirmament.astralPower
+							snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
 						elseif type == "SPELL_PERIODIC_ENERGIZE" then
-							snapshotData.snapshots[spellId].attributes.ticksRemaining = snapshotData.snapshots[spellId].attributes.ticksRemaining - 1
-							snapshotData.snapshots[spellId].attributes.astralPower = snapshotData.snapshots[spellId].attributes.ticksRemaining * spells.sunderedFirmament.astralPower
+							snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
 						end
 					elseif spellId == spells.eclipseSolar.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
@@ -4283,12 +4267,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					elseif spellId == spells.tigersFury.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Refresh(true)
+							snapshotData.snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.bloodtalons.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Refresh(true)
+							snapshotData.snapshots[spellId].cooldown:Initialize()
 						elseif type == "SPELL_AURA_REMOVED" then
 							snapshotData.snapshots[spellId].attributes.endTimeLeeway = currentTime + 0.1
 						end
@@ -4313,7 +4297,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						end
 					elseif spellId == spells.brutalSlash.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Refresh(true)
+							snapshotData.snapshots[spellId].cooldown:Initialize()
 						end
 					end
 				elseif specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then
@@ -4400,6 +4384,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.druid.balance)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.balance)
 
+			Twintop_Spells = spells
+			Twintop_SnapshotData = TRB.Data.snapshotData
 			if TRB.Data.barConstructedForSpec ~= "balance" then
 				TRB.Data.barConstructedForSpec = "balance"
 				ConstructResourceBar(specCache.balance.settings)
@@ -4819,7 +4805,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$passive" then
-				if (TRB.Functions.Talent:IsTalentActive(spells.naturesBalance) and (affectingCombat or (snapshotData.attributes.resource / TRB.Data.resourceFactor) < 50)) or snapshots[spells.furyOfElune.id].attributes.astralPower > 0 or snapshots[spells.sunderedFirmament.id].attributes.astralPower > 0 then
+				if (TRB.Functions.Talent:IsTalentActive(spells.naturesBalance) and (affectingCombat or (snapshotData.attributes.resource / TRB.Data.resourceFactor) < 50)) or snapshots[spells.furyOfElune.id].buff.resource > 0 or snapshots[spells.sunderedFirmament.id].buff.resource > 0 then
 					valid = true
 				end
 			elseif var == "$sunfireCount" then
@@ -4863,7 +4849,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$foeAstralPower" then
-				if snapshots[spells.furyOfElune.id].attributes.astralPower > 0 then
+				if snapshots[spells.furyOfElune.id].buff.resource > 0 then
 					valid = true
 				end
 			elseif var == "$foeTicks" then

@@ -317,7 +317,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				name = "",
 				icon = "",
 				ticks = 3,
-				manaPerTick = 0.01,
+				hasTicks = true,
+				tickRate = 1,
+				resourcePerTick = 0.01, --1% max mana. fill manually
 				duration = 3
 			}
 
@@ -348,10 +350,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		---@type TRB.Classes.Snapshot
 		specCache.mistweaver.snapshotData.snapshots[specCache.mistweaver.spells.vivaciousVivification.id] = TRB.Classes.Snapshot:New(specCache.mistweaver.spells.vivaciousVivification, nil, true)
 		---@type TRB.Classes.Snapshot
-		specCache.mistweaver.snapshotData.snapshots[specCache.mistweaver.spells.soulfangInfusion.id] = TRB.Classes.Snapshot:New(specCache.mistweaver.spells.soulfangInfusion, {
-			ticksRemaining = 0,
-			mana = 0
-		})
+		specCache.mistweaver.snapshotData.snapshots[specCache.mistweaver.spells.soulfangInfusion.id] = TRB.Classes.Snapshot:New(specCache.mistweaver.spells.soulfangInfusion)
 
 		specCache.mistweaver.barTextVariables = {
 			icons = {},
@@ -1116,10 +1115,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		
 		local soulfangInfusion = snapshots[spells.soulfangInfusion.id] --[[@as TRB.Classes.Snapshot]]
 		--$siMana
-		local _siMana = soulfangInfusion.attributes.mana
+		local _siMana = soulfangInfusion.buff.resource
 		local siMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_siMana, manaPrecision, "floor", true))
 		--$siTicks
-		local _siTicks = soulfangInfusion.attributes.ticksRemaining or 0
+		local _siTicks = soulfangInfusion.buff.ticks
 		local siTicks = string.format("%.0f", _siTicks)
 		--$siTime
 		local _siTime = soulfangInfusion.buff:GetRemainingTime(currentTime)
@@ -1653,29 +1652,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		markOfTheCrane.attributes.maxEndTime = maxEndTime
 	end
 
-	---Updates Soulfang Infusion
-	---@param currentTime number? # Timestamp to use for calculations
-	---@param forceCleanup boolean? # Should we force the cleanup even if the buff hasn't expired
-	local function UpdateSoulfangInfusion(currentTime, forceCleanup)
-		currentTime = currentTime or GetTime()
-		local spells = TRB.Data.spells
-		local soulfangInfusion = TRB.Data.snapshotData.snapshots[spells.soulfangInfusion.id] --[[@as TRB.Classes.Snapshot]]
-
-		if forceCleanup then
-			soulfangInfusion.buff:Reset()
-		else
-			soulfangInfusion.buff:GetRemainingTime(currentTime)
-		end
-
-		if soulfangInfusion.buff.isActive then
-			soulfangInfusion.attributes.ticksRemaining = math.ceil((soulfangInfusion.attributes.endTime - currentTime) / (spells.soulfangInfusion.duration / spells.soulfangInfusion.ticks))
-			soulfangInfusion.attributes.mana = soulfangInfusion.attributes.ticksRemaining * CalculateManaGain(TRB.Data.character.maxResource * spells.soulfangInfusion.manaPerTick, false)
-		else
-			soulfangInfusion.attributes.mana = 0
-			soulfangInfusion.attributes.ticksRemaining = 0
-		end
-	end
-
 	local function UpdateSnapshot()
 		TRB.Functions.Character:UpdateSnapshot()
 		local currentTime = GetTime()
@@ -1684,7 +1660,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	local function UpdateSnapshot_Mistweaver()
 		local currentTime = GetTime()
 		UpdateSnapshot()
-		UpdateSoulfangInfusion(currentTime)
 		
 		local _
 		local spells = TRB.Data.spells
@@ -1715,6 +1690,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		snapshots[spells.conjuredChillglobe.id].cooldown.startTime, snapshots[spells.conjuredChillglobe.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
 		snapshots[spells.conjuredChillglobe.id].cooldown:GetRemainingTime(currentTime)
+
+		snapshots[spells.soulfangInfusion.id].buff:UpdateTicks(currentTime)
 	end
 
 	local function UpdateSnapshot_Windwalker()
@@ -1873,7 +1850,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						end
 
 						if snapshots[spells.soulfangInfusion.id].buff.isActive then
-							passiveValue = passiveValue + snapshots[spells.soulfangInfusion.id].attributes.mana
+							passiveValue = passiveValue + snapshots[spells.soulfangInfusion.id].buff.resource
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[6], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
@@ -2155,13 +2132,10 @@ elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then --
 						local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 						channeledManaPotion.buff:Initialize(type)
 					elseif spellId == spells.soulfangInfusion.id then
-						snapshots[spellId].buff:Initialize(type, true)
+						snapshots[spellId].buff:Initialize(type)
 						if type == "SPELL_AURA_APPLIED" then -- Gain Soulfang Infusion
-							snapshots[spellId].attributes.ticksRemaining = spells.soulfangInfusion.ticks
-							snapshots[spellId].attributes.mana = snapshots[spellId].attributes.ticksRemaining * CalculateManaGain(TRB.Data.character.maxResource * spells.soulfangInfusion.manaPerTick, false)
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost Potion of Frozen Focus channel
-							-- Let UpdateSoulfangInfusion() clean this up
-							UpdateSoulfangInfusion(currentTime, true)
+							snapshots[spellId].buff:SetTickData(true, CalculateManaGain(TRB.Data.character.maxResource * spells.soulfangInfusion.resourcePerTick, false), spells.soulfangInfusion.tickRate)
+							snapshots[spellId].buff:UpdateTicks(currentTime)
 						end
 					elseif spellId == spells.manaTea.id then
 						snapshots[spellId].buff:Initialize(type)
@@ -2215,15 +2189,15 @@ elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then --
 						end
 					elseif spellId == spells.detox.id then
 						if type == "SPELL_DISPEL" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.expelHarm.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.paralysis.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 
 							if TRB.Functions.Talent:IsTalentActive(spells.paralysisRank2) then
 								snapshots[spellId].cooldown.duration = snapshots[spellId].cooldown.duration + spells.paralysisRank2.cooldownMod

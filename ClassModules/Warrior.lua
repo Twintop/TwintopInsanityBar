@@ -178,18 +178,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				hasCooldown = false,
 				thresholdUsable = false
 			},
-			victoryRush = {
-				id = 34428,
-				name = "",
-				icon = "",
-				isTalent = false,
-				baseline = true,
-			},
 			whirlwind = {
 				id = 1680,
 				name = "",
 				icon = "",
-				rage = -30,
+				rage = -40,
 				texture = "",
 				thresholdId = 7,
 				settingKey = "whirlwind",
@@ -220,11 +213,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "impendingVictory",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
-				isSnowflake = true
+				thresholdUsable = false
 			},
 			thunderClap = {
-				id = 6343,
+				id = 396719,
 				name = "",
 				icon = "",
 				rage = -30,
@@ -233,7 +225,15 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "thunderClap",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				isSnowflake = true
+			},
+			bloodAndThunder = {
+				id = 384277,
+				name = "", 
+				icon = "",
+				rageMod = -10,
+				isTalent = true
 			},
 			
 			spearOfBastion = {
@@ -351,15 +351,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		---@type TRB.Classes.Snapshot
 		specCache.arms.snapshotData.snapshots[specCache.arms.spells.thunderClap.id] = TRB.Classes.Snapshot:New(specCache.arms.spells.thunderClap)
 		---@type TRB.Classes.Snapshot
-		specCache.arms.snapshotData.snapshots[specCache.arms.spells.whirlwind.id] = TRB.Classes.Snapshot:New(specCache.arms.spells.whirlwind)
-		---@type TRB.Classes.Snapshot
 		specCache.arms.snapshotData.snapshots[specCache.arms.spells.mortalStrike.id] = TRB.Classes.Snapshot:New(specCache.arms.spells.mortalStrike)
 		---@type TRB.Classes.Snapshot
 		specCache.arms.snapshotData.snapshots[specCache.arms.spells.cleave.id] = TRB.Classes.Snapshot:New(specCache.arms.spells.cleave)
 		---@type TRB.Classes.Snapshot
 		specCache.arms.snapshotData.snapshots[specCache.arms.spells.ignorePain.id] = TRB.Classes.Snapshot:New(specCache.arms.spells.ignorePain)
-		---@type TRB.Classes.Snapshot
-		specCache.arms.snapshotData.snapshots[specCache.arms.spells.victoryRush.id] = TRB.Classes.Snapshot:New(specCache.arms.spells.victoryRush)
 		---@type TRB.Classes.Snapshot
 		specCache.arms.snapshotData.snapshots[specCache.arms.spells.suddenDeath.id] = TRB.Classes.Snapshot:New(specCache.arms.spells.suddenDeath)
 		---@type TRB.Classes.Snapshot
@@ -482,14 +478,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				baseline = true,
 				hasCooldown = false,
-				thresholdUsable = false
-			},
-			victoryRush = {
-				id = 34428,
-				name = "",
-				icon = "",
-				isTalent = false,
-				baseline = true,
+				thresholdUsable = false,
+				isSnowflake = true
 			},
 			whirlwind = {
 				id = 85739, --buff ID
@@ -517,11 +507,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "impendingVictory",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
-				isSnowflake = true
+				thresholdUsable = false
 			},
 			thunderClap = {
-				id = 6343,
+				id = 396719,
 				name = "",
 				icon = "",
 				rage = -30,
@@ -530,8 +519,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "thunderClap",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false
+				thresholdUsable = false,
+				isSnowflake = true
 			},
+			bloodAndThunder = {
+				id = 384277,
+				name = "",
+				icon = "",
+				rageMod = -10,
+				isTalent = true
+			},
+
 			spearOfBastion = {
 				id = 376079,
 				name = "",
@@ -573,32 +571,30 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = true,
 				healthMinimum = 0.35
 			},
-			bladestorm = {
-				id = 46924,
-				name = "",
-				icon = "",
-				rage = 5,
-				duration = 4,
-				ticks = 4 -- On hit + 4 = 5
-			},
 			ravager = {
 				id = 228920,
 				name = "",
 				icon = "",
-				rage = 10,
-				ticks = 6, -- Sometimes 5, sometimes 6, sometimes 7?!
+				hasTicks = true,
+				tickRate = 2,
 				duration = 12,
-				isHasted = true,
+				resourcePerTick = 10,
 				energizeId = 334934
 			},
 			stormOfSteel = {
 				id = 382953,
 				name = "",
 				icon = "",
-				rage = 10,
+				resourcePerTick = 10,
 				charges = 2,
 				isTalent = true
-			}
+			},
+			stormOfSwords = {
+				id = 388903,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
 		}
 
 		specCache.fury.snapshotData.audio = {
@@ -611,21 +607,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		---@type TRB.Classes.Snapshot
 		specCache.fury.snapshotData.snapshots[specCache.fury.spells.impendingVictory.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.impendingVictory)
 		---@type TRB.Classes.Snapshot
-		specCache.fury.snapshotData.snapshots[specCache.fury.spells.victoryRush.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.victoryRush)
-		---@type TRB.Classes.Snapshot
 		specCache.fury.snapshotData.snapshots[specCache.fury.spells.enrage.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.enrage)
 		---@type TRB.Classes.Snapshot
 		specCache.fury.snapshotData.snapshots[specCache.fury.spells.whirlwind.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.whirlwind)
 		---@type TRB.Classes.Snapshot
-		specCache.fury.snapshotData.snapshots[specCache.fury.spells.ravager.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.ravager, {
-			rage = 0,
-			ticksRemaining = 0
-		})
-		---@type TRB.Classes.Snapshot
-		specCache.fury.snapshotData.snapshots[specCache.fury.spells.bladestorm.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.bladestorm, {
-			ticksRemaining = 0,
-			rage = 0
-		})
+		specCache.fury.snapshotData.snapshots[specCache.fury.spells.ravager.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.ravager)
 		---@type TRB.Classes.Snapshot
 		specCache.fury.snapshotData.snapshots[specCache.fury.spells.execute.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.execute)
 		---@type TRB.Classes.Snapshot
@@ -668,7 +654,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = "Shield Block", printInSettings = true },
 			{ variable = "#slam", icon = spells.slam.icon, description = "Slam", printInSettings = true },
 			{ variable = "#spearOfBastion", icon = spells.spearOfBastion.icon, description = "Spear of Bastion", printInSettings = true },
-			{ variable = "#victoryRush", icon = spells.victoryRush.icon, description = "Victory Rush", printInSettings = true },
 			{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = "Whirlwind", printInSettings = true },			
 		}
 		specCache.arms.barTextVariables.values = {
@@ -743,7 +728,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-			{ variable = "#bladestorm", icon = spells.bladestorm.icon, description = "Bladestorm", printInSettings = true },
 			{ variable = "#charge", icon = spells.charge.icon, description = "Charge", printInSettings = true },
 			{ variable = "#enrage", icon = spells.enrage.icon, description = "Enrage", printInSettings = true },
 			{ variable = "#execute", icon = spells.execute.icon, description = "Execute", printInSettings = true },
@@ -752,7 +736,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "#slam", icon = spells.slam.icon, description = "Slam", printInSettings = true },
 			{ variable = "#spearOfBastion", icon = spells.spearOfBastion.icon, description = "Spear of Bastion", printInSettings = true },
 			{ variable = "#ravager", icon = spells.ravager.icon, description = "Ravager", printInSettings = true },
-			{ variable = "#victoryRush", icon = spells.victoryRush.icon, description = "Victory Rush", printInSettings = true },
 			{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = "Whirlwind", printInSettings = true }
 		}
 
@@ -1021,7 +1004,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#shieldBlock"] = spells.shieldBlock.icon
 		lookup["#slam"] = spells.slam.icon
 		lookup["#spearOfBastion"] = spells.spearOfBastion.icon
-		lookup["#victoryRush"] = spells.victoryRush.icon
 		lookup["#whirlwind"] = spells.whirlwind.icon
 		lookup["$rend"] = TRB.Functions.Talent:IsTalentActive(spells.rend)
 		lookup["$rendCount"] = rendCount
@@ -1114,10 +1096,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 
 		--$ravagerRage
-		local _ravagerRage = snapshots[spells.ravager.id].attributes.rage
+		local _ravagerRage = snapshots[spells.ravager.id].buff.resource
 		local ravagerRage = string.format("%.0f", _ravagerRage)
 		--$ravagerTicks
-		local ravagerTicks = string.format("%.0f", snapshots[spells.ravager.id].attributes.ticksRemaining)
+		local _ravagerTicks = snapshots[spells.ravager.id].buff.ticks
+		local ravagerTicks = string.format("%.0f", _ravagerTicks)
 
 		--$rage
 		local ragePrecision = specSettings.ragePrecision or 0
@@ -1158,12 +1141,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		Global_TwintopResourceBar.resource.passive = _passiveRage
 		Global_TwintopResourceBar.ravager = {
 			rage = _ravagerRage,
-			ticks = snapshots[spells.ravager.id].attributes.ticksRemaining or 0
+			ticks = _ravagerTicks
 		}
 
 
 		local lookup = TRB.Data.lookup or {}
-		lookup["#bladestorm"] = spells.bladestorm.icon
 		lookup["#charge"] = spells.charge.icon
 		lookup["#enrage"] = spells.enrage.icon
 		lookup["#execute"] = spells.execute.icon
@@ -1172,7 +1154,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#shieldBlock"] = spells.shieldBlock.icon
 		lookup["#slam"] = spells.slam.icon
 		lookup["#spearOfBastion"] = spells.spearOfBastion.icon
-		lookup["#victoryRush"] = spells.victoryRush.icon
 		lookup["#whirlwind"] = spells.whirlwind.icon
 		lookup["$suddenDeathTime"] = suddenDeathTime
 		lookup["$enrageTime"] = enrageTime
@@ -1240,9 +1221,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local specId = GetSpecialization()
 
 		if currentSpellName == nil and currentChannelName == nil then
-			if specId == 2 and snapshots[spells.bladestorm.id].buff.isActive then
-				return true
-			end
 			TRB.Functions.Character:ResetCastingSnapshotData()
 			return false
 		else
@@ -1270,56 +1248,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 	end
 
-	---Updates Ravager
-	---@param currentTime number? # Timestamp to use for calculations
-	local function UpdateRavager(currentTime)
-		currentTime = currentTime or GetTime()
-		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot
-		local ravager = TRB.Data.snapshotData.snapshots[spells.ravager.id]
-		ravager.buff:GetRemainingTime(currentTime)
-		if ravager.buff.isActive then
-			local ticksRemaining = math.ceil((ravager.buff.remaining) / (spells.ravager.duration / spells.ravager.ticks))
-
-			if ticksRemaining < ravager.attributes.ticksRemaining then
-				ravager.attributes.ticksRemaining = ticksRemaining
-			end
-
-			ravager.attributes.rage = ravager.attributes.ticksRemaining * spells.ravager.rage
-			if ravager.attributes.rage < 0 then
-				ravager.attributes.rage = 0
-			end
-		else
-			ravager.attributes.rage = 0
-			ravager.attributes.ticksRemaining = 0
-		end
-	end
-
-	---Updates Bladestorm
-	---@param currentTime number? # Timestamp to use for calculations
-	local function UpdateBladestorm(currentTime)
-		currentTime = currentTime or GetTime()
-		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot
-		local bladestorm = TRB.Data.snapshotData.snapshots[spells.bladestorm.id]
-		bladestorm.buff:GetRemainingTime(currentTime)
-		if bladestorm.buff.isActive then
-			local ticksRemaining = math.ceil((bladestorm.buff.remaining) / (spells.bladestorm.duration / spells.bladestorm.ticks))
-
-			if ticksRemaining < bladestorm.attributes.ticksRemaining then
-				bladestorm.attributes.ticksRemaining = ticksRemaining
-			end
-
-			bladestorm.attributes.rage = bladestorm.attributes.ticksRemaining * spells.bladestorm.rage
-			if bladestorm.attributes.rage < 0 then
-				bladestorm.attributes.rage = 0
-			end
-		else
-			bladestorm.attributes.rage = 0
-			bladestorm.attributes.ticksRemaining = 0
-		end
-	end
-
 	local function UpdateSnapshot()
 		local currentTime = GetTime()
 		TRB.Functions.Character:UpdateSnapshot()
@@ -1327,8 +1255,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local spells = TRB.Data.spells
 		---@type TRB.Classes.Snapshot[]
 		local snapshots = TRB.Data.snapshotData.snapshots
-
-		snapshots[spells.victoryRush.id].buff:GetRemainingTime(currentTime)
 
 		snapshots[spells.impendingVictory.id].cooldown:Refresh()
 		snapshots[spells.thunderClap.id].cooldown:Refresh()
@@ -1348,14 +1274,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		snapshots[spells.mortalStrike.id].cooldown:Refresh()
 		snapshots[spells.cleave.id].cooldown:Refresh()
 		snapshots[spells.ignorePain.id].cooldown:Refresh()
-		snapshots[spells.whirlwind.id].cooldown:Refresh()
 	end
 
 	local function UpdateSnapshot_Fury()
 		local currentTime = GetTime()
 		UpdateSnapshot()
-		UpdateBladestorm()
-		UpdateRavager()
 
 		local spells = TRB.Data.spells
 		---@type TRB.Classes.Snapshot[]
@@ -1363,6 +1286,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.whirlwind.id].buff:GetRemainingTime(currentTime)
+		snapshots[spells.ravager.id].buff:UpdateTicks(currentTime)
 
 		snapshots[spells.execute.id].cooldown:Refresh()
 	end
@@ -1430,13 +1354,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 					local pairOffset = 0
 					for k, v in pairs(spells) do
-						local showCooldown = false
 						local spell = spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local rageAmount = CalculateAbilityResourceValue(spell.rage)
 							local normalizedRage = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
-							if not (spell.id == spells.execute.id or spell.id == spells.whirlwind.id) then
+							if not (spell.id == spells.execute.id or spell.id == spells.whirlwind.id or spell.id == spells.thunderClap) then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 							end
 
@@ -1481,20 +1404,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
-								elseif spell.id == spells.impendingVictory.id then
-									if snapshots[spell.id].cooldown:IsUnusable() then
-										thresholdColor = specSettings.colors.threshold.unusable
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif currentRage >= -rageAmount or snapshots[spells.victoryRush.id].buff.isActive then
-										thresholdColor = specSettings.colors.threshold.over
-									else
-										thresholdColor = specSettings.colors.threshold.under
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end
 								elseif spell.id == spells.mortalStrike.id then
 									if snapshots[spells.battlelord.id].buff.isActive then
-										rageAmount = rageAmount - spells.battlelord.rageMod
-										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
+										rageAmount = rageAmount - spells.battlelord.rageMod										
 									end
 
 									if snapshots[spell.id].cooldown:IsUnusable() then
@@ -1506,10 +1418,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
+									
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 								elseif spell.id == spells.cleave.id then
 									if snapshots[spells.battlelord.id].buff.isActive then
 										rageAmount = rageAmount - spells.battlelord.rageMod
-										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 									end
 
 									if snapshots[spell.id].cooldown:IsUnusable() then
@@ -1521,21 +1434,36 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
+									
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 								elseif spell.id == spells.whirlwind.id then
 									if TRB.Functions.Talent:IsTalentActive(spells.stormOfSwords) then
 										rageAmount = rageAmount + spells.stormOfSwords.rageMod
-									end 
+									end
 									
-									if snapshots[spell.id].cooldown:IsUnusable() then
-										thresholdColor = specSettings.colors.threshold.unusable
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif currentRage >= -rageAmount or snapshots[spells.victoryRush.id].buff.isActive then
+									if currentRage >= -rageAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
+								elseif spell.id == spells.thunderClap.id then
+									if TRB.Functions.Talent:IsTalentActive(spells.bloodAndThunder) then
+										rageAmount = rageAmount + spells.bloodAndThunder.rageMod
+									end
+
+									if snapshots[spell.id].cooldown:IsUnusable() then
+										thresholdColor = specSettings.colors.threshold.unusable
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+									elseif currentRage >= -rageAmount then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+									
 									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 								end
 							elseif spell.hasCooldown then
@@ -1600,8 +1528,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 					local passiveValue = 0
 					if specSettings.bar.showPassive then
-						if snapshots[spells.ravager.id].attributes.rage > 0 then
-							passiveValue = passiveValue + snapshots[spells.ravager.id].attributes.rage
+						if snapshots[spells.ravager.id].buff.resource > 0 then
+							passiveValue = passiveValue + snapshots[spells.ravager.id].buff.resource
 						end
 					end
 
@@ -1692,16 +1620,31 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 											end
 										end
 									end
-								elseif spell.id == spells.impendingVictory.id then
-									if snapshots[spell.id].cooldown:IsUnusable() then
-										thresholdColor = specSettings.colors.threshold.unusable
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif currentRage >= -rageAmount or snapshots[spells.victoryRush.id].buff.isActive then
+								elseif spell.id == spells.slam.id then
+									if TRB.Functions.Talent:IsTalentActive(spells.stormOfSwords) then
+										showThreshold = false
+									elseif currentRage >= -rageAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
+								elseif spell.id == spells.thunderClap.id then
+									if TRB.Functions.Talent:IsTalentActive(spells.bloodAndThunder) then
+										rageAmount = rageAmount + spells.bloodAndThunder.rageMod
+									end
+									
+									if snapshots[spell.id].cooldown:IsUnusable() then
+										thresholdColor = specSettings.colors.threshold.unusable
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+									elseif currentRage >= -rageAmount then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+									
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 								end
 							elseif spell.hasCooldown then
 								if snapshots[spell.id].cooldown:IsUnusable() then
@@ -1775,15 +1718,15 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				if specId == 1 and TRB.Data.barConstructedForSpec == "arms" then --Arms
 					if spellId == spells.mortalStrike.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.cleave.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.ignorePain.id then
 						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 							-- This API call isn't working. Manual override for now.
 							--snapshot.ignorePain.startTime, snapshot.ignorePain.duration, _, _ = GetSpellCooldown(spells.ignorePain.id)
 							--snapshot.ignorePain.startTime = currentTime
@@ -1806,28 +1749,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
-					elseif spellId == spells.whirlwind.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
-						end
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "fury" then
-					if spellId == spells.bladestorm.id then
-						snapshots[spellId].buff:Initialize()
-						if type == "SPELL_AURA_APPLIED" then
-							local ticksRemaining = math.ceil((snapshots[spellId].buff.remaining) / (spells.bladestorm.duration / spells.ravager.ticks))
-							local rage = ticksRemaining * spells.bladestorm.rage
-							snapshots[spellId].attributes.ticksRemaining = ticksRemaining
-							snapshots[spellId].attributes.rage = rage
-
-							snapshotData.casting.spellId = spellId
-							snapshotData.casting.icon = spells.bladestorm.icon
-							UpdateBladestorm()
-						elseif type == "SPELL_AURA_REMOVED" then
-							snapshots[spellId].attributes.ticksRemaining = 0
-							snapshots[spellId].attributes.rage = 0
-						end
-					elseif spellId == spells.enrage.id then
+					if spellId == spells.enrage.id then
 						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.whirlwind.id then
 						if type == "SPELL_CAST_SUCCESS" then
@@ -1844,37 +1768,19 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						if type == "SPELL_CAST_SUCCESS" then -- Ravager used
 							local duration = spells.ravager.duration * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)
 							snapshots[spellId].buff:InitializeCustom(duration)
-							
-							local ravagerRage = spells.ravager.rage
+			
 							if TRB.Functions.Talent:IsTalentActive(spells.stormOfSteel) then
-								ravagerRage = ravagerRage + spells.stormOfSteel.rage
+								snapshots[spellId].buff:SetTickData(true, spells.ravager.resourcePerTick + spells.stormOfSteel.resourcePerTick, spells.ravager.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
+							else
+								snapshots[spellId].buff:SetTickData(true, spells.ravager.resourcePerTick, spells.ravager.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
 							end
-							
-							snapshots[spellId].attributes.ticksRemaining = spells.ravager.ticks
-							snapshots[spellId].attributes.rage = snapshots[spellId].attributes.ticksRemaining * ravagerRage
-							if snapshots[spellId].attributes.rage < 0 then
-								snapshots[spellId].attributes.rage = 0
-							end
+
+							snapshots[spellId].buff:UpdateTicks(currentTime)
 						end
 					elseif spellId == spells.ravager.energizeId then
 						if type == "SPELL_ENERGIZE" then
 							if snapshots[spells.ravager.id].buff.isActive then
-								if snapshots[spells.ravager.id].attributes.ticksRemaining == 1 then
-									snapshots[spells.ravager.id].buff:Reset()
-									snapshots[spells.ravager.id].attributes.ticksRemaining = 0
-									snapshots[spells.ravager.id].attributes.rage = 0
-								else
-									local ravagerRage = spells.ravager.rage
-									if TRB.Functions.Talent:IsTalentActive(spells.stormOfSteel) then
-										ravagerRage = ravagerRage + spells.stormOfSteel.rage
-									end
-									
-									snapshots[spells.ravager.id].attributes.ticksRemaining = snapshots[spells.ravager.id].attributes.ticksRemaining - 1
-									snapshots[spells.ravager.id].attributes.rage = snapshots[spells.ravager.id].attributes.ticksRemaining * ravagerRage
-									if snapshots[spells.ravager.id].attributes.rage < 0 then
-										snapshots[spells.ravager.id].attributes.rage = 0
-									end
-								end
+								snapshots[spells.ravager.id].buff:UpdateTicks(currentTime)
 							end
 						end
 					end
@@ -1883,21 +1789,19 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				-- Spec Agnostic
 				if spellId == spells.impendingVictory.id then
 					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					end
 				elseif spellId == spells.thunderClap.id then
 					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					end
 				elseif spellId == spells.execute.id and not TRB.Functions.Talent:IsTalentActive(spells.improvedExecute) then
 					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					end
-				elseif spellId == spells.victoryRush.id then
-					snapshots[spellId].buff:Initialize(type)
 				elseif spellId == spells.shieldBlock.id then
 					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					end
 				end
 			end
@@ -2056,10 +1960,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local specId = GetSpecialization()
 		TRB.Functions.Character:CheckCharacter()
 		TRB.Data.character.className = "warrior"
----@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Rage)
 
-		if specId == 1 then		
+		if specId == 1 then
 			TRB.Data.character.specName = "arms"
 
 			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.bloodletting) then
@@ -2253,17 +2156,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					valid = true
 				end
 			elseif var == "$resourceTotal" or var == "$rageTotal" then
-				if normalizedRage > 0 or snapshots[spells.ravager.id].attributes.rage > 0 or
+				if normalizedRage > 0 or snapshots[spells.ravager.id].buff.resource > 0 or
 					(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0)
 					then
 					valid = true
 				end
 			elseif var == "$passive" then
-				if snapshots[spells.ravager.id].attributes.rage > 0 then
+				if snapshots[spells.ravager.id].buff.resource > 0 then
 					valid = true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
-				if normalizedRage > 0 or snapshots[spells.ravager.id].attributes.rage > 0 then
+				if normalizedRage > 0 or snapshots[spells.ravager.id].buff.resource > 0 then
 					valid = true
 				end
 			elseif var == "$enrageTime" then

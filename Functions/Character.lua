@@ -9,6 +9,8 @@ function TRB.Functions.Character:CheckCharacter()
 ---@diagnostic disable-next-line: missing-parameter
 	TRB.Data.character.specGroup = GetActiveSpecGroup()
 	TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
+	TRB.Data.character.inPetBattle = C_PetBattles.IsInBattle()
+	TRB.Data.character.onTaxi = UnitOnTaxi("player")
 
 	TRB.Data.barTextCache = {}
 	TRB.Functions.Spell:FillSpellData()

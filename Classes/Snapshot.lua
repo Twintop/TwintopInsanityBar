@@ -74,6 +74,11 @@ end
 ---@field public customPropertiesDefinitions TRB.Classes.BuffCustomProperty[]
 ---@field public customProperties table
 ---@field public alwaysSimple boolean?
+---@field public hasTicks boolean
+---@field private resourcePerTick number
+---@field private tickRate number
+---@field public ticks number
+---@field public resource number
 ---@field public isCustom boolean
 ---@field protected parent TRB.Classes.Snapshot
 TRB.Classes.SnapshotBuff = {}
@@ -92,8 +97,15 @@ function TRB.Classes.SnapshotBuff:New(parent, alwaysSimpleBuff)
         self.alwaysSimple = false
     end
 
-    self:Reset()
     self.parent = parent
+
+    if self.parent.spell.hasTicks then
+        self.hasTicks = true
+        self.resourcePerTick = self.parent.spell.resourcePerTick
+        self.tickRate = self.parent.spell.tickRate
+    end
+
+    self:Reset()
     self.customPropertiesDefinitions = {}
 
     return self
@@ -113,11 +125,22 @@ function TRB.Classes.SnapshotBuff:Reset()
     self.remaining = 0
     self.endTimeLeeway = 0
     self.stacks = 0
+    self.ticks = 0
+    self.resource = 0
     self.isCustom = false
     self.customProperties = {}
 end
 
----Computes the time remaining on the Snapshot
+---@param hasTicks boolean # Does this spell have ticks?
+---@param resourcePerTick number # Amount of a given resource generated per tick
+---@param tickRate number # How frequently, in seconds, a tick occurs.
+function TRB.Classes.SnapshotBuff:SetTickData(hasTicks, resourcePerTick, tickRate)
+    self.hasTicks = hasTicks
+    self.resourcePerTick = resourcePerTick
+    self.tickRate = tickRate
+end
+
+---Computes the time remaining on the Snapshot and also refreshes data related to ticks if the spell supports it
 ---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
 ---@param useLeeway boolean? # If true, use the included leeway value for offsetting the remainingTime slightly.
 ---@return number # Duration remaining on the Snapshot
@@ -148,6 +171,15 @@ function TRB.Classes.SnapshotBuff:GetRemainingTime(currentTime, useLeeway)
 
     self.remaining = remainingTime
 	return remainingTime
+end
+
+function TRB.Classes.SnapshotBuff:UpdateTicks(currentTime)
+    if self.hasTicks then
+        currentTime = currentTime or GetTime()
+        self:GetRemainingTime(currentTime)
+        self.ticks = math.ceil(self.remaining / self.tickRate)
+        self.resource = self.ticks * self.resourcePerTick
+    end
 end
 
 ---Initializes the buff information for the snapshot
@@ -279,6 +311,7 @@ end
 ---@field public onCooldown boolean
 ---@field public charges integer
 ---@field public maxCharges integer
+---@field private retryForceTime number?
 ---@field private parent TRB.Classes.Snapshot
 TRB.Classes.SnapshotCooldown = {}
 TRB.Classes.SnapshotCooldown.__index = TRB.Classes.SnapshotCooldown
@@ -304,6 +337,7 @@ function TRB.Classes.SnapshotCooldown:Reset()
     self.onCooldown = false
     self.charges = 0
     self.maxCharges = 0
+    self.retryForceTime = nil
 end
 
 ---Computes the time remaining on the Snapshot
@@ -316,6 +350,11 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
     end
     
     currentTime = currentTime or GetTime()
+
+    if self.retryForceTime ~= nil and currentTime > self.retryForceTime then
+        self.retryForceTime = nil
+        self:Refresh(true)
+    end
 
     local remainingTime = 0
 
@@ -349,9 +388,15 @@ function TRB.Classes.SnapshotCooldown:GetRemainingTime(currentTime, totalTime)
     end
 end
 
+---Initializes the cooldown information for the snapshot by forcing a refresh and a retry on the next frame, if needed
+function TRB.Classes.SnapshotCooldown:Initialize()
+    self:Refresh(true, true)
+end
+
 ---Refreshes the cooldown information for the snapshot
 ---@param force boolean? # Force refresh of the value even if other interal logic would prevent it from doing so
-function TRB.Classes.SnapshotCooldown:Refresh(force)
+---@param retryForce boolean? # Allow the cooldown to retry a force on the next call to Refresh()
+function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
     if self.parent.spell ~= nil and self.parent.spell.id ~= nil and (force or self.parent.spell.hasCharges or self.onCooldown) then
         local startTime = nil
         local duration = 0
@@ -361,9 +406,27 @@ function TRB.Classes.SnapshotCooldown:Refresh(force)
             startTime, duration, _, _ = GetSpellCooldown(self.parent.spell.id)
         end
 
-        if force or self.onCooldown or startTime ~= nil then
+        local gcd = TRB.Functions.Character:GetCurrentGCDLockRemaining()
+        local down, up, lagHome, lagWorld = GetNetStats()
+        local latency = lagWorld / 1000
+        
+        local currentTime = GetTime()
+        local remainingTime = startTime + duration - currentTime
+
+        if startTime ~= nil and startTime > 0 and not self.onCooldown and remainingTime > gcd + latency then
             self.startTime = startTime
             self.duration = duration
+            self.retryForceTime = nil
+        elseif self.onCooldown and remainingTime > gcd + latency then
+            self.startTime = startTime
+            self.duration = duration
+            self.retryForceTime = nil
+        else
+            self.startTime = nil
+            self.duration = 0
+            if retryForce then
+                self.retryForceTime = currentTime
+            end
         end
     end
     self:GetRemainingTime()

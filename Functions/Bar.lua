@@ -45,6 +45,11 @@ end
 
 function TRB.Functions.Bar:HideResourceBar(force)
 	force = force or false
+	
+	if TRB.Data.character.inPetBattle or TRB.Data.character.onTaxi then
+		force = true
+	end
+
 	TRB.Functions.Class:HideResourceBar(force)
 end
 

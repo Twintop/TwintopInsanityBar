@@ -211,8 +211,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				talentId = 320374,
 				name = "",
 				icon = "",
-				fury = 5,
-				ticks = 12,
+				resourcePerTick = 5,
+				tickRate = 1,
+				hasTicks = true,
 				duration = 12,
 				isTalent = true
 			},
@@ -303,9 +304,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 389890,
 				name = "",
 				icon = "",
-				fury = 8,
-				ticks = 10,
-				duration = 10,
+				resourcePerTick = 8,
+				tickRate = 1,
+				hasTicks = true,
 				isTalent = true
 			},
 			momentum = {
@@ -330,10 +331,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		---@type TRB.Classes.Snapshot
 		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.deathSweep.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.deathSweep)
 		---@type TRB.Classes.Snapshot
-		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.eyeBeam.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.eyeBeam, {
-			ticksRemaining = 0,
-			fury = 0
-		})
+		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.eyeBeam.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.eyeBeam)
 		---@type TRB.Classes.Snapshot
 		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.glaiveTempest.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.glaiveTempest)
 		---@type TRB.Classes.Snapshot
@@ -341,19 +339,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		---@type TRB.Classes.Snapshot
 		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.metamorphosis.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.metamorphosis)
 		---@type TRB.Classes.Snapshot
-		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.immolationAura.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.immolationAura, {
-			ticksRemaining = 0,
-			fury = 0,
-		})
+		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.immolationAura.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.immolationAura)
 		---@type TRB.Classes.Snapshot
 		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.unboundChaos.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.unboundChaos)
 		---@type TRB.Classes.Snapshot
 		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.throwGlaive.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.throwGlaive)
 		---@type TRB.Classes.Snapshot
-		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.tacticalRetreat.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.tacticalRetreat, {
-			ticksRemaining = 0,
-			fury = 0
-		})
+		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.tacticalRetreat.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.tacticalRetreat)
 		---@type TRB.Classes.Snapshot
 		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.chaosTheory.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.chaosTheory)
 	end
@@ -559,43 +551,31 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		--$metamorphosisTime
 		local _metamorphosisTime = snapshotData.snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
-		local metamorphosisTime = "0.0"
-		if _metamorphosisTime ~= nil then
-			metamorphosisTime = string.format("%.1f", _metamorphosisTime)
-		end
+		local metamorphosisTime = string.format("%.1f", _metamorphosisTime)
 
 		--$metamorphosisTime
 		local _unboundChaosTime = snapshotData.snapshots[spells.unboundChaos.id].buff:GetRemainingTime(currentTime)
-		local unboundChaosTime = "0.0"
-		if _unboundChaosTime ~= nil then
-			unboundChaosTime = string.format("%.1f", _unboundChaosTime)
-		end
+		local unboundChaosTime = string.format("%.1f", _unboundChaosTime)
 
 		--$bhFury
-		local bhFury = snapshotData.snapshots[spells.immolationAura.id].attributes.fury
+		local bhFury = snapshotData.snapshots[spells.immolationAura.id].buff.resource
 
 		--$bhTicks and $iaTicks
-		local bhTicks = snapshotData.snapshots[spells.immolationAura.id].attributes.ticksRemaining
+		local bhTicks = snapshotData.snapshots[spells.immolationAura.id].buff.ticks
 
 		--$bhTime and $iaTime
 		local _bhTime = snapshotData.snapshots[spells.immolationAura.id].buff:GetRemainingTime(currentTime)
-		local bhTime = "0.0"
-		if _bhTime ~= nil then
-			bhTime = string.format("%.1f", _bhTime)
-		end
+		local bhTime = string.format("%.1f", _bhTime)
 
 		--$tacticalRetreatFury
-		local tacticalRetreatFury = snapshotData.snapshots[spells.tacticalRetreat.id].attributes.fury
+		local tacticalRetreatFury = snapshotData.snapshots[spells.tacticalRetreat.id].buff.resource
 
 		--$tacticalRetreatTicks
-		local tacticalRetreatTicks = snapshotData.snapshots[spells.tacticalRetreat.id].attributes.ticksRemaining
+		local tacticalRetreatTicks = snapshotData.snapshots[spells.tacticalRetreat.id].buff.ticks
 
 		--$tacticalRetreatTime
 		local _tacticalRetreatTime = snapshotData.snapshots[spells.tacticalRetreat.id].buff:GetRemainingTime(currentTime)
-		local tacticalRetreatTime = "0.0"
-		if _tacticalRetreatTime ~= nil then
-			tacticalRetreatTime = string.format("%.1f", _tacticalRetreatTime)
-		end
+		local tacticalRetreatTime = string.format("%.1f", _tacticalRetreatTime)
 
 		--$fury
 		local furyPrecision = specSettings.furyPrecision or 0
@@ -743,12 +723,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 						TRB.Data.snapshotData.casting.endTime = currentChannelEndTime / 1000
 						TRB.Data.snapshotData.casting.icon = TRB.Data.spells.eyeBeam.icon
 						local remainingTime = TRB.Data.snapshotData.casting.endTime - currentTime
+						--TODO: use SnapshotBuff:UpdateTicks() instead?
 						local ticks = TRB.Functions.Number:RoundTo(remainingTime / (TRB.Data.spells.blindFury.tickRate * (gcd / 1.5)), 0, "ceil", true)
 						local fury = ticks * TRB.Data.spells.blindFury.fury
 						TRB.Data.snapshotData.casting.resourceRaw = fury
 						TRB.Data.snapshotData.casting.resourceFinal = fury
-						TRB.Data.snapshotData.snapshots[spells.eyeBeam.id].attributes.ticksRemaining = ticks
-						TRB.Data.snapshotData.snapshots[spells.eyeBeam.id].attributes.fury = fury
 					else
 						TRB.Functions.Character:ResetCastingSnapshotData()
 						return false
@@ -765,69 +744,50 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end
 	end
 
-	---Updates Burning Hatred buff
-	---@param currentTime number? # Timestamp to use for calculations
-	local function UpdateBurningHatred(currentTime)
-		currentTime = currentTime or GetTime()
-		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
-		local immolationAura = snapshotData.snapshots[spells.immolationAura.id]
-		if immolationAura.buff.isActive then
-			immolationAura.attributes.ticksRemaining = math.ceil(immolationAura.buff:GetRemainingTime(currentTime) / (spells.burningHatred.duration / spells.burningHatred.ticks))
-			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.burningHatred) then
-				immolationAura.attributes.fury = immolationAura.attributes.ticksRemaining * spells.burningHatred.fury
-			else
-				immolationAura.attributes.fury = 0
-			end
-		end
-	end
-
-	---Updates Tactical Retreat buff
-	---@param currentTime number? # Timestamp to use for calculations
-	local function UpdateTacticalRetreat(currentTime)
-		currentTime = currentTime or GetTime()
-		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
-		local tacticalRetreat = snapshotData.snapshots[spells.tacticalRetreat.id]
-		if tacticalRetreat.buff.isActive then
-			tacticalRetreat.attributes.ticksRemaining = math.ceil(tacticalRetreat.buff:GetRemainingTime(currentTime) / (spells.tacticalRetreat.duration / spells.tacticalRetreat.ticks))
-			tacticalRetreat.attributes.fury = tacticalRetreat.attributes.ticksRemaining * spells.tacticalRetreat.fury
-		end
-	end
-
 	local function UpdateSnapshot()
 		TRB.Functions.Character:UpdateSnapshot()
 	end
 
 	local function UpdateSnapshot_Havoc()
 		local currentTime = GetTime()
-		UpdateSnapshot()
-		UpdateBurningHatred(currentTime)
-		UpdateTacticalRetreat(currentTime)
+		UpdateSnapshot()		
 		
 		local spells = TRB.Data.spells
 		---@type TRB.Classes.SnapshotData
 		local snapshotData = TRB.Data.snapshotData
 		local _
-		snapshotData.snapshots[spells.bladeDance.id].buff:GetRemainingTime(currentTime)
 		snapshotData.snapshots[spells.chaosNova.id].buff:GetRemainingTime(currentTime)
 		snapshotData.snapshots[spells.felEruption.id].buff:GetRemainingTime(currentTime)
 		snapshotData.snapshots[spells.throwGlaive.id].buff:GetRemainingTime(currentTime)
+		
+		if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.burningHatred) then
+			snapshotData.snapshots[spells.immolationAura.id].buff:UpdateTicks(currentTime)
+		else
+			snapshotData.snapshots[spells.immolationAura.id].buff:GetRemainingTime(currentTime)
+		end
+
+		snapshotData.snapshots[spells.tacticalRetreat.id].buff:UpdateTicks(currentTime)
 
 		snapshotData.snapshots[spells.metamorphosis.id].buff:Refresh()
 
-		if snapshotData.snapshots[spells.metamorphosis.id].buff.isActive then
+		if snapshotData.snapshots[spells.metamorphosis.id].buff.isActive and 
+				snapshotData.snapshots[spells.deathSweep.id].spell.id == spells.bladeDance.id then
 			snapshotData.snapshots[spells.bladeDance.id].spell = spells.deathSweep
 			snapshotData.snapshots[spells.deathSweep.id].spell = spells.deathSweep
-		else
+			snapshotData.snapshots[spells.bladeDance.id].cooldown:Refresh(true)
+			snapshotData.snapshots[spells.deathSweep.id].cooldown:Refresh(true)
+		elseif not snapshotData.snapshots[spells.metamorphosis.id].buff.isActive and 
+			    snapshotData.snapshots[spells.bladeDance.id].spell.id == spells.deathSweep.id then
 			snapshotData.snapshots[spells.bladeDance.id].spell = spells.bladeDance
 			snapshotData.snapshots[spells.deathSweep.id].spell = spells.bladeDance
+			snapshotData.snapshots[spells.bladeDance.id].cooldown:Refresh(true)
+			snapshotData.snapshots[spells.deathSweep.id].cooldown:Refresh(true)
+		else
+			snapshotData.snapshots[spells.bladeDance.id].cooldown:Refresh()
+			snapshotData.snapshots[spells.deathSweep.id].cooldown:Refresh()
 		end
 
-		snapshotData.snapshots[spells.eyeBeam.id].buff:Refresh()
-		snapshotData.snapshots[spells.eyeBeam.id].cooldown:Refresh()
+		snapshotData.snapshots[spells.eyeBeam.id].cooldown:Refresh(true)
 		snapshotData.snapshots[spells.bladeDance.id].cooldown:Refresh(true)
 		snapshotData.snapshots[spells.deathSweep.id].cooldown:Refresh(true)
 		snapshotData.snapshots[spells.chaosNova.id].cooldown:Refresh()
@@ -862,12 +822,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 					local passiveValue = 0
 					if specSettings.bar.showPassive then
-						if snapshotData.snapshots[spells.immolationAura.id].attributes.fury > 0 then
-							passiveValue = passiveValue + snapshotData.snapshots[spells.immolationAura.id].attributes.fury
+						if snapshotData.snapshots[spells.immolationAura.id].buff.resource > 0 then
+							passiveValue = passiveValue + snapshotData.snapshots[spells.immolationAura.id].buff.resource
 						end
 
-						if snapshotData.snapshots[spells.tacticalRetreat.id].attributes.fury > 0 then
-							passiveValue = passiveValue + snapshotData.snapshots[spells.tacticalRetreat.id].attributes.fury
+						if snapshotData.snapshots[spells.tacticalRetreat.id].buff.resource > 0 then
+							passiveValue = passiveValue + snapshotData.snapshots[spells.tacticalRetreat.id].buff.resource
 						end
 					end
 
@@ -1051,60 +1011,38 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				if specId == 1 and TRB.Data.barConstructedForSpec == "havoc" then --Havoc
 					if spellId == spells.bladeDance.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Refresh(true)
+							snapshotData.snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.deathSweep.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Refresh(true)
+							snapshotData.snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.chaosNova.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Refresh(true)
+							snapshotData.snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.eyeBeam.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Refresh(true)
+							snapshotData.snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.glaiveTempest.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Refresh(true)
+							snapshotData.snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.throwGlaive.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Refresh(true)
+							snapshotData.snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.felEruption.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Refresh(true)
+							snapshotData.snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.metamorphosis.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.immolationAura.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 						if type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-							local felfireHeartTicksMod = 0
-							
-							if TRB.Functions.Talent:IsTalentActive(spells.felfireHeart) then
-								felfireHeartTicksMod = spells.felfireHeart.ticks * TRB.Data.talents[spells.felfireHeart.id].currentRank
-							end
-
-							snapshotData.snapshots[spellId].attributes.ticksRemaining = spells.burningHatred.ticks + felfireHeartTicksMod
-							
-							if TRB.Functions.Talent:IsTalentActive(spells.burningHatred) then
-								snapshotData.snapshots[spellId].attributes.fury = snapshotData.snapshots[spellId].attributes.ticksRemaining * spells.burningHatred.fury
-							else
-								snapshotData.snapshots[spellId].attributes.fury = 0
-							end
-
-							snapshotData.snapshots[spellId].attributes.lastTick = currentTime
-						elseif type == "SPELL_AURA_REMOVED" then
-							snapshotData.snapshots[spellId].attributes.ticksRemaining = 0
-							snapshotData.snapshots[spellId].attributes.fury = 0
-							snapshotData.snapshots[spellId].attributes.lastTick = nil
-						elseif type == "SPELL_PERIODIC_ENERGIZE" then
-							snapshotData.snapshots[spellId].attributes.ticksRemaining = snapshotData.snapshots[spellId].attributes.ticksRemaining - 1
-							snapshotData.snapshots[spellId].attributes.fury = snapshotData.snapshots[spellId].attributes.ticksRemaining * spells.burningHatred.fury
-							snapshotData.snapshots[spellId].attributes.lastTick = currentTime
+							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
 						end
 					elseif spellId == spells.unboundChaos.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
@@ -1113,21 +1051,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					elseif spellId == spells.tacticalRetreat.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 						if type == "SPELL_AURA_APPLIED" then -- Gain Tactical Retreat
-							snapshotData.snapshots[spellId].attributes.ticksRemaining = spells.tacticalRetreat.ticks
-							snapshotData.snapshots[spellId].attributes.fury = snapshotData.snapshots[spellId].attributes.ticksRemaining * spells.tacticalRetreat.fury
-							snapshotData.snapshots[spellId].attributes.lastTick = currentTime
-						elseif type == "SPELL_AURA_REFRESH" then -- It shouldn't refresh but let's check for it anyway
-							snapshotData.snapshots[spellId].attributes.ticksRemaining = spells.tacticalRetreat.ticks + 1
-							snapshotData.snapshots[spellId].attributes.fury = snapshotData.snapshots[spellId].attributes.ticksRemaining * spells.tacticalRetreat.fury
-							snapshotData.snapshots[spellId].attributes.lastTick = currentTime
-						elseif type == "SPELL_AURA_REMOVED" then
-							snapshotData.snapshots[spellId].attributes.ticksRemaining = 0
-							snapshotData.snapshots[spellId].attributes.fury = 0
-							snapshotData.snapshots[spellId].attributes.lastTick = nil
-						elseif type == "SPELL_PERIODIC_ENERGIZE" then
-							snapshotData.snapshots[spellId].attributes.ticksRemaining = snapshotData.snapshots[spellId].attributes.ticksRemaining - 1
-							snapshotData.snapshots[spellId].attributes.fury = snapshotData.snapshots[spellId].attributes.ticksRemaining * spells.tacticalRetreat.fury
-							snapshotData.snapshots[spellId].attributes.lastTick = currentTime
+							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
 						end
 					end
 				end
@@ -1273,9 +1197,19 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		TRB.Data.character.className = "demonhunter"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Fury)
+		
+		local spells = TRB.Data.spells
+		---@type TRB.Classes.Snapshot[]
+		local snapshots = TRB.Data.snapshotData.snapshots
 
 		if GetSpecialization() == 1 then
 			TRB.Data.character.specName = "havoc"
+
+			if TRB.Functions.Talent:IsTalentActive(spells.burningHatred) then
+				snapshots[spells.immolationAura.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred.tickRate)
+			else
+				snapshots[spells.immolationAura.id].buff:SetTickData(false, 0, 0)
+			end
 		end
 	end
 
@@ -1384,11 +1318,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					valid = true
 				end
 			elseif var == "$bhFury" then
-				if snapshotData.snapshots[spells.immolationAura.id].attributes.fury > 0 then
+				if snapshotData.snapshots[spells.immolationAura.id].buff.resource > 0 then
 					valid = true
 				end
 			elseif var == "$bhTicks" or var == "$iaTicks" then
-				if snapshotData.snapshots[spells.immolationAura.id].attributes.ticksRemaining > 0 then
+				if snapshotData.snapshots[spells.immolationAura.id].buff.ticks > 0 then
 					valid = true
 				end
 			elseif var == "$bhTime" or var == "$iaTime" then
@@ -1400,11 +1334,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					valid = true
 				end
 			elseif var == "$tacticalRetreatFury" then
-				if snapshotData.snapshots[spells.tacticalRetreat.id].attributes.fury > 0 then
+				if snapshotData.snapshots[spells.tacticalRetreat.id].buff.resource > 0 then
 					valid = true
 				end
 			elseif var == "$tacticalRetreatTicks" then
-				if snapshotData.snapshots[spells.tacticalRetreat.id].attributes.ticksRemaining > 0 then
+				if snapshotData.snapshots[spells.tacticalRetreat.id].buff.ticks > 0 then
 					valid = true
 				end
 			elseif var == "$tacticalRetreatTime" then

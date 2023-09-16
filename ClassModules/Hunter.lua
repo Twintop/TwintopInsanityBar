@@ -804,11 +804,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		specCache.marksmanship.snapshotData.snapshots[specCache.marksmanship.spells.eagletalonsTrueFocus.id] = TRB.Classes.Snapshot:New(specCache.marksmanship.spells.eagletalonsTrueFocus, nil, true)
 		---@type TRB.Classes.Snapshot
 		specCache.marksmanship.snapshotData.snapshots[specCache.marksmanship.spells.barrage.id] = TRB.Classes.Snapshot:New(specCache.marksmanship.spells.barrage)
-		---@type TRB.Classes.Snapshot
-		specCache.marksmanship.snapshotData.snapshots[specCache.marksmanship.spells.rapidFire.id] = TRB.Classes.Snapshot:New(specCache.marksmanship.spells.rapidFire, {
-			ticksRemaining = 0,
-			focus = 0
-		})
 
 		specCache.marksmanship.barTextVariables = {
 			icons = {},
@@ -1008,9 +1003,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 265898,
 				name = "",
 				icon = "",
-				focus = 2,
-				ticks = 10,
-				duration = 10,
+				hasTicks = true,
+				resourcePerTick = 2,
+				tickRate = 1,
 				isTalent = true
 			},
 			carve = {
@@ -1032,6 +1027,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				focus = -30,
 				isTalent = true,
 				hasCooldown = true,
+				hasCharges = true,
 				texture = "",
 				thresholdId = 12,
 				settingKey = "butchery",
@@ -1074,10 +1070,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		---@type TRB.Classes.Snapshot
 		specCache.survival.snapshotData.snapshots[specCache.survival.spells.coordinatedAssault.id] = TRB.Classes.Snapshot:New(specCache.survival.spells.coordinatedAssault)
 		---@type TRB.Classes.Snapshot
-		specCache.survival.snapshotData.snapshots[specCache.survival.spells.termsOfEngagement.id] = TRB.Classes.Snapshot:New(specCache.survival.spells.termsOfEngagement, {			
-			ticksRemaining = 0,
-			focus = 0
-		})
+		specCache.survival.snapshotData.snapshots[specCache.survival.spells.termsOfEngagement.id] = TRB.Classes.Snapshot:New(specCache.survival.spells.termsOfEngagement)
 		---@type TRB.Classes.Snapshot
 		specCache.survival.snapshotData.snapshots[specCache.survival.spells.carve.id] = TRB.Classes.Snapshot:New(specCache.survival.spells.carve)
 		---@type TRB.Classes.Snapshot
@@ -1565,14 +1558,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local _beastCleaveTime = snapshots[spells.beastCleave.id].buff:GetRemainingTime(currentTime)
 		local beastCleaveTime = string.format("%.1f", _beastCleaveTime)
 
-		--[[
-		if TRB.Functions.Talent:IsTalentActive(spells.bloodFrenzy) and (snapshot.callOfTheWild.endTime or 0) > (snapshot.beastCleave.endTime or 0) then
-			_beastCleaveTime = (snapshot.callOfTheWild.endTime or 0) - currentTime
+		if TRB.Functions.Talent:IsTalentActive(spells.bloodFrenzy) and (snapshots[spells.callOfTheWild.id].buff:GetRemainingTime(currentTime)) > (snapshots[spells.beastCleave.id].buff.remaining) then
+			_beastCleaveTime = snapshots[spells.callOfTheWild.id].buff.remaining
 		end
 
-		if _beastCleaveTime > 0 then
-			beastCleaveTime = string.format("%.1f", _beastCleaveTime)
-		end]]
+		beastCleaveTime = string.format("%.1f", _beastCleaveTime)
 		
 		_passiveFocus = _regenFocus + _barbedShotFocus
 		_passiveFocusMinusRegen = _passiveFocus - _regenFocus
@@ -1968,10 +1958,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local castingFocus = string.format("|c%s%.0f|r", castingFocusColor, snapshotData.casting.resourceFinal)
 
 		--$toeFocus
-		local _toeFocus = snapshots[spells.termsOfEngagement.id].attributes.focus
+		local _toeFocus = snapshots[spells.termsOfEngagement.id].buff.resource
 		local toeFocus = string.format("%.0f", _toeFocus)
 		--$toeTicks
-		local _toeTicks = snapshots[spells.termsOfEngagement.id].attributes.ticksRemaining
+		local _toeTicks = snapshots[spells.termsOfEngagement.id].buff.ticks
 		local toeTicks = string.format("%.0f", _toeTicks)
 
 		local _regenFocus = 0
@@ -2124,23 +2114,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
-	local function UpdateRapidFire()
-		local currentTime = GetTime()
-		local spells = TRB.Data.spells
-		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-		local rapidFire = snapshotData.snapshots[spells.rapidFire.id]
-		rapidFire.buff:GetRemainingTime(currentTime)
-		if rapidFire.buff.isActive then
-			rapidFire.attributes.ticksRemaining = math.ceil(rapidFire.buff.remaining / (rapidFire.buff.duration / (spells.rapidFire.shots - 1)))
-			rapidFire.attributes.focus = snapshotData.casting.resourceFinal
-			snapshotData.casting.resourceRaw = rapidFire.attributes.ticksRemaining * spells.rapidFire.focus
-			snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(snapshotData.casting.resourceRaw)
-		else
-			rapidFire.attributes.ticksRemaining = 0
-			rapidFire.attributes.focus = 0
-		end
-	end
-
 	local function FillSnapshotDataCasting(spell)
 		local currentTime = GetTime()
 		local casting = TRB.Data.snapshotData.casting --[[@as TRB.Classes.SnapshotCasting]]
@@ -2156,6 +2129,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local spells = TRB.Data.spells
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
+		local casting = snapshotData.casting
 		local specId = GetSpecialization()
 		local currentSpell = UnitCastingInfo("player")
 		local currentChannel = UnitChannelInfo("player")
@@ -2188,13 +2162,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				if currentSpell == nil then
 					local spellName = select(1, currentChannel)
 					if spellName == spells.rapidFire.name then
-						snapshots[spells.rapidFire.id].buff.isActive = true
-						snapshots[spells.rapidFire.id].buff.duration = (select(5, UnitChannelInfo("player")) - select(4, UnitChannelInfo("player"))) / 1000
-						snapshots[spells.rapidFire.id].buff.endTime = select(5, UnitChannelInfo("player")) / 1000
-						snapshotData.casting.startTime = select(4, UnitChannelInfo("player")) / 1000
-						snapshotData.casting.spellId = spells.rapidFire.id
-						snapshotData.casting.icon = spells.rapidFire.icon
-						UpdateRapidFire()
+						local currentTime = GetTime()
+						casting.spellId = spells.rapidFire.id
+						casting.icon = spells.rapidFire.icon
+						casting.startTime = select(4, UnitChannelInfo("player")) / 1000
+						casting.endTime = select(5, UnitChannelInfo("player")) / 1000
+
+						local duration = casting.endTime - casting.startTime
+						local remainingTime = casting.endTime - currentTime
+						local ticksRemaining = math.ceil(remainingTime / (duration / (spells.rapidFire.shots - 1)))
+
+						casting.resourceRaw = ticksRemaining * spells.rapidFire.focus
+						casting.resourceFinal = CalculateAbilityResourceValue(casting.resourceRaw)
 					else
 						TRB.Functions.Character:ResetCastingSnapshotData()
 						return false
@@ -2240,24 +2219,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 			TRB.Functions.Character:ResetCastingSnapshotData()
 			return false
-		end
-	end
-
-	---Updates Terms of Engagement
-	---@param currentTime number? # Timestamp to use for calculations
-	local function UpdateTermsOfEngagement(currentTime)
-		currentTime = currentTime or GetTime()
-		local spells = TRB.Data.spells
-		local termsOfEngagement = TRB.Data.snapshotData.snapshots[spells.termsOfEngagement.id] --[[@as TRB.Classes.Snapshot]]
-
-		termsOfEngagement.buff:GetRemainingTime(currentTime)
-
-		if termsOfEngagement.buff.isActive then
-			termsOfEngagement.attributes.ticksRemaining = math.ceil((termsOfEngagement.attributes.endTime - currentTime) / (spells.termsOfEngagement.duration / spells.termsOfEngagement.ticks))
-			termsOfEngagement.attributes.focus = CalculateAbilityResourceValue(termsOfEngagement.attributes.ticksRemaining * spells.termsOfEngagement.focus)
-		else
-			termsOfEngagement.attributes.focux = 0
-			termsOfEngagement.attributes.ticksRemaining = 0
 		end
 	end
 
@@ -2328,13 +2289,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		snapshots[spells.aMurderOfCrows.id].cooldown:Refresh()
 		snapshots[spells.barrage.id].cooldown:Refresh()
 		snapshots[spells.wailingArrow.id].cooldown:Refresh()
-
+		
 		snapshots[spells.frenzy.id].buff:Refresh(currentTime, false, "pet")
 	end
 
 	local function UpdateSnapshot_Marksmanship()
 		UpdateSnapshot()
-		UpdateRapidFire()
 		
 		local spells = TRB.Data.spells
 		---@type TRB.Classes.Snapshot[]
@@ -2349,11 +2309,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	local function UpdateSnapshot_Survival()
 		UpdateSnapshot()
-		UpdateTermsOfEngagement()
 		
+		local currentTime = GetTime()
 		local spells = TRB.Data.spells
 		---@type TRB.Classes.Snapshot[]
 		local snapshots = TRB.Data.snapshotData.snapshots
+
+		snapshots[spells.termsOfEngagement.id].buff:UpdateTicks(currentTime)
 
 		snapshots[spells.butchery.id].cooldown:Refresh()
 		snapshots[spells.wildfireBomb.id].cooldown:Refresh()
@@ -2841,7 +2803,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							end
 						end
 
-						passiveValue = passiveValue + snapshots[spells.termsOfEngagement.id].attributes.focus
+						passiveValue = passiveValue + snapshots[spells.termsOfEngagement.id].buff.resource
 					end
 
 					if CastingSpell() and specSettings.bar.showCasting then
@@ -3016,10 +2978,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				if specId == 1 and TRB.Data.barConstructedForSpec == "beastMastery" then --Beast Mastery
 					if spellId == spells.barrage.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.barbedShot.id then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					elseif spellId == spells.barbedShot.buffId[1] or spellId == spells.barbedShot.buffId[2] or spellId == spells.barbedShot.buffId[3] or spellId == spells.barbedShot.buffId[4] or spellId == spells.barbedShot.buffId[5] then
 						if type == "SPELL_AURA_APPLIED" then -- Gain Barbed Shot buff
 							table.insert(snapshots[spells.barbedShot.id].attributes.list, {
@@ -3032,19 +2994,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						snapshots[spellId].buff:Initialize(type, nil, "pet")
 					elseif spellId == spells.killCommand.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.beastialWrath.id then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					elseif spellId == spells.cobraSting.id then
 						snapshots[spellId].buff:Initialize(type, true)
 					elseif spellId == spells.wailingArrow.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.aMurderOfCrows.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.direPack.id then
 						snapshots[spellId].buff:Initialize(type)
@@ -3053,28 +3015,28 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					elseif spellId == spells.callOfTheWild.id then
 						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.beastCleave.buffId then
-						snapshots[spellId].buff:Initialize(type)
+						snapshots[spells.beastCleave.id].buff:Initialize(type)
 					elseif spellId == spells.direBeastBasilisk.id then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					elseif spellId == spells.direBeastHawk.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "marksmanship" then --Marksmanship
 					if spellId == spells.burstingShot.id then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					elseif spellId == spells.aimedShot.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 							snapshotData.audio.playedAimedShotCue = false
 						end
 					elseif spellId == spells.barrage.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.explosiveShot.id then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					elseif spellId == spells.trueshot.id then
 						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.steadyFocus.id then
@@ -3086,45 +3048,29 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
-					elseif spellId == spells.rapidFire.id then
-						snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_REMOVED" then
-							snapshots[spellId].attributes.ticksRemaining = 0
-							snapshots[spellId].attributes.focus = 0
-						end
 					elseif spellId == spells.eagletalonsTrueFocus.id then
 						snapshots[spellId].buff:Initialize(type, true)
 					elseif spellId == spells.wailingArrow.id then
 						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Refresh(true)
+							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.sniperShot.id then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "survival" then --Survival
 					if spellId == spells.carve.id then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					elseif spellId == spells.flankingStrike.id then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					elseif spellId == spells.termsOfEngagement.id then
-						snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" then -- Gain Terms of Engagement
-							snapshots[spellId].attributes.ticksRemaining = spells.termsOfEngagement.ticks
-							snapshots[spellId].attributes.focus = snapshots[spellId].attributes.ticksRemaining * spells.termsOfEngagement.focus
-						elseif type == "SPELL_AURA_REFRESH" then
-							snapshots[spellId].attributes.ticksRemaining = spells.termsOfEngagement.ticks + 1
-							snapshots[spellId].attributes.focus = snapshots[spellId].attributes.ticksRemaining * spells.termsOfEngagement.focus
-						elseif type == "SPELL_AURA_REMOVED" then
-							snapshots[spellId].attributes.ticksRemaining = 0
-							snapshots[spellId].attributes.focus = 0
-						elseif type == "SPELL_PERIODIC_ENERGIZE" then
-							snapshots[spellId].attributes.ticksRemaining = snapshots[spellId].attributes.ticksRemaining - 1
-							snapshots[spellId].attributes.focus = snapshots[spellId].attributes.ticksRemaining * spells.termsOfEngagement.focus
+						snapshots[spells.termsOfEngagement.id].buff:Initialize(type)
+						if type == "SPELL_AURA_APPLIED" then
+							snapshots[spells.termsOfEngagement.id].buff:UpdateTicks(currentTime)
 						end
 					elseif spellId == spells.coordinatedAssault.id then
 						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.wildfireBomb.id then
-						snapshots[spellId].cooldown:Refresh(true)
+						snapshots[spellId].cooldown:Initialize()
 					end
 				end
 
@@ -3506,9 +3452,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					valid = true
 				end
 			elseif var == "$beastCleaveTime" then
-				--TODO: Check if the Call of the Wild check here is really needed
-				--if snapshot.beastCleave.endTime ~= nil or snapshot.callOfTheWild.endTime ~= nil then
-				if snapshots[spells.beastCleave.id].buff.isActive then
+				if snapshots[spells.beastCleave.id].buff.isActive or snapshots[spells.callOfTheWild.id].buff.isActive then
 					valid = true
 				end
 			end

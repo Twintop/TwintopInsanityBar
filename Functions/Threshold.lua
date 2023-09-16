@@ -175,6 +175,15 @@ function TRB.Functions.Threshold:RedrawThresholdLines(settings)
 	TRB.Frames.passiveFrame = passiveFrame
 end
 
+---Adjusts the display level, color, and cooldown status of a threshold and its icon.
+---@param spell table
+---@param threshold table
+---@param showThreshold boolean
+---@param currentFrameLevel integer
+---@param pairOffset integer
+---@param thresholdColor string
+---@param snapshot TRB.Classes.Snapshot
+---@param settings table
 function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings)
 	if settings.thresholds[spell.settingKey].enabled and showThreshold then
 		local currentTime = GetTime()
@@ -210,8 +219,8 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, threshold, showTh
 			threshold.icon.texture:SetDesaturated(not spell.thresholdUsable or outOfRange)
 		end
 		
-		if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshot.startTime ~= nil and currentTime < (snapshot.startTime + snapshot.duration) and (snapshot.maxCharges == nil or snapshot.charges < snapshot.maxCharges) then
-			threshold.icon.cooldown:SetCooldown(snapshot.startTime, snapshot.duration)
+		if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshot.cooldown:GetRemainingTime(currentTime) > 0 and (snapshot.maxCharges == nil or snapshot.charges < snapshot.maxCharges) then
+			threshold.icon.cooldown:SetCooldown(snapshot.cooldown.startTime, snapshot.cooldown.duration)
 		else
 			threshold.icon.cooldown:SetCooldown(0, 0)
 		end

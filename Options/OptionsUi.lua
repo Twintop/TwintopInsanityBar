@@ -364,18 +364,21 @@ function TRB.Functions.OptionsUi:BuildButton(parent, text, posX, posY, width, he
 	f.ntex = f:CreateTexture()
 	f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 	f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
+---@diagnostic disable-next-line: missing-parameter
 	f.ntex:SetAllPoints()
 	f:SetNormalTexture(f.ntex)
 	---@diagnostic disable-next-line: inject-field
 	f.htex = f:CreateTexture()
 	f.htex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 	f.htex:SetTexCoord(0, 0.625, 0, 0.6875)
+	---@diagnostic disable-next-line: missing-parameter
 	f.htex:SetAllPoints()
 	f:SetHighlightTexture(f.htex)
 	---@diagnostic disable-next-line: inject-field
 	f.ptex = f:CreateTexture()
 	f.ptex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
 	f.ptex:SetTexCoord(0, 0.625, 0, 0.6875)
+	---@diagnostic disable-next-line: missing-parameter
 	f.ptex:SetAllPoints()
 	f:SetPushedTexture(f.ptex)
 
