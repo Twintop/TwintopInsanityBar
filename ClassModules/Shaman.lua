@@ -2648,7 +2648,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
-			TRB.Data.resource2 = "CUSTOM"
+			TRB.Data.resource2 = "SPELL"
 			TRB.Data.resource2Id = 344179
 			TRB.Data.resource2Factor = 1
 		elseif specId == 3 and TRB.Data.settings.core.enabled.shaman.restoration then

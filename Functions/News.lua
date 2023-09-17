@@ -7,6 +7,21 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 ----
+# 10.1.7.2-release (2023-09-18)
+## Priest
+### Discipline
+
+- (FIX) Update settings screens to be more consistent.
+
+### Holy
+
+- [#325 - NEW](#325) Add bars to track the cooldown status of Holy Words in a similar style to Combo Points for other specs.
+<br/>&emsp;&ensp;- Control which Holy Words are tracked.
+<br/>&emsp;&ensp;- Change color of the Holy Word bar when your current cast will bring it off cooldown.
+<br/>&emsp;&ensp;- Independent of the main bar changing color/configuration for Holy Word cooldowns.
+<br/>&emsp;&ensp;- Supports Miracle Worker, showing the appropriate number of charges available for each Holy Word.
+- (FIX) Update settings screens to be more consistent.
+
 # 10.1.7.1-release (2023-09-16)
 ## General
 

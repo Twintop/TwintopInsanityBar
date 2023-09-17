@@ -1796,7 +1796,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		f:SetChecked(spec.comboPoints.sameColor)
 		f:SetScript("OnClick", function(self, ...)
 			spec.comboPoints.sameColor = self:GetChecked()
-		end)		
+		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = controls
 	end

@@ -609,7 +609,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 2050,
 				name = "",
 				icon = "",
-				duration = 60
+				duration = 60,
+				hasCharges = true
 			},
 			prayerOfHealing = {
 				id = 596,
@@ -631,7 +632,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				duration = 60,
-				isTalent = true
+				isTalent = true,
+				hasCharges = true
 			},
 			holyFire = {
 				id = 14914,
@@ -695,6 +697,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				maxStacks = 2,
 				isTalent = true
+			},
+			miracleWorker = {
+				id = 235587,
+				name = "",
+				icon = "",
+				isTalent = true				
 			},
 
 			-- External mana
@@ -3534,8 +3542,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		---@type TRB.Classes.Snapshot[]
 		local snapshots = TRB.Data.snapshotData.snapshots
 
-		snapshots[spells.holyWordSerenity.id].cooldown:Refresh()
-		snapshots[spells.holyWordSanctify.id].cooldown:Refresh()
+		snapshots[spells.holyWordSerenity.id].cooldown:Refresh(true)
+		snapshots[spells.holyWordSanctify.id].cooldown:Refresh(true)
 		snapshots[spells.holyWordChastise.id].cooldown:Refresh()
 		snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.resonantWords.id].buff:GetRemainingTime(currentTime)
@@ -4023,7 +4031,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
 								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[6], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
+
 								TRB.Frames.passiveFrame.thresholds[6].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[6]:Show()
 							else
@@ -4065,6 +4073,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 
 					local resourceBarColor = nil
+					local holyWordCooldownCompletes = false
+					local holyWordCooldownCompletesKey = nil
 
 					if snapshotData.casting.spellKey ~= nil then
 						if spells[snapshotData.casting.spellKey] ~= nil and
@@ -4076,8 +4086,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							local castTimeRemains = snapshotData.casting.endTime - currentTime
 							local holyWordCooldownRemaining = snapshots[spells[spells[snapshotData.casting.spellKey].holyWordKey].id].cooldown:GetRemainingTime(currentTime)
 
-							if (holyWordCooldownRemaining - CalculateHolyWordCooldown(spells[snapshotData.casting.spellKey].holyWordReduction, spells[snapshotData.casting.spellKey].id) - castTimeRemains) <= 0 and specSettings.bar[spells[snapshotData.casting.spellKey].holyWordKey .. "Enabled"] then
-								resourceBarColor = specSettings.colors.bar[spells[snapshotData.casting.spellKey].holyWordKey]
+							if (holyWordCooldownRemaining - CalculateHolyWordCooldown(spells[snapshotData.casting.spellKey].holyWordReduction, spells[snapshotData.casting.spellKey].id) - castTimeRemains) <= 0 then
+								holyWordCooldownCompletes = true
+								holyWordCooldownCompletesKey = spells[snapshotData.casting.spellKey].holyWordKey
+								if specSettings.bar[spells[snapshotData.casting.spellKey].holyWordKey .. "Enabled"] then
+									resourceBarColor = specSettings.colors.bar[spells[snapshotData.casting.spellKey].holyWordKey]
+								end
 							end
 						end
 					end
@@ -4106,6 +4120,107 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(resourceBarColor, true))
+
+					local cpBR, cpBG, cpBB, cpBA = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+					local cpBorderColor = specSettings.colors.comboPoints.border
+					local cpColor = specSettings.colors.comboPoints.base
+					local cpCompleteColor = specSettings.colors.comboPoints.completeCooldown
+					local currentCp = 1
+					
+					for x = 1, 3, 1 do
+						local spell
+						local completes = false
+						local holyWordBarsEnabled = false
+						if x == 1 then
+							spell = spells.holyWordSerenity
+							cpColor = specSettings.colors.comboPoints.holyWordSerenity
+							holyWordBarsEnabled = specSettings.colors.comboPoints.holyWordSerenityEnabled
+						elseif x == 2 then
+							spell = spells.holyWordSanctify
+							cpColor = specSettings.colors.comboPoints.holyWordSanctify
+							holyWordBarsEnabled = specSettings.colors.comboPoints.holyWordSanctifyEnabled
+						else
+							spell = spells.holyWordChastise
+							cpColor = specSettings.colors.comboPoints.holyWordChastise
+							holyWordBarsEnabled = specSettings.colors.comboPoints.holyWordChastiseEnabled
+						end
+						local cooldown = snapshots[spell.id].cooldown
+
+						if holyWordCooldownCompletes and spells[holyWordCooldownCompletesKey].id == spell.id then
+							completes = true
+						end
+
+						if TRB.Functions.Talent:IsTalentActive(spell) and holyWordBarsEnabled then
+							local cp1Time = 1
+							local cp1Duration = 1
+							local cp1Color = cpColor
+							local cp2Time = 1
+							local cp2Duration = 1
+							local cp2Color = cpColor
+							local hasCp2 = false
+							if cooldown.maxCharges == 2 then -- Miracle Worker for Serenity and Sanctify
+								if cooldown.charges == 2 then
+									cp1Time = 1
+									cp1Duration = 1
+									cp2Time = 1
+									cp2Duration = 1
+									hasCp2 = true
+								elseif cooldown.charges == 1 then
+									cp1Time = 1
+									cp1Duration = 1
+									cp2Time = cooldown.duration - cooldown:GetRemainingTime(currentTime)
+									cp2Duration = cooldown.duration
+									if completes then
+										cp2Color = cpCompleteColor
+									end
+									hasCp2 = true
+								else
+									cp1Time = cooldown.duration - cooldown:GetRemainingTime(currentTime)
+									cp1Duration = cooldown.duration
+									if completes then
+										cp1Color = cpCompleteColor
+									end
+									cp2Time = 0
+									cp2Duration = 1
+									hasCp2 = true
+								end
+							else -- Chastise or baseline Serenity and Sanctify
+								hasCp2 = false
+								if cooldown.onCooldown then
+									cp1Time = cooldown.duration - cooldown:GetRemainingTime(currentTime)
+									cp1Duration = cooldown.duration
+									if completes then
+										cp1Color = cpCompleteColor
+									end
+								else
+									cp1Time = 1
+									cp1Duration = 1
+								end
+							end
+							
+							if cp1Time < 0 then
+								cp1Time = cp1Duration
+							end
+							
+							if cp2Time < 0 then
+								cp2Time = cp2Duration
+							end
+
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp1Time, cp1Duration)
+							TRB.Frames.resource2Frames[currentCp].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cp1Color, true))
+							TRB.Frames.resource2Frames[currentCp].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
+							TRB.Frames.resource2Frames[currentCp].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBA)
+							currentCp = currentCp + 1
+
+							if hasCp2 then
+								TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp2Time, cp2Duration)
+								TRB.Frames.resource2Frames[currentCp].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cp2Color, true))
+								TRB.Frames.resource2Frames[currentCp].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
+								TRB.Frames.resource2Frames[currentCp].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBA)
+								currentCp = currentCp + 1
+							end
+						end
+					end
 				end
 
 				TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
@@ -5018,6 +5133,29 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
 			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
 			TRB.Data.character.items.imbuedFrostweaveSlippers = imbuedFrostweaveSlippers
+
+			local totalHolyWordCharges = 0
+			
+			if TRB.Functions.Talent:IsTalentActive(spells.holyWordSerenity) and TRB.Data.settings.priest.holy.colors.comboPoints.holyWordSerenityEnabled then
+				totalHolyWordCharges = totalHolyWordCharges + 1
+				if TRB.Functions.Talent:IsTalentActive(spells.miracleWorker) then
+					totalHolyWordCharges = totalHolyWordCharges + 1
+				end
+			end
+			
+			if TRB.Functions.Talent:IsTalentActive(spells.holyWordSanctify) and TRB.Data.settings.priest.holy.colors.comboPoints.holyWordSanctifyEnabled then
+				totalHolyWordCharges = totalHolyWordCharges + 1
+				if TRB.Functions.Talent:IsTalentActive(spells.miracleWorker) then
+					totalHolyWordCharges = totalHolyWordCharges + 1
+				end
+			end
+			
+			if TRB.Functions.Talent:IsTalentActive(spells.holyWordChastise) and TRB.Data.settings.priest.holy.colors.comboPoints.holyWordChastiseEnabled then
+				totalHolyWordCharges = totalHolyWordCharges + 1
+			end
+
+			TRB.Data.character.maxResource2 = totalHolyWordCharges
+			TRB.Functions.Bar:SetPosition(TRB.Data.settings.priest.holy, TRB.Frames.barContainerFrame)
 		elseif specId == 3 then
 			TRB.Data.character.specName = "shadow"
 ---@diagnostic disable-next-line: missing-parameter
@@ -5059,6 +5197,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
+			TRB.Data.resource2 = "CUSTOM"
 		elseif specId == 3 and TRB.Data.settings.core.enabled.priest.shadow == true then
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.shadow)
 			TRB.Data.specSupported = true

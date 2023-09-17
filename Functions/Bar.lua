@@ -177,7 +177,7 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 		local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 		local nodes = TRB.Data.character.maxResource2
 
-		if nodes == nil or nodes == 0 then
+		if nodes == nil then
 			nodes = length
 		end
 	

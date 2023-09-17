@@ -303,8 +303,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icons = {
 					showCooldown=true,
 					border=2,
-					relativeTo = "TOP",
-					relativeToName = "Above",
+					relativeTo = "BOTTOM",
+					relativeToName = "Below",
 					enabled=true,
 					desaturated=true,
 					xPos=0,
@@ -364,6 +364,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				holyWordSanctifyEnabled=true,
 				holyWordSerenityEnabled=true
 			},
+			comboPoints = {
+				width=25,
+				height=13,
+				xPos=0,
+				yPos=4,
+				border=1,
+				spacing=14,
+				relativeTo="TOP",
+				relativeToName="Above - Middle",
+				fullWidth=true,
+			},
 			endOfApotheosis = {
 				enabled=true,
 				mode="gcd",
@@ -421,6 +432,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					lightweaverBorderChange=true,
 					potionOfChilledClarityBorderChange=true,
 				},
+				comboPoints = {
+					border="FF000099",
+					base="FF000099", --required for generic combo point code
+					background="66000000",
+					holyWordSerenity="FF00DDDD",
+					holyWordSerenityEnabled = true,
+					holyWordSanctify="FFFFDD22",
+					holyWordSanctifyEnabled = true,
+					holyWordChastise="FFFF8080",
+					holyWordChastiseEnabled = true,
+					completeCooldown="FF00B500",
+					completeCooldownEnabled=true
+				},
 				threshold={
 					unusable="FFFF0000",
 					over="FF00FF00",
@@ -472,7 +496,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				passiveBarName="Blizzard",
 				castingBar="Interface\\TargetingFrame\\UI-StatusBar",
 				castingBarName="Blizzard",
-				textureLock=true
+				textureLock=true,
+				comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+				comboPointsBackgroundName="Blizzard Tooltip",
+				comboPointsBorder="Interface\\Buttons\\WHITE8X8",
+				comboPointsBorderName="1 Pixel",
+				comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
+				comboPointsBarName="Blizzard",
 			}
 		}
 
@@ -911,13 +941,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 1, yCoord, "Mana", false, true)
 
-		controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-90)
+		controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.surgeOfLight1
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight1")
 		end)
 						
-		controls.colors.surgeOfLight2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 2 stacks of Surge of Light", spec.colors.bar.surgeOfLight2, 300, 25, oUi.xCoord2, yCoord-120)
+		controls.colors.surgeOfLight2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 2 stacks of Surge of Light", spec.colors.bar.surgeOfLight2, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.surgeOfLight2
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight2")
@@ -944,8 +974,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.surgeOfLightBorderChange2 = self:GetChecked()
 		end)
-
-		yCoord = yCoord - 30
 
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, 5, 1, yCoord)
@@ -1683,7 +1711,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 5, 2, yCoord)
 
-		yCoord = yCoord - 40
+		yCoord = yCoord - 30
+		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 5, 2, yCoord, "Mana", "Holy Words")
+
+		yCoord = yCoord - 60
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 2, yCoord, false)
 
 		yCoord = yCoord - 30
@@ -1811,39 +1842,39 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 2, yCoord, "Mana", false, true)
 
-		controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-90)
+		controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.surgeOfLight1
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight1")
 		end)
 						
-		controls.colors.surgeOfLight2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 2 stacks of Surge of Light", spec.colors.bar.surgeOfLight2, 300, 25, oUi.xCoord2, yCoord-120)
+		controls.colors.surgeOfLight2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 2 stacks of Surge of Light", spec.colors.bar.surgeOfLight2, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.surgeOfLight2
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight2")
 		end)
 
-		controls.colors.resonantWords = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Resonant Words", spec.colors.bar.resonantWords, 300, 25, oUi.xCoord2, yCoord-150)
+		controls.colors.resonantWords = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Resonant Words", spec.colors.bar.resonantWords, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.resonantWords
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "resonantWords")
 		end)
 
-		controls.colors.lightweaver = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have any stacks of Lightweaver", spec.colors.bar.lightweaver, 300, 25, oUi.xCoord2, yCoord-180)
+		controls.colors.lightweaver = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have any stacks of Lightweaver", spec.colors.bar.lightweaver, 300, 25, oUi.xCoord2, yCoord-120)
 		f = controls.colors.lightweaver
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "lightweaver")
 		end)
-
+		
 		yCoord = yCoord - 30
-		controls.checkBoxes.innervateBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_innervateBorderChange", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.innervateBorderChange
+		controls.checkBoxes.surgeOfLight1BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_surgeOfLight1BorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.surgeOfLight1BorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Innervate")
-		f.tooltip = "This will change the bar border color when you have Innervate."
-		f:SetChecked(spec.colors.bar.innervateBorderChange)
+		getglobal(f:GetName() .. 'Text'):SetText("Surge of Light (1 stack)")
+		f.tooltip = "This will change the bar border color when you have 1 stack of Surge of Light."
+		f:SetChecked(spec.colors.bar.surgeOfLightBorderChange1)
 		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.innervateBorderChange = self:GetChecked()
+			spec.colors.bar.surgeOfLightBorderChange1 = self:GetChecked()
 		end)
 		
 		yCoord = yCoord - 30
@@ -1879,8 +1910,91 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.colors.bar.lightweaverBorderChange = self:GetChecked()
 		end)
 
+		yCoord = yCoord - 40
+		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Holy Word Colors", 0, yCoord)
+		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
+		controls.checkBoxes.holyWordSerenityComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSerenityComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.holyWordSerenityComboPointEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enable Holy Word: Serenity")
+		f.tooltip = "Show the Holy Word bar(s) for Holy Word: Serenity"
+		f:SetChecked(spec.colors.comboPoints.holyWordSerenityEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.comboPoints.holyWordSerenityEnabled = self:GetChecked()
+		end)
+
+		controls.colors.comboPoints.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Holy Word: Serenity", spec.colors.comboPoints.holyWordSerenity, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.holyWordSerenity
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordSerenity")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.holyWordSanctifyComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSanctifyComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.holyWordSanctifyComboPointEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enable Holy Word: Sanctify")
+		f.tooltip = "Show the Holy Word bar(s) for Holy Word: Sanctify"
+		f:SetChecked(spec.colors.comboPoints.holyWordSanctifyEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.comboPoints.holyWordSanctifyEnabled = self:GetChecked()
+		end)
+
+		controls.colors.comboPoints.holyWordSanctify = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Holy Word: Sanctify", spec.colors.comboPoints.holyWordSanctify, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.holyWordSanctify
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordSanctify")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.holyWordChastiseComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordChastiseComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.holyWordChastiseComboPointEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enable Holy Word: Chastise")
+		f.tooltip = "Show the Holy Word bar for Holy Word: Chastise"
+		f:SetChecked(spec.colors.comboPoints.holyWordChastiseEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.comboPoints.holyWordChastiseEnabled = self:GetChecked()
+		end)
+
+		controls.colors.comboPoints.holyWordChastise = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Holy Word: Chastise", spec.colors.comboPoints.holyWordChastise, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.holyWordChastise
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordChastise")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.completeCooldownEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_completeCooldownEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.completeCooldownEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enable complete cooldown color change?")
+		f.tooltip = "When checked, when the hardcasting of a spell will cause its related Holy Word to finish coming off of cooldown, that associated Holy Word bar will change to this color as an indication."
+		f:SetChecked(spec.colors.comboPoints.completeCooldownEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.comboPoints.completeCooldownEnabled = self:GetChecked()
+		end)
+
+		controls.colors.comboPoints.completeCooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Color when your cast will complete the cooldown", spec.colors.comboPoints.completeCooldown, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.completeCooldown
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "completeCooldown")
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Holy Word's border", spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.border
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled Holy Word background", spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
+		end)
 
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, 5, 2, yCoord)
