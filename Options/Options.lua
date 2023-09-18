@@ -407,7 +407,6 @@ local function LoadDefaultSettings()
 				specs = {
 					evoker = {
 						devastation = false,
-						preservation = false,
 						augmentation = false
 					},
 					priest = {
@@ -483,19 +482,19 @@ local function ConstructAddonOptionsPanel()
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
 
 	parent = interfaceSettingsFrame.optionsPanel
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Global Options", 0, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Global Options", oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 	---@diagnostic disable-next-line: inject-field
 	parent.panel = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Options_General_LayoutPanel", parent, 652, 555)
-	parent.panel:SetPoint("TOPLEFT", 0, yCoord)
+	parent.panel:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	parent.panel:Show()
 
 	parent = parent.panel.scrollFrame.scrollChild
 
 	yCoord = 5
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Time To Die", 0, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Time To Die", oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 50
 
@@ -549,7 +548,7 @@ local function ConstructAddonOptionsPanel()
 	end)
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Character and Player Settings", 0, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Character and Player Settings", oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 50
 
@@ -588,7 +587,7 @@ local function ConstructAddonOptionsPanel()
 	end)
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Frame Strata", 0, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Frame Strata", oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 
@@ -661,7 +660,7 @@ local function ConstructAddonOptionsPanel()
 
 
 	yCoord = yCoord - 60
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Channel", 0, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Channel", oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 
@@ -712,7 +711,7 @@ local function ConstructAddonOptionsPanel()
 	end
 
 	yCoord = yCoord - 60
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Experimental Features", 0, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Experimental Features", oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.experimentalEvokerDevastation = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Evoker_Devastation", parent, "ChatConfigCheckButtonTemplate")
@@ -725,19 +724,6 @@ local function ConstructAddonOptionsPanel()
 	f:SetChecked(TRB.Data.settings.core.experimental.specs.evoker.devastation)
 	f:SetScript("OnClick", function(self, ...)
 		TRB.Data.settings.core.experimental.specs.evoker.devastation = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 30
-	controls.checkBoxes.experimentalEvokerPreservation = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Evoker_Preservation", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.experimentalEvokerPreservation
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	---@diagnostic disable-next-line: undefined-field
-	getglobal(f:GetName() .. 'Text'):SetText("Preservation Evoker support")
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "This will enable experimental Preservation Evoker support within the bar. If you change this setting and are currently logged in on an Evoker, you'll need to reload your UI before Preservation Evoker configuration options become available."
-	f:SetChecked(TRB.Data.settings.core.experimental.specs.evoker.preservation)
-	f:SetScript("OnClick", function(self, ...)
-		TRB.Data.settings.core.experimental.specs.evoker.preservation = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 30
@@ -806,14 +792,14 @@ local function ConstructImportExportPanel()
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.importExportPanel)
 
 	parent = interfaceSettingsFrame.importExportPanel
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Import/Export", 0, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Import/Export", oUi.xCoord, yCoord)
 	controls.labels = controls.labels or {}
 	controls.buttons = controls.buttons or {}
 
 	yCoord = yCoord - 30
 	---@diagnostic disable-next-line: inject-field
 	parent.panel = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Options_General_LayoutPanel", parent, 652, 555)
-	parent.panel:SetPoint("TOPLEFT", 0, yCoord)
+	parent.panel:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	parent.panel:Show()
 
 	parent = parent.panel.scrollFrame.scrollChild
@@ -1133,150 +1119,144 @@ local function ConstructImportExportPanel()
 		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Bar Text).", 11, 4, false, false, false, true, false)
 	end)
 
-	if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation or TRB.Data.settings.core.experimental.specs.evoker.augmentation then
-		yCoord = yCoord - 35
-		controls.labels.evoker = TRB.Functions.OptionsUi:BuildLabel(parent, "Evoker", oUi.xCoord, yCoord, 110, 20)
-		if (TRB.Data.settings.core.experimental.specs.evoker.devastation and TRB.Data.settings.core.experimental.specs.evoker.preservation) or
-		(TRB.Data.settings.core.experimental.specs.evoker.devastation and TRB.Data.settings.core.experimental.specs.evoker.augmentation) or
-		(TRB.Data.settings.core.experimental.specs.evoker.preservation and TRB.Data.settings.core.experimental.specs.evoker.augmentation) then
-			buttonOffset = oUi.xCoord + oUi.xPadding + 100
-			controls.buttons.exportButton_Evoker_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
-			controls.buttons.exportButton_Evoker_All:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (All).", 13, nil, true, true, true, true, false)
-			end)
+	yCoord = yCoord - 35
+	controls.labels.evoker = TRB.Functions.OptionsUi:BuildLabel(parent, "Evoker", oUi.xCoord, yCoord, 110, 20)
+	if (TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.augmentation) then
+		buttonOffset = oUi.xCoord + oUi.xPadding + 100
+		controls.buttons.exportButton_Evoker_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+		controls.buttons.exportButton_Evoker_All:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (All).", 13, nil, true, true, true, true, false)
+		end)
 
-			buttonOffset = buttonOffset + buttonSpacing + 50
-			controls.exportButton_Evoker_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
-			controls.exportButton_Evoker_BarDisplay:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (Bar Display).", 13, nil, true, false, false, false, false)
-			end)
+		buttonOffset = buttonOffset + buttonSpacing + 50
+		controls.exportButton_Evoker_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+		controls.exportButton_Evoker_BarDisplay:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (Bar Display).", 13, nil, true, false, false, false, false)
+		end)
 
-			buttonOffset = buttonOffset + buttonSpacing + 80
-			controls.exportButton_Evoker_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
-			controls.exportButton_Evoker_FontAndText:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (Font & Text).", 13, nil, false, true, false, false, false)
-			end)
+		buttonOffset = buttonOffset + buttonSpacing + 80
+		controls.exportButton_Evoker_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+		controls.exportButton_Evoker_FontAndText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (Font & Text).", 13, nil, false, true, false, false, false)
+		end)
 
-			buttonOffset = buttonOffset + buttonSpacing + 90
-			controls.exportButton_Evoker_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
-			controls.exportButton_Evoker_AudioAndTracking:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (Audio & Tracking).", 13, nil, false, false, true, false, false)
-			end)
+		buttonOffset = buttonOffset + buttonSpacing + 90
+		controls.exportButton_Evoker_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+		controls.exportButton_Evoker_AudioAndTracking:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (Audio & Tracking).", 13, nil, false, false, true, false, false)
+		end)
 
-			buttonOffset = buttonOffset + buttonSpacing + 120
-			controls.exportButton_Evoker_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
-			controls.exportButton_Evoker_BarText:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (Bar Text).", 13, nil, false, false, false, true, false)
-			end)
-		end
+		buttonOffset = buttonOffset + buttonSpacing + 120
+		controls.exportButton_Evoker_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+		controls.exportButton_Evoker_BarText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (Bar Text).", 13, nil, false, false, false, true, false)
+		end)
+	end
 
-		if TRB.Data.settings.core.experimental.specs.evoker.devastation then
-			yCoord = yCoord - 25
-			specName = "Devastation"
-			controls.labels.druidDevastation = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+	if TRB.Data.settings.core.experimental.specs.evoker.devastation then
+		yCoord = yCoord - 25
+		specName = "Devastation"
+		controls.labels.druidDevastation = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
-			buttonOffset = oUi.xCoord + oUi.xPadding + 100
-			controls.buttons.exportButton_Evoker_Devastation_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
-			controls.buttons.exportButton_Evoker_Devastation_All:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (All).", 13, 1, true, true, true, true, false)
-			end)
+		buttonOffset = oUi.xCoord + oUi.xPadding + 100
+		controls.buttons.exportButton_Evoker_Devastation_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+		controls.buttons.exportButton_Evoker_Devastation_All:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (All).", 13, 1, true, true, true, true, false)
+		end)
 
-			buttonOffset = buttonOffset + buttonSpacing + 50
-			controls.exportButton_Evoker_Devastation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
-			controls.exportButton_Evoker_Devastation_BarDisplay:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (Bar Display).", 13, 1, true, false, false, false, false)
-			end)
+		buttonOffset = buttonOffset + buttonSpacing + 50
+		controls.exportButton_Evoker_Devastation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+		controls.exportButton_Evoker_Devastation_BarDisplay:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (Bar Display).", 13, 1, true, false, false, false, false)
+		end)
 
-			buttonOffset = buttonOffset + buttonSpacing + 80
-			controls.exportButton_Evoker_Devastation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
-			controls.exportButton_Evoker_Devastation_FontAndText:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (Font & Text).", 13, 1, false, true, false, false, false)
-			end)
+		buttonOffset = buttonOffset + buttonSpacing + 80
+		controls.exportButton_Evoker_Devastation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+		controls.exportButton_Evoker_Devastation_FontAndText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (Font & Text).", 13, 1, false, true, false, false, false)
+		end)
 
-			buttonOffset = buttonOffset + buttonSpacing + 90
-			controls.exportButton_Evoker_Devastation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
-			controls.exportButton_Evoker_Devastation_AudioAndTracking:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (Audio & Tracking).", 13, 1, false, false, true, false, false)
-			end)
+		buttonOffset = buttonOffset + buttonSpacing + 90
+		controls.exportButton_Evoker_Devastation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+		controls.exportButton_Evoker_Devastation_AudioAndTracking:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (Audio & Tracking).", 13, 1, false, false, true, false, false)
+		end)
 
-			buttonOffset = buttonOffset + buttonSpacing + 120
-			controls.exportButton_Evoker_Devastation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
-			controls.exportButton_Evoker_Devastation_BarText:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (Bar Text).", 13, 1, false, false, false, true, false)
-			end)
-		end
+		buttonOffset = buttonOffset + buttonSpacing + 120
+		controls.exportButton_Evoker_Devastation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+		controls.exportButton_Evoker_Devastation_BarText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (Bar Text).", 13, 1, false, false, false, true, false)
+		end)
+	end
 
-		if TRB.Data.settings.core.experimental.specs.evoker.preservation then
-			yCoord = yCoord - 25
-			specName = "Preservation"
-			controls.labels.druidPreservation = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+	yCoord = yCoord - 25
+	specName = "Preservation"
+	controls.labels.druidPreservation = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
-			buttonOffset = oUi.xCoord + oUi.xPadding + 100
-			controls.buttons.exportButton_Evoker_Preservation_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
-			controls.buttons.exportButton_Evoker_Preservation_All:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (All).", 13, 2, true, true, true, true, false)
-			end)
+	buttonOffset = oUi.xCoord + oUi.xPadding + 100
+	controls.buttons.exportButton_Evoker_Preservation_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Evoker_Preservation_All:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (All).", 13, 2, true, true, true, true, false)
+	end)
 
-			buttonOffset = buttonOffset + buttonSpacing + 50
-			controls.exportButton_Evoker_Preservation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
-			controls.exportButton_Evoker_Preservation_BarDisplay:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (Bar Display).", 13, 2, true, false, false, false, false)
-			end)
+	buttonOffset = buttonOffset + buttonSpacing + 50
+	controls.exportButton_Evoker_Preservation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Evoker_Preservation_BarDisplay:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (Bar Display).", 13, 2, true, false, false, false, false)
+	end)
 
-			buttonOffset = buttonOffset + buttonSpacing + 80
-			controls.exportButton_Evoker_Preservation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
-			controls.exportButton_Evoker_Preservation_FontAndText:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (Font & Text).", 13, 2, false, true, false, false, false)
-			end)
+	buttonOffset = buttonOffset + buttonSpacing + 80
+	controls.exportButton_Evoker_Preservation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Evoker_Preservation_FontAndText:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (Font & Text).", 13, 2, false, true, false, false, false)
+	end)
 
-			buttonOffset = buttonOffset + buttonSpacing + 90
-			controls.exportButton_Evoker_Preservation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
-			controls.exportButton_Evoker_Preservation_AudioAndTracking:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (Audio & Tracking).", 13, 2, false, false, true, false, false)
-			end)
+	buttonOffset = buttonOffset + buttonSpacing + 90
+	controls.exportButton_Evoker_Preservation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Evoker_Preservation_AudioAndTracking:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (Audio & Tracking).", 13, 2, false, false, true, false, false)
+	end)
 
-			buttonOffset = buttonOffset + buttonSpacing + 120
-			controls.exportButton_Evoker_Preservation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
-			controls.exportButton_Evoker_Preservation_BarText:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (Bar Text).", 13, 2, false, false, false, true, false)
-			end)
-		end
+	buttonOffset = buttonOffset + buttonSpacing + 120
+	controls.exportButton_Evoker_Preservation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Evoker_Preservation_BarText:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (Bar Text).", 13, 2, false, false, false, true, false)
+	end)
 
-		if TRB.Data.settings.core.experimental.specs.evoker.augmentation then
-			yCoord = yCoord - 25
-			specName = "Augmentation"
-			controls.labels.druidAugmentation = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+	if TRB.Data.settings.core.experimental.specs.evoker.augmentation then
+		yCoord = yCoord - 25
+		specName = "Augmentation"
+		controls.labels.druidAugmentation = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
-			buttonOffset = oUi.xCoord + oUi.xPadding + 100
-			controls.buttons.exportButton_Evoker_Augmentation_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
-			controls.buttons.exportButton_Evoker_Augmentation_All:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (All).", 13, 3, true, true, true, true, false)
-			end)
+		buttonOffset = oUi.xCoord + oUi.xPadding + 100
+		controls.buttons.exportButton_Evoker_Augmentation_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+		controls.buttons.exportButton_Evoker_Augmentation_All:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (All).", 13, 3, true, true, true, true, false)
+		end)
 
-			buttonOffset = buttonOffset + buttonSpacing + 50
-			controls.exportButton_Evoker_Augmentation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
-			controls.exportButton_Evoker_Augmentation_BarDisplay:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (Bar Display).", 13, 3, true, false, false, false, false)
-			end)
+		buttonOffset = buttonOffset + buttonSpacing + 50
+		controls.exportButton_Evoker_Augmentation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+		controls.exportButton_Evoker_Augmentation_BarDisplay:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (Bar Display).", 13, 3, true, false, false, false, false)
+		end)
 
-			buttonOffset = buttonOffset + buttonSpacing + 80
-			controls.exportButton_Evoker_Augmentation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
-			controls.exportButton_Evoker_Augmentation_FontAndText:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (Font & Text).", 13, 3, false, true, false, false, false)
-			end)
+		buttonOffset = buttonOffset + buttonSpacing + 80
+		controls.exportButton_Evoker_Augmentation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+		controls.exportButton_Evoker_Augmentation_FontAndText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (Font & Text).", 13, 3, false, true, false, false, false)
+		end)
 
-			buttonOffset = buttonOffset + buttonSpacing + 90
-			controls.exportButton_Evoker_Augmentation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
-			controls.exportButton_Evoker_Augmentation_AudioAndTracking:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (Audio & Tracking).", 13, 3, false, false, true, false, false)
-			end)
+		buttonOffset = buttonOffset + buttonSpacing + 90
+		controls.exportButton_Evoker_Augmentation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+		controls.exportButton_Evoker_Augmentation_AudioAndTracking:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (Audio & Tracking).", 13, 3, false, false, true, false, false)
+		end)
 
-			buttonOffset = buttonOffset + buttonSpacing + 120
-			controls.exportButton_Evoker_Augmentation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
-			controls.exportButton_Evoker_Augmentation_BarText:SetScript("OnClick", function(self, ...)
-				TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (Bar Text).", 13, 3, false, false, false, true, false)
-			end)
-		end
+		buttonOffset = buttonOffset + buttonSpacing + 120
+		controls.exportButton_Evoker_Augmentation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+		controls.exportButton_Evoker_Augmentation_BarText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (Bar Text).", 13, 3, false, false, false, true, false)
+		end)
 	end
 
 	yCoord = yCoord - 35

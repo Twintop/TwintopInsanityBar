@@ -24,7 +24,7 @@ A multi-class resource bar, based on my (Twintop's) previous Shadow Priest Insan
 Currently supported specs:
 - Demon Hunter - Havoc
 - Druid - Balance, Feral, Restoration
-- Evoker - Devastation (Experimental/Minimal), Preservation (Experimental)
+- Evoker - Devastation (Experimental/Minimal), Preservation, Augmentation (Experimental/Minimal)
 - Hunter - Beast Mastery, Marksmanship, Survival
 - Monk - Mistweaver, Windwalker
 - Priest - Holy, Shadow

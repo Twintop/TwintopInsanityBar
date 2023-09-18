@@ -789,7 +789,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 
 	controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.pinToPRD
-	f:SetPoint("TOPLEFT", 0, yCoord)
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
 	---@diagnostic disable-next-line: inject-field
 	f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
@@ -1956,7 +1956,7 @@ end
 function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, includeOvercap)
 	local _, className, _ = GetClassInfo(classId)
 	local f = nil
-	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors + Changing", 0, yCoord)
+	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors + Changing", oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 	controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, primaryResourceString, spec.colors.bar.base, 300, 25, oUi.xCoord2, yCoord)
@@ -1972,7 +1972,7 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 	local _, className, _ = GetClassInfo(classId)
 	local f = nil
 
-	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Border Color + Changing", 0, yCoord)
+	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Border Color + Changing", oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 25
 	controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border is normal/base border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord)
@@ -2050,7 +2050,7 @@ function TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 
 	local exampleMinus = -25
 	local exampleDiff = primaryResourceMax + exampleMinus
 
-	controls.overcappingConfiguration = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Overcapping Configuration", 0, yCoord)
+	controls.overcappingConfiguration = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Overcapping Configuration", oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 40
 	controls.checkBoxes.overcapModeRelative = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Overcap_RadioButton_Relative", parent, "UIRadioButtonTemplate")

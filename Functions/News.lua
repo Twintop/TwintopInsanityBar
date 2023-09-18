@@ -8,6 +8,42 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 # 10.1.7.2-release (2023-09-18)
+## Evoker
+
+- [#259](#259)[#280](#280)[#312](#312) Add support for Essence Burst to Devastation, Preservation, and Augmentation
+<br/>&emsp;&ensp;- Tracks the current stacks and time remaining on the Essence Burst buff, including Essence Attunement increasing maximum stacks.
+<br/>&emsp;&ensp;- Optional bar border color change when the buff is active
+<br/>&emsp;&ensp;- Optional audio cue when a buff stack is gained
+<br/>&emsp;&ensp;- New bar text icons and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#eb` or `#essenceBurst` -- Essence Burst buff icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$ebTime` -- time remaining on Essence Burst buff
+<br/>&emsp;&ensp;&emsp;&ensp;- `$ebStacks` -- stacks on the Essence Burst buff
+
+### Devastation
+
+- [#259 - UPDATE](#259) Adjust default Bar and Essence dimensions.
+
+### Preservation
+
+- [#280 - NEW](#280) Preservation Evoker moved out of Experimental and is now available and enabled by default.
+<br/>&emsp;&ensp;- Tracks Mana and Essence as resources.
+<br/>&emsp;&ensp;- Tracks Essence Burst stacks and allows for border color changes, audio cues, and bar text.
+<br/>&emsp;&ensp;- Threshold lines denoting how much mana will be restored from using an Aerated Mana Potion, Potion of Frozen Focus, or Conjured Chillglobe.
+<br/>&emsp;&ensp;- Mana regeneration support for:
+<br/>&emsp;&ensp;&emsp;&ensp;- Symbol of Hope (Holy Priest)
+<br/>&emsp;&ensp;&emsp;&ensp;- Innervate (Druid)
+<br/>&emsp;&ensp;&emsp;&ensp;- Mana Tide Totem (Restoration Shaman)
+<br/>&emsp;&ensp;&emsp;&ensp;- Potion of Frozen Focus
+<br/>&emsp;&ensp;&emsp;&ensp;- Potion of Chilled Clarity
+<br/>&emsp;&ensp;&emsp;&ensp;- Molten Radiance
+<br/>&emsp;&ensp;&emsp;&ensp;- Emerald Communion
+
+### Augmentation
+
+- [#312 - UPDATE](#312) Adjust default Bar and Essence dimensions.
+
+
+
 ## Priest
 ### Discipline
 

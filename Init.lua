@@ -8,7 +8,7 @@ TRB.Details.addonAuthor = C_AddOns.GetAddOnMetadata(addonName, "Author")
 TRB.Details.addonAuthorServer = C_AddOns.GetAddOnMetadata(addonName, "X-AuthorServer")
 TRB.Details.addonTitle = C_AddOns.GetAddOnMetadata(addonName, "Title")
 TRB.Details.addonReleaseDate = C_AddOns.GetAddOnMetadata(addonName, "X-ReleaseDate")
-TRB.Details.supportedSpecs = "|cFFA330C9Demon Hunter|r - Havoc\n|cFFFF7C0ADruid|r - Balance, Feral, Restoration\n|cFF33937FEvoker|r - Devastation (Experimental/Minimal), Preservation (Experimental), Augmentation (Experimental/Minimal)\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFF00FF98Monk|r - Mistweaver, Windwalker\n|cFFFFFFFFPriest|r - Discipline (Experimental), Holy, Shadow\n|cFFFFF468Rogue|r - Assassination, Outlaw\n|cFF0070DDShaman|r - Elemental, Enhancement (Experimental/Minimal), Restoration\n|cFFC69B6DWarrior|r - Arms, Fury"
+TRB.Details.supportedSpecs = "|cFFA330C9Demon Hunter|r - Havoc\n|cFFFF7C0ADruid|r - Balance, Feral, Restoration\n|cFF33937FEvoker|r - Devastation (Experimental/Minimal), Preservation, Augmentation (Experimental/Minimal)\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFF00FF98Monk|r - Mistweaver, Windwalker\n|cFFFFFFFFPriest|r - Discipline (Experimental), Holy, Shadow\n|cFFFFF468Rogue|r - Assassination, Outlaw\n|cFF0070DDShaman|r - Elemental, Enhancement (Experimental/Minimal), Restoration\n|cFFC69B6DWarrior|r - Arms, Fury"
 
 local addonData = {
 	loaded = false,
