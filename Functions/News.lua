@@ -42,8 +42,6 @@ local content = [====[
 
 - [#312 - UPDATE](#312) Adjust default Bar and Essence dimensions.
 
-
-
 ## Priest
 ### Discipline
 
