@@ -7,6 +7,15 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 ----
+
+# 10.1.7.1-release (2023-09-20)
+
+## Priest
+
+- (FIX) Prevent the Holy Word bars from appearing alongside the bar for Discipline or Shadow.
+
+----
+
 # 10.1.7.2-release (2023-09-18)
 ## Evoker
 
@@ -56,6 +65,8 @@ local content = [====[
 <br/>&emsp;&ensp;- Supports Miracle Worker, showing the appropriate number of charges available for each Holy Word.
 - (FIX) Update settings screens to be more consistent.
 
+----
+
 # 10.1.7.1-release (2023-09-16)
 ## General
 
@@ -92,6 +103,7 @@ local content = [====[
 - (CLEANUP) Remove obsolete Bladestorm code.
 
 ----
+
 # 10.1.7.0-release (2023-09-05)
 ## General
 

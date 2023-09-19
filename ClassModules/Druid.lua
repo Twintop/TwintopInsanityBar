@@ -4608,6 +4608,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
+			TRB.Data.resource2 = nil
+			TRB.Data.resource2Factor = nil
 		else
 			TRB.Data.specSupported = false
 		end

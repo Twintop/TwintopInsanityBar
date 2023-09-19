@@ -1991,7 +1991,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.priest.discipline)
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.priest.discipline)
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], spells.conjuredChillglobe.settingKey, TRB.Data.settings.priest.discipline)
-			
+			TRB.Frames.resource2ContainerFrame:Hide()
+
 			if TRB.Functions.Talent:IsTalentActive(spells.mindbender) then
 				TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[8], spells.mindbender.settingKey, TRB.Data.settings.priest.discipline)
 			else
@@ -2050,6 +2051,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.devouringPlague.settingKey, TRB.Data.settings.priest.shadow)
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.devouringPlague2.settingKey, TRB.Data.settings.priest.shadow)
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], spells.devouringPlague3.settingKey, TRB.Data.settings.priest.shadow)
+			TRB.Frames.resource2ContainerFrame:Hide()
 		end
 
 		TRB.Functions.Bar:Construct(settings)
@@ -5192,6 +5194,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
+			TRB.Data.resource2 = nil
+			TRB.Data.resource2Factor = nil
 		elseif specId == 2 and TRB.Data.settings.core.enabled.priest.holy == true then
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.holy)
 			TRB.Data.specSupported = true
@@ -5203,6 +5207,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Insanity
 			TRB.Data.resourceFactor = 100
+			TRB.Data.resource2 = nil
+			TRB.Data.resource2Factor = nil
 		else
 			TRB.Data.specSupported = false
 		end
