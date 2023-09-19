@@ -303,8 +303,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icons = {
 					showCooldown=true,
 					border=2,
-					relativeTo = "TOP",
-					relativeToName = "Above",
+					relativeTo = "BOTTOM",
+					relativeToName = "Below",
 					enabled=true,
 					desaturated=true,
 					xPos=0,
@@ -364,6 +364,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				holyWordSanctifyEnabled=true,
 				holyWordSerenityEnabled=true
 			},
+			comboPoints = {
+				width=25,
+				height=13,
+				xPos=0,
+				yPos=4,
+				border=1,
+				spacing=14,
+				relativeTo="TOP",
+				relativeToName="Above - Middle",
+				fullWidth=true,
+			},
 			endOfApotheosis = {
 				enabled=true,
 				mode="gcd",
@@ -421,6 +432,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					lightweaverBorderChange=true,
 					potionOfChilledClarityBorderChange=true,
 				},
+				comboPoints = {
+					border="FF000099",
+					base="FF000099", --required for generic combo point code
+					background="66000000",
+					holyWordSerenity="FF00DDDD",
+					holyWordSerenityEnabled = true,
+					holyWordSanctify="FFFFDD22",
+					holyWordSanctifyEnabled = true,
+					holyWordChastise="FFFF8080",
+					holyWordChastiseEnabled = true,
+					completeCooldown="FF00B500",
+					completeCooldownEnabled=true
+				},
 				threshold={
 					unusable="FFFF0000",
 					over="FF00FF00",
@@ -437,13 +461,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					soundName="TRB: Boxing Arena Gong"
 				},
 				surgeOfLight={
-					name = "Innervate (1 stack)",
+					name = "Surge of Light (1 stack)",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
 				},
 				surgeOfLight2={
-					name = "Innervate (2 stacks)",
+					name = "Surge of Light (2 stacks)",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -472,7 +496,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				passiveBarName="Blizzard",
 				castingBar="Interface\\TargetingFrame\\UI-StatusBar",
 				castingBarName="Blizzard",
-				textureLock=true
+				textureLock=true,
+				comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+				comboPointsBackgroundName="Blizzard Tooltip",
+				comboPointsBorder="Interface\\Buttons\\WHITE8X8",
+				comboPointsBorderName="1 Pixel",
+				comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
+				comboPointsBarName="Blizzard",
 			}
 		}
 
@@ -810,7 +840,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
@@ -819,7 +849,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
@@ -911,13 +941,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 1, yCoord, "Mana", false, true)
 
-		controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-90)
+		controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.surgeOfLight1
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight1")
 		end)
 						
-		controls.colors.surgeOfLight2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 2 stacks of Surge of Light", spec.colors.bar.surgeOfLight2, 300, 25, oUi.xCoord2, yCoord-120)
+		controls.colors.surgeOfLight2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 2 stacks of Surge of Light", spec.colors.bar.surgeOfLight2, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.surgeOfLight2
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight2")
@@ -944,8 +974,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.surgeOfLightBorderChange2 = self:GetChecked()
 		end)
-
-		yCoord = yCoord - 30
 
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, 5, 1, yCoord)
@@ -981,7 +1009,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 5, 1, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Mana", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
@@ -1005,7 +1033,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	
 
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 25
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_dotColor", parent, "ChatConfigCheckButtonTemplate")
@@ -1039,7 +1067,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
@@ -1075,7 +1103,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Discipline Priest (Audio & Tracking).", 5, 1, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervate = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Innervate_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -1272,7 +1300,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		yCoord = yCoord - 60
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive External Mana Generation Tracking", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive External Mana Generation Tracking", oUi.xCoord, yCoord)
 		
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervateRegen = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_InnervatePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -1308,7 +1336,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Shadowfiend Tracking", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Shadowfiend Tracking", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.shadowfiend = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Shadowfiend_Enabled", parent, "ChatConfigCheckButtonTemplate")
@@ -1417,7 +1445,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local namePrefix = "Priest_Discipline"
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
 		
 		controls.buttons.exportButton_Priest_Discipline_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Discipline_BarText:SetScript("OnClick", function(self, ...)
@@ -1496,7 +1524,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		parent = interfaceSettingsFrame.disciplineDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Discipline Priest", 0, yCoord-5)	
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Discipline Priest", oUi.xCoord, yCoord-5)	
 		
 		controls.checkBoxes.disciplinePriestEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_disciplinePriestEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.disciplinePriestEnabled
@@ -1543,7 +1571,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			tabs[i].Text:SetPoint("TOP", 0, 0)
 			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Priest_Discipline_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		end
 
 		tabsheets[1]:Show()
@@ -1636,7 +1664,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
@@ -1645,7 +1673,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
@@ -1683,7 +1711,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 5, 2, yCoord)
 
-		yCoord = yCoord - 40
+		yCoord = yCoord - 30
+		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 5, 2, yCoord, "Mana", "Holy Words")
+
+		yCoord = yCoord - 60
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 2, yCoord, false)
 
 		yCoord = yCoord - 30
@@ -1811,39 +1842,39 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 2, yCoord, "Mana", false, true)
 
-		controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-90)
+		controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.surgeOfLight1
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight1")
 		end)
 						
-		controls.colors.surgeOfLight2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 2 stacks of Surge of Light", spec.colors.bar.surgeOfLight2, 300, 25, oUi.xCoord2, yCoord-120)
+		controls.colors.surgeOfLight2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 2 stacks of Surge of Light", spec.colors.bar.surgeOfLight2, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.surgeOfLight2
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight2")
 		end)
 
-		controls.colors.resonantWords = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Resonant Words", spec.colors.bar.resonantWords, 300, 25, oUi.xCoord2, yCoord-150)
+		controls.colors.resonantWords = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Resonant Words", spec.colors.bar.resonantWords, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.resonantWords
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "resonantWords")
 		end)
 
-		controls.colors.lightweaver = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have any stacks of Lightweaver", spec.colors.bar.lightweaver, 300, 25, oUi.xCoord2, yCoord-180)
+		controls.colors.lightweaver = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have any stacks of Lightweaver", spec.colors.bar.lightweaver, 300, 25, oUi.xCoord2, yCoord-120)
 		f = controls.colors.lightweaver
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "lightweaver")
 		end)
-
+		
 		yCoord = yCoord - 30
-		controls.checkBoxes.innervateBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_innervateBorderChange", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.innervateBorderChange
+		controls.checkBoxes.surgeOfLight1BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_surgeOfLight1BorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.surgeOfLight1BorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Innervate")
-		f.tooltip = "This will change the bar border color when you have Innervate."
-		f:SetChecked(spec.colors.bar.innervateBorderChange)
+		getglobal(f:GetName() .. 'Text'):SetText("Surge of Light (1 stack)")
+		f.tooltip = "This will change the bar border color when you have 1 stack of Surge of Light."
+		f:SetChecked(spec.colors.bar.surgeOfLightBorderChange1)
 		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.innervateBorderChange = self:GetChecked()
+			spec.colors.bar.surgeOfLightBorderChange1 = self:GetChecked()
 		end)
 		
 		yCoord = yCoord - 30
@@ -1879,8 +1910,91 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.colors.bar.lightweaverBorderChange = self:GetChecked()
 		end)
 
+		yCoord = yCoord - 40
+		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Holy Word Colors", oUi.xCoord, yCoord)
+		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
+		controls.checkBoxes.holyWordSerenityComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSerenityComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.holyWordSerenityComboPointEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enable Holy Word: Serenity")
+		f.tooltip = "Show the Holy Word bar(s) for Holy Word: Serenity"
+		f:SetChecked(spec.colors.comboPoints.holyWordSerenityEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.comboPoints.holyWordSerenityEnabled = self:GetChecked()
+		end)
+
+		controls.colors.comboPoints.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Holy Word: Serenity", spec.colors.comboPoints.holyWordSerenity, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.holyWordSerenity
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordSerenity")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.holyWordSanctifyComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordSanctifyComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.holyWordSanctifyComboPointEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enable Holy Word: Sanctify")
+		f.tooltip = "Show the Holy Word bar(s) for Holy Word: Sanctify"
+		f:SetChecked(spec.colors.comboPoints.holyWordSanctifyEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.comboPoints.holyWordSanctifyEnabled = self:GetChecked()
+		end)
+
+		controls.colors.comboPoints.holyWordSanctify = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Holy Word: Sanctify", spec.colors.comboPoints.holyWordSanctify, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.holyWordSanctify
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordSanctify")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.holyWordChastiseComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyWordChastiseComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.holyWordChastiseComboPointEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enable Holy Word: Chastise")
+		f.tooltip = "Show the Holy Word bar for Holy Word: Chastise"
+		f:SetChecked(spec.colors.comboPoints.holyWordChastiseEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.comboPoints.holyWordChastiseEnabled = self:GetChecked()
+		end)
+
+		controls.colors.comboPoints.holyWordChastise = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Holy Word: Chastise", spec.colors.comboPoints.holyWordChastise, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.holyWordChastise
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "holyWordChastise")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.completeCooldownEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_completeCooldownEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.completeCooldownEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enable complete cooldown color change?")
+		f.tooltip = "When checked, when the hardcasting of a spell will cause its related Holy Word to finish coming off of cooldown, that associated Holy Word bar will change to this color as an indication."
+		f:SetChecked(spec.colors.comboPoints.completeCooldownEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.comboPoints.completeCooldownEnabled = self:GetChecked()
+		end)
+
+		controls.colors.comboPoints.completeCooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Color when your cast will complete the cooldown", spec.colors.comboPoints.completeCooldown, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.completeCooldown
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "completeCooldown")
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Holy Word's border", spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.border
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled Holy Word background", spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
+		end)
 
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, 5, 2, yCoord)
@@ -1891,7 +2005,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 5, 2, yCoord)
 		
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Apotheosis Configuration", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Apotheosis Configuration", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfApotheosisModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_EOA_M_GCD", parent, "UIRadioButtonTemplate")
@@ -1970,7 +2084,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 5, 2, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Mana", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
@@ -1994,7 +2108,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	
 
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 25
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_dotColor", parent, "ChatConfigCheckButtonTemplate")
@@ -2028,7 +2142,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
@@ -2064,7 +2178,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Holy Priest (Audio & Tracking).", 5, 2, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervate = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Innervate_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -2389,7 +2503,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		yCoord = yCoord - 60
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive External Mana Generation Tracking", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive External Mana Generation Tracking", oUi.xCoord, yCoord)
 		
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervateRegen = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_InnervatePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -2425,7 +2539,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Shadowfiend Tracking", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Shadowfiend Tracking", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.shadowfiend = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Shadowfiend_Enabled", parent, "ChatConfigCheckButtonTemplate")
@@ -2534,7 +2648,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local namePrefix = "Priest_Holy"
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
 		
 		controls.buttons.exportButton_Priest_Holy_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Holy_BarText:SetScript("OnClick", function(self, ...)
@@ -2613,7 +2727,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		parent = interfaceSettingsFrame.holyDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Holy Priest", 0, yCoord-5)	
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Holy Priest", oUi.xCoord, yCoord-5)	
 		
 		controls.checkBoxes.holyPriestEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_holyPriestEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.holyPriestEnabled
@@ -2660,7 +2774,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			tabs[i].Text:SetPoint("TOP", 0, 0)
 			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Priest_Holy_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		end
 
 		tabsheets[1]:Show()
@@ -2752,7 +2866,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
@@ -2761,7 +2875,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
@@ -2948,7 +3062,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 40
-		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", oUi.xCoord, yCoord)
 
 		controls.colors.threshold = {}
 
@@ -3048,7 +3162,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 5, 3, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Voidform Configuration", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Voidform Configuration", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfVoidformModeGCDs = CreateFrame("CheckButton", "TRB_EOFV_M_GCD", parent, "UIRadioButtonTemplate")
@@ -3130,7 +3244,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 5, 3, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Insanity Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Insanity Text Colors", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.colors.text.currentInsanity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Insanity", spec.colors.text.currentInsanity, 300, 25, oUi.xCoord, yCoord)
@@ -3169,7 +3283,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TRB_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", 0, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Insanity text color when you are able to cast Devouring Plague"
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -3188,7 +3302,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 25
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_dotColor", parent, "ChatConfigCheckButtonTemplate")
@@ -3223,7 +3337,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Haste Threshold Colors in Voidform", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Haste Threshold Colors in Voidform", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Low to Med. Haste% Threshold in Voidform"
@@ -3284,7 +3398,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.hasteThreshold = value
 		end)
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
@@ -3330,7 +3444,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest (Audio & Tracking).", 5, 3, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.dpReady = CreateFrame("CheckButton", "TwintopResourceBar_CB3_3", parent, "ChatConfigCheckButtonTemplate")
@@ -3594,7 +3708,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 
 		yCoord = yCoord - 60
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Auspicious Spirits Tracking", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Auspicious Spirits Tracking", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.as = CreateFrame("CheckButton", "TwintopResourceBar_CB3_6", parent, "ChatConfigCheckButtonTemplate")
@@ -3614,7 +3728,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Eternal Call to the Void / Void Tendril + Void Lasher Tracking", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Eternal Call to the Void / Void Tendril + Void Lasher Tracking", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.voidTendril = CreateFrame("CheckButton", "TwintopResourceBar_CB3_6a", parent, "ChatConfigCheckButtonTemplate")
@@ -3628,7 +3742,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Shadowfiend/Mindbender Tracking", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Shadowfiend/Mindbender Tracking", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.mindbender = CreateFrame("CheckButton", "TwintopResourceBar_CB3_7", parent, "ChatConfigCheckButtonTemplate")
@@ -3736,7 +3850,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local f = nil
 		local namePrefix = "Priest_Shadow"
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
 
 		controls.buttons.exportButton_Priest_Shadow_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Shadow_BarText:SetScript("OnClick", function(self, ...)
@@ -3817,7 +3931,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		parent = interfaceSettingsFrame.shadowDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Shadow Priest", 0, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Shadow Priest", oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.shadowPriestEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_shadowPriestEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.shadowPriestEnabled
@@ -3864,7 +3978,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			tabs[i].Text:SetPoint("TOP", 0, 0)
 			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Priest_Shadow_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		end
 
 		tabsheets[1]:Show()

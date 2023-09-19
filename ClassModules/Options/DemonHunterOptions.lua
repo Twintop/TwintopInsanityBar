@@ -283,7 +283,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			preferredIndex = 3
 		}
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
@@ -292,7 +292,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
@@ -408,7 +408,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 12, 1, yCoord, "Fury", true, false)
 
 		yCoord = yCoord - 40
-		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", oUi.xCoord, yCoord)
 		
 		controls.colors.threshold = {}
 
@@ -547,7 +547,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 12, 1, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Metamorphosis Configuration", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Metamorphosis Configuration", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfMetamorphosisModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_GCD", parent, "UIRadioButtonTemplate")
@@ -630,7 +630,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 12, 1, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Fury Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Fury Text Colors", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Fury", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
@@ -662,7 +662,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", 0, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Fury text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -681,7 +681,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end)
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
@@ -716,7 +716,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Havoc Demon Hunter (Audio & Tracking).", 12, 1, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
@@ -804,7 +804,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Havoc Demon Hunter (Bar Text).", 12, 1, false, false, false, true, false)
 		end)
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.labels.leftText = TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
@@ -872,7 +872,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.buttons = controls.buttons or {}
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Havoc Demon Hunter", 0, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Havoc Demon Hunter", oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.havocDemonHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_havocDemonHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.havocDemonHunterEnabled
@@ -919,7 +919,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			tabs[i].Text:SetPoint("TOP", 0, 0)
 			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_DemonHunter_Havoc_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		end
 
 		tabsheets[1]:Show()

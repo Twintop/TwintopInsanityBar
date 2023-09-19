@@ -817,7 +817,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}]]
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
@@ -826,7 +826,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
@@ -956,7 +956,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", oUi.xCoord, yCoord)
 
 		controls.colors.threshold = {}
 
@@ -1220,7 +1220,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 3, 1, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Focus Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Focus Text Colors", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Focus", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
@@ -1252,7 +1252,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", 0, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Focus text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -1271,7 +1271,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 25
 
@@ -1307,7 +1307,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
@@ -1342,7 +1342,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (Audio & Tracking).", 3, 1, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
@@ -1474,7 +1474,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive Focus Regeneration", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
@@ -1554,7 +1554,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local f = nil
 		local namePrefix = "Hunter_BeastMastery"
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
 		controls.buttons.exportButton_Hunter_BeastMastery_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_BeastMastery_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Beast Mastery Hunter (Bar Text).", 3, 1, false, false, false, true, false)
@@ -1628,7 +1628,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		parent = interfaceSettingsFrame.beastMasteryDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Beast Mastery Hunter", 0, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Beast Mastery Hunter", oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.beastMasteryHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_beastMasteryHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.beastMasteryHunterEnabled
@@ -1675,7 +1675,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			tabs[i].Text:SetPoint("TOP", 0, 0)
 			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Hunter_BeastMastery_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		end
 
 		tabsheets[1]:Show()
@@ -1768,7 +1768,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}]]
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
@@ -1777,7 +1777,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
@@ -1924,7 +1924,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", oUi.xCoord, yCoord)
 
 		controls.colors.threshold = {}
 
@@ -2141,7 +2141,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 2, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Trueshot Configuration", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Trueshot Configuration", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfTrueshotModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_GCD", parent, "UIRadioButtonTemplate")
@@ -2195,7 +2195,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Steady Focus Expiration Configuration", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Steady Focus Expiration Configuration", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.steadyFocusModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_M_GCD", parent, "UIRadioButtonTemplate")
@@ -2275,7 +2275,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 3, 2, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Focus Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Focus Text Colors", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Focus", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
@@ -2320,7 +2320,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", 0, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Focus text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -2339,7 +2339,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 25
 
@@ -2375,7 +2375,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
@@ -2410,7 +2410,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (Audio & Tracking).", 3, 2, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.aimedShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_aimedShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
@@ -2788,7 +2788,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive Focus Regeneration", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
@@ -2869,7 +2869,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local f = nil
 		local namePrefix = "Hunter_Marksmanship"
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
 		controls.buttons.exportButton_Hunter_Marksmanship_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_Marksmanship_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Marksmanship Hunter (Bar Text).", 3, 2, false, false, false, true, false)
@@ -2942,7 +2942,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		parent = interfaceSettingsFrame.marksmanshipDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Marksmanship Hunter", 0, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Marksmanship Hunter", oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.marksmanshipHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_marksmanshipHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.marksmanshipHunterEnabled
@@ -2989,7 +2989,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			tabs[i].Text:SetPoint("TOP", 0, 0)
 			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Hunter_Marksmanship_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		end
 
 		tabsheets[1]:Show()
@@ -3070,7 +3070,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
@@ -3079,7 +3079,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
@@ -3195,7 +3195,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 3, yCoord, "Focus", true, false)
 
 		yCoord = yCoord - 40
-		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", oUi.xCoord, yCoord)
 
 		controls.colors.threshold = {}
 
@@ -3378,7 +3378,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 3, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Coordinated Assault Configuration", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Coordinated Assault Configuration", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfCoordinatedAssaultModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_M_GCD", parent, "UIRadioButtonTemplate")
@@ -3458,7 +3458,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 3, 3, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Focus Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Focus Text Colors", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Focus", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
@@ -3497,7 +3497,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", 0, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Focus text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -3516,7 +3516,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 25
 
@@ -3552,7 +3552,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
@@ -3587,7 +3587,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (Audio & Tracking).", 3, 3, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
@@ -3720,7 +3720,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive Focus Regeneration", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive Focus Regeneration", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
@@ -3801,7 +3801,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local f = nil
 		local namePrefix = "Hunter_Survival"
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
 		controls.buttons.exportButton_Hunter_Survival_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Hunter_Survival_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Survival Hunter (Bar Text).", 3, 3, false, false, false, true, false)
@@ -3872,7 +3872,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		parent = interfaceSettingsFrame.survivalDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Survival Hunter", 0, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Survival Hunter", oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.survivalHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_survivalHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.survivalHunterEnabled
@@ -3919,7 +3919,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			tabs[i].Text:SetPoint("TOP", 0, 0)
 			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Hunter_Survival_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		end
 
 		tabsheets[1]:Show()

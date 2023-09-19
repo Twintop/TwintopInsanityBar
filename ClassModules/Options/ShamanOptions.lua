@@ -698,7 +698,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			preferredIndex = 3
 		}
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
@@ -707,7 +707,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
@@ -847,7 +847,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 40
-		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", 0, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", oUi.xCoord, yCoord)
 
 		controls.colors.threshold = {}
 
@@ -928,7 +928,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 1, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Ascendance Configuration", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Ascendance Configuration", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfAscendanceModeGCDs = CreateFrame("CheckButton", "TRB_EOFA_M_GCD", parent, "UIRadioButtonTemplate")
@@ -1010,7 +1010,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 7, 1, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Maelstrom Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Maelstrom Text Colors", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.colors.text.currentMaelstrom = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Maelstrom", spec.colors.text.currentMaelstrom, 300, 25, oUi.xCoord, yCoord)
@@ -1049,7 +1049,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TRB_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
-		f:SetPoint("TOPLEFT", 0, yCoord)
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
 		f.tooltip = "This will change the Maelstrom text color when you are able to cast Earth Shock or Earthquake."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
@@ -1068,7 +1068,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 25
 
@@ -1125,7 +1125,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Audio & Tracking).", 7, 1, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.esReady = CreateFrame("CheckButton", "TwintopResourceBar_CB3_3", parent, "ChatConfigCheckButtonTemplate")
@@ -1255,7 +1255,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
@@ -1290,7 +1290,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Bar Text).", 7, 1, false, false, false, true, false)
 		end)
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.labels.leftText = TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
@@ -1357,7 +1357,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		controls.buttons = controls.buttons or {}
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Elemental Shaman", 0, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Elemental Shaman", oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.elementalShamanEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_elementalShamanEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.elementalShamanEnabled
@@ -1404,7 +1404,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			tabs[i].Text:SetPoint("TOP", 0, 0)
 			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Shaman_Elemental_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		end
 
 		tabsheets[1]:Show()
@@ -1486,7 +1486,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			preferredIndex = 3
 		}
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
@@ -1495,7 +1495,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
@@ -1580,7 +1580,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Maelstrom Weapon Colors", 0, yCoord)
+		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Maelstrom Weapon Colors", oUi.xCoord, yCoord)
 		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
@@ -1627,7 +1627,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.comboPoints.sameColor = self:GetChecked()
 		end)
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Ascendance Configuration", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Ascendance Configuration", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfAscendanceModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_2EOFA_M_GCD", parent, "UIRadioButtonTemplate")
@@ -1704,7 +1704,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 7, 2, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Mana", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
@@ -1714,7 +1714,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
@@ -1728,7 +1728,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", oUi.xCoord, yCoord)
 		
 		yCoord = yCoord - 25
 		
@@ -1784,7 +1784,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Enhancement Shaman (Audio & Tracking).", 7, 2, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.enhancement = controls
 	end
@@ -1803,7 +1803,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local namePrefix = "Shaman_Enhancement"
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
 		controls.buttons.exportButton_Shaman_Enhancement_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Enhancement_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Enhancement Shaman (Bar Text).", 7, 2, false, false, false, true, false)
@@ -1876,7 +1876,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		parent = interfaceSettingsFrame.enhancementDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Enhancement Shaman", 0, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Enhancement Shaman", oUi.xCoord, yCoord-5)
 
 		controls.checkBoxes.enhancementShamanEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_enhancementShamanEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.enhancementShamanEnabled
@@ -1923,7 +1923,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			tabs[i].Text:SetPoint("TOP", 0, 0)
 			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Shaman_Enhancement_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		end
 
 		tabsheets[1]:Show()
@@ -2014,7 +2014,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		}
 		]]
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
@@ -2023,7 +2023,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
@@ -2154,7 +2154,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 7, 3, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Ascendance Configuration", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Ascendance Configuration", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfAscendanceModeGCDs = CreateFrame("CheckButton", "TwintopsResourceBar_Shaman_Restoration_EndOfAscendance_Mode_GCD", parent, "UIRadioButtonTemplate")
@@ -2233,7 +2233,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 7, 3, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Mana", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
@@ -2256,7 +2256,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 	
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 25
 
@@ -2291,7 +2291,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
@@ -2327,7 +2327,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Shaman (Audio & Tracking).", 7, 3, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervate = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_Innervate_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -2394,7 +2394,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 		
 		yCoord = yCoord - 60
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive External Mana Generation Tracking", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive External Mana Generation Tracking", oUi.xCoord, yCoord)
 		
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervateRegen = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_InnervatePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -2447,7 +2447,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local namePrefix = "Shaman_Restoration"
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
 		
 		controls.buttons.exportButton_Shaman_Restoration_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Restoration_BarText:SetScript("OnClick", function(self, ...)
@@ -2525,7 +2525,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		parent = interfaceSettingsFrame.restorationDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Restoration Shaman", 0, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Restoration Shaman", oUi.xCoord, yCoord-5)
 		
 		controls.checkBoxes.restorationShamanEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_restorationShamanEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.restorationShamanEnabled
@@ -2572,7 +2572,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			tabs[i].Text:SetPoint("TOP", 0, 0)
 			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Shaman_Restoration_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		end
 
 		tabsheets[1]:Show()

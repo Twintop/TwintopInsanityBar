@@ -28,9 +28,11 @@ function TRB.Functions.Character:UpdateSnapshot()
 	snapshotData.attributes.resource = UnitPower("player", TRB.Data.resource, true)
 
 	if TRB.Data.resource2 ~= nil then
-		if TRB.Data.resource2 == "CUSTOM" and TRB.Data.resource2Id ~= nil then
+		if TRB.Data.resource2 == "SPELL" and TRB.Data.resource2Id ~= nil then
 			local _, _, stacks, _, duration, endTime, _, _, _, spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.resource2Id)
 			snapshotData.attributes.resource2 = stacks or 0
+		elseif TRB.Data.resource2 == "CUSTOM" then
+			-- Do nothing
 		else
 			snapshotData.attributes.resource2 = UnitPower("player", TRB.Data.resource2, true)
 		end
@@ -119,6 +121,7 @@ function TRB.Functions.Character:IsComboPointUser()
 	local specId = GetSpecialization()
 
 	if 	(classIndexId == 4) or -- Rogue
+		(classIndexId == 5 and specId == 2) or -- Holy Priest
 		(classIndexId == 7 and specId == 2) or -- Enhancement Shaman
 		(classIndexId == 10 and specId == 3) or -- Windwalker Monk
 		(classIndexId == 11 and specId == 2) or -- Feral Druid

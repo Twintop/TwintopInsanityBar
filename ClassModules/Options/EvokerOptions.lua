@@ -116,10 +116,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			},
 			bar = {
 				width=555,
-				height=11,
+				height=16,
 				xPos=0,
 				yPos=-215,
-				border=1,
+				border=2,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=false,
@@ -127,7 +127,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			},
 			comboPoints = {
 				width=25,
-				height=21,
+				height=16,
 				xPos=0,
 				yPos=4,
 				border=2,
@@ -151,6 +151,14 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					background="66000000",
 					base="FF0000FF",
 					passive="FF8080FF",
+					essenceBurst = {
+						color = "FFFCE58E",
+						enabled = true
+					},
+					essenceBurst2 = {
+						color = "FFAF9942",
+						enabled = true
+					},
 				},
 				comboPoints = {
 					border="FF246759",
@@ -171,6 +179,18 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			audio = {
 				overcap={
 					name = "Overcap",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+				essenceBurst={
+					name = "Essence Burst (1 stack)",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName="TRB: Boxing Arena Gong"
+				},
+				essenceBurst2={
+					name = "Essence Burst (2 stacks)",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -360,7 +380,15 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					spending="FFFFFFFF",
 					passive="FF8080FF",
 					innervateBorderChange=true,
-					potionOfChilledClarityBorderChange=true
+					potionOfChilledClarityBorderChange=true,
+					essenceBurst = {
+						color = "FFFCE58E",
+						enabled = true
+					},
+					essenceBurst2 = {
+						color = "FFAF9942",
+						enabled = true
+					},
 				},
 				comboPoints = {
 					border="FF246759",
@@ -384,7 +412,19 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
-				}
+				},
+				essenceBurst={
+					name = "Essence Burst (1 stack)",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName="TRB: Boxing Arena Gong"
+				},
+				essenceBurst2={
+					name = "Essence Burst (2 stacks)",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
 			},
 			textures={
 				background="Interface\\Tooltips\\UI-Tooltip-Background",
@@ -500,10 +540,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			},
 			bar = {
 				width=555,
-				height=11,
+				height=16,
 				xPos=0,
 				yPos=-215,
-				border=1,
+				border=2,
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=false,
@@ -511,7 +551,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			},
 			comboPoints = {
 				width=25,
-				height=21,
+				height=16,
 				xPos=0,
 				yPos=4,
 				border=2,
@@ -535,6 +575,14 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					background="66000000",
 					base="FF0000FF",
 					passive="FF8080FF",
+					essenceBurst = {
+						color = "FFFCE58E",
+						enabled = true
+					},
+					essenceBurst2 = {
+						color = "FFAF9942",
+						enabled = true
+					},
 				},
 				comboPoints = {
 					border="FF246759",
@@ -555,6 +603,18 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			audio = {
 				overcap={
 					name = "Overcap",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+				essenceBurst={
+					name = "Essence Burst (1 stack)",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName="TRB: Boxing Arena Gong"
+				},
+				essenceBurst2={
+					name = "Essence Burst (2 stacks)",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName="TRB: Air Horn"
@@ -655,7 +715,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			preferredIndex = 3
 		}
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
@@ -664,7 +724,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
@@ -723,9 +783,43 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 13, 1, yCoord, "Mana", false, false)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.essenceBurstBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_Threshold_Option_essenceBurstBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.essenceBurstBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Essence Burst (1 stack)")
+		f.tooltip = "This will change the bar border color when you have 1 stack of Essence Burst."
+		f:SetChecked(spec.colors.bar.essenceBurst.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.essenceBurst.enabled = self:GetChecked()
+		end)
+
+		controls.colors.essenceBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 1 stack of Essence Burst", spec.colors.bar.essenceBurst.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.essenceBurst
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst")
+		end)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.essenceBurst2BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_Threshold_Option_essenceBurst2BorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.essenceBurst2BorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Essence Burst (2 stacks)")
+		f.tooltip = "This will change the bar border color when you have 2 stacks of Essence Burst."
+		f:SetChecked(spec.colors.bar.essenceBurst2.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.essenceBurst2.enabled = self:GetChecked()
+		end)
+
+		controls.colors.essenceBurst2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 2 stacks of Essence Burst", spec.colors.bar.essenceBurst2.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.essenceBurst2
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst2")
+		end)
 
 		yCoord = yCoord - 40
-		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Essence Colors", 0, yCoord)
+		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Essence Colors", oUi.xCoord, yCoord)
 		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
@@ -797,7 +891,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 13, 1, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Mana", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
@@ -807,7 +901,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end)
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
@@ -842,7 +936,137 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Devastation Evoker (Audio & Tracking).", 13, 1, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
+
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.essenceBurst = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_essenceBurstCB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.essenceBurst
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Essence Burst proc occurs")
+		f.tooltip = "Play an audio cue when a Essence Burst proc occurs. This will only play for the first proc."
+		f:SetChecked(spec.audio.essenceBurst.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.audio.essenceBurst.enabled = self:GetChecked()
+
+			if spec.audio.essenceBurst.enabled then
+				PlaySoundFile(spec.audio.essenceBurst.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.essenceBurstAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Evoker_Devastation_essenceBurstAudio", parent)
+		controls.dropDown.essenceBurstAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.essenceBurstAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurstAudio, spec.audio.essenceBurst.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.essenceBurstAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.essenceBurstAudio, function(self, level, menuList)
+			local entries = 25
+			local info = LibDD:UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					LibDD:UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == spec.audio.essenceBurst.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						LibDD:UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.essenceBurstAudio:SetValue(newValue, newName)
+			spec.audio.essenceBurst.sound = newValue
+			spec.audio.essenceBurst.soundName = newName
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurstAudio, newName)
+			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
+			PlaySoundFile(spec.audio.essenceBurst.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.essenceBurst2 = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_essenceBurst2CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.essenceBurst2
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you have two (max) Essence Burst procs")
+		f.tooltip = "Play audio cue when you get a second (and maximum) Essence Burst proc. If both are checked, only this sound will play."
+		f:SetChecked(spec.audio.essenceBurst2.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.audio.essenceBurst2.enabled = self:GetChecked()
+
+			if spec.audio.essenceBurst2.enabled then
+				PlaySoundFile(spec.audio.essenceBurst2.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.essenceBurst2Audio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Evoker_Devastation_essenceBurstAudio", parent)
+		controls.dropDown.essenceBurst2Audio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.essenceBurst2Audio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurst2Audio, spec.audio.essenceBurst2.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.essenceBurst2Audio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.essenceBurst2Audio, function(self, level, menuList)
+			local entries = 25
+			local info = LibDD:UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					LibDD:UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == spec.audio.essenceBurst2.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						LibDD:UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.essenceBurst2Audio:SetValue(newValue, newName)
+			spec.audio.essenceBurst2.sound = newValue
+			spec.audio.essenceBurst2.soundName = newName
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurst2Audio, newName)
+			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
+			PlaySoundFile(spec.audio.essenceBurst2.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.devastation = controls
 	end
@@ -861,7 +1085,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		local namePrefix = "Evoker_Devastation"
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
 		controls.buttons.exportButton_Evoker_Devastation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Devastation_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Devastation Evoker (Bar Text).", 13, 1, false, false, false, true, false)
@@ -934,7 +1158,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		parent = interfaceSettingsFrame.devastationDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Devastation Evoker", 0, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Devastation Evoker", oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.devastationEvokerEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_devastationEvokerEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.devastationEvokerEnabled
@@ -981,7 +1205,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			tabs[i].Text:SetPoint("TOP", 0, 0)
 			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Evoker_Devastation_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		end
 
 		tabsheets[1]:Show()
@@ -1077,7 +1301,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		}
 		]]
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
@@ -1086,7 +1310,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
@@ -1186,9 +1410,43 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 13, 2, yCoord, "Mana", false, true)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.essenceBurstBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_Threshold_Option_essenceBurstBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.essenceBurstBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Essence Burst (1 stack)")
+		f.tooltip = "This will change the bar border color when you have 1 stack of Essence Burst."
+		f:SetChecked(spec.colors.bar.essenceBurst.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.essenceBurst.enabled = self:GetChecked()
+		end)
+
+		controls.colors.essenceBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 1 stack of Essence Burst", spec.colors.bar.essenceBurst.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.essenceBurst
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst")
+		end)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.essenceBurst2BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_Threshold_Option_essenceBurst2BorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.essenceBurst2BorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Essence Burst (2 stacks)")
+		f.tooltip = "This will change the bar border color when you have 2 stacks of Essence Burst."
+		f:SetChecked(spec.colors.bar.essenceBurst2.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.essenceBurst2.enabled = self:GetChecked()
+		end)
+
+		controls.colors.essenceBurst2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 2 stacks of Essence Burst", spec.colors.bar.essenceBurst2.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.essenceBurst2
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst2")
+		end)
 
 		yCoord = yCoord - 40
-		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Essence Colors", 0, yCoord)
+		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Essence Colors", oUi.xCoord, yCoord)
 		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
@@ -1255,7 +1513,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 13, 2, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Mana", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
@@ -1279,7 +1537,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	
 		--[[
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", 0, yCoord)
+		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 25
 
@@ -1315,7 +1573,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		]]
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
@@ -1351,7 +1609,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Preservation Evoker (Audio & Tracking).", 13, 2, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervate = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_Innervate_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -1416,9 +1674,139 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			---@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.innervate.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.essenceBurst = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_essenceBurstCB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.essenceBurst
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Essence Burst proc occurs")
+		f.tooltip = "Play an audio cue when a Essence Burst proc occurs. This will only play for the first proc."
+		f:SetChecked(spec.audio.essenceBurst.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.audio.essenceBurst.enabled = self:GetChecked()
+
+			if spec.audio.essenceBurst.enabled then
+				PlaySoundFile(spec.audio.essenceBurst.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.essenceBurstAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Evoker_Preservation_essenceBurstAudio", parent)
+		controls.dropDown.essenceBurstAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.essenceBurstAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurstAudio, spec.audio.essenceBurst.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.essenceBurstAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.essenceBurstAudio, function(self, level, menuList)
+			local entries = 25
+			local info = LibDD:UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					LibDD:UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == spec.audio.essenceBurst.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						LibDD:UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.essenceBurstAudio:SetValue(newValue, newName)
+			spec.audio.essenceBurst.sound = newValue
+			spec.audio.essenceBurst.soundName = newName
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurstAudio, newName)
+			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
+			PlaySoundFile(spec.audio.essenceBurst.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.essenceBurst2 = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_essenceBurst2CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.essenceBurst2
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you have two (max) Essence Burst procs")
+		f.tooltip = "Play audio cue when you get a second (and maximum) Essence Burst proc. If both are checked, only this sound will play."
+		f:SetChecked(spec.audio.essenceBurst2.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.audio.essenceBurst2.enabled = self:GetChecked()
+
+			if spec.audio.essenceBurst2.enabled then
+				PlaySoundFile(spec.audio.essenceBurst2.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.essenceBurst2Audio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Evoker_Preservation_essenceBurstAudio", parent)
+		controls.dropDown.essenceBurst2Audio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.essenceBurst2Audio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurst2Audio, spec.audio.essenceBurst2.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.essenceBurst2Audio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.essenceBurst2Audio, function(self, level, menuList)
+			local entries = 25
+			local info = LibDD:UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					LibDD:UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == spec.audio.essenceBurst2.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						LibDD:UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.essenceBurst2Audio:SetValue(newValue, newName)
+			spec.audio.essenceBurst2.sound = newValue
+			spec.audio.essenceBurst2.soundName = newName
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurst2Audio, newName)
+			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
+			PlaySoundFile(spec.audio.essenceBurst2.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
 		
 		yCoord = yCoord - 60
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive External Mana Generation Tracking", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive External Mana Generation Tracking", oUi.xCoord, yCoord)
 		
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervateRegen = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_InnervatePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -1471,7 +1859,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		local namePrefix = "Evoker_Preservation"
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
 		
 		controls.buttons.exportButton_Evoker_Preservation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Preservation_BarText:SetScript("OnClick", function(self, ...)
@@ -1550,7 +1938,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		parent = interfaceSettingsFrame.preservationDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Preservation Evoker", 0, yCoord-5)	
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Preservation Evoker", oUi.xCoord, yCoord-5)	
 		
 		controls.checkBoxes.preservationEvokerEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_preservationEvokerEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.preservationEvokerEnabled
@@ -1597,7 +1985,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			tabs[i].Text:SetPoint("TOP", 0, 0)
 			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Evoker_Preservation_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		end
 
 		tabsheets[1]:Show()
@@ -1681,7 +2069,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			preferredIndex = 3
 		}
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar to Defaults", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, "Reset to Defaults", oUi.xCoord, yCoord, 150, 30)
@@ -1690,7 +2078,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", 0, yCoord)
+		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Reset Resource Bar Text", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, "Reset Bar Text (Simple)", oUi.xCoord, yCoord, 250, 30)
@@ -1749,9 +2137,43 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 13, 3, yCoord, "Mana", false, false)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.essenceBurstBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Threshold_Option_essenceBurstBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.essenceBurstBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Essence Burst (1 stack)")
+		f.tooltip = "This will change the bar border color when you have 1 stack of Essence Burst."
+		f:SetChecked(spec.colors.bar.essenceBurst.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.essenceBurst.enabled = self:GetChecked()
+		end)
+
+		controls.colors.essenceBurst = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 1 stack of Essence Burst", spec.colors.bar.essenceBurst.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.essenceBurst
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst")
+		end)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.essenceBurst2BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Threshold_Option_essenceBurst2BorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.essenceBurst2BorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Essence Burst (2 stacks)")
+		f.tooltip = "This will change the bar border color when you have 2 stacks of Essence Burst."
+		f:SetChecked(spec.colors.bar.essenceBurst2.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.essenceBurst2.enabled = self:GetChecked()
+		end)
+
+		controls.colors.essenceBurst2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 2 stacks of Essence Burst", spec.colors.bar.essenceBurst2.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.essenceBurst2
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "essenceBurst2")
+		end)
 
 		yCoord = yCoord - 40
-		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Essence Colors", 0, yCoord)
+		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Essence Colors", oUi.xCoord, yCoord)
 		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
@@ -1796,7 +2218,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		f:SetChecked(spec.comboPoints.sameColor)
 		f:SetScript("OnClick", function(self, ...)
 			spec.comboPoints.sameColor = self:GetChecked()
-		end)		
+		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = controls
 	end
@@ -1823,7 +2245,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 13, 3, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Mana", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
@@ -1833,7 +2255,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end)
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", 0, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
 		title = "Haste / Crit / Mastery / Vers Decimal Precision"
@@ -1868,7 +2290,137 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Augmentation Evoker (Audio & Tracking).", 13, 3, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", 0, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
+
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.essenceBurst = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_essenceBurstCB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.essenceBurst
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Essence Burst proc occurs")
+		f.tooltip = "Play an audio cue when a Essence Burst proc occurs. This will only play for the first proc."
+		f:SetChecked(spec.audio.essenceBurst.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.audio.essenceBurst.enabled = self:GetChecked()
+
+			if spec.audio.essenceBurst.enabled then
+				PlaySoundFile(spec.audio.essenceBurst.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.essenceBurstAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Evoker_Augmentation_essenceBurstAudio", parent)
+		controls.dropDown.essenceBurstAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.essenceBurstAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurstAudio, spec.audio.essenceBurst.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.essenceBurstAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.essenceBurstAudio, function(self, level, menuList)
+			local entries = 25
+			local info = LibDD:UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					LibDD:UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == spec.audio.essenceBurst.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						LibDD:UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.essenceBurstAudio:SetValue(newValue, newName)
+			spec.audio.essenceBurst.sound = newValue
+			spec.audio.essenceBurst.soundName = newName
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurstAudio, newName)
+			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
+			PlaySoundFile(spec.audio.essenceBurst.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.essenceBurst2 = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_essenceBurst2CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.essenceBurst2
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you have two (max) Essence Burst procs")
+		f.tooltip = "Play audio cue when you get a second (and maximum) Essence Burst proc. If both are checked, only this sound will play."
+		f:SetChecked(spec.audio.essenceBurst2.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.audio.essenceBurst2.enabled = self:GetChecked()
+
+			if spec.audio.essenceBurst2.enabled then
+				PlaySoundFile(spec.audio.essenceBurst2.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.essenceBurst2Audio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Evoker_Augmentation_essenceBurstAudio", parent)
+		controls.dropDown.essenceBurst2Audio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.essenceBurst2Audio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurst2Audio, spec.audio.essenceBurst2.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.essenceBurst2Audio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.essenceBurst2Audio, function(self, level, menuList)
+			local entries = 25
+			local info = LibDD:UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					LibDD:UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == spec.audio.essenceBurst2.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						LibDD:UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.essenceBurst2Audio:SetValue(newValue, newName)
+			spec.audio.essenceBurst2.sound = newValue
+			spec.audio.essenceBurst2.soundName = newName
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.essenceBurst2Audio, newName)
+			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
+			PlaySoundFile(spec.audio.essenceBurst2.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = controls
 	end
@@ -1887,7 +2439,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		local namePrefix = "Evoker_Augmentation"
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", 0, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
 		controls.buttons.exportButton_Evoker_Augmentation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Augmentation_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Augmentation Evoker (Bar Text).", 13, 3, false, false, false, true, false)
@@ -1960,7 +2512,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		parent = interfaceSettingsFrame.augmentationDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Augmentation Evoker", 0, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Augmentation Evoker", oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.augmentationEvokerEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_augmentationEvokerEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.augmentationEvokerEnabled
@@ -2007,7 +2559,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			tabs[i].Text:SetPoint("TOP", 0, 0)
 			tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Evoker_Augmentation_LayoutPanel" .. i, parent)
 			tabsheets[i]:Hide()
-			tabsheets[i]:SetPoint("TOPLEFT", 0, yCoord)
+			tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		end
 
 		tabsheets[1]:Show()
@@ -2034,9 +2586,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			DevastationConstructOptionsPanel(specCache.devastation)
 		end
 
-		if TRB.Data.settings.core.experimental.specs.evoker.preservation == true then
-			PreservationConstructOptionsPanel(specCache.preservation)
-		end
+		PreservationConstructOptionsPanel(specCache.preservation)
 
 		if TRB.Data.settings.core.experimental.specs.evoker.augmentation == true then
 			AugmentationConstructOptionsPanel(specCache.augmentation)

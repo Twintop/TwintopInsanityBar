@@ -126,11 +126,20 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		}
 
 		specCache.devastation.spells = {
+			essenceBurst = {
+				id = 359618,
+				name = "",
+				icon = ""
+			},
 		}
 
 		specCache.devastation.snapshotData.attributes.manaRegen = 0
 		specCache.devastation.snapshotData.audio = {
+			essenceBurstCue = false,
+			essenceBurst2Cue = false
 		}
+		---@type TRB.Classes.Snapshot
+		specCache.devastation.snapshotData.snapshots[specCache.devastation.spells.essenceBurst.id] = TRB.Classes.Snapshot:New(specCache.devastation.spells.essenceBurst)
 
 		specCache.devastation.barTextVariables = {
 			icons = {},
@@ -220,7 +229,13 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				icon = "",
 				duration = 5.0, --Hasted
 				resourcePerTick = 0.02,
-				tickRate = 1
+				tickRate = 1,
+				isTalent = true
+			},
+			essenceBurst = {
+				id = 369299,
+				name = "",
+				icon = ""
 			},
 
 			-- External mana
@@ -366,7 +381,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		specCache.preservation.snapshotData.attributes.manaRegen = 0
 		specCache.preservation.snapshotData.audio = {
-			innervateCue = false
+			innervateCue = false,
+			essenceBurstCue = false,
+			essenceBurst2Cue = false
 		}
 		
 		---@type TRB.Classes.Healer.Innervate
@@ -387,6 +404,8 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(specCache.preservation.spells.moltenRadiance)
 		---@type TRB.Classes.Snapshot
 		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.emeraldCommunion.id] = TRB.Classes.Snapshot:New(specCache.preservation.spells.emeraldCommunion)
+		---@type TRB.Classes.Snapshot
+		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.essenceBurst.id] = TRB.Classes.Snapshot:New(specCache.preservation.spells.essenceBurst)
 
 		specCache.preservation.barTextVariables = {
 			icons = {},
@@ -422,11 +441,20 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		}
 
 		specCache.augmentation.spells = {
+			essenceBurst = {
+				id = 392268,
+				name = "",
+				icon = ""
+			},
 		}
 
 		specCache.augmentation.snapshotData.attributes.manaRegen = 0
 		specCache.augmentation.snapshotData.audio = {
+			essenceBurstCue = false,
+			essenceBurst2Cue = false
 		}
+		---@type TRB.Classes.Snapshot
+		specCache.augmentation.snapshotData.snapshots[specCache.augmentation.spells.essenceBurst.id] = TRB.Classes.Snapshot:New(specCache.augmentation.spells.essenceBurst)
 
 		specCache.augmentation.barTextVariables = {
 			icons = {},
@@ -466,6 +494,8 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.devastation.barTextVariables.icons = {
+			{ variable = "#eb", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = true },
+			{ variable = "#essenceBurst", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = false },
 			{ variable = "#casting", icon = "", description = "The icon of the Mana generating spell you are currently hardcasting", printInSettings = true },
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
@@ -512,6 +542,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			{ variable = "$essenceMax", description = "Maximum Essence", printInSettings = true, color = false },
 			{ variable = "$comboPointsMax", description = "Maximum Essence", printInSettings = false, color = false },
 
+			{ variable = "$ebTime", description = "Time remaining on your Essence Burst buff", printInSettings = true, color = false },
+			{ variable = "$ebStacks", description = "Current stack count on your Essence Burst buff", printInSettings = true, color = false },
+
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
 		}
@@ -528,6 +561,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			{ variable = "#casting", icon = "", description = "The icon of the mana spending spell you are currently casting", printInSettings = true },
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+
+			{ variable = "#eb", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = true },
+			{ variable = "#essenceBurst", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = false },
 
 			{ variable = "#ec", icon = spells.emeraldCommunion.icon, description = spells.emeraldCommunion.name, printInSettings = true },
 			{ variable = "#emeraldCommunion", icon = spells.emeraldCommunion.icon, description = spells.emeraldCommunion.name, printInSettings = false },
@@ -595,6 +631,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			{ variable = "$manaTotal", description = "Current + Passive + Casting Mana Total", printInSettings = true, color = false },
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Mana Total", printInSettings = false, color = false },
 
+			{ variable = "$ebTime", description = "Time remaining on your Essence Burst buff", printInSettings = true, color = false },
+			{ variable = "$ebStacks", description = "Current stack count on your Essence Burst buff", printInSettings = true, color = false },
+
 			{ variable = "$ecMana", description = "Mana from Emerald Communion", printInSettings = true, color = false },
 			{ variable = "$ecTime", description = "Time left on Emerald Communion", printInSettings = true, color = false },
 			{ variable = "$ecTicks", description = "Number of ticks left from Emerald Communion", printInSettings = true, color = false },
@@ -635,6 +674,8 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.augmentation.barTextVariables.icons = {
+			{ variable = "#eb", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = true },
+			{ variable = "#essenceBurst", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = false },
 			{ variable = "#casting", icon = "", description = "The icon of the Mana generating spell you are currently hardcasting", printInSettings = true },
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
@@ -680,6 +721,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			{ variable = "$comboPoints", description = "Current Essence", printInSettings = false, color = false },
 			{ variable = "$essenceMax", description = "Maximum Essence", printInSettings = true, color = false },
 			{ variable = "$comboPointsMax", description = "Maximum Essence", printInSettings = false, color = false },
+
+			{ variable = "$ebTime", description = "Time remaining on your Essence Burst buff", printInSettings = true, color = false },
+			{ variable = "$ebStacks", description = "Current stack count on your Essence Burst buff", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -788,7 +832,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		
 		if (specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation) or
-		(specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation) or
+		(specId == 2) or
 		(specId == 3 and TRB.Data.settings.core.experimental.specs.evoker.augmentation) then
 			TRB.Frames.resource2ContainerFrame:Show()
 			TRB.Functions.Bar:Construct(settings)
@@ -797,6 +841,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 	end
 
 	local function RefreshLookupData_Devastation()
+		local currentTime = GetTime()
 		local spells = TRB.Data.spells
 		---@type TRB.Classes.SnapshotData
 		local snapshotData = TRB.Data.snapshotData
@@ -811,13 +856,24 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		--$mana
 		local manaPrecision = specSettings.manaPrecision or 1
 		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
+		
+		--$ebTime
+		local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
+		local ebTime = string.format("%.1f", _ebTime)
+		--$ecTicks
+		local _ebStacks = snapshots[spells.essenceBurst.id].buff.stacks
+		local ebStacks = string.format("%.0f", _ebStacks)
 		----------------------------
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#eb"] = spells.essenceBurst.icon
+		lookup["#essenceBurst"] = spells.essenceBurst.icon
 		lookup["$manaMax"] = TRB.Data.character.maxResource
 		lookup["$mana"] = currentMana
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentMana
+		lookup["$ebTime"] = ebTime
+		lookup["$ebStacks"] = ebStacks
 		lookup["$essence"] = TRB.Data.character.resource2
 		lookup["$comboPoints"] = TRB.Data.character.resource2
 		lookup["$essenceMax"] = TRB.Data.character.maxResource2Raw
@@ -830,6 +886,8 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
 		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
+		lookupLogic["$ebTime"] = _ebTime
+		lookupLogic["$ebStacks"] = _ebStacks
 		lookupLogic["$essence"] = TRB.Data.character.resource2
 		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
 		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2Raw
@@ -955,6 +1013,14 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local _manaPercent = (normalizedMana/maxResource)
 		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.Number:RoundTo(_manaPercent*100, manaPrecision, "floor"))
 
+
+		--$ebTime
+		local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
+		local ebTime = string.format("%.1f", _ebTime)
+		--$ecTicks
+		local _ebStacks = snapshots[spells.essenceBurst.id].buff.stacks
+		local ebStacks = string.format("%.0f", _ebStacks)
+
 		----------
 
 		Global_TwintopResourceBar.resource.passive = _passiveMana
@@ -979,6 +1045,8 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#eb"] = spells.essenceBurst.icon
+		lookup["#essenceBurst"] = spells.essenceBurst.icon
 		lookup["#ec"] = spells.emeraldCommunion.icon
 		lookup["#emeraldCommunion"] = spells.emeraldCommunion.icon
 		lookup["#innervate"] = spells.innervate.icon
@@ -1027,6 +1095,8 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		lookup["$potionOfFrozenFocusTime"] = potionOfFrozenFocusTime
 		lookup["$potionCooldown"] = potionCooldown
 		lookup["$potionCooldownSeconds"] = potionCooldownSeconds
+		lookup["$ebTime"] = ebTime
+		lookup["$ebStacks"] = ebStacks
 		lookup["$essence"] = TRB.Data.character.resource2
 		lookup["$comboPoints"] = TRB.Data.character.resource2
 		lookup["$essenceMax"] = TRB.Data.character.maxResource2Raw
@@ -1067,6 +1137,8 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		lookupLogic["$potionOfFrozenFocusTime"] = _potionOfFrozenFocusTime
 		lookupLogic["$potionCooldown"] = potionCooldown
 		lookupLogic["$potionCooldownSeconds"] = potionCooldown
+		lookupLogic["$ebTime"] = _ebTime
+		lookupLogic["$ebStacks"] = _ebStacks
 		lookupLogic["$essence"] = TRB.Data.character.resource2
 		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
 		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2Raw
@@ -1075,6 +1147,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 	end
 
 	local function RefreshLookupData_Augmentation()
+		local currentTime = GetTime()
 		local spells = TRB.Data.spells
 		---@type TRB.Classes.SnapshotData
 		local snapshotData = TRB.Data.snapshotData
@@ -1091,11 +1164,22 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
 		----------------------------
 
+		--$ebTime
+		local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
+		local ebTime = string.format("%.1f", _ebTime)
+		--$ecTicks
+		local _ebStacks = snapshots[spells.essenceBurst.id].buff.stacks
+		local ebStacks = string.format("%.0f", _ebStacks)
+
 		local lookup = TRB.Data.lookup or {}
+		lookup["#eb"] = spells.essenceBurst.icon
+		lookup["#essenceBurst"] = spells.essenceBurst.icon
 		lookup["$manaMax"] = TRB.Data.character.maxResource
 		lookup["$mana"] = currentMana
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentMana
+		lookup["$ebTime"] = ebTime
+		lookup["$ebStacks"] = ebStacks
 		lookup["$essence"] = TRB.Data.character.resource2
 		lookup["$comboPoints"] = TRB.Data.character.resource2
 		lookup["$essenceMax"] = TRB.Data.character.maxResource2Raw
@@ -1103,6 +1187,8 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$ebTime"] = _ebTime
+		lookupLogic["$ebStacks"] = _ebStacks
 		lookupLogic["$manaMax"] = TRB.Data.character.maxResource
 		lookupLogic["$mana"] = snapshotData.attributes.resource
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -1288,6 +1374,30 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 					barContainerFrame:SetAlpha(1.0)
 
+					if snapshots[spells.essenceBurst.id].buff.isActive then
+						if snapshots[spells.essenceBurst.id].buff.stacks == 1 then
+							if specSettings.colors.bar.essenceBurst.enabled then
+								barBorderColor = specSettings.colors.bar.essenceBurst.color
+							end
+
+							if specSettings.audio.essenceBurst.enabled and not snapshotData.audio.essenceBurstCue then
+								snapshotData.audio.essenceBurstCue = true
+								PlaySoundFile(specSettings.audio.essenceBurst.sound, coreSettings.audio.channel.channel)
+							end
+						end
+
+						if snapshots[spells.essenceBurst.id].buff.stacks == 2 then
+							if specSettings.colors.bar.essenceBurst2.enabled then
+								barBorderColor = specSettings.colors.bar.essenceBurst2.color
+							end
+
+							if specSettings.audio.essenceBurst2.enabled and not snapshotData.audio.essenceBurst2Cue then
+								snapshotData.audio.essenceBurst2Cue = true
+								PlaySoundFile(specSettings.audio.essenceBurst2.sound, coreSettings.audio.channel.channel)
+							end
+						end
+					end
+
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
@@ -1353,6 +1463,30 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 					local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 					local channeledManaPotion = snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 					local emeraldCommunion = snapshotData.snapshots[spells.emeraldCommunion.id]
+
+					if snapshots[spells.essenceBurst.id].buff.isActive then
+						if snapshots[spells.essenceBurst.id].buff.stacks == 1 then
+							if specSettings.colors.bar.essenceBurst.enabled then
+								barBorderColor = specSettings.colors.bar.essenceBurst.color
+							end
+
+							if specSettings.audio.essenceBurst.enabled and not snapshotData.audio.essenceBurstCue then
+								snapshotData.audio.essenceBurstCue = true
+								PlaySoundFile(specSettings.audio.essenceBurst.sound, coreSettings.audio.channel.channel)
+							end
+						end
+
+						if snapshots[spells.essenceBurst.id].buff.stacks == 2 then
+							if specSettings.colors.bar.essenceBurst2.enabled then
+								barBorderColor = specSettings.colors.bar.essenceBurst2.color
+							end
+
+							if specSettings.audio.essenceBurst2.enabled and not snapshotData.audio.essenceBurst2Cue then
+								snapshotData.audio.essenceBurst2Cue = true
+								PlaySoundFile(specSettings.audio.essenceBurst2.sound, coreSettings.audio.channel.channel)
+							end
+						end
+					end
 
 					if potionOfChilledClarity.buff.isActive then
 						if specSettings.colors.bar.potionOfChilledClarityBorderChange then
@@ -1567,6 +1701,30 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 					barContainerFrame:SetAlpha(1.0)
 
+					if snapshots[spells.essenceBurst.id].buff.isActive then
+						if snapshots[spells.essenceBurst.id].buff.stacks == 1 then
+							if specSettings.colors.bar.essenceBurst.enabled then
+								barBorderColor = specSettings.colors.bar.essenceBurst.color
+							end
+
+							if specSettings.audio.essenceBurst.enabled and not snapshotData.audio.essenceBurstCue then
+								snapshotData.audio.essenceBurstCue = true
+								PlaySoundFile(specSettings.audio.essenceBurst.sound, coreSettings.audio.channel.channel)
+							end
+						end
+
+						if snapshots[spells.essenceBurst.id].buff.stacks == 2 then
+							if specSettings.colors.bar.essenceBurst2.enabled then
+								barBorderColor = specSettings.colors.bar.essenceBurst2.color
+							end
+
+							if specSettings.audio.essenceBurst2.enabled and not snapshotData.audio.essenceBurst2Cue then
+								snapshotData.audio.essenceBurst2Cue = true
+								PlaySoundFile(specSettings.audio.essenceBurst2.sound, coreSettings.audio.channel.channel)
+							end
+						end
+					end
+
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
@@ -1645,7 +1803,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 						moltenRadiance.buff:Initialize(type)
 					end
 				end
-			end			
+			end	
 
 			if sourceGUID == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "devastation" then --Devastation					
@@ -1667,6 +1825,17 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 						end
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "augmentation" then --Augmentation
+				end
+
+				-- Spec Agnostic
+				if spellId == spells.essenceBurst.id then
+					snapshots[spellId].buff:Initialize(type)
+					if type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
+						snapshotData.audio.essenceBurst2Cue = false
+					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						snapshotData.audio.essenceBurstCue = false
+						snapshotData.audio.essenceBurst2Cue = false
+					end
 				end
 			end
 
@@ -1726,7 +1895,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				TRB.Data.barConstructedForSpec = "devastation"
 				ConstructResourceBar(specCache.devastation.settings)
 			end
-		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation then
+		elseif specId == 2 then
 			specCache.preservation.talents = TRB.Functions.Talent:GetTalents()
 			FillSpellData_Preservation()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)
@@ -1818,27 +1987,21 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							FillSpellData_Preservation()
 							FillSpellData_Augmentation()
 
-							if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation or TRB.Data.settings.core.experimental.specs.evoker.augmentation then
-								SwitchSpec()
-							end
+							SwitchSpec()
 
 							TRB.Options.Evoker.ConstructOptionsPanel(specCache)
 							
-							if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation or TRB.Data.settings.core.experimental.specs.evoker.augmentation then
-								-- Reconstruct just in case
-								if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
-									ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
-								end
-								TRB.Functions.Class:EventRegistration()
+							-- Reconstruct just in case
+							if TRB.Data.barConstructedForSpec and specCache[TRB.Data.barConstructedForSpec] and specCache[TRB.Data.barConstructedForSpec].settings then
+								ConstructResourceBar(specCache[TRB.Data.barConstructedForSpec].settings)
 							end
+							TRB.Functions.Class:EventRegistration()
 						end)
 					end)
 				end
 
 				if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
-					if TRB.Data.settings.core.experimental.specs.evoker.devastation or TRB.Data.settings.core.experimental.specs.evoker.preservation or TRB.Data.settings.core.experimental.specs.evoker.augmentation then
-						SwitchSpec()
-					end
+					SwitchSpec()
 				end
 			end
 		end
@@ -1856,7 +2019,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		if specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation then
 			settings = TRB.Data.settings.evoker.devastation
 			TRB.Data.character.specName = "devastation"
-		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation then
+		elseif specId == 2 then
 			settings = TRB.Data.settings.evoker.preservation
 			TRB.Data.character.specName = "preservation"
 			TRB.Functions.Spell:FillSpellDataManaCost(spells)
@@ -1921,7 +2084,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			TRB.Data.resourceFactor = 1
 			TRB.Data.resource2 = Enum.PowerType.Essence
 			TRB.Data.resource2Factor = 1
-		elseif specId == 2 and TRB.Data.settings.core.enabled.evoker.preservation and TRB.Data.settings.core.experimental.specs.evoker.preservation then
+		elseif specId == 2 and TRB.Data.settings.core.enabled.evoker.preservation then
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.preservation)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
@@ -1988,7 +2151,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 					TRB.Frames.barContainerFrame:Show()
 				end
 			end
-		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.evoker.preservation then
+		elseif specId == 2 then
 			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.evoker.preservation.displayBar.alwaysShow) and (
@@ -2207,6 +2370,14 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			valid = true
 		elseif var == "$comboPointsMax"or var == "$essenceMax" then
 			valid = true
+		elseif var == "$ebTime" then
+			if snapshots[spells.essenceBurst.id].buff.isActive then
+				valid = true
+			end
+		elseif var == "$ebStacks" then
+			if snapshots[spells.essenceBurst.id].buff.isActive then
+				valid = true
+			end
 		end
 
 		return valid
@@ -2219,7 +2390,6 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local specId = GetSpecialization()
 		if (specId ~= 1 and specId ~= 2 and specId ~= 3) or
 			(specId == 1 and not TRB.Data.settings.core.experimental.specs.evoker.devastation) or
-			(specId == 2 and not TRB.Data.settings.core.experimental.specs.evoker.preservation) or
 			(specId == 3 and not TRB.Data.settings.core.experimental.specs.evoker.augmentation) then
 			TRB.Functions.Bar:HideResourceBar(true)
 			return
