@@ -8,7 +8,7 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
-# 10.1.7.1-release (2023-09-20)
+# 10.1.7.3-release (2023-09-20)
 
 ## Priest
 
