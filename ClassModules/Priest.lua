@@ -2027,6 +2027,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.priest.holy)
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], spells.conjuredChillglobe.settingKey, TRB.Data.settings.priest.holy)
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[8], spells.shadowfiend.settingKey, TRB.Data.settings.priest.holy)
+			TRB.Frames.resource2ContainerFrame:Show()
 		elseif specId == 3 then
 			for x = 1, 3 do
 				if TRB.Frames.resourceFrame.thresholds[x] == nil then

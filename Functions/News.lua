@@ -8,6 +8,15 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.1.7.4-release (2023-09-20)
+
+## Priest
+### Holy
+
+- (FIX) When switching from another spec back to Holy, ensure the Holy Word bars are displayed.
+
+----
+
 # 10.1.7.3-release (2023-09-20)
 
 ## Priest
