@@ -261,7 +261,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				buffId = 393955,
-				modifier = -0.05,
+				modifier = -0.10,
 				isTalent = true
 			},
 			starweaver = {

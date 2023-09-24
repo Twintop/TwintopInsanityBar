@@ -241,6 +241,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				cooldown = 15,
 				nimbleFingers = true,
 				thresholdUsable = false,
+				hasCharges = true,
 				isTalent = false,
 				baseline = true
 			},
@@ -250,7 +251,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				id = 5938,
 				name = "",
 				icon = "",
-				energy = -20,
+				energy = -30,
 				comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 8,
@@ -487,14 +488,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "crimsonTempest",
 				thresholdUsable = false,
 				pandemicTimes = {
-					4 * 0.3, -- 0 CP, show same as if we had 1
-					4 * 0.3,
+					6 * 0.3, -- 0 CP, show same as if we had 1
 					6 * 0.3,
 					8 * 0.3,
 					10 * 0.3,
 					12 * 0.3,
 					14 * 0.3,
-					16 * 0.3, -- Kyrian ability buff
+					16 * 0.3,
+					18 * 0.3, -- Kyrian ability buff
 				},
 				isTalent = true
 			},
@@ -851,6 +852,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				cooldown = 15,
 				nimbleFingers = true,
 				thresholdUsable = false,
+				hasCharges = true,
 				isTalent = false,
 				baseline = true
 			},
@@ -860,7 +862,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				id = 5938,
 				name = "",
 				icon = "",
-				energy = -20,
+				energy = -30,
 				comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 8,

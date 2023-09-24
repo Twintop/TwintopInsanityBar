@@ -226,7 +226,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 10,
 				settingKey = "cobraShot",
 				killCommandCooldownReduction = 2,
-				isSnowflake = true,
 				thresholdUsable = false,
 				isTalent = true
 			},
@@ -344,13 +343,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				isTalent = true,
 				focusMod = 0.5
 			},
-			aspectOfTheWild = {
-				id = 193530,
-				name = "",
-				icon = "",
-				isTalent = true,
-				focusMod = -10
-			},
 			beastCleave = {
 				id = 115939,
 				name = "",
@@ -421,8 +413,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.wailingArrow.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.wailingArrow)
 		---@type TRB.Classes.Snapshot
 		specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.direPack.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.direPack)
-		---@type TRB.Classes.Snapshot
-		specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.aspectOfTheWild.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.aspectOfTheWild)
 		---@type TRB.Classes.Snapshot
 		specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.callOfTheWild.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.callOfTheWild)
 		---@type TRB.Classes.Snapshot
@@ -2305,6 +2295,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		snapshots[spells.barrage.id].cooldown:Refresh()
 		snapshots[spells.wailingArrow.id].cooldown:Refresh()
 		snapshots[spells.explosiveShot.id].cooldown:Refresh()
+
+		snapshots[spells.trueshot.id].buff:Refresh()
 	end
 
 	local function UpdateSnapshot_Survival()
@@ -2441,18 +2433,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
-								elseif spell.id == spells.cobraShot.id then
-									if snapshots[spells.aspectOfTheWild.id].buff.isActive then
-										focusAmount = focusAmount - spells.aspectOfTheWild.focusMod
-										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
-									end
-
-									if snapshotData.attributes.resource >= -focusAmount then
-										thresholdColor = specSettings.colors.threshold.over
-									else
-										thresholdColor = specSettings.colors.threshold.under
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end
 								end
 							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
 								showThreshold = false
@@ -2484,7 +2464,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 					local barColor = specSettings.colors.bar.base
 
-					local barbedShotPartialCharges = snapshots[spells.barbedShot.id].cooldown.charges + (snapshots[spells.barbedShot.id].cooldown.remaining / snapshots[spells.barbedShot.id].cooldown.duration)
+					local bsPartial = 0
+
+					if snapshots[spells.barbedShot.id].cooldown.remaining > 0 and snapshots[spells.barbedShot.id].cooldown.duration > 0 then
+						bsPartial = snapshots[spells.barbedShot.id].cooldown.remaining / snapshots[spells.barbedShot.id].cooldown.duration
+					end
+
+					local barbedShotPartialCharges = snapshots[spells.barbedShot.id].cooldown.charges + bsPartial
 					local beastialWrathCooldownRemaining = snapshots[spells.beastialWrath.id].cooldown:GetRemainingTime(currentTime)
 					local affectingCombat = UnitAffectingCombat("player")
 					local reactionTimeGcds = math.min(gcd * 1.5, 2)
@@ -3009,8 +2995,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.direPack.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.aspectOfTheWild.id then
 						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.callOfTheWild.id then
 						snapshots[spellId].buff:Initialize(type)
