@@ -143,7 +143,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 1,
 				settingKey = "ambush",
 				thresholdUsable = false,
-				baseline = true
+				baseline = true,
+				viciousVenoms = true
 			},
 			cheapShot = {
 				id = 1833,
@@ -427,7 +428,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 15,
 				settingKey = "mutilate",
 				thresholdUsable = false,
-				baseline = true
+				baseline = true,
+				viciousVenoms = true
 			},
 			poisonedKnife = {
 				id = 185565,
@@ -507,19 +509,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				buffId = 392403,
 				isTalent = true
 			},
-			exsanguinate = {
-				id = 200806,
+			viciousVenoms = {
+				id = 381634,
 				name = "",
 				icon = "",
-				energy = -25,
-				texture = "",
-				thresholdId = 19,
-				settingKey = "exsanguinate",
-				hasCooldown = true,
-				isSnowflake = true,
-				thresholdUsable = false,
-				cooldown = 45,
-				isTalent = true
+				isTalent = true,
+				energyMod = {
+					[0] = 0,
+					[1] = -5,
+					[2] = -10
+				}
 			},
 			-- TODO: Add Doomblade as a bleed
 			blindside = {
@@ -542,7 +541,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				energy = -15,
 				comboPointsGenerated = 2,
 				texture = "",
-				thresholdId = 20,
+				thresholdId = 19,
 				settingKey = "serratedBoneSpike",
 				hasCooldown = true,
 				debuffId = 394036,
@@ -555,7 +554,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				energy = -25,
 				comboPointsGenerated = 1,
 				texture = "",
-				thresholdId = 21,
+				thresholdId = 20,
 				settingKey = "sepsis",
 				hasCooldown = true,
 				cooldown = 90,
@@ -569,7 +568,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				energy = -35,
 				comboPointsGenerated = 1,
 				texture = "",
-				thresholdId = 22,
+				thresholdId = 21,
 				settingKey = "kingsbane",
 				hasCooldown = true,
 				cooldown = 60,
@@ -583,7 +582,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -25,
 				texture = "",
-				thresholdId = 23,
+				thresholdId = 22,
 				settingKey = "deathFromAbove",
 				comboPoints = true,
 				hasCooldown = true,
@@ -597,7 +596,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -25,
 				texture = "",
-				thresholdId = 24,
+				thresholdId = 23,
 				settingKey = "dismantle",
 				hasCooldown = true,
 				isPvp = true,
@@ -660,8 +659,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.echoingReprimand_4CP2.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.echoingReprimand_4CP2)
 		---@type TRB.Classes.Snapshot
 		specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.echoingReprimand_5CP.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.echoingReprimand_5CP)
-		---@type TRB.Classes.Snapshot
-		specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.exsanguinate.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.exsanguinate)
 		---@type TRB.Classes.Snapshot
 		specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.serratedBoneSpike.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.serratedBoneSpike)
 		---@type TRB.Classes.Snapshot
@@ -1203,6 +1200,21 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				cooldown = 60 * 7,
 				restlessBlades = true
 			},
+			killingSpree = {
+				id = 51690,
+				name = "",
+				icon = "",
+				energy = -40,
+				texture = "",
+				thresholdId = 21,
+				settingKey = "killingSpree",
+				comboPoints = true,
+				hasCooldown = true,
+				isTalent = true,
+				thresholdUsable = false,
+				cooldown = 90,
+				restlessBlades = true
+			},
 			-- TODO: Implement this!
 			greenskinsWickers = {
 				id = 386823,
@@ -1218,7 +1230,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -25,
 				texture = "",
-				thresholdId = 21,
+				thresholdId = 22,
 				settingKey = "deathFromAbove",
 				comboPoints = true,
 				hasCooldown = true,
@@ -1232,7 +1244,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				energy = -25,
 				texture = "",
-				thresholdId = 22,
+				thresholdId = 23,
 				settingKey = "dismantle",
 				hasCooldown = true,
 				isPvp = true,
@@ -1303,6 +1315,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.deathFromAbove)
 		---@type TRB.Classes.Snapshot
 		specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.dismantle.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.dismantle)
+		---@type TRB.Classes.Snapshot
+		specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.killingSpree.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.killingSpree)
 		---@type TRB.Classes.Snapshot
 		specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.rollTheBones.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.rollTheBones, {
 			---@type TRB.Classes.Snapshot[]
@@ -2740,7 +2754,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		snapshots[spells.subterfuge.id].buff:GetRemainingTime(currentTime)
 
 		snapshots[spells.serratedBoneSpike.id].cooldown:Refresh()
-		snapshots[spells.exsanguinate.id].cooldown:Refresh()
 		snapshots[spells.garrote.id].cooldown:Refresh()
 		snapshots[spells.kingsbane.id].cooldown:Refresh()
 	end
@@ -2837,7 +2850,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					for k, v in pairs(spells) do
 						local spell = spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							local energyAmount = CalculateAbilityResourceValue(spell.energy, spell.nimbleFingers, spell.rushedSetup, spell.comboPoints)
+							local viciousVenomsOffset = 0
+
+							if spell.viciousVenoms then
+								viciousVenomsOffset = spells.viciousVenoms.energyMod[TRB.Data.talents[spells.viciousVenoms.id].currentRank]
+							end
+
+							local energyAmount = CalculateAbilityResourceValue(spell.energy + viciousVenomsOffset, spell.nimbleFingers, spell.rushedSetup, spell.comboPoints)
 							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
@@ -2870,19 +2889,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								end
 							else
 								if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-									if spell.id == spells.exsanguinate.id then
-										if not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
-											showThreshold = false
-										elseif not IsTargetBleeding(snapshotData.targetData.currentTargetGuid) or snapshots[spell.id].cooldown:IsUnusable() then
-											thresholdColor = specSettings.colors.threshold.unusable
-											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-										elseif snapshotData.attributes.resource >= -energyAmount then
-											thresholdColor = specSettings.colors.threshold.over
-										else
-											thresholdColor = specSettings.colors.threshold.under
-											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-										end
-									elseif spell.id == spells.shiv.id then
+									if spell.id == spells.shiv.id then
 										if not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
 											showThreshold = false
 										elseif TRB.Functions.Talent:IsTalentActive(spells.tinyToxicBlade) then -- Don't show this threshold
@@ -3336,11 +3343,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 			if sourceGUID == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "assassination" then --Assassination
-					if spellId == spells.exsanguinate.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
-						end
-					elseif spellId == spells.blindside.id then
+					if spellId == spells.blindside.id then
 						snapshots[spellId].buff:Initialize(type)
 						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.rogue.assassination.audio.blindside.enabled then
@@ -3421,6 +3424,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.gouge.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							snapshots[spellId].cooldown:Initialize()
+						end
+					elseif spellId == spells.killingSpree.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							snapshots[spellId].cooldown:Initialize()
 						end

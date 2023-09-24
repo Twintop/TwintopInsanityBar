@@ -32,6 +32,12 @@ local content = [====[
 ### Assassination
 
 - [#329 - UPDATE](#329) Update Crimson Tempest's duration per combo point spent.
+- [#329 - UPDATE](#329) Remove Exsanguinate as the active version has no on-use Energy cost now.
+- [#329 - UPDATE](#329) Add Vicious Venoms support to increase the Energy cost of Mutilate and Ambush by 5/10.
+
+### Outlaw
+
+- [#329 - UPDATE](#329) Add Killing Spree threshold line.
 
 ----
 

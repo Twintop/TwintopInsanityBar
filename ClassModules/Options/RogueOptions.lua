@@ -159,24 +159,21 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				crimsonTempest = { --
 					enabled = true, -- 18
 				},
-				exsanguinate = { --
+				serratedBoneSpike = { --
 					enabled = true, -- 19
 				},
-				serratedBoneSpike = { --
+				sepsis = { --
 					enabled = true, -- 20
 				},
-				sepsis = { --
-					enabled = true, -- 21
-				},
 				kingsbane = { --
-					enabled = true, -- 22
+					enabled = true, -- 21
 				},
 				-- PvP					
 				deathFromAbove = {
-					enabled = false, -- 23
+					enabled = false, -- 22
 				},
 				dismantle = {
-					enabled = false, -- 24
+					enabled = false, -- 23
 				},
 			},
 			generation = {
@@ -453,6 +450,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				},
 				dreadblades = {
 					enabled = true, -- 20
+				},
+				killingSpree = {
+					enabled = true, -- 21
 				},
 				-- PvP					
 				deathFromAbove = {
@@ -1121,17 +1121,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetChecked(spec.thresholds.distract.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.distract.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.exsanguinateThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_exsanguinate", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.exsanguinateThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Exsanguinate")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Exsanguinate. If on cooldown or the current target has no bleeds, will be colored as 'unusable'."
-		f:SetChecked(spec.thresholds.exsanguinate.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.exsanguinate.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
@@ -2225,6 +2214,17 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetChecked(spec.thresholds.kidneyShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.kidneyShot.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.killingSpreeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_killingSpree", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.killingSpreeThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Killing Spree")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Killing Spree. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
+		f:SetChecked(spec.thresholds.killingSpree.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.killingSpree.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
