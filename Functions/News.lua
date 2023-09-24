@@ -8,6 +8,33 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.2.0.0-beta01 (2023-10-01)
+
+## Druid
+### Balance
+
+- [#329 - UPDATE](#329) Rattle the Stars now reduces the Astral Power cost of Starsurge and Starfall by 10%.
+
+## Hunter
+### Beast Mastery
+
+- [#329 - UPDATE](#329) Remove Aspect of the Wild.
+
+### Marksmanship
+
+- [#329 - UPDATE](#329) Actively refresh Trueshot duration remaining.
+
+### Rogue
+
+- [#329 - UPDATE](#329) Feint now has charges.
+- [#329 - UPDATE](#329) Shiv's cost increased to 30 Energy.
+
+### Assassination
+
+- [#329 - UPDATE](#329) Update Crimson Tempest's duration per combo point spent.
+
+----
+
 # 10.1.7.5-release (2023-10-01)
 
 ## Hunter
