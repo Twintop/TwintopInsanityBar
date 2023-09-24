@@ -28,6 +28,7 @@ Classes\TimeToDie.lua
 Classes\Target.lua
 Classes\Talent.lua
 
+Classes\Settings.lua
 Classes\SpecCache.lua
 
 ClassModules\Classes\HealerClasses.lua
