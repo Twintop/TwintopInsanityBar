@@ -19,62 +19,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	TRB.Data.character = {}
 
 	local specCache = {
-		discipline = {
-			barTextVariables = {
-				icons = {},
-				values = {}
-			},
-			spells = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		},
-		holy = {
-			barTextVariables = {
-				icons = {},
-				values = {}
-			},
-			spells = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		},
-		shadow = {
-			barTextVariables = {
-				icons = {},
-				values = {}
-			},
-			spells = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		}
+		discipline = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
+		holy = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
+		shadow = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
 	}
 	
-	specCache.discipline.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
-	specCache.discipline.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
-	
-	specCache.holy.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
-	specCache.holy.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
-	
-	specCache.shadow.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
-	specCache.shadow.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
-
 	local function CalculateManaGain(mana, isPotion)
 		if isPotion == nil then
 			isPotion = false

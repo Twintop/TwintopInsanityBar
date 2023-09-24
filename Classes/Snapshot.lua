@@ -13,7 +13,7 @@ TRB.Classes.SnapshotData = {}
 TRB.Classes.SnapshotData.__index = TRB.Classes.SnapshotData
 
 ---Creates a new SnapshotData object
----@param attributes table # Custom attributes to be tracked
+---@param attributes table? # Custom attributes to be tracked
 ---@return TRB.Classes.SnapshotData
 function TRB.Classes.SnapshotData:New(attributes)
     local self = {}
