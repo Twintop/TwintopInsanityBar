@@ -2088,7 +2088,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		if talents:IsTalentActive(spells.lightOfTheNaaru) then
-			mod = mod * (1 + (spells.lightOfTheNaaru.holyWordModifier * TRB.Data.talents[spells.lightOfTheNaaru.id].currentRank))
+			mod = mod * (1 + (spells.lightOfTheNaaru.holyWordModifier * talents.talents[spells.lightOfTheNaaru.id].currentRank))
 		end
 
 		return mod * (base + prayerFocusValue) + divineConversationValue

@@ -66,15 +66,15 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			}
 		},
 	}
-
-	---@type TRB.Classes.SnapshotData
-	specCache.devastation.snapshotData = TRB.Classes.SnapshotData:New()
-
-	---@type TRB.Classes.SnapshotData
-	specCache.preservation.snapshotData = TRB.Classes.SnapshotData:New()
 	
-	---@type TRB.Classes.SnapshotData
-	specCache.augmentation.snapshotData = TRB.Classes.SnapshotData:New()
+	specCache.devastation.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
+	specCache.devastation.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
+	
+	specCache.preservation.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
+	specCache.preservation.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
+	
+	specCache.augmentation.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
+	specCache.augmentation.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
 
 	local function CalculateManaGain(mana, isPotion)
 		if isPotion == nil then

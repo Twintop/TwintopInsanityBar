@@ -1780,7 +1780,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local snapshotValue = 1.0
 
 		if bonuses.tigersFury == true and snapshotData.snapshots[spells.tigersFury.id].buff.isActive then
-			local tfBonus = spells.carnivorousInstinct.modifierPerStack * TRB.Data.talents[TRB.Data.spells.carnivorousInstinct.id].currentRank
+			local tfBonus = spells.carnivorousInstinct.modifierPerStack * talents.talents[TRB.Data.spells.carnivorousInstinct.id].currentRank
 
 			snapshotValue = snapshotValue * (TRB.Data.spells.tigersFury.modifier + tfBonus)
 		end
