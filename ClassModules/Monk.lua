@@ -13,19 +13,19 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
+	
+	local talents --[[@as TRB.Classes.Talents]]
 
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
 
 	local specCache = {
 		windwalker = {
-			snapshot = {},
 			barTextVariables = {
 				icons = {},
 				values = {}
 			},
 			spells = {},
-			talents = {},
 			settings = {
 				bar = nil,
 				comboPoints = nil,
@@ -36,13 +36,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			}
 		},
 		mistweaver = {
-			snapshot = {},
 			barTextVariables = {
 				icons = {},
 				values = {}
 			},
 			spells = {},
-			talents = {},
 			settings = {
 				bar = nil,
 				comboPoints = nil,
@@ -53,12 +51,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			}
 		}
 	}
-
-	---@type TRB.Classes.SnapshotData
-	specCache.mistweaver.snapshotData = TRB.Classes.SnapshotData:New()
 	
-	---@type TRB.Classes.SnapshotData
-	specCache.windwalker.snapshotData = TRB.Classes.SnapshotData:New()
+	specCache.mistweaver.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
+	specCache.mistweaver.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
+	
+	specCache.windwalker.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
+	specCache.windwalker.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
 
 	local function CalculateManaGain(mana, isPotion)
 		if isPotion == nil then
@@ -1977,9 +1975,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
+							elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
 								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
@@ -2199,7 +2197,7 @@ elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then --
 						if type == "SPELL_CAST_SUCCESS" then
 							snapshots[spellId].cooldown:Initialize()
 
-							if TRB.Functions.Talent:IsTalentActive(spells.paralysisRank2) then
+							if talents:IsTalentActive(spells.paralysisRank2) then
 								snapshots[spellId].cooldown.duration = snapshots[spellId].cooldown.duration + spells.paralysisRank2.cooldownMod
 							end
 						end
@@ -2249,7 +2247,7 @@ elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then --
 		local specId = GetSpecialization()
 		if specId == 1 then
 		elseif specId == 2 then
-			specCache.mistweaver.talents = TRB.Functions.Talent:GetTalents()
+			specCache.mistweaver.talents:GetTalents()
 			FillSpellData_Mistweaver()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.mistweaver)
 			
@@ -2261,11 +2259,12 @@ elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then --
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.monk.mistweaver)
 
 			if TRB.Data.barConstructedForSpec ~= "mistweaver" then
+				talents = specCache.mistweaver.talents
 				TRB.Data.barConstructedForSpec = "mistweaver"
 				ConstructResourceBar(specCache.mistweaver.settings)
 			end
 		elseif specId == 3 then
-			specCache.windwalker.talents = TRB.Functions.Talent:GetTalents()
+			specCache.windwalker.talents:GetTalents()
 			FillSpellData_Windwalker()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.windwalker)
 			
@@ -2280,6 +2279,7 @@ elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then --
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.monk.windwalker)
 
 			if TRB.Data.barConstructedForSpec ~= "windwalker" then
+				talents = specCache.windwalker.talents
 				TRB.Data.barConstructedForSpec = "windwalker"
 				ConstructResourceBar(specCache.windwalker.settings)
 			end

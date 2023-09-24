@@ -220,7 +220,7 @@ TRB.Data.character = {
 ---@diagnostic disable-next-line: missing-parameter
 	specGroup = GetActiveSpecGroup(),
 	maxResource = 100,
-	talents = {},
+	talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]],
 	items = {}
 }
 

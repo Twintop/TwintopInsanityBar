@@ -10,6 +10,9 @@ local content = [====[
 
 # 10.1.7.5-release (2023-10-01)
 
+## General
+- [#330 - REFACTOR](#330) Change how Talents are stored and accessed.
+
 ## Hunter
 ### Beast Mastery
 

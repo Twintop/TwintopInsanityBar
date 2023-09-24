@@ -13,18 +13,18 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
 	
+	local talents --[[@as TRB.Classes.Talents]]
+
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
 
 	local specCache = {
 		havoc = {
-			snapshot = {},
 			barTextVariables = {
 				icons = {},
 				values = {}
 			},
 			spells = {},
-			talents = {},
 			settings = {
 				bar = nil,
 				comboPoints = nil,
@@ -35,9 +35,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			}
 		}
 	}
-
-	---@type TRB.Classes.SnapshotData
-	specCache.havoc.snapshotData = TRB.Classes.SnapshotData:New()
+	
+	specCache.havoc.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
+	specCache.havoc.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
 
 	local function FillSpecializationCache()
 		-- Havoc
@@ -716,7 +716,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		else
 			if specId == 1 then
 				if currentSpellName == nil then
-					if currentChannelId == TRB.Data.spells.eyeBeam.id and TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.blindFury) then
+					if currentChannelId == TRB.Data.spells.eyeBeam.id and talents:IsTalentActive(TRB.Data.spells.blindFury) then
 						local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 						TRB.Data.snapshotData.casting.spellId = TRB.Data.spells.eyeBeam.id
 						--TRB.Data.snapshotData.casting.startTime = currentChannelStartTime / 1000
@@ -760,7 +760,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		snapshotData.snapshots[spells.felEruption.id].buff:GetRemainingTime(currentTime)
 		snapshotData.snapshots[spells.throwGlaive.id].buff:GetRemainingTime(currentTime)
 		
-		if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.burningHatred) then
+		if talents:IsTalentActive(TRB.Data.spells.burningHatred) then
 			snapshotData.snapshots[spells.immolationAura.id].buff:UpdateTicks(currentTime)
 		else
 			snapshotData.snapshots[spells.immolationAura.id].buff:GetRemainingTime(currentTime)
@@ -878,13 +878,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 								showThreshold = false
 							elseif metaTime == 0 and (spell.demonForm ~= nil and spell.demonForm == true) then
 								showThreshold = false
-							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+							elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
+							elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.chaosNova.id then
-									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.unleashedPower) then
+									if talents:IsTalentActive(TRB.Data.spells.unleashedPower) then
 										furyAmount = furyAmount * TRB.Data.spells.unleashedPower.furyModifier
 									end
 
@@ -900,7 +900,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == TRB.Data.spells.throwGlaive.id then
-									if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.furiousThrows) then
+									if talents:IsTalentActive(TRB.Data.spells.furiousThrows) then
 										furyAmount = TRB.Data.spells.furiousThrows.fury
 										if snapshotData.snapshots[spells.throwGlaive.id].cooldown.charges == 0 then
 											thresholdColor = specSettings.colors.threshold.unusable
@@ -1100,7 +1100,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 then
-			specCache.havoc.talents = TRB.Functions.Talent:GetTalents()
+			specCache.havoc.talents:GetTalents()
 			FillSpellData_Havoc()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.havoc)
 
@@ -1113,6 +1113,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.demonhunter.havoc)
 
 			if TRB.Data.barConstructedForSpec ~= "havoc" then
+				talents = specCache.havoc.talents
 				TRB.Data.barConstructedForSpec = "havoc"
 				ConstructResourceBar(specCache.havoc.settings)
 			end
@@ -1205,7 +1206,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		if GetSpecialization() == 1 then
 			TRB.Data.character.specName = "havoc"
 
-			if TRB.Functions.Talent:IsTalentActive(spells.burningHatred) then
+			if talents:IsTalentActive(spells.burningHatred) then
 				snapshots[spells.immolationAura.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred.tickRate)
 			else
 				snapshots[spells.immolationAura.id].buff:SetTickData(false, 0, 0)

@@ -13,19 +13,19 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
+	
+	local talents --[[@as TRB.Classes.Talents]]
 
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
 
 	local specCache = {
 		assassination = {
-			snapshot = {},
 			barTextVariables = {
 				icons = {},
 				values = {}
 			},
 			spells = {},
-			talents = {},
 			settings = {
 				bar = nil,
 				comboPoints = nil,
@@ -36,13 +36,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			}
 		},
 		outlaw = {
-			snapshot = {},
 			barTextVariables = {
 				icons = {},
 				values = {}
 			},
 			spells = {},
-			talents = {},
 			settings = {
 				bar = nil,
 				comboPoints = nil,
@@ -53,12 +51,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			}
 		}
 	}
-
-	---@type TRB.Classes.SnapshotData
-	specCache.assassination.snapshotData = TRB.Classes.SnapshotData:New()
-
-	---@type TRB.Classes.SnapshotData
-	specCache.outlaw.snapshotData = TRB.Classes.SnapshotData:New()
+	
+	specCache.assassination.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
+	specCache.assassination.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
+	
+	specCache.outlaw.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
+	specCache.outlaw.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
 
 	local function FillSpecializationCache()
 		-- Assassination
@@ -1691,16 +1689,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local spells = TRB.Data.spells
 		local modifier = 1.0
 
-		if comboPoints == true and TRB.Functions.Talent:IsTalentActive(spells.tightSpender) then
+		if comboPoints == true and talents:IsTalentActive(spells.tightSpender) then
 			modifier = modifier * spells.tightSpender.energyMod
 		end
 
 		-- TODO: validate how Nimble Fingers reduces energy costs. Is it before or after percentage modifiers? Assuming before for now
-		if nimbleFingers == true and TRB.Functions.Talent:IsTalentActive(spells.nimbleFingers) then
+		if nimbleFingers == true and talents:IsTalentActive(spells.nimbleFingers) then
 			resource = resource + spells.nimbleFingers.energyMod
 		end
 
-		if rushedSetup == true and TRB.Functions.Talent:IsTalentActive(spells.rushedSetup) then
+		if rushedSetup == true and talents:IsTalentActive(spells.rushedSetup) then
 			modifier = modifier * spells.rushedSetup.energyMod
 		end
 
@@ -2019,7 +2017,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				amplifyingPoisonTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 			end
 
-			if _sbsOnTarget == false and TRB.Functions.Talent:IsTalentActive(spells.serratedBoneSpike) then
+			if _sbsOnTarget == false and talents:IsTalentActive(spells.serratedBoneSpike) then
 				sbsCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _sbsCount)
 			else
 				sbsCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _sbsCount)
@@ -2869,7 +2867,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							else
 								if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 									if spell.id == spells.exsanguinate.id then
-										if not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+										if not talents:IsTalentActive(spell) then -- Talent not selected
 											showThreshold = false
 										elseif not IsTargetBleeding(snapshotData.targetData.currentTargetGuid) or snapshots[spell.id].cooldown:IsUnusable() then
 											thresholdColor = specSettings.colors.threshold.unusable
@@ -2881,9 +2879,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == spells.shiv.id then
-										if not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+										if not talents:IsTalentActive(spell) then -- Talent not selected
 											showThreshold = false
-										elseif TRB.Functions.Talent:IsTalentActive(spells.tinyToxicBlade) then -- Don't show this threshold
+										elseif talents:IsTalentActive(spells.tinyToxicBlade) then -- Don't show this threshold
 											showThreshold = false
 										elseif snapshots[spell.id].cooldown.charges == 0 then
 											thresholdColor = specSettings.colors.threshold.unusable
@@ -2908,7 +2906,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 										end
 									elseif spell.id == spells.garrote.id then
-										if not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+										if not talents:IsTalentActive(spell) then -- Talent not selected
 											showThreshold = false
 										else
 											if snapshots[spells.improvedGarrote.id].attributes.isActiveStealth or snapshots[spells.improvedGarrote.id].buff.isActive then
@@ -2925,9 +2923,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											end
 										end
 									end
-								elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
+								elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 									showThreshold = false
-								elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+								elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								elseif spell.hasCooldown then
 									if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
@@ -2994,7 +2992,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					
 					local sbsCp = 0
 					
-					if specSettings.comboPoints.spec.serratedBoneSpikeColor and TRB.Functions.Talent:IsTalentActive(spells.serratedBoneSpike) and snapshotData.targetData.currentTargetGuid ~= nil and snapshots[spells.serratedBoneSpike.id].cooldown.charges > 0 then
+					if specSettings.comboPoints.spec.serratedBoneSpikeColor and talents:IsTalentActive(spells.serratedBoneSpike) and snapshotData.targetData.currentTargetGuid ~= nil and snapshots[spells.serratedBoneSpike.id].cooldown.charges > 0 then
 						sbsCp = 1 + snapshotData.targetData.count[spells.serratedBoneSpike.debuffId]
 					end
 
@@ -3208,9 +3206,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 										end
 									end
-								elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
+								elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 									showThreshold = false
-								elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+								elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								elseif spell.hasCooldown then
 									if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
@@ -3350,7 +3348,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					elseif spellId == spells.garrote.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_CAST_SUCCESS" then
-								if not((TRB.Functions.Talent:IsTalentActive(spells.subterfuge) and IsStealthed()) or snapshots[spells.subterfuge.id].buff.isActive) then
+								if not((talents:IsTalentActive(spells.subterfuge) and IsStealthed()) or snapshots[spells.subterfuge.id].buff.isActive) then
 									snapshots[spellId].cooldown:Initialize()
 								end
 
@@ -3580,7 +3578,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 then
-			specCache.assassination.talents = TRB.Functions.Talent:GetTalents()
+			specCache.assassination.talents:GetTalents()
 			FillSpellData_Assassination()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.assassination)
 			
@@ -3605,13 +3603,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.assassination)
 
 			if TRB.Data.barConstructedForSpec ~= "assassination" then
+				talents = specCache.assassination.talents
 				TRB.Data.barConstructedForSpec = "assassination"
 				ConstructResourceBar(specCache.assassination.settings)
 			else
 				TRB.Functions.Bar:SetPosition(TRB.Data.settings.rogue.assassination, TRB.Frames.barContainerFrame)
 			end
 		elseif specId == 2 then
-			specCache.outlaw.talents = TRB.Functions.Talent:GetTalents()
+			specCache.outlaw.talents:GetTalents()
 			FillSpellData_Outlaw()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.outlaw)
 			
@@ -3629,6 +3628,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.outlaw)
 
 			if TRB.Data.barConstructedForSpec ~= "outlaw" then
+				talents = specCache.outlaw.talents
 				TRB.Data.barConstructedForSpec = "outlaw"
 				ConstructResourceBar(specCache.outlaw.settings)
 			else

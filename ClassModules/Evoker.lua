@@ -13,19 +13,19 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
+	
+	local talents --[[@as TRB.Classes.Talents]]
 
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
 
 	local specCache = {
 		devastation = {
-			snapshot = {},
 			barTextVariables = {
 				icons = {},
 				values = {}
 			},
 			spells = {},
-			talents = {},
 			settings = {
 				bar = nil,
 				comboPoints = nil,
@@ -36,13 +36,11 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			}
 		},
 		preservation = {
-			snapshot = {},
 			barTextVariables = {
 				icons = {},
 				values = {}
 			},
 			spells = {},
-			talents = {},
 			settings = {
 				bar = nil,
 				comboPoints = nil,
@@ -53,13 +51,11 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			}
 		},
 		augmentation = {
-			snapshot = {},
 			barTextVariables = {
 				icons = {},
 				values = {}
 			},
 			spells = {},
-			talents = {},
 			settings = {
 				bar = nil,
 				comboPoints = nil,
@@ -1880,7 +1876,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation then
-			specCache.devastation.talents = TRB.Functions.Talent:GetTalents()
+			specCache.devastation.talents:GetTalents()
 			FillSpellData_Devastation()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.devastation)
 			
@@ -1892,11 +1888,12 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.devastation)
 
 			if TRB.Data.barConstructedForSpec ~= "devastation" then
+				talents = specCache.devastation.talents
 				TRB.Data.barConstructedForSpec = "devastation"
 				ConstructResourceBar(specCache.devastation.settings)
 			end
 		elseif specId == 2 then
-			specCache.preservation.talents = TRB.Functions.Talent:GetTalents()
+			specCache.preservation.talents:GetTalents()
 			FillSpellData_Preservation()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)
 
@@ -1908,11 +1905,12 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.preservation)
 
 			if TRB.Data.barConstructedForSpec ~= "preservation" then
+				talents = specCache.devastation.talents
 				TRB.Data.barConstructedForSpec = "preservation"
 				ConstructResourceBar(specCache.preservation.settings)
 			end
 		elseif specId == 3 and TRB.Data.settings.core.experimental.specs.evoker.augmentation then
-			specCache.augmentation.talents = TRB.Functions.Talent:GetTalents()
+			specCache.augmentation.talents:GetTalents()
 			FillSpellData_Augmentation()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.augmentation)
 			
@@ -1924,6 +1922,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.augmentation)
 
 			if TRB.Data.barConstructedForSpec ~= "augmentation" then
+				talents = specCache.augmentation.talents
 				TRB.Data.barConstructedForSpec = "augmentation"
 				ConstructResourceBar(specCache.augmentation.settings)
 			end

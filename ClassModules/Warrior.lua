@@ -12,19 +12,19 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
+	
+	local talents --[[@as TRB.Classes.Talents]]
 
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
 
 	local specCache = {
 		arms = {
-			snapshot = {},
 			barTextVariables = {
 				icons = {},
 				values = {}
 			},
 			spells = {},
-			talents = {},
 			settings = {
 				bar = nil,
 				comboPoints = nil,
@@ -35,13 +35,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			}
 		},
 		fury = {
-			snapshot = {},
 			barTextVariables = {
 				icons = {},
 				values = {}
 			},
 			spells = {},
-			talents = {},
 			settings = {
 				bar = nil,
 				comboPoints = nil,
@@ -53,11 +51,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		}
 	}
 	
-	---@type TRB.Classes.SnapshotData
-	specCache.arms.snapshotData = TRB.Classes.SnapshotData:New()
+	specCache.arms.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
+	specCache.arms.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
 	
-	---@type TRB.Classes.SnapshotData
-	specCache.fury.snapshotData = TRB.Classes.SnapshotData:New()
+	specCache.fury.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
+	specCache.fury.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
 
 	local function FillSpecializationCache()
 		-- Arms
@@ -1005,7 +1003,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#slam"] = spells.slam.icon
 		lookup["#spearOfBastion"] = spells.spearOfBastion.icon
 		lookup["#whirlwind"] = spells.whirlwind.icon
-		lookup["$rend"] = TRB.Functions.Talent:IsTalentActive(spells.rend)
+		lookup["$rend"] = talents:IsTalentActive(spells.rend)
 		lookup["$rendCount"] = rendCount
 		lookup["$rendTime"] = rendTime
 		lookup["$deepWoundsCount"] = deepWoundsCount
@@ -1028,7 +1026,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		TRB.Data.lookup = lookup
 		
 		local lookupLogic = TRB.Data.lookupLogic or {}
-		lookupLogic["$rend"] = TRB.Functions.Talent:IsTalentActive(spells.rend)
+		lookupLogic["$rend"] = talents:IsTalentActive(spells.rend)
 		lookupLogic["$rendCount"] = _rendCount
 		lookupLogic["$rendTime"] = _rendTime
 		lookupLogic["$deepWoundsCount"] = _deepWoundsCount
@@ -1367,7 +1365,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							local thresholdColor = specSettings.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
-							if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+							if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == spells.execute.id then
@@ -1378,7 +1376,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									
 									local healthMinimum = spells.execute.healthMinimum
 									
-									if TRB.Functions.Talent:IsTalentActive(spells.massacre) then
+									if talents:IsTalentActive(spells.massacre) then
 										healthMinimum = spells.massacre.healthMinimum
 									end
 
@@ -1437,7 +1435,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									
 									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 								elseif spell.id == spells.whirlwind.id then
-									if TRB.Functions.Talent:IsTalentActive(spells.stormOfSwords) then
+									if talents:IsTalentActive(spells.stormOfSwords) then
 										rageAmount = rageAmount + spells.stormOfSwords.rageMod
 									end
 									
@@ -1450,7 +1448,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
 								elseif spell.id == spells.thunderClap.id then
-									if TRB.Functions.Talent:IsTalentActive(spells.bloodAndThunder) then
+									if talents:IsTalentActive(spells.bloodAndThunder) then
 										rageAmount = rageAmount + spells.bloodAndThunder.rageMod
 									end
 
@@ -1577,11 +1575,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							local thresholdColor = specSettings.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
-							if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+							if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == spells.execute.id then
-									if TRB.Functions.Talent:IsTalentActive(spells.improvedExecute) then
+									if talents:IsTalentActive(spells.improvedExecute) then
 										showThreshold = false
 									else
 										local targetUnitHealth
@@ -1591,7 +1589,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										
 										local healthMinimum = spells.execute.healthMinimum
 										
-										if TRB.Functions.Talent:IsTalentActive(spells.massacre) then
+										if talents:IsTalentActive(spells.massacre) then
 											healthMinimum = spells.massacre.healthMinimum
 										end
 
@@ -1621,7 +1619,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										end
 									end
 								elseif spell.id == spells.slam.id then
-									if TRB.Functions.Talent:IsTalentActive(spells.stormOfSwords) then
+									if talents:IsTalentActive(spells.stormOfSwords) then
 										showThreshold = false
 									elseif currentRage >= -rageAmount then
 										thresholdColor = specSettings.colors.threshold.over
@@ -1630,7 +1628,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == spells.thunderClap.id then
-									if TRB.Functions.Talent:IsTalentActive(spells.bloodAndThunder) then
+									if talents:IsTalentActive(spells.bloodAndThunder) then
 										rageAmount = rageAmount + spells.bloodAndThunder.rageMod
 									end
 									
@@ -1769,7 +1767,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							local duration = spells.ravager.duration * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)
 							snapshots[spellId].buff:InitializeCustom(duration)
 			
-							if TRB.Functions.Talent:IsTalentActive(spells.stormOfSteel) then
+							if talents:IsTalentActive(spells.stormOfSteel) then
 								snapshots[spellId].buff:SetTickData(true, spells.ravager.resourcePerTick + spells.stormOfSteel.resourcePerTick, spells.ravager.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
 							else
 								snapshots[spellId].buff:SetTickData(true, spells.ravager.resourcePerTick, spells.ravager.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
@@ -1795,7 +1793,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					if type == "SPELL_CAST_SUCCESS" then
 						snapshots[spellId].cooldown:Initialize()
 					end
-				elseif spellId == spells.execute.id and not TRB.Functions.Talent:IsTalentActive(spells.improvedExecute) then
+				elseif spellId == spells.execute.id and not talents:IsTalentActive(spells.improvedExecute) then
 					if type == "SPELL_CAST_SUCCESS" then
 						snapshots[spellId].cooldown:Initialize()
 					end
@@ -1847,7 +1845,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 then
-			specCache.arms.talents = TRB.Functions.Talent:GetTalents()
+			specCache.arms.talents:GetTalents()
 			FillSpellData_Arms()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.arms)
 
@@ -1863,11 +1861,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.arms)
 			
 			if TRB.Data.barConstructedForSpec ~= "arms" then
+				talents = specCache.arms.talents
 				TRB.Data.barConstructedForSpec = "arms"
 				ConstructResourceBar(specCache.arms.settings)
 			end
 		elseif specId == 2 then
-			specCache.fury.talents = TRB.Functions.Talent:GetTalents()
+			specCache.fury.talents:GetTalents()
 			FillSpellData_Fury()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.fury)
 			
@@ -1876,6 +1875,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warrior.fury)
 			
 			if TRB.Data.barConstructedForSpec ~= "fury" then
+				talents = specCache.fury.talents
 				TRB.Data.barConstructedForSpec = "fury"
 				ConstructResourceBar(specCache.fury.settings)
 			end
@@ -1965,7 +1965,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		if specId == 1 then
 			TRB.Data.character.specName = "arms"
 
-			if TRB.Functions.Talent:IsTalentActive(TRB.Data.spells.bloodletting) then
+			if talents:IsTalentActive(TRB.Data.spells.bloodletting) then
 				TRB.Data.character.pandemicModifier = TRB.Data.spells.bloodletting.modifier
 			end
 		elseif specId == 2 then
@@ -2110,7 +2110,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					valid = true
 				end
 			elseif var == "$rend" then
-				if TRB.Functions.Talent:IsTalentActive(spells.rend) then
+				if talents:IsTalentActive(spells.rend) then
 					valid = true
 				end
 			elseif var == "$rendCount" then

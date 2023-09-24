@@ -12,13 +12,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
+	
+	local talents --[[@as TRB.Classes.Talents]]
 
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
 
 	local specCache = {
 		beastMastery = {
-			snapshot = {},
 			barTextVariables = {},
 			settings = {
 				bar = nil,
@@ -30,7 +31,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			}
 		},
 		marksmanship = {
-			snapshot = {},
 			barTextVariables = {},
 			settings = {
 				bar = nil,
@@ -42,7 +42,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			}
 		},
 		survival = {
-			snapshot = {},
 			barTextVariables = {},
 			settings = {
 				bar = nil,
@@ -54,15 +53,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			}
 		}
 	}
-
-	---@type TRB.Classes.SnapshotData
-	specCache.beastMastery.snapshotData = TRB.Classes.SnapshotData:New()
-
-	---@type TRB.Classes.SnapshotData
-	specCache.marksmanship.snapshotData = TRB.Classes.SnapshotData:New()
-
-	---@type TRB.Classes.SnapshotData
-	specCache.survival.snapshotData = TRB.Classes.SnapshotData:New()
+	
+	specCache.beastMastery.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
+	specCache.beastMastery.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
+	
+	specCache.marksmanship.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
+	specCache.marksmanship.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
+	
+	specCache.survival.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
+	specCache.survival.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
 
 	local function FillSpecializationCache()
 		-- Beast Mastery
@@ -1558,7 +1557,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local _beastCleaveTime = snapshots[spells.beastCleave.id].buff:GetRemainingTime(currentTime)
 		local beastCleaveTime = string.format("%.1f", _beastCleaveTime)
 
-		if TRB.Functions.Talent:IsTalentActive(spells.bloodFrenzy) and (snapshots[spells.callOfTheWild.id].buff:GetRemainingTime(currentTime)) > (snapshots[spells.beastCleave.id].buff.remaining) then
+		if talents:IsTalentActive(spells.bloodFrenzy) and (snapshots[spells.callOfTheWild.id].buff:GetRemainingTime(currentTime)) > (snapshots[spells.beastCleave.id].buff.remaining) then
 			_beastCleaveTime = snapshots[spells.callOfTheWild.id].buff.remaining
 		end
 
@@ -1668,7 +1667,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$barbedShotTicks"] = barbedShotTicks
 		lookup["$barbedShotTime"] = barbedShotTime
 		lookup["$beastCleaveTime"] = beastCleaveTime
-		lookup["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(spells.serpentSting)
+		lookup["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
 		lookup["$regen"] = regenFocus
@@ -1703,7 +1702,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookupLogic["$barbedShotTicks"] = snapshots[spells.barbedShot.id].attributes.ticksRemaining
 		lookupLogic["$barbedShotTime"] = _barbedShotTime
 		lookupLogic["$beastCleaveTime"] = _beastCleaveTime
-		lookupLogic["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(spells.serpentSting)
+		lookupLogic["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
 		lookupLogic["$ssCount"] = _serpentStingCount
 		lookupLogic["$ssTime"] = _serpentStingTime
 		lookupLogic["$regen"] = _regenFocus
@@ -1861,7 +1860,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$trueshotTime"] = trueshotTime
 		lookup["$lockAndLoadTime"] = lockAndLoadTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
-		lookup["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(spells.serpentSting)
+		lookup["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
 		lookup["$focusTotal"] = focusTotal
@@ -1887,7 +1886,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookupLogic["$trueshotTime"] = _trueshotTime
 		lookupLogic["$lockAndLoadTime"] = _lockAndLoadTime
 		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
-		lookupLogic["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(spells.serpentSting)
+		lookupLogic["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
 		lookupLogic["$ssCount"] = _serpentStingCount
 		lookupLogic["$ssTime"] = _serpentStingTime
 		lookupLogic["$focusTotal"] = _focusTotal
@@ -2061,7 +2060,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#wildfireBomb"] = spells.wildfireBomb.icon
 		lookup["$coordinatedAssaultTime"] = coordinatedAssaultTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
-		lookup["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(spells.serpentSting)
+		lookup["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
 		lookup["$wildfireBombCharges"] = wildfireBombCharges
@@ -2089,7 +2088,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		lookupLogic["$coordinatedAssaultTime"] = _coordinatedAssaultTime
 		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
-		lookupLogic["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(spells.serpentSting)
+		lookupLogic["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
 		lookupLogic["$ssCount"] = _serpentStingCount
 		lookupLogic["$ssTime"] = _serpentStingTime
 		lookupLogic["$wildfireBombCharges"] = wildfireBombCharges
@@ -2183,7 +2182,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					if spellName == spells.aimedShot.name then
 						FillSnapshotDataCasting(spells.aimedShot)
 					elseif spellName == spells.steadyShot.name then
-						if TRB.Functions.Talent:IsTalentActive(spells.improvedSteadyShot) then
+						if talents:IsTalentActive(spells.improvedSteadyShot) then
 							FillSnapshotDataCasting(spells.improvedSteadyShot)
 						else
 						FillSnapshotDataCasting(spells.steadyShot)
@@ -2454,9 +2453,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								end
-							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
+							elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 								showThreshold = false
-							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+							elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif spell.hasCooldown then
 								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
@@ -2504,16 +2503,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							barColor = specSettings.colors.bar.frenzyUse
 						elseif snapshots[spells.barbedShot.id].cooldown.remaining <= reactionTimeGcds and snapshots[spells.barbedShot.id].cooldown.charges == 1 then
 							barColor = specSettings.colors.bar.frenzyUse
-						elseif TRB.Functions.Talent:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.remainingTotal <= reactionTimeGcds and beastialWrathCooldownRemaining < (spells.barbedWrath.beastialWrathCooldownReduction + reactionTimeGcds) then
+						elseif talents:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.remainingTotal <= reactionTimeGcds and beastialWrathCooldownRemaining < (spells.barbedWrath.beastialWrathCooldownReduction + reactionTimeGcds) then
 							barColor = specSettings.colors.bar.frenzyUse
-						elseif TRB.Functions.Talent:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * spells.barbedWrath.beastialWrathCooldownReduction) then
+						elseif talents:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * spells.barbedWrath.beastialWrathCooldownReduction) then
 							barColor = specSettings.colors.bar.frenzyUse
 						end
 					else
 						if affectingCombat then
 							if snapshots[spells.barbedShot.id].cooldown.charges == 2 then
 								barColor = specSettings.colors.bar.frenzyUse
-							elseif TRB.Functions.Talent:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * spells.barbedWrath.beastialWrathCooldownReduction) then
+							elseif talents:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * spells.barbedWrath.beastialWrathCooldownReduction) then
 								barColor = specSettings.colors.bar.frenzyUse
 							elseif snapshots[spells.barbedShot.id].cooldown.remainingTotal <= reactionTimeGcds then
 								barColor = specSettings.colors.bar.frenzyUse
@@ -2585,7 +2584,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						snapshotData.audio.overcapCue = false
 					end
 
-					if UnitAffectingCombat("player") and specSettings.steadyFocus.enabled and TRB.Functions.Talent:IsTalentActive(spells.steadyFocus) then
+					if UnitAffectingCombat("player") and specSettings.steadyFocus.enabled and talents:IsTalentActive(spells.steadyFocus) then
 						local timeThreshold = 0
 
 						if specSettings.steadyFocus.mode == "gcd" then
@@ -2657,7 +2656,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == spells.arcaneShot.id then
-									if TRB.Functions.Talent:IsTalentActive(spells.chimaeraShot) == true then
+									if talents:IsTalentActive(spells.chimaeraShot) == true then
 										showThreshold = false
 									elseif snapshotData.attributes.resource >= -focusAmount then
 										thresholdColor = specSettings.colors.threshold.over
@@ -2720,9 +2719,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										snapshotData.audio.playedKillShotCue = false
 									end
 								end
-							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+							elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
+							elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
 								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
@@ -2880,7 +2879,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										snapshotData.audio.playedKillShotCue = false
 									end
 								elseif spell.id == spells.raptorStrike.id then
-									if TRB.Functions.Talent:IsTalentActive(spells.mongooseBite) then
+									if talents:IsTalentActive(spells.mongooseBite) then
 										showThreshold = false
 									else
 										if snapshotData.attributes.resource >= -focusAmount then
@@ -2891,7 +2890,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										end
 									end
 								elseif spell.id == spells.mongooseBite.id then
-									if not TRB.Functions.Talent:IsTalentActive(spells.mongooseBite) then
+									if not talents:IsTalentActive(spells.mongooseBite) then
 										showThreshold = false
 									else
 										if snapshotData.attributes.resource >= -focusAmount then
@@ -2902,9 +2901,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										end
 									end
 								end
-							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+							elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
+							elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
 								if snapshots[spell.id].cooldown:IsUnusable() then
@@ -3132,7 +3131,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 then
-			specCache.beastMastery.talents = TRB.Functions.Talent:GetTalents()
+			specCache.beastMastery.talents:GetTalents()
 			FillSpellData_BeastMastery()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.beastMastery)
 			
@@ -3147,14 +3146,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.beastMastery)
 
 			if TRB.Data.barConstructedForSpec ~= "beastMastery" then
+				talents = specCache.beastMastery.talents
 				TRB.Data.barConstructedForSpec = "beastMastery"
 				ConstructResourceBar(specCache.beastMastery.settings)
-				TwintopResourceBar_SnapshotData = TRB.Data.snapshotData
-				TwintopResourceBar_Settings = TRB.Data.settings.hunter.marksmanship
-				TwintopResourceBar_Spells = TRB.Data.spells
 			end
 		elseif specId == 2 then
-			specCache.marksmanship.talents = TRB.Functions.Talent:GetTalents()
+			specCache.marksmanship.talents:GetTalents()
 			FillSpellData_Marksmanship()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.marksmanship)
 			
@@ -3169,11 +3166,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.marksmanship)
 
 			if TRB.Data.barConstructedForSpec ~= "marksmanship" then
+				talents = specCache.marksmanship.talents
 				TRB.Data.barConstructedForSpec = "marksmanship"
 				ConstructResourceBar(specCache.marksmanship.settings)
 			end
 		elseif specId == 3 then
-			specCache.survival.talents = TRB.Functions.Talent:GetTalents()
+			specCache.survival.talents:GetTalents()
 			FillSpellData_Survival()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.survival)
 			
@@ -3189,6 +3187,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 			if TRB.Data.barConstructedForSpec ~= "survival" then
+				talents = specCache.survival.talents
 				TRB.Data.barConstructedForSpec = "survival"
 				ConstructResourceBar(specCache.survival.settings)
 			end
@@ -3558,7 +3557,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				valid = true
 			end
 		elseif var == "$serpentSting" then
-			if TRB.Functions.Talent:IsTalentActive(spells.serpentSting) then
+			if talents:IsTalentActive(spells.serpentSting) then
 				valid = true
 			end
 		end

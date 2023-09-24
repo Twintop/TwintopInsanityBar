@@ -23,13 +23,14 @@ Libs\json.lua
 Libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
 Libs\LibMarkdown\LibMarkdown.xml
 
-Init.lua
-
 Classes\Snapshot.lua
 Classes\TimeToDie.lua
 Classes\Target.lua
+Classes\Talent.lua
 
 ClassModules\Classes\HealerClasses.lua
+
+Init.lua
 
 Functions\Aura.lua
 Functions\Bar.lua
