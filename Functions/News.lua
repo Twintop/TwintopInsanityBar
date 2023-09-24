@@ -8,6 +8,15 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 ----
 
+# 10.1.7.5-release (2023-10-01)
+
+## Hunter
+### Beast Mastery
+
+- (FIX) Prevent Lua error when logging in as Beast Mastery.
+
+----
+
 # 10.1.7.4-release (2023-09-20)
 
 ## Priest
