@@ -2484,7 +2484,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 					local barColor = specSettings.colors.bar.base
 
-					local barbedShotPartialCharges = snapshots[spells.barbedShot.id].cooldown.charges + (snapshots[spells.barbedShot.id].cooldown.remaining / snapshots[spells.barbedShot.id].cooldown.duration)
+					local bsPartial = 0
+
+					if snapshots[spells.barbedShot.id].cooldown.remaining > 0 and snapshots[spells.barbedShot.id].cooldown.duration > 0 then
+						bsPartial = snapshots[spells.barbedShot.id].cooldown.remaining / snapshots[spells.barbedShot.id].cooldown.duration
+					end
+
+					local barbedShotPartialCharges = snapshots[spells.barbedShot.id].cooldown.charges + bsPartial
 					local beastialWrathCooldownRemaining = snapshots[spells.beastialWrath.id].cooldown:GetRemainingTime(currentTime)
 					local affectingCombat = UnitAffectingCombat("player")
 					local reactionTimeGcds = math.min(gcd * 1.5, 2)
