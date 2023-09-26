@@ -19,43 +19,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	TRB.Data.character = {}
 
 	local specCache = {
-		arms = {
-			barTextVariables = {
-				icons = {},
-				values = {}
-			},
-			spells = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		},
-		fury = {
-			barTextVariables = {
-				icons = {},
-				values = {}
-			},
-			spells = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		}
+		arms = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
+		fury = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
 	}
-	
-	specCache.arms.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
-	specCache.arms.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
-	
-	specCache.fury.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
-	specCache.fury.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
 
 	local function FillSpecializationCache()
 		-- Arms

@@ -19,25 +19,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	TRB.Data.character = {}
 
 	local specCache = {
-		havoc = {
-			barTextVariables = {
-				icons = {},
-				values = {}
-			},
-			spells = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		}
+		havoc = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
 	}
-	
-	specCache.havoc.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
-	specCache.havoc.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
 
 	local function FillSpecializationCache()
 		-- Havoc

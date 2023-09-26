@@ -19,61 +19,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	TRB.Data.character = {}
 	
 	local specCache = {
-		elemental = {
-			barTextVariables = {
-				icons = {},
-				values = {}
-			},
-			spells = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		},
-		enhancement = {
-			barTextVariables = {
-				icons = {},
-				values = {}
-			},
-			spells = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		},
-		restoration = {
-			barTextVariables = {
-				icons = {},
-				values = {}
-			},
-			spells = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		}
+		elemental = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
+		enhancement = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
+		restoration = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
 	}
-	
-	specCache.elemental.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
-	specCache.elemental.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
-	
-	specCache.enhancement.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
-	specCache.enhancement.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
-	
-	specCache.restoration.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
-	specCache.restoration.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
 
 	local function CalculateManaGain(mana, isPotion)
 		local spells = TRB.Data.spells

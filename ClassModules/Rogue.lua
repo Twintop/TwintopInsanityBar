@@ -20,43 +20,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	TRB.Data.character = {}
 
 	local specCache = {
-		assassination = {
-			barTextVariables = {
-				icons = {},
-				values = {}
-			},
-			spells = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		},
-		outlaw = {
-			barTextVariables = {
-				icons = {},
-				values = {}
-			},
-			spells = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		}
+		assassination = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
+		outlaw = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
 	}
-	
-	specCache.assassination.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
-	specCache.assassination.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
-	
-	specCache.outlaw.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
-	specCache.outlaw.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
 
 	local function FillSpecializationCache()
 		-- Assassination

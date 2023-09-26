@@ -19,51 +19,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	TRB.Data.character = {}
 	
 	local specCache = {
-		balance = {
-			barTextVariables = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		},
-		feral = {
-			barTextVariables = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		},
-		restoration = {
-			barTextVariables = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		}
+		balance = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
+		feral = TRB.Classes.SpecCache:New({
+			bleeds = {}
+		}) --[[@as TRB.Classes.SpecCache]],
+		restoration = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
 	}
-	
-	specCache.balance.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
-	specCache.balance.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
-	
-	specCache.feral.snapshotData = TRB.Classes.SnapshotData:New({
-		bleeds = {}
-	}) --[[@as TRB.Classes.SnapshotData]]
-	specCache.feral.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
-	
-	specCache.restoration.snapshotData = TRB.Classes.SnapshotData:New() --[[@as TRB.Classes.SnapshotData]]
-	specCache.restoration.talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]]
 
 	local function CalculateManaGain(mana, isPotion)
 		if isPotion == nil then
