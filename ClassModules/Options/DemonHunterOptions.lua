@@ -81,7 +81,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	local function HavocLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			furyPrecision=0,
+			resourcePrecision=0,
 			thresholds = {
 				width = 2,
 				overlapBorder=true,

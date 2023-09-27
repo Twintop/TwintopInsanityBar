@@ -2308,7 +2308,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0) then
 				valid = true
 			end
-		elseif var == "$regen" or var == "$regenMana" or var == "$manaRegen" then
+		elseif var == "$regen" then
 			if snapshotData.attributes.resource < TRB.Data.character.maxResource and
 				((settings.generation.mode == "time" and settings.generation.time > 0) or
 				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then

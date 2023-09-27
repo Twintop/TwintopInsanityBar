@@ -12,8 +12,17 @@ local content = [====[
 
 ## General
 - [#330 - REFACTOR](#330) Change how Talents are stored and accessed.
+- (REFACTOR) Standardize resource names under the hood.
+
+## Druid
+### Feral
+
+- (FIX) Allow for passive and regen values for Energy to be properly tracked as bar text.
 
 ## Hunter
+
+- (FIX) Fix passive focus bar text tracking to not report as a valid variable when disabled.
+
 ### Beast Mastery
 
 - (FIX) Prevent Lua error when logging in as Beast Mastery.

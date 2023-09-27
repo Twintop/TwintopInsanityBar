@@ -362,7 +362,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				id = 117952,
 				name = "",
 				icon = "",
-				energy = -20,
+				resource = -20,
 				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 1,
@@ -375,7 +375,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				id = 322101,
 				name = "",
 				icon = "",
-				energy = -15,
+				resource = -15,
 				comboPointsGenerated = 1,
 				texture = "",
 				thresholdId = 2,
@@ -406,7 +406,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				id = 100780,
 				name = "",
 				icon = "",
-				energy = -50,
+				resource = -50,
 				comboPointsGenerated = 2,
 				texture = "",
 				thresholdId = 3,
@@ -428,7 +428,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				id = 116670,
 				name = "",
 				icon = "",
-				energy = -30,
+				resource = -30,
 				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 4,
@@ -453,7 +453,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				id = 218164,
 				name = "",
 				icon = "",
-				energy = -20,
+				resource = -20,
 				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 5,
@@ -468,7 +468,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				id = 116095,
 				name = "",
 				icon = "",
-				energy = -15,
+				resource = -15,
 				comboPoints = true,
 				texture = "",
 				thresholdId = 6,
@@ -480,7 +480,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				id = 115078,
 				name = "",
 				icon = "",
-				energy = -20,
+				resource = -20,
 				comboPointsGenerated = 0,
 				texture = "",
 				thresholdId = 7,
@@ -522,7 +522,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				name = "",
 				icon = "",
 				comboPointsGenerated = 2,
-				energyPerTick = 15,
+				resourcePerTick = 15,
 				ticks = 5,
 				tickRate = 1,
 				isTalent = true
@@ -541,7 +541,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			},
 		}
 
-		specCache.windwalker.snapshotData.attributes.energyRegen = 0
+		specCache.windwalker.snapshotData.attributes.resourceRegen = 0
 		specCache.windwalker.snapshotData.audio = {
 			overcapCue = false,
 			playedDanceOfChiJiCue = false
@@ -773,10 +773,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			{ variable = "$resourceMax", description = "Maximum Energy", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Builder Energy from Hardcasting Spells", printInSettings = false, color = false },
 			{ variable = "$casting", description = "Spender Energy from Hardcasting Spells", printInSettings = false, color = false },
-			{ variable = "$passive", description = "Energy from Passive Sources including Regen and Barbed Shot buffs", printInSettings = true, color = false },
+			{ variable = "$passive", description = "Energy from Passive Sources including Regen", printInSettings = true, color = false },
 			{ variable = "$regen", description = "Energy from Passive Regen", printInSettings = true, color = false },
 			{ variable = "$regenEnergy", description = "Energy from Passive Regen", printInSettings = false, color = false },
-			{ variable = "$energyRegen", description = "Energy from Passive Regen", printInSettings = false, color = false },
+			{ variable = "$resourceRegen", description = "Energy from Passive Regen", printInSettings = false, color = false },
 			{ variable = "$energyPlusCasting", description = "Current + Casting Energy Total", printInSettings = false, color = false },
 			{ variable = "$resourcePlusCasting", description = "Current + Casting Energy Total", printInSettings = false, color = false },
 			{ variable = "$energyPlusPassive", description = "Current + Passive Energy Total", printInSettings = true, color = false },
@@ -871,7 +871,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		elseif specId == 3 then
 			for k, v in pairs(spells) do
 				local spell = spells[k]
-				if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+				if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 					if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
@@ -1246,7 +1246,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local currentTime = GetTime()
 
 		-- This probably needs to be pulled every refresh
-		snapshotData.attributes.energyRegen, _ = GetPowerRegen()
+		snapshotData.attributes.resourceRegen, _ = GetPowerRegen()
 
 		--$overcap
 		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
@@ -1292,9 +1292,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		if specSettings.generation.enabled then
 			if specSettings.generation.mode == "time" then
-				_regenEnergy = snapshotData.attributes.energyRegen * (specSettings.generation.time or 3.0)
+				_regenEnergy = snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0)
 			else
-				_regenEnergy = snapshotData.attributes.energyRegen * ((specSettings.generation.gcds or 2) * _gcd)
+				_regenEnergy = snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * _gcd)
 			end
 		end
 
@@ -1429,7 +1429,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		lookup["$regen"] = regenEnergy
 		lookup["$regenEnergy"] = regenEnergy
-		lookup["$energyRegen"] = regenEnergy
+		lookup["$resourceRegen"] = regenEnergy
 		lookup["$overcap"] = overcap
 		lookup["$resourceOvercap"] = overcap
 		lookup["$energyOvercap"] = overcap
@@ -1466,7 +1466,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		lookupLogic["$regen"] = _regenEnergy
 		lookupLogic["$regenEnergy"] = _regenEnergy
-		lookupLogic["$energyRegen"] = _regenEnergy
+		lookupLogic["$resourceRegen"] = _regenEnergy
 		lookupLogic["$overcap"] = overcap
 		lookupLogic["$resourceOvercap"] = overcap
 		lookupLogic["$energyOvercap"] = overcap
@@ -1484,8 +1484,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local currentTime = GetTime()
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		snapshotData.casting.startTime = currentTime
-		snapshotData.casting.resourceRaw = spell.energy
-		snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.energy)
+		snapshotData.casting.resourceRaw = spell.resource
+		snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.resource)
 		snapshotData.casting.spellId = spell.id
 		snapshotData.casting.icon = spell.icon
 	end
@@ -1558,7 +1558,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if currentChannelId == spells.cracklingJadeLightning.id then
 						snapshotData.casting.spellId = spells.cracklingJadeLightning.id
 						snapshotData.casting.startTime = currentTime
-						snapshotData.casting.resourceRaw = spells.cracklingJadeLightning.energy
+						snapshotData.casting.resourceRaw = spells.cracklingJadeLightning.resource
 						snapshotData.casting.icon = spells.cracklingJadeLightning.icon
 						UpdateCastingResourceFinal()
 					end
@@ -1891,9 +1891,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					if specSettings.bar.showPassive then
 						if specSettings.generation.enabled then
 							if specSettings.generation.mode == "time" then
-								passiveValue = (snapshotData.attributes.energyRegen * (specSettings.generation.time or 3.0))
+								passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
 							else
-								passiveValue = (snapshotData.attributes.energyRegen * ((specSettings.generation.gcds or 2) * gcd))
+								passiveValue = (snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * gcd))
 							end
 						end
 					end
@@ -1932,9 +1932,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					local pairOffset = 0
 					for k, v in pairs(spells) do
 						local spell = spells[k]
-						if spell ~= nil and spell.id ~= nil and spell.energy ~= nil and spell.energy < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then	
-							local energyAmount = CalculateAbilityResourceValue(spell.energy, true)
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -energyAmount, TRB.Data.character.maxResource)
+						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then	
+							local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -1949,14 +1949,14 @@ elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not s
 								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif snapshotData.attributes.resource >= -energyAmount then
+								elseif snapshotData.attributes.resource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
-								if snapshotData.attributes.resource >= -energyAmount then
+								if snapshotData.attributes.resource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -2711,8 +2711,9 @@ elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not s
 				if snapshotData.attributes.resource > 0 then
 					valid = true
 				end
-			elseif var == "$regen" or var == "$regenEnergy" or var == "$energyRegen" then
-				if snapshotData.attributes.resource < TRB.Data.character.maxResource and
+			elseif var == "$regen" or var == "$regenEnergy" or var == "$resourceRegen" then
+				if settings.generation.enabled and
+					snapshotData.attributes.resource < TRB.Data.character.maxResource and
 					((settings.generation.mode == "time" and settings.generation.time > 0) or
 					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 					valid = true

@@ -89,7 +89,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local function ArmsLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			ragePrecision=0,
+			resourcePrecision=0,
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
@@ -300,7 +300,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local function FuryLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			ragePrecision=0,
+			resourcePrecision=0,
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
@@ -936,13 +936,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		title = "Rage Decimal Precision"
-		controls.astralPowerPrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.ragePrecision, 1, 0,
+		controls.resourcePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.resourcePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.astralPowerPrecision:SetScript("OnValueChanged", function(self, value)
+		controls.resourcePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
-			spec.ragePrecision = value
+			spec.resourcePrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.arms = controls
@@ -1671,13 +1671,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		title = "Rage Decimal Precision"
-		controls.astralPowerPrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.ragePrecision, 1, 0,
+		controls.resourcePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.resourcePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.astralPowerPrecision:SetScript("OnValueChanged", function(self, value)
+		controls.resourcePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
-			spec.ragePrecision = value
+			spec.resourcePrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.fury = controls

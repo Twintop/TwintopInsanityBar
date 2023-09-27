@@ -596,7 +596,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			hasteApproachingThreshold=135,
 			hasteThreshold=140,
 			hastePrecision=2,
-			insanityPrecision=0,
+			resourcePrecision=0,
 			auspiciousSpiritsTracker=true,
 			voidTendrilTracker=true,
 			thresholds = {
@@ -3412,13 +3412,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		title = "Insanity Decimal Precision"
-		controls.insanityPrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, spec.insanityPrecision, 1, 0,
+		controls.resourcePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, spec.resourcePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.insanityPrecision:SetScript("OnValueChanged", function(self, value)
+		controls.resourcePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
-			spec.insanityPrecision = value
+			spec.resourcePrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame

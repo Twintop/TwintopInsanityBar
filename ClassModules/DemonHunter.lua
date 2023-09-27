@@ -62,7 +62,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 258920,
 				name = "",
 				icon = "",
-				fury = 20,
+				resource = 20,
 				cooldown = 30,
 				isTalent = false,
 				baseline = true
@@ -79,7 +79,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				name = "",
 				icon = "",
 				texture = "",
-				fury = -25,
+				resource = -25,
 				thresholdId = 9,
 				settingKey = "throwGlaive",
 				hasCooldown = true,
@@ -95,7 +95,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 188499,
 				name = "",
 				icon = "",
-				fury = -35,
+				resource = -35,
 				cooldown = 9,
 				texture = "",
 				thresholdId = 2,
@@ -110,7 +110,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			   id = 162794,
 			   name = "",
 			   icon = "",
-			   fury = -40,
+			   resource = -40,
 			   texture = "",
 			   thresholdId = 4,
 			   settingKey = "chaosStrike",
@@ -125,7 +125,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 201427,
 				name = "",
 				icon = "",
-				fury = -40,
+				resource = -40,
 				texture = "",
 				thresholdId = 1,
 				settingKey = "annihilation",
@@ -140,7 +140,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 210152,
 				name = "",
 				icon = "",
-				fury = -35,
+				resource = -35,
 				cooldown = 9,
 				texture = "",
 				thresholdId = 5,
@@ -158,7 +158,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			   id = 179057,
 			   name = "",
 			   icon = "",
-			   fury = -30,
+			   resource = -30,
 			   texture = "",
 			   thresholdId = 3,
 			   settingKey = "chaosNova",
@@ -171,7 +171,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 206477,
 				name = "",
 				icon = "",
-				furyModifier = 0.5,
+				resourceModifier = 0.5,
 				isTalent = true
 			},
 
@@ -180,7 +180,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 198013,
 				name = "",
 				icon = "",
-				fury = -30,
+				resource = -30,
 				duration = 2,
 				texture = "",
 				thresholdId = 6,
@@ -204,7 +204,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 393029,
 				name = "",
 				icon = "",
-				fury = -25,
+				resource = -25,
 				isTalent = true
 			},
 			felfireHeart = { --TODO: figure out how this plays with Burning Hatred
@@ -219,7 +219,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 211881,
 				name = "",
 				icon = "",
-				fury = -10,
+				resource = -10,
 				cooldown = 30,
 				texture = "",
 				thresholdId = 8,
@@ -234,7 +234,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				icon = "",
 				durationModifier = 1.5,
 				tickRate = 0.1,
-				fury = 4,
+				resource = 4,
 				isHasted = true,
 				isTalent = true
 			},
@@ -242,7 +242,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 342817,
 				name = "",
 				icon = "",
-				fury = -30,
+				resource = -30,
 				cooldown = 20,
 				texture = "",
 				thresholdId = 7,
@@ -256,20 +256,20 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 162243,
 				name = "",
 				icon = "",
-				fury = 20,
-				furyMax = 30
+				resource = 20,
+				resourceMax = 30
 			},
 			demonicAppetite = {
 				id = 206478,
 				name = "",
 				icon = "",
-				fury = 30
+				resource = 30
 			},
 			felBlade = {
 				id = 232893,
 				name = "",
 				icon = "",
-				fury = 40
+				resource = 40
 			},
 			unboundChaos = {
 				id = 347462,
@@ -281,7 +281,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 206416,
 				name = "",
 				icon = "",
-				furyAdjustment = -20
+				resourceAdjustment = -20
 			},
 			tacticalRetreat = {
 				id = 389890,
@@ -473,7 +473,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		if specId == 1 then
 			for k, v in pairs(TRB.Data.spells) do
 				local spell = TRB.Data.spells[k]
-				if spell ~= nil and spell.id ~= nil and spell.fury ~= nil and spell.fury < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+				if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 					if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
@@ -561,24 +561,24 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local tacticalRetreatTime = string.format("%.1f", _tacticalRetreatTime)
 
 		--$fury
-		local furyPrecision = specSettings.furyPrecision or 0
-		local currentFury = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(normalizedFury, furyPrecision, "floor"))
+		local resourcePrecision = specSettings.resourcePrecision or 0
+		local currentFury = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(normalizedFury, resourcePrecision, "floor"))
 		--$casting
 		local _castingFury = snapshotData.casting.resourceFinal
-		local castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_castingFury, furyPrecision, "floor"))
+		local castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor"))
 		--$passive
 		local _passiveFury = bhFury + tacticalRetreatFury
-		local passiveFury = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveFury, furyPrecision, "floor"))
+		local passiveFury = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveFury, resourcePrecision, "floor"))
 		
 		--$furyTotal
 		local _furyTotal = math.min(_passiveFury + snapshotData.casting.resourceFinal + normalizedFury, TRB.Data.character.maxResource)
-		local furyTotal = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(_furyTotal, furyPrecision, "floor"))
+		local furyTotal = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(_furyTotal, resourcePrecision, "floor"))
 		--$furyPlusCasting
 		local _furyPlusCasting = math.min(snapshotData.casting.resourceFinal + normalizedFury, TRB.Data.character.maxResource)
-		local furyPlusCasting = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_furyPlusCasting, furyPrecision, "floor"))
+		local furyPlusCasting = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_furyPlusCasting, resourcePrecision, "floor"))
 		--$furyPlusPassive
 		local _furyPlusPassive = math.min(_passiveFury + normalizedFury, TRB.Data.character.maxResource)
-		local furyPlusPassive = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(_furyPlusPassive, furyPrecision, "floor"))
+		local furyPlusPassive = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(_furyPlusPassive, resourcePrecision, "floor"))
 		----------------------------
 
 		Global_TwintopResourceBar.resource.resource = normalizedFury
@@ -678,8 +678,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	local function FillSnapshotDataCasting(spell)
 		local currentTime = GetTime()
 		TRB.Data.snapshotData.casting.startTime = currentTime
-		TRB.Data.snapshotData.casting.resourceRaw = spell.fury
-		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.fury)
+		TRB.Data.snapshotData.casting.resourceRaw = spell.resource
+		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.resource)
 		TRB.Data.snapshotData.casting.spellId = spell.id
 		TRB.Data.snapshotData.casting.icon = spell.icon
 	end
@@ -708,9 +708,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 						local remainingTime = TRB.Data.snapshotData.casting.endTime - currentTime
 						--TODO: use SnapshotBuff:UpdateTicks() instead?
 						local ticks = TRB.Functions.Number:RoundTo(remainingTime / (TRB.Data.spells.blindFury.tickRate * (gcd / 1.5)), 0, "ceil", true)
-						local fury = ticks * TRB.Data.spells.blindFury.fury
-						TRB.Data.snapshotData.casting.resourceRaw = fury
-						TRB.Data.snapshotData.casting.resourceFinal = fury
+						local resource = ticks * TRB.Data.spells.blindFury.resource
+						TRB.Data.snapshotData.casting.resourceRaw = resource
+						TRB.Data.snapshotData.casting.resourceFinal = resource
 					else
 						TRB.Functions.Character:ResetCastingSnapshotData()
 						return false
@@ -800,7 +800,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local currentFury = snapshotData.attributes.resource / TRB.Data.resourceFactor
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local metaTime = snapshotData.snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
 
 					local passiveValue = 0
@@ -815,30 +815,30 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					end
 
 					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = currentFury + snapshotData.casting.resourceFinal
+						castingBarValue = currentResource + snapshotData.casting.resourceFinal
 					else
-						castingBarValue = currentFury
+						castingBarValue = currentResource
 					end
 
-					if castingBarValue < currentFury then --Using a spender
+					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue) 
 							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, currentFury)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, currentFury)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentFury)
+						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentResource)
 						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
 						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
@@ -848,11 +848,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					local pairOffset = 0
 					for k, v in pairs(TRB.Data.spells) do
 						local spell = TRB.Data.spells[k]
-						if spell ~= nil and spell.id ~= nil and spell.fury ~= nil and spell.fury < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							local furyAmount = CalculateAbilityResourceValue(spell.fury)
-							local normalizedFury = snapshotData.attributes.resource / TRB.Data.resourceFactor
+						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+							local resourceAmount = CalculateAbilityResourceValue(spell.resource)
+							local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -furyAmount, TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -868,15 +868,15 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == TRB.Data.spells.chaosNova.id then
 									if talents:IsTalentActive(TRB.Data.spells.unleashedPower) then
-										furyAmount = furyAmount * TRB.Data.spells.unleashedPower.furyModifier
+										resourceAmount = resourceAmount * TRB.Data.spells.unleashedPower.resourceModifier
 									end
 
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -furyAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
 									if snapshotData.snapshots[spells.chaosNova.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif currentFury >= -furyAmount then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -884,11 +884,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 									end
 								elseif spell.id == TRB.Data.spells.throwGlaive.id then
 									if talents:IsTalentActive(TRB.Data.spells.furiousThrows) then
-										furyAmount = TRB.Data.spells.furiousThrows.fury
+										resourceAmount = TRB.Data.spells.furiousThrows.resource
 										if snapshotData.snapshots[spells.throwGlaive.id].cooldown.charges == 0 then
 											thresholdColor = specSettings.colors.threshold.unusable
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-										elseif snapshotData.attributes.resource >= -furyAmount then
+										elseif snapshotData.attributes.resource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
 										else
 											thresholdColor = specSettings.colors.threshold.under
@@ -901,7 +901,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 									if snapshotData.snapshots[spells.chaosTheory.id].buff.isActive then
 										thresholdColor = specSettings.colors.threshold.special
 										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-									elseif currentFury >= -furyAmount then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -912,14 +912,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif currentFury >= -furyAmount then
+								elseif currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
-								if currentFury >= -furyAmount then
+								if currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -1289,7 +1289,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		---@type TRB.Classes.SnapshotData
 		local snapshotData = TRB.Data.snapshotData
 		local settings = nil
-		local normalizedFury = snapshotData.attributes.resource / TRB.Data.resourceFactor
+		local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 		if specId == 1 then
 			settings = TRB.Data.settings.demonhunter.havoc
 		else
@@ -1333,19 +1333,19 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end
 
 		if var == "$resource" or var == "$fury" then
-			if normalizedFury > 0 then
+			if normalizedResource > 0 then
 				valid = true
 			end
 		elseif var == "$resourceMax" or var == "$furyMax" then
 			valid = true
 		elseif var == "$resourceTotal" or var == "$furyTotal" then
-			if normalizedFury > 0  or TRB.Functions.Class:IsValidVariableForSpec("$passive") or TRB.Functions.Class:IsValidVariableForSpec("$bhFury") or
+			if normalizedResource > 0  or TRB.Functions.Class:IsValidVariableForSpec("$passive") or TRB.Functions.Class:IsValidVariableForSpec("$bhFury") or
 				(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0)
 				then
 				valid = true
 			end
 		elseif var == "$resourcePlusCasting" or var == "$furyPlusCasting" then
-			if normalizedFury > 0 or
+			if normalizedResource > 0 or
 				(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0) then
 				valid = true
 			end
@@ -1357,7 +1357,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				return true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$furyPlusPassive" then
-			if normalizedFury > 0 or TRB.Functions.Class:IsValidVariableForSpec("$passive") or TRB.Functions.Class:IsValidVariableForSpec("$bhFury") then
+			if normalizedResource > 0 or TRB.Functions.Class:IsValidVariableForSpec("$passive") or TRB.Functions.Class:IsValidVariableForSpec("$bhFury") then
 				valid = true
 			end
 		elseif var == "$casting" then

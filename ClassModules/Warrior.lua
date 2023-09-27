@@ -54,7 +54,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 100,
 				name = "",
 				icon = "",
-				rage = 20,
+				resource = 20,
 				isTalent = false,
 				baseline = true,
 			},
@@ -63,8 +63,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				healthMinimum = 0.2,
-				rage = -20,
-				rageMax = -40,
+				resource = -20,
+				resourceMax = -40,
 				texture = "",
 				thresholdId = 1,
 				settingKey = "execute",
@@ -79,7 +79,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				healthMinimum = 0.2,
-				rage = -20,
+				resource = -20,
 				texture = "",
 				thresholdId = 2,
 				settingKey = "executeMinimum",
@@ -94,7 +94,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				healthMinimum = 0.2,
-				rage = -40,
+				resource = -40,
 				texture = "",
 				thresholdId = 3,
 				settingKey = "executeMaximum",
@@ -108,7 +108,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 1715,
 				name = "",
 				icon = "",
-				rage = -10,
+				resource = -10,
 				texture = "",
 				thresholdId = 4,
 				settingKey = "hamstring",
@@ -120,7 +120,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 2565,
 				name = "",
 				icon = "",
-				rage = -30,
+				resource = -30,
 				texture = "",
 				thresholdId = 5,
 				settingKey = "shieldBlock",
@@ -133,7 +133,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 1464,
 				name = "",
 				icon = "",
-				rage = -20,
+				resource = -20,
 				texture = "",
 				thresholdId = 6,
 				settingKey = "slam",
@@ -146,7 +146,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 1680,
 				name = "",
 				icon = "",
-				rage = -40,
+				resource = -40,
 				texture = "",
 				thresholdId = 7,
 				settingKey = "whirlwind",
@@ -171,7 +171,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 202168,
 				name = "",
 				icon = "",
-				rage = -10,
+				resource = -10,
 				texture = "",
 				thresholdId = 8,
 				settingKey = "impendingVictory",
@@ -183,7 +183,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 396719,
 				name = "",
 				icon = "",
-				rage = -30,
+				resource = -30,
 				texture = "",
 				thresholdId = 9,
 				settingKey = "thunderClap",
@@ -196,7 +196,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 384277,
 				name = "", 
 				icon = "",
-				rageMod = -10,
+				resourceMod = -10,
 				isTalent = true
 			},
 			
@@ -204,7 +204,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 376079,
 				name = "",
 				icon = "",
-				rage = 20
+				resource = 20
 			},
 
 			--Arms Talent abilities
@@ -212,7 +212,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 12294,
 				name = "",
 				icon = "",
-				rage = -30,
+				resource = -30,
 				texture = "",
 				thresholdId = 10,
 				settingKey = "mortalStrike",
@@ -232,7 +232,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				talentId = 772,
 				name = "",
 				icon = "",
-				rage = -30,
+				resource = -30,
 				texture = "",
 				thresholdId = 11,
 				settingKey = "rend",
@@ -247,7 +247,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 845,
 				name = "",
 				icon = "",
-				rage = -20,
+				resource = -20,
 				texture = "",
 				thresholdId = 12,
 				settingKey = "cleave",
@@ -260,7 +260,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 190456,
 				name = "",
 				icon = "",
-				rage = -40,
+				resource = -40,
 				texture = "",
 				thresholdId = 13,
 				settingKey = "ignorePain",
@@ -293,13 +293,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				isTalent = true,
-				rageMod = -20
+				resourceMod = -20
 			},
 			battlelord = {
 				id = 386631,
 				name = "",
 				icon = "",
-				rageMod = -10
+				resourceMod = -10
 			}
 		}
 
@@ -356,7 +356,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 100,
 				name = "",
 				icon = "",
-				rage = 20,
+				resource = 20,
 				isTalent = false,
 				baseline = true,
 			},
@@ -365,8 +365,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				healthMinimum = 0.2,
-				rage = -20,
-				rageMax = -40,
+				resource = -20,
+				resourceMax = -40,
 				texture = "",
 				thresholdId = 1,
 				settingKey = "execute",
@@ -381,7 +381,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				healthMinimum = 0.2,
-				rage = -20,
+				resource = -20,
 				texture = "",
 				thresholdId = 2,
 				settingKey = "executeMinimum",
@@ -396,7 +396,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				name = "",
 				icon = "",
 				healthMinimum = 0.2,
-				rage = -40,
+				resource = -40,
 				texture = "",
 				thresholdId = 3,
 				settingKey = "executeMaximum",
@@ -410,7 +410,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 1715,
 				name = "",
 				icon = "",
-				rage = -10,
+				resource = -10,
 				texture = "",
 				thresholdId = 4,
 				settingKey = "hamstring",
@@ -422,7 +422,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 2565,
 				name = "",
 				icon = "",
-				rage = -30,
+				resource = -30,
 				texture = "",
 				thresholdId = 5,
 				settingKey = "shieldBlock",
@@ -435,7 +435,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 1464,
 				name = "",
 				icon = "",
-				rage = -20,
+				resource = -20,
 				texture = "",
 				thresholdId = 6,
 				settingKey = "slam",
@@ -465,7 +465,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 202168,
 				name = "",
 				icon = "",
-				rage = -10,
+				resource = -10,
 				texture = "",
 				thresholdId = 7,
 				settingKey = "impendingVictory",
@@ -477,7 +477,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 396719,
 				name = "",
 				icon = "",
-				rage = -30,
+				resource = -30,
 				texture = "",
 				thresholdId = 8,
 				settingKey = "thunderClap",
@@ -490,7 +490,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 384277,
 				name = "",
 				icon = "",
-				rageMod = -10,
+				resourceMod = -10,
 				isTalent = true
 			},
 
@@ -498,7 +498,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 376079,
 				name = "",
 				icon = "",
-				rage = 20
+				resource = 20
 			},
 
 			-- Fury Talent abilities
@@ -508,7 +508,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				id = 184367,
 				name = "",
 				icon = "",
-				rage = -80,
+				resource = -80,
 				texture = "",
 				thresholdId = 9,
 				settingKey = "rampage",
@@ -809,7 +809,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		for k, _ in pairs(spells) do
 			local spell = spells[k]
-			if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+			if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
@@ -878,23 +878,23 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local suddenDeathTime = string.format("%.1f", _suddenDeathTime)
 
 		--$rage
-		local ragePrecision = specSettings.ragePrecision or 0
-		local currentRage = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(normalizedRage, ragePrecision, "floor"))
+		local resourcePrecision = specSettings.resourcePrecision or 0
+		local currentRage = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(normalizedRage, resourcePrecision, "floor"))
 		--$casting
-		local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, ragePrecision, "floor"))
+		local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 		--$passive
 		local _passiveRage = 0
-		local passiveRage = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveRage, ragePrecision, "floor"))
+		local passiveRage = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveRage, resourcePrecision, "floor"))
 		
 		--$rageTotal
 		local _rageTotal = math.min(_passiveRage + snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
-		local rageTotal = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(_rageTotal, ragePrecision, "floor"))
+		local rageTotal = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(_rageTotal, resourcePrecision, "floor"))
 		--$ragePlusCasting
 		local _ragePlusCasting = math.min(snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
-		local ragePlusCasting = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(_ragePlusCasting, ragePrecision, "floor"))
+		local ragePlusCasting = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(_ragePlusCasting, resourcePrecision, "floor"))
 		--$ragePlusPassive
 		local _ragePlusPassive = math.min(_passiveRage + normalizedRage, TRB.Data.character.maxResource)
-		local ragePlusPassive = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(_ragePlusPassive, ragePrecision, "floor"))
+		local ragePlusPassive = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(_ragePlusPassive, resourcePrecision, "floor"))
 
 		
 		--$rendCount and $rendTime
@@ -1067,23 +1067,23 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local ravagerTicks = string.format("%.0f", _ravagerTicks)
 
 		--$rage
-		local ragePrecision = specSettings.ragePrecision or 0
-		local currentRage = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(normalizedRage, ragePrecision, "floor"))
+		local resourcePrecision = specSettings.resourcePrecision or 0
+		local currentRage = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(normalizedRage, resourcePrecision, "floor"))
 		--$casting
-		local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, ragePrecision, "floor"))
+		local castingRage = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(snapshotData.casting.resourceFinal, resourcePrecision, "floor"))
 		--$passive
 		local _passiveRage = _ravagerRage
-		local passiveRage = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveRage, ragePrecision, "floor"))
+		local passiveRage = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveRage, resourcePrecision, "floor"))
 		
 		--$rageTotal
 		local _rageTotal = math.min(_passiveRage + snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
-		local rageTotal = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(_rageTotal, ragePrecision, "floor"))
+		local rageTotal = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(_rageTotal, resourcePrecision, "floor"))
 		--$ragePlusCasting
 		local _ragePlusCasting = math.min(snapshotData.casting.resourceFinal + normalizedRage, TRB.Data.character.maxResource)
-		local ragePlusCasting = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(_ragePlusCasting, ragePrecision, "floor"))
+		local ragePlusCasting = string.format("|c%s%s|r", castingRageColor, TRB.Functions.Number:RoundTo(_ragePlusCasting, resourcePrecision, "floor"))
 		--$ragePlusPassive
 		local _ragePlusPassive = math.min(_passiveRage + normalizedRage, TRB.Data.character.maxResource)
-		local ragePlusPassive = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(_ragePlusPassive, ragePrecision, "floor"))
+		local ragePlusPassive = string.format("|c%s%s|r", currentRageColor, TRB.Functions.Number:RoundTo(_ragePlusPassive, resourcePrecision, "floor"))
 
 		--$enrageTime
 		local _enrageTime = snapshots[spells.enrage.id].buff:GetRemainingTime(currentTime)
@@ -1169,8 +1169,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local function FillSnapshotDataCasting(spell)
 		local currentTime = GetTime()
 		TRB.Data.snapshotData.casting.startTime = currentTime
-		TRB.Data.snapshotData.casting.resourceRaw = spell.rage
-		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.rage)
+		TRB.Data.snapshotData.casting.resourceRaw = spell.resource
+		TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.resource)
 		TRB.Data.snapshotData.casting.spellId = spell.id
 		TRB.Data.snapshotData.casting.icon = spell.icon
 	end
@@ -1279,37 +1279,37 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local currentRage = snapshotData.attributes.resource / TRB.Data.resourceFactor
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 					local passiveValue = 0
 					if specSettings.bar.showPassive then
 					end
 
 					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = currentRage + snapshotData.casting.resourceFinal
+						castingBarValue = currentResource + snapshotData.casting.resourceFinal
 					else
-						castingBarValue = currentRage
+						castingBarValue = currentResource
 					end
 
-					if castingBarValue < currentRage then --Using a spender
+					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue) 
 							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, currentRage)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, currentRage)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentRage)
+						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentResource)
 						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
 						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
@@ -1319,12 +1319,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					local pairOffset = 0
 					for k, v in pairs(spells) do
 						local spell = spells[k]
-						if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							local rageAmount = CalculateAbilityResourceValue(spell.rage)
-							local normalizedRage = snapshotData.attributes.resource / TRB.Data.resourceFactor
+						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+							local resourceAmount = CalculateAbilityResourceValue(spell.resource)
+							local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 							if not (spell.id == spells.execute.id or spell.id == spells.whirlwind.id or spell.id == spells.thunderClap) then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 							end
 
 							local showThreshold = true
@@ -1349,9 +1349,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									local suddenDeathTime = snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)
 
 									if suddenDeathTime > 0 then
-										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -spells.execute.rageMax, TRB.Data.character.maxResource)
+										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -spells.execute.resourceMax, TRB.Data.character.maxResource)
 									else
-										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, math.min(math.max(-rageAmount, normalizedRage), -spells.execute.rageMax), TRB.Data.character.maxResource)
+										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, math.min(math.max(-resourceAmount, normalizedResource), -spells.execute.resourceMax), TRB.Data.character.maxResource)
 									end
 
 									if UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
@@ -1362,7 +1362,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										showThreshold = false
 									elseif spell.settingKey == "execute" and (targetUnitHealth >= healthMinimum) and suddenDeathTime == 0 then
 										showThreshold = false
-									elseif currentRage >= -rageAmount then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -1370,78 +1370,78 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									end
 								elseif spell.id == spells.mortalStrike.id then
 									if snapshots[spells.battlelord.id].buff.isActive then
-										rageAmount = rageAmount - spells.battlelord.rageMod										
+										resourceAmount = resourceAmount - spells.battlelord.resourceMod
 									end
 
 									if snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif currentRage >= -rageAmount then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 									
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 								elseif spell.id == spells.cleave.id then
 									if snapshots[spells.battlelord.id].buff.isActive then
-										rageAmount = rageAmount - spells.battlelord.rageMod
+										resourceAmount = resourceAmount - spells.battlelord.resourceMod
 									end
 
 									if snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif currentRage >= -rageAmount then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 									
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 								elseif spell.id == spells.whirlwind.id then
 									if talents:IsTalentActive(spells.stormOfSwords) then
-										rageAmount = rageAmount + spells.stormOfSwords.rageMod
+										resourceAmount = resourceAmount + spells.stormOfSwords.resourceMod
 									end
 									
-									if currentRage >= -rageAmount then
+									if currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 								elseif spell.id == spells.thunderClap.id then
 									if talents:IsTalentActive(spells.bloodAndThunder) then
-										rageAmount = rageAmount + spells.bloodAndThunder.rageMod
+										resourceAmount = resourceAmount + spells.bloodAndThunder.resourceMod
 									end
 
 									if snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif currentRage >= -rageAmount then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 									
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 								end
 							elseif spell.hasCooldown then
 								if snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif currentRage >= -rageAmount then
+								elseif currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
-								if currentRage >= -rageAmount then
+								if currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -1488,7 +1488,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local currentRage = snapshotData.attributes.resource / TRB.Data.resourceFactor
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 					local passiveValue = 0
 					if specSettings.bar.showPassive then
@@ -1498,30 +1498,30 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					end
 
 					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = currentRage + snapshotData.casting.resourceFinal
+						castingBarValue = currentResource + snapshotData.casting.resourceFinal
 					else
-						castingBarValue = currentRage
+						castingBarValue = currentResource
 					end
 
-					if castingBarValue < currentRage then --Using a spender
+					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, currentRage)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, currentRage)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentRage)
+						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentResource)
 						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
 						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
@@ -1531,11 +1531,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					local pairOffset = 0
 					for k, v in pairs(spells) do
 						local spell = spells[k]
-						if spell ~= nil and spell.id ~= nil and spell.rage ~= nil and spell.rage < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							local rageAmount = CalculateAbilityResourceValue(spell.rage)
-							local normalizedRage = snapshotData.attributes.resource / TRB.Data.resourceFactor
+						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+							local resourceAmount = CalculateAbilityResourceValue(spell.resource)
+							local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 							
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -1571,12 +1571,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 											showThreshold = false
 										else
 											if spell.settingKey == "execute" then
-												TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, math.min(math.max(-rageAmount, normalizedRage), -spells.execute.rageMax), TRB.Data.character.maxResource)
+												TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, math.min(math.max(-resourceAmount, normalizedResource), -spells.execute.resourceMax), TRB.Data.character.maxResource)
 											end
 
 											if snapshots[spell.id].cooldown:IsUnusable() then
 												thresholdColor = specSettings.colors.threshold.unusable
-											elseif currentRage >= -rageAmount then
+											elseif currentResource >= -resourceAmount then
 												thresholdColor = specSettings.colors.threshold.over
 											else
 												thresholdColor = specSettings.colors.threshold.under
@@ -1587,7 +1587,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 								elseif spell.id == spells.slam.id then
 									if talents:IsTalentActive(spells.stormOfSwords) then
 										showThreshold = false
-									elseif currentRage >= -rageAmount then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -1595,33 +1595,33 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									end
 								elseif spell.id == spells.thunderClap.id then
 									if talents:IsTalentActive(spells.bloodAndThunder) then
-										rageAmount = rageAmount + spells.bloodAndThunder.rageMod
+										resourceAmount = resourceAmount + spells.bloodAndThunder.resourceMod
 									end
 									
 									if snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif currentRage >= -rageAmount then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 									
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -rageAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 								end
 							elseif spell.hasCooldown then
 								if snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif currentRage >= -rageAmount then
+								elseif currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
-								if currentRage >= -rageAmount then
+								if currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -2060,7 +2060,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local targetData = snapshotData.targetData
 		local target = targetData.targets[targetData.currentTargetGuid]
 		local spells = TRB.Data.spells
-		local normalizedRage = snapshotData.attributes.resource / TRB.Data.resourceFactor
+		local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 		local settings = nil
 		if specId == 1 then
 			settings = TRB.Data.settings.warrior.arms
@@ -2104,7 +2104,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					valid = true
 				end
 			elseif var == "$resourceTotal" or var == "$rageTotal" then
-				if normalizedRage > 0 or
+				if normalizedResource > 0 or
 					(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0)
 					then
 					valid = true
@@ -2112,7 +2112,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			elseif var == "$passive" then
 				valid = false
 			elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
-				if normalizedRage > 0 then
+				if normalizedResource > 0 then
 					valid = true
 				end
 			end
@@ -2122,7 +2122,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					valid = true
 				end
 			elseif var == "$resourceTotal" or var == "$rageTotal" then
-				if normalizedRage > 0 or snapshots[spells.ravager.id].buff.resource > 0 or
+				if normalizedResource > 0 or snapshots[spells.ravager.id].buff.resource > 0 or
 					(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0)
 					then
 					valid = true
@@ -2132,7 +2132,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					valid = true
 				end
 			elseif var == "$resourcePlusPassive" or var == "$ragePlusPassive" then
-				if normalizedRage > 0 or snapshots[spells.ravager.id].buff.resource > 0 then
+				if normalizedResource > 0 or snapshots[spells.ravager.id].buff.resource > 0 then
 					valid = true
 				end
 			elseif var == "$enrageTime" then
@@ -2151,7 +2151,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				if snapshots[spells.ravager.id].buff.isActive then
 					valid = true
 				end
-			elseif var == "$ravagerRage" then
+			elseif var == "$ravagerResource" then
 				if snapshots[spells.ravager.id].buff.isActive then
 					valid = true
 				end
@@ -2163,13 +2163,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 
 		if var == "$resource" or var == "$rage" then
-			if normalizedRage > 0 then
+			if normalizedResource > 0 then
 				valid = true
 			end
 		elseif var == "$resourceMax" or var == "$rageMax" then
 			valid = true
 		elseif var == "$resourcePlusCasting" or var == "$ragePlusCasting" then
-			if normalizedRage > 0 or
+			if normalizedResource > 0 or
 				(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw ~= 0) then
 				valid = true
 			end

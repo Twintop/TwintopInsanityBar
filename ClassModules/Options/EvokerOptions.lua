@@ -527,12 +527,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					height=24
 				},
 			},
-			generation = {
-				mode="gcd",
-				gcds=1,
-				time=1.5,
-				enabled=true
-			},
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,

@@ -91,7 +91,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	local function BalanceLoadDefaultSettings()
 		local settings = {
 			hastePrecision=2,
-			astralPowerPrecision=0,
+			resourcePrecision=0,
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
@@ -1246,13 +1246,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end)
 
 		title = "Astral Power Decimal Precision"
-		controls.astralPowerPrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.astralPowerPrecision, 1, 0,
+		controls.resourcePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.resourcePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.astralPowerPrecision:SetScript("OnValueChanged", function(self, value)
+		controls.resourcePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
-			spec.astralPowerPrecision = value
+			spec.resourcePrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrame = interfaceSettingsFrame

@@ -913,7 +913,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 8092,
 				name = "",
 				icon = "",
-				insanity = 6,
+				resource = 6,
 				isTalent = false,
 				baseline = true,
 				hasCharges = true
@@ -922,7 +922,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 589,
 				icon = "",
 				name = "",
-				insanity = 3,
+				resource = 3,
 				baseDuration = 16,
 				pandemic = true,
 				pandemicTime = 16 * 0.3,
@@ -938,7 +938,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 15407,
 				name = "",
 				icon = "",
-				insanity = 2,
+				resource = 2,
 				isTalent = false,
 				baseline = true
 			},
@@ -946,7 +946,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 34914,
 				name = "",
 				icon = "",
-				insanity = 4,
+				resource = 4,
 				baseDuration = 21,
 				pandemic = true,
 				pandemicTime = 21 * 0.3,
@@ -957,7 +957,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 205448,
 				name = "",
 				icon = "",
-				insanity = 10,
+				resource = 10,
 				isTalent = false,
 				baseline = true
 			},
@@ -970,7 +970,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				energizeId = 279420,
 				name = "",
 				icon = "",
-				insanity = 2,
+				resource = 2,
 				isTalent = true,
 				baseline = true
 			},
@@ -991,14 +991,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				isTalent = true,
-				insanity = 10
+				resource = 10
 			},
 			mindgames = {
 				id = 375901,
 				name = "",
 				icon = "",
 				isTalent = true,
-				insanity = 10
+				resource = 10
 			},
 
 
@@ -1008,7 +1008,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				texture = "",
-				insanity = -50,
+				resource = -50,
 				thresholdId = 1,
 				settingKey = "devouringPlague",
 				thresholdUsable = false,
@@ -1020,7 +1020,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				texture = "",
-				insanity = -100,
+				resource = -100,
 				thresholdId = 2,
 				settingKey = "devouringPlague2",
 				thresholdUsable = false,
@@ -1032,7 +1032,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				texture = "",
-				insanity = -150,
+				resource = -150,
 				thresholdId = 3,
 				settingKey = "devouringPlague3",
 				thresholdUsable = false,
@@ -1049,7 +1049,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 155271,
 				idSpawn = 341263,
 				idImpact = 413231,
-				insanity = 1,
+				resource = 1,
 				targetChance = function(num)
 					if num == 0 then
 						return 0
@@ -1071,7 +1071,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 280752,
 				name = "",
 				icon = "",
-				insanity = 4,
+				resource = 4,
 				isTalent = true
 			},
 			voidEruption = {
@@ -1090,14 +1090,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 391109,
 				name = "",
 				icon = "",
-				insanity = 30,
+				resource = 30,
 				isTalent = true
 			},
 			mindSpike = {
 				id = 73510,
 				name = "",
 				icon = "",
-				insanity = 4,
+				resource = 4,
 				isTalent = true
 			},
 			darkEvangelism = {
@@ -1112,14 +1112,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				isTalent = true,
-				insanityMod = -5
+				resourceMod = -5
 			},
 			distortedReality = {
 				id = 409044,
 				name = "",
 				icon = "",
 				isTalent = true,
-				insanityMod = 5
+				resourceMod = 5
 			},
 			surgeOfInsanity = {
 				id = 391399,
@@ -1132,7 +1132,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				buffId = 391401,
-				insanity = 3,
+				resource = 3,
 				isTalent = true
 			},
 			mindSpikeInsanity = {
@@ -1141,7 +1141,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				buffId = 407468,
 				talentId = 391403,
-				insanity = 6,
+				resource = 6,
 				isTalent = true
 			},
 			deathspeaker = {
@@ -1155,14 +1155,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 263165,
 				name = "",
 				icon = "",
-				insanity = 6,
+				resource = 6,
 				isTalent = true
 			},
 			shadowCrash = {
 				id = 205385,
 				name = "",
 				icon = "",
-				insanity = 6,
+				resource = 6,
 				isTalent = true
 			},
 			shadowyInsight = {
@@ -1182,7 +1182,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 73510,
 				name = "",
 				icon = "",
-				insanity = 1,
+				resource = 1,
 				perRank = 0.5,
 				isTalent = true
 			},
@@ -1192,14 +1192,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				energizeId = 200010,
 				name = "",
 				icon = "",
-				insanity = 2,
+				resource = 2,
 				isTalent = true
 			},
 			devouredDespair = { -- Idol of Y'Shaarj proc
 				id = 373317,
 				name = "",
 				icon = "",
-				insanity = 5,
+				resource = 5,
 				duration = 15,
 				ticks = 15
 			},
@@ -1231,7 +1231,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 344838,
 				name = "",
 				icon = "",
-				insanity = 1,
+				resource = 1,
 				duration = 15,
 				ticks = 15,
 				tickDuration = 1
@@ -1240,7 +1240,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				id = 344838, --Doesn't actually exist / unused?
 				name = "",
 				icon = "",
-				insanity = 1,
+				resource = 1,
 				duration = 15,
 				ticks = 15,
 				tickDuration = 1
@@ -1288,7 +1288,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		})
 		---@type TRB.Classes.Snapshot
 		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.devouredDespair.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.devouredDespair, {
-			insanity = 0,
+			resource = 0,
 			ticks = 0
 		})
 		---@type TRB.Classes.Snapshot
@@ -2043,10 +2043,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return mod * (base + prayerFocusValue) + divineConversationValue
 	end
 
-	local function CalculateInsanityGain(insanity)
+	local function CalculateResourceGain(resource)
 		local modifier = 1.0
 
-		return insanity * modifier
+		return resource * modifier
 	end
 
 	local function RefreshLookupData_Discipline()
@@ -2708,15 +2708,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		--$insanity
-		local insanityPrecision = specSettings.insanityPrecision or 0
+		local resourcePrecision = specSettings.resourcePrecision or 0
 		local _currentInsanity = normalizedInsanity
-		local currentInsanity = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(_currentInsanity, insanityPrecision, "floor"))
+		local currentInsanity = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(_currentInsanity, resourcePrecision, "floor"))
 		--$casting
 		local _castingInsanity = snapshotData.casting.resourceFinal
-		local castingInsanity = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.Number:RoundTo(_castingInsanity, insanityPrecision, "floor"))
+		local castingInsanity = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.Number:RoundTo(_castingInsanity, resourcePrecision, "floor"))
 		--$mbInsanity
 		local _mbInsanity = snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal
-		local mbInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_mbInsanity, insanityPrecision, "floor"))
+		local mbInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_mbInsanity, resourcePrecision, "floor"))
 		--$mbGcds
 		local _mbGcds = snapshots[spells.shadowfiend.id].attributes.remaining.gcds
 		local mbGcds = string.format("%.0f", _mbGcds)
@@ -2728,7 +2728,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local mbTime = string.format("%.1f", _mbTime)
 		--$loiInsanity
 		local _loiInsanity = snapshots[spells.idolOfCthun.id].attributes.resourceFinal
-		local loiInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_loiInsanity, insanityPrecision, "floor"))
+		local loiInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_loiInsanity, resourcePrecision, "floor"))
 		--$loiTicks
 		local _loiTicks = snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining
 		local loiTicks = string.format("%.0f", _loiTicks)
@@ -2739,20 +2739,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _asCount = targetData.count[spells.auspiciousSpirits.id] or 0
 		local asCount = string.format("%.0f", _asCount)
 		--$asInsanity
-		local _asInsanity = CalculateInsanityGain(spells.auspiciousSpirits.insanity) * (targetData.custom.auspiciousSpiritsGenerate or 0)
-		local asInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_asInsanity, insanityPrecision, "ceil"))
+		local _asInsanity = CalculateResourceGain(spells.auspiciousSpirits.resource) * (targetData.custom.auspiciousSpiritsGenerate or 0)
+		local asInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_asInsanity, resourcePrecision, "ceil"))
 		--$passive
 		local _passiveInsanity = _asInsanity + _mbInsanity + _loiInsanity
-		local passiveInsanity = string.format("|c%s%s|r", specSettings.colors.text.passiveInsanity, TRB.Functions.Number:RoundTo(_passiveInsanity, insanityPrecision, "floor"))
+		local passiveInsanity = string.format("|c%s%s|r", specSettings.colors.text.passiveInsanity, TRB.Functions.Number:RoundTo(_passiveInsanity, resourcePrecision, "floor"))
 		--$insanityTotal
 		local _insanityTotal = math.min(_passiveInsanity + snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
-		local insanityTotal = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(_insanityTotal, insanityPrecision, "floor"))
+		local insanityTotal = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(_insanityTotal, resourcePrecision, "floor"))
 		--$insanityPlusCasting
 		local _insanityPlusCasting = math.min(snapshotData.casting.resourceFinal + normalizedInsanity, TRB.Data.character.maxResource)
-		local insanityPlusCasting = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.Number:RoundTo(_insanityPlusCasting, insanityPrecision, "floor"))
+		local insanityPlusCasting = string.format("|c%s%s|r", castingInsanityColor, TRB.Functions.Number:RoundTo(_insanityPlusCasting, resourcePrecision, "floor"))
 		--$insanityPlusPassive
 		local _insanityPlusPassive = math.min(_passiveInsanity + normalizedInsanity, TRB.Data.character.maxResource)
-		local insanityPlusPassive = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(_insanityPlusPassive, insanityPrecision, "floor"))
+		local insanityPlusPassive = string.format("|c%s%s|r", currentInsanityColor, TRB.Functions.Number:RoundTo(_insanityPlusPassive, resourcePrecision, "floor"))
 
 
 		----------
@@ -3039,7 +3039,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function UpdateCastingResourceFinal_Shadow()
-		TRB.Data.snapshotData.casting.resourceFinal = CalculateInsanityGain(TRB.Data.snapshotData.casting.resourceRaw)
+		TRB.Data.snapshotData.casting.resourceFinal = CalculateResourceGain(TRB.Data.snapshotData.casting.resourceRaw)
 	end
 
 	local function CastingSpell()
@@ -3133,17 +3133,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					if currentChannelId == spells.mindFlay.id then
 						snapshotData.casting.spellId = spells.mindFlay.id
 						snapshotData.casting.startTime = currentTime
-						snapshotData.casting.resourceRaw = spells.mindFlay.insanity
+						snapshotData.casting.resourceRaw = spells.mindFlay.resource
 						snapshotData.casting.icon = spells.mindFlay.icon
 					elseif currentChannelId == spells.mindFlayInsanity.id then
 						snapshotData.casting.spellId = spells.mindFlayInsanity.id
 						snapshotData.casting.startTime = currentTime
-						snapshotData.casting.resourceRaw = spells.mindFlayInsanity.insanity
+						snapshotData.casting.resourceRaw = spells.mindFlayInsanity.resource
 						snapshotData.casting.icon = spells.mindFlayInsanity.icon
 					elseif currentChannelId == spells.voidTorrent.id then
 						snapshotData.casting.spellId = spells.voidTorrent.id
 						snapshotData.casting.startTime = currentTime
-						snapshotData.casting.resourceRaw = spells.voidTorrent.insanity
+						snapshotData.casting.resourceRaw = spells.voidTorrent.resource
 						snapshotData.casting.icon = spells.voidTorrent.icon
 					else
 						TRB.Functions.Character:ResetCastingSnapshotData()
@@ -3153,42 +3153,42 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				else
 					if currentSpellId == spells.mindBlast.id then
 						snapshotData.casting.startTime = currentTime
-						snapshotData.casting.resourceRaw = spells.mindBlast.insanity
+						snapshotData.casting.resourceRaw = spells.mindBlast.resource
 						snapshotData.casting.spellId = spells.mindBlast.id
 						snapshotData.casting.icon = spells.mindBlast.icon
 					elseif currentSpellId == spells.mindSpike.id then
 						snapshotData.casting.startTime = currentTime
-						snapshotData.casting.resourceRaw = spells.mindSpike.insanity
+						snapshotData.casting.resourceRaw = spells.mindSpike.resource
 						snapshotData.casting.spellId = spells.mindSpike.id
 						snapshotData.casting.icon = spells.mindSpike.icon
 					elseif currentSpellId == spells.mindSpikeInsanity.id then
 						snapshotData.casting.startTime = currentTime
-						snapshotData.casting.resourceRaw = spells.mindSpikeInsanity.insanity
+						snapshotData.casting.resourceRaw = spells.mindSpikeInsanity.resource
 						snapshotData.casting.spellId = spells.mindSpikeInsanity.id
 						snapshotData.casting.icon = spells.mindSpikeInsanity.icon
 					elseif currentSpellId == spells.darkAscension.id then
 						snapshotData.casting.startTime = currentTime
-						snapshotData.casting.resourceRaw = spells.darkAscension.insanity
+						snapshotData.casting.resourceRaw = spells.darkAscension.resource
 						snapshotData.casting.spellId = spells.darkAscension.id
 						snapshotData.casting.icon = spells.darkAscension.icon
 					elseif currentSpellId == spells.vampiricTouch.id then
 						snapshotData.casting.startTime = currentTime
-						snapshotData.casting.resourceRaw = spells.vampiricTouch.insanity
+						snapshotData.casting.resourceRaw = spells.vampiricTouch.resource
 						snapshotData.casting.spellId = spells.vampiricTouch.id
 						snapshotData.casting.icon = spells.vampiricTouch.icon
 					elseif currentSpellId == spells.mindgames.id then
 						snapshotData.casting.startTime = currentTime
-						snapshotData.casting.resourceRaw = spells.mindgames.insanity
+						snapshotData.casting.resourceRaw = spells.mindgames.resource
 						snapshotData.casting.spellId = spells.mindgames.id
 						snapshotData.casting.icon = spells.mindgames.icon
 					elseif currentSpellId == spells.halo.id then
 						snapshotData.casting.startTime = currentTime
-						snapshotData.casting.resourceRaw = spells.halo.insanity
+						snapshotData.casting.resourceRaw = spells.halo.resource
 						snapshotData.casting.spellId = spells.halo.id
 						snapshotData.casting.icon = spells.halo.icon
 					elseif currentSpellId == spells.massDispel.id and talents:IsTalentActive(spells.hallucinations) and affectingCombat then
 						snapshotData.casting.startTime = currentTime
-						snapshotData.casting.resourceRaw = spells.hallucinations.insanity
+						snapshotData.casting.resourceRaw = spells.hallucinations.resource
 						snapshotData.casting.spellId = spells.massDispel.id
 						snapshotData.casting.icon = spells.massDispel.icon
 					else
@@ -3329,8 +3329,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					shadowfiend.attributes.resourceRaw = countValue * shadowfiend.spell.manaPercent * TRB.Data.character.maxResource
 					shadowfiend.attributes.resourceFinal = CalculateManaGain(shadowfiend.attributes.resourceRaw, false)
 				elseif specId == 3 then
-					shadowfiend.attributes.resourceRaw = countValue * shadowfiend.spell.insanity
-					shadowfiend.attributes.resourceFinal = CalculateInsanityGain(shadowfiend.attributes.resourceRaw)
+					shadowfiend.attributes.resourceRaw = countValue * shadowfiend.spell.resource
+					shadowfiend.attributes.resourceFinal = CalculateResourceGain(shadowfiend.attributes.resourceRaw)
 				end
 			end
 		else
@@ -3369,8 +3369,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				devouredDespair:Reset()
 				devouredDespair.attributes.ticks = 0
 			end
-			devouredDespair.attributes.resourceRaw = devouredDespair.attributes.ticks * TRB.Data.spells.devouredDespair.insanity
-			devouredDespair.attributes.resourceFinal = CalculateInsanityGain(devouredDespair.attributes.resourceRaw)
+			devouredDespair.attributes.resourceRaw = devouredDespair.attributes.ticks * TRB.Data.spells.devouredDespair.resource
+			devouredDespair.attributes.resourceFinal = CalculateResourceGain(devouredDespair.attributes.resourceRaw)
 		end
 	end
 
@@ -3407,7 +3407,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							-- NOTE: Might need to be math.floor()
 							local ticksRemaining = math.ceil((endTime - nextTick) / TRB.Data.spells.lashOfInsanity_Lasher.tickDuration)
 
-							totalInsanity_Lasher = totalInsanity_Lasher + (ticksRemaining * TRB.Data.spells.lashOfInsanity_Lasher.insanity)
+							totalInsanity_Lasher = totalInsanity_Lasher + (ticksRemaining * TRB.Data.spells.lashOfInsanity_Lasher.resource)
 							totalTicksRemaining_Lasher = totalTicksRemaining_Lasher + ticksRemaining
 						else
 							local nextTick = TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList[vtGuid].tickTime + TRB.Data.spells.lashOfInsanity_Tendril.tickDuration
@@ -3420,7 +3420,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							-- NOTE: Might need to be math.floor()
 							local ticksRemaining = math.ceil((endTime - nextTick) / TRB.Data.spells.lashOfInsanity_Tendril.tickDuration) --Not needed as it is 1sec, but adding in case it changes
 
-							totalInsanity_Tendril = totalInsanity_Tendril + (ticksRemaining * TRB.Data.spells.lashOfInsanity_Tendril.insanity)
+							totalInsanity_Tendril = totalInsanity_Tendril + (ticksRemaining * TRB.Data.spells.lashOfInsanity_Tendril.resource)
 							totalTicksRemaining_Tendril = totalTicksRemaining_Tendril + ticksRemaining
 						end
 
@@ -3434,7 +3434,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.numberActive = totalActive
 		TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.resourceRaw = totalInsanity_Tendril + totalInsanity_Lasher
 		-- Fortress of the Mind does not apply but other Insanity boosting effects do.
-		TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.resourceFinal = CalculateInsanityGain(TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.resourceRaw)
+		TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.resourceFinal = CalculateResourceGain(TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.resourceRaw)
 	end
 
 	local function UpdateSnapshot()
@@ -4188,7 +4188,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local currentInsanity = snapshotData.attributes.resource / TRB.Data.resourceFactor
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 					local passiveValue = 0
 					local barBorderColor = specSettings.colors.bar.border
@@ -4216,16 +4216,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
 					if CastingSpell() and specSettings.bar.showCasting  then
-						castingBarValue = snapshotData.casting.resourceFinal + currentInsanity
+						castingBarValue = snapshotData.casting.resourceFinal + currentResource
 					else
-						castingBarValue = currentInsanity
+						castingBarValue = currentResource
 					end
 
 					if specSettings.bar.showPassive and
 						(talents:IsTalentActive(spells.auspiciousSpirits) or
 						(snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal) > 0 or
 						snapshots[spells.idolOfCthun.id].attributes.resourceFinal > 0) then
-						passiveValue = ((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * (snapshotData.targetData.custom.auspiciousSpiritsGenerate or 0)) + snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal + snapshots[spells.idolOfCthun.id].attributes.resourceFinal)
+						passiveValue = ((CalculateResourceGain(spells.auspiciousSpirits.resource) * (snapshotData.targetData.custom.auspiciousSpiritsGenerate or 0)) + snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal + snapshots[spells.idolOfCthun.id].attributes.resourceFinal)
 						if (snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal) > 0 and (castingBarValue + (snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)) < TRB.Data.character.maxResource then
 							TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (castingBarValue + (snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)), TRB.Data.character.maxResource)
 							TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
@@ -4241,10 +4241,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local pairOffset = 0
 					for k, v in pairs(spells) do
 						local spell = spells[k]
-						if spell ~= nil and spell.id ~= nil and spell.insanity ~= nil and spell.insanity < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							pairOffset = (spell.thresholdId - 1) * 3
-							local resourceAmount = spell.insanity
-							local currentResource = currentInsanity
+							local resourceAmount = spell.resource
+							local currentResource = currentResource
 							--TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
@@ -4254,11 +4254,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.settingKey == spells.devouringPlague.settingKey then
 									if talents:IsTalentActive(spells.mindsEye) then
-										resourceAmount = resourceAmount - spells.mindsEye.insanityMod
+										resourceAmount = resourceAmount - spells.mindsEye.resourceMod
 									end
 
 									if talents:IsTalentActive(spells.distortedReality) then
-										resourceAmount = resourceAmount - spells.distortedReality.insanityMod
+										resourceAmount = resourceAmount - spells.distortedReality.resourceMod
 									end
 
 									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
@@ -4276,15 +4276,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.settingKey == spells.devouringPlague2.settingKey then
-									local previousResourceAmount = spells.devouringPlague.insanity
+									local previousResourceAmount = spells.devouringPlague.resource
 									if talents:IsTalentActive(spells.mindsEye) then
-										resourceAmount = resourceAmount - (spells.mindsEye.insanityMod*2)
-										previousResourceAmount = previousResourceAmount - (spells.mindsEye.insanityMod)
+										resourceAmount = resourceAmount - (spells.mindsEye.resourceMod*2)
+										previousResourceAmount = previousResourceAmount - (spells.mindsEye.resourceMod)
 									end
 
 									if talents:IsTalentActive(spells.distortedReality) then
-										resourceAmount = resourceAmount - (spells.distortedReality.insanityMod*2)
-										previousResourceAmount = previousResourceAmount - (spells.distortedReality.insanityMod)
+										resourceAmount = resourceAmount - (spells.distortedReality.resourceMod*2)
+										previousResourceAmount = previousResourceAmount - (spells.distortedReality.resourceMod)
 									end
 
 									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
@@ -4307,15 +4307,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.settingKey == spells.devouringPlague3.settingKey then
-									local previousResourceAmount = spells.devouringPlague2.insanity
+									local previousResourceAmount = spells.devouringPlague2.resource
 									if talents:IsTalentActive(spells.mindsEye) then
-										resourceAmount = resourceAmount - (spells.mindsEye.insanityMod*3)
-										previousResourceAmount = previousResourceAmount - (spells.mindsEye.insanityMod*2)
+										resourceAmount = resourceAmount - (spells.mindsEye.resourceMod*3)
+										previousResourceAmount = previousResourceAmount - (spells.mindsEye.resourceMod*2)
 									end
 
 									if talents:IsTalentActive(spells.distortedReality) then
-										resourceAmount = resourceAmount - (spells.distortedReality.insanityMod*3)
-										previousResourceAmount = previousResourceAmount - (spells.distortedReality.insanityMod*2)
+										resourceAmount = resourceAmount - (spells.distortedReality.resourceMod*3)
+										previousResourceAmount = previousResourceAmount - (spells.distortedReality.resourceMod*2)
 									end
 
 									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
@@ -4366,7 +4366,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					end
 
-					if snapshots[spells.mindDevourer.id].buff.isActive or currentInsanity >= TRB.Data.character.devouringPlagueThreshold or snapshots[spells.mindDevourer.id].buff.isActive then
+					if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= TRB.Data.character.devouringPlagueThreshold or snapshots[spells.mindDevourer.id].buff.isActive then
 						if specSettings.colors.bar.flashEnabled then
 							TRB.Functions.Bar:PulseFrame(barContainerFrame, specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 						else
@@ -4388,29 +4388,29 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 
 					passiveBarValue = castingBarValue + passiveValue
-					if castingBarValue < currentInsanity then --Using a spender
+					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, currentInsanity)
+							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, currentInsanity)
+							TRB.Functions.Bar:SetValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentInsanity)
+						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentResource)
 						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
 						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
-					if snapshots[spells.mindDevourer.id].buff.isActive or currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
+					if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= TRB.Data.character.devouringPlagueThreshold then
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.devouringPlagueUsableCasting, true))
 					else
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
@@ -4438,13 +4438,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 						if useEndOfVoidformColor and timeLeft <= timeThreshold then
 							barColor = specSettings.colors.bar.inVoidform1GCD
-						elseif snapshots[spells.mindDevourer.id].buff.isActive or currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
+						elseif snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= TRB.Data.character.devouringPlagueThreshold then
 							barColor = specSettings.colors.bar.devouringPlagueUsable
 						else
 							barColor = specSettings.colors.bar.inVoidform
 						end
 					else
-						if snapshots[spells.mindDevourer.id].buff.isActive or currentInsanity >= TRB.Data.character.devouringPlagueThreshold then
+						if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= TRB.Data.character.devouringPlagueThreshold then
 							barColor = specSettings.colors.bar.devouringPlagueUsable
 						else
 							barColor = specSettings.colors.bar.base
@@ -5113,16 +5113,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		elseif specId == 3 then
 			TRB.Data.character.specName = "shadow"
 ---@diagnostic disable-next-line: missing-parameter
-			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Insanity)
+			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Resource)
 
-			TRB.Data.character.devouringPlagueThreshold = -spells.devouringPlague.insanity
+			TRB.Data.character.devouringPlagueThreshold = -spells.devouringPlague.resource
 			
 			if talents:IsTalentActive(spells.mindsEye) then
-				TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + spells.mindsEye.insanityMod
+				TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + spells.mindsEye.resourceMod
 			end
 			
 			if talents:IsTalentActive(spells.distortedReality) then
-				TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + spells.distortedReality.insanityMod
+				TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + spells.distortedReality.resourceMod
 			end
 			
 			if talents:IsTalentActive(spells.mindbender) then
@@ -5157,7 +5157,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		elseif specId == 3 and TRB.Data.settings.core.enabled.priest.shadow == true then
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.shadow)
 			TRB.Data.specSupported = true
-			TRB.Data.resource = Enum.PowerType.Insanity
+			TRB.Data.resource = Enum.PowerType.Resource
 			TRB.Data.resourceFactor = 100
 			TRB.Data.resource2 = nil
 			TRB.Data.resource2Factor = nil
@@ -5479,7 +5479,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			elseif var == "$resourceTotal" or var == "$insanityTotal" then
 				if snapshotData.attributes.resource > 0 or
 					(snapshotData.casting.resourceRaw ~= nil and snapshotData.casting.resourceRaw > 0) or
-					(((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + snapshots[spells.shadowfiend.id].attributes.resourceRaw + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0) then
+					(((CalculateResourceGain(spells.auspiciousSpirits.resource) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + snapshots[spells.shadowfiend.id].attributes.resourceRaw + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0) then
 					valid = true
 				end
 			elseif var == "$resourcePlusCasting" or var == "$insanityPlusCasting" then
@@ -5496,7 +5496,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif var == "$resourcePlusPassive" or var == "$insanityPlusPassive" then
 				if snapshotData.attributes.resource > 0 or
-					((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + snapshots[spells.shadowfiend.id].attributes.resourceRaw + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0 then
+					((CalculateResourceGain(spells.auspiciousSpirits.resource) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + snapshots[spells.shadowfiend.id].attributes.resourceRaw + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0 then
 					valid = true
 				end
 			elseif var == "$casting" then
@@ -5504,7 +5504,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					valid = true
 				end
 			elseif var == "$passive" then
-				if ((CalculateInsanityGain(spells.auspiciousSpirits.insanity) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + snapshots[spells.shadowfiend.id].attributes.resourceRaw + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0 then
+				if ((CalculateResourceGain(spells.auspiciousSpirits.resource) * snapshotData.targetData.count[spells.auspiciousSpirits.id]) + snapshots[spells.shadowfiend.id].attributes.resourceRaw + snapshots[spells.idolOfCthun.id].attributes.resourceFinal) > 0 then
 					valid = true
 				end
 			elseif var == "$mbInsanity" then

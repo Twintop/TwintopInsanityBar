@@ -2316,6 +2316,56 @@ function TRB.Options:PortForwardSettings()
 			enabled = true
 		}
 	end
+
+	-- Rename insanityPrecision to resourcePrecision
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.priest ~= nil and
+		TwintopInsanityBarSettings.priest.shadow ~= nil and
+		TwintopInsanityBarSettings.priest.shadow.insanityPrecision ~= nil
+		then
+		TwintopInsanityBarSettings.priest.shadow.resourcePrecision = TwintopInsanityBarSettings.priest.shadow.insanityPrecision
+		TwintopInsanityBarSettings.priest.shadow.insanityPrecision = nil
+	end
+
+	-- Rename ragePrecision to resourcePrecision
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.warrior ~= nil and
+		TwintopInsanityBarSettings.warrior.arms ~= nil and
+		TwintopInsanityBarSettings.warrior.arms.ragePrecision ~= nil
+		then
+		TwintopInsanityBarSettings.warrior.arms.resourcePrecision = TwintopInsanityBarSettings.warrior.arms.ragePrecision
+		TwintopInsanityBarSettings.warrior.arms.ragePrecision = nil
+	end
+
+	-- Rename ragePrecision to resourcePrecision
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.warrior ~= nil and
+		TwintopInsanityBarSettings.warrior.fury ~= nil and
+		TwintopInsanityBarSettings.warrior.fury.ragePrecision ~= nil
+		then
+		TwintopInsanityBarSettings.warrior.fury.resourcePrecision = TwintopInsanityBarSettings.warrior.fury.ragePrecision
+		TwintopInsanityBarSettings.warrior.fury.ragePrecision = nil
+	end
+
+	-- Rename astralPowerPrecision to resourcePrecision
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.druid ~= nil and
+		TwintopInsanityBarSettings.druid.balance ~= nil and
+		TwintopInsanityBarSettings.druid.balance.astralPowerPrecision ~= nil
+		then
+		TwintopInsanityBarSettings.druid.balance.resourcePrecision = TwintopInsanityBarSettings.druid.balance.astralPowerPrecision
+		TwintopInsanityBarSettings.druid.balance.astralPowerPrecision = nil
+	end
+
+	-- Rename furyPrecision to resourcePrecision
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.furyPrecision ~= nil
+		then
+		TwintopInsanityBarSettings.demonhunter.havoc.resourcePrecision = TwintopInsanityBarSettings.demonhunter.havoc.furyPrecision
+		TwintopInsanityBarSettings.demonhunter.havoc.furyPrecision = nil
+	end
 end
 
 function TRB.Options:CleanupSettings(oldSettings)

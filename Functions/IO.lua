@@ -112,9 +112,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 
 		if classId == 1 then -- Warrior
 			if specId == 1 then -- Arms
-				configuration.ragePrecision = settings.ragePrecision
+				configuration.resourcePrecision = settings.resourcePrecision
 			elseif specId == 2 then -- Fury
-				configuration.ragePrecision = settings.ragePrecision
+				configuration.resourcePrecision = settings.resourcePrecision
 			end
 		elseif classId == 3 then -- Hunters
 			if specId == 1 then -- Beast Mastery
@@ -131,7 +131,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 3 then -- Shadow
 				configuration.hasteApproachingThreshold = settings.hasteApproachingThreshold
 				configuration.hasteThreshold = settings.hasteThreshold
-				configuration.insanityPrecision = settings.insanityPrecision
+				configuration.resourcePrecision = settings.resourcePrecision
 			end
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
@@ -144,7 +144,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 11 then -- Druids
 			if specId == 1 then -- Balance
-				configuration.astralPowerPrecision = settings.astralPowerPrecision
+				configuration.resourcePrecision = settings.resourcePrecision
 			elseif specId == 2 then -- Feral
 			elseif specId == 4 then -- Restoration
 			end
@@ -162,9 +162,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 
 		if classId == 1 then -- Warrior
 			if specId == 1 then -- Arms
-				configuration.ragePrecision = settings.ragePrecision
+				configuration.resourcePrecision = settings.resourcePrecision
 			elseif specId == 2 then -- Fury
-				configuration.ragePrecision = settings.ragePrecision
+				configuration.resourcePrecision = settings.resourcePrecision
 			end
 		elseif classId == 3 then -- Hunters
 			configuration.generation = settings.generation
