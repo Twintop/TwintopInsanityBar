@@ -450,6 +450,8 @@ local function AddToBarTextCache(input)
 		function(a, b)
 			return string.len(a.variable) > string.len(b.variable)
 		end)
+	
+	--Only loop through this while we're not at the end of the string AND we haven't done 1000 checks. This is a sanity checker to prevent an infinite run for some reason!
 	while p <= string.len(input) and infinity < 1000 do
 		infinity = infinity + 1
 		local a, b, c, d, z, a1, b1, c1, d1, z1
