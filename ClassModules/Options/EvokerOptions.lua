@@ -10,10 +10,6 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	local passiveFrame = TRB.Frames.passiveFrame
 	local barBorderFrame = TRB.Frames.barBorderFrame
 
-	local leftTextFrame = TRB.Frames.leftTextFrame
-	local middleTextFrame = TRB.Frames.middleTextFrame
-	local rightTextFrame = TRB.Frames.rightTextFrame
-
 	local resourceFrame = TRB.Frames.resourceFrame
 	local passiveFrame = TRB.Frames.passiveFrame
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame

@@ -4894,7 +4894,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		else
 			TRB.Data.barConstructedForSpec = nil
 		end
-		
+
 		TRB.Functions.Class:EventRegistration()
 	end
 

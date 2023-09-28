@@ -1,4 +1,5 @@
 local _, TRB = ...
+local _, _, classIndexId = UnitClass("player")
 
 TRB.Options = {}
 
@@ -650,9 +651,20 @@ local function ConstructAddonOptionsPanel()
 		TRB.Frames.resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		TRB.Frames.castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		TRB.Frames.passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		TRB.Frames.leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		TRB.Frames.middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		TRB.Frames.rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		if classIndexId == 5 then
+			---@type Frame[]
+			local textFrames = TRB.Frames.textFrames
+			local entries = TRB.Functions.Table:Length(textFrames)
+			if entries > 0 then
+				for i = 1, entries do
+					textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+				end
+			end
+		else
+			TRB.Frames.leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+			TRB.Frames.middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+			TRB.Frames.rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		end
 		---@diagnostic disable-next-line: undefined-field
 		LibDD:UIDropDownMenu_SetText(controls.dropDown.strata, newName)
 		CloseDropDownMenus()

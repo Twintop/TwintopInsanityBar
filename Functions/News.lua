@@ -11,6 +11,9 @@ local content = [====[
 # 10.1.7.5-release (2023-10-01)
 
 ## General
+- [#87 - NEW](#87) Bar text is now improved!
+<br/>&emsp;&ensp;- You are no longer limited to three fixed bar text areas (left, center, and right). Now you can create and position up to 10 bar text areas.
+<br/>&emsp;&ensp;- The previous limit of 20 variables/icons per bar text areas has been increased to 1000.
 - [#330 - REFACTOR](#330) Change how Talents are stored and accessed.
 - (REFACTOR) Standardize resource names under the hood.
 

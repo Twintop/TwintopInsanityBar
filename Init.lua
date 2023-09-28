@@ -26,104 +26,6 @@ end
 
 TRB.Details.addonData = addonData
 
--- Frames
-TRB.Frames = {}
-
----@type Frame
-TRB.Frames.barContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame", UIParent, "BackdropTemplate")
----@type Frame
-TRB.Frames.resourceFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
----@class Frame
-TRB.Frames.castingFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
----@class Frame
-TRB.Frames.passiveFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
----@class Frame
-TRB.Frames.barBorderFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
-
-TRB.Frames.passiveFrame.thresholds = {}
-TRB.Frames.resourceFrame.thresholds = {}
-
----@class Frame
-TRB.Frames.leftTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
----@class Frame
-TRB.Frames.middleTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
----@class Frame
-TRB.Frames.rightTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
-
-TRB.Frames.leftTextFrame.font = TRB.Frames.leftTextFrame:CreateFontString(nil, "BACKGROUND")
-TRB.Frames.middleTextFrame.font = TRB.Frames.middleTextFrame:CreateFontString(nil, "BACKGROUND")
-TRB.Frames.rightTextFrame.font = TRB.Frames.rightTextFrame:CreateFontString(nil, "BACKGROUND")
-
-TRB.Frames.targetsTimerFrame = CreateFrame("Frame")
-TRB.Frames.targetsTimerFrame.sinceLastUpdate = 0
-
----@class Frame
-TRB.Frames.timerFrame = CreateFrame("Frame")
-TRB.Frames.timerFrame.sinceLastUpdate = 0
-TRB.Frames.timerFrame.ttdSinceLastUpdate = 0
-TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
-
--- For the following specs, we need to have a secondary bar/bars created
--- We're going to make these as StatusBars so we can use them for Death Knight runes and Warlock soulshards in the future
-if classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 13 then
-	TRB.Frames.resource2Frames = {}
-	---@diagnostic disable-next-line: param-type-mismatch
-	TRB.Frames.resource2ContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame2", TRB.Frames.barContainerFrame, "BackdropTemplate")
-	
-	for x = 1, 10 do
-		TRB.Frames.resource2Frames[x] = {}
-		---@diagnostic disable-next-line: param-type-mismatch
-		TRB.Frames.resource2Frames[x].containerFrame = CreateFrame("Frame", nil, TRB.Frames.resource2ContainerFrame, "BackdropTemplate")
-		TRB.Frames.resource2Frames[x].borderFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
-		TRB.Frames.resource2Frames[x].resourceFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
-	end
-end
-
-function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
-	---@type TRB.Classes.TargetData
-	local targetData = TRB.Data.snapshotData.targetData
-
-	local currentTime = GetTime()	
-	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
-	self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate
-	self.characterCheckSinceLastUpdate  = self.characterCheckSinceLastUpdate  + sinceLastUpdate
-	if self.sinceLastUpdate >= 0.05 then -- in seconds
-		TRB.Functions.Class:TriggerResourceBarUpdates()
-		self.sinceLastUpdate = 0
-	end
-
-	if self.characterCheckSinceLastUpdate >= TRB.Data.settings.core.dataRefreshRate then -- in seconds
-		TRB.Functions.Class:CheckCharacter()
-		self.characterCheckSinceLastUpdate  = 0
-	end
-
-	local guid = UnitGUID("target")
-	if targetData.currentTargetGuid ~= guid then
-		targetData.currentTargetGuid = guid
-	end
-
-	if guid ~= nil then
-		local isDead = UnitIsDeadOrGhost("target")
-
-		if isDead and targetData.targets[targetData.currentTargetGuid] ~= nil then
-			targetData:Remove(guid)
-		elseif guid ~= TRB.Data.character.guid and targetData.ttdIsActive then
-			targetData:InitializeTarget(guid)
-			local target = targetData.targets[targetData.currentTargetGuid]
-			if self.ttdSinceLastUpdate >= target.timeToDie.settings.sampleRate then -- in seconds			
-				target.timeToDie:Update(currentTime)
-				self.ttdSinceLastUpdate = 0
-			end
-		end
-	end
-end
-
-TRB.Frames.combatFrame = CreateFrame("Frame", "TwintopResourceBarFrame_CombatFrame", TRB.Frames.barContainerFrame)
-
--- Settings placeholders
-TRB.Frames.interfaceSettingsFrameContainer = {}
-TRB.Frames.interfaceSettingsFrameContainer.controls = {}
-
 -- Some class functions get referenced by other methods. These live in a consistent location but are actually created in the class modules.
 TRB.Functions.Class = {}
 
@@ -149,6 +51,17 @@ TRB.Data.constants = {
 			sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 			soundName="TRB: Air Horn"
 		}
+	},
+	frameCategories = {
+		container = "Container",
+		resource = "Resource"
+	},
+	frameNames = {
+		container = "Container",
+		resource = "Resource",
+		casting = "Casting",
+		passive = "Passive",
+		border = "Border",
 	},
 	frameLevels = {
 		barContainer = 0,
@@ -235,6 +148,115 @@ TRB.Data.sanityCheckValues = {
 	barMaxHeight = 0,
 	barMinHeight = 0
 }
+
+
+-- Frames
+TRB.Frames = {}
+
+---@type Frame
+TRB.Frames.barContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame", UIParent, "BackdropTemplate")
+---@type Frame
+TRB.Frames.resourceFrame = CreateFrame("StatusBar", "TwintopResourceBarFrame_Resource", TRB.Frames.barContainerFrame, "BackdropTemplate")
+---@type Frame
+TRB.Frames.castingFrame = CreateFrame("StatusBar", "TwintopResourceBarFrame_Resource_Casting", TRB.Frames.barContainerFrame, "BackdropTemplate")
+---@type Frame
+TRB.Frames.passiveFrame = CreateFrame("StatusBar", "TwintopResourceBarFrame_Resource_Passive", TRB.Frames.barContainerFrame, "BackdropTemplate")
+---@type Frame
+TRB.Frames.barBorderFrame = CreateFrame("StatusBar", "TwintopResourceBarFrame_Resource_Border", TRB.Frames.barContainerFrame, "BackdropTemplate")
+
+---@diagnostic disable-next-line: inject-field
+TRB.Frames.passiveFrame.thresholds = {}
+---@diagnostic disable-next-line: inject-field
+TRB.Frames.resourceFrame.thresholds = {}
+
+if classIndexId == 5 then --Do this for Priests only
+	TRB.Frames.textFrames = {}
+else
+	---@type Frame
+	TRB.Frames.leftTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
+	---@type Frame
+	TRB.Frames.middleTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
+	---@type Frame
+	TRB.Frames.rightTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
+
+	---@diagnostic disable-next-line: inject-field
+	TRB.Frames.leftTextFrame.font = TRB.Frames.leftTextFrame:CreateFontString(nil, "BACKGROUND")
+	---@diagnostic disable-next-line: inject-field
+	TRB.Frames.middleTextFrame.font = TRB.Frames.middleTextFrame:CreateFontString(nil, "BACKGROUND")
+	---@diagnostic disable-next-line: inject-field
+	TRB.Frames.rightTextFrame.font = TRB.Frames.rightTextFrame:CreateFontString(nil, "BACKGROUND")
+end
+
+TRB.Frames.targetsTimerFrame = CreateFrame("Frame")
+TRB.Frames.targetsTimerFrame.sinceLastUpdate = 0
+
+---@class Frame
+TRB.Frames.timerFrame = CreateFrame("Frame")
+TRB.Frames.timerFrame.sinceLastUpdate = 0
+TRB.Frames.timerFrame.ttdSinceLastUpdate = 0
+TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
+
+-- For the following specs, we need to have a secondary bar/bars created
+-- We're going to make these as StatusBars so we can use them for Death Knight runes and Warlock soulshards in the future
+if classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 13 then
+	TRB.Frames.resource2Frames = {}
+	---@diagnostic disable-next-line: param-type-mismatch
+	TRB.Frames.resource2ContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame2", TRB.Frames.barContainerFrame, "BackdropTemplate")
+	
+	for x = 1, 10 do
+		TRB.Frames.resource2Frames[x] = {}
+		---@diagnostic disable-next-line: param-type-mismatch
+		TRB.Frames.resource2Frames[x].containerFrame = CreateFrame("Frame", nil, TRB.Frames.resource2ContainerFrame, "BackdropTemplate")
+		TRB.Frames.resource2Frames[x].borderFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
+		TRB.Frames.resource2Frames[x].resourceFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
+	end
+end
+
+function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
+	---@type TRB.Classes.TargetData
+	local targetData = TRB.Data.snapshotData.targetData
+
+	local currentTime = GetTime()	
+	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
+	self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate
+	self.characterCheckSinceLastUpdate  = self.characterCheckSinceLastUpdate  + sinceLastUpdate
+	if self.sinceLastUpdate >= 0.05 then -- in seconds
+		TRB.Functions.Class:TriggerResourceBarUpdates()
+		self.sinceLastUpdate = 0
+	end
+
+	if self.characterCheckSinceLastUpdate >= TRB.Data.settings.core.dataRefreshRate then -- in seconds
+		TRB.Functions.Class:CheckCharacter()
+		self.characterCheckSinceLastUpdate  = 0
+	end
+
+	local guid = UnitGUID("target")
+	if targetData.currentTargetGuid ~= guid then
+		targetData.currentTargetGuid = guid
+	end
+
+	if guid ~= nil then
+		local isDead = UnitIsDeadOrGhost("target")
+
+		if isDead and targetData.targets[targetData.currentTargetGuid] ~= nil then
+			targetData:Remove(guid)
+		elseif guid ~= TRB.Data.character.guid and targetData.ttdIsActive then
+			targetData:InitializeTarget(guid)
+			local target = targetData.targets[targetData.currentTargetGuid]
+			if self.ttdSinceLastUpdate >= target.timeToDie.settings.sampleRate then -- in seconds			
+				target.timeToDie:Update(currentTime)
+				self.ttdSinceLastUpdate = 0
+			end
+		end
+	end
+end
+
+TRB.Frames.combatFrame = CreateFrame("Frame", "TwintopResourceBarFrame_CombatFrame", TRB.Frames.barContainerFrame)
+
+-- Settings placeholders
+TRB.Frames.interfaceSettingsFrameContainer = {}
+TRB.Frames.interfaceSettingsFrameContainer.controls = {}
+
 
 local function ParseCmdString(msg)
 	if msg then

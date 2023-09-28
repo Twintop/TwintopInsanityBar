@@ -2,6 +2,7 @@
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Bar = {}
+local _, _, classIndexId = UnitClass("player")
 
 
 function TRB.Functions.Bar:GetSanityCheckValues(settings)
@@ -65,9 +66,15 @@ function TRB.Functions.Bar:SetHeight(settings)
 	TRB.Frames.resourceFrame:SetHeight(value-(settings.bar.border*2))
 	TRB.Frames.castingFrame:SetHeight(value-(settings.bar.border*2))
 	TRB.Frames.passiveFrame:SetHeight(value-(settings.bar.border*2))
-	TRB.Frames.leftTextFrame:SetHeight(settings.bar.height * 3.5)
-	TRB.Frames.middleTextFrame:SetHeight(settings.bar.height * 3.5)
-	TRB.Frames.rightTextFrame:SetHeight(settings.bar.height * 3.5)
+
+	if classIndexId == 5 then
+
+	else
+		TRB.Frames.leftTextFrame:SetHeight(settings.bar.height * 3.5)
+		TRB.Frames.middleTextFrame:SetHeight(settings.bar.height * 3.5)
+		TRB.Frames.rightTextFrame:SetHeight(settings.bar.height * 3.5)
+	end
+	
 	TRB.Functions.Threshold:RedrawThresholdLines(settings)
 end
 
@@ -478,40 +485,44 @@ function TRB.Functions.Bar:Construct(settings)
 
 		TRB.Functions.Bar:SetMinMax(settings)
 
-		leftTextFrame:Show()
-		leftTextFrame:SetWidth(settings.bar.width)
-		leftTextFrame:SetHeight(settings.bar.height * 3.5)
-		leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 2, 0)
-		leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		leftTextFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
-		leftTextFrame.font:SetPoint("LEFT", 0, 0)
-		leftTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
-		leftTextFrame.font:SetJustifyH("LEFT")
-		leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
-		leftTextFrame.font:Show()
+		if classIndexId == 5 then
+			TRB.Functions.BarText:CreateBarTextFrames(settings)
+		else
+			leftTextFrame:Show()
+			leftTextFrame:SetWidth(settings.bar.width)
+			leftTextFrame:SetHeight(settings.bar.height * 3.5)
+			leftTextFrame:SetPoint("LEFT", barContainerFrame, "LEFT", 2, 0)
+			leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+			leftTextFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+			leftTextFrame.font:SetPoint("LEFT", 0, 0)
+			leftTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
+			leftTextFrame.font:SetJustifyH("LEFT")
+			leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
+			leftTextFrame.font:Show()
 
-		middleTextFrame:Show()
-		middleTextFrame:SetWidth(settings.bar.width)
-		middleTextFrame:SetHeight(settings.bar.height * 3.5)
-		middleTextFrame:SetPoint("CENTER", barContainerFrame, "CENTER", 0, 0)
-		middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		middleTextFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
-		middleTextFrame.font:SetPoint("CENTER", 0, 0)
-		middleTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
-		middleTextFrame.font:SetJustifyH("CENTER")
-		middleTextFrame.font:SetFont(settings.displayText.middle.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
-		middleTextFrame.font:Show()
+			middleTextFrame:Show()
+			middleTextFrame:SetWidth(settings.bar.width)
+			middleTextFrame:SetHeight(settings.bar.height * 3.5)
+			middleTextFrame:SetPoint("CENTER", barContainerFrame, "CENTER", 0, 0)
+			middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+			middleTextFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+			middleTextFrame.font:SetPoint("CENTER", 0, 0)
+			middleTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
+			middleTextFrame.font:SetJustifyH("CENTER")
+			middleTextFrame.font:SetFont(settings.displayText.middle.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
+			middleTextFrame.font:Show()
 
-		rightTextFrame:Show()
-		rightTextFrame:SetWidth(settings.bar.width)
-		rightTextFrame:SetHeight(settings.bar.height * 3.5)
-		rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
-		rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		rightTextFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
-		rightTextFrame.font:SetPoint("RIGHT", 0, 0)
-		rightTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
-		rightTextFrame.font:SetJustifyH("RIGHT")
-		rightTextFrame.font:SetFont(settings.displayText.right.fontFace, settings.displayText.right.fontSize, "OUTLINE")
-		rightTextFrame.font:Show()
+			rightTextFrame:Show()
+			rightTextFrame:SetWidth(settings.bar.width)
+			rightTextFrame:SetHeight(settings.bar.height * 3.5)
+			rightTextFrame:SetPoint("RIGHT", barContainerFrame, "RIGHT", 0, 0)
+			rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+			rightTextFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+			rightTextFrame.font:SetPoint("RIGHT", 0, 0)
+			rightTextFrame.font:SetTextColor(255/255, 255/255, 255/255, 1.0)
+			rightTextFrame.font:SetJustifyH("RIGHT")
+			rightTextFrame.font:SetFont(settings.displayText.right.fontFace, settings.displayText.right.fontSize, "OUTLINE")
+			rightTextFrame.font:Show()
+		end
 	end
 end

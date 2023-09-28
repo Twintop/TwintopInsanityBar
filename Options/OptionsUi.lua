@@ -42,7 +42,7 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 	f.MinLabel:SetSize(0, 14)
 	---@diagnostic disable-next-line: redundant-parameter
 	f.MinLabel:SetWordWrap(false)
-	f.MinLabel:SetPoint("TopLeft", f, "BottomLeft", 0, -1)
+	f.MinLabel:SetPoint("TOPLEFT", f, "BOTTOMLEFT", 0, -1)
 	f.MinLabel:SetText(minValue)
 	---@diagnostic disable-next-line: inject-field
 	f.MaxLabel = f:CreateFontString(nil, "OVERLAY")
@@ -50,7 +50,7 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 	f.MaxLabel:SetSize(0, 14)
 	---@diagnostic disable-next-line: redundant-parameter
 	f.MaxLabel:SetWordWrap(false)
-	f.MaxLabel:SetPoint("TopRight", f, "BottomRight", 0, -1)
+	f.MaxLabel:SetPoint("TOPRIGHT", f, "BOTTOMRIGHT", 0, -1)
 	f.MaxLabel:SetText(maxValue)
 	---@diagnostic disable-next-line: inject-field
 	f.Title = f:CreateFontString(nil, "OVERLAY")
@@ -58,7 +58,7 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 	f.Title:SetSize(0, 14)
 	---@diagnostic disable-next-line: redundant-parameter
 	f.Title:SetWordWrap(false)
-	f.Title:SetPoint("Bottom", f, "Top")
+	f.Title:SetPoint("BOTTOM", f, "TOP")
 	f.Title:SetText(title)
 	---@diagnostic disable-next-line: inject-field
 	f.Thumb = f:CreateTexture(nil, "ARTWORK")
@@ -130,7 +130,7 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 	f.Plus = CreateFrame("Button", nil, f)
 	f.Plus:SetSize(18, 18)
 	f.Plus:RegisterForClicks("AnyUp")
-	f.Plus:SetPoint("Left", f, "Right", 0, 0)
+	f.Plus:SetPoint("LEFT", f, "RIGHT", 0, 0)
 	f.Plus:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
 	f.Plus:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
 	f.Plus:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIcon-BlinkHilight")
@@ -141,7 +141,7 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 	f.Minus = CreateFrame("Button", nil, f)
 	f.Minus:SetSize(18, 18)
 	f.Minus:RegisterForClicks("AnyUp")
-	f.Minus:SetPoint("Right", f, "Left", 0, 0)
+	f.Minus:SetPoint("RIGHT", f, "LEFT", 0, 0)
 	f.Minus:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up")
 	f.Minus:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down")
 	f.Minus:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIcon-BlinkHilight")
@@ -303,6 +303,7 @@ function TRB.Functions.OptionsUi:BuildSectionHeader(parent, title, posX, posY)
 	f:SetPoint("TOPLEFT", posX, posY)
 	f:SetWidth(500)
 	f:SetHeight(30)
+	---@diagnostic disable-next-line: inject-field
 	f.font = f:CreateFontString(nil)
 	f.font:SetFontObject(GameFontNormalLarge)
 	f.font:SetPoint("LEFT", f, "LEFT")
@@ -322,6 +323,7 @@ function TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, var, desc, po
 	f:SetPoint("TOPLEFT", posX, posY)
 	f:SetWidth(width)
 	f:SetHeight(height)
+	---@diagnostic disable-next-line: inject-field
 	f.font = f:CreateFontString(nil)
 	f.font:SetFontObject(GameFontNormalSmall)
 	f.font:SetPoint("LEFT", f, "LEFT")
@@ -339,6 +341,7 @@ function TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, var, desc, po
 	fd:SetPoint("TOPLEFT", posX+5, posY-height)
 	fd:SetWidth(width-5)
 	fd:SetHeight(height2)
+	---@diagnostic disable-next-line: inject-field
 	fd.font = fd:CreateFontString(nil)
 	fd.font:SetFontObject(GameFontHighlightSmall)
 	fd.font:SetPoint("LEFT", fd, "LEFT")
@@ -364,7 +367,7 @@ function TRB.Functions.OptionsUi:BuildButton(parent, text, posX, posY, width, he
 	f.ntex = f:CreateTexture()
 	f.ntex:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
 	f.ntex:SetTexCoord(0, 0.625, 0, 0.6875)
----@diagnostic disable-next-line: missing-parameter
+	---@diagnostic disable-next-line: missing-parameter
 	f.ntex:SetAllPoints()
 	f:SetNormalTexture(f.ntex)
 	---@diagnostic disable-next-line: inject-field
@@ -400,6 +403,7 @@ function TRB.Functions.OptionsUi:BuildLabel(parent, text, posX, posY, width, hei
 	f:SetPoint("TOPLEFT", posX, posY)
 	f:SetWidth(width)
 	f:SetHeight(height)
+	---@diagnostic disable-next-line: inject-field
 	f.font = f:CreateFontString(nil, "BACKGROUND")
 	f.font:SetFontObject(fontObject)
 	f.font:SetPoint("LEFT", f, "LEFT")
@@ -645,7 +649,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		local borderSize = math.min(maxBorderSize, spec.bar.border)
 		controls.borderWidth:SetValue(borderSize)
 		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
-		controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+		controls.borderWidth.MaxLabel:SetText(tostring(maxBorderSize))
 
 		if GetSpecialization() == specId then
 			TRB.Functions.Bar:SetWidth(spec)
@@ -664,7 +668,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		local borderSize = math.min(maxBorderSize, spec.bar.border)
 
 		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
-		controls.borderWidth.MaxLabel:SetText(maxBorderSize)
+		controls.borderWidth.MaxLabel:SetText(tostring(maxBorderSize))
 		controls.borderWidth.EditBox:SetText(borderSize)
 
 		if GetSpecialization() == specId then
@@ -749,9 +753,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 
 		local scValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
 		controls.height:SetMinMaxValues(minsliderHeight, scValues.barMaxHeight)
-		controls.height.MinLabel:SetText(minsliderHeight)
+		controls.height.MinLabel:SetText(tostring(minsliderHeight))
 		controls.width:SetMinMaxValues(minsliderWidth, scValues.barMaxWidth)
-		controls.width.MinLabel:SetText(minsliderWidth)
+		controls.width.MinLabel:SetText(tostring(minsliderWidth))
 	end)
 
 	if spec.thresholds ~= nil then
@@ -918,9 +922,9 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 
 		local scValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
 		controls.comboPointHeight:SetMinMaxValues(minsliderHeight, scValues.comboPointsMaxHeight)
-		controls.comboPointHeight.MinLabel:SetText(minsliderHeight)
+		controls.comboPointHeight.MinLabel:SetText(tostring(minsliderHeight))
 		controls.comboPointWidth:SetMinMaxValues(minsliderWidth, scValues.comboPointsMaxWidth)
-		controls.comboPointWidth.MinLabel:SetText(minsliderWidth)
+		controls.comboPointWidth.MinLabel:SetText(tostring(minsliderWidth))
 	end)
 
 	title = secondaryResourceString .. " Spacing"
@@ -1680,9 +1684,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		local minsliderHeight = math.max(spec.thresholds.icons.border*2, 1)
 
 		controls.thresholdIconHeight:SetMinMaxValues(minsliderHeight, 128)
-		controls.thresholdIconHeight.MinLabel:SetText(minsliderHeight)
+		controls.thresholdIconHeight.MinLabel:SetText(tostring(minsliderHeight))
 		controls.thresholdIconWidth:SetMinMaxValues(minsliderWidth, 128)
-		controls.thresholdIconWidth.MinLabel:SetText(minsliderWidth)
+		controls.thresholdIconWidth.MinLabel:SetText(tostring(minsliderWidth))
 
 		if GetSpecialization() == specId then
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)

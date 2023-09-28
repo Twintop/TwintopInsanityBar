@@ -1,5 +1,6 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
+local _, _, classIndexId = UnitClass("player")
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.BarText = {}
 
@@ -449,7 +450,7 @@ local function AddToBarTextCache(input)
 		function(a, b)
 			return string.len(a.variable) > string.len(b.variable)
 		end)
-	while p <= string.len(input) and infinity < 20 do
+	while p <= string.len(input) and infinity < 1000 do
 		infinity = infinity + 1
 		local a, b, c, d, z, a1, b1, c1, d1, z1
 		local match = false
@@ -500,7 +501,6 @@ local function AddToBarTextCache(input)
 				end
 			else
 				for x = 1, iconEntries do
-					local len = string.len(barTextVariables.icons[x].variable)
 					z, z1 = string.find(input, barTextVariables.icons[x].variable, a-1)
 					if z ~= nil and z == a then
 						match = true
@@ -518,7 +518,6 @@ local function AddToBarTextCache(input)
 			end
 		elseif b ~= nil and (c == nil or b < c) and (d == nil or b < d) then
 			for x = 1, valueEntries do
-				local len = string.len(barTextValuesVars[x].variable)
 				z, z1 = string.find(input, barTextValuesVars[x].variable, b-1)
 				if z ~= nil and z == b then
 					match = true
@@ -540,7 +539,6 @@ local function AddToBarTextCache(input)
 			end
 		elseif c ~= nil and (d == nil or c < d) then
 			for x = 1, pipeEntries do
-				local len = string.len(barTextVariables.pipe[x].variable)
 				z, z1 = string.find(input, barTextVariables.pipe[x].variable, c-1)
 				if z ~= nil and z == c then
 					match = true
@@ -560,7 +558,6 @@ local function AddToBarTextCache(input)
 			end
 		elseif d ~= nil then
 			for x = 1, percentEntries do
-				local len = string.len(barTextVariables.percent[x].variable)
 				z, z1 = string.find(input, barTextVariables.percent[x].variable, d-1)
 				if z ~= nil and z == d then
 					match = true
@@ -836,21 +833,60 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 		TRB.Functions.RefreshLookupData()
 	
 		if refreshText then
-			local leftText, middleText, rightText = TRB.Functions.BarText:BarText(settings)
-			local leftTextFrame = TRB.Frames.leftTextFrame
-			local middleTextFrame = TRB.Frames.middleTextFrame
-			local rightTextFrame = TRB.Frames.rightTextFrame
+			if classIndexId == 5 then --Do this for Priests only
+				---@type Frame[]
+				local textFrames = TRB.Frames.textFrames
+				local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
+	
+				local entries = TRB.Functions.Table:Length(displayText.barText)
+				if entries > 0 then
+					for i = 1, entries do
+						local e = displayText.barText[i]
+						local color = e.color
+						local fontFace = e.fontFace
+						local fontSize = e.fontSize
+						
+						if e.useDefaultFontColor then
+							color = displayText.default.color
+						end
 
-			if not pcall(TryUpdateText, leftTextFrame, leftText) then
-				leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
-			end
+						if e.useDefaultFontFace then
+							fontFace = displayText.default.fontFace
+						end
 
-			if not pcall(TryUpdateText, middleTextFrame, middleText) then
-				middleTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
-			end
+						if e.useDefaultFontSize then
+							fontSize = displayText.default.fontSize
+						end
 
-			if not pcall(TryUpdateText, rightTextFrame, rightText) then
-				rightTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.right.fontSize, "OUTLINE")
+						local barText = {
+							text = e.text,
+							color = string.format("|c%s", color)
+						}
+
+						local returnText = GetReturnText(barText)
+
+						if not pcall(TryUpdateText, textFrames[i], returnText) then
+							textFrames[i].font:SetFont(fontFace, fontSize, "OUTLINE")
+						end
+					end
+				end
+			else
+				local leftText, middleText, rightText = TRB.Functions.BarText:BarText(settings)
+				local leftTextFrame = TRB.Frames.leftTextFrame
+				local middleTextFrame = TRB.Frames.middleTextFrame
+				local rightTextFrame = TRB.Frames.rightTextFrame
+
+				if not pcall(TryUpdateText, leftTextFrame, leftText) then
+					leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
+				end
+
+				if not pcall(TryUpdateText, middleTextFrame, middleText) then
+					middleTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
+				end
+
+				if not pcall(TryUpdateText, rightTextFrame, rightText) then
+					rightTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.right.fontSize, "OUTLINE")
+				end
 			end
 		end
 	end
@@ -900,4 +936,48 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 	end
 
 	return valid
+end
+
+---@param settings table
+function TRB.Functions.BarText:CreateBarTextFrames(settings)
+	---@type Frame[]
+	local textFrames = TRB.Frames.textFrames
+	local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
+	
+	local entries = TRB.Functions.Table:Length(displayText.barText)
+	if entries > 0 then
+		for i = 1, entries do
+			local e = displayText.barText[i]
+			local relativeTo = e.position.relativeTo
+			local relativeToFrame = _G["TwintopResourceBarFrame_"..e.position.relativeToFrame]
+			local fontFace = e.fontFace
+			local fontSize = e.fontSize
+
+			if e.useDefaultFontFace then
+				fontFace = displayText.default.fontFace
+			end
+
+			if e.useDefaultFontSize then
+				fontSize = displayText.default.fontSize
+			end
+
+			if textFrames[i] == nil then
+				textFrames[i] = CreateFrame("Frame", "TwintopResourceBarFrame_TextFrame"..i, relativeToFrame)
+				---@diagnostic disable-next-line: inject-field
+				textFrames[i].font = TRB.Frames.textFrames[i]:CreateFontString(nil, "BACKGROUND")
+			end
+			
+			textFrames[i]:Show()
+			textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+			textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+			textFrames[i]:SetParent(relativeToFrame)
+			textFrames[i].font:SetTextColor(255/255, 255/255, 255/255, 1.0)
+			textFrames[i].font:SetJustifyH(relativeTo)
+			textFrames[i].font:SetFont(fontFace, fontSize, "OUTLINE")
+			textFrames[i].font:Show()
+
+			textFrames[i]:SetAllPoints(textFrames[i].font)
+			textFrames[i].font:SetPoint(relativeTo, relativeToFrame, relativeTo, e.position.xPos, e.position.yPos)
+		end
+	end
 end

@@ -11,10 +11,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local passiveFrame = TRB.Frames.passiveFrame
 	local barBorderFrame = TRB.Frames.barBorderFrame
 
-	local leftTextFrame = TRB.Frames.leftTextFrame
-	local middleTextFrame = TRB.Frames.middleTextFrame
-	local rightTextFrame = TRB.Frames.rightTextFrame
-
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
 	TRB.Options.Priest = {}
@@ -511,26 +507,66 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function ShadowLoadDefaultBarTextSimpleSettings()
+		---@type TRB.Classes.DisplayText
 		local textSettings = {
-			fontSizeLock=true,
-			fontFaceLock=true,
-			left={
-				text="$haste%",
+			default = {
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontSize=18,
+				color = "FFFFFFFF",
 			},
-			middle={
-				text="{$vfTime}[$vfTime]",
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
-				fontSize=18
-			},
-			right={
-				text="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+			barText = {
+				{
+					useDefaultFontColor = false,
+					useDefaultFontFace = false,
+					useDefaultFontSize = false,
+					text="$haste%",
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontSize=18,
+					position = {
+						xPos = 2,
+						yPos = 0,
+						relativeTo = "LEFT",
+						relativeToName = "Left",
+						relativeToFrame = "Resource",
+						relativeToFrameName = "Main Resource Bar"
+					}
+				},
+				{
+					useDefaultFontColor = false,
+					useDefaultFontFace = false,
+					useDefaultFontSize = false,
+					text="{$vfTime}[$vfTime]",
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontSize=18,
+					position = {
+						xPos = 0,
+						yPos = 0,
+						relativeTo = "CENTER",
+						relativeToName = "Center",
+						relativeToFrame = "Resource",
+						relativeToFrameName = "Main Resource Bar"
+					}
+				},
+				{
+					useDefaultFontColor = false,
+					useDefaultFontFace = false,
+					useDefaultFontSize = false,
+					text="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontSize=18,
+					position = {
+						xPos = -2,
+						yPos = 0,
+						relativeTo = "RIGHT",
+						relativeToName = "Right",
+						relativeToFrame = "Resource",
+						relativeToFrameName = "Main Resource Bar"
+					}
+				}
 			}
 		}
 
@@ -538,26 +574,69 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function ShadowLoadDefaultBarTextAdvancedSettings()
+		---@type TRB.Classes.DisplayText
 		local textSettings = {
-			fontSizeLock = false,
-			fontFaceLock = true,
-			left = {
-				text="#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount][       ]   {$ttd}[TTD: $ttd]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			default = {
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18,
+				color = "FFFFFFFF",
 			},
-			middle = {
-				text="{$mdTime}[#mDev $mdTime #mDev{$vfTime||$mfiTime}[||n]]{$mfiTime}[#mfi $mfiTime #mfi{$vfTime}[||n]]{$vfTime}[$vfTime]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
-			},
-			right = {
-				text="{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]$insanity",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 22
+			barText = {
+				{
+					useDefaultFontColor = false,
+					useDefaultFontFace = false,
+					useDefaultFontSize = false,
+					text="#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount][       ]   {$ttd}[TTD: $ttd]",
+					fontFace = "Fonts\\FRIZQT__.TTF",
+					fontFaceName = "Friz Quadrata TT",
+					fontSize = 13,
+					color = "FFFFFFFF",
+					position = {
+						xPos = 2,
+						yPos = 0,
+						relativeTo = "LEFT",
+						relativeToName = "Left",
+						relativeToFrame = "Resource",
+						relativeToFrameName = "Main Resource Bar"
+					}
+				},
+				{
+					useDefaultFontColor = false,
+					useDefaultFontFace = false,
+					useDefaultFontSize = false,
+					text="{$mdTime}[#mDev $mdTime #mDev{$vfTime||$mfiTime}[||n]]{$mfiTime}[#mfi $mfiTime #mfi{$vfTime}[||n]]{$vfTime}[$vfTime]",
+					fontFace = "Fonts\\FRIZQT__.TTF",
+					fontFaceName = "Friz Quadrata TT",
+					fontSize = 13,
+					color = "FFFFFFFF",
+					position = {
+						xPos = 0,
+						yPos = 0,
+						relativeTo = "CENTER",
+						relativeToName = "Center",
+						relativeToFrame = "Resource",
+						relativeToFrameName = "Main Resource Bar"
+					}
+				},
+				{
+					useDefaultFontColor = false,
+					useDefaultFontFace = false,
+					useDefaultFontSize = false,
+					text="{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]$insanity",
+					fontFace = "Fonts\\FRIZQT__.TTF",
+					fontFaceName = "Friz Quadrata TT",
+					fontSize = 22,
+					color = "FFFFFFFF",
+					position = {
+						xPos = -2,
+						yPos = 0,
+						relativeTo = "RIGHT",
+						relativeToName = "Right",
+						relativeToFrame = "Resource",
+						relativeToFrameName = "Main Resource Bar"
+					}
+				}
 			}
 		}
 
@@ -565,26 +644,66 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function ShadowLoadDefaultBarTextNarrowAdvancedSettings()
+		---@type TRB.Classes.DisplayText
 		local textSettings = {
-			fontSizeLock = false,
-			fontFaceLock = true,
-			left = {
-				text="#swp $swpCount   $haste% ($gcd)||n#vt $vtCount   {$ttd}[TTD: $ttd]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			default = {
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontSize=18,
+				color = "FFFFFFFF",
 			},
-			middle = {
-				text="{$mdTime}[#mDev $mdTime #mDev{$vfTime}[||n]]{$vfTime}[$vfTime]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
-			},
-			right = {
-				text="{$casting}[#casting$casting+]{$passive}[$passive+]$insanity",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 22
+			barText = {
+				{
+					useDefaultFontColor = false,
+					useDefaultFontFace = false,
+					useDefaultFontSize = false,
+					text="#swp $swpCount   $haste% ($gcd)||n#vt $vtCount   {$ttd}[TTD: $ttd]",
+					fontFace = "Fonts\\FRIZQT__.TTF",
+					fontFaceName = "Friz Quadrata TT",
+					fontSize = 13,
+					position = {
+						xPos = 2,
+						yPos = 0,
+						relativeTo = "LEFT",
+						relativeToName = "Left",
+						relativeToFrame = "TwintopResourceBarFrame",
+						relativeToFrameName = "Main Resource Bar"
+					}
+				},
+				{
+					useDefaultFontColor = false,
+					useDefaultFontFace = false,
+					useDefaultFontSize = false,
+					text="{$mdTime}[#mDev $mdTime #mDev{$vfTime}[||n]]{$vfTime}[$vfTime]",
+					fontFace = "Fonts\\FRIZQT__.TTF",
+					fontFaceName = "Friz Quadrata TT",
+					fontSize = 13,
+					position = {
+						xPos = 0,
+						yPos = 0,
+						relativeTo = "CENTER",
+						relativeToName = "Center",
+						relativeToFrame = "TwintopResourceBarFrame",
+						relativeToFrameName = "Main Resource Bar"
+					}
+				},
+				{
+					useDefaultFontColor = false,
+					useDefaultFontFace = false,
+					useDefaultFontSize = false,
+					text="{$casting}[#casting$casting+]{$passive}[$passive+]$insanity",
+					fontFace = "Fonts\\FRIZQT__.TTF",
+					fontFaceName = "Friz Quadrata TT",
+					fontSize = 22,
+					position = {
+						xPos = -2,
+						yPos = 0,
+						relativeTo = "RIGHT",
+						relativeToName = "Right",
+						relativeToFrame = "TwintopResourceBarFrame",
+						relativeToFrameName = "Main Resource Bar"
+					}
+				}
 			}
 		}
 
@@ -3241,7 +3360,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest (Font & Text).", 5, 3, false, true, false, false, false)
 		end)
 
-		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 5, 3, yCoord)
+		--yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 5, 3, yCoord)
+		controls.colors.text = controls.colors.text or {}
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Insanity Text Colors", oUi.xCoord, yCoord)
