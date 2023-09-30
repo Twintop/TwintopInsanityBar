@@ -4482,6 +4482,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if destGUID == TRB.Data.character.guid then
 				if (specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (specId == 2 and TRB.Data.barConstructedForSpec == "holy") then -- Let's check raid effect mana stuff
 					if settings.passiveGeneration.symbolOfHope and (spellId == spells.symbolOfHope.tickId or spellId == spells.symbolOfHope.id) then
+						---@diagnostic disable-next-line: param-type-mismatch
 						local castByToken = UnitTokenFromGUID(sourceGUID)
 						local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 						symbolOfHope.buff:Initialize(type, nil, castByToken)
@@ -4542,6 +4543,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if specId == 1 and TRB.Data.barConstructedForSpec == "discipline" then
 					if spellId == spells.purgeTheWicked.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
+---@diagnostic disable-next-line: param-type-mismatch
 							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					end
@@ -4576,10 +4578,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.vampiricTouch.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
+							---@diagnostic disable-next-line: param-type-mismatch
 							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					elseif spellId == spells.devouringPlague.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
+							---@diagnostic disable-next-line: param-type-mismatch
 							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					elseif settings.auspiciousSpiritsTracker and talents:IsTalentActive(spells.auspiciousSpirits) and spellId == spells.auspiciousSpirits.idSpawn and type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
@@ -4592,6 +4596,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 						triggerUpdate = true
 					elseif settings.auspiciousSpiritsTracker and talents:IsTalentActive(spells.auspiciousSpirits) and spellId == spells.auspiciousSpirits.idImpact and (type == "SPELL_DAMAGE" or type == "SPELL_MISSED" or type == "SPELL_ABSORBED") then --Auspicious Spirit Hit
+						---@diagnostic disable-next-line: param-type-mismatch
 						if targetData:CheckTargetExists(destGUID) then
 							targetData.targets[destGUID].spells[spells.auspiciousSpirits.id].count = targetData.targets[destGUID].spells[spells.auspiciousSpirits.id].count - 1
 							targetData.count[spells.auspiciousSpirits.id] = targetData.count[spells.auspiciousSpirits.id] - 1
@@ -4647,6 +4652,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				-- Spec agnostic
 				if spellId == spells.shadowWordPain.id then
 					if TRB.Functions.Class:InitializeTarget(destGUID) then
+						---@diagnostic disable-next-line: param-type-mismatch
 						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 					end
 				end
@@ -4664,6 +4670,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
+				---@diagnostic disable-next-line: param-type-mismatch
 				targetData:Remove(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true

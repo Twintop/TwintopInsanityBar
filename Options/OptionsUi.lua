@@ -2451,3 +2451,173 @@ function TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, cla
 	return yCoord
 end
 
+function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, classId, specId, yCoord)
+	local _, className, _ = GetClassInfo(classId)
+	local f = nil
+	local title = ""
+
+	controls.colors.text = controls.colors.text or {}
+	controls.dropDown.fonts = {}
+
+	controls.textDisplayDefaultSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Default Bar Text Font Settings", oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+
+	-- Create the dropdown, and configure its appearance
+	controls.dropDown.fontDefault = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_fontDefault", parent)
+	controls.dropDown.fontDefault.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Default Font Face", oUi.xCoord, yCoord)
+	controls.dropDown.fontDefault.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.fontDefault:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.fontDefault, oUi.dropdownWidth)
+	LibDD:UIDropDownMenu_SetText(controls.dropDown.fontDefault, spec.displayText.default.fontFaceName)
+	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.fontDefault, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	LibDD:UIDropDownMenu_Initialize(controls.dropDown.fontDefault, function(self, level, menuList)
+		local entries = 25
+		local info = LibDD:UIDropDownMenu_CreateInfo()
+		local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
+		local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
+		if (level or 1) == 1 or menuList == nil then
+			local menus = math.ceil(TRB.Functions.Table:Length(fonts) / entries)
+			for i=0, menus-1 do
+				info.hasArrow = true
+				info.notCheckable = true
+				info.text = "Fonts " .. i+1
+				info.menuList = i
+				LibDD:UIDropDownMenu_AddButton(info)
+			end
+		else
+			local start = entries * menuList
+
+			for k, v in pairs(fontsList) do
+				if k > start and k <= start + entries then
+					info.text = v
+					info.value = fonts[v]
+					info.checked = fonts[v] == spec.displayText.default.fontFace
+					info.func = self.SetValue
+					info.arg1 = fonts[v]
+					info.arg2 = v
+					info.fontObject = CreateFont(v)
+					info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
+					LibDD:UIDropDownMenu_AddButton(info, level)
+				end
+			end
+		end
+	end)
+
+	function controls.dropDown.fontDefault:SetValue(newValue, newName)
+		spec.displayText.default.fontFace = newValue
+		spec.displayText.default.fontFaceName = newName
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.fontDefault, newName)
+		LibDD:CloseDropDownMenus()
+	end
+
+	yCoord = yCoord - 30
+	controls.colors.text.default = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Default Font Color", spec.displayText.default.color,
+																		250, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.default
+	f:SetScript("OnMouseDown", function(self, button, ...)
+	TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.displayText.default, controls.colors.text, "color")
+	end)
+
+	yCoord = yCoord - 60
+	title = "Default Font Size"
+	controls.fontSizeDefault = TRB.Functions.OptionsUi:BuildSlider(parent, title, 6, 72, spec.displayText.default.fontSize, 1, 0,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.fontSizeDefault:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		spec.displayText.default.fontSize = value
+	end)
+
+	return yCoord
+end
+
+---comment
+---@param parent frame
+---@param controls table
+---@param spec table
+---@param classId integer
+---@param specId integer
+---@param yCoord number
+---@return number
+function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, classId, specId, yCoord)
+
+	local _, className, _ = GetClassInfo(classId)
+	local f = nil
+	local title = ""
+	
+	controls.colors.text = controls.colors.text or {}
+	controls.dropDown.fonts = {}
+
+	controls.textDisplayDefaultSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Default Bar Text Font Settings", oUi.xCoord, yCoord)
+	yCoord = yCoord - 30
+
+	-- Create the dropdown, and configure its appearance
+	controls.dropDown.fontDefault = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_fontDefault", parent)
+	controls.dropDown.fontDefault.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Default Font Face", oUi.xCoord, yCoord)
+	controls.dropDown.fontDefault.label.font:SetFontObject(GameFontNormal)
+	controls.dropDown.fontDefault:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.fontDefault, oUi.dropdownWidth)
+	LibDD:UIDropDownMenu_SetText(controls.dropDown.fontDefault, spec.displayText.default.fontFaceName)
+	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.fontDefault, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	LibDD:UIDropDownMenu_Initialize(controls.dropDown.fontDefault, function(self, level, menuList)
+		local entries = 25
+		local info = LibDD:UIDropDownMenu_CreateInfo()
+		local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
+		local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
+		if (level or 1) == 1 or menuList == nil then
+			local menus = math.ceil(TRB.Functions.Table:Length(fonts) / entries)
+			for i=0, menus-1 do
+				info.hasArrow = true
+				info.notCheckable = true
+				info.text = "Fonts " .. i+1
+				info.menuList = i
+				LibDD:UIDropDownMenu_AddButton(info)
+			end
+		else
+			local start = entries * menuList
+
+			for k, v in pairs(fontsList) do
+				if k > start and k <= start + entries then
+					info.text = v
+					info.value = fonts[v]
+					info.checked = fonts[v] == spec.displayText.default.fontFace
+					info.func = self.SetValue
+					info.arg1 = fonts[v]
+					info.arg2 = v
+					info.fontObject = CreateFont(v)
+					info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
+					LibDD:UIDropDownMenu_AddButton(info, level)
+				end
+			end
+		end
+	end)
+
+	function controls.dropDown.fontDefault:SetValue(newValue, newName)
+		spec.displayText.default.fontFace = newValue
+		spec.displayText.default.fontFaceName = newName
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.fontDefault, newName)
+		LibDD:CloseDropDownMenus()
+	end
+
+	yCoord = yCoord - 30
+	controls.colors.text.default = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Default Font Color", spec.displayText.default.color,
+																		250, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.text.default
+	f:SetScript("OnMouseDown", function(self, button, ...)
+	TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.displayText.default, controls.colors.text, "color")
+	end)
+
+	yCoord = yCoord - 60
+	title = "Default Font Size"
+	controls.fontSizeDefault = TRB.Functions.OptionsUi:BuildSlider(parent, title, 6, 72, spec.displayText.default.fontSize, 1, 0,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.fontSizeDefault:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		spec.displayText.default.fontSize = value
+	end)
+
+	return yCoord
+end

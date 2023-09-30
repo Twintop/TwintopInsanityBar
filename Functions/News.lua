@@ -613,6 +613,7 @@ function TRB.Functions.News:BuildNewsPopup()
         end)
 
     simpleHtml:SetScript("OnHyperlinkEnter", function(f) SetCursor("Interface\\CURSOR\\vehichleCursor.PNG") end)
+---@diagnostic disable-next-line: param-type-mismatch
     simpleHtml:SetScript("OnHyperlinkLeave", function(f) SetCursor(nil)                                     end)
 
     simpleHtml:SetText(LMD:ToHTML(content))

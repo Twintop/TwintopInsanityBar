@@ -22,6 +22,7 @@ Libs\base64.lua
 Libs\json.lua
 Libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
 Libs\LibMarkdown\LibMarkdown.xml
+Libs\LibScrollingTable\lib-st.xml
 
 Classes\Snapshot.lua
 Classes\TimeToDie.lua

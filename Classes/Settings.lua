@@ -62,7 +62,9 @@ end
 ---@field public useDefaultFontFace boolean
 ---@field public useDefaultFontSize boolean
 ---@field public useDefaultFontColor boolean
+---@field public name string
 ---@field public text string
+---@field public guid string
 ---@field public position TRB.Classes.DisplayTextPosition
 
 ---@class TRB.Classes.DisplayTextPosition

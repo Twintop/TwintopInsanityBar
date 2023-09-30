@@ -795,17 +795,28 @@ end
 
 function TRB.Functions.BarText:IsTtdActive(settings)
 	local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
+	local found = false
 	if settings ~= nil and settings.displayText ~= nil then
-		if string.find(settings.displayText.left.text, "$ttd") or
-			string.find(settings.displayText.middle.text, "$ttd") or
-			string.find(settings.displayText.right.text, "$ttd") then
-			targetData.ttdIsActive = true
+		if classIndexId == 5 then --Do this for Priests only
+			local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
+			local entries = TRB.Functions.Table:Length(displayText.barText)
+			if entries > 0 then
+				for i = 1, entries do
+					if string.find(displayText.barText[i].text, "$ttd") then
+						found = true
+						break
+					end
+				end
+			end
 		else
-			targetData.ttdIsActive = false
+			if string.find(settings.displayText.left.text, "$ttd") or
+				string.find(settings.displayText.middle.text, "$ttd") or
+				string.find(settings.displayText.right.text, "$ttd") then
+				found = true
+			end
 		end
-	else
-		targetData.ttdIsActive = false
 	end
+	targetData.ttdIsActive = found
 end
 
 function TRB.Functions.BarText:BarText(settings)
@@ -868,6 +879,8 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 						local returnText = GetReturnText(barText)
 
 						if not pcall(TryUpdateText, textFrames[i], returnText) then
+							textFrames[i].font:SetFont(fontFace, fontSize, "OUTLINE")
+						else
 							textFrames[i].font:SetFont(fontFace, fontSize, "OUTLINE")
 						end
 					end
