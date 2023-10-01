@@ -55,6 +55,8 @@ end
 ---@class TRB.Classes.DisplayTextDefault
 ---@field public fontFace string
 ---@field public fontFaceName string
+---@field public fontJustifyHorizontal string
+---@field public fontJustifyHorizontalName string
 ---@field public fontSize integer
 ---@field public color string
 

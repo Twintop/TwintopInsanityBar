@@ -858,6 +858,9 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 						local color = e.color
 						local fontFace = e.fontFace
 						local fontSize = e.fontSize
+						local fontJustifyHorizontal = e.fontJustifyHorizontal
+						local relativeTo = e.position.relativeTo
+						local relativeToFrame = _G["TwintopResourceBarFrame_"..e.position.relativeToFrame]
 						
 						if e.useDefaultFontColor then
 							color = displayText.default.color
@@ -879,10 +882,11 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 						local returnText = GetReturnText(barText)
 
 						if not pcall(TryUpdateText, textFrames[i], returnText) then
-							textFrames[i].font:SetFont(fontFace, fontSize, "OUTLINE")
-						else
-							textFrames[i].font:SetFont(fontFace, fontSize, "OUTLINE")
 						end
+						textFrames[i].font:SetJustifyH(fontJustifyHorizontal)
+						textFrames[i].font:SetFont(fontFace, fontSize, "OUTLINE")
+						textFrames[i].font:ClearAllPoints()
+						textFrames[i].font:SetPoint(relativeTo, relativeToFrame, relativeTo, e.position.xPos, e.position.yPos)
 					end
 				end
 			else
@@ -967,6 +971,7 @@ function TRB.Functions.BarText:CreateBarTextFrames(settings)
 			local relativeToFrame = _G["TwintopResourceBarFrame_"..e.position.relativeToFrame]
 			local fontFace = e.fontFace
 			local fontSize = e.fontSize
+			local fontJustifyHorizontal = e.fontJustifyHorizontal
 
 			if e.useDefaultFontFace then
 				fontFace = displayText.default.fontFace
@@ -987,7 +992,7 @@ function TRB.Functions.BarText:CreateBarTextFrames(settings)
 			textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
 			textFrames[i]:SetParent(relativeToFrame)
 			textFrames[i].font:SetTextColor(255/255, 255/255, 255/255, 1.0)
-			textFrames[i].font:SetJustifyH(relativeTo)
+			textFrames[i].font:SetJustifyH(fontJustifyHorizontal)
 			textFrames[i].font:SetFont(fontFace, fontSize, "OUTLINE")
 			textFrames[i].font:Show()
 
