@@ -1,4 +1,3 @@
----@diagnostic disable: inject-field
 -- Copyright 2008-2020 Dan Dumont
 --
 -- This program is free software: you can redistribute it and/or modify
@@ -180,8 +179,8 @@ do
 				col.text:SetPoint("BOTTOM", col, "BOTTOM", 0, 0);
 				col.text:SetWidth(self.cols[j].width - 2*lrpadding);
 			end
-			local j = #self.cols + 1;
-			local col = row.cols[j];
+			j = #self.cols + 1;
+			col = row.cols[j];
 			while col do
 				col:Hide();
 				j = j + 1;
@@ -666,7 +665,7 @@ do
 		st.Show = Show;
 		st.Hide = Hide;
 		st.SetDisplayRows = SetDisplayRows;
-		--st.SetRowHeight = SetRowHeight;
+		st.SetRowHeight = SetRowHeight;
 		st.SetHeight = SetHeight;
 		st.SetWidth = SetWidth;
 		st.SetDisplayCols = SetDisplayCols;
@@ -809,7 +808,6 @@ do
 		scrolltrough:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -4, 4);
 		scrolltrough.background = scrolltrough:CreateTexture(nil, "BACKGROUND");
 		scrolltrough.background:SetAllPoints(scrolltrough);
----@diagnostic disable-next-line: undefined-field
 		scrolltrough.background:SetColorTexture(0.05, 0.05, 0.05, 1.0);
 		local scrolltroughborder = CreateFrame("Frame", f:GetName().."ScrollTroughBorder", scrollframe);
 		scrolltroughborder:SetWidth(1);
@@ -817,7 +815,6 @@ do
 		scrolltroughborder:SetPoint("BOTTOMRIGHT", scrolltrough, "BOTTOMLEFT");
 		scrolltroughborder.background = scrolltrough:CreateTexture(nil, "BACKGROUND");
 		scrolltroughborder.background:SetAllPoints(scrolltroughborder);
----@diagnostic disable-next-line: undefined-field
 		scrolltroughborder.background:SetColorTexture(0.5, 0.5, 0.5, 1.0);
 
 		st.Refresh = function(self)

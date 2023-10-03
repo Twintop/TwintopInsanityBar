@@ -4102,51 +4102,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			{
 				["name"] = "Bar Text",
-				["width"] = 335,--260,
+				["width"] = 260,
 				["align"] = "LEFT"
+			},
+			{
+				["name"] = "",
+				["width"] = 75,--260,
+				["align"] = "RIGHT",
+				["color"] = {
+					["r"] = 1,
+					["g"] = 0,
+					["b"] = 0,
+					["a"] = 1,
+				}
 			}
 		}
-
-		local dataTable = {}
-
-		local displayText = spec.displayText --[[@as TRB.Classes.DisplayText]]
-		local entries = TRB.Functions.Table:Length(displayText.barText)
-		if entries > 0 then
-			for i = 1, entries do
-				local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(displayText.barText[i].color, true)
-				table.insert(dataTable, {
-					cols = {
-						{
-							value = displayText.barText[i].guid
-						},
-						{
-							value = displayText.barText[i].name,
-							--["args"] = nil,
-							--[[["color"] = {
-								["r"] = r,
-								["g"] = g,
-								["b"] = b,
-								["a"] = a,
-							},]]
-							--["colorargs"] = nil,
-							--["DoCellUpdate"] = nil,
-						},
-						{
-							value = displayText.barText[i].position.relativeToFrameName,
-						},
-						{
-							value = displayText.barText[i].text,
-							--[[["color"] = {
-								["r"] = r,
-								["g"] = g,
-								["b"] = b,
-								["a"] = a,
-							},]]
-						}
-					}
-				})
-			end
-		end
 
 		---@type TRB.Classes.DisplayTextEntry
 		---@diagnostic disable-next-line: missing-fields
@@ -4159,12 +4129,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		btc:SetWidth(620)
 		btc:SetHeight(120)
 
-		local barTextTable = ScrollingTable:CreateST(columns, 5, 15, nil, btc)
-		barTextTable:SetData(dataTable)
-		barTextTable:EnableSelection(true)
+		local barTextTable = ScrollingTable:CreateST(columns, 5, 15, nil, btc, false, false)
 
-		yCoord = yCoord - 120
+		yCoord = yCoord - 110
 
+		local addButton = TRB.Functions.OptionsUi:BuildButton(parent, "Add New Bar Text Area", 450, yCoord, 175, 25)
+
+		yCoord = yCoord - 40
 		title = "Horizontal Offset"
 		local barTextHorizontal = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth), math.floor(sanityCheckValues.barMaxWidth), 0, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
@@ -4408,63 +4379,196 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		barText:SetScript("OnTextChanged", function(self, input)
 			workingBarText.text = self:GetText()
 			TRB.Data.barTextCache = {}
-			barTextTable:Refresh()
+			--barTextTable:Refresh()
 		end)
 		barText:SetCursorPosition(0)
 
-		barTextTable:RegisterEvents({
-			OnClick = function (rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, ...)
-				local found = false
-				local guid = data[realrow].cols[1].value
-				local e = TRB.Functions.Table:Length(displayText.barText)
-				if e > 0 then
-					for i = 1, e do
-						if displayText.barText[i].guid == guid then
-							workingBarText = displayText.barText[i]
-							found = true
-							break
-						end
+
+
+		---comment
+		---@param displayText TRB.Classes.DisplayText
+		---@param btt table # LibScrollingTable
+		local function SetTableValues(displayText, btt)
+			local dataTable = {}
+			local entries = TRB.Functions.Table:Length(displayText.barText)
+			if entries > 0 then
+				for i = 1, entries do
+					local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(displayText.barText[i].color, true)
+					table.insert(dataTable, {
+						cols = {
+							{
+								value = displayText.barText[i].guid
+							},
+							{
+								value = displayText.barText[i].name,
+								--["args"] = nil,
+								--[[["color"] = {
+									["r"] = r,
+									["g"] = g,
+									["b"] = b,
+									["a"] = a,
+								},]]
+								--["colorargs"] = nil,
+								--["DoCellUpdate"] = nil,
+							},
+							{
+								value = displayText.barText[i].position.relativeToFrameName,
+							},
+							{
+								value = displayText.barText[i].text,
+								--[[["color"] = {
+									["r"] = r,
+									["g"] = g,
+									["b"] = b,
+									["a"] = a,
+								},]]
+							},
+							{
+								value = "DELETE",
+								--[[["color"] = {
+									["r"] = 1,
+									["g"] = 0,
+									["b"] = 0,
+									["a"] = 1,
+								}]]
+							}
+						}
+					})
+				end
+			end
+			btt:SetData(dataTable)
+			btt:EnableSelection(true)
+		end
+
+		---comment
+		---@return TRB.Classes.DisplayTextEntry
+		local function GetNewDisplayTextEntry()
+			return {
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				useDefaultFontColor = false,
+				name = "New Bar Text Entry",
+				text = "",
+				guid = TRB.Functions.String:Guid(),
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=18,
+				color="FFFF0000",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
+			}
+		end
+
+		---comment
+		---@param guid string
+		---@param dt TRB.Classes.DisplayText
+		local function FillBarTextEditorFields(guid, dt)
+			local found = false
+			local e = TRB.Functions.Table:Length(dt.barText)
+			if e > 0 then
+				for i = 1, e do
+					if dt.barText[i].guid == guid then
+						workingBarText = dt.barText[i]
+						found = true
+						break
 					end
 				end
+			end
 
-				if not found then
-					workingBarText = {
-						useDefaultFontFace = false,
-						useDefaultFontSize = false,
-						useDefaultFontColor = false,
-						name = "New Bar Text Entry",
-						text = "",
-						guid = TRB.Functions.String:Guid(),
-						fontFace="Fonts\\FRIZQT__.TTF",
-						fontFaceName="Friz Quadrata TT",
-						fontJustifyHorizontal = "LEFT",
-						fontJustifyHorizontalName = "Left",
-						fontSize=18,
-						color="FFFF0000",
-						position = {
-							xPos = 0,
-							yPos = 0,
-							relativeTo = "LEFT",
-							relativeToName = "Left",
-							relativeToFrame = "Resource",
-							relativeToFrameName = "Main Resource Bar"
-						}
-					}
+			if not found then
+				return
+				--workingBarText = GetNewDisplayTextEntry()
+			end
+
+			LibDD:UIDropDownMenu_SetText(font, workingBarText.fontFaceName)
+			LibDD:UIDropDownMenu_SetText(barTextJustifyHorizontal, workingBarText.fontJustifyHorizontalName)
+			fontSize:SetValue(workingBarText.fontSize)
+			barTextColor.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(workingBarText.color, true))
+			barText:SetText(workingBarText.text)
+
+			TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextHorizontal, workingBarText.position.xPos)
+			TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextVertical, workingBarText.position.yPos)
+			LibDD:UIDropDownMenu_SetText(barTextRelativeTo, workingBarText.position.relativeToName)
+			LibDD:UIDropDownMenu_SetText(barTextRelativeToFrame, workingBarText.position.relativeToFrameName)
+		end
+
+		SetTableValues(spec.displayText, barTextTable)
+
+		addButton:SetScript("OnClick", function(self, ...)
+			local displayText = spec.displayText --[[@as TRB.Classes.DisplayText]]
+			local newEntry = GetNewDisplayTextEntry()
+			table.insert(displayText.barText, newEntry)
+			SetTableValues(displayText, barTextTable)
+			barTextTable:SetSelection(TRB.Functions.Table:Length(displayText.barText))
+			TRB.Functions.BarText:CreateBarTextFrames(spec)
+			FillBarTextEditorFields(newEntry.guid, displayText)
+		end)
+
+		---Deletes a specified bar text row
+		---@param displayText TRB.Classes.DisplayText
+		---@param row integer
+		---@param btt table
+		local function DeleteBarTextRow(displayText, row, btt)
+			btt:SetSelection()
+			table.remove(displayText.barText, row)
+			SetTableValues(displayText, btt)
+			TRB.Functions.BarText:CreateBarTextFrames(spec)
+		end
+
+		StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
+			text = "",
+			button1 = "Yes",
+			button2 = "No",
+			OnShow = function(self, data)
+				self.text:SetFormattedText(data.message)
+				self.data = data
+			end,
+			OnAccept = function(self)
+				DeleteBarTextRow(self.data.displayText, self.data.row, self.data.btt)
+			end,
+			timeout = 0,
+			whileDead = true,
+			hideOnEscape = true,
+			preferredIndex = 3
+		}
+
+		barTextTable:RegisterEvents({
+			OnClick = function (rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, button, ...)
+				if button == "LeftButton" then
+					local currentSelection = scrollingTable:GetSelection()
+					local guid = data[realrow].cols[1].value
+
+					if column == 5 then
+						StaticPopup_Show("TwintopResourceBar_ConfirmDeleteBarText", nil, nil, {
+							message = "Are you sure you want to delete '"..data[realrow].cols[2].value.."'?",
+							displayText = spec.displayText,
+							row = realrow,
+							btt = scrollingTable
+						 })
+						--DeleteBarTextRow(spec.displayText, row, scrollingTable)
+					else
+						FillBarTextEditorFields(guid, spec.displayText)
+						C_Timer.After(0, function()
+							C_Timer.After(0.05, function()
+								local newSelection = scrollingTable:GetSelection()
+
+								if newSelection == nil then
+									barTextTable:SetSelection(currentSelection)
+								end
+							end)
+						end)
+					end
 				end
-
-				LibDD:UIDropDownMenu_SetText(font, workingBarText.fontFaceName)
-				LibDD:UIDropDownMenu_SetText(barTextJustifyHorizontal, workingBarText.fontJustifyHorizontalName)
-				fontSize:SetValue(workingBarText.fontSize)
-				barTextColor.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(workingBarText.color, true))
-				barText:SetText(workingBarText.text)
-
-				TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextHorizontal, workingBarText.position.xPos)
-				TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextVertical, workingBarText.position.yPos)
-				LibDD:UIDropDownMenu_SetText(barTextRelativeTo, workingBarText.position.relativeToName)
-				LibDD:UIDropDownMenu_SetText(barTextRelativeToFrame, workingBarText.position.relativeToFrameName)
 			end
 		})
-		
 
 		yCoord = yCoord - 200
 		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
