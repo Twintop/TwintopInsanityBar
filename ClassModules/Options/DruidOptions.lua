@@ -31,26 +31,73 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	]]
 
 	local function BalanceLoadDefaultBarTextSimpleSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock=true,
-			fontFaceLock=true,
-			left={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
 				text="$haste%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="{$eclipse}[$eclipseTime sec.]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[$casting + ]{$passive}[$passive + ]$astralPower",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
@@ -58,33 +105,80 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 
 	local function BalanceLoadDefaultBarTextAdvancedSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock = false,
-			fontFaceLock = true,
-			left = {
-				text = "#sunfire $sunfireCount    {$talentStellarFlare}[#stellarFlare $stellarFlareCount    ]$haste% ($gcd)||n#moonfire $moonfireCount     {$talentStellarFlare}[          ]{$ttd}[TTD: $ttd]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="#sunfire $sunfireCount    {$talentStellarFlare}[#stellarFlare $stellarFlareCount    ]$haste% ($gcd)||n#moonfire $moonfireCount     {$talentStellarFlare}[          ]{$ttd}[TTD: $ttd]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle = {
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="{$eclipse}[#eclipse $eclipseTime #eclipse]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right = {
-				text = "{$casting}[#casting$casting+]{$passive}[$passive+]$astralPower",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 22
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="{$casting}[#casting$casting+]{$passive}[$passive+]$astralPower",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=22,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
 
-	local function BalanceLoadDefaultSettings()
+	local function BalanceLoadDefaultSettings(includeBarText)
 		local settings = {
 			hastePrecision=2,
 			resourcePrecision=0,
@@ -155,9 +249,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					overThreshold="FF00FF00",
 					overThresholdEnabled=false,
 					overcapEnabled=true,
-					left="FFFFFFFF",
-					middle="FFFFFFFF",
-					right="FFFFFFFF",
 					dots={
 						enabled=true,
 						up="FFFFFFFF",
@@ -190,7 +281,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					outOfRange="FF440000"
 				}
 			},
-			displayText = {},
+			displayText={
+				default = {
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = "Left",
+					fontSize=18,
+					color = "FFFFFFFF",
+				},
+				barText = {}
+			},
 			audio = {
 				ssReady={
 					name = "Starsurge Ready",
@@ -232,7 +333,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			}
 		}
 
-		settings.displayText = BalanceLoadDefaultBarTextSimpleSettings()
+		if includeBarText then
+			settings.displayText.barText = BalanceLoadDefaultBarTextSimpleSettings()
+		end
+
 		return settings
 	end
 
@@ -241,26 +345,73 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	]]
 
 	local function FeralLoadDefaultBarTextSimpleSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock=true,
-			fontFaceLock=true,
-			left={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[$casting + ]{$passive}[$passive + ]$resource",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
@@ -268,33 +419,80 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 
 	local function FeralLoadDefaultBarTextAdvancedSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock = false,
-			fontFaceLock = true,
-			left = {
-				text = "#rake $rakeCount    #thrash $thrashCount||n#rip $ripCount    {$lunarInspiration}[#moonfire $moonfireCount]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="#rake $rakeCount    #thrash $thrashCount||n#rip $ripCount    {$lunarInspiration}[#moonfire $moonfireCount]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle = {
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right = {
-				text = "{$casting}[#casting$casting+]{$passive}[$passive+]$resource",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 22
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="{$casting}[#casting$casting+]{$passive}[$passive+]$resource",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=22,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
 
-	local function FeralLoadDefaultSettings()
+	local function FeralLoadDefaultSettings(includeBarText)
 		local settings = {
 			hastePrecision=2,
 			thresholds = {
@@ -410,9 +608,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					overThreshold="FF00FF00",
 					overThresholdEnabled=false,
 					overcapEnabled=true,
-					left="FFFFFFFF",
-					middle="FFFFFFFF",
-					right="FFFFFFFF",
 					dots={
 						enabled=true,
 						same="FFFFFFFF",
@@ -451,7 +646,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					outOfRange="FF440000"
 				}
 			},
-			displayText = {},
+			displayText={
+				default = {
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = "Left",
+					fontSize=18,
+					color = "FFFFFFFF",
+				},
+				barText = {}
+			},
 			audio = {
 				overcap={
 					name = "Overcap",
@@ -486,32 +691,83 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				comboPointsBarName="Blizzard",
 			}
 		}
-		settings.displayText = FeralLoadDefaultBarTextSimpleSettings()
+		
+		if includeBarText then
+			settings.displayText = FeralLoadDefaultBarTextSimpleSettings()
+		end
+
 		return settings
 	end
 	
 	-- Restoration
 	local function RestorationLoadDefaultBarTextSimpleSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock=true,
-			fontFaceLock=true,
-			left={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
 				text="{$efflorescenceTime}[$efflorescenceTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=16
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=16,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=16
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=16,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=16
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=16,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
@@ -519,33 +775,80 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 
 	local function RestorationLoadDefaultBarTextAdvancedSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock = false,
-			fontFaceLock = true,
-			left = {
-				text = "{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle = {
-				text = "{$efflorescenceTime}[#efflorescence $efflorescenceTime #efflorescence]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
+				text="{$efflorescenceTime}[#efflorescence $efflorescenceTime #efflorescence]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right = {
-				text = "{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 16
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=16,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
 
-	local function RestorationLoadDefaultSettings()
+	local function RestorationLoadDefaultSettings(includeBarText)
 		local settings = {
 			hastePrecision=2,
 			thresholds = {
@@ -625,9 +928,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					current="FF4D4DFF",
 					casting="FFFFFFFF",
 					passive="FF8080FF",
-					left="FFFFFFFF",
-					middle="FFFFFFFF",
-					right="FFFFFFFF",
 					dots={
 						enabled=true,
 						up="FFFFFFFF",
@@ -657,7 +957,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					outOfRange="FF440000"
 				}
 			},
-			displayText={},
+			displayText={
+				default = {
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = "Left",
+					fontSize=18,
+					color = "FFFFFFFF",
+				},
+				barText = {}
+			},
 			audio={
 				innervate={
 					name = "Innervate",
@@ -681,7 +991,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			}
 		}
 
-		settings.displayText = RestorationLoadDefaultBarTextSimpleSettings()
+		if includeBarText then
+			settings.displayText.barText = RestorationLoadDefaultBarTextSimpleSettings()
+		end
+
 		return settings
 	end
 
@@ -814,7 +1127,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local title = ""
 
-		controls.buttons.exportButton_Druid_Balance_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Druid_Balance_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Balance_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Bar Display).", 11, 1, true, false, false, false, false)
 		end)
@@ -1126,7 +1439,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local title = ""
 
-		controls.buttons.exportButton_Druid_Balance_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Druid_Balance_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Balance_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Font & Text).", 11, 1, false, true, false, false, false)
 		end)
@@ -1269,7 +1582,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local title = ""
 
-		controls.buttons.exportButton_Druid_Balance_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Druid_Balance_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Balance_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Audio & Tracking).", 11, 1, false, false, true, false, false)
 		end)
@@ -1550,61 +1863,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		local spec = TRB.Data.settings.druid.balance
-
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.balance
 		local yCoord = 5
-		local f = nil
-		local namePrefix = "Druid_Balance"
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		controls.buttons.exportButton_Druid_Balance_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Druid_Balance_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Balance_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Balance Druid (Bar Text).", 11, 1, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.left = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.left
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.left.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-
-		yCoord = yCoord - 70
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.middle = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.middle
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.middle.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-
-		yCoord = yCoord - 70
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.right = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.right
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.right.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
-		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
+		TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 11, 1, yCoord, cache)
 	end
 
 	local function BalanceConstructOptionsPanel(cache)
@@ -1799,7 +2069,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local title = ""
 
-		controls.buttons.exportButton_Druid_Feral_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Druid_Feral_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Feral_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Feral Druid (Bar Display).", 11, 2, true, false, false, false, false)
 		end)
@@ -2195,7 +2465,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local title = ""
 
-		controls.buttons.exportButton_Druid_Feral_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Druid_Feral_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Feral_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Feral Druid (Font & Text).", 11, 2, false, true, false, false, false)
 		end)
@@ -2326,7 +2596,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local title = ""
 
-		controls.buttons.exportButton_Druid_Feral_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Druid_Feral_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Feral_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Feral Druid (Audio & Tracking).", 11, 2, false, false, true, false, false)
 		end)
@@ -2535,61 +2805,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		local spec = TRB.Data.settings.druid.feral
-
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.feral
 		local yCoord = 5
-		local f = nil
-		local namePrefix = "Druid_Feral"
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		controls.buttons.exportButton_Druid_Feral_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Druid_Feral_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Feral_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Feral Druid (Bar Text).", 11, 2, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.left = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.left
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.left.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-
-		yCoord = yCoord - 70
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.middle = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.middle
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.middle.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-
-		yCoord = yCoord - 70
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.right = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.right
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.right.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
-		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
+		TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 11, 2, yCoord, cache)
 	end
 
 	local function FeralConstructOptionsPanel(cache)
@@ -2805,7 +3032,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local title = ""
 
-		controls.buttons.exportButton_Druid_Restoration_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Druid_Restoration_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Restoration_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Druid (Bar Display).", 11, 4, true, false, false, false, false)
 		end)
@@ -2982,7 +3209,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local title = ""
 
-		controls.buttons.exportButton_Druid_Restoration_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Druid_Restoration_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Restoration_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Druid (Font & Text).", 11, 4, false, true, false, false, false)
 		end)
@@ -3079,7 +3306,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local title = ""
 
-		controls.buttons.exportButton_Druid_Restoration_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Druid_Restoration_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Restoration_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Druid (Audio & Tracking).", 11, 4, false, false, true, false, false)
 		end)
@@ -3196,67 +3423,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		local spec = TRB.Data.settings.druid.restoration
-
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.restoration
 		local yCoord = 5
-		local f = nil
-
-		local namePrefix = "Druid_Restoration"
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		
-		controls.buttons.exportButton_Druid_Restoration_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Druid_Restoration_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Druid_Restoration_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Druid (Bar Text).", 11, 4, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.left = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.left
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.left.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 4 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-
-		yCoord = yCoord - 70
-		controls.labels.middleText = TRB.Functions.OptionsUi:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.middle = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.middle
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.middle.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 4 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-
-		yCoord = yCoord - 70
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.right = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.right
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.right.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 4 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
-		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
+		TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 11, 4, yCoord, cache)
 	end
 
 	local function RestorationConstructOptionsPanel(cache)

@@ -2449,12 +2449,34 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 
-					local settings = TRB.Options.Shaman.LoadDefaultSettings()
-					if TwintopInsanityBarSettings then
+					if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
 						TRB.Options:PortForwardSettings()
+
+						local settings = TRB.Options.Shaman.LoadDefaultSettings(false)
+
+						if TwintopInsanityBarSettings.shaman == nil or
+							TwintopInsanityBarSettings.shaman.elemental == nil or
+							TwintopInsanityBarSettings.shaman.elemental.displayText == nil then
+							settings.shaman.elemental.displayText = TRB.Options.Shaman.ElementalLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TRB.Data.settings.core.experimental.specs.shaman.enhancement and
+							(TwintopInsanityBarSettings.shaman == nil or
+							TwintopInsanityBarSettings.shaman.enhancement == nil or
+							TwintopInsanityBarSettings.shaman.enhancement.displayText == nil) then
+							settings.shaman.enhancement.displayText = TRB.Options.Shaman.EnhancementLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.shaman == nil or
+							TwintopInsanityBarSettings.shaman.restoration == nil or
+							TwintopInsanityBarSettings.shaman.restoration.displayText == nil then
+							settings.shaman.restoration.displayText = TRB.Options.Shaman.RestorationLoadDefaultBarTextSimpleSettings()
+						end
+
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
+						local settings = TRB.Options.Shaman.LoadDefaultSettings(true)
 						TRB.Data.settings = settings
 					end
 					FillSpecializationCache()
@@ -2972,6 +2994,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		return valid
+	end
+
+	function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+		local specId = GetSpecialization()
+		local settings = TRB.Data.settings.priest
+		local spells = TRB.Data.spells
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+		if specId == 1 then
+		elseif specId == 2 then
+		elseif specId == 3 then
+		end
+		return nil
 	end
 
 	--HACK to fix FPS

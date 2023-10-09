@@ -24,6 +24,8 @@ if not addonData.libs.SharedMedia:IsValid("border", "1 Pixel") then
 	addonData.libs.SharedMedia:Register("border", "1 Pixel", "Interface\\Buttons\\WHITE8X8")
 end
 
+addonData.libs.ScrollingTable = LibStub:GetLibrary("ScrollingTable")
+
 TRB.Details.addonData = addonData
 
 -- Some class functions get referenced by other methods. These live in a consistent location but are actually created in the class modules.
@@ -106,7 +108,7 @@ TRB.Data.constants.optionsUi.xOffset2 = TRB.Data.constants.optionsUi.xCoord2 + T
 TRB.Data.settings = {}
 
 TRB.Data.specSupported = false
-TRB.Data.resource = nil 
+TRB.Data.resource = nil
 TRB.Data.resourceFactor = 1
 TRB.Data.barConstructedForSpec = nil
 
@@ -169,23 +171,7 @@ TRB.Frames.passiveFrame.thresholds = {}
 ---@diagnostic disable-next-line: inject-field
 TRB.Frames.resourceFrame.thresholds = {}
 
-if classIndexId == 5 then --Do this for Priests only
-	TRB.Frames.textFrames = {}
-else
-	---@type Frame
-	TRB.Frames.leftTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
-	---@type Frame
-	TRB.Frames.middleTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
-	---@type Frame
-	TRB.Frames.rightTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
-
-	---@diagnostic disable-next-line: inject-field
-	TRB.Frames.leftTextFrame.font = TRB.Frames.leftTextFrame:CreateFontString(nil, "BACKGROUND")
-	---@diagnostic disable-next-line: inject-field
-	TRB.Frames.middleTextFrame.font = TRB.Frames.middleTextFrame:CreateFontString(nil, "BACKGROUND")
-	---@diagnostic disable-next-line: inject-field
-	TRB.Frames.rightTextFrame.font = TRB.Frames.rightTextFrame:CreateFontString(nil, "BACKGROUND")
-end
+TRB.Frames.textFrames = {}
 
 TRB.Frames.targetsTimerFrame = CreateFrame("Frame")
 TRB.Frames.targetsTimerFrame.sinceLastUpdate = 0
@@ -206,7 +192,7 @@ if classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId =
 	for x = 1, 10 do
 		TRB.Frames.resource2Frames[x] = {}
 		---@diagnostic disable-next-line: param-type-mismatch
-		TRB.Frames.resource2Frames[x].containerFrame = CreateFrame("Frame", nil, TRB.Frames.resource2ContainerFrame, "BackdropTemplate")
+		TRB.Frames.resource2Frames[x].containerFrame = CreateFrame("Frame", "TwintopResourceBarFrame_ComboPoint_"..x, TRB.Frames.resource2ContainerFrame, "BackdropTemplate")
 		TRB.Frames.resource2Frames[x].borderFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
 		TRB.Frames.resource2Frames[x].resourceFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
 	end

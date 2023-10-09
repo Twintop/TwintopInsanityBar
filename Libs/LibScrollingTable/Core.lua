@@ -1,3 +1,4 @@
+---@diagnostic disable: inject-field, lowercase-global, undefined-global
 -- Copyright 2008-2020 Dan Dumont
 --
 -- This program is free software: you can redistribute it and/or modify

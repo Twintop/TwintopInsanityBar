@@ -2110,347 +2110,6 @@ function TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 
 	end)
 end
 
-function TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, classId, specId, yCoord)
-	local _, className, _ = GetClassInfo(classId)
-	local f = nil
-	local title = ""
-	
-	controls.dropDown.fonts = {}
-
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Font Face", oUi.xCoord, yCoord)
-
-	--[[
-
-		Todo: Refactor font naming to make using the LSM functions a reality.
-
-	]]
-	yCoord = yCoord - 30
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.fontLeft = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_FontLeft", parent)
-	controls.dropDown.fontLeft.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Left Bar Font Face", oUi.xCoord, yCoord)
-	controls.dropDown.fontLeft.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.fontLeft:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.fontLeft, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.fontLeft, spec.displayText.left.fontFaceName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.fontLeft, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.fontLeft, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
-		local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(fonts) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = "Fonts " .. i+1
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(fontsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = fonts[v]
-					info.checked = fonts[v] == spec.displayText.left.fontFace
-					info.func = self.SetValue
-					info.arg1 = fonts[v]
-					info.arg2 = v
-					info.fontObject = CreateFont(v)
-					info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	function controls.dropDown.fontLeft:SetValue(newValue, newName)
-		spec.displayText.left.fontFace = newValue
-		spec.displayText.left.fontFaceName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-		if spec.displayText.fontFaceLock then
-			spec.displayText.middle.fontFace = newValue
-			spec.displayText.middle.fontFaceName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-			spec.displayText.right.fontFace = newValue
-			spec.displayText.right.fontFaceName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-		end
-
-		if GetSpecialization() == specId then
-			TRB.Frames.leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
-			if spec.displayText.fontFaceLock then
-				TRB.Frames.middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-				TRB.Frames.rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-			end
-		end
-
-		LibDD:CloseDropDownMenus()
-	end
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.fontMiddle = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_FontMiddle", parent)
-	controls.dropDown.fontMiddle.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Middle Bar Font Face", oUi.xCoord2, yCoord)
-	controls.dropDown.fontMiddle.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.fontMiddle:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.fontMiddle, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.fontMiddle, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.fontMiddle, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
-		local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(fonts) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = "Fonts " .. i+1
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(fontsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = fonts[v]
-					info.checked = fonts[v] == spec.displayText.middle.fontFace
-					info.func = self.SetValue
-					info.arg1 = fonts[v]
-					info.arg2 = v
-					info.fontObject = CreateFont(v)
-					info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	function controls.dropDown.fontMiddle:SetValue(newValue, newName)
-		spec.displayText.middle.fontFace = newValue
-		spec.displayText.middle.fontFaceName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-		if spec.displayText.fontFaceLock then
-			spec.displayText.left.fontFace = newValue
-			spec.displayText.left.fontFaceName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-			spec.displayText.right.fontFace = newValue
-			spec.displayText.right.fontFaceName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-		end
-
-		if GetSpecialization() == specId then
-			TRB.Frames.middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-			if spec.displayText.fontFaceLock then
-				TRB.Frames.leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
-				TRB.Frames.rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-			end
-		end
-
-		LibDD:CloseDropDownMenus()
-	end
-
-	yCoord = yCoord - 40 - 20
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.fontRight = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_FontRight", parent)
-	controls.dropDown.fontRight.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Right Bar Font Face", oUi.xCoord, yCoord)
-	controls.dropDown.fontRight.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.fontRight:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.fontRight, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.fontRight, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.fontRight, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
-		local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(fonts) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = "Fonts " .. i+1
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(fontsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = fonts[v]
-					info.checked = fonts[v] == spec.displayText.right.fontFace
-					info.func = self.SetValue
-					info.arg1 = fonts[v]
-					info.arg2 = v
-					info.fontObject = CreateFont(v)
-					info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	function controls.dropDown.fontRight:SetValue(newValue, newName)
-		spec.displayText.right.fontFace = newValue
-		spec.displayText.right.fontFaceName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.fontRight, newName)
-		if spec.displayText.fontFaceLock then
-			spec.displayText.left.fontFace = newValue
-			spec.displayText.left.fontFaceName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.fontLeft, newName)
-			spec.displayText.middle.fontFace = newValue
-			spec.displayText.middle.fontFaceName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.fontMiddle, newName)
-		end
-
-		if GetSpecialization() == specId then
-			TRB.Frames.rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-			if spec.displayText.fontFaceLock then
-				TRB.Frames.leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
-				TRB.Frames.middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-			end
-		end
-
-		LibDD:CloseDropDownMenus()
-	end
-
-	controls.checkBoxes.fontFaceLock = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."CB1_FONTFACE1", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.fontFaceLock
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-	getglobal(f:GetName() .. 'Text'):SetText("Use the same font face for all text")
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "This will lock the font face for text for each part of the bar to be the same."
-	f:SetChecked(spec.displayText.fontFaceLock)
-	f:SetScript("OnClick", function(self, ...)
-		spec.displayText.fontFaceLock = self:GetChecked()
-		if spec.displayText.fontFaceLock then
-			spec.displayText.middle.fontFace = spec.displayText.left.fontFace
-			spec.displayText.middle.fontFaceName = spec.displayText.left.fontFaceName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.fontMiddle, spec.displayText.middle.fontFaceName)
-			spec.displayText.right.fontFace = spec.displayText.left.fontFace
-			spec.displayText.right.fontFaceName = spec.displayText.left.fontFaceName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.fontRight, spec.displayText.right.fontFaceName)
-
-			if GetSpecialization() == specId then
-				TRB.Frames.middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-				TRB.Frames.rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-			end
-		end
-	end)
-
-
-	yCoord = yCoord - 70
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Font Size and Colors", oUi.xCoord, yCoord)
-
-	title = "Left Bar Text Font Size"
-	yCoord = yCoord - 50
-	controls.fontSizeLeft = TRB.Functions.OptionsUi:BuildSlider(parent, title, 6, 72, spec.displayText.left.fontSize, 1, 0,
-								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.fontSizeLeft:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.displayText.left.fontSize = value
-
-		if GetSpecialization() == specId then
-			TRB.Frames.leftTextFrame.font:SetFont(spec.displayText.left.fontFace, spec.displayText.left.fontSize, "OUTLINE")
-		end
-
-		if spec.displayText.fontSizeLock then
-			controls.fontSizeMiddle:SetValue(value)
-			controls.fontSizeRight:SetValue(value)
-		end
-	end)
-
-	controls.checkBoxes.fontSizeLock = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_CB2_F1", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.fontSizeLock
-	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Use the same font size for all text")
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "This will lock the font sizes for each part of the bar to be the same size."
-	f:SetChecked(spec.displayText.fontSizeLock)
-	f:SetScript("OnClick", function(self, ...)
-		spec.displayText.fontSizeLock = self:GetChecked()
-		if spec.displayText.fontSizeLock then
-			controls.fontSizeMiddle:SetValue(spec.displayText.left.fontSize)
-			controls.fontSizeRight:SetValue(spec.displayText.left.fontSize)
-		end
-	end)
-
-	controls.colors.text = {}
-
-	controls.colors.text.left = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Left Text", spec.colors.text.left,
-													250, 25, oUi.xCoord2, yCoord-30)
-	f = controls.colors.text.left
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "left")
-	end)
-
-	controls.colors.text.middle = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Middle Text", spec.colors.text.middle,
-													225, 25, oUi.xCoord2, yCoord-70)
-	f = controls.colors.text.middle
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "middle")
-	end)
-
-	controls.colors.text.right = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Right Text", spec.colors.text.right,
-													225, 25, oUi.xCoord2, yCoord-110)
-	f = controls.colors.text.right
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "right")
-	end)
-
-	title = "Middle Bar Text Font Size"
-	yCoord = yCoord - 60
-	controls.fontSizeMiddle = TRB.Functions.OptionsUi:BuildSlider(parent, title, 6, 72, spec.displayText.middle.fontSize, 1, 0,
-								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.fontSizeMiddle:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.displayText.middle.fontSize = value
-
-		if GetSpecialization() == specId then
-			TRB.Frames.middleTextFrame.font:SetFont(spec.displayText.middle.fontFace, spec.displayText.middle.fontSize, "OUTLINE")
-		end
-
-		if spec.displayText.fontSizeLock then
-			controls.fontSizeLeft:SetValue(value)
-			controls.fontSizeRight:SetValue(value)
-		end
-	end)
-
-	title = "Right Bar Text Font Size"
-	yCoord = yCoord - 60
-	controls.fontSizeRight = TRB.Functions.OptionsUi:BuildSlider(parent, title, 6, 72, spec.displayText.right.fontSize, 1, 0,
-								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.fontSizeRight:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.displayText.right.fontSize = value
-
-		if GetSpecialization() == specId then
-			TRB.Frames.rightTextFrame.font:SetFont(spec.displayText.right.fontFace, spec.displayText.right.fontSize, "OUTLINE")
-		end
-
-		if spec.displayText.fontSizeLock then
-			controls.fontSizeLeft:SetValue(value)
-			controls.fontSizeMiddle:SetValue(value)
-		end
-	end)
-	return yCoord
-end
-
 function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, classId, specId, yCoord)
 	local _, className, _ = GetClassInfo(classId)
 	local f = nil
@@ -2539,30 +2198,238 @@ end
 ---@param classId integer
 ---@param specId integer
 ---@param yCoord number
----@return number
-function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, classId, specId, yCoord)
-
+function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, classId, specId, yCoord, cache)
 	local _, className, _ = GetClassInfo(classId)
-	local f = nil
 	local title = ""
+	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
+	local namePrefix = className.."_"..specId.."_"
 	
-	controls.colors.text = controls.colors.text or {}
-	controls.dropDown.fonts = {}
+	local columns = {
+		{
+			["name"] = "GUID",
+			["width"] = 1,
+			["align"] = "CENTER"
+		},
+		{
+			["name"] = "Name",
+			["width"] = 100,
+			["align"] = "LEFT",
+			--[[["color"] = { 
+				["r"] = 0.5, 
+				["g"] = 0.5, 
+				["b"] = 1.0, 
+				["a"] = 1.0 
+			},
+			["colorargs"] = nil,
+			["bgcolor"] = {
+				["r"] = 1.0, 
+				["g"] = 0.0, 
+				["b"] = 0.0, 
+				["a"] = 1.0 
+			}, -- red backgrounds, eww!
+			["defaultsort"] = "dsc",
+			["sortnext"]= 4,
+			["comparesort"] = function (cella, cellb, column)
+				return cella.value < cellb.value;
+			end,
+			["DoCellUpdate"] = nil,]]
+		},
+		{
+			["name"] = "Bound To",
+			["width"] = 150,
+			["align"] = "LEFT"
+		},
+		{
+			["name"] = "Bar Text",
+			["width"] = 320,
+			["align"] = "LEFT"
+		},
+		{
+			["name"] = "",
+			["width"] = 15,--260,
+			["align"] = "CENTER",
+			["color"] = {
+				["r"] = 1,
+				["g"] = 0,
+				["b"] = 0,
+				["a"] = 1,
+			}
+		}
+	}
 
-	controls.textDisplayDefaultSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Default Bar Text Font Settings", oUi.xCoord, yCoord)
-	yCoord = yCoord - 30
+	---@type TRB.Classes.DisplayTextEntry
+	---@diagnostic disable-next-line: missing-fields
+	local workingBarText = {}
 
+	controls.barTextContainer = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+	local btc = controls.barTextContainer
+
+	btc:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord)
+	btc:SetWidth(620)
+	btc:SetHeight(105)
+
+	yCoord = yCoord - 90
+	local btoHeight = 400
+	local barTextTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, 4, 15, nil, btc, false, false)
+	
+	local addButton = TRB.Functions.OptionsUi:BuildButton(parent, "Add New Bar Text Area", 450, yCoord, 175, 25)
+
+	local barTextOptionsFrame = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+	barTextOptionsFrame:SetPoint("TOPLEFT", btc, "BOTTOMLEFT", 0, 0)
+	barTextOptionsFrame:SetPoint("TOPRIGHT", btc, "BOTTOMRIGHT", 0, 0)
+	barTextOptionsFrame:SetHeight(btoHeight)
+	barTextOptionsFrame:Hide()
+
+	local oldYCoord = yCoord - btoHeight
+
+	yCoord = 0-- yCoord - 90
+
+	local barTextName = TRB.Functions.OptionsUi:BuildTextBox(barTextOptionsFrame, "", 200, 250, 20, oUi.xCoord, yCoord)
+---@diagnostic disable-next-line: inject-field
+	barTextName.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, "Name", oUi.xCoord, yCoord+25)
+	barTextName.label.font:SetFontObject(GameFontNormal)
+
+	yCoord = yCoord - 40
+	title = "Horizontal Offset"
+	local barTextHorizontal = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, math.ceil(-sanityCheckValues.barMaxWidth), math.floor(sanityCheckValues.barMaxWidth), 0, 1, 2,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	barTextHorizontal:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		workingBarText.position.xPos = value
+		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+	end)
+
+	title = "Vertical Offset"
+	local barTextVertical = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, math.ceil(-sanityCheckValues.barMaxHeight), math.floor(sanityCheckValues.barMaxHeight), 0, 1, 2,
+								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	barTextVertical:SetScript("OnValueChanged", function(self, value)
+		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+		workingBarText.position.yPos = value
+		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+	end)
+
+	yCoord = yCoord - 40
 	-- Create the dropdown, and configure its appearance
-	controls.dropDown.fontDefault = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_fontDefault", parent)
-	controls.dropDown.fontDefault.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Default Font Face", oUi.xCoord, yCoord)
-	controls.dropDown.fontDefault.label.font:SetFontObject(GameFontNormal)
-	controls.dropDown.fontDefault:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.fontDefault, oUi.dropdownWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.fontDefault, spec.displayText.default.fontFaceName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.fontDefault, "LEFT")
+	local barTextRelativeToFrame = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_barTextRelativeToFrame", barTextOptionsFrame)
+	barTextRelativeToFrame.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, "Bound to Bar", oUi.xCoord, yCoord)
+	barTextRelativeToFrame.label.font:SetFontObject(GameFontNormal)
+	barTextRelativeToFrame:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+	LibDD:UIDropDownMenu_SetWidth(barTextRelativeToFrame, oUi.dropdownWidth)
+	LibDD:UIDropDownMenu_SetText(barTextRelativeToFrame, "")
+	LibDD:UIDropDownMenu_JustifyText(barTextRelativeToFrame, "LEFT")
 
 	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.fontDefault, function(self, level, menuList)
+	LibDD:UIDropDownMenu_Initialize(barTextRelativeToFrame, function(self, level, menuList)
+		local entries = 25
+		local info = LibDD:UIDropDownMenu_CreateInfo()
+		local relativeTo = {}
+		relativeTo["Main Resource Bar"] = "Resource"
+		relativeTo["Screen"] = "UIParent"
+		--relativeTo["Center"] = "CENTER"
+		--relativeTo["Right"] = "RIGHT"
+		local relativeToList = {
+			"Main Resource Bar",
+			"Screen"
+		}
+
+		if (classId == 5 and specId == 2) then
+			relativeTo["Holy Word: Serenity (1st Charge)"] = "HolyWord_Serenity_1"
+			relativeTo["Holy Word: Serenity (2nd Charge)"] = "HolyWord_Serenity_2"
+			relativeTo["Holy Word: Sanctify (1st Charge)"] = "HolyWord_Sanctify_1"
+			relativeTo["Holy Word: Sanctify (2nd Charge)"] = "HolyWord_Sanctify_2"
+			relativeTo["Holy Word: Chastise"] = "HolyWord_Chastise_1"
+			relativeToList = {
+				"Main Resource Bar",
+				"Holy Word: Serenity (1st Charge)",
+				"Holy Word: Serenity (2nd Charge)",
+				"Holy Word: Sanctify (1st Charge)",
+				"Holy Word: Sanctify (2nd Charge)",
+				"Holy Word: Chastise",
+				"Screen",
+			}
+		end
+
+		for k, v in pairs(relativeToList) do
+			info.text = v
+			info.value = relativeTo[v]
+			info.checked = false --relativeTo[v] == spec.comboPoints.relativeTo
+			info.func = self.SetValue
+			info.arg1 = relativeTo[v]
+			info.arg2 = v
+			LibDD:UIDropDownMenu_AddButton(info, level)
+		end
+	end)
+
+
+	-- Create the dropdown, and configure its appearance
+	local barTextRelativeTo = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_barTextRelativeTo", barTextOptionsFrame)
+	barTextRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, "Relative Position of Bar Text to selected Bar", oUi.xCoord2, yCoord)
+	barTextRelativeTo.label.font:SetFontObject(GameFontNormal)
+	barTextRelativeTo:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+	LibDD:UIDropDownMenu_SetWidth(barTextRelativeTo, oUi.dropdownWidth)
+	LibDD:UIDropDownMenu_SetText(barTextRelativeTo, "")
+	LibDD:UIDropDownMenu_JustifyText(barTextRelativeTo, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	LibDD:UIDropDownMenu_Initialize(barTextRelativeTo, function(self, level, menuList)
+		local entries = 25
+		local info = LibDD:UIDropDownMenu_CreateInfo()
+		local relativeTo = {}
+		relativeTo["Top Left"] = "TOPLEFT"
+		relativeTo["Top"] = "TOP"
+		relativeTo["Top Right"] = "TOPRIGHT"
+		relativeTo["Left"] = "LEFT"
+		relativeTo["Center"] = "CENTER"
+		relativeTo["Right"] = "RIGHT"
+		relativeTo["Bottom Left"] = "BOTTOMLEFT"
+		relativeTo["Bottom"] = "BOTTOM"
+		relativeTo["Bottom Right"] = "BOTTOMRIGHT"
+		local relativeToList = {
+			"Top Left",
+			"Top",
+			"Top Right",
+			"Left",
+			"Center",
+			"Right",
+			"Bottom Left",
+			"Bottom",
+			"Bottom Right"
+		}
+
+		for k, v in pairs(relativeToList) do
+			info.text = v
+			info.value = relativeTo[v]
+			info.checked = false --relativeTo[v] == spec.comboPoints.relativeTo
+			info.func = self.SetValue
+			info.arg1 = relativeTo[v]
+			info.arg2 = v
+			LibDD:UIDropDownMenu_AddButton(info, level)
+		end
+	end)
+
+	function barTextRelativeTo:SetValue(newValue, newName)
+		workingBarText.position.relativeTo = newValue
+		workingBarText.position.relativeToName = newName
+		LibDD:UIDropDownMenu_SetText(barTextRelativeTo, newName)
+		LibDD:CloseDropDownMenus()
+		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+	end
+
+	yCoord = yCoord - 60
+
+	controls.colors.text = controls.colors.text or {}
+
+	-- Create the dropdown, and configure its appearance
+	local font = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_font", barTextOptionsFrame)
+	font.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, "Font Face", oUi.xCoord, yCoord)
+	font.label.font:SetFontObject(GameFontNormal)
+	font:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
+	LibDD:UIDropDownMenu_SetWidth(font, oUi.dropdownWidth)
+	LibDD:UIDropDownMenu_SetText(font, "")
+	LibDD:UIDropDownMenu_JustifyText(font, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	LibDD:UIDropDownMenu_Initialize(font, function(self, level, menuList)
 		local entries = 25
 		local info = LibDD:UIDropDownMenu_CreateInfo()
 		local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
@@ -2583,7 +2450,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				if k > start and k <= start + entries then
 					info.text = v
 					info.value = fonts[v]
-					info.checked = fonts[v] == spec.displayText.default.fontFace
+					info.checked = false -- fonts[v] == spec.displayText.default.fontFace
 					info.func = self.SetValue
 					info.arg1 = fonts[v]
 					info.arg2 = v
@@ -2595,29 +2462,315 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		end
 	end)
 
-	function controls.dropDown.fontDefault:SetValue(newValue, newName)
-		spec.displayText.default.fontFace = newValue
-		spec.displayText.default.fontFaceName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.fontDefault, newName)
+	function font:SetValue(newValue, newName)
+		workingBarText.fontFace = newValue
+		workingBarText.fontFaceName = newName
+		LibDD:UIDropDownMenu_SetText(font, newName)
 		LibDD:CloseDropDownMenus()
+		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
 	end
 
-	yCoord = yCoord - 30
-	controls.colors.text.default = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Default Font Color", spec.displayText.default.color,
-																		250, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.default
-	f:SetScript("OnMouseDown", function(self, button, ...)
-	TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.displayText.default, controls.colors.text, "color")
+	local useDefaultFontFace = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontFace", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
+	useDefaultFontFace:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-60)
+	getglobal(useDefaultFontFace:GetName() .. 'Text'):SetText("Use default Font Face")
+
+	-- Create the dropdown, and configure its appearance
+	local barTextJustifyHorizontal = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_barTextJustifyHorizontal", barTextOptionsFrame)
+	barTextJustifyHorizontal.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, "Font Horizontal Alignment (Justify)", oUi.xCoord2, yCoord)
+	barTextJustifyHorizontal.label.font:SetFontObject(GameFontNormal)
+	barTextJustifyHorizontal:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+	LibDD:UIDropDownMenu_SetWidth(barTextJustifyHorizontal, oUi.dropdownWidth)
+	LibDD:UIDropDownMenu_SetText(barTextJustifyHorizontal, "")
+	LibDD:UIDropDownMenu_JustifyText(barTextJustifyHorizontal, "LEFT")
+
+	-- Create and bind the initialization function to the dropdown menu
+	LibDD:UIDropDownMenu_Initialize(barTextJustifyHorizontal, function(self, level, menuList)
+		local entries = 25
+		local info = LibDD:UIDropDownMenu_CreateInfo()
+		local relativeTo = {}
+		relativeTo["Left"] = "LEFT"
+		relativeTo["Center"] = "CENTER"
+		relativeTo["Right"] = "RIGHT"
+		local relativeToList = {
+			"Left",
+			"Center",
+			"Right",
+		}
+
+		for k, v in pairs(relativeToList) do
+			info.text = v
+			info.value = relativeTo[v]
+			info.checked = false --relativeTo[v] == spec.comboPoints.relativeTo
+			info.func = self.SetValue
+			info.arg1 = relativeTo[v]
+			info.arg2 = v
+			LibDD:UIDropDownMenu_AddButton(info, level)
+		end
 	end)
 
-	yCoord = yCoord - 60
-	title = "Default Font Size"
-	controls.fontSizeDefault = TRB.Functions.OptionsUi:BuildSlider(parent, title, 6, 72, spec.displayText.default.fontSize, 1, 0,
+	function barTextJustifyHorizontal:SetValue(newValue, newName)
+		workingBarText.fontJustifyHorizontal = newValue
+		workingBarText.fontJustifyHorizontalName = newName
+		LibDD:UIDropDownMenu_SetText(barTextJustifyHorizontal, newName)
+		LibDD:CloseDropDownMenus()
+		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+	end
+
+	
+	yCoord = yCoord - 100
+	title = "Font Size"
+	local fontSize = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, 6, 72, 18, 1, 0,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.fontSizeDefault:SetScript("OnValueChanged", function(self, value)
+	fontSize:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		spec.displayText.default.fontSize = value
+		workingBarText.fontSize = value
+		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
 	end)
 
-	return yCoord
+	local useDefaultFontSize = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontSize", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
+	useDefaultFontSize:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-40)
+	getglobal(useDefaultFontSize:GetName() .. 'Text'):SetText("Use default Font Size")
+
+	--yCoord = yCoord - 30
+	controls.colors = controls.colors or {}
+	controls.colors.barText = controls.colors.barText or {}
+	controls.colors.barText.color = TRB.Functions.OptionsUi:BuildColorPicker(barTextOptionsFrame, "Font Color", "FFFFFFFF",
+																			250, 25, oUi.xCoord2, yCoord)
+	local barTextColor = controls.colors.barText.color
+	barTextColor:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, workingBarText, controls.colors.barText, "color")
+	end)
+
+	local useDefaultFontColor = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontColor", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
+	useDefaultFontColor:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
+	getglobal(useDefaultFontColor:GetName() .. 'Text'):SetText("Use default Font Color")
+
+
+	yCoord = yCoord - 70
+	controls.labels.barText = TRB.Functions.OptionsUi:BuildLabel(barTextOptionsFrame, "Bar Text", oUi.xCoord, yCoord, 90, 20)
+
+	yCoord = yCoord - 20
+	local barText = TRB.Functions.OptionsUi:CreateBarTextInputPanel(barTextOptionsFrame, namePrefix .. "_Text", "",
+													590, 45, oUi.xCoord, yCoord)
+	barText:SetCursorPosition(0)
+
+	---comment
+	---@param displayText TRB.Classes.DisplayText
+	---@param btt table # LibScrollingTable
+	local function SetTableValues(displayText, btt)
+		local dataTable = {}
+		local entries = TRB.Functions.Table:Length(displayText.barText)
+		if entries > 0 then
+			for i = 1, entries do
+				local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(displayText.barText[i].color, true)
+				table.insert(dataTable, {
+					cols = {
+						{
+							value = displayText.barText[i].guid
+						},
+						{
+							value = displayText.barText[i].name,
+							--["args"] = nil,
+							--[[["color"] = {
+								["r"] = r,
+								["g"] = g,
+								["b"] = b,
+								["a"] = a,
+							},]]
+							--["colorargs"] = nil,
+							--["DoCellUpdate"] = nil,
+						},
+						{
+							value = displayText.barText[i].position.relativeToFrameName,
+						},
+						{
+							value = displayText.barText[i].text,
+							--[[["color"] = {
+								["r"] = r,
+								["g"] = g,
+								["b"] = b,
+								["a"] = a,
+							},]]
+						},
+						{
+							value = "X",
+							--[[["color"] = {
+								["r"] = 1,
+								["g"] = 0,
+								["b"] = 0,
+								["a"] = 1,
+							}]]
+						}
+					}
+				})
+			end
+		end
+		btt:SetData(dataTable)
+		btt:EnableSelection(true)
+	end
+
+	---comment
+	---@return TRB.Classes.DisplayTextEntry
+	local function GetNewDisplayTextEntry()
+		return {
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			useDefaultFontColor = false,
+			name = "New Bar Text Entry",
+			text = "",
+			guid = TRB.Functions.String:Guid(),
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = "Left",
+			fontSize=18,
+			color="FFFF0000",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "LEFT",
+				relativeToName = "Left",
+				relativeToFrame = "Resource",
+				relativeToFrameName = "Main Resource Bar"
+			}
+		}
+	end
+
+	---comment
+	---@param guid string
+	---@param dt TRB.Classes.DisplayText
+	local function FillBarTextEditorFields(guid, dt)
+		local found = false
+		local e = TRB.Functions.Table:Length(dt.barText)
+		if e > 0 then
+			for i = 1, e do
+				if dt.barText[i].guid == guid then
+					workingBarText = dt.barText[i]
+					found = true
+					break
+				end
+			end
+		end
+
+		if not found then
+			return
+			--workingBarText = GetNewDisplayTextEntry()
+		end
+
+		barTextName:SetText(workingBarText.name)
+		LibDD:UIDropDownMenu_SetText(font, workingBarText.fontFaceName)
+		LibDD:UIDropDownMenu_SetText(barTextJustifyHorizontal, workingBarText.fontJustifyHorizontalName)
+		fontSize:SetValue(workingBarText.fontSize)
+		barTextColor.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(workingBarText.color, true))
+		barText:SetText(workingBarText.text)
+
+		TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextHorizontal, workingBarText.position.xPos)
+		TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextVertical, workingBarText.position.yPos)
+		LibDD:UIDropDownMenu_SetText(barTextRelativeTo, workingBarText.position.relativeToName)
+		LibDD:UIDropDownMenu_SetText(barTextRelativeToFrame, workingBarText.position.relativeToFrameName)
+		
+		barTextOptionsFrame:Show()
+	end
+
+	SetTableValues(spec.displayText, barTextTable)
+
+	addButton:SetScript("OnClick", function(self, ...)
+		local displayText = spec.displayText --[[@as TRB.Classes.DisplayText]]
+		local newEntry = GetNewDisplayTextEntry()
+		table.insert(displayText.barText, newEntry)
+		SetTableValues(displayText, barTextTable)
+		barTextTable:SetSelection(TRB.Functions.Table:Length(displayText.barText))
+		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		FillBarTextEditorFields(newEntry.guid, displayText)
+		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+	end)
+
+	barTextName:SetScript("OnTextChanged", function(self, input)
+		workingBarText.name = self:GetText()
+		local displayText = spec.displayText --[[@as TRB.Classes.DisplayText]]
+		SetTableValues(displayText, barTextTable)
+	end)
+
+	barText:SetScript("OnTextChanged", function(self, input)
+		workingBarText.text = self:GetText()
+		local displayText = spec.displayText --[[@as TRB.Classes.DisplayText]]
+		SetTableValues(displayText, barTextTable)
+		TRB.Data.barTextCache = {}
+	end)
+
+	function barTextRelativeToFrame:SetValue(newValue, newName)
+		workingBarText.position.relativeToFrame = newValue
+		workingBarText.position.relativeToFrameName = newName
+		LibDD:UIDropDownMenu_SetText(barTextRelativeToFrame, newName)
+		LibDD:CloseDropDownMenus()
+		local displayText = spec.displayText --[[@as TRB.Classes.DisplayText]]
+		SetTableValues(displayText, barTextTable)
+		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+	end
+
+	---Deletes a specified bar text row
+	---@param displayText TRB.Classes.DisplayText
+	---@param row integer
+	---@param btt table
+	local function DeleteBarTextRow(displayText, row, btt)
+		btt:SetSelection()
+		table.remove(displayText.barText, row)
+		SetTableValues(displayText, btt)
+		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+	end
+
+	StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
+		text = "",
+		button1 = "Yes",
+		button2 = "No",
+		OnShow = function(self, data)
+			self.text:SetFormattedText(data.message)
+			self.data = data
+		end,
+		OnAccept = function(self)
+			DeleteBarTextRow(self.data.displayText, self.data.row, self.data.btt)
+			barTextOptionsFrame:Hide()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3
+	}
+
+	barTextTable:RegisterEvents({
+		OnClick = function (rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, button, ...)
+			if button == "LeftButton" then
+				local currentSelection = scrollingTable:GetSelection()
+
+				if realrow ~= nil and realrow > 0 then
+					local guid = data[realrow].cols[1].value
+
+					if column == 5 then
+						StaticPopup_Show("TwintopResourceBar_ConfirmDeleteBarText", nil, nil, {
+							message = "Are you sure you want to delete '"..data[realrow].cols[2].value.."'?",
+							displayText = spec.displayText,
+							row = realrow,
+							btt = scrollingTable
+						})
+					else
+						FillBarTextEditorFields(guid, spec.displayText)
+						C_Timer.After(0, function()
+							C_Timer.After(0.05, function()
+								local newSelection = scrollingTable:GetSelection()
+
+								if newSelection == nil then
+									barTextTable:SetSelection(currentSelection)
+								end
+							end)
+						end)
+					end
+				end
+			end
+		end
+	})
+
+	yCoord = oldYCoord
+	local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
+	TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
+	TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
 end

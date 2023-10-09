@@ -28,26 +28,73 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	-- Elemental
 
 	local function ElementalLoadDefaultBarTextSimpleSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock=true,
-			fontFaceLock=true,
-			left={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
 				text="$haste%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[$casting + ]{$passive}[$passive + ]$maelstrom",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
@@ -55,33 +102,80 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function ElementalLoadDefaultBarTextAdvancedSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock = false,
-			fontFaceLock = true,
-			left = {
-				text = "#flameShock $fsCount    $haste% ($gcd)||n{$ifStacks}[#frostShock $ifStacks][       ]    {$ttd}[TTD: $ttd]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="#flameShock $fsCount    $haste% ($gcd)||n{$ifStacks}[#frostShock $ifStacks][       ]    {$ttd}[TTD: $ttd]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle = {
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right = {
-				text = "{$casting}[#casting$casting+]{$passive}[$passive+]$maelstrom",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 22
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="{$casting}[#casting$casting+]{$passive}[$passive+]$maelstrom",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=22,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
 
-	local function ElementalLoadDefaultSettings()
+	local function ElementalLoadDefaultSettings(includeBarText)
 		local settings = {
 			hastePrecision=2,
 			thresholds = {
@@ -145,9 +239,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					overThreshold="FF00FF00",
 					overThresholdEnabled=false,
 					overcapEnabled=true,
-					left="FFFFFFFF",
-					middle="FFFFFFFF",
-					right="FFFFFFFF",
 					dots={
 						enabled=true,
 						up="FFFFFFFF",
@@ -181,7 +272,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					outOfRange="FF440000"
 				}
 			},
-			displayText = {},
+			displayText={
+				default = {
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = "Left",
+					fontSize=18,
+					color = "FFFFFFFF",
+				},
+				barText = {}
+			},
 			audio = {
 				esReady={
 					name = "Earth Shock Ready",
@@ -211,32 +312,82 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			}
 		}
 
-		settings.displayText = ElementalLoadDefaultBarTextSimpleSettings()
+		if includeBarText then
+			settings.displayText.barText = ElementalLoadDefaultBarTextSimpleSettings()
+		end
+
 		return settings
 	end
 
 	-- Enhancement
 	local function EnhancementLoadDefaultBarTextSimpleSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock=true,
-			fontFaceLock=true,
-			left={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=13
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="{$ascendanceTime}[#ascendance $ascendanceTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=13
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
 				text="$mana",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=13
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
@@ -244,33 +395,80 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 	
 	local function EnhancementLoadDefaultBarTextAdvancedSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock = false,
-			fontFaceLock = true,
-			left = {
-				text = "#flameShock $fsCount {$ttd}[   TTD: $ttd]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="#flameShock $fsCount {$ttd}[   TTD: $ttd]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle = {
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="{$ascendanceTime}[#ascendance $ascendanceTime #ascendance]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right = {
-				text = "$mana",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="$mana",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
 
-	local function EnhancementLoadDefaultSettings()
+	local function EnhancementLoadDefaultSettings(includeBarText)
 		local settings = {
 			hastePrecision=2,
 			thresholds = {
@@ -363,9 +561,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					casting="FFFFFFFF",
 					spending="FFFFFFFF",
 					passive="FF8080FF",
-					left="FFFFFFFF",
-					middle="FFFFFFFF",
-					right="FFFFFFFF",
 					dots={
 						enabled=true,
 						up="FFFFFFFF",
@@ -396,7 +591,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					outOfRange="FF440000"
 				}
 			},
-			displayText = {},
+			displayText={
+				default = {
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = "Left",
+					fontSize=18,
+					color = "FFFFFFFF",
+				},
+				barText = {}
+			},
 			audio = {
 				overcap={
 					name = "Overcap",
@@ -426,33 +631,83 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			}
 		}
 
-		settings.displayText = EnhancementLoadDefaultBarTextSimpleSettings()
+		if includeBarText then
+			settings.displayText.barText = EnhancementLoadDefaultBarTextSimpleSettings()
+		end
+
 		return settings
 	end
 
 
 	-- Restoration
 	local function RestorationLoadDefaultBarTextSimpleSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock=true,
-			fontFaceLock=true,
-			left={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=16
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=16,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=16
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=16,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=16
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=16,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
@@ -460,33 +715,80 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	end
 
 	local function RestorationLoadDefaultBarTextAdvancedSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock = false,
-			fontFaceLock = true,
-			left = {
-				text = "{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle = {
-				text = "",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
+				text="",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right = {
-				text = "{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 16
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=16,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
 
-	local function RestorationLoadDefaultSettings()
+	local function RestorationLoadDefaultSettings(includeBarText)
 		local settings = {
 			hastePrecision=2,
 			thresholds = {
@@ -566,9 +868,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					current="FF4D4DFF",
 					casting="FFFFFFFF",
 					passive="FF8080FF",
-					left="FFFFFFFF",
-					middle="FFFFFFFF",
-					right="FFFFFFFF",
 					dots={
 						enabled=true,
 						up="FFFFFFFF",
@@ -596,7 +895,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					outOfRange="FF440000"
 				}
 			},
-			displayText={},
+			displayText={
+				default = {
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = "Left",
+					fontSize=18,
+					color = "FFFFFFFF",
+				},
+				barText = {}
+			},
 			audio={
 				innervate={
 					name = "Innervate",
@@ -620,7 +929,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			}
 		}
 
-		settings.displayText = RestorationLoadDefaultBarTextSimpleSettings()
+		if includeBarText then
+			settings.displayText.barText = RestorationLoadDefaultBarTextSimpleSettings()
+		end
+
 		return settings
 	end
 
@@ -734,7 +1046,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Elemental_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Elemental_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Elemental_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Bar Display).", 7, 1, true, false, false, false, false)
 		end)
@@ -998,7 +1310,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Elemental_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Elemental_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Elemental_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Font & Text).", 7, 1, false, true, false, false, false)
 		end)
@@ -1116,7 +1428,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Elemental_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Elemental_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Elemental_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Audio & Tracking).", 7, 1, false, false, true, false, false)
 		end)
@@ -1274,66 +1586,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		local spec = TRB.Data.settings.shaman.elemental
-
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.elemental
 		local yCoord = 5
-		local f = nil
-		local namePrefix = "Shaman_Elemental"
 
-		controls.buttons.exportButton_Shaman_Elemental_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
+		controls.buttons.exportButton_Shaman_Elemental_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Elemental_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Bar Text).", 7, 1, false, false, false, true, false)
 		end)
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-
 		yCoord = yCoord - 30
-		controls.labels.leftText = TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.left = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.left
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.left.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 1 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-
-		yCoord = yCoord - 70
-		controls.labels.middleText = TRB.Functions.OptionsUi:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.middle = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.middle
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.middle.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 1 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-
-		yCoord = yCoord - 70
-		controls.labels.rightText = TRB.Functions.OptionsUi:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.right = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.right
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.right.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 1 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
-		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
+		TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 7, 1, yCoord, cache)
 	end
 
 	local function ElementalConstructOptionsPanel(cache)
@@ -1522,7 +1786,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Enhancement_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Enhancement_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Enhancement_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Enhancement Shaman (Bar Display).", 7, 2, true, false, false, false, false)
 		end)
@@ -1692,7 +1956,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Enhancement_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Enhancement_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Enhancement_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Enhancement Shaman (Font & Text).", 7, 2, false, true, false, false, false)
 		end)
@@ -1775,7 +2039,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Enhancement_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Enhancement_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Enhancement_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Enhancement Shaman (Audio & Tracking).", 7, 2, false, false, true, false, false)
 		end)
@@ -1791,62 +2055,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		local spec = TRB.Data.settings.shaman.enhancement
-
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.enhancement
 		local yCoord = 5
-		local f = nil
-
-		local namePrefix = "Shaman_Enhancement"
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		controls.buttons.exportButton_Shaman_Enhancement_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Enhancement_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Enhancement_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Enhancement Shaman (Bar Text).", 7, 2, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.left = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.left
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.left.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-
-		yCoord = yCoord - 70
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.middle = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.middle
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.middle.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-
-		yCoord = yCoord - 70
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.right = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.right
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.right.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
-		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
+		TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 7, 2, yCoord, cache)
 	end
 
 	local function EnhancementConstructOptionsPanel(cache)
@@ -2057,7 +2277,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Restoration_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Restoration_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Restoration_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Shaman (Bar Display).", 7, 3, true, false, false, false, false)
 		end)
@@ -2221,7 +2441,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Restoration_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Restoration_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Restoration_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Shaman (Font & Text).", 7, 3, false, true, false, false, false)
 		end)
@@ -2318,7 +2538,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Restoration_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Restoration_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Restoration_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Shaman (Audio & Tracking).", 7, 3, false, false, true, false, false)
 		end)
@@ -2435,67 +2655,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		local spec = TRB.Data.settings.shaman.restoration
-
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.restoration
 		local yCoord = 5
-		local f = nil
 
-		local namePrefix = "Shaman_Restoration"
-
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		
-		controls.buttons.exportButton_Shaman_Restoration_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)		
+		controls.buttons.exportButton_Shaman_Restoration_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Restoration_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Shaman (Bar Text).", 7, 3, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.left = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.left
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.left.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 3 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-
-		yCoord = yCoord - 70
-		controls.labels.middleText = TRB.Functions.OptionsUi:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.middle = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.middle
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.middle.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 3 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-
-		yCoord = yCoord - 70
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.right = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.right
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.right.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 3 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
-		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
+		TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 7, 3, yCoord, cache)
 	end
 
 	local function RestorationConstructOptionsPanel(cache)

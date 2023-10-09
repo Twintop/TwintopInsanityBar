@@ -20,60 +20,155 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 
 	local function DisciplineLoadDefaultBarTextSimpleSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock=true,
-			fontFaceLock=true,
-			left={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=16
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=16
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=16
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
+	TRB.Options.Priest.DisciplineLoadDefaultBarTextSimpleSettings = DisciplineLoadDefaultBarTextSimpleSettings
 
 	local function DisciplineLoadDefaultBarTextAdvancedSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock = false,
-			fontFaceLock = true,
-			left = {
-				text = "{$potionCooldown}[#potionOfFrozenFocus $potionCooldown]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="{$potionCooldown}[#potionOfFrozenFocus $potionCooldown]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle = {
-				text = "",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
+				text="",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right = {
-				text = "{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 16
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=16,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
 
-	local function DisciplineLoadDefaultSettings()
+	local function DisciplineLoadDefaultSettings(includeBarText)
 		local settings = {
 			hastePrecision=2,
 			thresholds = {
@@ -162,9 +257,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					current="FF4D4DFF",
 					casting="FFFFFFFF",
 					passive="FF8080FF",
-					left="FFFFFFFF",
-					middle="FFFFFFFF",
-					right="FFFFFFFF",
 					dots={
 						enabled=true,
 						up="FFFFFFFF",
@@ -194,7 +286,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					outOfRange="FF440000"
 				}
 			},
-			displayText={},
+			displayText={
+				default = {
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = "Left",
+					fontSize=18,
+					color = "FFFFFFFF",
+				},
+				barText = {}
+			},
 			audio={
 				innervate={
 					name = "Innervate",
@@ -230,66 +332,164 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			}
 		}
 
-		settings.displayText = DisciplineLoadDefaultBarTextSimpleSettings()
+		if includeBarText then
+			settings.displayText.barText = DisciplineLoadDefaultBarTextSimpleSettings()
+		end
+
 		return settings
 	end
 
 
 	local function HolyLoadDefaultBarTextSimpleSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock=true,
-			fontFaceLock=true,
-			left={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=16
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="{$apotheosisTime}[$apotheosisTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=16
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=16
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
+	TRB.Options.Priest.HolyLoadDefaultBarTextSimpleSettings = HolyLoadDefaultBarTextSimpleSettings
 
 	local function HolyLoadDefaultBarTextAdvancedSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock = false,
-			fontFaceLock = true,
-			left = {
-				text = "{$hwSanctifyTime}[#hwSanctify $hwSanctifyTime][          ]    {$potionCooldown}[#potionOfFrozenFocus $potionCooldown]||n{$hwSerenityTime}[#hwSerenity $hwSerenityTime] ",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="{$hwSanctifyTime}[#hwSanctify $hwSanctifyTime][          ]    {$potionCooldown}[#potionOfFrozenFocus $potionCooldown]||n{$hwSerenityTime}[#hwSerenity $hwSerenityTime] ",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle = {
-				text = "{$apotheosisTime}[#apotheosis $apotheosisTime #apotheosis]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
+				text="{$apotheosisTime}[#apotheosis $apotheosisTime #apotheosis]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right = {
-				text = "{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 16
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=16,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
 
-	local function HolyLoadDefaultSettings()
+	local function HolyLoadDefaultSettings(includeBarText)
 		local settings = {
 			hastePrecision=2,
 			thresholds = {
@@ -394,9 +594,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					current="FF4D4DFF",
 					casting="FFFFFFFF",
 					passive="FF8080FF",
-					left="FFFFFFFF",
-					middle="FFFFFFFF",
-					right="FFFFFFFF",
 					dots={
 						enabled=true,
 						up="FFFFFFFF",
@@ -448,7 +645,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					outOfRange="FF440000"
 				}
 			},
-			displayText={},
+			displayText={
+				default = {
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = "Left",
+					fontSize=18,
+					color = "FFFFFFFF",
+				},
+				barText = {}
+			},
 			audio={
 				innervate={
 					name = "Innervate",
@@ -502,168 +709,155 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			}
 		}
 
-		settings.displayText = HolyLoadDefaultBarTextSimpleSettings()
+		if includeBarText then
+			settings.displayText.barText = HolyLoadDefaultBarTextSimpleSettings()
+		end
+
 		return settings
 	end
 
 	local function ShadowLoadDefaultBarTextSimpleSettings()
-		---@type TRB.Classes.DisplayText
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			default = {
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="$haste%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = "Left",
 				fontSize=18,
 				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			barText = {
-				{
-					useDefaultFontColor = false,
-					useDefaultFontFace = false,
-					useDefaultFontSize = false,
-					name="Left",
-					guid=TRB.Functions.String:Guid(),
-					text="$haste%",
-					fontFace="Fonts\\FRIZQT__.TTF",
-					fontFaceName="Friz Quadrata TT",
-					fontJustifyHorizontal = "LEFT",
-					fontJustifyHorizontalName = "Left",
-					fontSize=18,
-					position = {
-						xPos = 2,
-						yPos = 0,
-						relativeTo = "LEFT",
-						relativeToName = "Left",
-						relativeToFrame = "Resource",
-						relativeToFrameName = "Main Resource Bar"
-					}
-				},
-				{
-					useDefaultFontColor = false,
-					useDefaultFontFace = false,
-					useDefaultFontSize = false,
-					name="Center",
-					guid=TRB.Functions.String:Guid(),
-					text="{$vfTime}[$vfTime]",
-					fontFace="Fonts\\FRIZQT__.TTF",
-					fontFaceName="Friz Quadrata TT",
-					fontJustifyHorizontal = "CENTER",
-					fontJustifyHorizontalName = "Center",
-					fontSize=18,
-					position = {
-						xPos = 0,
-						yPos = 0,
-						relativeTo = "CENTER",
-						relativeToName = "Center",
-						relativeToFrame = "Resource",
-						relativeToFrameName = "Main Resource Bar"
-					}
-				},
-				{
-					useDefaultFontColor = false,
-					useDefaultFontFace = false,
-					useDefaultFontSize = false,
-					name="Right",
-					guid=TRB.Functions.String:Guid(),
-					text="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
-					fontFace="Fonts\\FRIZQT__.TTF",
-					fontFaceName="Friz Quadrata TT",
-					fontJustifyHorizontal = "RIGHT",
-					fontJustifyHorizontalName = "Right",
-					fontSize=18,
-					position = {
-						xPos = -2,
-						yPos = 0,
-						relativeTo = "RIGHT",
-						relativeToName = "Right",
-						relativeToFrame = "Resource",
-						relativeToFrameName = "Main Resource Bar"
-					}
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
+				text="{$vfTime}[$vfTime]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
+			},
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
 				}
 			}
 		}
 
 		return textSettings
 	end
+	TRB.Options.Priest.ShadowLoadDefaultBarTextSimpleSettings = ShadowLoadDefaultBarTextSimpleSettings
 
 	local function ShadowLoadDefaultBarTextAdvancedSettings()
-		---@type TRB.Classes.DisplayText
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount][       ]   {$ttd}[TTD: $ttd]",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = "Left",
-				fontSize=18,
-				color = "FFFFFFFF"
+				fontSize = 13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			barText = {
-				{
-					useDefaultFontColor = false,
-					useDefaultFontFace = false,
-					useDefaultFontSize = false,
-					name="Left",
-					guid=TRB.Functions.String:Guid(),
-					text="#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount][       ]   {$ttd}[TTD: $ttd]",
-					fontFace = "Fonts\\FRIZQT__.TTF",
-					fontFaceName = "Friz Quadrata TT",
-					fontJustifyHorizontal = "LEFT",
-					fontJustifyHorizontalName = "Left",
-					fontSize = 13,
-					color = "FFFFFFFF",
-					position = {
-						xPos = 2,
-						yPos = 0,
-						relativeTo = "LEFT",
-						relativeToName = "Left",
-						relativeToFrame = "Resource",
-						relativeToFrameName = "Main Resource Bar"
-					}
-				},
-				{
-					useDefaultFontColor = false,
-					useDefaultFontFace = false,
-					useDefaultFontSize = false,
-					guid=TRB.Functions.String:Guid(),
-					name="Center",
-					text="{$mdTime}[#mDev $mdTime #mDev{$vfTime||$mfiTime}[||n]]{$mfiTime}[#mfi $mfiTime #mfi{$vfTime}[||n]]{$vfTime}[$vfTime]",
-					fontFace = "Fonts\\FRIZQT__.TTF",
-					fontFaceName = "Friz Quadrata TT",
-					fontJustifyHorizontal = "CENTER",
-					fontJustifyHorizontalName = "Center",
-					fontSize = 13,
-					color = "FFFFFFFF",
-					position = {
-						xPos = 0,
-						yPos = 0,
-						relativeTo = "CENTER",
-						relativeToName = "Center",
-						relativeToFrame = "Resource",
-						relativeToFrameName = "Main Resource Bar"
-					}
-				},
-				{
-					useDefaultFontColor = false,
-					useDefaultFontFace = false,
-					useDefaultFontSize = false,
-					guid=TRB.Functions.String:Guid(),
-					name="Right",
-					text="{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]$insanity",
-					fontFace = "Fonts\\FRIZQT__.TTF",
-					fontFaceName = "Friz Quadrata TT",
-					fontJustifyHorizontal = "RIGHT",
-					fontJustifyHorizontalName = "Right",
-					fontSize = 22,
-					color = "FFFFFFFF",
-					position = {
-						xPos = -2,
-						yPos = 0,
-						relativeTo = "RIGHT",
-						relativeToName = "Right",
-						relativeToFrame = "Resource",
-						relativeToFrameName = "Main Resource Bar"
-					}
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				guid=TRB.Functions.String:Guid(),
+				name="Middle",
+				text="{$mdTime}[#mDev $mdTime #mDev{$vfTime||$mfiTime}[||n]]{$mfiTime}[#mfi $mfiTime #mfi{$vfTime}[||n]]{$vfTime}[$vfTime]",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize = 13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
+			},
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				guid=TRB.Functions.String:Guid(),
+				name="Right",
+				text="{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]$insanity",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize = 22,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
 				}
 			}
 		}
@@ -672,79 +866,72 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function ShadowLoadDefaultBarTextNarrowAdvancedSettings()
-		---@type TRB.Classes.DisplayText
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			default = {
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="#swp $swpCount   $haste% ($gcd)||n#vt $vtCount   {$ttd}[TTD: $ttd]",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
 				fontJustifyHorizontalName = "Left",
-				fontSize=18,
+				fontSize = 13,
 				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			barText = {
-				{
-					useDefaultFontColor = false,
-					useDefaultFontFace = false,
-					useDefaultFontSize = false,
-					name="Left",
-					guid=TRB.Functions.String:Guid(),
-					text="#swp $swpCount   $haste% ($gcd)||n#vt $vtCount   {$ttd}[TTD: $ttd]",
-					fontFace = "Fonts\\FRIZQT__.TTF",
-					fontFaceName = "Friz Quadrata TT",
-					fontJustifyHorizontal = "LEFT",
-					fontJustifyHorizontalName = "Left",
-					fontSize = 13,
-					position = {
-						xPos = 2,
-						yPos = 0,
-						relativeTo = "LEFT",
-						relativeToName = "Left",
-						relativeToFrame = "Resource",
-						relativeToFrameName = "Main Resource Bar"
-					}
-				},
-				{
-					name="Center",
-					guid=TRB.Functions.String:Guid(),
-					useDefaultFontColor = false,
-					useDefaultFontFace = false,
-					useDefaultFontSize = false,
-					text="{$mdTime}[#mDev $mdTime #mDev{$vfTime}[||n]]{$vfTime}[$vfTime]",
-					fontFace = "Fonts\\FRIZQT__.TTF",
-					fontFaceName = "Friz Quadrata TT",
-					fontJustifyHorizontal = "CENTER",
-					fontJustifyHorizontalName = "Center",
-					fontSize = 13,
-					position = {
-						xPos = 0,
-						yPos = 0,
-						relativeTo = "CENTER",
-						relativeToName = "Center",
-						relativeToFrame = "Resource",
-						relativeToFrameName = "Main Resource Bar"
-					}
-				},
-				{
-					useDefaultFontColor = false,
-					useDefaultFontFace = false,
-					useDefaultFontSize = false,
-					name="Right",
-					guid=TRB.Functions.String:Guid(),
-					text="{$casting}[#casting$casting+]{$passive}[$passive+]$insanity",
-					fontFace = "Fonts\\FRIZQT__.TTF",
-					fontFaceName = "Friz Quadrata TT",
-					fontJustifyHorizontal = "RIGHT",
-					fontJustifyHorizontalName = "Right",
-					fontSize = 22,
-					position = {
-						xPos = -2,
-						yPos = 0,
-						relativeTo = "RIGHT",
-						relativeToName = "Right",
-						relativeToFrame = "Resource",
-						relativeToFrameName = "Main Resource Bar"
-					}
+			{
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				text="{$mdTime}[#mDev $mdTime #mDev{$vfTime}[||n]]{$vfTime}[$vfTime]",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize = 13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
+			},
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="{$casting}[#casting$casting+]{$passive}[$passive+]$insanity",
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				fontFaceName = "Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize = 22,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
 				}
 			}
 		}
@@ -752,7 +939,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		return textSettings
 	end
 
-	local function ShadowLoadDefaultSettings()
+	local function ShadowLoadDefaultSettings(includeBarText)
 		local settings = {
 			hasteApproachingThreshold=135,
 			hasteThreshold=140,
@@ -829,9 +1016,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					overThreshold="FF00FF00",
 					overThresholdEnabled=false,
 					overcapEnabled=true,
-					left="FFFFFFFF",
-					middle="FFFFFFFF",
-					right="FFFFFFFF",
 					hasteBelow="FFFFFFFF",
 					hasteApproaching="FFFFFF00",
 					hasteAbove="FF00FF00",
@@ -875,7 +1059,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					outOfRange="FF440000"
 				}
 			},
-			displayText={},
+			displayText={
+				default = {
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = "Left",
+					fontSize=18,
+					color = "FFFFFFFF",
+				},
+				barText = {}
+			},
 			audio={
 				overcap={
 					name = "Overcap",
@@ -917,15 +1111,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			}
 		}
 
-		settings.displayText = ShadowLoadDefaultBarTextSimpleSettings()
+		if includeBarText then
+			settings.displayText.barText = ShadowLoadDefaultBarTextSimpleSettings()
+		end
+
 		return settings
 	end
 
-	local function LoadDefaultSettings()
+	local function LoadDefaultSettings(includeBarText)
 		local settings = TRB.Options.LoadDefaultSettings()
-		settings.priest.discipline = DisciplineLoadDefaultSettings()
-		settings.priest.holy = HolyLoadDefaultSettings()
-		settings.priest.shadow = ShadowLoadDefaultSettings()
+		settings.priest.discipline = DisciplineLoadDefaultSettings(includeBarText)
+		settings.priest.holy = HolyLoadDefaultSettings(includeBarText)
+		settings.priest.shadow = ShadowLoadDefaultSettings(includeBarText)
 		return settings
 	end
 	TRB.Options.Priest.LoadDefaultSettings = LoadDefaultSettings
@@ -1041,7 +1238,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local title = ""
 
-		controls.buttons.exportButton_Priest_Discipline_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Priest_Discipline_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Discipline_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Discipline Priest (Bar Display).", 5, 1, true, false, false, false, false)
 		end)
@@ -1162,12 +1359,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local title = ""
 
-		controls.buttons.exportButton_Priest_Discipline_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Priest_Discipline_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Discipline_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Discipline Priest (Font & Text).", 5, 1, false, true, false, false, false)
 		end)
 
-		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 5, 1, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 5, 1, yCoord)
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", oUi.xCoord, yCoord)
@@ -1259,7 +1456,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local title = ""
 
-		controls.buttons.exportButton_Priest_Discipline_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Priest_Discipline_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Discipline_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Discipline Priest (Audio & Tracking).", 5, 1, false, false, true, false, false)
 		end)
@@ -1597,68 +1794,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			return
 		end
 
+		local spec = TRB.Data.settings.priest.discipline
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.discipline
 		local yCoord = 5
-		local f = nil
 
-		local spec = TRB.Data.settings.priest.discipline
-
-		local namePrefix = "Priest_Discipline"
-
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		
-		controls.buttons.exportButton_Priest_Discipline_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)		
+		controls.buttons.exportButton_Priest_Discipline_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Discipline_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Discipline Priest (Bar Text).", 5, 1, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.left = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.left
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.left.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 2 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-
-		yCoord = yCoord - 70
-		controls.labels.middleText = TRB.Functions.OptionsUi:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.middle = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.middle
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.middle.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 2 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-
-		yCoord = yCoord - 70
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.right = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.right
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.right.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 2 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
-		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
+		TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 5, 1, yCoord, cache)
 	end
 
 	local function DisciplineConstructOptionsPanel(cache)
@@ -1865,7 +2013,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local title = ""
 
-		controls.buttons.exportButton_Priest_Holy_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Priest_Holy_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Holy_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Holy Priest (Bar Display).", 5, 2, true, false, false, false, false)
 		end)
@@ -2084,6 +2232,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(spec.colors.comboPoints.holyWordSerenityEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.comboPoints.holyWordSerenityEnabled = self:GetChecked()
+			TRB.Functions.BarText:CreateBarTextFrames(spec)
 		end)
 
 		controls.colors.comboPoints.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Holy Word: Serenity", spec.colors.comboPoints.holyWordSerenity, 300, 25, oUi.xCoord2, yCoord)
@@ -2101,6 +2250,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(spec.colors.comboPoints.holyWordSanctifyEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.comboPoints.holyWordSanctifyEnabled = self:GetChecked()
+			TRB.Functions.BarText:CreateBarTextFrames(spec)
 		end)
 
 		controls.colors.comboPoints.holyWordSanctify = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Holy Word: Sanctify", spec.colors.comboPoints.holyWordSanctify, 300, 25, oUi.xCoord2, yCoord)
@@ -2118,6 +2268,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(spec.colors.comboPoints.holyWordChastiseEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.comboPoints.holyWordChastiseEnabled = self:GetChecked()
+			TRB.Functions.BarText:CreateBarTextFrames(spec)
 		end)
 
 		controls.colors.comboPoints.holyWordChastise = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Holy Word: Chastise", spec.colors.comboPoints.holyWordChastise, 300, 25, oUi.xCoord2, yCoord)
@@ -2237,12 +2388,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local title = ""
 
-		controls.buttons.exportButton_Priest_Holy_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Priest_Holy_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Holy_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Holy Priest (Font & Text).", 5, 2, false, true, false, false, false)
 		end)
 
-		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 5, 2, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 5, 2, yCoord)
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", oUi.xCoord, yCoord)
@@ -2334,7 +2485,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local title = ""
 
-		controls.buttons.exportButton_Priest_Holy_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Priest_Holy_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Holy_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Holy Priest (Audio & Tracking).", 5, 2, false, false, true, false, false)
 		end)
@@ -2800,68 +2951,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			return
 		end
 
+		local spec = TRB.Data.settings.priest.holy
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.holy
 		local yCoord = 5
-		local f = nil
 
-		local spec = TRB.Data.settings.priest.holy
-
-		local namePrefix = "Priest_Holy"
-
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		
-		controls.buttons.exportButton_Priest_Holy_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)		
+		controls.buttons.exportButton_Priest_Holy_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Holy_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Holy Priest (Bar Text).", 5, 2, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.left = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.left
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.left.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 2 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-
-		yCoord = yCoord - 70
-		controls.labels.middleText = TRB.Functions.OptionsUi:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.middle = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.middle
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.middle.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 2 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-
-		yCoord = yCoord - 70
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.right = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.right
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.right.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 2 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
-		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
+		TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 5, 2, yCoord, cache)
 	end
 
 	local function HolyConstructOptionsPanel(cache)
@@ -3073,7 +3175,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local title = ""
 
-		controls.buttons.exportButton_Priest_Shadow_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Priest_Shadow_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Shadow_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest (Bar Display).", 5, 3, true, false, false, false, false)
 		end)
@@ -3397,7 +3499,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local title = ""
 
-		controls.buttons.exportButton_Priest_Shadow_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Priest_Shadow_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Shadow_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest (Font & Text).", 5, 3, false, true, false, false, false)
 		end)
@@ -3600,7 +3702,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local title = ""
 
-		controls.buttons.exportButton_Priest_Shadow_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Priest_Shadow_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Shadow_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest (Audio & Tracking).", 5, 3, false, false, true, false, false)
 		end)
@@ -4001,579 +4103,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.shadow
 		local yCoord = 5
-		local f = nil
-		local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
-		local namePrefix = "Priest_Shadow"
-		local title = ""
-		local _, className, _ = GetClassInfo(5)
-		local specId = 3
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-
-		controls.buttons.exportButton_Priest_Shadow_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Priest_Shadow_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Priest_Shadow_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Shadow Priest (Bar Text).", 5, 3, false, false, false, true, false)
 		end)
 
-		--[[
 		yCoord = yCoord - 30
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.left = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.left
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.left.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 3 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-		f:SetCursorPosition(0)
-
-		yCoord = yCoord - 70
-		controls.labels.middleText = TRB.Functions.OptionsUi:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.middle = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.middle
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.middle.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 3 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-		f:SetCursorPosition(0)
-
-		yCoord = yCoord - 70
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.right = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.right
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.right.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			if GetSpecialization() == 3 then
-				TRB.Functions.BarText:IsTtdActive(spec)
-			end
-		end)
-		f:SetCursorPosition(0)]]
-
-		yCoord = yCoord - 30
-
-		local ScrollingTable = LibStub("ScrollingTable")
-
-		local columns = {
-			{
-				["name"] = "GUID",
-				["width"] = 1,
-				["align"] = "CENTER"
-			},
-			{
-				["name"] = "Name",
-				["width"] = 100,
-				["align"] = "LEFT",
-				--[[["color"] = { 
-					["r"] = 0.5, 
-					["g"] = 0.5, 
-					["b"] = 1.0, 
-					["a"] = 1.0 
-				},
-				["colorargs"] = nil,
-				["bgcolor"] = {
-					["r"] = 1.0, 
-					["g"] = 0.0, 
-					["b"] = 0.0, 
-					["a"] = 1.0 
-				}, -- red backgrounds, eww!
-				["defaultsort"] = "dsc",
-				["sortnext"]= 4,
-				["comparesort"] = function (cella, cellb, column)
-					return cella.value < cellb.value;
-				end,
-				["DoCellUpdate"] = nil,]]
-			},
-			{
-				["name"] = "Bound To",
-				["width"] = 150,
-				["align"] = "LEFT"
-			},
-			{
-				["name"] = "Bar Text",
-				["width"] = 260,
-				["align"] = "LEFT"
-			},
-			{
-				["name"] = "",
-				["width"] = 75,--260,
-				["align"] = "RIGHT",
-				["color"] = {
-					["r"] = 1,
-					["g"] = 0,
-					["b"] = 0,
-					["a"] = 1,
-				}
-			}
-		}
-
-		---@type TRB.Classes.DisplayTextEntry
-		---@diagnostic disable-next-line: missing-fields
-		local workingBarText = {}
-
-		controls.barTextContainer = CreateFrame("Frame", nil, parent, "BackdropTemplate")
-		local btc = controls.barTextContainer
-
-		btc:SetPoint("TOPLEFT", parent, "TOPLEFT", oUi.xCoord, yCoord)
-		btc:SetWidth(620)
-		btc:SetHeight(120)
-
-		local barTextTable = ScrollingTable:CreateST(columns, 5, 15, nil, btc, false, false)
-
-		yCoord = yCoord - 110
-
-		local addButton = TRB.Functions.OptionsUi:BuildButton(parent, "Add New Bar Text Area", 450, yCoord, 175, 25)
-
-		yCoord = yCoord - 40
-		title = "Horizontal Offset"
-		local barTextHorizontal = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth), math.floor(sanityCheckValues.barMaxWidth), 0, 1, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		barTextHorizontal:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			workingBarText.position.xPos = value
-			--TODO: Call to reposition bar text areas
-		end)
-	
-		title = "Vertical Offset"
-		local barTextVertical = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight), math.floor(sanityCheckValues.barMaxHeight), 0, 1, 2,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		barTextVertical:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			workingBarText.position.yPos = value
-			--TODO: Call to reposition bar text areas
-		end)
-
-		yCoord = yCoord - 40
-		-- Create the dropdown, and configure its appearance
-		local barTextRelativeToFrame = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_barTextRelativeToFrame", parent)
-		barTextRelativeToFrame.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bound to Bar", oUi.xCoord, yCoord)
-		barTextRelativeToFrame.label.font:SetFontObject(GameFontNormal)
-		barTextRelativeToFrame:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-		LibDD:UIDropDownMenu_SetWidth(barTextRelativeToFrame, oUi.dropdownWidth)
-		LibDD:UIDropDownMenu_SetText(barTextRelativeToFrame, "")
-		LibDD:UIDropDownMenu_JustifyText(barTextRelativeToFrame, "LEFT")
-	
-		-- Create and bind the initialization function to the dropdown menu
-		LibDD:UIDropDownMenu_Initialize(barTextRelativeToFrame, function(self, level, menuList)
-			local entries = 25
-			local info = LibDD:UIDropDownMenu_CreateInfo()
-			local relativeTo = {}
-			relativeTo["Main Resource Bar"] = "Resource"
-			--relativeTo["Center"] = "CENTER"
-			--relativeTo["Right"] = "RIGHT"
-			local relativeToList = {
-				"Main Resource Bar",
-				--"Center",
-				--"Right",
-			}
-	
-			for k, v in pairs(relativeToList) do
-				info.text = v
-				info.value = relativeTo[v]
-				info.checked = false --relativeTo[v] == spec.comboPoints.relativeTo
-				info.func = self.SetValue
-				info.arg1 = relativeTo[v]
-				info.arg2 = v
-				LibDD:UIDropDownMenu_AddButton(info, level)
-			end
-		end)
-	
-		function barTextRelativeToFrame:SetValue(newValue, newName)
-			workingBarText.fontJustifyHorizontal = newValue
-			workingBarText.fontJustifyHorizontalName = newName
-			LibDD:UIDropDownMenu_SetText(barTextRelativeToFrame, newName)
-			LibDD:CloseDropDownMenus()
-		end
-
-
-
-
-		-- Create the dropdown, and configure its appearance
-		local barTextRelativeTo = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_barTextRelativeTo", parent)
-		barTextRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Relative Position of Bar Text to selected Bar", oUi.xCoord2, yCoord)
-		barTextRelativeTo.label.font:SetFontObject(GameFontNormal)
-		barTextRelativeTo:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-		LibDD:UIDropDownMenu_SetWidth(barTextRelativeTo, oUi.dropdownWidth)
-		LibDD:UIDropDownMenu_SetText(barTextRelativeTo, "")
-		LibDD:UIDropDownMenu_JustifyText(barTextRelativeTo, "LEFT")
-	
-		-- Create and bind the initialization function to the dropdown menu
-		LibDD:UIDropDownMenu_Initialize(barTextRelativeTo, function(self, level, menuList)
-			local entries = 25
-			local info = LibDD:UIDropDownMenu_CreateInfo()
-			local relativeTo = {}
-			relativeTo["Top Left"] = "TOPLEFT"
-			relativeTo["Top"] = "TOP"
-			relativeTo["Top Right"] = "TOPRIGHT"
-			relativeTo["Left"] = "LEFT"
-			relativeTo["Center"] = "CENTER"
-			relativeTo["Right"] = "RIGHT"
-			relativeTo["Bottom Left"] = "BOTTOMLEFT"
-			relativeTo["Bottom"] = "BOTTOM"
-			relativeTo["Bottom Right"] = "BOTTOMRIGHT"
-			local relativeToList = {
-				"Top Left",
-				"Top",
-				"Top Right",
-				"Left",
-				"Center",
-				"Right",
-				"Bottom Left",
-				"Bottom",
-				"Bottom Right"
-			}
-	
-			for k, v in pairs(relativeToList) do
-				info.text = v
-				info.value = relativeTo[v]
-				info.checked = false --relativeTo[v] == spec.comboPoints.relativeTo
-				info.func = self.SetValue
-				info.arg1 = relativeTo[v]
-				info.arg2 = v
-				LibDD:UIDropDownMenu_AddButton(info, level)
-			end
-		end)
-	
-		function barTextRelativeTo:SetValue(newValue, newName)
-			workingBarText.position.relativeTo = newValue
-			workingBarText.position.relativeToName = newName
-			LibDD:UIDropDownMenu_SetText(barTextRelativeTo, newName)
-			LibDD:CloseDropDownMenus()
-		end
-
-
-
-		yCoord = yCoord - 60
-
-		controls.colors.text = controls.colors.text or {}
-
-		-- Create the dropdown, and configure its appearance
-		local font = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_font", parent)
-		font.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Font Face", oUi.xCoord, yCoord)
-		font.label.font:SetFontObject(GameFontNormal)
-		font:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-		LibDD:UIDropDownMenu_SetWidth(font, oUi.dropdownWidth)
-		LibDD:UIDropDownMenu_SetText(font, "")
-		LibDD:UIDropDownMenu_JustifyText(font, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		LibDD:UIDropDownMenu_Initialize(font, function(self, level, menuList)
-			local entries = 25
-			local info = LibDD:UIDropDownMenu_CreateInfo()
-			local fonts = TRB.Details.addonData.libs.SharedMedia:HashTable("font")
-			local fontsList = TRB.Details.addonData.libs.SharedMedia:List("font")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.Table:Length(fonts) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = "Fonts " .. i+1
-					info.menuList = i
-					LibDD:UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(fontsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = fonts[v]
-						info.checked = false -- fonts[v] == spec.displayText.default.fontFace
-						info.func = self.SetValue
-						info.arg1 = fonts[v]
-						info.arg2 = v
-						info.fontObject = CreateFont(v)
-						info.fontObject:SetFont(fonts[v], 12, "OUTLINE")
-						LibDD:UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		function font:SetValue(newValue, newName)
-			workingBarText.fontFace = newValue
-			workingBarText.fontFaceName = newName
-			LibDD:UIDropDownMenu_SetText(font, newName)
-			LibDD:CloseDropDownMenus()
-		end
-
-		-- Create the dropdown, and configure its appearance
-		local barTextJustifyHorizontal = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_barTextJustifyHorizontal", parent)
-		barTextJustifyHorizontal.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Font Horizontal Alignment (Justify)", oUi.xCoord2, yCoord)
-		barTextJustifyHorizontal.label.font:SetFontObject(GameFontNormal)
-		barTextJustifyHorizontal:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-		LibDD:UIDropDownMenu_SetWidth(barTextJustifyHorizontal, oUi.dropdownWidth)
-		LibDD:UIDropDownMenu_SetText(barTextJustifyHorizontal, "")
-		LibDD:UIDropDownMenu_JustifyText(barTextJustifyHorizontal, "LEFT")
-	
-		-- Create and bind the initialization function to the dropdown menu
-		LibDD:UIDropDownMenu_Initialize(barTextJustifyHorizontal, function(self, level, menuList)
-			local entries = 25
-			local info = LibDD:UIDropDownMenu_CreateInfo()
-			local relativeTo = {}
-			relativeTo["Left"] = "LEFT"
-			relativeTo["Center"] = "CENTER"
-			relativeTo["Right"] = "RIGHT"
-			local relativeToList = {
-				"Left",
-				"Center",
-				"Right",
-			}
-	
-			for k, v in pairs(relativeToList) do
-				info.text = v
-				info.value = relativeTo[v]
-				info.checked = false --relativeTo[v] == spec.comboPoints.relativeTo
-				info.func = self.SetValue
-				info.arg1 = relativeTo[v]
-				info.arg2 = v
-				LibDD:UIDropDownMenu_AddButton(info, level)
-			end
-		end)
-	
-		function barTextJustifyHorizontal:SetValue(newValue, newName)
-			workingBarText.fontJustifyHorizontal = newValue
-			workingBarText.fontJustifyHorizontalName = newName
-			LibDD:UIDropDownMenu_SetText(barTextJustifyHorizontal, newName)
-			LibDD:CloseDropDownMenus()
-		end
-
-		
-		yCoord = yCoord - 80
-		title = "Font Size"
-		local fontSize = TRB.Functions.OptionsUi:BuildSlider(parent, title, 6, 72, 18, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-		fontSize:SetScript("OnValueChanged", function(self, value)
-			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-			workingBarText.fontSize = value
-		end)
-
-		--yCoord = yCoord - 30
-		controls.colors = controls.colors or {}
-		controls.colors.barText = controls.colors.barText or {}
-		controls.colors.barText.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Font Color", "FFFFFFFF",
-																				250, 25, oUi.xCoord2, yCoord)
-		local barTextColor = controls.colors.barText.color
-		barTextColor:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, workingBarText, controls.colors.barText, "color")
-		end)
-
-
-		yCoord = yCoord - 40
-		controls.labels.barText = TRB.Functions.OptionsUi:BuildLabel(parent, "Bar Text", oUi.xCoord, yCoord, 90, 20)
-
-		yCoord = yCoord - 20
-		local barText = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Text", "",
-														590, 60, oUi.xCoord, yCoord)
-		barText:SetScript("OnTextChanged", function(self, input)
-			workingBarText.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			--barTextTable:Refresh()
-		end)
-		barText:SetCursorPosition(0)
-
-
-
-		---comment
-		---@param displayText TRB.Classes.DisplayText
-		---@param btt table # LibScrollingTable
-		local function SetTableValues(displayText, btt)
-			local dataTable = {}
-			local entries = TRB.Functions.Table:Length(displayText.barText)
-			if entries > 0 then
-				for i = 1, entries do
-					local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(displayText.barText[i].color, true)
-					table.insert(dataTable, {
-						cols = {
-							{
-								value = displayText.barText[i].guid
-							},
-							{
-								value = displayText.barText[i].name,
-								--["args"] = nil,
-								--[[["color"] = {
-									["r"] = r,
-									["g"] = g,
-									["b"] = b,
-									["a"] = a,
-								},]]
-								--["colorargs"] = nil,
-								--["DoCellUpdate"] = nil,
-							},
-							{
-								value = displayText.barText[i].position.relativeToFrameName,
-							},
-							{
-								value = displayText.barText[i].text,
-								--[[["color"] = {
-									["r"] = r,
-									["g"] = g,
-									["b"] = b,
-									["a"] = a,
-								},]]
-							},
-							{
-								value = "DELETE",
-								--[[["color"] = {
-									["r"] = 1,
-									["g"] = 0,
-									["b"] = 0,
-									["a"] = 1,
-								}]]
-							}
-						}
-					})
-				end
-			end
-			btt:SetData(dataTable)
-			btt:EnableSelection(true)
-		end
-
-		---comment
-		---@return TRB.Classes.DisplayTextEntry
-		local function GetNewDisplayTextEntry()
-			return {
-				useDefaultFontFace = false,
-				useDefaultFontSize = false,
-				useDefaultFontColor = false,
-				name = "New Bar Text Entry",
-				text = "",
-				guid = TRB.Functions.String:Guid(),
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
-				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
-				fontSize=18,
-				color="FFFF0000",
-				position = {
-					xPos = 0,
-					yPos = 0,
-					relativeTo = "LEFT",
-					relativeToName = "Left",
-					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
-				}
-			}
-		end
-
-		---comment
-		---@param guid string
-		---@param dt TRB.Classes.DisplayText
-		local function FillBarTextEditorFields(guid, dt)
-			local found = false
-			local e = TRB.Functions.Table:Length(dt.barText)
-			if e > 0 then
-				for i = 1, e do
-					if dt.barText[i].guid == guid then
-						workingBarText = dt.barText[i]
-						found = true
-						break
-					end
-				end
-			end
-
-			if not found then
-				return
-				--workingBarText = GetNewDisplayTextEntry()
-			end
-
-			LibDD:UIDropDownMenu_SetText(font, workingBarText.fontFaceName)
-			LibDD:UIDropDownMenu_SetText(barTextJustifyHorizontal, workingBarText.fontJustifyHorizontalName)
-			fontSize:SetValue(workingBarText.fontSize)
-			barTextColor.Texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(workingBarText.color, true))
-			barText:SetText(workingBarText.text)
-
-			TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextHorizontal, workingBarText.position.xPos)
-			TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextVertical, workingBarText.position.yPos)
-			LibDD:UIDropDownMenu_SetText(barTextRelativeTo, workingBarText.position.relativeToName)
-			LibDD:UIDropDownMenu_SetText(barTextRelativeToFrame, workingBarText.position.relativeToFrameName)
-		end
-
-		SetTableValues(spec.displayText, barTextTable)
-
-		addButton:SetScript("OnClick", function(self, ...)
-			local displayText = spec.displayText --[[@as TRB.Classes.DisplayText]]
-			local newEntry = GetNewDisplayTextEntry()
-			table.insert(displayText.barText, newEntry)
-			SetTableValues(displayText, barTextTable)
-			barTextTable:SetSelection(TRB.Functions.Table:Length(displayText.barText))
-			TRB.Functions.BarText:CreateBarTextFrames(spec)
-			FillBarTextEditorFields(newEntry.guid, displayText)
-		end)
-
-		---Deletes a specified bar text row
-		---@param displayText TRB.Classes.DisplayText
-		---@param row integer
-		---@param btt table
-		local function DeleteBarTextRow(displayText, row, btt)
-			btt:SetSelection()
-			table.remove(displayText.barText, row)
-			SetTableValues(displayText, btt)
-			TRB.Functions.BarText:CreateBarTextFrames(spec)
-		end
-
-		StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
-			text = "",
-			button1 = "Yes",
-			button2 = "No",
-			OnShow = function(self, data)
-				self.text:SetFormattedText(data.message)
-				self.data = data
-			end,
-			OnAccept = function(self)
-				DeleteBarTextRow(self.data.displayText, self.data.row, self.data.btt)
-			end,
-			timeout = 0,
-			whileDead = true,
-			hideOnEscape = true,
-			preferredIndex = 3
-		}
-
-		barTextTable:RegisterEvents({
-			OnClick = function (rowFrame, cellFrame, data, cols, row, realrow, column, scrollingTable, button, ...)
-				if button == "LeftButton" then
-					local currentSelection = scrollingTable:GetSelection()
-					local guid = data[realrow].cols[1].value
-
-					if column == 5 then
-						StaticPopup_Show("TwintopResourceBar_ConfirmDeleteBarText", nil, nil, {
-							message = "Are you sure you want to delete '"..data[realrow].cols[2].value.."'?",
-							displayText = spec.displayText,
-							row = realrow,
-							btt = scrollingTable
-						 })
-						--DeleteBarTextRow(spec.displayText, row, scrollingTable)
-					else
-						FillBarTextEditorFields(guid, spec.displayText)
-						C_Timer.After(0, function()
-							C_Timer.After(0.05, function()
-								local newSelection = scrollingTable:GetSelection()
-
-								if newSelection == nil then
-									barTextTable:SetSelection(currentSelection)
-								end
-							end)
-						end)
-					end
-				end
-			end
-		})
-
-		yCoord = yCoord - 200
-		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
-		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
+		TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 5, 3, yCoord, cache)
 	end
 
 	local function ShadowConstructOptionsPanel(cache)

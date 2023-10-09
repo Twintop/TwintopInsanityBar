@@ -2268,12 +2268,27 @@ elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not s
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 
-					local settings = TRB.Options.Monk.LoadDefaultSettings()
-					if TwintopInsanityBarSettings then
+					if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
 						TRB.Options:PortForwardSettings()
+
+						local settings = TRB.Options.Monk.LoadDefaultSettings(false)
+
+						if TwintopInsanityBarSettings.monk == nil or
+							TwintopInsanityBarSettings.monk.mistweaver == nil or
+							TwintopInsanityBarSettings.monk.mistweaver.displayText == nil then
+							settings.monk.mistweaver.displayText = TRB.Options.Monk.MistweaverLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.monk == nil or
+							TwintopInsanityBarSettings.monk.windwalker == nil or
+							TwintopInsanityBarSettings.monk.windwalker.displayText == nil then
+							settings.monk.windwalker.displayText = TRB.Options.Monk.WindwalkerLoadDefaultBarTextSimpleSettings()
+						end
+
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
+						local settings = TRB.Options.Monk.LoadDefaultSettings(true)
 						TRB.Data.settings = settings
 					end
 					FillSpecializationCache()
@@ -2726,6 +2741,19 @@ elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not s
 		end
 
 		return valid
+	end
+
+	function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+		local specId = GetSpecialization()
+		local settings = TRB.Data.settings.priest
+		local spells = TRB.Data.spells
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+		if specId == 1 then
+		elseif specId == 2 then
+		elseif specId == 3 then
+		end
+		return nil
 	end
 
 	--HACK to fix FPS

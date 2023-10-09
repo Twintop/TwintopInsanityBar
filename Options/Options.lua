@@ -651,19 +651,13 @@ local function ConstructAddonOptionsPanel()
 		TRB.Frames.resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		TRB.Frames.castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		TRB.Frames.passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		if classIndexId == 5 then
-			---@type Frame[]
-			local textFrames = TRB.Frames.textFrames
-			local entries = TRB.Functions.Table:Length(textFrames)
-			if entries > 0 then
-				for i = 1, entries do
-					textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
-				end
+		---@type Frame[]
+		local textFrames = TRB.Frames.textFrames
+		local entries = TRB.Functions.Table:Length(textFrames)
+		if entries > 0 then
+			for i = 1, entries do
+				textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
 			end
-		else
-			TRB.Frames.leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-			TRB.Frames.middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-			TRB.Frames.rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		end
 		---@diagnostic disable-next-line: undefined-field
 		LibDD:UIDropDownMenu_SetText(controls.dropDown.strata, newName)
@@ -2377,6 +2371,119 @@ function TRB.Options:PortForwardSettings()
 		then
 		TwintopInsanityBarSettings.demonhunter.havoc.resourcePrecision = TwintopInsanityBarSettings.demonhunter.havoc.furyPrecision
 		TwintopInsanityBarSettings.demonhunter.havoc.furyPrecision = nil
+	end
+
+	-- Change to new bar text format
+	if TwintopInsanityBarSettings ~= nil then
+		local classLength = TRB.Functions.Table:Length(TwintopInsanityBarSettings)
+		if classLength > 0 then
+			for class, classValue in pairs(TwintopInsanityBarSettings) do
+				if class ~= "core" then
+					local specLength = TRB.Functions.Table:Length(classValue)
+					if specLength > 0 then
+						for spec, specValue in pairs(classValue) do
+							if specValue.displayText ~= nil and specValue.displayText.fontSizeLock ~= nil then
+								specValue.displayText.default = {
+									fontFace="Fonts\\FRIZQT__.TTF",
+									fontFaceName="Friz Quadrata TT",
+									fontJustifyHorizontal = "LEFT",
+									fontJustifyHorizontalName = "Left",
+									fontSize=18,
+									color = "FFFFFFFF"
+								}
+
+								if specValue.displayText.fontSizeLock then
+									specValue.displayText.default.fontSize = specValue.displayText.left.fontSize
+								end
+
+								if specValue.displayText.fontFaceLock then
+									specValue.displayText.default.fontFace = specValue.displayText.left.fontFace
+									specValue.displayText.default.fontFaceName = specValue.displayText.left.fontFaceName
+								end
+
+								specValue.displayText.barText = {
+									{
+										useDefaultFontColor = false,
+										useDefaultFontFace = specValue.displayText.fontFaceLock,
+										useDefaultFontSize = specValue.displayText.fontSizeLock,
+										name="Left",
+										guid=TRB.Functions.String:Guid(),
+										text=specValue.displayText.left.text,
+										fontFace=specValue.displayText.left.fontFace,
+										fontFaceName=specValue.displayText.left.fontFaceName,
+										fontJustifyHorizontal = "LEFT",
+										fontJustifyHorizontalName = "Left",
+										fontSize = specValue.displayText.left.fontSize,
+										color = specValue.colors.text.left,
+										position = {
+											xPos = 2,
+											yPos = 0,
+											relativeTo = "LEFT",
+											relativeToName = "Left",
+											relativeToFrame = "Resource",
+											relativeToFrameName = "Main Resource Bar"
+										}
+									},
+									{
+										useDefaultFontColor = false,
+										useDefaultFontFace = specValue.displayText.fontFaceLock,
+										useDefaultFontSize = specValue.displayText.fontSizeLock,
+										name="Middle",
+										guid=TRB.Functions.String:Guid(),
+										text=specValue.displayText.middle.text,
+										fontFace=specValue.displayText.middle.fontFace,
+										fontFaceName=specValue.displayText.middle.fontFaceName,
+										fontJustifyHorizontal = "CENTER",
+										fontJustifyHorizontalName = "Center",
+										fontSize = specValue.displayText.middle.fontSize,
+										color = specValue.colors.text.middle,
+										position = {
+											xPos = 0,
+											yPos = 0,
+											relativeTo = "CENTER",
+											relativeToName = "Center",
+											relativeToFrame = "Resource",
+											relativeToFrameName = "Main Resource Bar"
+										}
+									},
+									{
+										useDefaultFontColor = false,
+										useDefaultFontFace = specValue.displayText.fontFaceLock,
+										useDefaultFontSize = specValue.displayText.fontSizeLock,
+										name="Right",
+										guid=TRB.Functions.String:Guid(),
+										text=specValue.displayText.right.text,
+										fontFace=specValue.displayText.right.fontFace,
+										fontFaceName=specValue.displayText.right.fontFaceName,
+										fontJustifyHorizontal = "RIGHT",
+										fontJustifyHorizontalName = "Right",
+										fontSize = specValue.displayText.right.fontSize,
+										color = specValue.colors.text.right,
+										position = {
+											xPos = -2,
+											yPos = 0,
+											relativeTo = "RIGHT",
+											relativeToName = "Right",
+											relativeToFrame = "Resource",
+											relativeToFrameName = "Main Resource Bar"
+										}
+									}
+								}
+
+								specValue.displayText.left = nil
+								specValue.displayText.middle = nil
+								specValue.displayText.right = nil
+								specValue.displayText.fontSizeLock = nil
+								specValue.displayText.fontFaceLock = nil
+								specValue.colors.text.left = nil
+								specValue.colors.text.middle = nil
+								specValue.colors.text.right = nil
+							end
+						end
+					end
+				end
+			end
+		end
 	end
 end
 

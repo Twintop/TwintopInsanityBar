@@ -1894,12 +1894,35 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 
-					local settings = TRB.Options.Evoker.LoadDefaultSettings()
-					if TwintopInsanityBarSettings then
+					if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
 						TRB.Options:PortForwardSettings()
+
+						local settings = TRB.Options.Evoker.LoadDefaultSettings(false)
+
+						if TRB.Data.settings.core.experimental.specs.evoker.devastation and
+							(TwintopInsanityBarSettings.evoker == nil or
+							TwintopInsanityBarSettings.evoker.devastation == nil or
+							TwintopInsanityBarSettings.evoker.devastation.displayText == nil) then
+							settings.evoker.devastation.displayText = TRB.Options.Evoker.DevastationLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.evoker == nil or
+							TwintopInsanityBarSettings.evoker.preservation == nil or
+							TwintopInsanityBarSettings.evoker.preservation.displayText == nil then
+							settings.evoker.preservation.displayText = TRB.Options.Evoker.PreservationLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TRB.Data.settings.core.experimental.specs.evoker.augmentation and
+							(TwintopInsanityBarSettings.evoker == nil or
+							TwintopInsanityBarSettings.evoker.augmentation == nil or
+							TwintopInsanityBarSettings.evoker.augmentation.displayText == nil) then
+							settings.evoker.augmentation.displayText = TRB.Options.Evoker.AugmentationLoadDefaultBarTextSimpleSettings()
+						end
+
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
+						local settings = TRB.Options.Evoker.LoadDefaultSettings(true)
 						TRB.Data.settings = settings
 					end
 					FillSpecializationCache()
@@ -2329,6 +2352,19 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		end
 
 		return valid
+	end
+
+	function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+		local specId = GetSpecialization()
+		local settings = TRB.Data.settings.priest
+		local spells = TRB.Data.spells
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+		if specId == 1 then
+		elseif specId == 2 then
+		elseif specId == 3 then
+		end
+		return nil
 	end
 
 	--HACK to fix FPS

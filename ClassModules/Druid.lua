@@ -4429,12 +4429,33 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 
-					local settings = TRB.Options.Druid.LoadDefaultSettings()
-					if TwintopInsanityBarSettings then
+					if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
 						TRB.Options:PortForwardSettings()
+
+						local settings = TRB.Options.Druid.LoadDefaultSettings(false)
+
+						if TwintopInsanityBarSettings.druid == nil or
+							TwintopInsanityBarSettings.druid.balance == nil or
+							TwintopInsanityBarSettings.druid.balance.displayText == nil then
+							settings.druid.balance.displayText = TRB.Options.Druid.BalanceLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.druid == nil or
+							TwintopInsanityBarSettings.druid.feral == nil or
+							TwintopInsanityBarSettings.druid.feral.displayText == nil then
+							settings.druid.feral.displayText = TRB.Options.Druid.FeralLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.druid == nil or
+							TwintopInsanityBarSettings.druid.restoration == nil or
+							TwintopInsanityBarSettings.druid.restoration.displayText == nil then
+							settings.druid.restoration.displayText = TRB.Options.Druid.RestorationLoadDefaultBarTextSimpleSettings()
+						end
+
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
+						local settings = TRB.Options.Druid.LoadDefaultSettings(true)
 						TRB.Data.settings = settings
 					end
 					FillSpecializationCache()
@@ -5315,6 +5336,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		return valid
+	end
+
+	function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+		local specId = GetSpecialization()
+		local settings = TRB.Data.settings.priest
+		local spells = TRB.Data.spells
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+		if specId == 1 then
+		elseif specId == 2 then
+		elseif specId == 3 then
+		elseif specId == 4 then
+		end
+		return nil
 	end
 
 	--HACK to fix FPS
