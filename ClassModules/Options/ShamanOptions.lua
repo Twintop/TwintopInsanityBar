@@ -1315,7 +1315,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Font & Text).", 7, 1, false, true, false, false, false)
 		end)
 
-		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 7, 1, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 7, 1, yCoord)
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Maelstrom Text Colors", oUi.xCoord, yCoord)
@@ -1961,7 +1961,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Enhancement Shaman (Font & Text).", 7, 2, false, true, false, false, false)
 		end)
 
-		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 7, 2, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 7, 2, yCoord)
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", oUi.xCoord, yCoord)
@@ -2446,7 +2446,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Shaman (Font & Text).", 7, 3, false, true, false, false, false)
 		end)
 
-		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 7, 3, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 7, 3, yCoord)
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", oUi.xCoord, yCoord)

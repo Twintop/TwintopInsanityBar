@@ -725,9 +725,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Havoc Demon Hunter (Font & Text).", 12, 1, false, true, false, false, false)
 		end)
 
-		
-
-		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 12, 1, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 12, 1, yCoord)
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Fury Text Colors", oUi.xCoord, yCoord)
