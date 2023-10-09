@@ -4100,7 +4100,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 	function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		local specId = GetSpecialization()
-		local settings = TRB.Data.settings.priest
+		local settings = TRB.Data.settings.rogue
 		local spells = TRB.Data.spells
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 

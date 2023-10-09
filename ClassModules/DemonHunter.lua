@@ -1384,7 +1384,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 	function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		local specId = GetSpecialization()
-		local settings = TRB.Data.settings.priest
+		local settings = TRB.Data.settings.demonhunter
 		local spells = TRB.Data.spells
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 

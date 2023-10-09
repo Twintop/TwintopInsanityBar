@@ -3550,7 +3550,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 	function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		local specId = GetSpecialization()
-		local settings = TRB.Data.settings.priest
+		local settings = TRB.Data.settings.hunter
 		local spells = TRB.Data.spells
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
