@@ -97,6 +97,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		return textSettings
 	end
+	TRB.Options.Rogue.AssassinationLoadDefaultBarTextSimpleSettings = AssassinationLoadDefaultBarTextSimpleSettings
 	
 	local function AssassinationLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]
@@ -491,6 +492,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		return textSettings
 	end
+	TRB.Options.Rogue.OutlawLoadDefaultBarTextSimpleSettings = OutlawLoadDefaultBarTextSimpleSettings
 	
 	local function OutlawLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]

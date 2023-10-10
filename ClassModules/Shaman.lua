@@ -2460,7 +2460,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							settings.shaman.elemental.displayText = TRB.Options.Shaman.ElementalLoadDefaultBarTextSimpleSettings()
 						end
 
-						if TRB.Data.settings.core.experimental.specs.shaman.enhancement and
+						if TwintopInsanityBarSettings.core.experimental.specs.shaman.enhancement and
 							(TwintopInsanityBarSettings.shaman == nil or
 							TwintopInsanityBarSettings.shaman.enhancement == nil or
 							TwintopInsanityBarSettings.shaman.enhancement.displayText == nil) then

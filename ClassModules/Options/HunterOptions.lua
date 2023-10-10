@@ -97,6 +97,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		return textSettings
 	end
+	TRB.Options.Hunter.BeastMasteryLoadDefaultBarTextSimpleSettings = BeastMasteryLoadDefaultBarTextSimpleSettings
 	
 	local function BeastMasteryLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]
@@ -430,6 +431,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		return textSettings
 	end
+	TRB.Options.Hunter.MarksmanshipLoadDefaultBarTextSimpleSettings = MarksmanshipLoadDefaultBarTextSimpleSettings
 	
 	local function MarksmanshipLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]
@@ -790,6 +792,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		return textSettings
 	end
+	TRB.Options.Hunter.SurvivalLoadDefaultBarTextSimpleSettings = SurvivalLoadDefaultBarTextSimpleSettings
 	
 	local function SurvivalLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]

@@ -12,7 +12,7 @@ function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
 	]]
 	
 	-- Text
-	if settings.displayText ~= nil then
+	if settings.displayText ~= nil and settings.displayText.barText ~= nil then
 		for idx, bt in pairs(settings.displayText.barText) do
 			if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.FONT, bt.fontFaceName) then
 				bt.fontFace = TRB.Details.addonData.libs.SharedMedia.MediaTable.font[bt.fontFaceName]

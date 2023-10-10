@@ -1127,7 +1127,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 						if TwintopInsanityBarSettings.demonhunter == nil or
 							TwintopInsanityBarSettings.demonhunter.havoc == nil or
 							TwintopInsanityBarSettings.demonhunter.havoc.displayText == nil then
-							settings.demonhunter.havoc.displayText = TRB.Options.DemonHunter.HavocLoadDefaultBarTextSimpleSettings()
+							settings.demonhunter.havoc.displayText.barText = TRB.Options.DemonHunter.HavocLoadDefaultBarTextSimpleSettings()
 						end
 
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)

@@ -2169,14 +2169,16 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 		spec.displayText.default.fontFaceName = newName
 		LibDD:UIDropDownMenu_SetText(controls.dropDown.fontDefault, newName)
 		LibDD:CloseDropDownMenus()
+		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
 	end
 
 	yCoord = yCoord - 30
-	controls.colors.text.default = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Default Font Color", spec.displayText.default.color,
+	controls.colors.text.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Default Font Color", spec.displayText.default.color,
 																		250, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.text.default
+	f = controls.colors.text.color
 	f:SetScript("OnMouseDown", function(self, button, ...)
-	TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.displayText.default, controls.colors.text, "color")
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.displayText.default, controls.colors.text, "color")
+		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
 	end)
 
 	yCoord = yCoord - 60
@@ -2186,6 +2188,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 	controls.fontSizeDefault:SetScript("OnValueChanged", function(self, value)
 		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 		spec.displayText.default.fontSize = value
+		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
 	end)
 
 	return yCoord
@@ -2282,7 +2285,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	local oldYCoord = yCoord - btoHeight
 
-	yCoord = 0-- yCoord - 90
+	yCoord = 0
 
 	local barTextName = TRB.Functions.OptionsUi:BuildTextBox(barTextOptionsFrame, "", 200, 250, 20, oUi.xCoord, yCoord)
 ---@diagnostic disable-next-line: inject-field
@@ -2473,6 +2476,11 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	local useDefaultFontFace = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontFace", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontFace:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-60)
 	getglobal(useDefaultFontFace:GetName() .. 'Text'):SetText("Use default Font Face")
+	useDefaultFontFace.tooltip = "This will make this bar text area use the default font face instead of the font face chosen above."
+	useDefaultFontFace:SetScript("OnClick", function(self, ...)
+		workingBarText.useDefaultFontFace = self:GetChecked()
+		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+	end)
 
 	-- Create the dropdown, and configure its appearance
 	local barTextJustifyHorizontal = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_barTextJustifyHorizontal", barTextOptionsFrame)
@@ -2530,6 +2538,11 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	local useDefaultFontSize = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontSize", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontSize:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-40)
 	getglobal(useDefaultFontSize:GetName() .. 'Text'):SetText("Use default Font Size")
+	useDefaultFontSize.tooltip = "This will make this bar text area use the default font size instead of the font size chosen above."
+	useDefaultFontSize:SetScript("OnClick", function(self, ...)
+		workingBarText.useDefaultFontSize = self:GetChecked()
+		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+	end)
 
 	--yCoord = yCoord - 30
 	controls.colors = controls.colors or {}
@@ -2544,6 +2557,11 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	local useDefaultFontColor = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontColor", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontColor:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	getglobal(useDefaultFontColor:GetName() .. 'Text'):SetText("Use default Font Color")
+	useDefaultFontColor.tooltip = "This will make this bar text area use the default font color instead of the font color chosen above."
+	useDefaultFontColor:SetScript("OnClick", function(self, ...)
+		workingBarText.useDefaultFontColor = self:GetChecked()
+		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+	end)
 
 
 	yCoord = yCoord - 70
@@ -2654,7 +2672,6 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 		if not found then
 			return
-			--workingBarText = GetNewDisplayTextEntry()
 		end
 
 		barTextName:SetText(workingBarText.name)
@@ -2668,6 +2685,10 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		TRB.Functions.OptionsUi:EditBoxSetTextMinMax(barTextVertical, workingBarText.position.yPos)
 		LibDD:UIDropDownMenu_SetText(barTextRelativeTo, workingBarText.position.relativeToName)
 		LibDD:UIDropDownMenu_SetText(barTextRelativeToFrame, workingBarText.position.relativeToFrameName)
+
+		useDefaultFontColor:SetChecked(workingBarText.useDefaultFontColor)
+		useDefaultFontFace:SetChecked(workingBarText.useDefaultFontFace)
+		useDefaultFontSize:SetChecked(workingBarText.useDefaultFontSize)
 		
 		barTextOptionsFrame:Show()
 	end

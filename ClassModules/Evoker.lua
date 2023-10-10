@@ -1899,7 +1899,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 						local settings = TRB.Options.Evoker.LoadDefaultSettings(false)
 
-						if TRB.Data.settings.core.experimental.specs.evoker.devastation and
+						if TwintopInsanityBarSettings.core.experimental.specs.evoker.devastation and
 							(TwintopInsanityBarSettings.evoker == nil or
 							TwintopInsanityBarSettings.evoker.devastation == nil or
 							TwintopInsanityBarSettings.evoker.devastation.displayText == nil) then
@@ -1912,7 +1912,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							settings.evoker.preservation.displayText = TRB.Options.Evoker.PreservationLoadDefaultBarTextSimpleSettings()
 						end
 
-						if TRB.Data.settings.core.experimental.specs.evoker.augmentation and
+						if TwintopInsanityBarSettings.experimental.specs.evoker.augmentation and
 							(TwintopInsanityBarSettings.evoker == nil or
 							TwintopInsanityBarSettings.evoker.augmentation == nil or
 							TwintopInsanityBarSettings.evoker.augmentation.displayText == nil) then

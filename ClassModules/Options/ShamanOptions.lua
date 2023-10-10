@@ -100,6 +100,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		return textSettings
 	end
+	TRB.Options.Shaman.ElementalLoadDefaultBarTextSimpleSettings = ElementalLoadDefaultBarTextSimpleSettings
 
 	local function ElementalLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]
@@ -393,6 +394,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		return textSettings
 	end
+	TRB.Options.Shaman.EnhancementLoadDefaultBarTextSimpleSettings = EnhancementLoadDefaultBarTextSimpleSettings
 	
 	local function EnhancementLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]
@@ -713,6 +715,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		return textSettings
 	end
+	TRB.Options.Shaman.RestorationLoadDefaultBarTextSimpleSettings = RestorationLoadDefaultBarTextSimpleSettings
 
 	local function RestorationLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]

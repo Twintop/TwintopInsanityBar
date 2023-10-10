@@ -99,6 +99,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		return textSettings
 	end
+	TRB.Options.Monk.MistweaverLoadDefaultBarTextSimpleSettings = MistweaverLoadDefaultBarTextSimpleSettings
 
 	local function MistweaverLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]
@@ -395,6 +396,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		return textSettings
 	end
+	TRB.Options.Monk.WindwalkerLoadDefaultBarTextSimpleSettings = WindwalkerLoadDefaultBarTextSimpleSettings
 	
 	local function WindwalkerLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]

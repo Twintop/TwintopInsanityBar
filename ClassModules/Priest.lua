@@ -4950,7 +4950,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 						local settings = TRB.Options.Priest.LoadDefaultSettings(false)
 
-						if TRB.Data.settings.core.experimental.specs.priest.discipline and
+						if TwintopInsanityBarSettings.core.experimental.specs.priest.discipline and
 							(TwintopInsanityBarSettings.priest == nil or
 							TwintopInsanityBarSettings.priest.discipline == nil or
 							TwintopInsanityBarSettings.priest.discipline.displayText == nil) then

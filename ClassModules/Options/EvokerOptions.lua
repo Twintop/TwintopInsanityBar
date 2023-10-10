@@ -98,6 +98,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		return textSettings
 	end
+	TRB.Options.Evoker.DevastationLoadDefaultBarTextSimpleSettings = DevastationLoadDefaultBarTextSimpleSettings
 	
 	local function DevastationLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]
@@ -398,6 +399,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		return textSettings
 	end
+	TRB.Options.Evoker.PreservationLoadDefaultBarTextSimpleSettings = PreservationLoadDefaultBarTextSimpleSettings
 
 	local function PreservationLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]
@@ -733,6 +735,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		return textSettings
 	end
+	TRB.Options.Evoker.AugmentationLoadDefaultBarTextSimpleSettings = AugmentationLoadDefaultBarTextSimpleSettings
 	
 	local function AugmentationLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]

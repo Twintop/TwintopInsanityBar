@@ -103,6 +103,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		return textSettings
 	end
+	TRB.Options.Druid.BalanceLoadDefaultBarTextSimpleSettings = BalanceLoadDefaultBarTextSimpleSettings
 
 	local function BalanceLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]
@@ -417,6 +418,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		return textSettings
 	end
+	TRB.Options.Druid.FeralLoadDefaultBarTextSimpleSettings = FeralLoadDefaultBarTextSimpleSettings
 
 	local function FeralLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]
@@ -693,7 +695,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		}
 		
 		if includeBarText then
-			settings.displayText = FeralLoadDefaultBarTextSimpleSettings()
+			settings.displayText.barText = FeralLoadDefaultBarTextSimpleSettings()
 		end
 
 		return settings
@@ -773,6 +775,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		return textSettings
 	end
+	TRB.Options.Druid.RestorationLoadDefaultBarTextSimpleSettings = RestorationLoadDefaultBarTextSimpleSettings
 
 	local function RestorationLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]

@@ -101,6 +101,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		return textSettings
 	end
+	TRB.Options.Warrior.ArmsLoadDefaultBarTextSimpleSettings = ArmsLoadDefaultBarTextSimpleSettings
 
 	local function ArmsLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]
@@ -416,6 +417,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		return textSettings
 	end
+	TRB.Options.Warrior.FuryLoadDefaultBarTextSimpleSettings = FuryLoadDefaultBarTextSimpleSettings
 
 	local function FuryLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]

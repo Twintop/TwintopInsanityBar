@@ -93,6 +93,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		return textSettings
 	end
+	TRB.Options.DemonHunter.HavocLoadDefaultBarTextSimpleSettings = HavocLoadDefaultBarTextSimpleSettings
 
 	local function HavocLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]
@@ -310,7 +311,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		}
 
 		if includeBarText then
-			settings.displayText = HavocLoadDefaultBarTextSimpleSettings()
+			settings.displayText.barText = HavocLoadDefaultBarTextSimpleSettings()
 		end
 
 		return settings
