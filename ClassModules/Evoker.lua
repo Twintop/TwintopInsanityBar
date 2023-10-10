@@ -1903,20 +1903,20 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							(TwintopInsanityBarSettings.evoker == nil or
 							TwintopInsanityBarSettings.evoker.devastation == nil or
 							TwintopInsanityBarSettings.evoker.devastation.displayText == nil) then
-							settings.evoker.devastation.displayText = TRB.Options.Evoker.DevastationLoadDefaultBarTextSimpleSettings()
+							settings.evoker.devastation.displayText.barText = TRB.Options.Evoker.DevastationLoadDefaultBarTextSimpleSettings()
 						end
 
 						if TwintopInsanityBarSettings.evoker == nil or
 							TwintopInsanityBarSettings.evoker.preservation == nil or
 							TwintopInsanityBarSettings.evoker.preservation.displayText == nil then
-							settings.evoker.preservation.displayText = TRB.Options.Evoker.PreservationLoadDefaultBarTextSimpleSettings()
+							settings.evoker.preservation.displayText.barText = TRB.Options.Evoker.PreservationLoadDefaultBarTextSimpleSettings()
 						end
 
-						if TwintopInsanityBarSettings.experimental.specs.evoker.augmentation and
+						if TwintopInsanityBarSettings.core.experimental.specs.evoker.augmentation and
 							(TwintopInsanityBarSettings.evoker == nil or
 							TwintopInsanityBarSettings.evoker.augmentation == nil or
 							TwintopInsanityBarSettings.evoker.augmentation.displayText == nil) then
-							settings.evoker.augmentation.displayText = TRB.Options.Evoker.AugmentationLoadDefaultBarTextSimpleSettings()
+							settings.evoker.augmentation.displayText.barText = TRB.Options.Evoker.AugmentationLoadDefaultBarTextSimpleSettings()
 						end
 
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)

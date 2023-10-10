@@ -2276,13 +2276,13 @@ elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not s
 						if TwintopInsanityBarSettings.monk == nil or
 							TwintopInsanityBarSettings.monk.mistweaver == nil or
 							TwintopInsanityBarSettings.monk.mistweaver.displayText == nil then
-							settings.monk.mistweaver.displayText = TRB.Options.Monk.MistweaverLoadDefaultBarTextSimpleSettings()
+							settings.monk.mistweaver.displayText.barText = TRB.Options.Monk.MistweaverLoadDefaultBarTextSimpleSettings()
 						end
 
 						if TwintopInsanityBarSettings.monk == nil or
 							TwintopInsanityBarSettings.monk.windwalker == nil or
 							TwintopInsanityBarSettings.monk.windwalker.displayText == nil then
-							settings.monk.windwalker.displayText = TRB.Options.Monk.WindwalkerLoadDefaultBarTextSimpleSettings()
+							settings.monk.windwalker.displayText.barText = TRB.Options.Monk.WindwalkerLoadDefaultBarTextSimpleSettings()
 						end
 
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)

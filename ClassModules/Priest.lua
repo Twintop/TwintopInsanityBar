@@ -4955,19 +4955,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							(TwintopInsanityBarSettings.priest == nil or
 							TwintopInsanityBarSettings.priest.discipline == nil or
 							TwintopInsanityBarSettings.priest.discipline.displayText == nil) then
-							settings.priest.discipline.displayText = TRB.Options.Priest.DisciplineLoadDefaultBarTextSimpleSettings()
+							settings.priest.discipline.displayText.barText = TRB.Options.Priest.DisciplineLoadDefaultBarTextSimpleSettings()
 						end
 
 						if TwintopInsanityBarSettings.priest == nil or
 							TwintopInsanityBarSettings.priest.holy == nil or
 							TwintopInsanityBarSettings.priest.holy.displayText == nil then
-							settings.priest.holy.displayText = TRB.Options.Priest.HolyLoadDefaultBarTextSimpleSettings()
+							settings.priest.holy.displayText.barText = TRB.Options.Priest.HolyLoadDefaultBarTextSimpleSettings()
 						end
 
 						if TwintopInsanityBarSettings.priest == nil or
 							TwintopInsanityBarSettings.priest.shadow == nil or
 							TwintopInsanityBarSettings.priest.shadow.displayText == nil then
-							settings.priest.shadow.displayText = TRB.Options.Priest.ShadowLoadDefaultBarTextSimpleSettings()
+							settings.priest.shadow.displayText.barText = TRB.Options.Priest.ShadowLoadDefaultBarTextSimpleSettings()
 						end
 
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)

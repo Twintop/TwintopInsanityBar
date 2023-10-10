@@ -1871,13 +1871,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 						if TwintopInsanityBarSettings.warrior == nil or
 							TwintopInsanityBarSettings.warrior.arms == nil or
 							TwintopInsanityBarSettings.warrior.arms.displayText == nil then
-							settings.warrior.arms.displayText = TRB.Options.Warrior.ArmsLoadDefaultBarTextSimpleSettings()
+							settings.warrior.arms.displayText.barText = TRB.Options.Warrior.ArmsLoadDefaultBarTextSimpleSettings()
 						end
 
 						if TwintopInsanityBarSettings.warrior == nil or
 							TwintopInsanityBarSettings.warrior.fury == nil or
 							TwintopInsanityBarSettings.warrior.fury.displayText == nil then
-							settings.warrior.fury.displayText = TRB.Options.Warrior.FuryLoadDefaultBarTextSimpleSettings()
+							settings.warrior.fury.displayText.barText = TRB.Options.Warrior.FuryLoadDefaultBarTextSimpleSettings()
 						end
 
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)

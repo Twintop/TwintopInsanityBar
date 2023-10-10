@@ -2457,20 +2457,20 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						if TwintopInsanityBarSettings.shaman == nil or
 							TwintopInsanityBarSettings.shaman.elemental == nil or
 							TwintopInsanityBarSettings.shaman.elemental.displayText == nil then
-							settings.shaman.elemental.displayText = TRB.Options.Shaman.ElementalLoadDefaultBarTextSimpleSettings()
+							settings.shaman.elemental.displayText.barText = TRB.Options.Shaman.ElementalLoadDefaultBarTextSimpleSettings()
 						end
 
 						if TwintopInsanityBarSettings.core.experimental.specs.shaman.enhancement and
 							(TwintopInsanityBarSettings.shaman == nil or
 							TwintopInsanityBarSettings.shaman.enhancement == nil or
 							TwintopInsanityBarSettings.shaman.enhancement.displayText == nil) then
-							settings.shaman.enhancement.displayText = TRB.Options.Shaman.EnhancementLoadDefaultBarTextSimpleSettings()
+							settings.shaman.enhancement.displayText.barText = TRB.Options.Shaman.EnhancementLoadDefaultBarTextSimpleSettings()
 						end
 
 						if TwintopInsanityBarSettings.shaman == nil or
 							TwintopInsanityBarSettings.shaman.restoration == nil or
 							TwintopInsanityBarSettings.shaman.restoration.displayText == nil then
-							settings.shaman.restoration.displayText = TRB.Options.Shaman.RestorationLoadDefaultBarTextSimpleSettings()
+							settings.shaman.restoration.displayText.barText = TRB.Options.Shaman.RestorationLoadDefaultBarTextSimpleSettings()
 						end
 
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)

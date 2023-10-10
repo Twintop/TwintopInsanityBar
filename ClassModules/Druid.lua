@@ -4436,19 +4436,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						if TwintopInsanityBarSettings.druid == nil or
 							TwintopInsanityBarSettings.druid.balance == nil or
 							TwintopInsanityBarSettings.druid.balance.displayText == nil then
-							settings.druid.balance.displayText = TRB.Options.Druid.BalanceLoadDefaultBarTextSimpleSettings()
+							settings.druid.balance.displayText.barText = TRB.Options.Druid.BalanceLoadDefaultBarTextSimpleSettings()
 						end
 
 						if TwintopInsanityBarSettings.druid == nil or
 							TwintopInsanityBarSettings.druid.feral == nil or
 							TwintopInsanityBarSettings.druid.feral.displayText == nil then
-							settings.druid.feral.displayText = TRB.Options.Druid.FeralLoadDefaultBarTextSimpleSettings()
+							settings.druid.feral.displayText.barText = TRB.Options.Druid.FeralLoadDefaultBarTextSimpleSettings()
 						end
 
 						if TwintopInsanityBarSettings.druid == nil or
 							TwintopInsanityBarSettings.druid.restoration == nil or
 							TwintopInsanityBarSettings.druid.restoration.displayText == nil then
-							settings.druid.restoration.displayText = TRB.Options.Druid.RestorationLoadDefaultBarTextSimpleSettings()
+							settings.druid.restoration.displayText.barText = TRB.Options.Druid.RestorationLoadDefaultBarTextSimpleSettings()
 						end
 
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)

@@ -3626,13 +3626,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						if TwintopInsanityBarSettings.rogue == nil or
 							TwintopInsanityBarSettings.rogue.assassination == nil or
 							TwintopInsanityBarSettings.rogue.assassination.displayText == nil then
-							settings.rogue.assassination.displayText = TRB.Options.Rogue.AssassinationLoadDefaultBarTextSimpleSettings()
+							settings.rogue.assassination.displayText.barText = TRB.Options.Rogue.AssassinationLoadDefaultBarTextSimpleSettings()
 						end
 
 						if TwintopInsanityBarSettings.rogue == nil or
 							TwintopInsanityBarSettings.rogue.outlaw == nil or
 							TwintopInsanityBarSettings.rogue.outlaw.displayText == nil then
-							settings.rogue.outlaw.displayText = TRB.Options.Rogue.OutlawLoadDefaultBarTextSimpleSettings()
+							settings.rogue.outlaw.displayText.barText = TRB.Options.Rogue.OutlawLoadDefaultBarTextSimpleSettings()
 						end
 
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
