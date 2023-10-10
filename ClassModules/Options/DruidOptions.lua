@@ -1035,7 +1035,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.druid.balance = nil
+				TRB.Data.settings.druid.balance = BalanceLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1997,7 +1997,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.druid.feral = nil
+				TRB.Data.settings.druid.feral = FeralLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -2938,7 +2938,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.druid.restoration = nil
+				TRB.Data.settings.druid.restoration = RestorationLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,

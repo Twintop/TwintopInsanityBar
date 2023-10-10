@@ -839,7 +839,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.rogue.assassination = nil
+				TRB.Data.settings.rogue.assassination = AssassinationLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1952,7 +1952,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.rogue.outlaw = nil
+				TRB.Data.settings.rogue.outlaw = OutlawLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,

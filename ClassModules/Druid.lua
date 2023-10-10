@@ -4111,7 +4111,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						if type == "SPELL_AURA_APPLIED" then -- Gain Fury of Elune
 							snapshotData.snapshots[spellId].buff:InitializeCustom(spells.furyOfElune.duration)
 							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
-							print(snapshotData.snapshots[spellId].buff.ticks, snapshotData.snapshots[spellId].buff.resource)
 						elseif type == "SPELL_PERIODIC_ENERGIZE" then
 							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
 						end

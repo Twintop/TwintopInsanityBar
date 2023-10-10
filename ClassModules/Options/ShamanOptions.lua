@@ -974,7 +974,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.shaman.elemental = nil
+				TRB.Data.settings.shaman.elemental = ElementalLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1714,7 +1714,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.shaman.enhancement = nil
+				TRB.Data.settings.shaman.enhancement = EnhancementLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -2183,7 +2183,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.shaman.restoration = nil
+				TRB.Data.settings.shaman.restoration = RestorationLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,

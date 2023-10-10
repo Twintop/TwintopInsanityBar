@@ -1163,7 +1163,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.priest.discipline = nil
+				TRB.Data.settings.priest.discipline = DisciplineLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1938,7 +1938,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.priest.holy = nil
+				TRB.Data.settings.priest.holy = HolyLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -3081,7 +3081,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.priest.shadow = nil
+				TRB.Data.settings.priest.shadow = ShadowLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,

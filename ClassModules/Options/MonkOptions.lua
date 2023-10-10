@@ -691,7 +691,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.monk.mistweaver = nil
+				TRB.Data.settings.monk.mistweaver = MistweaverLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1252,7 +1252,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.monk.windwalker = nil
+				TRB.Data.settings.monk.windwalker = WindwalkerLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,

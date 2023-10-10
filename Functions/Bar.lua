@@ -137,7 +137,7 @@ function TRB.Functions.Bar:SetValue(settings, bar, value, maxResource)
 	if settings ~= nil and settings.bar ~= nil and bar ~= nil and TRB.Data.character.maxResource ~= nil and TRB.Data.character.maxResource > 0 then
 		local min, max = bar:GetMinMaxValues()
 		local factor = max / maxResource
-		bar:SetValue(math.min(value * factor, maxResource))
+		bar:SetValue(math.min(value * factor, max))
 	end
 end
 

@@ -678,7 +678,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.warrior.arms = nil
+				TRB.Data.settings.warrior.arms = ArmsLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1443,7 +1443,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.warrior.fury = nil
+				TRB.Data.settings.warrior.fury = FuryLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,

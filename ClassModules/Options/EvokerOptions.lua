@@ -991,7 +991,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.evoker.devastation = nil
+				TRB.Data.settings.evoker.devastation = DevastationLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1518,7 +1518,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.evoker.preservation = nil
+				TRB.Data.settings.evoker.preservation = PreservationLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -2252,7 +2252,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.evoker.augmentation = nil
+				TRB.Data.settings.evoker.augmentation = AugmentationLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,
