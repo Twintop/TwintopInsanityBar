@@ -2077,7 +2077,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentEnergy
 		lookup["$casting"] = castingEnergy
-		lookup["$comboPoints"] = TRB.Data.character.resource2
+		lookup["$comboPoints"] = snapshotData.attributes.resource2
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 		lookup["$amplifyingPoisonCount"] = amplifyingPoisonCount
 		lookup["$amplifyingPoisonTime"] = amplifyingPoisonTime
@@ -2144,7 +2144,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
 		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
+		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 		lookupLogic["$amplifyingPoisonCount"] = amplifyingPoisonCount
 		lookupLogic["$amplifyingPoisonTime"] = amplifyingPoisonTime
@@ -2461,7 +2461,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentEnergy
 		lookup["$casting"] = castingEnergy
-		lookup["$comboPoints"] = TRB.Data.character.resource2
+		lookup["$comboPoints"] = snapshotData.attributes.resource2
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 		lookup["$atrophicPoisonCount"] = atrophicPoisonCount
 		lookup["$atrophicPoisonTime"] = atrophicPoisonTime
@@ -2521,7 +2521,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
 		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
+		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 		lookupLogic["$atrophicPoisonCount"] = atrophicPoisonCount
 		lookupLogic["$atrophicPoisonTime"] = atrophicPoisonTime

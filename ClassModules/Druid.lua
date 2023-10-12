@@ -1392,6 +1392,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			
 			{ variable = "$berserkTime", description = "Time remaining on your Berserk or Incarnation: King of the Jungle buff", printInSettings = true, color = false },
 			{ variable = "$incarnationTime", description = "Time remaining on your Berserk or Incarnation: King of the Jungle buff", printInSettings = false, color = false },
+			{ variable = "$incarnationTicks", description = "Number of remaining ticks / incoming Combo Points from your Incarnation: King of the Jungle buff", printInSettings = true, color = false },
+			{ variable = "$incarnationTickTime", description = "Time until the next tick / Combo Point generation occurs from your Incarnation: King of the Jungle buff proc", printInSettings = true, color = false },
+			{ variable = "$incarnationNextCp", description = "The next Combo Point number that will be generated when your King of the Jungle buff is active", printInSettings = true, color = false },
 
 			{ variable = "$suddenAmbushTime", description = "Time remaining on your Sudden Ambush proc", printInSettings = true, color = false },
 			
@@ -1403,6 +1406,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$predatorRevealedTime", description = "Time remaining on your Predator Revealed proc", printInSettings = true, color = false },
 			{ variable = "$predatorRevealedTicks", description = "Number of remaining ticks / incoming Combo Points from your Predator Revealed proc", printInSettings = true, color = false },
 			{ variable = "$predatorRevealedTickTime", description = "Time until the next tick / Combo Point generation occurs from your Predator Revealed proc", printInSettings = true, color = false },
+			{ variable = "$predatorRevealedNextCp", description = "The next Combo Point number that will be generated when your Predator Revealed proc is active", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -2441,6 +2445,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local _berserkTime = GetBerserkRemainingTime()
 		local berserkTime = string.format("%.1f", _berserkTime)
 
+		--$incarnationTicks 
+		local _incarnationTicks = snapshotData.snapshots[spells.berserk.id].attributes.ticks
+		
+		--$incarnationTickTime
+		local _incarnationTickTime = snapshotData.snapshots[spells.berserk.id].attributes.untilNextTick
+		local incarnationTickTime = string.format("%.1f", _incarnationTickTime)
+
 		--$apexPredatorsCravingTime
 		local _apexPredatorsCravingTime = snapshotData.snapshots[spells.apexPredatorsCraving.id].buff:GetRemainingTime(currentTime)
 		local apexPredatorsCravingTime = string.format("%.1f", _apexPredatorsCravingTime)
@@ -2455,6 +2466,22 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		--$predatorRevealedTickTime
 		local _predatorRevealedTickTime = snapshotData.snapshots[spells.predatorRevealed.id].attributes.untilNextTick
 		local predatorRevealedTickTime = string.format("%.1f", _predatorRevealedTickTime)
+
+		--$incarnationNextCp
+		local incarnationNextCp = 0
+		
+		--$predatorRevealedNextCp
+		local predatorRevealedNextCp = 0
+
+		for x = 1, TRB.Data.character.maxResource2 do
+			if snapshotData.attributes.resource2 < x then
+				if incarnationNextCp == 0 and _incarnationTicks > 0 and (_incarnationTickTime <= _predatorRevealedTickTime or predatorRevealedNextCp > 0 or _predatorRevealedTicks == 0) then
+					incarnationNextCp = x
+				elseif _predatorRevealedTickTime > 0 and predatorRevealedNextCp == 0 then
+					predatorRevealedNextCp = x
+				end
+			end
+		end
 
 		----------------------------
 
@@ -2537,6 +2564,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$clearcastingTime"] = clearcastingTime
 		lookup["$berserkTime"] = berserkTime
 		lookup["$incarnationTime"] = berserkTime
+		lookup["$incarnationTicks"] = _incarnationTicks
+		lookup["$incarnationTickTime"] = incarnationTickTime
+		lookup["$incarnationNextCp"] = incarnationNextCp
+
 		lookup["$apexPredatorsCravingTime"] = apexPredatorsCravingTime
 		lookup["$tigersFuryTime"] = tigersFuryTime
 		lookup["$tigersFuryCooldownTime"] = tigersFuryCooldownTime
@@ -2544,7 +2575,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$predatorRevealedTime"] = predatorRevealedTime
 		lookup["$predatorRevealedTicks"] = _predatorRevealedTicks
 		lookup["$predatorRevealedTickTime"] = predatorRevealedTickTime
-
+		lookup["$predatorRevealedNextCp"] = predatorRevealedNextCp
 		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$energyTotal"] = energyTotal
 		lookup["$energyMax"] = TRB.Data.character.maxResource
@@ -2568,7 +2599,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$overcap"] = overcap
 		lookup["$resourceOvercap"] = overcap
 		lookup["$energyOvercap"] = overcap
-		lookup["$comboPoints"] = TRB.Data.character.resource2
+		lookup["$comboPoints"] = snapshotData.attributes.resource2
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 		lookup["$inStealth"] = ""
 		TRB.Data.lookup = lookup
@@ -2605,12 +2636,16 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookupLogic["$clearcastingTime"] = _clearcastingTime
 		lookupLogic["$berserkTime"] = _berserkTime
 		lookupLogic["$incarnationTime"] = _berserkTime
+		lookupLogic["$incarnationTicks"] = _incarnationTicks
+		lookupLogic["$incarnationTickTime"] = _incarnationTickTime
+		lookupLogic["$incarnationNextCp"] = incarnationNextCp
 		lookupLogic["$apexPredatorsCravingTime"] = _apexPredatorsCravingTime
 		lookupLogic["$tigersFuryTime"] = _tigersFuryTime
 		lookupLogic["$tigersFuryCooldownTime"] = _tigersFuryCooldownTime
 		lookupLogic["$predatorRevealedTime"] = _predatorRevealedTime
 		lookupLogic["$predatorRevealedTicks"] = _predatorRevealedTicks
 		lookupLogic["$predatorRevealedTickTime"] = _predatorRevealedTickTime
+		lookupLogic["$predatorRevealedNextCp"] = predatorRevealedNextCp
 		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
 		lookupLogic["$energyTotal"] = _energyTotal
 		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
@@ -2634,7 +2669,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookupLogic["$overcap"] = overcap
 		lookupLogic["$resourceOvercap"] = overcap
 		lookupLogic["$energyOvercap"] = overcap
-		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
+		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 		lookupLogic["$inStealth"] = ""
 		TRB.Data.lookupLogic = lookupLogic
@@ -5156,6 +5191,14 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 			elseif var == "$berserkTime" or var == "$incarnationTime" then
 				if GetBerserkRemainingTime() > 0 then
+					valid = true
+				end
+			elseif var == "$incarnationTicks" then
+				if snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive then
+					valid = true
+				end
+			elseif var == "$incarnationTickTime" then
+				if snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$apexPredatorsCravingTime" then

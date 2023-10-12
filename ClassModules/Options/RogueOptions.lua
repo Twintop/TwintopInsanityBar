@@ -31,6 +31,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -53,6 +54,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$sadTime}[$sadTime]",
@@ -75,6 +77,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$passive}[$passive + ]$energy",
@@ -106,6 +109,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="#garrote $garroteCount {$garroteTime}[ $garroteTime]{$isNecrolord}[{!$garroteTime}[       ]  #serratedBoneSpike $sbsCount]||n#rupture $ruptureCount {$ruptureTime}[ $ruptureTime] {$ttd}[{!$ruptureTime}[      ]  TTD: $ttd]",
@@ -128,6 +132,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$sadTime}[#sad $sadTime #sad]|n{$blindsideTime}[#blindside $blindsideTime #blindside]",
@@ -150,6 +155,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$regen}[$regen+]$energy",
@@ -306,7 +312,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				spacing=14,
 				relativeTo="TOP",
 				relativeToName="Above - Middle",
-				fullWidth=false,
+				fullWidth=true,
 				consistentUnfilledColor = false,
 				spec={
 					serratedBoneSpikeColor = true
@@ -426,6 +432,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$rtbBuffTime}[#rollTheBones $rtbBuffTime]",
@@ -448,6 +455,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$sadTime}[#sliceAndDice $sadTime]",
@@ -470,6 +478,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$passive}[$passive + ]$energy",
@@ -501,6 +510,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$rtbBuffTime}[#rollTheBones $rtbBuffTime #rollTheBones]{$ttd}[||nTTD: $ttd]",
@@ -523,6 +533,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$sadTime}[#sad $sadTime #sad]",
@@ -545,6 +556,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$regen}[$regen+]$energy",
@@ -694,7 +706,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				spacing=14,
 				relativeTo="TOP",
 				relativeToName="Above - Middle",
-				fullWidth=false,
+				fullWidth=true,
 				consistentUnfilledColor = false
 			},
 			colors = {
@@ -852,7 +864,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = AssassinationLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = AssassinationLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -865,7 +877,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = AssassinationLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = AssassinationLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1965,7 +1977,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = OutlawLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = OutlawLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1978,7 +1990,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = OutlawLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = OutlawLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,

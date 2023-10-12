@@ -467,7 +467,7 @@ function TRB.Functions.Bar:Construct(settings)
 				resource:SetStatusBarTexture(settings.textures.comboPointsBar)
 				resource:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(settings.colors.comboPoints.base, true))
 				resource:SetFrameStrata(TRB.Data.settings.core.strata.level)
-				resource:SetFrameLevel(TRB.Data.constants.frameLevels.cpContainer)
+				resource:SetFrameLevel(TRB.Data.constants.frameLevels.cpResource)
 			end
 		end
 

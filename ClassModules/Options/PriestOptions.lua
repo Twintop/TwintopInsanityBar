@@ -26,6 +26,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -48,6 +49,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -70,6 +72,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
@@ -101,6 +104,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$potionCooldown}[#potionOfFrozenFocus $potionCooldown]",
@@ -123,6 +127,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -145,6 +150,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
@@ -340,6 +346,129 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 
+	local function HolyLoadExtraBarTextSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
+		local textSettings = {
+			{
+				useDefaultFontColor = false,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Left",
+				text = "{$hwSerenityTime&$hwSerenityCharges=0}[$hwSerenityTime]",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 14,
+				name = "HW Serenity 1",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = "Holy Word: Serenity (1st Charge)",
+					yPos = 0,
+					relativeToFrame = "HolyWord_Serenity_1",
+				},
+				fontJustifyHorizontal = "LEFT",
+				useDefaultFontSize = false,
+				color = "ffffffff",
+				enabled = true,
+			},
+			{
+				enabled = true,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Left",
+				text = "{$hwSerenityTime&$hwSerenityCharges=1}[$hwSerenityTime]",
+				fontSize = 14,
+				color = "FFFFFFFF",
+				name = "HW Serenity 2",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = "Holy Word: Serenity (2nd Charge)",
+					yPos = 0,
+					relativeToFrame = "HolyWord_Serenity_2",
+				},
+				fontJustifyHorizontal = "LEFT",
+				useDefaultFontSize = false,
+				fontFaceName = "Friz Quadrata TT",
+				useDefaultFontColor = false,
+			},
+			{
+				enabled = true,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Left",
+				text = "{$hwSanctifyTime&$hwSanctifyCharges=0}[$hwSanctifyTime]",
+				fontSize = 14,
+				color = "FFFFFFFF",
+				name = "HW Sanctify 1",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = "Holy Word: Sanctify (1st Charge)",
+					yPos = 0,
+					relativeToFrame = "HolyWord_Sanctify_1",
+				},
+				fontJustifyHorizontal = "LEFT",
+				useDefaultFontSize = false,
+				fontFaceName = "Friz Quadrata TT",
+				useDefaultFontColor = false,
+			},
+			{
+				enabled = true,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Left",
+				text = "{$hwSanctifyTime&$hwSanctifyCharges=1}[$hwSanctifyTime]",
+				fontSize = 14,
+				color = "FFFFFFFF",
+				name = "HW Sanctify 2",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = "Holy Word: Sanctify (2nd Charge)",
+					yPos = 0,
+					relativeToFrame = "HolyWord_Sanctify_2",
+				},
+				fontJustifyHorizontal = "LEFT",
+				useDefaultFontSize = false,
+				fontFaceName = "Friz Quadrata TT",
+				useDefaultFontColor = false,
+			},
+			{
+				enabled = true,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Left",
+				text = "{$hwChastiseTime}[$hwChastiseTime]",
+				fontSize = 14,
+				color = "FFFFFFFF",
+				name = "HW Chastise",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = "Holy Word: Chastise",
+					yPos = 0,
+					relativeToFrame = "HolyWord_Chastise_1",
+				},
+				fontJustifyHorizontal = "LEFT",
+				useDefaultFontSize = false,
+				fontFaceName = "Friz Quadrata TT",
+				useDefaultFontColor = false,
+			}
+		}
+
+		return textSettings
+	end
+
 	local function HolyLoadDefaultBarTextSimpleSettings()
 		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
@@ -347,6 +476,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -369,6 +499,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$apotheosisTime}[$apotheosisTime]",
@@ -391,6 +522,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
@@ -411,6 +543,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			}
 		}
 
+		local extraTextSettings = HolyLoadExtraBarTextSettings()
+
+		for x = 1, #extraTextSettings do
+			table.insert(textSettings, extraTextSettings[x])
+		end
 		return textSettings
 	end
 	TRB.Options.Priest.HolyLoadDefaultBarTextSimpleSettings = HolyLoadDefaultBarTextSimpleSettings
@@ -422,6 +559,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$hwSanctifyTime}[#hwSanctify $hwSanctifyTime][          ]    {$potionCooldown}[#potionOfFrozenFocus $potionCooldown]||n{$hwSerenityTime}[#hwSerenity $hwSerenityTime] ",
@@ -444,6 +582,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$apotheosisTime}[#apotheosis $apotheosisTime #apotheosis]",
@@ -466,6 +605,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
@@ -486,6 +626,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			}
 		}
 
+		local extraTextSettings = HolyLoadExtraBarTextSettings()
+
+		for x = 1, #extraTextSettings do
+			table.insert(textSettings, extraTextSettings[x])
+		end
 		return textSettings
 	end
 
@@ -723,6 +868,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="$haste%",
@@ -745,6 +891,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$vfTime}[$vfTime]",
@@ -767,6 +914,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
@@ -798,6 +946,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount][       ]   {$ttd}[TTD: $ttd]",
@@ -820,6 +969,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				guid=TRB.Functions.String:Guid(),
 				name="Middle",
 				text="{$mdTime}[#mDev $mdTime #mDev{$vfTime||$mfiTime}[||n]]{$mfiTime}[#mfi $mfiTime #mfi{$vfTime}[||n]]{$vfTime}[$vfTime]",
@@ -842,6 +992,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				guid=TRB.Functions.String:Guid(),
 				name="Right",
 				text="{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]$insanity",
@@ -872,6 +1023,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="#swp $swpCount   $haste% ($gcd)||n#vt $vtCount   {$ttd}[TTD: $ttd]",
@@ -896,6 +1048,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				text="{$mdTime}[#mDev $mdTime #mDev{$vfTime}[||n]]{$vfTime}[$vfTime]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
@@ -916,6 +1069,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$passive}[$passive+]$insanity",
@@ -1176,7 +1330,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = DisciplineLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = DisciplineLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1189,7 +1343,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = DisciplineLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = DisciplineLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1951,7 +2105,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = HolyLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = HolyLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1964,7 +2118,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = HolyLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = HolyLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -3094,7 +3248,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = ShadowLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = ShadowLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -3107,7 +3261,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = ShadowLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = ShadowLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -3120,7 +3274,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = ShadowLoadDefaultBarTextNarrowAdvancedSettings()
+				spec.displayText.barText = ShadowLoadDefaultBarTextNarrowAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,

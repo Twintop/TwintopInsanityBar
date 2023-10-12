@@ -885,6 +885,9 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 					local returnText = GetReturnText(barText)
 
 					local pcallResult = pcall(TryUpdateText, textFrames[i], returnText)
+					
+					textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+					textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
 					--[[textFrames[i].font:SetJustifyH(fontJustifyHorizontal)
 					textFrames[i].font:SetFont(fontFace, fontSize, "OUTLINE")
 					textFrames[i].font:ClearAllPoints()
@@ -913,10 +916,10 @@ function TRB.Functions.BarText:CreateBarTextFrames(settings, classId, specId)
 	local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
 	
 	local entries = TRB.Functions.Table:Length(displayText.barText)
-	local textFramesEntries = TRB.Functions.Table:Length(textFrames)
-	local frameCount = 1
+	local frameCount = 0
 	if entries > 0 then
 		for i = 1, entries do
+			frameCount = frameCount + 1
 			local e = displayText.barText[i]
 
 			local fontFace = e.fontFace
@@ -952,30 +955,33 @@ function TRB.Functions.BarText:CreateBarTextFrames(settings, classId, specId)
 				textFrames[frameCount].font = TRB.Frames.textFrames[frameCount]:CreateFontString(nil, "BACKGROUND")
 			end
 
-			if relativeToFrame ~= nil then
+			textFrames[frameCount]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+			textFrames[frameCount]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+
+			if relativeToFrame ~= nil and e.enabled then
 				textFrames[frameCount].font:SetTextColor(255/255, 255/255, 255/255, 1.0)
 				textFrames[frameCount].font:SetJustifyH(fontJustifyHorizontal)
 				textFrames[frameCount].font:SetFont(fontFace, fontSize, "OUTLINE")
 				textFrames[frameCount].font:Show()
 				textFrames[frameCount].font:ClearAllPoints()
-				textFrames[frameCount].font:SetPoint(relativeTo, relativeToFrame, relativeTo, e.position.xPos, e.position.yPos)
-				textFrames[frameCount]:SetFrameStrata(TRB.Data.settings.core.strata.level)
-				textFrames[frameCount]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+				textFrames[frameCount].font:SetPoint(relativeTo, relativeToFrame, relativeTo, e.position.xPos, e.position.yPos)				
 				textFrames[frameCount]:SetParent(relativeToFrame)
 				textFrames[frameCount]:ClearAllPoints()
 				textFrames[frameCount]:SetAllPoints(textFrames[frameCount].font)
 				textFrames[frameCount]:Show()
 			else
 				textFrames[frameCount]:Hide()
+				textFrames[frameCount].font:Hide()
 			end
-			frameCount = frameCount + 1
 		end
 	end
 	
+	local textFramesEntries = TRB.Functions.Table:Length(textFrames)
 	-- We have extra frames we don't need now, probably because we changed talents/specs/deleted one in config. Hide extras.
 	if textFramesEntries > frameCount then
 		for i = frameCount, textFramesEntries do
 			textFrames[i]:Hide()
+			textFrames[i].font:Hide()
 		end
 	end
 end

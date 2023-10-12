@@ -51,6 +51,7 @@ end
 ---@class TRB.Classes.DisplayText
 ---@field public default TRB.Classes.DisplayTextDefault
 ---@field public barText TRB.Classes.DisplayTextEntry[]
+TRB.Classes.DisplayText = {}
 
 ---@class TRB.Classes.DisplayTextDefault
 ---@field public fontFace string
@@ -64,6 +65,7 @@ end
 ---@field public useDefaultFontFace boolean
 ---@field public useDefaultFontSize boolean
 ---@field public useDefaultFontColor boolean
+---@field public enabled boolean
 ---@field public name string
 ---@field public text string
 ---@field public guid string

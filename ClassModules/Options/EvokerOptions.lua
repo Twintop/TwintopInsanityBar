@@ -24,6 +24,152 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 	TRB.Frames.interfaceSettingsFrameContainer.controls.preservation = {}
 	TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation = {}
 
+	local function EvokerLoadExtraBarTextSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
+		local textSettings = {
+			{
+				enabled = true,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Left",
+				text = "{$essence=0}[$essenceRegenTime]",
+				fontSize = 14,
+				color = "FFFFFFFF",
+				name = "Essence 1",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = "Essence 1",
+					yPos = 0,
+					relativeToFrame = "ComboPoint_1",
+				},
+				fontJustifyHorizontal = "LEFT",
+				useDefaultFontSize = false,
+				fontFaceName = "Friz Quadrata TT",
+				useDefaultFontColor = false,
+			},
+			{
+				enabled = true,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Left",
+				text = "{$essence=1}[$essenceRegenTime]",
+				fontSize = 14,
+				color = "FFFFFFFF",
+				name = "Essence 2",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = "Essence 2",
+					yPos = 0,
+					relativeToFrame = "ComboPoint_2",
+				},
+				fontJustifyHorizontal = "LEFT",
+				useDefaultFontSize = false,
+				fontFaceName = "Friz Quadrata TT",
+				useDefaultFontColor = false,
+			},
+			{
+				enabled = true,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Left",
+				text = "{$essence=2}[$essenceRegenTime]",
+				fontSize = 14,
+				color = "FFFFFFFF",
+				name = "Essence 3",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = "Essence 3",
+					yPos = 0,
+					relativeToFrame = "ComboPoint_3",
+				},
+				fontJustifyHorizontal = "LEFT",
+				useDefaultFontSize = false,
+				fontFaceName = "Friz Quadrata TT",
+				useDefaultFontColor = false,
+			},
+			{
+				enabled = true,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Left",
+				text = "{$essence=3}[$essenceRegenTime]",
+				fontSize = 14,
+				color = "FFFFFFFF",
+				name = "Essence 4",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = "Essence 4",
+					yPos = 0,
+					relativeToFrame = "ComboPoint_4",
+				},
+				fontJustifyHorizontal = "LEFT",
+				useDefaultFontSize = false,
+				fontFaceName = "Friz Quadrata TT",
+				useDefaultFontColor = false,
+			},
+			{
+				enabled = true,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Left",
+				text = "{$essence=4}[$essenceRegenTime]",
+				fontSize = 14,
+				color = "FFFFFFFF",
+				name = "Essence 5",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = "Essence 5",
+					yPos = 0,
+					relativeToFrame = "ComboPoint_5",
+				},
+				fontJustifyHorizontal = "LEFT",
+				useDefaultFontSize = false,
+				fontFaceName = "Friz Quadrata TT",
+				useDefaultFontColor = false,
+			},
+			{
+				enabled = true,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Left",
+				text = "{$essence=5}[$essenceRegenTime]",
+				fontSize = 14,
+				color = "FFFFFFFF",
+				name = "Essence 6",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = "Essence 6",
+					yPos = 0,
+					relativeToFrame = "ComboPoint_6",
+				},
+				fontJustifyHorizontal = "LEFT",
+				useDefaultFontSize = false,
+				fontFaceName = "Friz Quadrata TT",
+				useDefaultFontColor = false,
+			}
+		}
+
+		return textSettings
+	end
+
 	-- Devastation
 	local function DevastationLoadDefaultBarTextSimpleSettings()
 		---@type TRB.Classes.DisplayTextEntry[]
@@ -32,6 +178,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -54,6 +201,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -76,6 +224,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$passive}[$passive + ]",
@@ -96,6 +245,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			}
 		}
 
+		local extraTextSettings = EvokerLoadExtraBarTextSettings()
+
+		for x = 1, #extraTextSettings do
+			table.insert(textSettings, extraTextSettings[x])
+		end
 		return textSettings
 	end
 	TRB.Options.Evoker.DevastationLoadDefaultBarTextSimpleSettings = DevastationLoadDefaultBarTextSimpleSettings
@@ -107,6 +261,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$ttd}[||nTTD: $ttd]",
@@ -129,6 +284,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -151,6 +307,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="$mana",
@@ -171,6 +328,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			}
 		}
 
+		local extraTextSettings = EvokerLoadExtraBarTextSettings()
+
+		for x = 1, #extraTextSettings do
+			table.insert(textSettings, extraTextSettings[x])
+		end
 		return textSettings
 	end
 
@@ -333,6 +495,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -355,6 +518,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -377,6 +541,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
@@ -397,6 +562,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			}
 		}
 
+		local extraTextSettings = EvokerLoadExtraBarTextSettings()
+
+		for x = 1, #extraTextSettings do
+			table.insert(textSettings, extraTextSettings[x])
+		end
 		return textSettings
 	end
 	TRB.Options.Evoker.PreservationLoadDefaultBarTextSimpleSettings = PreservationLoadDefaultBarTextSimpleSettings
@@ -408,6 +578,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
@@ -430,6 +601,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -452,6 +624,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
@@ -472,6 +645,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			}
 		}
 
+		local extraTextSettings = EvokerLoadExtraBarTextSettings()
+
+		for x = 1, #extraTextSettings do
+			table.insert(textSettings, extraTextSettings[x])
+		end
 		return textSettings
 	end
 
@@ -548,7 +726,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				spacing=14,
 				relativeTo="TOP",
 				relativeToName="Above - Middle",
-				fullWidth=false,
+				fullWidth=true,
 			},
 			passiveGeneration = {
 				innervate = true,
@@ -669,6 +847,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -691,6 +870,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -713,6 +893,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="$mana",
@@ -733,6 +914,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			}
 		}
 
+		local extraTextSettings = EvokerLoadExtraBarTextSettings()
+
+		for x = 1, #extraTextSettings do
+			table.insert(textSettings, extraTextSettings[x])
+		end
 		return textSettings
 	end
 	TRB.Options.Evoker.AugmentationLoadDefaultBarTextSimpleSettings = AugmentationLoadDefaultBarTextSimpleSettings
@@ -744,6 +930,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$ttd}[||nTTD: $ttd]",
@@ -766,6 +953,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -788,6 +976,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="$mana",
@@ -808,6 +997,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			}
 		}
 
+		local extraTextSettings = EvokerLoadExtraBarTextSettings()
+
+		for x = 1, #extraTextSettings do
+			table.insert(textSettings, extraTextSettings[x])
+		end
 		return textSettings
 	end
 
@@ -1004,7 +1198,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = DevastationLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = DevastationLoadDefaultBarTextSimpleSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -1017,7 +1211,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = DevastationLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = DevastationLoadDefaultBarTextAdvancedSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -1531,7 +1725,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = PreservationLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = PreservationLoadDefaultBarTextSimpleSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -1544,7 +1738,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = PreservationLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = PreservationLoadDefaultBarTextAdvancedSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -1558,7 +1752,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = PreservationLoadDefaultBarTextNarrowAdvancedSettings()
+				spec.displayText.barText = PreservationLoadDefaultBarTextNarrowAdvancedSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -2265,7 +2459,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = AugmentationLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = AugmentationLoadDefaultBarTextSimpleSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -2278,7 +2472,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = AugmentationLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = AugmentationLoadDefaultBarTextAdvancedSettings()
 				ReloadUI()
 			end,
 			timeout = 0,

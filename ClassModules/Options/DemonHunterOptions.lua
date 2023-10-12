@@ -27,6 +27,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$ucTime}[$ucTime]",
@@ -49,6 +50,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$metamorphosisTime}[$metamorphosisTime]",
@@ -71,6 +73,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$passive}[$passive + ]{$casting}[$casting + ]$fury",
@@ -102,6 +105,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$ttd}[TTD: $ttd]",
@@ -124,6 +128,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$ucTime}[#unboundChaos $ucTime #unboundChaos||n]{$metamorphosisTime}[#metamorphosis $metamorphosisTime #metamorphosis]",
@@ -146,6 +151,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$tacticalRetreatFury}[#tacticalRetreat$tacticalRetreatFury+]{$bhFury}[#bh$bhFury+]{$casting}[#casting$casting+]$fury",
@@ -362,7 +368,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = HavocLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = HavocLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -375,7 +381,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = HavocLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = HavocLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,

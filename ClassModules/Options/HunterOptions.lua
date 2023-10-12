@@ -31,6 +31,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -53,6 +54,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$frenzyStacks}[$frenzyTime ($frenzyStacks)]",
@@ -75,6 +77,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[$casting + ]{$passive}[$passive + ]$focus",
@@ -106,6 +109,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="$haste% ($gcd)||n{$ttd}[TTD: $ttd] ",
@@ -128,6 +132,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$frenzyStacks}[#frenzy$frenzyTime - $frenzyStacks#frenzy]",
@@ -150,6 +155,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$barbedShotFocus}[#barbedShot$barbedShotFocus+]{$regen}[$regen+]$focus",
@@ -365,6 +371,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$trueshotTime}[$trueshotTime sec]",
@@ -387,6 +394,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -409,6 +417,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[$casting + ]{$passive}[$passive + ]$focus",
@@ -440,6 +449,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$serpentSting}[#serpentSting $ssCount   ]$haste% ($gcd)||n{$serpentSting}[          ]{$ttd}[TTD: $ttd][ ] ",
@@ -462,6 +472,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$trueshotTime}[#trueshot $trueshotTime #trueshot]",
@@ -484,6 +495,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$passive}[$passive+]$focus",
@@ -726,6 +738,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$coordinatedAssaultTime}[$coordinatedAssaultTime sec]",
@@ -748,6 +761,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -770,6 +784,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[$casting + ]{$passive}[$passive + ]$focus",
@@ -801,6 +816,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="#serpentSting $ssCount   $haste% ($gcd)||n {$ttd}[TTD: $ttd][ ] ",
@@ -823,6 +839,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$coordinatedAssaultTime}[#coordinatedAssault $coordinatedAssaultTime #coordinatedAssault]",
@@ -845,6 +862,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$toeFocus}[#termsOfEngagement$toeFocus+]{$regen}[$regen+]$focus",
@@ -1093,7 +1111,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = BeastMasteryLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = BeastMasteryLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1106,7 +1124,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = BeastMasteryLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = BeastMasteryLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1119,7 +1137,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = BeastMasteryLoadDefaultBarTextNarrowAdvancedSettings()
+				spec.displayText.barText = BeastMasteryLoadDefaultBarTextNarrowAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -2001,7 +2019,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = MarksmanshipLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = MarksmanshipLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -2014,7 +2032,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = MarksmanshipLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = MarksmanshipLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -2027,7 +2045,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = MarksmanshipLoadDefaultBarTextNarrowAdvancedSettings()
+				spec.displayText.barText = MarksmanshipLoadDefaultBarTextNarrowAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -3273,7 +3291,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = SurvivalLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = SurvivalLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -3286,7 +3304,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = SurvivalLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = SurvivalLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,

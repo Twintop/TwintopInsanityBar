@@ -33,6 +33,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -55,6 +56,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -77,6 +79,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
@@ -108,6 +111,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
@@ -130,6 +134,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -152,6 +157,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
@@ -330,6 +336,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$serenityTime}[$serenityTime sec]",
@@ -352,6 +359,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$danceOfChiJiTime}[$danceOfChiJiTime] {$motcCount}[#sck $motcCount | $motcMinTime]",
@@ -374,6 +382,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$passive}[$passive + ]$energy",
@@ -405,6 +414,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$serenityTime}[#serenity $serenityTime #serenity]{$ttd}[||nTTD: $ttd]",
@@ -427,6 +437,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$danceOfChiJiTime}[$danceOfChiJiTime]{$motcCount}[||n#sck$motcCount - $motcMinTime#sck]",
@@ -449,6 +460,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$regen}[$regen+]$energy",
@@ -555,7 +567,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				spacing=14,
 				relativeTo="TOP",
 				relativeToName="Above - Middle",
-				fullWidth=false,
+				fullWidth=true,
 			},
 			colors = {
 				text = {
@@ -704,7 +716,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = MistweaverLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = MistweaverLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -717,7 +729,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = MistweaverLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = MistweaverLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -731,7 +743,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = MistweaverLoadDefaultBarTextNarrowAdvancedSettings()
+				spec.displayText.barText = MistweaverLoadDefaultBarTextNarrowAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1265,7 +1277,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = WindwalkerLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = WindwalkerLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1278,7 +1290,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = WindwalkerLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = WindwalkerLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,

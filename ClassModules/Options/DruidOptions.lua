@@ -37,6 +37,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="$haste%",
@@ -59,6 +60,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$eclipse}[$eclipseTime sec.]",
@@ -81,6 +83,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[$casting + ]{$passive}[$passive + ]$astralPower",
@@ -112,6 +115,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="#sunfire $sunfireCount    {$talentStellarFlare}[#stellarFlare $stellarFlareCount    ]$haste% ($gcd)||n#moonfire $moonfireCount     {$talentStellarFlare}[          ]{$ttd}[TTD: $ttd]",
@@ -134,6 +138,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$eclipse}[#eclipse $eclipseTime #eclipse]",
@@ -156,6 +161,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$passive}[$passive+]$astralPower",
@@ -345,6 +351,129 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		Feral Defaults
 	]]
 
+	local function FeralLoadExtraBarTextSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
+		local textSettings = {
+			{
+				enabled = true,
+				useDefaultFontColor = false,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Center",
+				text = "{$predatorRevealedNextCp=($comboPoints+1)&$comboPoints=0}[$predatorRevealedTickTime]{$incarnationNextCp=($comboPoints+1)&$comboPoints=0}[$incarnationTickTime]",
+				fontFaceName = "Friz Quadrata TT",
+				name = "CP1",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = "Combo Point 1",
+					yPos = 0,
+					relativeToFrame = "ComboPoint_1",
+				},
+				fontJustifyHorizontal = "CENTER",
+				useDefaultFontSize = false,
+				fontSize = 14,
+				color = "ffffffff",
+			},
+			{
+				enabled = true,
+				useDefaultFontColor = false,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Center",
+				text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=1)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=0)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=1)||($incarnationNextCp=($comboPoints+2)&$comboPoints=0)}[$incarnationTickTime]",
+				color = "ffffffff",
+				name = "CP2",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = "Combo Point 2",
+					yPos = 0,
+					relativeToFrame = "ComboPoint_2",
+				},
+				fontJustifyHorizontal = "CENTER",
+				useDefaultFontSize = false,
+				fontSize = 14,
+				fontFaceName = "Friz Quadrata TT",
+			},
+			{
+				enabled = true,
+				useDefaultFontColor = false,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Center",
+				text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=2)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=1)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=2)||($incarnationNextCp=($comboPoints+2)&$comboPoints=1)}[$incarnationTickTime]",
+				color = "ffffffff",
+				name = "CP3",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = "Combo Point 3",
+					yPos = 0,
+					relativeToFrame = "ComboPoint_3",
+				},
+				fontJustifyHorizontal = "CENTER",
+				useDefaultFontSize = false,
+				fontSize = 14,
+				fontFaceName = "Friz Quadrata TT",
+			},
+			{
+				enabled = true,
+				useDefaultFontColor = false,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Center",
+				text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=3)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=2)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=3)||($incarnationNextCp=($comboPoints+2)&$comboPoints=2)}[$incarnationTickTime]",
+				color = "ffffffff",
+				name = "CP4",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = -3,
+					relativeToFrameName = "Combo Point 4",
+					yPos = 0,
+					relativeToFrame = "ComboPoint_4",
+				},
+				fontJustifyHorizontal = "CENTER",
+				useDefaultFontSize = false,
+				fontSize = 14,
+				fontFaceName = "Friz Quadrata TT",
+			},
+			{
+				enabled = true,
+				useDefaultFontColor = false,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Center",
+				text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=4)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=3)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=4)||($incarnationNextCp=($comboPoints+2)&$comboPoints=3)}[$incarnationTickTime]",
+				color = "ffffffff",
+				name = "CP5",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = "Combo Point 5",
+					yPos = 0,
+					relativeToFrame = "ComboPoint_5",
+				},
+				fontJustifyHorizontal = "CENTER",
+				useDefaultFontSize = false,
+				fontSize = 14,
+				fontFaceName = "Friz Quadrata TT",
+			}
+		}
+
+		return textSettings
+	end
+
 	local function FeralLoadDefaultBarTextSimpleSettings()
 		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
@@ -352,6 +481,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -374,6 +504,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -396,6 +527,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[$casting + ]{$passive}[$passive + ]$resource",
@@ -416,6 +548,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			}
 		}
 
+		local extraTextSettings = FeralLoadExtraBarTextSettings()
+
+		for x = 1, #extraTextSettings do
+			table.insert(textSettings, extraTextSettings[x])
+		end
 		return textSettings
 	end
 	TRB.Options.Druid.FeralLoadDefaultBarTextSimpleSettings = FeralLoadDefaultBarTextSimpleSettings
@@ -427,6 +564,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="#rake $rakeCount    #thrash $thrashCount||n#rip $ripCount    {$lunarInspiration}[#moonfire $moonfireCount]",
@@ -449,6 +587,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -471,6 +610,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$passive}[$passive+]$resource",
@@ -491,6 +631,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			}
 		}
 
+		local extraTextSettings = FeralLoadExtraBarTextSettings()
+
+		for x = 1, #extraTextSettings do
+			table.insert(textSettings, extraTextSettings[x])
+		end
 		return textSettings
 	end
 
@@ -593,7 +738,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				spacing=14,
 				relativeTo="TOP",
 				relativeToName="Above - Middle",
-				fullWidth=false,
+				fullWidth=true,
 				consistentUnfilledColor = false,
 				generation = true,
 				spec={
@@ -709,6 +854,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$efflorescenceTime}[$efflorescenceTime]",
@@ -731,6 +877,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -753,6 +900,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
@@ -784,6 +932,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
@@ -806,6 +955,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$efflorescenceTime}[#efflorescence $efflorescenceTime #efflorescence]",
@@ -828,6 +978,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
@@ -1048,7 +1199,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = BalanceLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = BalanceLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1061,7 +1212,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = BalanceLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = BalanceLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1074,7 +1225,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = BalanceLoadDefaultBarTextNarrowAdvancedSettings()
+				spec.displayText.barText = BalanceLoadDefaultBarTextNarrowAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -2010,7 +2161,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = FeralLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = FeralLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -2023,7 +2174,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = FeralLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = FeralLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -2951,7 +3102,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = RestorationLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = RestorationLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -2964,7 +3115,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = RestorationLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = RestorationLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -2978,7 +3129,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = RestorationLoadDefaultBarTextNarrowAdvancedSettings()
+				spec.displayText.barText = RestorationLoadDefaultBarTextNarrowAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,

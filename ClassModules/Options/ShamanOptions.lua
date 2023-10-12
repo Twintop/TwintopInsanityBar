@@ -34,6 +34,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="$haste%",
@@ -56,6 +57,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -78,6 +80,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[$casting + ]{$passive}[$passive + ]$maelstrom",
@@ -109,6 +112,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="#flameShock $fsCount    $haste% ($gcd)||n{$ifStacks}[#frostShock $ifStacks][       ]    {$ttd}[TTD: $ttd]",
@@ -131,6 +135,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -153,6 +158,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$passive}[$passive+]$maelstrom",
@@ -328,6 +334,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -350,6 +357,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$ascendanceTime}[#ascendance $ascendanceTime]",
@@ -372,6 +380,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="$mana",
@@ -403,6 +412,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="#flameShock $fsCount {$ttd}[   TTD: $ttd]",
@@ -425,6 +435,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$ascendanceTime}[#ascendance $ascendanceTime #ascendance]",
@@ -447,6 +458,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="$mana",
@@ -649,6 +661,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -671,6 +684,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -693,6 +707,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
@@ -724,6 +739,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
@@ -746,6 +762,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -768,6 +785,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
@@ -987,7 +1005,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = ElementalLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = ElementalLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1000,7 +1018,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = ElementalLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = ElementalLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1727,7 +1745,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = EnhancementLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = EnhancementLoadDefaultBarTextSimpleSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -1740,7 +1758,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = EnhancementLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = EnhancementLoadDefaultBarTextAdvancedSettings()
 				ReloadUI()
 			end,
 			timeout = 0,
@@ -2196,7 +2214,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = RestorationLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = RestorationLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -2209,7 +2227,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = RestorationLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = RestorationLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -2223,7 +2241,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = RestorationLoadDefaultBarTextNarrowAdvancedSettings()
+				spec.displayText.barText = RestorationLoadDefaultBarTextNarrowAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,

@@ -2277,7 +2277,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	
 	local addButton = TRB.Functions.OptionsUi:BuildButton(parent, "Add New Bar Text Area", 450, yCoord, 175, 25)
 
-	local barTextOptionsFrame = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+	local barTextOptionsFrame = CreateFrame("Frame", "TwintopResourceBar_"..classId.."_"..specId.."_BarTextOptionsFrame", parent, "BackdropTemplate")
 	barTextOptionsFrame:SetPoint("TOPLEFT", btc, "BOTTOMLEFT", 0, 0)
 	barTextOptionsFrame:SetPoint("TOPRIGHT", btc, "BOTTOMRIGHT", 0, 0)
 	barTextOptionsFrame:SetHeight(btoHeight)
@@ -2291,6 +2291,11 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 ---@diagnostic disable-next-line: inject-field
 	barTextName.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, "Name", oUi.xCoord, yCoord+25)
 	barTextName.label.font:SetFontObject(GameFontNormal)
+	
+	local barTextEntryEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_TextEnabled", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
+	barTextEntryEnabled:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
+	getglobal(barTextEntryEnabled:GetName() .. 'Text'):SetText("Enabled")
+	barTextEntryEnabled.tooltip = "Is this Bar Text enabled and will be shown?"
 
 	yCoord = yCoord - 40
 	title = "Horizontal Offset"
@@ -2335,7 +2340,43 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			"Screen"
 		}
 
-		if (classId == 5 and specId == 2) then
+		if (classId == 4 and specId == 1) then -- Assassination Rogue
+			relativeTo["Combo Point 1"] = "ComboPoint_1"
+			relativeTo["Combo Point 2"] = "ComboPoint_2"
+			relativeTo["Combo Point 3"] = "ComboPoint_3"
+			relativeTo["Combo Point 4"] = "ComboPoint_4"
+			relativeTo["Combo Point 5"] = "ComboPoint_5"
+			relativeTo["Combo Point 6"] = "ComboPoint_6"
+			relativeToList = {
+				"Main Resource Bar",
+				"Combo Point 1",
+				"Combo Point 2",
+				"Combo Point 3",
+				"Combo Point 4",
+				"Combo Point 5",
+				"Combo Point 6",
+				"Screen",
+			}
+		elseif (classId == 4 and specId == 2) then -- Outlaw Rogue
+			relativeTo["Combo Point 1"] = "ComboPoint_1"
+			relativeTo["Combo Point 2"] = "ComboPoint_2"
+			relativeTo["Combo Point 3"] = "ComboPoint_3"
+			relativeTo["Combo Point 4"] = "ComboPoint_4"
+			relativeTo["Combo Point 5"] = "ComboPoint_5"
+			relativeTo["Combo Point 6"] = "ComboPoint_6"
+			relativeTo["Combo Point 7"] = "ComboPoint_7"
+			relativeToList = {
+				"Main Resource Bar",
+				"Combo Point 1",
+				"Combo Point 2",
+				"Combo Point 3",
+				"Combo Point 4",
+				"Combo Point 5",
+				"Combo Point 6",
+				"Combo Point 7",
+				"Screen",
+			}
+		elseif (classId == 5 and specId == 2) then -- Holy Priest
 			relativeTo["Holy Word: Serenity (1st Charge)"] = "HolyWord_Serenity_1"
 			relativeTo["Holy Word: Serenity (2nd Charge)"] = "HolyWord_Serenity_2"
 			relativeTo["Holy Word: Sanctify (1st Charge)"] = "HolyWord_Sanctify_1"
@@ -2348,6 +2389,80 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				"Holy Word: Sanctify (1st Charge)",
 				"Holy Word: Sanctify (2nd Charge)",
 				"Holy Word: Chastise",
+				"Screen",
+			}
+		elseif (classId == 7 and specId == 2) then -- Enhancement Shaman
+			relativeTo["Maelstrom 1"] = "ComboPoint_1"
+			relativeTo["Maelstrom 2"] = "ComboPoint_2"
+			relativeTo["Maelstrom 3"] = "ComboPoint_3"
+			relativeTo["Maelstrom 4"] = "ComboPoint_4"
+			relativeTo["Maelstrom 5"] = "ComboPoint_5"
+			relativeTo["Maelstrom 6"] = "ComboPoint_6"
+			relativeTo["Maelstrom 7"] = "ComboPoint_7"
+			relativeTo["Maelstrom 8"] = "ComboPoint_8"
+			relativeTo["Maelstrom 9"] = "ComboPoint_9"
+			relativeTo["Maelstrom 10"] = "ComboPoint_10"
+			relativeToList = {
+				"Main Resource Bar",
+				"Maelstrom 1",
+				"Maelstrom 2",
+				"Maelstrom 3",
+				"Maelstrom 4",
+				"Maelstrom 5",
+				"Maelstrom 6",
+				"Maelstrom 7",
+				"Maelstrom 8",
+				"Maelstrom 9",
+				"Maelstrom 10",
+				"Screen",
+			}
+		elseif (classId == 10 and specId == 3) then -- Windwalker Monk
+			relativeTo["Chi 1"] = "ComboPoint_1"
+			relativeTo["Chi 2"] = "ComboPoint_2"
+			relativeTo["Chi 3"] = "ComboPoint_3"
+			relativeTo["Chi 4"] = "ComboPoint_4"
+			relativeTo["Chi 5"] = "ComboPoint_5"
+			relativeTo["Chi 6"] = "ComboPoint_6"
+			relativeToList = {
+				"Main Resource Bar",
+				"Chi 1",
+				"Chi 2",
+				"Chi 3",
+				"Chi 4",
+				"Chi 5",
+				"Chi 6",
+				"Screen",
+			}
+		elseif (classId == 11 and specId == 2) then -- Feral Druid
+			relativeTo["Combo Point 1"] = "ComboPoint_1"
+			relativeTo["Combo Point 2"] = "ComboPoint_2"
+			relativeTo["Combo Point 3"] = "ComboPoint_3"
+			relativeTo["Combo Point 4"] = "ComboPoint_4"
+			relativeTo["Combo Point 5"] = "ComboPoint_5"
+			relativeToList = {
+				"Main Resource Bar",
+				"Combo Point 1",
+				"Combo Point 2",
+				"Combo Point 3",
+				"Combo Point 4",
+				"Combo Point 5",
+				"Screen",
+			}
+		elseif (classId == 13) then -- Evoker
+			relativeTo["Essence 1"] = "ComboPoint_1"
+			relativeTo["Essence 2"] = "ComboPoint_2"
+			relativeTo["Essence 3"] = "ComboPoint_3"
+			relativeTo["Essence 4"] = "ComboPoint_4"
+			relativeTo["Essence 5"] = "ComboPoint_5"
+			relativeTo["Essence 6"] = "ComboPoint_6"
+			relativeToList = {
+				"Main Resource Bar",
+				"Essence 1",
+				"Essence 2",
+				"Essence 3",
+				"Essence 4",
+				"Essence 5",
+				"Essence 6",
 				"Screen",
 			}
 		end
@@ -2631,6 +2746,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	---@return TRB.Classes.DisplayTextEntry
 	local function GetNewDisplayTextEntry()
 		return {
+			enabled = true,
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			useDefaultFontColor = false,
@@ -2642,7 +2758,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			fontJustifyHorizontal = "LEFT",
 			fontJustifyHorizontalName = "Left",
 			fontSize=18,
-			color="FFFF0000",
+			color="FFFFFFFF",
 			position = {
 				xPos = 0,
 				yPos = 0,
@@ -2675,6 +2791,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		end
 
 		barTextName:SetText(workingBarText.name)
+		barTextEntryEnabled:SetChecked(workingBarText.enabled)
+		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(barTextEntryEnabled, workingBarText.enabled, true)
+
 		LibDD:UIDropDownMenu_SetText(font, workingBarText.fontFaceName)
 		LibDD:UIDropDownMenu_SetText(barTextJustifyHorizontal, workingBarText.fontJustifyHorizontalName)
 		fontSize:SetValue(workingBarText.fontSize)
@@ -2703,6 +2822,11 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		barTextTable:SetSelection(TRB.Functions.Table:Length(displayText.barText))
 		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
 		FillBarTextEditorFields(newEntry.guid, displayText)
+	end)
+	
+	barTextEntryEnabled:SetScript("OnClick", function(self, ...)
+		workingBarText.enabled = self:GetChecked()
+		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(barTextEntryEnabled, workingBarText.enabled, true)
 		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
 	end)
 
@@ -2731,13 +2855,17 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	---Deletes a specified bar text row
 	---@param displayText TRB.Classes.DisplayText
+	---@param deleteClassId integer
+	---@param deleteSpecId integer
 	---@param row integer
 	---@param btt table
-	local function DeleteBarTextRow(displayText, row, btt)
+	local function DeleteBarTextRow(displayText, deleteClassId, deleteSpecId, row, btt)
 		btt:SetSelection()
 		table.remove(displayText.barText, row)
+		workingBarText = {}
 		SetTableValues(displayText, btt)
-		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
+		TRB.Functions.BarText:CreateBarTextFrames(spec, deleteClassId, deleteSpecId)
+		_G["TwintopResourceBar_"..deleteClassId.."_"..deleteSpecId.."_BarTextOptionsFrame"]:Hide()
 	end
 
 	StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
@@ -2749,8 +2877,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			self.data = data
 		end,
 		OnAccept = function(self)
-			DeleteBarTextRow(self.data.displayText, self.data.row, self.data.btt)
-			barTextOptionsFrame:Hide()
+			DeleteBarTextRow(self.data.displayText, self.data.classId, self.data.specId, self.data.row, self.data.btt)
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -2771,7 +2898,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 							message = "Are you sure you want to delete '"..data[realrow].cols[2].value.."'?",
 							displayText = spec.displayText,
 							row = realrow,
-							btt = scrollingTable
+							btt = scrollingTable,
+							classId = classId,
+							specId = specId,
 						})
 					else
 						FillBarTextEditorFields(guid, spec.displayText)

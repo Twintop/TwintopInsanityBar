@@ -35,6 +35,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -57,6 +58,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -79,6 +81,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$passive}[$passive+]{$casting}[$casting + ]{$passive}[$passive + ]$rage",
@@ -110,6 +113,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="#deepWounds $deepWoundsCount   $haste% ($gcd)||n{$rend}[#rend $rendCount   ][          ]{$ttd}[TTD: $ttd][ ]",
@@ -132,6 +136,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$suddenDeathTime}[#suddenDeath $suddenDeathTime #suddenDeath]",
@@ -154,6 +159,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]$rage",
@@ -351,6 +357,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="",
@@ -373,6 +380,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$enrageTime}[$enrageTime sec]",
@@ -395,6 +403,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$passive}[$passive+]{$casting}[$casting + ]{$passive}[$passive + ]$rage",
@@ -426,6 +435,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
 				text="$haste% ($gcd)||n{$ttd}[TTD: $ttd][ ]",
@@ -448,6 +458,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
 				text="{$enrageTime}[#enrage $enrageTime #enrage][ ]||n{$whirlwindStacks}[#whirlwind $whirlwindTime ($whirlwindStacks) #whirlwind]",
@@ -470,6 +481,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
+				enabled = true,
 				name="Right",
 				guid=TRB.Functions.String:Guid(),
 				text="{$ravagerRage}[#ravager$ravagerRage+]{$casting}[#casting$casting+]$rage",
@@ -691,7 +703,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = ArmsLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = ArmsLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -704,7 +716,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = ArmsLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = ArmsLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -717,7 +729,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = ArmsLoadDefaultBarTextNarrowAdvancedSettings()
+				spec.displayText.barText = ArmsLoadDefaultBarTextNarrowAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1456,7 +1468,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = FuryLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = FuryLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1469,7 +1481,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = FuryLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = FuryLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1482,7 +1494,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = FuryLoadDefaultBarTextNarrowAdvancedSettings()
+				spec.displayText.barText = FuryLoadDefaultBarTextNarrowAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
