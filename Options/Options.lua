@@ -1,4 +1,5 @@
 local _, TRB = ...
+local _, _, classIndexId = UnitClass("player")
 
 TRB.Options = {}
 
@@ -664,9 +665,14 @@ local function ConstructAddonOptionsPanel()
 		TRB.Frames.resourceFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		TRB.Frames.castingFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
 		TRB.Frames.passiveFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		TRB.Frames.leftTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		TRB.Frames.middleTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
-		TRB.Frames.rightTextFrame:SetFrameStrata(TRB.Data.settings.core.strata.level)
+		---@type Frame[]
+		local textFrames = TRB.Frames.textFrames
+		local entries = TRB.Functions.Table:Length(textFrames)
+		if entries > 0 then
+			for i = 1, entries do
+				textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+			end
+		end
 		---@diagnostic disable-next-line: undefined-field
 		LibDD:UIDropDownMenu_SetText(controls.dropDown.strata, newName)
 		CloseDropDownMenus()
@@ -848,8 +854,8 @@ local function ConstructImportExportPanel()
 
 	StaticPopupDialogs["TwintopResourceBar_Import"] = {
 		text = "Paste in a Twintop's Resource Bar configuration string to have that configuration be imported. Your UI will be reloaded automatically.",
-		button1 = "Import",	
-		button2 = "Cancel",		
+		button1 = "Import",
+		button2 = "Cancel",
 		hasEditBox = true,
 		hasWideEditBox = true,
 		editBoxWidth = 500,
@@ -2329,6 +2335,576 @@ function TRB.Options:PortForwardSettings()
 			color = barColor,
 			enabled = true
 		}
+	end
+
+	-- Rename insanityPrecision to resourcePrecision
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.priest ~= nil and
+		TwintopInsanityBarSettings.priest.shadow ~= nil and
+		TwintopInsanityBarSettings.priest.shadow.insanityPrecision ~= nil
+		then
+		TwintopInsanityBarSettings.priest.shadow.resourcePrecision = TwintopInsanityBarSettings.priest.shadow.insanityPrecision
+		TwintopInsanityBarSettings.priest.shadow.insanityPrecision = nil
+	end
+
+	-- Rename ragePrecision to resourcePrecision
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.warrior ~= nil and
+		TwintopInsanityBarSettings.warrior.arms ~= nil and
+		TwintopInsanityBarSettings.warrior.arms.ragePrecision ~= nil
+		then
+		TwintopInsanityBarSettings.warrior.arms.resourcePrecision = TwintopInsanityBarSettings.warrior.arms.ragePrecision
+		TwintopInsanityBarSettings.warrior.arms.ragePrecision = nil
+	end
+
+	-- Rename ragePrecision to resourcePrecision
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.warrior ~= nil and
+		TwintopInsanityBarSettings.warrior.fury ~= nil and
+		TwintopInsanityBarSettings.warrior.fury.ragePrecision ~= nil
+		then
+		TwintopInsanityBarSettings.warrior.fury.resourcePrecision = TwintopInsanityBarSettings.warrior.fury.ragePrecision
+		TwintopInsanityBarSettings.warrior.fury.ragePrecision = nil
+	end
+
+	-- Rename astralPowerPrecision to resourcePrecision
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.druid ~= nil and
+		TwintopInsanityBarSettings.druid.balance ~= nil and
+		TwintopInsanityBarSettings.druid.balance.astralPowerPrecision ~= nil
+		then
+		TwintopInsanityBarSettings.druid.balance.resourcePrecision = TwintopInsanityBarSettings.druid.balance.astralPowerPrecision
+		TwintopInsanityBarSettings.druid.balance.astralPowerPrecision = nil
+	end
+
+	-- Rename furyPrecision to resourcePrecision
+	if TwintopInsanityBarSettings ~= nil and
+		TwintopInsanityBarSettings.demonhunter ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc ~= nil and
+		TwintopInsanityBarSettings.demonhunter.havoc.furyPrecision ~= nil
+		then
+		TwintopInsanityBarSettings.demonhunter.havoc.resourcePrecision = TwintopInsanityBarSettings.demonhunter.havoc.furyPrecision
+		TwintopInsanityBarSettings.demonhunter.havoc.furyPrecision = nil
+	end
+
+	-- Change to new bar text format
+	if TwintopInsanityBarSettings ~= nil then
+		local classLength = TRB.Functions.Table:Length(TwintopInsanityBarSettings)
+		if classLength > 0 then
+			for class, classValue in pairs(TwintopInsanityBarSettings) do
+				if class ~= "core" then
+					local specLength = TRB.Functions.Table:Length(classValue)
+					if specLength > 0 then
+						for spec, specValue in pairs(classValue) do
+							if specValue.displayText ~= nil and specValue.displayText.fontSizeLock ~= nil then
+								specValue.displayText.default = {
+									fontFace="Fonts\\FRIZQT__.TTF",
+									fontFaceName="Friz Quadrata TT",
+									fontJustifyHorizontal = "LEFT",
+									fontJustifyHorizontalName = "Left",
+									fontSize=18,
+									color = "FFFFFFFF"
+								}
+
+								if specValue.displayText.fontSizeLock then
+									specValue.displayText.default.fontSize = specValue.displayText.left.fontSize
+								end
+
+								if specValue.displayText.fontFaceLock then
+									specValue.displayText.default.fontFace = specValue.displayText.left.fontFace
+									specValue.displayText.default.fontFaceName = specValue.displayText.left.fontFaceName
+								end
+
+								specValue.displayText.barText = {
+									{
+										enabled = true,
+										useDefaultFontColor = false,
+										useDefaultFontFace = specValue.displayText.fontFaceLock,
+										useDefaultFontSize = specValue.displayText.fontSizeLock,
+										name="Left",
+										guid=TRB.Functions.String:Guid(),
+										text=specValue.displayText.left.text,
+										fontFace=specValue.displayText.left.fontFace,
+										fontFaceName=specValue.displayText.left.fontFaceName,
+										fontJustifyHorizontal = "LEFT",
+										fontJustifyHorizontalName = "Left",
+										fontSize = specValue.displayText.left.fontSize,
+										color = specValue.colors.text.left,
+										position = {
+											xPos = 2,
+											yPos = 0,
+											relativeTo = "LEFT",
+											relativeToName = "Left",
+											relativeToFrame = "Resource",
+											relativeToFrameName = "Main Resource Bar"
+										}
+									},
+									{
+										enabled = true,
+										useDefaultFontColor = false,
+										useDefaultFontFace = specValue.displayText.fontFaceLock,
+										useDefaultFontSize = specValue.displayText.fontSizeLock,
+										name="Middle",
+										guid=TRB.Functions.String:Guid(),
+										text=specValue.displayText.middle.text,
+										fontFace=specValue.displayText.middle.fontFace,
+										fontFaceName=specValue.displayText.middle.fontFaceName,
+										fontJustifyHorizontal = "CENTER",
+										fontJustifyHorizontalName = "Center",
+										fontSize = specValue.displayText.middle.fontSize,
+										color = specValue.colors.text.middle,
+										position = {
+											xPos = 0,
+											yPos = 0,
+											relativeTo = "CENTER",
+											relativeToName = "Center",
+											relativeToFrame = "Resource",
+											relativeToFrameName = "Main Resource Bar"
+										}
+									},
+									{
+										enabled = true,
+										useDefaultFontColor = false,
+										useDefaultFontFace = specValue.displayText.fontFaceLock,
+										useDefaultFontSize = specValue.displayText.fontSizeLock,
+										name="Right",
+										guid=TRB.Functions.String:Guid(),
+										text=specValue.displayText.right.text,
+										fontFace=specValue.displayText.right.fontFace,
+										fontFaceName=specValue.displayText.right.fontFaceName,
+										fontJustifyHorizontal = "RIGHT",
+										fontJustifyHorizontalName = "Right",
+										fontSize = specValue.displayText.right.fontSize,
+										color = specValue.colors.text.right,
+										position = {
+											xPos = -2,
+											yPos = 0,
+											relativeTo = "RIGHT",
+											relativeToName = "Right",
+											relativeToFrame = "Resource",
+											relativeToFrameName = "Main Resource Bar"
+										}
+									}
+								}
+
+								specValue.displayText.left = nil
+								specValue.displayText.middle = nil
+								specValue.displayText.right = nil
+								specValue.displayText.fontSizeLock = nil
+								specValue.displayText.fontFaceLock = nil
+								specValue.colors.text.left = nil
+								specValue.colors.text.middle = nil
+								specValue.colors.text.right = nil
+
+								if spec == "feral" then
+									local enabled = true
+									
+									if specValue.comboPoints ~= nil and specValue.comboPoints.generation == false then
+										enabled = false
+									end
+
+									---@type TRB.Classes.DisplayTextEntry[]
+									local extraTextSettings = {
+										{
+											enabled = enabled,
+											useDefaultFontColor = false,
+											fontFace = "Fonts\\FRIZQT__.TTF",
+											useDefaultFontFace = false,
+											guid=TRB.Functions.String:Guid(),
+											fontJustifyHorizontalName = "Center",
+											text = "{$predatorRevealedNextCp=($comboPoints+1)&$comboPoints=0}[$predatorRevealedTickTime]{$incarnationNextCp=($comboPoints+1)&$comboPoints=0}[$incarnationTickTime]",
+											fontFaceName = "Friz Quadrata TT",
+											name = "CP1",
+											position = {
+												relativeToName = "Center",
+												relativeTo = "CENTER",
+												xPos = 0,
+												relativeToFrameName = "Combo Point 1",
+												yPos = 0,
+												relativeToFrame = "ComboPoint_1",
+											},
+											fontJustifyHorizontal = "CENTER",
+											useDefaultFontSize = false,
+											fontSize = 14,
+											color = "ffffffff",
+										},
+										{
+											enabled = enabled,
+											useDefaultFontColor = false,
+											fontFace = "Fonts\\FRIZQT__.TTF",
+											useDefaultFontFace = false,
+											guid=TRB.Functions.String:Guid(),
+											fontJustifyHorizontalName = "Center",
+											text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=1)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=0)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=1)||($incarnationNextCp=($comboPoints+2)&$comboPoints=0)}[$incarnationTickTime]",
+											color = "ffffffff",
+											name = "CP2",
+											position = {
+												relativeToName = "Center",
+												relativeTo = "CENTER",
+												xPos = 0,
+												relativeToFrameName = "Combo Point 2",
+												yPos = 0,
+												relativeToFrame = "ComboPoint_2",
+											},
+											fontJustifyHorizontal = "CENTER",
+											useDefaultFontSize = false,
+											fontSize = 14,
+											fontFaceName = "Friz Quadrata TT",
+										},
+										{
+											enabled = enabled,
+											useDefaultFontColor = false,
+											fontFace = "Fonts\\FRIZQT__.TTF",
+											useDefaultFontFace = false,
+											guid=TRB.Functions.String:Guid(),
+											fontJustifyHorizontalName = "Center",
+											text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=2)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=1)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=2)||($incarnationNextCp=($comboPoints+2)&$comboPoints=1)}[$incarnationTickTime]",
+											color = "ffffffff",
+											name = "CP3",
+											position = {
+												relativeToName = "Center",
+												relativeTo = "CENTER",
+												xPos = 0,
+												relativeToFrameName = "Combo Point 3",
+												yPos = 0,
+												relativeToFrame = "ComboPoint_3",
+											},
+											fontJustifyHorizontal = "CENTER",
+											useDefaultFontSize = false,
+											fontSize = 14,
+											fontFaceName = "Friz Quadrata TT",
+										},
+										{
+											enabled = enabled,
+											useDefaultFontColor = false,
+											fontFace = "Fonts\\FRIZQT__.TTF",
+											useDefaultFontFace = false,
+											guid=TRB.Functions.String:Guid(),
+											fontJustifyHorizontalName = "Center",
+											text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=3)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=2)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=3)||($incarnationNextCp=($comboPoints+2)&$comboPoints=2)}[$incarnationTickTime]",
+											color = "ffffffff",
+											name = "CP4",
+											position = {
+												relativeToName = "Center",
+												relativeTo = "CENTER",
+												xPos = -3,
+												relativeToFrameName = "Combo Point 4",
+												yPos = 0,
+												relativeToFrame = "ComboPoint_4",
+											},
+											fontJustifyHorizontal = "CENTER",
+											useDefaultFontSize = false,
+											fontSize = 14,
+											fontFaceName = "Friz Quadrata TT",
+										},
+										{
+											enabled = enabled,
+											useDefaultFontColor = false,
+											fontFace = "Fonts\\FRIZQT__.TTF",
+											useDefaultFontFace = false,
+											guid=TRB.Functions.String:Guid(),
+											fontJustifyHorizontalName = "Center",
+											text = "{($predatorRevealedNextCp=($comboPoints+1)&$comboPoints=4)||($predatorRevealedNextCp=($comboPoints+2)&$comboPoints=3)}[$predatorRevealedTickTime]{($incarnationNextCp=($comboPoints+1)&$comboPoints=4)||($incarnationNextCp=($comboPoints+2)&$comboPoints=3)}[$incarnationTickTime]",
+											color = "ffffffff",
+											name = "CP5",
+											position = {
+												relativeToName = "Center",
+												relativeTo = "CENTER",
+												xPos = 0,
+												relativeToFrameName = "Combo Point 5",
+												yPos = 0,
+												relativeToFrame = "ComboPoint_5",
+											},
+											fontJustifyHorizontal = "CENTER",
+											useDefaultFontSize = false,
+											fontSize = 14,
+											fontFaceName = "Friz Quadrata TT",
+										}
+									}
+
+									for x = 1, #extraTextSettings do
+										table.insert(specValue.displayText.barText, extraTextSettings[x])
+									end
+								elseif class == "priest" and spec == "holy" then
+									local enabled = true
+
+									---@type TRB.Classes.DisplayTextEntry[]
+									local extraTextSettings = {
+										{
+											useDefaultFontColor = false,
+											fontFace = "Fonts\\FRIZQT__.TTF",
+											useDefaultFontFace = false,
+											guid=TRB.Functions.String:Guid(),
+											fontJustifyHorizontalName = "Left",
+											text = "{$hwSerenityTime&$hwSerenityCharges=0}[$hwSerenityTime]",
+											fontFaceName = "Friz Quadrata TT",
+											fontSize = 14,
+											name = "HW Serenity 1",
+											position = {
+												relativeToName = "Center",
+												relativeTo = "CENTER",
+												xPos = 0,
+												relativeToFrameName = "Holy Word: Serenity (1st Charge)",
+												yPos = 0,
+												relativeToFrame = "HolyWord_Serenity_1",
+											},
+											fontJustifyHorizontal = "LEFT",
+											useDefaultFontSize = false,
+											color = "ffffffff",
+											enabled = enabled,
+										},
+										{
+											enabled = enabled,
+											fontFace = "Fonts\\FRIZQT__.TTF",
+											useDefaultFontFace = false,
+											guid=TRB.Functions.String:Guid(),
+											fontJustifyHorizontalName = "Left",
+											text = "{$hwSerenityTime&$hwSerenityCharges=1}[$hwSerenityTime]",
+											fontSize = 14,
+											color = "FFFFFFFF",
+											name = "HW Serenity 2",
+											position = {
+												relativeToName = "Center",
+												relativeTo = "CENTER",
+												xPos = 0,
+												relativeToFrameName = "Holy Word: Serenity (2nd Charge)",
+												yPos = 0,
+												relativeToFrame = "HolyWord_Serenity_2",
+											},
+											fontJustifyHorizontal = "LEFT",
+											useDefaultFontSize = false,
+											fontFaceName = "Friz Quadrata TT",
+											useDefaultFontColor = false,
+										},
+										{
+											enabled = enabled,
+											fontFace = "Fonts\\FRIZQT__.TTF",
+											useDefaultFontFace = false,
+											guid=TRB.Functions.String:Guid(),
+											fontJustifyHorizontalName = "Left",
+											text = "{$hwSanctifyTime&$hwSanctifyCharges=0}[$hwSanctifyTime]",
+											fontSize = 14,
+											color = "FFFFFFFF",
+											name = "HW Sanctify 1",
+											position = {
+												relativeToName = "Center",
+												relativeTo = "CENTER",
+												xPos = 0,
+												relativeToFrameName = "Holy Word: Sanctify (1st Charge)",
+												yPos = 0,
+												relativeToFrame = "HolyWord_Sanctify_1",
+											},
+											fontJustifyHorizontal = "LEFT",
+											useDefaultFontSize = false,
+											fontFaceName = "Friz Quadrata TT",
+											useDefaultFontColor = false,
+										},
+										{
+											enabled = enabled,
+											fontFace = "Fonts\\FRIZQT__.TTF",
+											useDefaultFontFace = false,
+											guid=TRB.Functions.String:Guid(),
+											fontJustifyHorizontalName = "Left",
+											text = "{$hwSanctifyTime&$hwSanctifyCharges=1}[$hwSanctifyTime]",
+											fontSize = 14,
+											color = "FFFFFFFF",
+											name = "HW Sanctify 2",
+											position = {
+												relativeToName = "Center",
+												relativeTo = "CENTER",
+												xPos = 0,
+												relativeToFrameName = "Holy Word: Sanctify (2nd Charge)",
+												yPos = 0,
+												relativeToFrame = "HolyWord_Sanctify_2",
+											},
+											fontJustifyHorizontal = "LEFT",
+											useDefaultFontSize = false,
+											fontFaceName = "Friz Quadrata TT",
+											useDefaultFontColor = false,
+										},
+										{
+											enabled = enabled,
+											fontFace = "Fonts\\FRIZQT__.TTF",
+											useDefaultFontFace = false,
+											guid=TRB.Functions.String:Guid(),
+											fontJustifyHorizontalName = "Left",
+											text = "{$hwChastiseTime}[$hwChastiseTime]",
+											fontSize = 14,
+											color = "FFFFFFFF",
+											name = "HW Chastise",
+											position = {
+												relativeToName = "Center",
+												relativeTo = "CENTER",
+												xPos = 0,
+												relativeToFrameName = "Holy Word: Chastise",
+												yPos = 0,
+												relativeToFrame = "HolyWord_Chastise_1",
+											},
+											fontJustifyHorizontal = "LEFT",
+											useDefaultFontSize = false,
+											fontFaceName = "Friz Quadrata TT",
+											useDefaultFontColor = false,
+										}
+									}
+
+									for x = 1, #extraTextSettings do
+										table.insert(specValue.displayText.barText, extraTextSettings[x])
+									end
+								elseif class == "evoker" then
+									local enabled = true
+
+									---@type TRB.Classes.DisplayTextEntry[]
+									local extraTextSettings = {
+										{
+											enabled = enabled,
+											fontFace = "Fonts\\FRIZQT__.TTF",
+											useDefaultFontFace = false,
+											guid=TRB.Functions.String:Guid(),
+											fontJustifyHorizontalName = "Left",
+											text = "{$essence=0}[$essenceRegenTime]",
+											fontSize = 14,
+											color = "FFFFFFFF",
+											name = "Essence 1",
+											position = {
+												relativeToName = "Center",
+												relativeTo = "CENTER",
+												xPos = 0,
+												relativeToFrameName = "Essence 1",
+												yPos = 0,
+												relativeToFrame = "ComboPoint_1",
+											},
+											fontJustifyHorizontal = "LEFT",
+											useDefaultFontSize = false,
+											fontFaceName = "Friz Quadrata TT",
+											useDefaultFontColor = false,
+										},
+										{
+											enabled = enabled,
+											fontFace = "Fonts\\FRIZQT__.TTF",
+											useDefaultFontFace = false,
+											guid=TRB.Functions.String:Guid(),
+											fontJustifyHorizontalName = "Left",
+											text = "{$essence=1}[$essenceRegenTime]",
+											fontSize = 14,
+											color = "FFFFFFFF",
+											name = "Essence 2",
+											position = {
+												relativeToName = "Center",
+												relativeTo = "CENTER",
+												xPos = 0,
+												relativeToFrameName = "Essence 2",
+												yPos = 0,
+												relativeToFrame = "ComboPoint_2",
+											},
+											fontJustifyHorizontal = "LEFT",
+											useDefaultFontSize = false,
+											fontFaceName = "Friz Quadrata TT",
+											useDefaultFontColor = false,
+										},
+										{
+											enabled = enabled,
+											fontFace = "Fonts\\FRIZQT__.TTF",
+											useDefaultFontFace = false,
+											guid=TRB.Functions.String:Guid(),
+											fontJustifyHorizontalName = "Left",
+											text = "{$essence=2}[$essenceRegenTime]",
+											fontSize = 14,
+											color = "FFFFFFFF",
+											name = "Essence 3",
+											position = {
+												relativeToName = "Center",
+												relativeTo = "CENTER",
+												xPos = 0,
+												relativeToFrameName = "Essence 3",
+												yPos = 0,
+												relativeToFrame = "ComboPoint_3",
+											},
+											fontJustifyHorizontal = "LEFT",
+											useDefaultFontSize = false,
+											fontFaceName = "Friz Quadrata TT",
+											useDefaultFontColor = false,
+										},
+										{
+											enabled = enabled,
+											fontFace = "Fonts\\FRIZQT__.TTF",
+											useDefaultFontFace = false,
+											guid=TRB.Functions.String:Guid(),
+											fontJustifyHorizontalName = "Left",
+											text = "{$essence=3}[$essenceRegenTime]",
+											fontSize = 14,
+											color = "FFFFFFFF",
+											name = "Essence 4",
+											position = {
+												relativeToName = "Center",
+												relativeTo = "CENTER",
+												xPos = 0,
+												relativeToFrameName = "Essence 4",
+												yPos = 0,
+												relativeToFrame = "ComboPoint_4",
+											},
+											fontJustifyHorizontal = "LEFT",
+											useDefaultFontSize = false,
+											fontFaceName = "Friz Quadrata TT",
+											useDefaultFontColor = false,
+										},
+										{
+											enabled = enabled,
+											fontFace = "Fonts\\FRIZQT__.TTF",
+											useDefaultFontFace = false,
+											guid=TRB.Functions.String:Guid(),
+											fontJustifyHorizontalName = "Left",
+											text = "{$essence=4}[$essenceRegenTime]",
+											fontSize = 14,
+											color = "FFFFFFFF",
+											name = "Essence 5",
+											position = {
+												relativeToName = "Center",
+												relativeTo = "CENTER",
+												xPos = 0,
+												relativeToFrameName = "Essence 5",
+												yPos = 0,
+												relativeToFrame = "ComboPoint_5",
+											},
+											fontJustifyHorizontal = "LEFT",
+											useDefaultFontSize = false,
+											fontFaceName = "Friz Quadrata TT",
+											useDefaultFontColor = false,
+										},
+										{
+											enabled = enabled,
+											fontFace = "Fonts\\FRIZQT__.TTF",
+											useDefaultFontFace = false,
+											guid=TRB.Functions.String:Guid(),
+											fontJustifyHorizontalName = "Left",
+											text = "{$essence=5}[$essenceRegenTime]",
+											fontSize = 14,
+											color = "FFFFFFFF",
+											name = "Essence 6",
+											position = {
+												relativeToName = "Center",
+												relativeTo = "CENTER",
+												xPos = 0,
+												relativeToFrameName = "Essence 6",
+												yPos = 0,
+												relativeToFrame = "ComboPoint_6",
+											},
+											fontJustifyHorizontal = "LEFT",
+											useDefaultFontSize = false,
+											fontFaceName = "Friz Quadrata TT",
+											useDefaultFontColor = false,
+										}
+									}
+
+									for x = 1, #extraTextSettings do
+										table.insert(specValue.displayText.barText, extraTextSettings[x])
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
 	end
 end
 

@@ -7,6 +7,113 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 ----
+
+# 10.1.7.5-release (2023-10-13)
+
+## General
+
+- [#87 - NEW](#87) Bar text has been massivelt improved!
+<br/>&emsp;&ensp;- You are no longer limited to three fixed bar text areas (left, center, and right). Now you can create and position an unlimited number of bar text areas.
+<br/>&emsp;&ensp;- Bar text areas can now be bound to any of the Resource Bar's UI elements (main Resource Bar, specific Combo Points/Chi/Essence) or to the overall game screen. Additionally, what part of the UI element (e.g. top left, center, bottom, etc.) and positional offsets are allowed.
+<br/>&emsp;&ensp;- Default values for the Font Face, Font Size, and Font Color can be set and enabled on a per-text area basis.
+<br/>&emsp;&ensp;- Font horizontal alignment (justify) on a per-text area basis to ensure that your text displays out in the correct direction.
+<br/>&emsp;&ensp;- Full conditional logic support for all bar text areas.
+<br/>&emsp;&ensp;- Enable or disable individual bar text areas from being shown.
+<br/>&emsp;&ensp;- The previous limit of 20 variables/icons per bar text area has been increased to 1000.
+<br/>&emsp;&ensp;- Import/Export options updated to reflect the above changes.
+<br/>&emsp;&ensp;- Existing bar text configurations will be forward-ported to use this new system. Some specializations will also have new bar text areas added with default text.
+- [#87 - UPDATE](#87) Various bar text variables have been introduced for logic purposes. Specifics are included for each class or specialization below.
+- [#330 - REFACTOR](#330) Change how Talents are stored and accessed.
+- (REFACTOR) Standardize resource names under the hood.
+
+## Druid
+### Feral
+
+- [#87 - NEW](#87) Bar text related enhancements:
+<br/>&emsp;&ensp;- Bar text "Bound to Bar" options include each specific Combo Point in addition to the Main Resource Bar and Screen.
+<br/>&emsp;&ensp;- Bar text has been added to all Combo Points bars. This text shows a timer for how long is remaining until that specific Combo Point will finish generating when it is the next to be charged from either Incarnation: King of the Jungle's buff or a Predator Revealed proc.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$incarnationTicks` -- Number of remaining ticks / incoming Combo Points from your Incarnation: Kinf of the Jungle buff
+<br/>&emsp;&ensp;&emsp;&ensp;- `$incarnationTickTime` -- Time until the next tick / Combo Point generation from your Incarnation: Kinf of the Jungle buff
+<br/>&emsp;&ensp;&emsp;&ensp;- `$incarnationNextCp` -- The next Combo Point number that will be generated when your King of the Jungle buff is active
+<br/>&emsp;&ensp;&emsp;&ensp;- `$predatorRevealedNextCp` -- The next Combo Point number that will be generated when your Predator Revealed proc is active
+- [#87 - FIX](#87) Allow for passive and regen values for Energy to be properly tracked as bar text.
+- [#87 - FIX](#87) Show correct number of Combo Points with the `$comboPoints` bar text variable.
+- [#87 - UPDATE](#87) Make the Combo Point bars span the full width of the Main Resource Bar by default.
+
+## Evoker
+
+- [#87 - NEW](#87) Bar text related enhancements:
+<br/>&emsp;&ensp;- Bar text "Bound to Bar" options include each specific Essence in addition to the Main Resource Bar and Screen.
+<br/>&emsp;&ensp;- Bar text has been added to all Essence bars. This text shows a timer for how long is remaining until the next Essence will finish regenning on the currently regenning Essence.
+<br/>&emsp;&ensp;- New bar text variable:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$essenceRegenTime` -- Remaining time until your next Essence finishes regenerating
+
+### Preservation
+
+- [#87 - NEW](#87) Bar text related enhancements:
+<br/>&emsp;&ensp;- Devastation was missing some Essence related bar text variables. These have been added.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$essence`, `$comboPoints` -- Current Essence
+<br/>&emsp;&ensp;&emsp;&ensp;- `$essenceMax`, `$comboPointsMax` -- Maximum Essence
+
+## Monk
+### Windwalker
+
+- [#87 - NEW](#87) Bar text related enhancements:
+<br/>&emsp;&ensp;- Bar text "Bound to Bar" options include each specific Chi in addition to the Main Resource Bar and Screen.
+- [#87 - FIX](#87) Show correct number of Chi with the `$chi` and `$comboPoints` bar text variables.
+- [#87 - UPDATE](#87) Make the Chi bars span the full width of the Main Resource Bar by default.
+
+## Hunter
+
+- [#87 - FIX](#87) Fix passive focus bar text tracking to not report as a valid variable when disabled.
+
+### Beast Mastery
+
+- (FIX) Prevent Lua error when logging in as Beast Mastery.
+
+## Priest
+### Holy
+
+- [#87 - NEW](#87) Bar text related enhancements:
+<br/>&emsp;&ensp;- Bar text "Bound to Bar" options include each specific Holy Word charge in addition to the Main Resource Bar and Screen.
+<br/>&emsp;&ensp;- Bar text has been added to all Holy Word bars. This text shows a timer for how long is remaining until that specific Holy Word charge will finish recharging.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$hwSanctifyCharges`, `$sanctifyCharges`, `$holyWordSanctifyCharges` -- Number of charges left on Holy Word: Sanctify
+<br/>&emsp;&ensp;&emsp;&ensp;- `$hwSerenityCharges`, `$serenityCharges`, `$holyWordSerenityCharges` -- Number of charges left on Holy Word: Serenity
+- [#87 - UPDATE](#87) Make the Holy Word bars span the full width of the Main Resource Bar by default.
+
+## Rogue
+
+- [#87 - NEW](#87) Bar text related enhancements:
+<br/>&emsp;&ensp;- Bar text "Bound to Bar" options include each specific Chi in addition to the Main Resource Bar and Screen.
+- [#87 - FIX](#87) Show correct number of Combo Points with the `$comboPoints` bar text variable.
+- [#87 - UPDATE](#87) Make the Combo Point bars span the full width of the Main Resource Bar by default.
+
+## Shaman
+### Enhancement
+- [#87 - FIX](#87) Show correct number of Maelstrom with the `$maelstromWeapon` and `$comboPoints` bar text variables.
+
+----
+
+# 10.1.7.4-release (2023-09-20)
+
+## Priest
+### Holy
+
+- (FIX) When switching from another spec back to Holy, ensure the Holy Word bars are displayed.
+
+----
+
+# 10.1.7.3-release (2023-09-20)
+
+## Priest
+
+- (FIX) Prevent the Holy Word bars from appearing alongside the bar for Discipline or Shadow.
+
+----
+
 # 10.1.7.2-release (2023-09-18)
 ## Evoker
 
@@ -56,6 +163,8 @@ local content = [====[
 <br/>&emsp;&ensp;- Supports Miracle Worker, showing the appropriate number of charges available for each Holy Word.
 - (FIX) Update settings screens to be more consistent.
 
+----
+
 # 10.1.7.1-release (2023-09-16)
 ## General
 
@@ -92,6 +201,7 @@ local content = [====[
 - (CLEANUP) Remove obsolete Bladestorm code.
 
 ----
+
 # 10.1.7.0-release (2023-09-05)
 ## General
 
@@ -568,6 +678,7 @@ function TRB.Functions.News:BuildNewsPopup()
         end)
 
     simpleHtml:SetScript("OnHyperlinkEnter", function(f) SetCursor("Interface\\CURSOR\\vehichleCursor.PNG") end)
+---@diagnostic disable-next-line: param-type-mismatch
     simpleHtml:SetScript("OnHyperlinkLeave", function(f) SetCursor(nil)                                     end)
 
     simpleHtml:SetText(LMD:ToHTML(content))

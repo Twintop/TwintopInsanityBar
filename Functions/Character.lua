@@ -68,12 +68,45 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 
 end
 
+---Fills the specialization cache with a combination of global and spec specific settings
+---@param settings table
+---@param cache TRB.Classes.SharedSpecSetting[] # The full cache of all specs for the current class
+---@param className string # Class name
+---| '"demonhunter"' # Demon Hunter
+---| '"druid"' # Druid 
+---| '"evoker"' # Evoker
+---| '"hunter"' # Hunter
+---| '"monk"' # Monk
+---| '"priest"' # Priest
+---| '"rogue"' # Rogue
+---| '"shaman"' # Shaman
+---| '"warrior"' # Warrior
+---@param specName string
+---| '"havoc"' # Havoc (Demon Hunter)
+---| '"balance"' # Balance (Druid)
+---| '"feral"' # Feral (Druid)
+---| '"restoration"' # Restoration (Druid, Shaman)
+---| '"devastation"' # Devastation (Evoker)
+---| '"preservation"' # Preservation (Evoker)
+---| '"augmentation"' # Augmentation (Evoker)
+---| '"beastMastery"' # Beast Mastery (Hunter)
+---| '"marksmanship"' # Marksmanship (Hunter)
+---| '"survival"' # Survival (Hunter)
+---| '"discipline"' # Discipline (Priest)
+---| '"holy"' # Holy (Priest)
+---| '"shadow"' # Shadow (Priest)
+---| '"assassination"' # Assassination (Rogue)
+---| '"outlaw"' # Outlaw (Rogue)
+---| '"elemental"' # Elemental (Shaman)
+---| '"enhancement"' # Enhancement (Shaman)
+---| '"arms"' # Arms (Warrior)
+---| '"fury"' # Fury (Warrior)
 function TRB.Functions.Character:FillSpecializationCacheSettings(settings, cache, className, specName)
 	local specCache = cache[specName]
 	local core = settings.core
-	local s = core.globalSettings[className][specName]
+	local s = core.globalSettings[className][specName] --[[@as TRB.Classes.GlobalSpecSetting]]
 	local enabled = (core.globalSettings.globalEnable or s.specEnable) and specCache.settings ~= nil
-	local spec = settings[className][specName]
+	local spec = settings[className][specName] --[[@as TRB.Classes.GlobalSpecSetting]]
 
 	if enabled and s.bar then
 		specCache.settings.bar = core.bar

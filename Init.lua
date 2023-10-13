@@ -24,7 +24,133 @@ if not addonData.libs.SharedMedia:IsValid("border", "1 Pixel") then
 	addonData.libs.SharedMedia:Register("border", "1 Pixel", "Interface\\Buttons\\WHITE8X8")
 end
 
+addonData.libs.ScrollingTable = LibStub:GetLibrary("ScrollingTable")
+
 TRB.Details.addonData = addonData
+
+-- Some class functions get referenced by other methods. These live in a consistent location but are actually created in the class modules.
+TRB.Functions.Class = {}
+
+-- Working data
+TRB.Data = {}
+
+TRB.Data.constants = {
+	borderWidthFactor = 4,
+	defaultSettings = {
+		fonts = {
+			fontFace = "Fonts\\FRIZQT__.TTF",
+			fontFaceName = "Friz Quadrata TT",
+		},
+		textures = {
+			background="Interface\\Tooltips\\UI-Tooltip-Background",
+			backgroundName="Blizzard Tooltip",
+			border="Interface\\Buttons\\WHITE8X8",
+			borderName="1 Pixel",
+			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
+			resourceBarName="Blizzard",
+		},
+		sounds = {
+			sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+			soundName="TRB: Air Horn"
+		}
+	},
+	frameCategories = {
+		container = "Container",
+		resource = "Resource"
+	},
+	frameNames = {
+		container = "Container",
+		resource = "Resource",
+		casting = "Casting",
+		passive = "Passive",
+		border = "Border",
+	},
+	frameLevels = {
+		barContainer = 0,
+		barPassive = 80,
+		barCasting = 90,
+		barResource = 100,
+		barBorder = 101,
+		cpContainer = 0,
+		cpResource = 110,
+		cpBorder = 111,
+		thresholdBase = 1000,
+		thresholdOutOfRange = 1200,
+		thresholdBleedSame = 1400,
+		thresholdBleedBetter = 1600,
+		thresholdUnusable = 1800,
+		thresholdUnder = 2000,
+		thresholdOver = 2200,
+		thresholdBleedDownOrWorse = 2400,
+		thresholdHighPriority = 2600,
+		thresholdOffsetLine = 2,
+		thresholdOffsetIcon = 1,
+		thresholdOffsetCooldown = 0,
+		thresholdOffsetNoCooldown = 100,
+		barText = 5000
+	},
+	optionsUi = {
+		xPadding = 10,
+		xPadding2 = 30,
+		xCoord = 5,
+		xCoord2 = 320,
+		xOffset1 = 50,
+		xOffset2 = 370, --Calculated below
+		dropdownWidth = 225,
+		sliderWidth = 260,
+		sliderHeight = 20,
+		maxOptionsWidth = 650
+	}
+}
+
+TRB.Data.constants.optionsUi.xOffset2 = TRB.Data.constants.optionsUi.xCoord2 + TRB.Data.constants.optionsUi.xOffset1
+
+TRB.Data.settings = {}
+
+TRB.Data.specSupported = false
+TRB.Data.resource = nil
+TRB.Data.resourceFactor = 1
+TRB.Data.barConstructedForSpec = nil
+
+TRB.Data.barTextVariables = {
+	icons = {},
+	values = {},
+	pipe = {
+		{ variable = "||n", description = "Insert a Newline. Alternative to pressing Enter.", printInSettings = true },
+		{ variable = "||c", description = "", printInSettings = false },
+		{ variable = "||r", description = "", printInSettings = false },
+	},
+	percent = {
+		{ variable = "%%" }
+	}
+}
+
+TRB.Data.barTextCache = {}
+
+-- This is here for reference/what every implementation should use as a minimum
+TRB.Data.character = {
+	guid = UnitGUID("player"),
+	className = "",
+	specName = "",
+---@diagnostic disable-next-line: missing-parameter
+	specGroup = GetActiveSpecGroup(),
+	maxResource = 100,
+	talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]],
+	items = {}
+}
+
+TRB.Data.spells = {}
+
+TRB.Data.lookup = {}
+TRB.Data.lookupLogic = {}
+
+TRB.Data.sanityCheckValues = {
+	barMaxWidth = 0,
+	barMinWidth = 0,
+	barMaxHeight = 0,
+	barMinHeight = 0
+}
+
 
 -- Frames
 TRB.Frames = {}
@@ -32,27 +158,20 @@ TRB.Frames = {}
 ---@type Frame
 TRB.Frames.barContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame", UIParent, "BackdropTemplate")
 ---@type Frame
-TRB.Frames.resourceFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
----@class Frame
-TRB.Frames.castingFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
----@class Frame
-TRB.Frames.passiveFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
----@class Frame
-TRB.Frames.barBorderFrame = CreateFrame("StatusBar", nil, TRB.Frames.barContainerFrame, "BackdropTemplate")
+TRB.Frames.resourceFrame = CreateFrame("StatusBar", "TwintopResourceBarFrame_Resource", TRB.Frames.barContainerFrame, "BackdropTemplate")
+---@type Frame
+TRB.Frames.castingFrame = CreateFrame("StatusBar", "TwintopResourceBarFrame_Resource_Casting", TRB.Frames.barContainerFrame, "BackdropTemplate")
+---@type Frame
+TRB.Frames.passiveFrame = CreateFrame("StatusBar", "TwintopResourceBarFrame_Resource_Passive", TRB.Frames.barContainerFrame, "BackdropTemplate")
+---@type Frame
+TRB.Frames.barBorderFrame = CreateFrame("StatusBar", "TwintopResourceBarFrame_Resource_Border", TRB.Frames.barContainerFrame, "BackdropTemplate")
 
+---@diagnostic disable-next-line: inject-field
 TRB.Frames.passiveFrame.thresholds = {}
+---@diagnostic disable-next-line: inject-field
 TRB.Frames.resourceFrame.thresholds = {}
 
----@class Frame
-TRB.Frames.leftTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
----@class Frame
-TRB.Frames.middleTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
----@class Frame
-TRB.Frames.rightTextFrame = CreateFrame("Frame", nil, TRB.Frames.barContainerFrame)
-
-TRB.Frames.leftTextFrame.font = TRB.Frames.leftTextFrame:CreateFontString(nil, "BACKGROUND")
-TRB.Frames.middleTextFrame.font = TRB.Frames.middleTextFrame:CreateFontString(nil, "BACKGROUND")
-TRB.Frames.rightTextFrame.font = TRB.Frames.rightTextFrame:CreateFontString(nil, "BACKGROUND")
+TRB.Frames.textFrames = {}
 
 TRB.Frames.targetsTimerFrame = CreateFrame("Frame")
 TRB.Frames.targetsTimerFrame.sinceLastUpdate = 0
@@ -73,7 +192,7 @@ if classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId =
 	for x = 1, 10 do
 		TRB.Frames.resource2Frames[x] = {}
 		---@diagnostic disable-next-line: param-type-mismatch
-		TRB.Frames.resource2Frames[x].containerFrame = CreateFrame("Frame", nil, TRB.Frames.resource2ContainerFrame, "BackdropTemplate")
+		TRB.Frames.resource2Frames[x].containerFrame = CreateFrame("Frame", "TwintopResourceBarFrame_ComboPoint_"..x, TRB.Frames.resource2ContainerFrame, "BackdropTemplate")
 		TRB.Frames.resource2Frames[x].borderFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
 		TRB.Frames.resource2Frames[x].resourceFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
 	end
@@ -124,117 +243,6 @@ TRB.Frames.combatFrame = CreateFrame("Frame", "TwintopResourceBarFrame_CombatFra
 TRB.Frames.interfaceSettingsFrameContainer = {}
 TRB.Frames.interfaceSettingsFrameContainer.controls = {}
 
--- Some class functions get referenced by other methods. These live in a consistent location but are actually created in the class modules.
-TRB.Functions.Class = {}
-
--- Working data
-TRB.Data = {}
-
-TRB.Data.constants = {
-	borderWidthFactor = 4,
-	defaultSettings = {
-		fonts = {
-			fontFace = "Fonts\\FRIZQT__.TTF",
-			fontFaceName = "Friz Quadrata TT",
-		},
-		textures = {
-			background="Interface\\Tooltips\\UI-Tooltip-Background",
-			backgroundName="Blizzard Tooltip",
-			border="Interface\\Buttons\\WHITE8X8",
-			borderName="1 Pixel",
-			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
-			resourceBarName="Blizzard",
-		},
-		sounds = {
-			sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-			soundName="TRB: Air Horn"
-		}
-	},
-	frameLevels = {
-		barContainer = 0,
-		barPassive = 80,
-		barCasting = 90,
-		barResource = 100,
-		barBorder = 101,
-		cpContainer = 0,
-		cpResource = 110,
-		cpBorder = 111,
-		thresholdBase = 1000,
-		thresholdOutOfRange = 1200,
-		thresholdBleedSame = 1400,
-		thresholdBleedBetter = 1600,
-		thresholdUnusable = 1800,
-		thresholdUnder = 2000,
-		thresholdOver = 2200,
-		thresholdBleedDownOrWorse = 2400,
-		thresholdHighPriority = 2600,
-		thresholdOffsetLine = 2,
-		thresholdOffsetIcon = 1,
-		thresholdOffsetCooldown = 0,
-		thresholdOffsetNoCooldown = 100,
-		barText = 5000
-	},
-	optionsUi = {
-		xPadding = 10,
-		xPadding2 = 30,
-		xCoord = 5,
-		xCoord2 = 320,
-		xOffset1 = 50,
-		xOffset2 = 370, --Calculated below
-		dropdownWidth = 225,
-		sliderWidth = 260,
-		sliderHeight = 20,
-		maxOptionsWidth = 650
-	}
-}
-
-TRB.Data.constants.optionsUi.xOffset2 = TRB.Data.constants.optionsUi.xCoord2 + TRB.Data.constants.optionsUi.xOffset1
-
-TRB.Data.settings = {}
-
-TRB.Data.specSupported = false
-TRB.Data.resource = nil 
-TRB.Data.resourceFactor = 1
-TRB.Data.barConstructedForSpec = nil
-
-TRB.Data.barTextVariables = {
-	icons = {},
-	values = {},
-	pipe = {
-		{ variable = "||n", description = "Insert a Newline. Alternative to pressing Enter.", printInSettings = true },
-		{ variable = "||c", description = "", printInSettings = false },
-		{ variable = "||r", description = "", printInSettings = false },
-	},
-	percent = {
-		{ variable = "%%" }
-	}
-}
-
-TRB.Data.barTextCache = {}
-
--- This is here for reference/what every implementation should use as a minimum
-TRB.Data.character = {
-	guid = UnitGUID("player"),
-	className = "",
-	specName = "",
----@diagnostic disable-next-line: missing-parameter
-	specGroup = GetActiveSpecGroup(),
-	maxResource = 100,
-	talents = {},
-	items = {}
-}
-
-TRB.Data.spells = {}
-
-TRB.Data.lookup = {}
-TRB.Data.lookupLogic = {}
-
-TRB.Data.sanityCheckValues = {
-	barMaxWidth = 0,
-	barMinWidth = 0,
-	barMaxHeight = 0,
-	barMinHeight = 0
-}
 
 local function ParseCmdString(msg)
 	if msg then
