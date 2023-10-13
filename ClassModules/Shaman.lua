@@ -1296,7 +1296,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["$mana"] = currentMana
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentMana
-		lookup["$maelstromWeapon"] = snapshotData.attributes
+		lookup["$maelstromWeapon"] = snapshotData.attributes.resource2
 		lookup["$comboPoints"] = snapshotData.attributes.resource2
 		lookup["$maelstromWeaponMax"] = TRB.Data.character.maxResource2
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
@@ -1311,9 +1311,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
 		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-		lookupLogic["$essence"] = snapshotData.attributes.resource
+		lookupLogic["$maelstromWeapon"] = snapshotData.attributes.resource2
 		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
-		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$maelstromWeaponMax"] = TRB.Data.character.maxResource2
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 		lookupLogic["$ascendanceTime"] = _ascendanceTime
 		lookupLogic["$fsCount"] = _flameShockCount
@@ -2030,9 +2030,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = specSettings.colors.comboPoints.final
 							end
-						elseif snapshotData.attributes.resource2+1 == x then
-							local partial = UnitPartialPower("player", Enum.PowerType.Essence)
-							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
 						else
 							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 						end

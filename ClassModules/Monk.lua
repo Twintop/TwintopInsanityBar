@@ -1416,7 +1416,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentEnergy
 		lookup["$casting"] = castingEnergy
-		lookup["$chi"] = snapshotData.attributes
+		lookup["$chi"] = snapshotData.attributes.resource2
 		lookup["$comboPoints"] = snapshotData.attributes.resource2
 		lookup["$chiMax"] = TRB.Data.character.maxResource2
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
@@ -1453,7 +1453,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
 		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-		lookupLogic["$chi"] = snapshotData.attributes
+		lookupLogic["$chi"] = snapshotData.attributes.resource2
 		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 		lookupLogic["$chiMax"] = TRB.Data.character.maxResource2
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2

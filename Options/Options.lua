@@ -840,8 +840,8 @@ local function ConstructImportExportPanel()
 
 	StaticPopupDialogs["TwintopResourceBar_Import"] = {
 		text = "Paste in a Twintop's Resource Bar configuration string to have that configuration be imported. Your UI will be reloaded automatically.",
-		button1 = "Import",	
-		button2 = "Cancel",		
+		button1 = "Import",
+		button2 = "Cancel",
 		hasEditBox = true,
 		hasWideEditBox = true,
 		editBoxWidth = 500,

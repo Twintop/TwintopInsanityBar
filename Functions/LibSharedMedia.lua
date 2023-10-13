@@ -13,11 +13,13 @@ function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
 	
 	-- Text
 	if settings.displayText ~= nil and settings.displayText.barText ~= nil then
-		for idx, bt in pairs(settings.displayText.barText) do
+		---@type TRB.Classes.DisplayTextEntry[]
+		local barText = settings.displayText.barText
+		for idx, bt in pairs(barText) do
 			if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.FONT, bt.fontFaceName) then
 				bt.fontFace = TRB.Details.addonData.libs.SharedMedia.MediaTable.font[bt.fontFaceName]
 			else
-				print("TRB: |cFFFF5555Invalid font (" .. specName .. " left bar text): '|r" .. bt.fontFaceName .. "|cFFFF5555'. Resetting to a default font.|r")
+				print("TRB: |cFFFF5555Invalid font (" .. specName .. " bar text '"..bt.name.."'): '|r" .. bt.fontFaceName .. "|cFFFF5555'. Resetting to a default font.|r")
 				bt.fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
 				bt.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
 			end
