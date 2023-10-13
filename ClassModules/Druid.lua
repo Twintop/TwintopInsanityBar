@@ -5201,6 +5201,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				if snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive then
 					valid = true
 				end
+			elseif var == "$incarnationNextCp" then
+				if snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive then
+					valid = true
+				end
 			elseif var == "$apexPredatorsCravingTime" then
 				if snapshots[spells.apexPredatorsCraving.id].buff.isActive then
 					valid = true
@@ -5222,6 +5226,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$predatorRevealedTickTime" then
+				if snapshots[spells.predatorRevealed.id].buff.isActive then
+					valid = true
+				end
+			elseif var == "$predatorRevealedNextCp" then
 				if snapshots[spells.predatorRevealed.id].buff.isActive then
 					valid = true
 				end
