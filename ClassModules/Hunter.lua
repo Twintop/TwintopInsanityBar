@@ -12,57 +12,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
+	
+	local talents --[[@as TRB.Classes.Talents]]
 
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
 
 	local specCache = {
-		beastMastery = {
-			snapshot = {},
-			barTextVariables = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		},
-		marksmanship = {
-			snapshot = {},
-			barTextVariables = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		},
-		survival = {
-			snapshot = {},
-			barTextVariables = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		}
+		beastMastery = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
+		marksmanship = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
+		survival = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
 	}
-
-	---@type TRB.Classes.SnapshotData
-	specCache.beastMastery.snapshotData = TRB.Classes.SnapshotData:New()
-
-	---@type TRB.Classes.SnapshotData
-	specCache.marksmanship.snapshotData = TRB.Classes.SnapshotData:New()
-
-	---@type TRB.Classes.SnapshotData
-	specCache.survival.snapshotData = TRB.Classes.SnapshotData:New()
 
 	local function FillSpecializationCache()
 		-- Beast Mastery
@@ -93,7 +53,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 185358,
 				name = "",
 				icon = "",
-				focus = -40,
+				resource = -40,
 				texture = "",
 				thresholdId = 1,
 				settingKey = "arcaneShot",
@@ -104,7 +64,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 982,
 				name = "",
 				icon = "",
-				focus = -35,
+				resource = -35,
 				texture = "",
 				thresholdId = 2,
 				settingKey = "revivePet",
@@ -115,7 +75,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 195645,
 				name = "",
 				icon = "",
-				focus = -20,
+				resource = -20,
 				texture = "",
 				thresholdId = 3,
 				settingKey = "wingClip",
@@ -128,7 +88,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 34026,
 				name = "",
 				icon = "",
-				focus = -30,
+				resource = -30,
 				texture = "",
 				thresholdId = 4,
 				settingKey = "killCommand",
@@ -148,7 +108,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 53351,
 				name = "",
 				icon = "",
-				focus = -10,
+				resource = -10,
 				texture = "",
 				thresholdId = 5,
 				settingKey = "killShot",
@@ -161,7 +121,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 1513,
 				name = "",
 				icon = "",
-				focus = -25,
+				resource = -25,
 				texture = "",
 				thresholdId = 6,
 				settingKey = "scareBeast",
@@ -171,7 +131,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 212431,
 				name = "",
 				icon = "",
-				focus = -20,
+				resource = -20,
 				texture = "",
 				thresholdId = 7,
 				settingKey = "explosiveShot",
@@ -184,7 +144,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 120360,
 				name = "",
 				icon = "",
-				focus = -60,
+				resource = -60,
 				texture = "",
 				thresholdId = 8,
 				settingKey = "barrage",
@@ -197,7 +157,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 271788,
 				name = "",
 				icon = "",
-				focus = -10,
+				resource = -10,
 				texture = "",
 				thresholdId = 9,
 				settingKey = "serpentSting",
@@ -221,7 +181,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 193455,
 				name = "",
 				icon = "",
-				focus = -35,
+				resource = -35,
 				texture = "",
 				thresholdId = 10,
 				settingKey = "cobraShot",
@@ -233,7 +193,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 2643,
 				name = "",
 				icon = "",
-				focus = -40,
+				resource = -40,
 				texture = "",
 				thresholdId = 11,
 				settingKey = "multiShot",
@@ -251,7 +211,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				},
 				name = "",
 				icon = "",
-				focus = 5,
+				resource = 5,
 				ticks = 4,
 				duration = 8,
 				hasCharges = true,
@@ -282,7 +242,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 131894,
 				name = "",
 				icon = "",
-				focus = -30,
+				resource = -30,
 				texture = "",
 				thresholdId = 12,
 				settingKey = "aMurderOfCrows",
@@ -321,7 +281,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 392060,
 				name = "",
 				icon = "",
-				focus = -15,
+				resource = -15,
 				texture = "",
 				thresholdId = 13,
 				settingKey = "wailingArrow",
@@ -341,7 +301,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				name = "",
 				icon = "",
 				isTalent = true,
-				focusMod = 0.5
+				resourceMod = 0.5
 			},
 			beastCleave = {
 				id = 115939,
@@ -368,7 +328,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 205691,
 				name = "",
 				icon = "",
-				focus = -60,
+				resource = -60,
 				texture = "",
 				thresholdId = 14,
 				settingKey = "direBeastBasilisk",
@@ -381,7 +341,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 208652,
 				name = "",
 				icon = "",
-				focus = -30,
+				resource = -30,
 				texture = "",
 				thresholdId = 15,
 				settingKey = "direBeastHawk",
@@ -392,7 +352,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			}
 		}
 
-		specCache.beastMastery.snapshotData.attributes.focusRegen = 0
+		specCache.beastMastery.snapshotData.attributes.resourceRegen = 0
 		specCache.beastMastery.snapshotData.audio = {
 			overcapCue = false,
 			playedKillShotCue = false
@@ -429,7 +389,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.barbedShot.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.barbedShot, {
 			count = 0,
 			ticksRemaining = 0,
-			focus = 0,
+			resource = 0,
 			list = {}
 		})
 
@@ -468,7 +428,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				iconName = "ability_impalingbolt",
 				name = "",
 				icon = "",
-				focus = -40,
+				resource = -40,
 				texture = "",
 				thresholdId = 1,
 				settingKey = "arcaneShot",
@@ -479,7 +439,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 982,
 				name = "",
 				icon = "",
-				focus = -35,
+				resource = -35,
 				texture = "",
 				thresholdId = 2,
 				settingKey = "revivePet",
@@ -490,7 +450,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 195645,
 				name = "",
 				icon = "",
-				focus = -20,
+				resource = -20,
 				texture = "",
 				thresholdId = 3,
 				settingKey = "wingClip",
@@ -503,7 +463,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 34026,
 				name = "",
 				icon = "",
-				focus = -30,
+				resource = -30,
 				texture = "",
 				thresholdId = 4,
 				settingKey = "killCommand",
@@ -522,7 +482,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 53351,
 				name = "",
 				icon = "",
-				focus = -10,
+				resource = -10,
 				texture = "",
 				thresholdId = 5,
 				settingKey = "killShot",
@@ -537,7 +497,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 1513,
 				name = "",
 				icon = "",
-				focus = -25,
+				resource = -25,
 				texture = "",
 				thresholdId = 6,
 				settingKey = "scareBeast",
@@ -547,7 +507,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 212431,
 				name = "",
 				icon = "",
-				focus = -20,
+				resource = -20,
 				texture = "",
 				thresholdId = 7,
 				settingKey = "explosiveShot",
@@ -560,7 +520,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 120360,
 				name = "",
 				icon = "",
-				focus = -30,
+				resource = -30,
 				texture = "",
 				thresholdId = 8,
 				settingKey = "barrage",
@@ -573,7 +533,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 271788,
 				name = "",
 				icon = "",
-				focus = -10,
+				resource = -10,
 				texture = "",
 				thresholdId = 9,
 				settingKey = "serpentSting",
@@ -595,7 +555,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 56641,
 				name = "",
 				icon = "",
-				focus = 0,
+				resource = 0,
 				baseline = true
 			},
 
@@ -604,7 +564,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 19434,
 				name = "",
 				icon = "",
-				focus = -35,
+				resource = -35,
 				texture = "",
 				thresholdId = 10,
 				settingKey = "aimedShot",
@@ -617,21 +577,21 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 321293,
 				name = "",
 				icon = "",
-				focus = -20, --Arcane Shot and Chimaera Shot
+				resource = -20, --Arcane Shot and Chimaera Shot
 				isTalent = true
 			},
 			improvedSteadyShot = {
 				id = 321018,
 				name = "",
 				icon = "",
-				focus = 10,
+				resource = 10,
 				isTalent = true
 			},
 			rapidFire = {
 				id = 257044,
 				name = "",
 				icon = "",
-				focus = 1,
+				resource = 1,
 				shots = 7,
 				duration = 2, --On cast then every 1/3 sec, hasted
 				isTalent = true
@@ -640,7 +600,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 342049,
 				name = "",
 				icon = "",
-				focus = -20,
+				resource = -20,
 				texture = "",
 				thresholdId = 11,
 				settingKey = "chimaeraShot",
@@ -658,7 +618,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 257620,
 				name = "",
 				icon = "",
-				focus = -20,
+				resource = -20,
 				texture = "",
 				thresholdId = 12,
 				settingKey = "multiShot",
@@ -669,7 +629,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 186387,
 				name = "",
 				icon = "",
-				focus = -10,
+				resource = -10,
 				texture = "",
 				thresholdId = 13,
 				settingKey = "burstingShot",
@@ -735,7 +695,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 355589,
 				name = "",
 				icon = "",
-				focus = -15,
+				resource = -15,
 				texture = "",
 				thresholdId = 14,
 				settingKey = "wailingArrow",
@@ -750,7 +710,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 203155,
 				name = "", 
 				icon = "",
-				focus = -40,
+				resource = -40,
 				texture = "",
 				thresholdId = 15,
 				settingKey = "sniperShot",
@@ -762,7 +722,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		}
 
-		specCache.marksmanship.snapshotData.attributes.focusRegen = 0
+		specCache.marksmanship.snapshotData.attributes.resourceRegen = 0
 		specCache.marksmanship.snapshotData.audio = {
 			overcapCue = false,
 			playedKillShotCue = false,
@@ -814,7 +774,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				serpentSting = 0
 			},
 			termsOfEngagement = {
-				focus = 0,
+				resource = 0,
 				ticks = 0
 			}
 		}
@@ -833,7 +793,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 185358,
 				name = "",
 				icon = "",
-				focus = -40,
+				resource = -40,
 				texture = "",
 				thresholdId = 1,
 				settingKey = "arcaneShot",
@@ -844,7 +804,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 982,
 				name = "",
 				icon = "",
-				focus = -35,
+				resource = -35,
 				texture = "",
 				thresholdId = 2,
 				settingKey = "revivePet",
@@ -855,7 +815,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 195645,
 				name = "",
 				icon = "",
-				focus = -20,
+				resource = -20,
 				texture = "",
 				thresholdId = 3,
 				settingKey = "wingClip",
@@ -868,7 +828,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 34026,
 				name = "",
 				icon = "",
-				focus = 21,
+				resource = 21,
 				texture = "",
 				--thresholdId = 4,
 				--settingKey = "killCommand",
@@ -888,7 +848,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 53351,
 				name = "",
 				icon = "",
-				focus = -10,
+				resource = -10,
 				texture = "",
 				thresholdId = 5,
 				settingKey = "killShot",
@@ -901,7 +861,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 1513,
 				name = "",
 				icon = "",
-				focus = -25,
+				resource = -25,
 				texture = "",
 				thresholdId = 6,
 				settingKey = "scareBeast",
@@ -911,7 +871,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 212431,
 				name = "",
 				icon = "",
-				focus = -20,
+				resource = -20,
 				texture = "",
 				thresholdId = 7,
 				settingKey = "explosiveShot",
@@ -924,7 +884,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 120360,
 				name = "",
 				icon = "",
-				focus = -60,
+				resource = -60,
 				texture = "",
 				thresholdId = 8,
 				settingKey = "barrage",
@@ -937,7 +897,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 271788,
 				name = "",
 				icon = "",
-				focus = -10,
+				resource = -10,
 				texture = "",
 				thresholdId = 9,
 				settingKey = "serpentSting",
@@ -961,7 +921,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 186270,
 				name = "",
 				icon = "",
-				focus = -30,
+				resource = -30,
 				texture = "",
 				thresholdId = 10,
 				isSnowflake = true,
@@ -1002,7 +962,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 187708,
 				name = "",
 				icon = "",
-				focus = -35,
+				resource = -35,
 				texture = "",
 				thresholdId = 11,
 				settingKey = "carve",
@@ -1014,7 +974,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 212436,
 				name = "",
 				icon = "",
-				focus = -30,
+				resource = -30,
 				isTalent = true,
 				hasCooldown = true,
 				hasCharges = true,
@@ -1027,7 +987,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 259387,
 				name = "",
 				icon = "",
-				focus = -30,
+				resource = -30,
 				isSnowflake = true,
 				texture = "",
 				thresholdId = 4, --NOTE this take's Kill Command's stypical threshold ID only so all the rest at the class level stay consistent!
@@ -1039,7 +999,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				id = 269751,
 				name = "",
 				icon = "",
-				focus = 30,
+				resource = 30,
 				hasCooldown = true,
 				thresholdUsable = false,
 				isTalent = true
@@ -1052,7 +1012,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			},
 		}
 
-		specCache.survival.snapshotData.attributes.focusRegen = 0
+		specCache.survival.snapshotData.attributes.resourceRegen = 0
 		specCache.survival.snapshotData.audio = {
 			overcapCue = false,
 			playedKillShotCue = false
@@ -1439,7 +1399,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		targetData:Cleanup(clearAll)
 	end
 
-	local function ConstructResourceBar(settings)		
+	local function ConstructResourceBar(settings)
 		local spells = TRB.Data.spells
 
 		local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
@@ -1451,7 +1411,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		for k, v in pairs(spells) do
 			local spell = spells[k]
-			if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+			if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
@@ -1478,7 +1438,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local currentTime = GetTime()
 
 		-- This probably needs to be pulled every refresh
-		snapshotData.attributes.focusRegen, _ = GetPowerRegen()
+		snapshotData.attributes.resourceRegen, _ = GetPowerRegen()
 
 		--$overcap
 		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
@@ -1524,9 +1484,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		if specSettings.generation.enabled then
 			if specSettings.generation.mode == "time" then
-				_regenFocus = snapshotData.attributes.focusRegen * (specSettings.generation.time or 3.0)
+				_regenFocus = snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0)
 			else
-				_regenFocus = snapshotData.attributes.focusRegen * ((specSettings.generation.gcds or 2) * _gcd)
+				_regenFocus = snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * _gcd)
 			end
 		end
 
@@ -1534,7 +1494,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local regenFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _regenFocus)
 
 		--$barbedShotFocus
-		local _barbedShotFocus = snapshots[spells.barbedShot.id].attributes.focus
+		local _barbedShotFocus = snapshots[spells.barbedShot.id].attributes.resource
 		local barbedShotFocus = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _barbedShotFocus)
 
 		--$barbedShotTicks
@@ -1548,7 +1508,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local _beastCleaveTime = snapshots[spells.beastCleave.id].buff:GetRemainingTime(currentTime)
 		local beastCleaveTime = string.format("%.1f", _beastCleaveTime)
 
-		if TRB.Functions.Talent:IsTalentActive(spells.bloodFrenzy) and (snapshots[spells.callOfTheWild.id].buff:GetRemainingTime(currentTime)) > (snapshots[spells.beastCleave.id].buff.remaining) then
+		if talents:IsTalentActive(spells.bloodFrenzy) and (snapshots[spells.callOfTheWild.id].buff:GetRemainingTime(currentTime)) > (snapshots[spells.beastCleave.id].buff.remaining) then
 			_beastCleaveTime = snapshots[spells.callOfTheWild.id].buff.remaining
 		end
 
@@ -1612,7 +1572,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		Global_TwintopResourceBar.resource.barbedShot = _barbedShotFocus
 		Global_TwintopResourceBar.barbedShot = {
 			count = snapshots[spells.barbedShot.id].attributes.count,
-			focus = snapshots[spells.barbedShot.id].attributes.focus,
+			focus = snapshots[spells.barbedShot.id].attributes.resource,
 			ticks = snapshots[spells.barbedShot.id].attributes.ticksRemaining,
 			remaining = _barbedShotTime
 		}
@@ -1658,7 +1618,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$barbedShotTicks"] = barbedShotTicks
 		lookup["$barbedShotTime"] = barbedShotTime
 		lookup["$beastCleaveTime"] = beastCleaveTime
-		lookup["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(spells.serpentSting)
+		lookup["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
 		lookup["$regen"] = regenFocus
@@ -1693,7 +1653,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookupLogic["$barbedShotTicks"] = snapshots[spells.barbedShot.id].attributes.ticksRemaining
 		lookupLogic["$barbedShotTime"] = _barbedShotTime
 		lookupLogic["$beastCleaveTime"] = _beastCleaveTime
-		lookupLogic["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(spells.serpentSting)
+		lookupLogic["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
 		lookupLogic["$ssCount"] = _serpentStingCount
 		lookupLogic["$ssTime"] = _serpentStingTime
 		lookupLogic["$regen"] = _regenFocus
@@ -1715,7 +1675,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local currentTime = GetTime()
 
 		-- This probably needs to be pulled every refresh
-		snapshotData.attributes.focusRegen, _ = GetPowerRegen()
+		snapshotData.attributes.resourceRegen, _ = GetPowerRegen()
 
 		--$overcap
 		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
@@ -1760,9 +1720,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		if specSettings.generation.enabled then
 			if specSettings.generation.mode == "time" then
-				_regenFocus = snapshotData.attributes.focusRegen * (specSettings.generation.time or 3.0)
+				_regenFocus = snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0)
 			else
-				_regenFocus = snapshotData.attributes.focusRegen * ((specSettings.generation.gcds or 2) * _gcd)
+				_regenFocus = snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * _gcd)
 			end
 		end
 
@@ -1851,7 +1811,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$trueshotTime"] = trueshotTime
 		lookup["$lockAndLoadTime"] = lockAndLoadTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
-		lookup["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(spells.serpentSting)
+		lookup["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
 		lookup["$focusTotal"] = focusTotal
@@ -1877,7 +1837,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookupLogic["$trueshotTime"] = _trueshotTime
 		lookupLogic["$lockAndLoadTime"] = _lockAndLoadTime
 		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
-		lookupLogic["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(spells.serpentSting)
+		lookupLogic["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
 		lookupLogic["$ssCount"] = _serpentStingCount
 		lookupLogic["$ssTime"] = _serpentStingTime
 		lookupLogic["$focusTotal"] = _focusTotal
@@ -1909,7 +1869,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local currentTime = GetTime()
 
 		-- This probably needs to be pulled every refresh
-		snapshotData.attributes.focusRegen, _ = GetPowerRegen()
+		snapshotData.attributes.resourceRegen, _ = GetPowerRegen()
 
 		--$overcap
 		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
@@ -1961,9 +1921,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		if specSettings.generation.enabled then
 			if specSettings.generation.mode == "time" then
-				_regenFocus = snapshotData.attributes.focusRegen * (specSettings.generation.time or 3.0)
+				_regenFocus = snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0)
 			else
-				_regenFocus = snapshotData.attributes.focusRegen * ((specSettings.generation.gcds or 2) * _gcd)
+				_regenFocus = snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * _gcd)
 			end
 		end
 
@@ -2051,7 +2011,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#wildfireBomb"] = spells.wildfireBomb.icon
 		lookup["$coordinatedAssaultTime"] = coordinatedAssaultTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
-		lookup["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(spells.serpentSting)
+		lookup["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
 		lookup["$wildfireBombCharges"] = wildfireBombCharges
@@ -2079,7 +2039,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		lookupLogic["$coordinatedAssaultTime"] = _coordinatedAssaultTime
 		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
-		lookupLogic["$serpentSting"] = TRB.Functions.Talent:IsTalentActive(spells.serpentSting)
+		lookupLogic["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
 		lookupLogic["$ssCount"] = _serpentStingCount
 		lookupLogic["$ssTime"] = _serpentStingTime
 		lookupLogic["$wildfireBombCharges"] = wildfireBombCharges
@@ -2108,8 +2068,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local currentTime = GetTime()
 		local casting = TRB.Data.snapshotData.casting --[[@as TRB.Classes.SnapshotCasting]]
 		casting.startTime = currentTime
-		casting.resourceRaw = spell.focus
-		casting.resourceFinal = CalculateAbilityResourceValue(spell.focus)
+		casting.resourceRaw = spell.resource
+		casting.resourceFinal = CalculateAbilityResourceValue(spell.resource)
 		casting.spellId = spell.id
 		casting.icon = spell.icon
 	end
@@ -2162,7 +2122,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						local remainingTime = casting.endTime - currentTime
 						local ticksRemaining = math.ceil(remainingTime / (duration / (spells.rapidFire.shots - 1)))
 
-						casting.resourceRaw = ticksRemaining * spells.rapidFire.focus
+						casting.resourceRaw = ticksRemaining * spells.rapidFire.resource
 						casting.resourceFinal = CalculateAbilityResourceValue(casting.resourceRaw)
 					else
 						TRB.Functions.Character:ResetCastingSnapshotData()
@@ -2173,7 +2133,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					if spellName == spells.aimedShot.name then
 						FillSnapshotDataCasting(spells.aimedShot)
 					elseif spellName == spells.steadyShot.name then
-						if TRB.Functions.Talent:IsTalentActive(spells.improvedSteadyShot) then
+						if talents:IsTalentActive(spells.improvedSteadyShot) then
 							FillSnapshotDataCasting(spells.improvedSteadyShot)
 						else
 						FillSnapshotDataCasting(spells.steadyShot)
@@ -2219,7 +2179,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local spells = TRB.Data.spells
 		local barbedShot = TRB.Data.snapshotData.snapshots[spells.barbedShot.id] --[[@as TRB.Classes.Snapshot]]
 		local entries = TRB.Functions.Table:Length(barbedShot.attributes.list)
-		local totalFocus = 0
+		local totalResource = 0
 		local totalTicksRemaining = 0
 		local maxEndTime = nil
 		local activeCount = 0
@@ -2230,8 +2190,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				else
 					activeCount = activeCount + 1
 					barbedShot.attributes.list[x].ticksRemaining = math.ceil((barbedShot.attributes.list[x].endTime - currentTime) / (spells.barbedShot.duration / spells.barbedShot.ticks))
-					barbedShot.attributes.list[x].focus = CalculateAbilityResourceValue(barbedShot.attributes.list[x].ticksRemaining * spells.barbedShot.focus)
-					totalFocus = totalFocus + barbedShot.attributes.list[x].focus
+					barbedShot.attributes.list[x].resource = CalculateAbilityResourceValue(barbedShot.attributes.list[x].ticksRemaining * spells.barbedShot.resource)
+					totalResource = totalResource + barbedShot.attributes.list[x].resource
 					totalTicksRemaining = totalTicksRemaining + barbedShot.attributes.list[x].ticksRemaining
 
 					if barbedShot.attributes.list[x].endTime > (maxEndTime or 0) then
@@ -2248,7 +2208,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			barbedShot.buff:Reset()
 		end
 		barbedShot.attributes.count = activeCount
-		barbedShot.attributes.focus = totalFocus
+		barbedShot.attributes.resource = totalResource
 		barbedShot.attributes.ticksRemaining = totalTicksRemaining
 
 		-- Recharge info
@@ -2344,9 +2304,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					if specSettings.bar.showPassive then
 						if specSettings.generation.enabled then
 							if specSettings.generation.mode == "time" then
-								passiveValue = (snapshotData.attributes.focusRegen * (specSettings.generation.time or 3.0))
+								passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
 							else
-								passiveValue = (snapshotData.attributes.focusRegen * ((specSettings.generation.gcds or 2) * gcd))
+								passiveValue = (snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * gcd))
 							end
 						end
 					end
@@ -2385,9 +2345,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					local pairOffset = 0
 					for k, v in pairs(spells) do
 						local spell = spells[k]
-						if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							local focusAmount = CalculateAbilityResourceValue(spell.focus, true)
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
+						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+							local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -2407,7 +2367,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										snapshotData.audio.playedKillShotCue = false
-									elseif snapshotData.attributes.resource >= -focusAmount then
+									elseif snapshotData.attributes.resource >= -resourceAmount then
 										if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
 											snapshotData.audio.playedKillShotCue = true
 											PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
@@ -2420,36 +2380,36 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									end
 								elseif spell.id == spells.killCommand.id then
 									if snapshots[spells.direPack.id].buff.isActive then
-										focusAmount = focusAmount * spells.direPack.focusMod
-										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
+										resourceAmount = resourceAmount * spells.direPack.resourceMod
+										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 									end
 
 									if snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif snapshotData.attributes.resource >= -focusAmount or snapshots[spells.cobraSting.id].buff.isActive then
+									elseif snapshotData.attributes.resource >= -resourceAmount or snapshots[spells.cobraSting.id].buff.isActive then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								end
-							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
+							elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 								showThreshold = false
-							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+							elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
 							elseif spell.hasCooldown then
 								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif snapshotData.attributes.resource >= -focusAmount then
+								elseif snapshotData.attributes.resource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
-								if snapshotData.attributes.resource >= -focusAmount then
+								if snapshotData.attributes.resource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -2484,16 +2444,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							barColor = specSettings.colors.bar.frenzyUse
 						elseif snapshots[spells.barbedShot.id].cooldown.remaining <= reactionTimeGcds and snapshots[spells.barbedShot.id].cooldown.charges == 1 then
 							barColor = specSettings.colors.bar.frenzyUse
-						elseif TRB.Functions.Talent:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.remainingTotal <= reactionTimeGcds and beastialWrathCooldownRemaining < (spells.barbedWrath.beastialWrathCooldownReduction + reactionTimeGcds) then
+						elseif talents:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.remainingTotal <= reactionTimeGcds and beastialWrathCooldownRemaining < (spells.barbedWrath.beastialWrathCooldownReduction + reactionTimeGcds) then
 							barColor = specSettings.colors.bar.frenzyUse
-						elseif TRB.Functions.Talent:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * spells.barbedWrath.beastialWrathCooldownReduction) then
+						elseif talents:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * spells.barbedWrath.beastialWrathCooldownReduction) then
 							barColor = specSettings.colors.bar.frenzyUse
 						end
 					else
 						if affectingCombat then
 							if snapshots[spells.barbedShot.id].cooldown.charges == 2 then
 								barColor = specSettings.colors.bar.frenzyUse
-							elseif TRB.Functions.Talent:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * spells.barbedWrath.beastialWrathCooldownReduction) then
+							elseif talents:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * spells.barbedWrath.beastialWrathCooldownReduction) then
 								barColor = specSettings.colors.bar.frenzyUse
 							elseif snapshots[spells.barbedShot.id].cooldown.remainingTotal <= reactionTimeGcds then
 								barColor = specSettings.colors.bar.frenzyUse
@@ -2565,7 +2525,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						snapshotData.audio.overcapCue = false
 					end
 
-					if UnitAffectingCombat("player") and specSettings.steadyFocus.enabled and TRB.Functions.Talent:IsTalentActive(spells.steadyFocus) then
+					if UnitAffectingCombat("player") and specSettings.steadyFocus.enabled and talents:IsTalentActive(spells.steadyFocus) then
 						local timeThreshold = 0
 
 						if specSettings.steadyFocus.mode == "gcd" then
@@ -2586,9 +2546,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					if specSettings.bar.showPassive then
 						if specSettings.generation.enabled then
 							if specSettings.generation.mode == "time" then
-								passiveValue = (snapshotData.attributes.focusRegen * (specSettings.generation.time or 3.0))
+								passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
 							else
-								passiveValue = (snapshotData.attributes.focusRegen * ((specSettings.generation.gcds or 2) * gcd))
+								passiveValue = (snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * gcd))
 							end
 						end
 					end
@@ -2627,9 +2587,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					local pairOffset = 0
 					for k, v in pairs(spells) do
 						local spell = spells[k]
-						if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							local focusAmount = CalculateAbilityResourceValue(spell.focus, true)
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
+						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+							local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -2637,9 +2597,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == spells.arcaneShot.id then
-									if TRB.Functions.Talent:IsTalentActive(spells.chimaeraShot) == true then
+									if talents:IsTalentActive(spells.chimaeraShot) == true then
 										showThreshold = false
-									elseif snapshotData.attributes.resource >= -focusAmount then
+									elseif snapshotData.attributes.resource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -2649,7 +2609,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									if snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif snapshots[spells.lockAndLoad.id].buff.isActive or snapshotData.attributes.resource >= -focusAmount then
+									elseif snapshots[spells.lockAndLoad.id].buff.isActive or snapshotData.attributes.resource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -2688,7 +2648,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										snapshotData.audio.playedKillShotCue = false
-									elseif snapshotData.attributes.resource >= -focusAmount then
+									elseif snapshotData.attributes.resource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 										if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
 											snapshotData.audio.playedKillShotCue = true
@@ -2700,22 +2660,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										snapshotData.audio.playedKillShotCue = false
 									end
 								end
-							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+							elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
+							elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
 								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif snapshotData.attributes.resource >= -focusAmount then
+								elseif snapshotData.attributes.resource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
-								if snapshotData.attributes.resource >= -focusAmount then
+								if snapshotData.attributes.resource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -2783,9 +2743,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					if specSettings.bar.showPassive then
 						if specSettings.generation.enabled then
 							if specSettings.generation.mode == "time" then
-								passiveValue = (snapshotData.attributes.focusRegen * (specSettings.generation.time or 3.0))
+								passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
 							else
-								passiveValue = (snapshotData.attributes.focusRegen * ((specSettings.generation.gcds or 2) * gcd))
+								passiveValue = (snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * gcd))
 							end
 						end
 
@@ -2826,9 +2786,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					local pairOffset = 0
 					for k, v in pairs(spells) do
 						local spell = spells[k]
-						if spell ~= nil and spell.id ~= nil and spell.focus ~= nil and spell.focus < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-							local focusAmount = CalculateAbilityResourceValue(spell.focus, true)
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -focusAmount, TRB.Data.character.maxResource)
+						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+							local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -2848,7 +2808,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										snapshotData.audio.playedKillShotCue = false
-									elseif snapshotData.attributes.resource >= -focusAmount then
+									elseif snapshotData.attributes.resource >= -resourceAmount then
 										if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
 											snapshotData.audio.playedKillShotCue = true
 											PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
@@ -2860,10 +2820,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										snapshotData.audio.playedKillShotCue = false
 									end
 								elseif spell.id == spells.raptorStrike.id then
-									if TRB.Functions.Talent:IsTalentActive(spells.mongooseBite) then
+									if talents:IsTalentActive(spells.mongooseBite) then
 										showThreshold = false
 									else
-										if snapshotData.attributes.resource >= -focusAmount then
+										if snapshotData.attributes.resource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
 										else
 											thresholdColor = specSettings.colors.threshold.under
@@ -2871,10 +2831,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										end
 									end
 								elseif spell.id == spells.mongooseBite.id then
-									if not TRB.Functions.Talent:IsTalentActive(spells.mongooseBite) then
+									if not talents:IsTalentActive(spells.mongooseBite) then
 										showThreshold = false
 									else
-										if snapshotData.attributes.resource >= -focusAmount then
+										if snapshotData.attributes.resource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
 										else
 											thresholdColor = specSettings.colors.threshold.under
@@ -2882,22 +2842,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										end
 									end
 								end
-							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+							elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
+							elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
 								if snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif snapshotData.attributes.resource >= -focusAmount then
+								elseif snapshotData.attributes.resource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
-								if snapshotData.attributes.resource >= -focusAmount then
+								if snapshotData.attributes.resource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -2972,7 +2932,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						if type == "SPELL_AURA_APPLIED" then -- Gain Barbed Shot buff
 							table.insert(snapshots[spells.barbedShot.id].attributes.list, {
 								ticksRemaining = spells.barbedShot.ticks,
-								focus = snapshots[spells.barbedShot.id].attributes.ticksRemaining * spells.barbedShot.focus,
+								resource = snapshots[spells.barbedShot.id].attributes.ticksRemaining * spells.barbedShot.resource,
 								endTime = currentTime + spells.barbedShot.duration
 							})
 						end
@@ -3110,7 +3070,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
 		if specId == 1 then
-			specCache.beastMastery.talents = TRB.Functions.Talent:GetTalents()
+			specCache.beastMastery.talents:GetTalents()
 			FillSpellData_BeastMastery()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.beastMastery)
 			
@@ -3125,14 +3085,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.beastMastery)
 
 			if TRB.Data.barConstructedForSpec ~= "beastMastery" then
+				talents = specCache.beastMastery.talents
 				TRB.Data.barConstructedForSpec = "beastMastery"
 				ConstructResourceBar(specCache.beastMastery.settings)
-				TwintopResourceBar_SnapshotData = TRB.Data.snapshotData
-				TwintopResourceBar_Settings = TRB.Data.settings.hunter.marksmanship
-				TwintopResourceBar_Spells = TRB.Data.spells
 			end
 		elseif specId == 2 then
-			specCache.marksmanship.talents = TRB.Functions.Talent:GetTalents()
+			specCache.marksmanship.talents:GetTalents()
 			FillSpellData_Marksmanship()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.marksmanship)
 			
@@ -3147,11 +3105,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.hunter.marksmanship)
 
 			if TRB.Data.barConstructedForSpec ~= "marksmanship" then
+				talents = specCache.marksmanship.talents
 				TRB.Data.barConstructedForSpec = "marksmanship"
 				ConstructResourceBar(specCache.marksmanship.settings)
 			end
 		elseif specId == 3 then
-			specCache.survival.talents = TRB.Functions.Talent:GetTalents()
+			specCache.survival.talents:GetTalents()
 			FillSpellData_Survival()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.survival)
 			
@@ -3167,6 +3126,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 			if TRB.Data.barConstructedForSpec ~= "survival" then
+				talents = specCache.survival.talents
 				TRB.Data.barConstructedForSpec = "survival"
 				ConstructResourceBar(specCache.survival.settings)
 			end
@@ -3188,12 +3148,33 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 
-					local settings = TRB.Options.Hunter.LoadDefaultSettings()
-					if TwintopInsanityBarSettings then
+					if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
 						TRB.Options:PortForwardSettings()
+
+						local settings = TRB.Options.Hunter.LoadDefaultSettings(false)
+
+						if TwintopInsanityBarSettings.hunter == nil or
+							TwintopInsanityBarSettings.hunter.beastMastery == nil or
+							TwintopInsanityBarSettings.hunter.beastMastery.displayText == nil then
+							settings.hunter.beastMastery.displayText.barText = TRB.Options.Hunter.BeastMasteryLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.hunter == nil or
+							TwintopInsanityBarSettings.hunter.marksmanship == nil or
+							TwintopInsanityBarSettings.hunter.marksmanship.displayText == nil then
+							settings.hunter.marksmanship.displayText.barText = TRB.Options.Hunter.MarksmanshipLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.hunter == nil or
+							TwintopInsanityBarSettings.hunter.survival == nil or
+							TwintopInsanityBarSettings.hunter.survival.displayText == nil then
+							settings.hunter.survival.displayText.barText = TRB.Options.Hunter.SurvivalLoadDefaultBarTextSimpleSettings()
+						end
+
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
+						local settings = TRB.Options.Hunter.LoadDefaultSettings(true)
 						TRB.Data.settings = settings
 					end
 					FillSpecializationCache()
@@ -3507,18 +3488,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				valid = true
 			end
 		elseif var == "$passive" then
-			if snapshotData.attributes.resource < TRB.Data.character.maxResource and
-				settings.generation.enabled and
-				((settings.generation.mode == "time" and settings.generation.time > 0) or
-				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-				valid = true
-			elseif specId == 1 and TRB.Functions.Class:IsValidVariableForSpec("$barbedShotFocus") then
-				valid = true
-			elseif specId == 3 and snapshots[spells.termsOfEngagement.id].buff.isActive then
-				valid = true
+			if settings.generation.enabled then
+				if snapshotData.attributes.resource < TRB.Data.character.maxResource and
+					((settings.generation.mode == "time" and settings.generation.time > 0) or
+					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+					valid = true
+				elseif specId == 1 and TRB.Functions.Class:IsValidVariableForSpec("$barbedShotFocus") then
+					valid = true
+				elseif specId == 3 and snapshots[spells.termsOfEngagement.id].buff.isActive then
+					valid = true
+				end
 			end
 		elseif var == "$regen" or var == "$regenFocus" or var == "$focusRegen" then
-			if snapshotData.attributes.resource < TRB.Data.character.maxResource and
+			if settings.generation.enabled and
+				snapshotData.attributes.resource < TRB.Data.character.maxResource and
 				((settings.generation.mode == "time" and settings.generation.time > 0) or
 				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 				valid = true
@@ -3536,12 +3519,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				valid = true
 			end
 		elseif var == "$serpentSting" then
-			if TRB.Functions.Talent:IsTalentActive(spells.serpentSting) then
+			if talents:IsTalentActive(spells.serpentSting) then
 				valid = true
 			end
 		end
 
 		return valid
+	end
+
+	function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+		local specId = GetSpecialization()
+		local settings = TRB.Data.settings.hunter
+		local spells = TRB.Data.spells
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+		if specId == 1 then
+		elseif specId == 2 then
+		elseif specId == 3 then
+		end
+		return nil
 	end
 
 	--HACK to fix FPS

@@ -92,29 +92,13 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 	if includeFontAndText then
 		configuration.colors.text = settings.colors.text
 		configuration.hastePrecision = settings.hastePrecision
-		configuration.displayText.fontSizeLock = settings.displayText.fontSizeLock
-		configuration.displayText.fontFaceLock = settings.displayText.fontFaceLock
-		configuration.displayText.left = {
-			fontFace = settings.displayText.left.fontFace,
-			fontFaceName = settings.displayText.left.fontFaceName,
-			fontSize = settings.displayText.left.fontSize
-		}
-		configuration.displayText.middle = {
-			fontFace = settings.displayText.middle.fontFace,
-			fontFaceName = settings.displayText.middle.fontFaceName,
-			fontSize = settings.displayText.middle.fontSize
-		}
-		configuration.displayText.right = {
-			fontFace = settings.displayText.right.fontFace,
-			fontFaceName = settings.displayText.right.fontFaceName,
-			fontSize = settings.displayText.right.fontSize
-		}
+		configuration.displayText.default = settings.displayText.default
 
 		if classId == 1 then -- Warrior
 			if specId == 1 then -- Arms
-				configuration.ragePrecision = settings.ragePrecision
+				configuration.resourcePrecision = settings.resourcePrecision
 			elseif specId == 2 then -- Fury
-				configuration.ragePrecision = settings.ragePrecision
+				configuration.resourcePrecision = settings.resourcePrecision
 			end
 		elseif classId == 3 then -- Hunters
 			if specId == 1 then -- Beast Mastery
@@ -131,7 +115,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 3 then -- Shadow
 				configuration.hasteApproachingThreshold = settings.hasteApproachingThreshold
 				configuration.hasteThreshold = settings.hasteThreshold
-				configuration.insanityPrecision = settings.insanityPrecision
+				configuration.resourcePrecision = settings.resourcePrecision
 			end
 		elseif classId == 7 then -- Shaman
 			if specId == 1 then -- Elemental
@@ -144,7 +128,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end
 		elseif classId == 11 then -- Druids
 			if specId == 1 then -- Balance
-				configuration.astralPowerPrecision = settings.astralPowerPrecision
+				configuration.resourcePrecision = settings.resourcePrecision
 			elseif specId == 2 then -- Feral
 			elseif specId == 4 then -- Restoration
 			end
@@ -162,9 +146,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 
 		if classId == 1 then -- Warrior
 			if specId == 1 then -- Arms
-				configuration.ragePrecision = settings.ragePrecision
+				configuration.resourcePrecision = settings.resourcePrecision
 			elseif specId == 2 then -- Fury
-				configuration.ragePrecision = settings.ragePrecision
+				configuration.resourcePrecision = settings.resourcePrecision
 			end
 		elseif classId == 3 then -- Hunters
 			configuration.generation = settings.generation
@@ -218,12 +202,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 	end
 
 	if includeBarText then
-		configuration.displayText.left = configuration.displayText.left or {}
-		configuration.displayText.left.text = settings.displayText.left.text
-		configuration.displayText.middle = configuration.displayText.middle or {}
-		configuration.displayText.middle.text = settings.displayText.middle.text
-		configuration.displayText.right = configuration.displayText.right or {}
-		configuration.displayText.right.text = settings.displayText.right.text
+		configuration.displayText.barText = settings.displayText.barText or {}
 	end
 
 	return configuration
@@ -504,7 +483,38 @@ function TRB.Functions.IO:Import(input)
 	local existingSettings = TRB.Data.settings
 
 	local function TableMergeWrapper(existing, config)
-		return TRB.Functions.Table:Merge(existing, config)
+		local newBarText = {}
+		
+		for className, class in pairs(config) do
+			if className ~= "core" then
+				for specName, spec in pairs(class) do
+					local entryCount = TRB.Functions.Table:Length(spec.displayText.barText)
+					if entryCount > 0 then
+						newBarText[className.."_"..specName] = spec.displayText.barText
+						spec.displayText.barText = {}
+						TRB.Functions.Table:Print(newBarText[className.."_"..specName])
+					end
+				end
+			end
+		end
+
+		local merged = TRB.Functions.Table:Merge(existing, config)
+
+		if TRB.Functions.Table:Length(newBarText) > 0 then
+			for className, class in pairs(merged) do
+				if className ~= "core" then
+					for specName, spec in pairs(class) do
+						local entryCount = TRB.Functions.Table:Length(newBarText[className.."_"..specName])
+						if entryCount > 0 then
+							spec.displayText.barText = newBarText[className.."_"..specName]
+							TRB.Functions.Table:Print(spec.displayText.barText)
+						end
+					end
+				end
+			end
+		end
+
+		return merged
 	end
 
 	result, mergedSettings = pcall(TableMergeWrapper, existingSettings, configuration)

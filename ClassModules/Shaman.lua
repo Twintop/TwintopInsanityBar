@@ -13,71 +13,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
 	
+	local talents --[[@as TRB.Classes.Talents]]
+	
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
 	
 	local specCache = {
-		elemental = {
-			snapshot = {},
-			barTextVariables = {
-				icons = {},
-				values = {}
-			},
-			spells = {},
-			talents = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		},
-		enhancement = {
-			snapshot = {},
-			barTextVariables = {
-				icons = {},
-				values = {}
-			},
-			spells = {},
-			talents = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		},
-		restoration = {
-			snapshot = {},
-			barTextVariables = {
-				icons = {},
-				values = {}
-			},
-			spells = {},
-			talents = {},
-			settings = {
-				bar = nil,
-				comboPoints = nil,
-				displayBar = nil,
-				font = nil,
-				textures = nil,
-				thresholds = nil
-			}
-		}
+		elemental = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
+		enhancement = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
+		restoration = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
 	}
-
-	---@type TRB.Classes.SnapshotData
-	specCache.elemental.snapshotData = TRB.Classes.SnapshotData:New()
-
-	---@type TRB.Classes.SnapshotData
-	specCache.enhancement.snapshotData = TRB.Classes.SnapshotData:New()
-	
-	---@type TRB.Classes.SnapshotData
-	specCache.restoration.snapshotData = TRB.Classes.SnapshotData:New()
 
 	local function CalculateManaGain(mana, isPotion)
 		local spells = TRB.Data.spells
@@ -132,7 +77,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				id = 188196,
 				name = "",
 				icon = "",
-				maelstrom = 8,
+				resource = 8,
 				overload = 3,
 				baseline = true,
 				primalFracture = true
@@ -154,7 +99,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				id = 51505,
 				name = "",
 				icon = "",
-				maelstrom = 10,
+				resource = 10,
 				isTalent = true,
 				baseline = true,
 				primalFracture = true
@@ -163,7 +108,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				id = 188443,
 				name = "",
 				icon = "",
-				maelstrom = 4,
+				resource = 4,
 				overload = 3,
 				isTalent = true,
 				baseline = true
@@ -172,7 +117,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				id = 196840,
 				name = "",
 				icon = "",
-				maelstrom = 14,
+				resource = 14,
 				isTalent = true,
 				primalFracture = true
 			},
@@ -180,7 +125,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				id = 51514,
 				name = "",
 				icon = "",
-				maelstrom = 8,
+				resource = 8,
 				isTalent = true
 			},
 
@@ -190,7 +135,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				id = 8042,
 				name = "",
 				icon = "",
-				maelstrom = -60,
+				resource = -60,
 				texture = "",
 				thresholdId = 1,
 				settingKey = "earthShock",
@@ -203,7 +148,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				id = 61882,
 				name = "",
 				icon = "",
-				maelstrom = -60,
+				resource = -60,
 				texture = "",
 				thresholdId = 2,
 				settingKey = "earthquake",
@@ -215,14 +160,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				id = 378776,
 				name = "",
 				icon = "",
-				maelstrom = 8,
+				resource = 8,
 				isTalent = true
 			},
 			flowOfPower = {
 				id = 385923,
 				name = "",
 				icon = "",
-				maelstromMod = {
+				resourceMod = {
 					base = {
 						[0] = {
 							lightningBolt = 0,
@@ -250,7 +195,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				id = 210714,
 				name = "",
 				icon = "",
-				maelstrom = 25,
+				resource = 25,
 				overload = 12,
 				stacks = 4,
 				duration = 15,
@@ -274,7 +219,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				id = 381708,
 				name = "",
 				icon = "",
-				maelstromMod = {
+				resourceMod = {
 					[0] = {
 						earthShock = 0,
 						earthquake = 0,
@@ -303,7 +248,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				id = 117014,
 				name = "",
 				icon = "",
-				maelstrom = -90,
+				resource = -90,
 				thresholdId = 3,
 				settingKey = "elementalBlast",
 				thresholdUsable = false,
@@ -326,7 +271,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				id = 114074,
 				name = "",
 				icon = "",
-				maelstrom = 4, --Tooltip says 3, but spell ID 217891 and in game says 4
+				resource = 4, --Tooltip says 3, but spell ID 217891 and in game says 4
 				overload = 3
 			},
 
@@ -334,16 +279,16 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				id = 192106,
 				name = "",
 				icon = "",
-				maelstrom = 5
+				resource = 5
 			},
 
-			--TODO: Add Searing Flames passive maelstrom
+			--TODO: Add Searing Flames passive resource
 
 			primalFracture = { -- T30 4P
 				id = 410018,
 				name = "",
 				icon = "",
-				maelstromMod = 1.5
+				resourceMod = 1.5
 			}
 		}
 		
@@ -364,7 +309,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		specCache.elemental.snapshotData.snapshots[specCache.elemental.spells.powerOfTheMaelstrom.id] = TRB.Classes.Snapshot:New(specCache.elemental.spells.powerOfTheMaelstrom, nil, true)
 		---@type TRB.Classes.Snapshot
 		specCache.elemental.snapshotData.snapshots[specCache.elemental.spells.icefury.id] = TRB.Classes.Snapshot:New(specCache.elemental.spells.icefury, {
-			maelstrom = 0
+			resource = 0
 		})
 		---@type TRB.Classes.Snapshot
 		specCache.elemental.snapshotData.snapshots[specCache.elemental.spells.stormkeeper.id] = TRB.Classes.Snapshot:New(specCache.elemental.spells.stormkeeper)
@@ -1031,7 +976,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		if specId == 1 then
 			for k, v in pairs(spells) do
 				local spell = spells[k]
-				if spell ~= nil and spell.id ~= nil and spell.maelstrom ~= nil and spell.maelstrom < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+				if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 					if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
@@ -1047,7 +992,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
 			for k, v in pairs(spells) do
 				local spell = spells[k]
-				if spell ~= nil and spell.id ~= nil and spell.maelstrom ~= nil and spell.maelstrom < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+				if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 					if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
@@ -1351,10 +1296,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["$mana"] = currentMana
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentMana
-		lookup["$maelstromWeapon"] = TRB.Data.character.resource2
-		lookup["$comboPoints"] = TRB.Data.character.resource2
-		lookup["$maelstromWeaponMax"] = TRB.Data.character.maxResource2Raw
-		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
+		lookup["$maelstromWeapon"] = snapshotData.attributes.resource2
+		lookup["$comboPoints"] = snapshotData.attributes.resource2
+		lookup["$maelstromWeaponMax"] = TRB.Data.character.maxResource2
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 		lookup["$ascendanceTime"] = ascendanceTime
 		lookup["$fsCount"] = flameShockCount
 		lookup["$fsTime"] = flameShockTime
@@ -1366,10 +1311,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
 		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-		lookupLogic["$essence"] = TRB.Data.character.resource2
-		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
-		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2Raw
-		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
+		lookupLogic["$maelstromWeapon"] = snapshotData.attributes.resource2
+		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
+		lookupLogic["$maelstromWeaponMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 		lookupLogic["$ascendanceTime"] = _ascendanceTime
 		lookupLogic["$fsCount"] = _flameShockCount
 		lookupLogic["$fsTime"] = _flameShockTime
@@ -1628,12 +1573,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
-	local function FillSnapshotDataCasting(spell, maelstromMod)
+	local function FillSnapshotDataCasting(spell, resourceMod)
 		local spells = TRB.Data.spells
 		local snapshotData = TRB.Data.snapshotData
 
-		maelstromMod = maelstromMod or 0
-		local maelstromMultMod = 1
+		resourceMod = resourceMod or 0
+		local resourceMultMod = 1
 
 		if snapshotData.snapshots[spells.primalFracture.id].buff.isActive then
 			if spell.id == spells.lavaBurst.id or
@@ -1641,14 +1586,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				spell.id == spells.icefury.id or
 				spell.id == spells.frostShock.id
 				then
-				maelstromMultMod = spells.primalFracture.maelstromMod
+				resourceMultMod = spells.primalFracture.resourceMod
 			end
 		end
 
 		local currentTime = GetTime()
 		snapshotData.casting.startTime = currentTime
-		snapshotData.casting.resourceRaw = (spell.maelstrom + maelstromMod) * maelstromMultMod
-		snapshotData.casting.resourceFinal = (spell.maelstrom + maelstromMod) * maelstromMultMod
+		snapshotData.casting.resourceRaw = (spell.resource + resourceMod) * resourceMultMod
+		snapshotData.casting.resourceFinal = (spell.resource + resourceMod) * resourceMultMod
 		snapshotData.casting.spellId = spell.id
 		snapshotData.casting.icon = spell.icon
 	end
@@ -1682,22 +1627,22 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				if currentSpellName == nil then
 					TRB.Functions.Character:ResetCastingSnapshotData()
 					return false
-					--See shaman implementation for handling channeled spells
+					--See Priest implementation for handling channeled spells
 				else
 					if currentSpellId == spells.lightningBolt.id then
-						FillSnapshotDataCasting(spells.lightningBolt, spells.flowOfPower.maelstromMod.base[TRB.Data.talents[spells.flowOfPower.id].currentRank].lightningBolt)
+						FillSnapshotDataCasting(spells.lightningBolt, spells.flowOfPower.resourceMod.base[talents.talents[spells.flowOfPower.id].currentRank].lightningBolt)
 
 						if snapshots[spells.surgeOfPower.id].buff.isActive then
-							snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw + ((spells.lightningBolt.overload + spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[spells.flowOfPower.id].currentRank].lightningBolt) * 2)
-							snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + ((spells.lightningBolt.overload + spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[spells.flowOfPower.id].currentRank].lightningBolt) * 2)
+							snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw + ((spells.lightningBolt.overload + spells.flowOfPower.resourceMod.overload[talents.talents[spells.flowOfPower.id].currentRank].lightningBolt) * 2)
+							snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + ((spells.lightningBolt.overload + spells.flowOfPower.resourceMod.overload[talents.talents[spells.flowOfPower.id].currentRank].lightningBolt) * 2)
 						end
 						
 						if snapshots[spells.powerOfTheMaelstrom.id].buff.isActive then
-							snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw + spells.lightningBolt.overload + spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[spells.flowOfPower.id].currentRank].lightningBolt
-							snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.lightningBolt.overload + spells.flowOfPower.maelstromMod.overload[TRB.Data.talents[spells.flowOfPower.id].currentRank].lightningBolt
+							snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw + spells.lightningBolt.overload + spells.flowOfPower.resourceMod.overload[talents.talents[spells.flowOfPower.id].currentRank].lightningBolt
+							snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.lightningBolt.overload + spells.flowOfPower.resourceMod.overload[talents.talents[spells.flowOfPower.id].currentRank].lightningBolt
 						end
 					elseif currentSpellId == spells.lavaBurst.id then
-						FillSnapshotDataCasting(spells.lavaBurst, spells.flowOfPower.maelstromMod.base[TRB.Data.talents[spells.flowOfPower.id].currentRank].lavaBurst)
+						FillSnapshotDataCasting(spells.lavaBurst, spells.flowOfPower.resourceMod.base[talents.talents[spells.flowOfPower.id].currentRank].lavaBurst)
 					elseif currentSpellId == spells.elementalBlast.id then
 						FillSnapshotDataCasting(spells.elementalBlast)
 					elseif currentSpellId == spells.icefury.id then
@@ -1730,7 +1675,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 						snapshotData.casting.resourceRaw = snapshotData.casting.resourceRaw * snapshots[spells.chainLightning.id].attributes.targetsHit
 						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * snapshots[spells.chainLightning.id].attributes.targetsHit
-					elseif currentSpellId == spells.hex.id and TRB.Functions.Talent:IsTalentActive(spells.inundate) and affectingCombat then
+					elseif currentSpellId == spells.hex.id and talents:IsTalentActive(spells.inundate) and affectingCombat then
 						FillSnapshotDataCasting(spells.hex)
 					else
 						TRB.Functions.Character:ResetCastingSnapshotData()
@@ -1795,7 +1740,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		snapshots[spells.icefury.id].buff:GetRemainingTime(currentTime)
 
 		TRB.Data.character.earthShockThreshold = TRB.Data.character.earthShockThreshold
-		TRB.Data.character.earthquakeThreshold = -(spells.earthquake.maelstrom - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].earthquake)
+		TRB.Data.character.earthquakeThreshold = -(spells.earthquake.resource - spells.eyeOfTheStorm.resourceMod[talents.talents[spells.eyeOfTheStorm.id].currentRank].earthquake)
 	end
 
 	local function UpdateSnapshot_Enhancement()
@@ -1896,9 +1841,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					local pairOffset = 0
 					for k, v in pairs(spells) do
 						local spell = spells[k]
-						if spell ~= nil and spell.id ~= nil and spell.maelstrom ~= nil and spell.maelstrom < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							pairOffset = (spell.thresholdId - 1) * 3
-							local resourceAmount = spell.maelstrom
+							local resourceAmount = spell.resource
 							local currentResource = snapshotData.attributes.resource
 							--TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
@@ -1908,12 +1853,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.id == spells.earthShock.id then
-									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+									if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
-									elseif TRB.Functions.Talent:IsTalentActive(spells.elementalBlast) then
+									elseif talents:IsTalentActive(spells.elementalBlast) then
 										showThreshold = false
 									else
-										resourceAmount = resourceAmount - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].earthShock
+										resourceAmount = resourceAmount - spells.eyeOfTheStorm.resourceMod[talents.talents[spells.eyeOfTheStorm.id].currentRank].earthShock
 										
 										if currentResource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
@@ -1923,10 +1868,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 										end
 									end
 								elseif spell.id == spells.elementalBlast.id then
-									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+									if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									else
-										resourceAmount = resourceAmount - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].elementalBlast
+										resourceAmount = resourceAmount - spells.eyeOfTheStorm.resourceMod[talents.talents[spells.eyeOfTheStorm.id].currentRank].elementalBlast
 										
 										if currentResource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
@@ -1936,10 +1881,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 										end
 									end
 								elseif spell.id == spells.earthquake.id then
-									if spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+									if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
 									else
-										resourceAmount = resourceAmount - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].earthquake
+										resourceAmount = resourceAmount - spells.eyeOfTheStorm.resourceMod[talents.talents[spells.eyeOfTheStorm.id].currentRank].earthquake
 
 										if snapshots[spells.echoesOfGreatSundering.id].buff.isActive then
 											thresholdColor = specSettings.colors.threshold.echoesOfGreatSundering
@@ -1954,9 +1899,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 									end
 								end
 							--The rest isn't used. Keeping it here for consistency until I can finish abstracting this whole mess out
-							elseif spell.isTalent and not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+							elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 								showThreshold = false
-							elseif spell.isPvp and (not TRB.Data.character.isPvp or not TRB.Functions.Talent:IsTalentActive(spell)) then
+							elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.hasCooldown then
 								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
@@ -2085,9 +2030,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = specSettings.colors.comboPoints.final
 							end
-						elseif snapshotData.attributes.resource2+1 == x then
-							local partial = UnitPartialPower("player", Enum.PowerType.Essence)
-							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
 						else
 							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 						end
@@ -2355,7 +2297,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						end
 					elseif spellId == spells.icefury.id then
 						snapshots[spells.icefury.id].buff:Initialize(type)
-						snapshots[spells.icefury.id].attributes.maelstrom = snapshots[spells.icefury.id].buff.stacks * spells.frostShock.maelstrom
+						snapshots[spells.icefury.id].attributes.resource = snapshots[spells.icefury.id].buff.stacks * spells.frostShock.resource
 					elseif spellId == spells.stormkeeper.id then
 						snapshots[spells.stormkeeper.id].buff:Initialize(type)
 					elseif spellId == spells.surgeOfPower.id then
@@ -2427,7 +2369,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local specId = GetSpecialization()
 
 		if specId == 1 then
-			specCache.elemental.talents = TRB.Functions.Talent:GetTalents()
+			specCache.elemental.talents:GetTalents()
 			FillSpellData_Elemental()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.elemental)
 
@@ -2442,11 +2384,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.elemental)
 			
 			if TRB.Data.barConstructedForSpec ~= "elemental" then
+				talents = specCache.elemental.talents
 				TRB.Data.barConstructedForSpec = "elemental"
 				ConstructResourceBar(specCache.elemental.settings)
 			end
 		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
-			specCache.enhancement.talents = TRB.Functions.Talent:GetTalents()
+			specCache.enhancement.talents:GetTalents()
 			FillSpellData_Enhancement()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.enhancement)
 						
@@ -2461,11 +2404,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.enhancement)
 
 			if TRB.Data.barConstructedForSpec ~= "enhancement" then
+				talents = specCache.enhancement.talents
 				TRB.Data.barConstructedForSpec = "enhancement"
 				ConstructResourceBar(specCache.enhancement.settings)
 			end
 		elseif specId == 3 then
-			specCache.restoration.talents = TRB.Functions.Talent:GetTalents()
+			specCache.restoration.talents:GetTalents()
 			FillSpellData_Restoration()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.restoration)
 
@@ -2480,6 +2424,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.shaman.restoration)
 
 			if TRB.Data.barConstructedForSpec ~= "restoration" then
+				talents = specCache.restoration.talents
 				TRB.Data.barConstructedForSpec = "restoration"
 				ConstructResourceBar(specCache.restoration.settings)
 			end
@@ -2501,12 +2446,34 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 
-					local settings = TRB.Options.Shaman.LoadDefaultSettings()
-					if TwintopInsanityBarSettings then
+					if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
 						TRB.Options:PortForwardSettings()
+
+						local settings = TRB.Options.Shaman.LoadDefaultSettings(false)
+
+						if TwintopInsanityBarSettings.shaman == nil or
+							TwintopInsanityBarSettings.shaman.elemental == nil or
+							TwintopInsanityBarSettings.shaman.elemental.displayText == nil then
+							settings.shaman.elemental.displayText.barText = TRB.Options.Shaman.ElementalLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.core.experimental.specs.shaman.enhancement and
+							(TwintopInsanityBarSettings.shaman == nil or
+							TwintopInsanityBarSettings.shaman.enhancement == nil or
+							TwintopInsanityBarSettings.shaman.enhancement.displayText == nil) then
+							settings.shaman.enhancement.displayText.barText = TRB.Options.Shaman.EnhancementLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.shaman == nil or
+							TwintopInsanityBarSettings.shaman.restoration == nil or
+							TwintopInsanityBarSettings.shaman.restoration.displayText == nil then
+							settings.shaman.restoration.displayText.barText = TRB.Options.Shaman.RestorationLoadDefaultBarTextSimpleSettings()
+						end
+
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
+						local settings = TRB.Options.Shaman.LoadDefaultSettings(true)
 						TRB.Data.settings = settings
 					end
 					FillSpecializationCache()
@@ -2575,10 +2542,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spells.earthShock.thresholdId], spells.earthShock.settingKey, TRB.Data.settings.shaman.elemental)
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spells.elementalBlast.thresholdId], spells.elementalBlast.settingKey, TRB.Data.settings.shaman.elemental)
 
-			if (TRB.Functions.Talent:IsTalentActive(spells.elementalBlast) and spells.elementalBlast.maelstrom < TRB.Data.character.maxResource) then
-				TRB.Data.character.earthShockThreshold = -(spells.elementalBlast.maelstrom - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].elementalBlast)
+			if (talents:IsTalentActive(spells.elementalBlast) and spells.elementalBlast.resource < TRB.Data.character.maxResource) then
+				TRB.Data.character.earthShockThreshold = -(spells.elementalBlast.resource - spells.eyeOfTheStorm.resourceMod[talents.talents[spells.eyeOfTheStorm.id].currentRank].elementalBlast)
 			else
-				TRB.Data.character.earthShockThreshold = -(spells.earthShock.maelstrom - spells.eyeOfTheStorm.maelstromMod[TRB.Data.talents[spells.eyeOfTheStorm.id].currentRank].earthShock)
+				TRB.Data.character.earthShockThreshold = -(spells.earthShock.resource - spells.eyeOfTheStorm.resourceMod[talents.talents[spells.eyeOfTheStorm.id].currentRank].earthShock)
 			end
 		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
 			TRB.Data.character.specName = "enhancement"
@@ -2808,7 +2775,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					(snapshotData.casting.resourceRaw ~= nil and (snapshotData.casting.resourceRaw > 0 or snapshotData.casting.spellId == spells.chainLightning.id or snapshotData.casting.spellId == spells.lavaBeam.id)) then
 					valid = true
 				end
-			elseif var == "$overcap" or var == "$insanityOvercap" or var == "$resourceOvercap" then
+			elseif var == "$overcap" or var == "$maelstromOvercap" or var == "$resourceOvercap" then
 				local threshold = ((snapshotData.attributes.resource / TRB.Data.resourceFactor) + snapshotData.casting.resourceFinal)
 				if settings.overcap.mode == "relative" and (TRB.Data.character.maxResource + settings.overcap.relative) < threshold then
 					return true
@@ -2886,7 +2853,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				if snapshotData.attributes.resource > 0 then
 					valid = true
 				end
-			elseif var == "$regen" or var == "$regenMana" or var == "$manaRegen" then
+			elseif var == "$regen" then
 				if snapshotData.attributes.resource < TRB.Data.character.maxResource and
 					((settings.generation.mode == "time" and settings.generation.time > 0) or
 					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
@@ -3024,6 +2991,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		return valid
+	end
+
+	function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+		local specId = GetSpecialization()
+		local settings = TRB.Data.settings.shaman
+		local spells = TRB.Data.spells
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+		if specId == 1 then
+		elseif specId == 2 then
+		elseif specId == 3 then
+		end
+		return nil
 	end
 
 	--HACK to fix FPS

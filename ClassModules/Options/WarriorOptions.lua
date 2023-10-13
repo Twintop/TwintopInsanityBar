@@ -10,10 +10,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	local passiveFrame = TRB.Frames.passiveFrame
 	local barBorderFrame = TRB.Frames.barBorderFrame
 
-	local leftTextFrame = TRB.Frames.leftTextFrame
-	local middleTextFrame = TRB.Frames.middleTextFrame
-	local rightTextFrame = TRB.Frames.rightTextFrame
-
 	local resourceFrame = TRB.Frames.resourceFrame
 	local passiveFrame = TRB.Frames.passiveFrame
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
@@ -33,63 +29,164 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 	]]
 
 	local function ArmsLoadDefaultBarTextSimpleSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock=true,
-			fontFaceLock=true,
-			left={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
 				text="{$passive}[$passive+]{$casting}[$casting + ]{$passive}[$passive + ]$rage",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
+	TRB.Options.Warrior.ArmsLoadDefaultBarTextSimpleSettings = ArmsLoadDefaultBarTextSimpleSettings
 
 	local function ArmsLoadDefaultBarTextAdvancedSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock = false,
-			fontFaceLock = true,
-			left = {
-				text = "#deepWounds $deepWoundsCount   $haste% ($gcd)||n{$rend}[#rend $rendCount   ][          ]{$ttd}[TTD: $ttd][ ]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="#deepWounds $deepWoundsCount   $haste% ($gcd)||n{$rend}[#rend $rendCount   ][          ]{$ttd}[TTD: $ttd][ ]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle = {
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="{$suddenDeathTime}[#suddenDeath $suddenDeathTime #suddenDeath]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right = {
-				text = "{$casting}[#casting$casting+]$rage",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 22
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="{$casting}[#casting$casting+]$rage",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=22,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
 
-	local function ArmsLoadDefaultSettings()
+	local function ArmsLoadDefaultSettings(includeBarText)
 		local settings = {
 			hastePrecision=2,
-			ragePrecision=0,
+			resourcePrecision=0,
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
@@ -177,9 +274,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					overThreshold="FF00FF00",
 					overThresholdEnabled=false,
 					overcapEnabled=true,
-					left="FFFFFFFF",
-					middle="FFFFFFFF",
-					right="FFFFFFFF",
 					dots={
 						enabled=true,
 						up="FFFFFFFF",
@@ -204,7 +298,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					outOfRange="FF440000"
 				}
 			},
-			displayText = {},
+			displayText={
+				default = {
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = "Left",
+					fontSize=18,
+					color = "FFFFFFFF",
+				},
+				barText = {}
+			},
 			audio = {
 				overcap={
 					name = "Overcap",
@@ -234,7 +338,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			}
 		}
 
-		settings.displayText = ArmsLoadDefaultBarTextSimpleSettings()
+		if includeBarText then
+			settings.displayText.barText = ArmsLoadDefaultBarTextSimpleSettings()
+		end
+
 		return settings
 	end
 
@@ -244,63 +351,164 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	
 	local function FuryLoadDefaultBarTextSimpleSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock=true,
-			fontFaceLock=true,
-			left={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="{$enrageTime}[$enrageTime sec]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
 				text="{$passive}[$passive+]{$casting}[$casting + ]{$passive}[$passive + ]$rage",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
+	TRB.Options.Warrior.FuryLoadDefaultBarTextSimpleSettings = FuryLoadDefaultBarTextSimpleSettings
 
 	local function FuryLoadDefaultBarTextAdvancedSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock = false,
-			fontFaceLock = true,
-			left = {
-				text = "$haste% ($gcd)||n{$ttd}[TTD: $ttd][ ]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="$haste% ($gcd)||n{$ttd}[TTD: $ttd][ ]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle = {
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="{$enrageTime}[#enrage $enrageTime #enrage][ ]||n{$whirlwindStacks}[#whirlwind $whirlwindTime ($whirlwindStacks) #whirlwind]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right = {
-				text = "{$ravagerRage}[#ravager$ravagerRage+]{$casting}[#casting$casting+]$rage",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 22
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="{$ravagerRage}[#ravager$ravagerRage+]{$casting}[#casting$casting+]$rage",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=22,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
 
-	local function FuryLoadDefaultSettings()
+	local function FuryLoadDefaultSettings(includeBarText)
 		local settings = {
 			hastePrecision=2,
-			ragePrecision=0,
+			resourcePrecision=0,
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
@@ -376,9 +584,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					overThreshold="FF00FF00",
 					overThresholdEnabled=false,
 					overcapEnabled=true,
-					left="FFFFFFFF",
-					middle="FFFFFFFF",
-					right="FFFFFFFF",
 					dots={
 						enabled=true,
 						up="FFFFFFFF",
@@ -404,7 +609,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					outOfRange="FF440000"
 				}
 			},
-			displayText = {},
+			displayText={
+				default = {
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = "Left",
+					fontSize=18,
+					color = "FFFFFFFF",
+				},
+				barText = {}
+			},
 			audio = {
 				overcap={
 					name = "Overcap",
@@ -434,7 +649,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			}
 		}
 
-		settings.displayText = FuryLoadDefaultBarTextSimpleSettings()
+		if includeBarText then
+			settings.displayText.barText = FuryLoadDefaultBarTextSimpleSettings()
+		end
+
 		return settings
 	end
 
@@ -472,7 +690,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.warrior.arms = nil
+				TRB.Data.settings.warrior.arms = ArmsLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -485,7 +703,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = ArmsLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = ArmsLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -498,7 +716,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = ArmsLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = ArmsLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -511,7 +729,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = ArmsLoadDefaultBarTextNarrowAdvancedSettings()
+				spec.displayText.barText = ArmsLoadDefaultBarTextNarrowAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -567,7 +785,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		local title = ""
 
-		controls.buttons.exportButton_Warrior_Arms_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Warrior_Arms_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Arms_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (Bar Display).", 1, 1, true, false, false, false, false)
 		end)
@@ -827,12 +1045,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		local title = ""
 
-		controls.buttons.exportButton_Warrior_Arms_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Warrior_Arms_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Arms_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (Font & Text).", 1, 1, false, true, false, false, false)
 		end)
 
-		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 1, 1, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 1, 1, yCoord)
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Rage Text Colors", oUi.xCoord, yCoord)
@@ -936,13 +1154,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		title = "Rage Decimal Precision"
-		controls.astralPowerPrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.ragePrecision, 1, 0,
+		controls.resourcePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.resourcePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.astralPowerPrecision:SetScript("OnValueChanged", function(self, value)
+		controls.resourcePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
-			spec.ragePrecision = value
+			spec.resourcePrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.arms = controls
@@ -962,7 +1180,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		local title = ""
 
-		controls.buttons.exportButton_Warrior_Arms_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Warrior_Arms_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Arms_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (Audio & Tracking).", 1, 1, false, false, true, false, false)
 		end)
@@ -1106,60 +1324,18 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 
 		local spec = TRB.Data.settings.warrior.arms
-
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.arms
 		local yCoord = 5
-		local f = nil
-		local namePrefix = "Warrior_Arms"
 
-		controls.buttons.exportButton_Warrior_Arms_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
+		controls.buttons.exportButton_Warrior_Arms_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Arms_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Arms Warrior (Bar Text).", 1, 1, false, false, false, true, false)
 		end)
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-
 		yCoord = yCoord - 30
-		controls.labels.leftText = TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.left = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.left
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.left.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-		yCoord = yCoord - 70
-		controls.labels.middleText = TRB.Functions.OptionsUi:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.middle = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.middle
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.middle.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-		yCoord = yCoord - 70
-		controls.labels.rightText = TRB.Functions.OptionsUi:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.right = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.right
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.right.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
-		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
+		TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 1, 1, yCoord, cache)
 	end
 
 	local function ArmsConstructOptionsPanel(cache)
@@ -1279,7 +1455,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.warrior.fury = nil
+				TRB.Data.settings.warrior.fury = FuryLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1292,7 +1468,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = FuryLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = FuryLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1305,7 +1481,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = FuryLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = FuryLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1318,7 +1494,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = FuryLoadDefaultBarTextNarrowAdvancedSettings()
+				spec.displayText.barText = FuryLoadDefaultBarTextNarrowAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1374,7 +1550,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		local title = ""
 
-		controls.buttons.exportButton_Warrior_Fury_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Warrior_Fury_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Fury_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Fury Warrior (Bar Display).", 1, 2, true, false, false, false, false)
 		end)
@@ -1597,12 +1773,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		local title = ""
 
-		controls.buttons.exportButton_Warrior_Fury_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Warrior_Fury_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Fury_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Fury Warrior (Font & Text).", 1, 2, false, true, false, false, false)
 		end)
 
-		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 1, 2, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 1, 2, yCoord)
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Rage Text Colors", oUi.xCoord, yCoord)
@@ -1671,13 +1847,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		title = "Rage Decimal Precision"
-		controls.astralPowerPrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.ragePrecision, 1, 0,
+		controls.resourcePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.resourcePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
-		controls.astralPowerPrecision:SetScript("OnValueChanged", function(self, value)
+		controls.resourcePrecision:SetScript("OnValueChanged", function(self, value)
 			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
 			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
 			self.EditBox:SetText(value)
-			spec.ragePrecision = value
+			spec.resourcePrecision = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.fury = controls
@@ -1697,7 +1873,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		local title = ""
 
-		controls.buttons.exportButton_Warrior_Fury_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Warrior_Fury_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Fury_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Fury Warrior (Audio & Tracking).", 1, 2, false, false, true, false, false)
 		end)
@@ -1842,60 +2018,18 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 
 		local spec = TRB.Data.settings.warrior.fury
-
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.fury
 		local yCoord = 5
-		local f = nil
-		local namePrefix = "Warrior_Fury"
 
-		controls.buttons.exportButton_Warrior_Fury_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
+		controls.buttons.exportButton_Warrior_Fury_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Fury_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Fury Warrior (Bar Text).", 1, 2, false, false, false, true, false)
 		end)
 
-		controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-
 		yCoord = yCoord - 30
-		controls.labels.leftText = TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.left = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.left
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.left.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-		yCoord = yCoord - 70
-		controls.labels.middleText = TRB.Functions.OptionsUi:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.middle = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.middle
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.middle.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-		yCoord = yCoord - 70
-		controls.labels.rightText = TRB.Functions.OptionsUi:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.right = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.right
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.right.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
-		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
+		TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 1, 2, yCoord, cache)
 	end
 
 	local function FuryConstructOptionsPanel(cache)

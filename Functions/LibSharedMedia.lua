@@ -12,29 +12,17 @@ function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
 	]]
 	
 	-- Text
-	if settings.displayText ~= nil then
-		if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.FONT, settings.displayText.left.fontFaceName) then
-			settings.displayText.left.fontFace = TRB.Details.addonData.libs.SharedMedia.MediaTable.font[settings.displayText.left.fontFaceName]
-		else
-			print("TRB: |cFFFF5555Invalid font (" .. specName .. " left bar text): '|r" .. settings.displayText.left.fontFaceName .. "|cFFFF5555'. Resetting to a default font.|r")
-			settings.displayText.left.fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
-			settings.displayText.left.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
-		end
-		
-		if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.FONT, settings.displayText.middle.fontFaceName) then
-			settings.displayText.middle.fontFace = TRB.Details.addonData.libs.SharedMedia.MediaTable.font[settings.displayText.middle.fontFaceName]
-		else
-			print("TRB: |cFFFF5555Invalid font (" .. specName .. " middle bar text): '|r" .. settings.displayText.middle.fontFaceName .. "|cFFFF5555'. Resetting to a default font.|r")
-			settings.displayText.middle.fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
-			settings.displayText.middle.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
-		end
-		
-		if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.FONT, settings.displayText.right.fontFaceName) then
-			settings.displayText.right.fontFace = TRB.Details.addonData.libs.SharedMedia.MediaTable.font[settings.displayText.right.fontFaceName]
-		else
-			print("TRB: |cFFFF5555Invalid font (" .. specName .. " right bar text): '|r" .. settings.displayText.right.fontFaceName .. "|cFFFF5555'. Resetting to a default font.|r")
-			settings.displayText.right.fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
-			settings.displayText.right.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
+	if settings.displayText ~= nil and settings.displayText.barText ~= nil then
+		---@type TRB.Classes.DisplayTextEntry[]
+		local barText = settings.displayText.barText
+		for idx, bt in pairs(barText) do
+			if TRB.Details.addonData.libs.SharedMedia:IsValid(TRB.Details.addonData.libs.SharedMedia.MediaType.FONT, bt.fontFaceName) then
+				bt.fontFace = TRB.Details.addonData.libs.SharedMedia.MediaTable.font[bt.fontFaceName]
+			else
+				print("TRB: |cFFFF5555Invalid font (" .. specName .. " bar text '"..bt.name.."'): '|r" .. bt.fontFaceName .. "|cFFFF5555'. Resetting to a default font.|r")
+				bt.fontFace = TRB.Data.constants.defaultSettings.fonts.fontFace
+				bt.fontFaceName = TRB.Data.constants.defaultSettings.fonts.fontFaceName
+			end
 		end
 	end
 

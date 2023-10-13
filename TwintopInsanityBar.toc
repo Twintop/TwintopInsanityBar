@@ -4,7 +4,7 @@
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 10.2.0.0
 ## X-ReleaseType: beta01
-## X-ReleaseDate: October 01, 2023
+## X-ReleaseDate: October 13, 2023
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -22,14 +22,19 @@ Libs\base64.lua
 Libs\json.lua
 Libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
 Libs\LibMarkdown\LibMarkdown.xml
-
-Init.lua
+Libs\LibScrollingTable\lib-st.xml
 
 Classes\Snapshot.lua
 Classes\TimeToDie.lua
 Classes\Target.lua
+Classes\Talent.lua
+
+Classes\Settings.lua
+Classes\SpecCache.lua
 
 ClassModules\Classes\HealerClasses.lua
+
+Init.lua
 
 Functions\Aura.lua
 Functions\Bar.lua
