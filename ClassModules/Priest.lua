@@ -1585,9 +1585,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$sanctifyTime", description = "Time left on Holy Word: Sanctify's cooldown", printInSettings = false, color = false },
 			{ variable = "$holyWordSanctifyTime", description = "Time left on Holy Word: Sanctify's cooldown", printInSettings = false, color = false },
 			
+			{ variable = "$hwSanctifyCharges", description = "Number of charges left on Holy Word: Sanctify", printInSettings = true, color = false },
+			{ variable = "$sanctifyCharges", description = "Number of charges left on Holy Word: Sanctify", printInSettings = false, color = false },
+			{ variable = "$holyWordSanctifyCharges", description = "Number of charges left on Holy Word: Sanctify", printInSettings = false, color = false },
+			
 			{ variable = "$hwSerenityTime", description = "Time left on Holy Word: Serenity's cooldown", printInSettings = true, color = false },
 			{ variable = "$serenityTime", description = "Time left on Holy Word: Serenity's cooldown", printInSettings = false, color = false },
 			{ variable = "$holyWordSerenityTime", description = "Time left on Holy Word: Serenity's cooldown", printInSettings = false, color = false },
+			
+			{ variable = "$hwSerenityCharges", description = "Number of charges left on Holy Word: Serenity", printInSettings = true, color = false },
+			{ variable = "$serenityCharges", description = "Number of charges left on Holy Word: Serenity", printInSettings = false, color = false },
+			{ variable = "$holyWordSerenityCharges", description = "Number of charges left on Holy Word: Serenity", printInSettings = false, color = false },
 
 			{ variable = "$apotheosisTime", description = "Time remaining on Apotheosis", printInSettings = true, color = false },
 			
@@ -2477,6 +2485,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$hwSerenityTime
 		local _hwSerenityTime = snapshots[spells.holyWordSerenity.id].cooldown.remaining
 		local hwSerenityTime = string.format("%.1f", _hwSerenityTime)
+		
+		--$hwSanctifyCharges
+		local _hwSanctifyCharges = snapshots[spells.holyWordSanctify.id].cooldown.charges
+		local hwSanctifyCharges = string.format("%.0f", _hwSanctifyCharges)
+		
+		--$hwSerenityCharges
+		local _hwSerenityCharges = snapshots[spells.holyWordSerenity.id].cooldown.charges
+		local hwSerenityCharges = string.format("%.0f", _hwSerenityCharges)
 
 		--$apotheosisTime
 		local _apotheosisTime = snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
@@ -2579,6 +2595,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$hwSerenityTime"] = hwSerenityTime
 		lookup["$serenityTime"] = hwSerenityTime
 		lookup["$holyWordSerenityTime"] = hwSerenityTime
+		lookup["$hwSanctifyCharges"] = hwSanctifyCharges
+		lookup["$sanctifyCharges"] = hwSanctifyCharges
+		lookup["$holyWordSanctifyCharges"] = hwSanctifyCharges
+		lookup["$hwSerenityCharges"] = hwSerenityCharges
+		lookup["$serenityCharges"] = hwSerenityCharges
+		lookup["$holyWordSerenityCharges"] = hwSerenityCharges
 		lookup["$sohMana"] = sohMana
 		lookup["$sohTime"] = sohTime
 		lookup["$sohTicks"] = sohTicks
@@ -2633,6 +2655,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$hwSerenityTime"] = _hwSerenityTime
 		lookupLogic["$serenityTime"] = _hwSerenityTime
 		lookupLogic["$holyWordSerenityTime"] = _hwSerenityTime
+		lookupLogic["$hwSanctifyCharges"] = _hwSanctifyCharges
+		lookupLogic["$sanctifyCharges"] = _hwSanctifyCharges
+		lookupLogic["$holyWordSanctifyCharges"] = _hwSanctifyCharges
+		lookupLogic["$hwSerenityCharges"] = _hwSerenityCharges
+		lookupLogic["$serenityCharges"] = _hwSerenityCharges
+		lookupLogic["$holyWordSerenityCharges"] = _hwSerenityCharges
 		lookupLogic["$sohMana"] = _sohMana
 		lookupLogic["$sohTime"] = _sohTime
 		lookupLogic["$sohTicks"] = _sohTicks
@@ -4410,6 +4438,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
+
 					if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= TRB.Data.character.devouringPlagueThreshold then
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.devouringPlagueUsableCasting, true))
 					else
@@ -4482,6 +4511,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if destGUID == TRB.Data.character.guid then
 				if (specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (specId == 2 and TRB.Data.barConstructedForSpec == "holy") then -- Let's check raid effect mana stuff
 					if settings.passiveGeneration.symbolOfHope and (spellId == spells.symbolOfHope.tickId or spellId == spells.symbolOfHope.id) then
+						---@diagnostic disable-next-line: param-type-mismatch
 						local castByToken = UnitTokenFromGUID(sourceGUID)
 						local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 						symbolOfHope.buff:Initialize(type, nil, castByToken)
@@ -4542,6 +4572,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if specId == 1 and TRB.Data.barConstructedForSpec == "discipline" then
 					if spellId == spells.purgeTheWicked.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
+---@diagnostic disable-next-line: param-type-mismatch
 							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					end
@@ -4576,10 +4607,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.vampiricTouch.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
+							---@diagnostic disable-next-line: param-type-mismatch
 							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					elseif spellId == spells.devouringPlague.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
+							---@diagnostic disable-next-line: param-type-mismatch
 							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
 					elseif settings.auspiciousSpiritsTracker and talents:IsTalentActive(spells.auspiciousSpirits) and spellId == spells.auspiciousSpirits.idSpawn and type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
@@ -4592,6 +4625,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 						triggerUpdate = true
 					elseif settings.auspiciousSpiritsTracker and talents:IsTalentActive(spells.auspiciousSpirits) and spellId == spells.auspiciousSpirits.idImpact and (type == "SPELL_DAMAGE" or type == "SPELL_MISSED" or type == "SPELL_ABSORBED") then --Auspicious Spirit Hit
+						---@diagnostic disable-next-line: param-type-mismatch
 						if targetData:CheckTargetExists(destGUID) then
 							targetData.targets[destGUID].spells[spells.auspiciousSpirits.id].count = targetData.targets[destGUID].spells[spells.auspiciousSpirits.id].count - 1
 							targetData.count[spells.auspiciousSpirits.id] = targetData.count[spells.auspiciousSpirits.id] - 1
@@ -4647,6 +4681,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				-- Spec agnostic
 				if spellId == spells.shadowWordPain.id then
 					if TRB.Functions.Class:InitializeTarget(destGUID) then
+						---@diagnostic disable-next-line: param-type-mismatch
 						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 					end
 				end
@@ -4664,6 +4699,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
+				---@diagnostic disable-next-line: param-type-mismatch
 				targetData:Remove(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
@@ -4894,7 +4930,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		else
 			TRB.Data.barConstructedForSpec = nil
 		end
-		
+
 		TRB.Functions.Class:EventRegistration()
 	end
 
@@ -4910,12 +4946,34 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 
-					local settings = TRB.Options.Priest.LoadDefaultSettings()
-					if TwintopInsanityBarSettings then
+					if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
 						TRB.Options:PortForwardSettings()
+
+						local settings = TRB.Options.Priest.LoadDefaultSettings(false)
+
+						if TwintopInsanityBarSettings.core.experimental.specs.priest.discipline and
+							(TwintopInsanityBarSettings.priest == nil or
+							TwintopInsanityBarSettings.priest.discipline == nil or
+							TwintopInsanityBarSettings.priest.discipline.displayText == nil) then
+							settings.priest.discipline.displayText.barText = TRB.Options.Priest.DisciplineLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.priest == nil or
+							TwintopInsanityBarSettings.priest.holy == nil or
+							TwintopInsanityBarSettings.priest.holy.displayText == nil then
+							settings.priest.holy.displayText.barText = TRB.Options.Priest.HolyLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.priest == nil or
+							TwintopInsanityBarSettings.priest.shadow == nil or
+							TwintopInsanityBarSettings.priest.shadow.displayText == nil then
+							settings.priest.shadow.displayText.barText = TRB.Options.Priest.ShadowLoadDefaultBarTextSimpleSettings()
+						end
+
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
+						local settings = TRB.Options.Priest.LoadDefaultSettings(true)
 						TRB.Data.settings = settings
 					end
 					FillSpecializationCache()
@@ -5141,21 +5199,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	function TRB.Functions.Class:EventRegistration()
 		local specId = GetSpecialization()
+		local specSettings
 		if specId == 1 and TRB.Data.settings.core.enabled.priest.discipline == true and TRB.Data.settings.core.experimental.specs.priest.discipline then
-			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.discipline)
+			specSettings = TRB.Data.settings.priest.discipline
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
 			TRB.Data.resource2 = nil
 			TRB.Data.resource2Factor = nil
 		elseif specId == 2 and TRB.Data.settings.core.enabled.priest.holy == true then
-			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.holy)
+			specSettings = TRB.Data.settings.priest.holy
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
 			TRB.Data.resource2 = "CUSTOM"
 		elseif specId == 3 and TRB.Data.settings.core.enabled.priest.shadow == true then
-			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.shadow)
+			specSettings = TRB.Data.settings.priest.shadow
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Resource
 			TRB.Data.resourceFactor = 100
@@ -5166,8 +5225,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		if TRB.Data.specSupported then
+			TRB.Functions.BarText:IsTtdActive(specSettings)
 			TRB.Functions.Class:CheckCharacter()
 
+			TRB.Functions.BarText:CreateBarTextFrames(specSettings)
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 			TRB.Frames.barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
@@ -5451,16 +5512,24 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if snapshots[spells.apotheosis.id].buff.isActive then
 					valid = true
 				end
-			elseif var == "$hwChastiseTime" then
+			elseif var == "$hwChastiseTime" or var == "$chastiseTime" or var == "$holyWordChastiseTime" then
 				if snapshots[spells.holyWordChastise.id].cooldown.remaining > 0 then
 					valid = true
 				end
-			elseif var == "$hwSerenityTime" then
+			elseif var == "$hwSerenityTime" or var == "$serenityTime" or var == "$holyWordSerenityTime" then
 				if snapshots[spells.holyWordSerenity.id].cooldown.remaining > 0 then
 					valid = true
 				end
-			elseif var == "$hwSanctifyTime" then
+			elseif var == "$hwSanctifyTime" or var == "$sanctifyTime" or var == "$holyWordSanctifyTime" then
 				if snapshots[spells.holyWordSanctify.id].cooldown.remaining > 0 then
+					valid = true
+				end
+			elseif var == "$hwChastiseCharges" or var == "$chastiseCharges" or var == "$holyWordChastiseCharges" then
+				if snapshots[spells.holyWordChastise.id].cooldown.charges > 0 then
+					valid = true
+				end
+			elseif var == "$hwSerenityCharges" or var == "$serenityCharges" or var == "$holyWordSerenityCharges" then
+				if snapshots[spells.holyWordSerenity.id].cooldown.charges > 0 then
 					valid = true
 				end
 			end
@@ -5641,6 +5710,64 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end
 		return valid
+	end
+
+	function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+		local specId = GetSpecialization()
+		local settings = TRB.Data.settings.priest
+		local spells = TRB.Data.spells
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+		if specId == 1 then
+		elseif specId == 2 then
+			if TRB.Functions.String:StartsWith(relativeToFrame, "HolyWord_") then
+				if TRB.Functions.String:Contains(relativeToFrame, "Serenity") and settings.holy.colors.comboPoints.holyWordSerenityEnabled and talents:IsTalentActive(spells.holyWordSerenity) then
+					if TRB.Functions.String:EndsWith(relativeToFrame, "1") then
+						return _G["TwintopResourceBarFrame_ComboPoint_1"]
+					elseif TRB.Functions.String:EndsWith(relativeToFrame, "2") and talents:IsTalentActive(spells.miracleWorker) then
+						return _G["TwintopResourceBarFrame_ComboPoint_2"]
+					end
+				elseif TRB.Functions.String:Contains(relativeToFrame, "Sanctify") and settings.holy.colors.comboPoints.holyWordSanctifyEnabled and talents:IsTalentActive(spells.holyWordSanctify) then
+					if TRB.Functions.String:EndsWith(relativeToFrame, "1") then
+						local nextHwCount = 1
+						if settings.holy.colors.comboPoints.holyWordSerenityEnabled and talents:IsTalentActive(spells.holyWordSerenity) then
+							nextHwCount = nextHwCount + 1
+							if talents:IsTalentActive(spells.miracleWorker) then
+								nextHwCount = nextHwCount + 1
+							end
+						end
+						return _G["TwintopResourceBarFrame_ComboPoint_"..nextHwCount]
+					elseif TRB.Functions.String:EndsWith(relativeToFrame, "2") and talents:IsTalentActive(spells.miracleWorker) then
+						local nextHwCount = 2
+						if settings.holy.colors.comboPoints.holyWordSerenityEnabled and talents:IsTalentActive(spells.holyWordSerenity) then
+							nextHwCount = nextHwCount + 1
+							if talents:IsTalentActive(spells.miracleWorker) then
+								nextHwCount = nextHwCount + 1
+							end
+						end
+						return _G["TwintopResourceBarFrame_ComboPoint_"..nextHwCount]
+					end
+				elseif TRB.Functions.String:EndsWith(relativeToFrame, "Chastise_1") and settings.holy.colors.comboPoints.holyWordChastiseEnabled and talents:IsTalentActive(spells.holyWordChastise) then
+					local nextHwCount = 1
+					if settings.holy.colors.comboPoints.holyWordSerenityEnabled and talents:IsTalentActive(spells.holyWordSerenity) then
+						nextHwCount = nextHwCount + 1
+						if talents:IsTalentActive(spells.miracleWorker) then
+							nextHwCount = nextHwCount + 1
+						end
+					end
+					
+					if settings.holy.colors.comboPoints.holyWordSanctifyEnabled and talents:IsTalentActive(spells.holyWordSanctify) then
+						nextHwCount = nextHwCount + 1
+						if talents:IsTalentActive(spells.miracleWorker) then
+							nextHwCount = nextHwCount + 1
+						end
+					end
+					return _G["TwintopResourceBarFrame_ComboPoint_"..nextHwCount]
+				end
+			end
+		elseif specId == 3 then
+		end
+		return nil
 	end
 
 	--HACK to fix FPS

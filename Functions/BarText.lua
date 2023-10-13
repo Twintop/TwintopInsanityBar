@@ -1,5 +1,6 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
+local _, _, classIndexId = UnitClass("player")
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.BarText = {}
 
@@ -449,7 +450,9 @@ local function AddToBarTextCache(input)
 		function(a, b)
 			return string.len(a.variable) > string.len(b.variable)
 		end)
-	while p <= string.len(input) and infinity < 20 do
+	
+	--Only loop through this while we're not at the end of the string AND we haven't done 1000 checks. This is a sanity checker to prevent an infinite run for some reason!
+	while p <= string.len(input) and infinity < 1000 do
 		infinity = infinity + 1
 		local a, b, c, d, z, a1, b1, c1, d1, z1
 		local match = false
@@ -500,7 +503,6 @@ local function AddToBarTextCache(input)
 				end
 			else
 				for x = 1, iconEntries do
-					local len = string.len(barTextVariables.icons[x].variable)
 					z, z1 = string.find(input, barTextVariables.icons[x].variable, a-1)
 					if z ~= nil and z == a then
 						match = true
@@ -518,7 +520,6 @@ local function AddToBarTextCache(input)
 			end
 		elseif b ~= nil and (c == nil or b < c) and (d == nil or b < d) then
 			for x = 1, valueEntries do
-				local len = string.len(barTextValuesVars[x].variable)
 				z, z1 = string.find(input, barTextValuesVars[x].variable, b-1)
 				if z ~= nil and z == b then
 					match = true
@@ -540,7 +541,6 @@ local function AddToBarTextCache(input)
 			end
 		elseif c ~= nil and (d == nil or c < d) then
 			for x = 1, pipeEntries do
-				local len = string.len(barTextVariables.pipe[x].variable)
 				z, z1 = string.find(input, barTextVariables.pipe[x].variable, c-1)
 				if z ~= nil and z == c then
 					match = true
@@ -560,7 +560,6 @@ local function AddToBarTextCache(input)
 			end
 		elseif d ~= nil then
 			for x = 1, percentEntries do
-				local len = string.len(barTextVariables.percent[x].variable)
 				z, z1 = string.find(input, barTextVariables.percent[x].variable, d-1)
 				if z ~= nil and z == d then
 					match = true
@@ -796,64 +795,20 @@ end
 
 function TRB.Functions.BarText:IsTtdActive(settings)
 	local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
+	local found = false
 	if settings ~= nil and settings.displayText ~= nil then
-		if string.find(settings.displayText.left.text, "$ttd") or
-			string.find(settings.displayText.middle.text, "$ttd") or
-			string.find(settings.displayText.right.text, "$ttd") then
-			targetData.ttdIsActive = true
-		else
-			targetData.ttdIsActive = false
-		end
-	else
-		targetData.ttdIsActive = false
-	end
-end
-
-function TRB.Functions.BarText:BarText(settings)
-	if settings ~= nil and settings.colors ~= nil and settings.colors.text ~= nil and settings.displayText ~= nil and
-		settings.displayText.left ~= nil and settings.displayText.middle ~= nil and settings.displayText.right ~= nil then
-		local returnText = {}
-		returnText[0] = {}
-		returnText[1] = {}
-		returnText[2] = {}
-		returnText[0].text = settings.displayText.left.text
-		returnText[1].text = settings.displayText.middle.text
-		returnText[2].text = settings.displayText.right.text
-
-		returnText[0].color = string.format("|c%s", settings.colors.text.left)
-		returnText[1].color = string.format("|c%s", settings.colors.text.middle)
-		returnText[2].color = string.format("|c%s", settings.colors.text.right)
-
-		return GetReturnText(returnText[0]), GetReturnText(returnText[1]), GetReturnText(returnText[2])
-	else
-		return "", "", ""
-	end
-end
-
-function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
-	if settings ~= nil and settings.bar ~= nil then
-		TRB.Functions.BarText:RefreshLookupDataBase(settings)
-		TRB.Functions.RefreshLookupData()
-	
-		if refreshText then
-			local leftText, middleText, rightText = TRB.Functions.BarText:BarText(settings)
-			local leftTextFrame = TRB.Frames.leftTextFrame
-			local middleTextFrame = TRB.Frames.middleTextFrame
-			local rightTextFrame = TRB.Frames.rightTextFrame
-
-			if not pcall(TryUpdateText, leftTextFrame, leftText) then
-				leftTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.left.fontSize, "OUTLINE")
-			end
-
-			if not pcall(TryUpdateText, middleTextFrame, middleText) then
-				middleTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.middle.fontSize, "OUTLINE")
-			end
-
-			if not pcall(TryUpdateText, rightTextFrame, rightText) then
-				rightTextFrame.font:SetFont(settings.displayText.left.fontFace, settings.displayText.right.fontSize, "OUTLINE")
+		local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
+		local entries = TRB.Functions.Table:Length(displayText.barText)
+		if entries > 0 then
+			for i = 1, entries do
+				if string.find(displayText.barText[i].text, "$ttd") then
+					found = true
+					break
+				end
 			end
 		end
 	end
+	targetData.ttdIsActive = found
 end
 
 function TRB.Functions.BarText:IsValidVariableBase(var)
@@ -900,4 +855,133 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 	end
 
 	return valid
+end
+
+function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
+	if settings ~= nil and settings.bar ~= nil then
+		TRB.Functions.BarText:RefreshLookupDataBase(settings)
+		TRB.Functions.RefreshLookupData()
+	
+		if refreshText then
+			---@type Frame[]
+			local textFrames = TRB.Frames.textFrames
+			local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
+
+			local entries = TRB.Functions.Table:Length(displayText.barText)
+			if entries > 0 then
+				for i = 1, entries do
+					local e = displayText.barText[i]
+					local color = e.color
+					
+					if e.useDefaultFontColor then
+						color = displayText.default.color
+					end
+
+					local barText = {
+						text = e.text,
+						color = string.format("|c%s", color)
+					}
+
+					local returnText = GetReturnText(barText)
+
+					local pcallResult = pcall(TryUpdateText, textFrames[i], returnText)
+					
+					textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+					textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+					--[[textFrames[i].font:SetJustifyH(fontJustifyHorizontal)
+					textFrames[i].font:SetFont(fontFace, fontSize, "OUTLINE")
+					textFrames[i].font:ClearAllPoints()
+					textFrames[i].font:SetPoint(relativeTo, relativeToFrame, relativeTo, e.position.xPos, e.position.yPos)]]
+				end
+			end
+		end
+	end
+end
+
+---Builds the required bar text frames
+---@param settings table
+---@param classId integer?
+---@param specId integer?
+function TRB.Functions.BarText:CreateBarTextFrames(settings, classId, specId)
+	-- Only do this if we're on the current class and spec!
+	local _, _, currentClassId = UnitClass("player")
+	local currentSpecId = GetSpecialization()
+
+	if classId ~= nil and specId ~= nil and (currentClassId ~= classId or currentSpecId ~= specId) then
+		return
+	end
+	
+	---@type Frame[]
+	local textFrames = TRB.Frames.textFrames
+	local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
+	
+	local entries = TRB.Functions.Table:Length(displayText.barText)
+	local frameCount = 0
+	if entries > 0 then
+		for i = 1, entries do
+			frameCount = frameCount + 1
+			local e = displayText.barText[i]
+
+			local fontFace = e.fontFace
+			local fontSize = e.fontSize
+			local fontJustifyHorizontal = e.fontJustifyHorizontal
+
+			if e.useDefaultFontFace then
+				fontFace = displayText.default.fontFace
+			end
+
+			if e.useDefaultFontSize then
+				fontSize = displayText.default.fontSize
+			end
+
+			local relativeTo = e.position.relativeTo
+			---@type Frame
+			local relativeToFrame
+			
+			if e.position.relativeToFrame == "UIParent" then
+				relativeToFrame = UIParent
+			elseif e.position.relativeToFrame == "AllComboPoints" then
+			else
+				relativeToFrame = TRB.Functions.Class:GetBarTextFrame(e.position.relativeToFrame)
+
+				if relativeToFrame == nil then
+					relativeToFrame = _G["TwintopResourceBarFrame_"..e.position.relativeToFrame]
+				end
+			end
+			
+			if textFrames[frameCount] == nil then
+				textFrames[frameCount] = CreateFrame("Frame", "TwintopResourceBarFrame_TextFrame"..frameCount, relativeToFrame)
+				---@diagnostic disable-next-line: inject-field
+				textFrames[frameCount].font = TRB.Frames.textFrames[frameCount]:CreateFontString(nil, "BACKGROUND")
+			end
+
+			textFrames[frameCount]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+			textFrames[frameCount]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+
+			if relativeToFrame ~= nil and e.enabled then
+				textFrames[frameCount].font:SetTextColor(255/255, 255/255, 255/255, 1.0)
+				textFrames[frameCount].font:SetJustifyH(fontJustifyHorizontal)
+				textFrames[frameCount].font:SetFont(fontFace, fontSize, "OUTLINE")
+				textFrames[frameCount].font:Show()
+				textFrames[frameCount].font:ClearAllPoints()
+				textFrames[frameCount].font:SetPoint(relativeTo, relativeToFrame, relativeTo, e.position.xPos, e.position.yPos)				
+				textFrames[frameCount]:SetParent(relativeToFrame)
+				textFrames[frameCount]:ClearAllPoints()
+				textFrames[frameCount]:SetAllPoints(textFrames[frameCount].font)
+				textFrames[frameCount]:Show()
+			else
+				textFrames[frameCount]:Hide()
+				textFrames[frameCount].font:Hide()
+			end
+		end
+	end
+	
+	local textFramesEntries = TRB.Functions.Table:Length(textFrames)
+	-- We have extra frames we don't need now, probably because we changed talents/specs/deleted one in config. Hide extras.
+	if textFramesEntries > frameCount then
+		for i = frameCount, textFramesEntries do
+			textFrames[i]:Hide()
+			textFrames[i].font:Hide()
+		end
+	end
 end

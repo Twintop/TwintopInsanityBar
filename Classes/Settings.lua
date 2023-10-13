@@ -47,3 +47,34 @@ function TRB.Classes.GlobalSpecSetting:New(specEnable)
     self.specEnable = specEnable
     return self
 end
+
+---@class TRB.Classes.DisplayText
+---@field public default TRB.Classes.DisplayTextDefault
+---@field public barText TRB.Classes.DisplayTextEntry[]
+TRB.Classes.DisplayText = {}
+
+---@class TRB.Classes.DisplayTextDefault
+---@field public fontFace string
+---@field public fontFaceName string
+---@field public fontJustifyHorizontal string
+---@field public fontJustifyHorizontalName string
+---@field public fontSize integer
+---@field public color string
+
+---@class TRB.Classes.DisplayTextEntry : TRB.Classes.DisplayTextDefault
+---@field public useDefaultFontFace boolean
+---@field public useDefaultFontSize boolean
+---@field public useDefaultFontColor boolean
+---@field public enabled boolean
+---@field public name string
+---@field public text string
+---@field public guid string
+---@field public position TRB.Classes.DisplayTextPosition
+
+---@class TRB.Classes.DisplayTextPosition
+---@field public xPos number
+---@field public yPos number
+---@field public relativeTo string
+---@field public relativeToName string
+---@field public relativeToFrame string
+---@field public relativeToFrameName string

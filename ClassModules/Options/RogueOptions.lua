@@ -10,10 +10,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	local passiveFrame = TRB.Frames.passiveFrame
 	local barBorderFrame = TRB.Frames.barBorderFrame
 
-	local leftTextFrame = TRB.Frames.leftTextFrame
-	local middleTextFrame = TRB.Frames.middleTextFrame
-	local rightTextFrame = TRB.Frames.rightTextFrame
-
 	local resourceFrame = TRB.Frames.resourceFrame
 	local passiveFrame = TRB.Frames.passiveFrame
 	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
@@ -29,60 +25,161 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	TRB.Frames.interfaceSettingsFrameContainer.controls.subtlety = {}
 
 	local function AssassinationLoadDefaultBarTextSimpleSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock=true,
-			fontFaceLock=true,
-			left={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="{$sadTime}[$sadTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
 				text="{$passive}[$passive + ]$energy",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
+	TRB.Options.Rogue.AssassinationLoadDefaultBarTextSimpleSettings = AssassinationLoadDefaultBarTextSimpleSettings
 	
 	local function AssassinationLoadDefaultBarTextAdvancedSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock = false,
-			fontFaceLock = true,
-			left = {
-				text = "#garrote $garroteCount {$garroteTime}[ $garroteTime]{$isNecrolord}[{!$garroteTime}[       ]  #serratedBoneSpike $sbsCount]||n#rupture $ruptureCount {$ruptureTime}[ $ruptureTime] {$ttd}[{!$ruptureTime}[      ]  TTD: $ttd]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="#garrote $garroteCount {$garroteTime}[ $garroteTime]{$isNecrolord}[{!$garroteTime}[       ]  #serratedBoneSpike $sbsCount]||n#rupture $ruptureCount {$ruptureTime}[ $ruptureTime] {$ttd}[{!$ruptureTime}[      ]  TTD: $ttd]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle = {
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="{$sadTime}[#sad $sadTime #sad]|n{$blindsideTime}[#blindside $blindsideTime #blindside]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right = {
-				text = "{$casting}[#casting$casting+]{$regen}[$regen+]$energy",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 22
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="{$casting}[#casting$casting+]{$regen}[$regen+]$energy",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=22,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
 
-	local function AssassinationLoadDefaultSettings()
+	local function AssassinationLoadDefaultSettings(includeBarText)
 		local settings = {
 			hastePrecision=2,
 			thresholds = {
@@ -215,7 +312,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				spacing=14,
 				relativeTo="TOP",
 				relativeToName="Above - Middle",
-				fullWidth=false,
+				fullWidth=true,
 				consistentUnfilledColor = false,
 				spec={
 					serratedBoneSpikeColor = true
@@ -231,9 +328,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					overThreshold="FF00FF00",
 					overThresholdEnabled=false,
 					overcapEnabled=true,
-					left="FFFFFFFF",
-					middle="FFFFFFFF",
-					right="FFFFFFFF",
 					dots={
 						enabled=true,
 						up="FFFFFFFF",
@@ -272,7 +366,17 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					outOfRange="FF440000"
 				}
 			},
-			displayText = {},
+			displayText={
+				default = {
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = "Left",
+					fontSize=18,
+					color = "FFFFFFFF",
+				},
+				barText = {}
+			},
 			audio = {
 				overcap={
 					name = "Overcap",
@@ -314,65 +418,169 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			}
 		}
 
-		settings.displayText = AssassinationLoadDefaultBarTextSimpleSettings()
+		if includeBarText then
+			settings.displayText.barText = AssassinationLoadDefaultBarTextSimpleSettings()
+		end
+
 		return settings
 	end
 
 	local function OutlawLoadDefaultBarTextSimpleSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock=true,
-			fontFaceLock=true,
-			left={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
 				text="{$rtbBuffTime}[#rollTheBones $rtbBuffTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="{$sadTime}[#sliceAndDice $sadTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right={
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
 				text="{$passive}[$passive + ]$energy",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
-				fontSize=18
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
+	TRB.Options.Rogue.OutlawLoadDefaultBarTextSimpleSettings = OutlawLoadDefaultBarTextSimpleSettings
 	
 	local function OutlawLoadDefaultBarTextAdvancedSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
-			fontSizeLock = false,
-			fontFaceLock = true,
-			left = {
-				text = "{$rtbBuffTime}[#rollTheBones $rtbBuffTime #rollTheBones]{$ttd}[||nTTD: $ttd]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="{$rtbBuffTime}[#rollTheBones $rtbBuffTime #rollTheBones]{$ttd}[||nTTD: $ttd]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			middle = {
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
 				text="{$sadTime}[#sad $sadTime #sad]",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 13
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			},
-			right = {
-				text = "{$casting}[#casting$casting+]{$regen}[$regen+]$energy",
-				fontFace = "Fonts\\FRIZQT__.TTF",
-				fontFaceName = "Friz Quadrata TT",
-				fontSize = 22
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="{$casting}[#casting$casting+]{$regen}[$regen+]$energy",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=22,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
 			}
 		}
 
 		return textSettings
 	end
 
-	local function OutlawLoadDefaultSettings()
+	local function OutlawLoadDefaultSettings(includeBarText)
 		local settings = {
 			hastePrecision=2,
 			thresholds = {
@@ -498,7 +706,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				spacing=14,
 				relativeTo="TOP",
 				relativeToName="Above - Middle",
-				fullWidth=false,
+				fullWidth=true,
 				consistentUnfilledColor = false
 			},
 			colors = {
@@ -511,9 +719,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					overThreshold="FF00FF00",
 					overThresholdEnabled=false,
 					overcapEnabled=true,
-					left="FFFFFFFF",
-					middle="FFFFFFFF",
-					right="FFFFFFFF",
 					dots={
 						enabled=true,
 						up="FFFFFFFF",
@@ -554,7 +759,17 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					outOfRange="FF440000"
 				}
 			},
-			displayText = {},
+			displayText={
+				default = {
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = "Left",
+					fontSize=18,
+					color = "FFFFFFFF",
+				},
+				barText = {}
+			},
 			audio = {
 				overcap={
 					name = "Overcap",
@@ -596,7 +811,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			}
 		}
 
-		settings.displayText = OutlawLoadDefaultBarTextSimpleSettings()
+		if includeBarText then
+			settings.displayText.barText = OutlawLoadDefaultBarTextSimpleSettings()
+		end
+
 		return settings
 	end
 
@@ -633,7 +851,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.rogue.assassination = nil
+				TRB.Data.settings.rogue.assassination = AssassinationLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -646,7 +864,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = AssassinationLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = AssassinationLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -659,7 +877,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = AssassinationLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = AssassinationLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -708,7 +926,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local title = ""
 
-		controls.buttons.exportButton_Rogue_Assassination_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Assassination_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Assassination_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Assassination Rogue (Bar Display).", 4, 1, true, false, false, false, false)
 		end)
@@ -1216,12 +1434,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local title = ""
 
-		controls.buttons.exportButton_Rogue_Assassination_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Assassination_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Assassination_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Assassination Rogue (Font & Text).", 4, 1, false, true, false, false, false)
 		end)
 
-		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 4, 1, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 4, 1, yCoord)
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Energy Text Colors", oUi.xCoord, yCoord)
@@ -1342,7 +1560,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local title = ""
 
-		controls.buttons.exportButton_Rogue_Assassination_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Assassination_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Assassination_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Assassination Rogue (Audio & Tracking).", 4, 1, false, false, true, false, false)
 		end)
@@ -1616,61 +1834,18 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end
 
 		local spec = TRB.Data.settings.rogue.assassination
-
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.assassination
 		local yCoord = 5
-		local f = nil
-		local namePrefix = "Rogue_Assassination"
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		controls.buttons.exportButton_Rogue_Assassination_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Assassination_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Assassination_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Assassination Rogue (Bar Text).", 4, 1, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.left = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.left
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.left.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-
-		yCoord = yCoord - 70
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.middle = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.middle
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.middle.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-
-		yCoord = yCoord - 70
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.right = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.right
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.right.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
-		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
+		TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 4, 1, yCoord, cache)
 	end
 
 	local function AssassinationConstructOptionsPanel(cache)
@@ -1789,7 +1964,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				TRB.Data.settings.rogue.outlaw = nil
+				TRB.Data.settings.rogue.outlaw = OutlawLoadDefaultSettings(true)
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1802,7 +1977,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = OutlawLoadDefaultBarTextSimpleSettings()
+				spec.displayText.barText = OutlawLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1815,7 +1990,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			button1 = "Yes",
 			button2 = "No",
 			OnAccept = function()
-				spec.displayText = OutlawLoadDefaultBarTextAdvancedSettings()
+				spec.displayText.barText = OutlawLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
 			end,
 			timeout = 0,
@@ -1864,7 +2039,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local title = ""
 
-		controls.buttons.exportButton_Rogue_Outlaw_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Outlaw_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Outlaw_BarDisplay:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Outlaw Rogue (Bar Display).", 4, 2, true, false, false, false, false)
 		end)
@@ -2354,12 +2529,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local title = ""
 
-		controls.buttons.exportButton_Rogue_Outlaw_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Outlaw_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Outlaw_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Outlaw Rogue (Font & Text).", 4, 2, false, true, false, false, false)
 		end)
 
-		yCoord = TRB.Functions.OptionsUi:GenerateFontOptions(parent, controls, spec, 4, 2, yCoord)
+		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 4, 2, yCoord)
 
 		yCoord = yCoord - 40
 		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Energy Text Colors", oUi.xCoord, yCoord)
@@ -2480,7 +2655,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local title = ""
 
-		controls.buttons.exportButton_Rogue_Outlaw_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Outlaw_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Outlaw_AudioAndTracking:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Outlaw Rogue (Audio & Tracking).", 4, 2, false, false, true, false, false)
 		end)
@@ -2753,61 +2928,18 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end
 
 		local spec = TRB.Data.settings.rogue.outlaw
-
 		local interfaceSettingsFrame = TRB.Frames.interfaceSettingsFrameContainer
 		local controls = interfaceSettingsFrame.controls.outlaw
 		local yCoord = 5
-		local f = nil
-		local namePrefix = "Rogue_Outlaw"
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		controls.buttons.exportButton_Rogue_Outlaw_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 325, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Outlaw_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Outlaw_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Outlaw Rogue (Bar Text).", 4, 2, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Left Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.left = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Left", spec.displayText.left.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.left
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.left.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-
-		yCoord = yCoord - 70
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Middle Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.middle = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Middle", spec.displayText.middle.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.middle
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.middle.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-
-		yCoord = yCoord - 70
-		TRB.Functions.OptionsUi:BuildLabel(parent, "Right Text", oUi.xCoord, yCoord, 90, 20, nil, "RIGHT")
-
-		controls.textbox.right = TRB.Functions.OptionsUi:CreateBarTextInputPanel(parent, namePrefix .. "_Right", spec.displayText.right.text,
-														430, 60, oUi.xCoord+95, yCoord)
-		f = controls.textbox.right
-		f:SetScript("OnTextChanged", function(self, input)
-			spec.displayText.right.text = self:GetText()
-			TRB.Data.barTextCache = {}
-			TRB.Functions.BarText:IsTtdActive(spec)
-		end)
-
-		yCoord = yCoord - 30
-		local variablesPanel = TRB.Functions.OptionsUi:CreateVariablesSidePanel(parent, namePrefix)
-		TRB.Options:CreateBarTextInstructions(parent, oUi.xCoord, yCoord)
-		TRB.Options:CreateBarTextVariables(cache, variablesPanel, 5, -30)
+		TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, 4, 2, yCoord, cache)
 	end
 
 	local function OutlawConstructOptionsPanel(cache)

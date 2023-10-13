@@ -1863,12 +1863,27 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 
-					local settings = TRB.Options.Warrior.LoadDefaultSettings()
-					if TwintopInsanityBarSettings then
+					if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
 						TRB.Options:PortForwardSettings()
+
+						local settings = TRB.Options.Warrior.LoadDefaultSettings(false)
+
+						if TwintopInsanityBarSettings.warrior == nil or
+							TwintopInsanityBarSettings.warrior.arms == nil or
+							TwintopInsanityBarSettings.warrior.arms.displayText == nil then
+							settings.warrior.arms.displayText.barText = TRB.Options.Warrior.ArmsLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.warrior == nil or
+							TwintopInsanityBarSettings.warrior.fury == nil or
+							TwintopInsanityBarSettings.warrior.fury.displayText == nil then
+							settings.warrior.fury.displayText.barText = TRB.Options.Warrior.FuryLoadDefaultBarTextSimpleSettings()
+						end
+
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
+						local settings = TRB.Options.Warrior.LoadDefaultSettings(true)
 						TRB.Data.settings = settings
 					end
 					FillSpecializationCache()
@@ -2187,6 +2202,19 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end
 
 		return valid
+	end
+
+	function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+		local specId = GetSpecialization()
+		local settings = TRB.Data.settings.warrior
+		local spells = TRB.Data.spells
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+		if specId == 1 then
+		elseif specId == 2 then
+		elseif specId == 3 then
+		end
+		return nil
 	end
 
 	--HACK to fix FPS

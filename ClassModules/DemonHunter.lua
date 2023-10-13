@@ -823,7 +823,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue) 
+							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
 							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
 							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
@@ -1119,12 +1119,21 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 
-					local settings = TRB.Options.DemonHunter.LoadDefaultSettings()
-					if TwintopInsanityBarSettings then
+					if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
 						TRB.Options:PortForwardSettings()
+
+						local settings = TRB.Options.DemonHunter.LoadDefaultSettings(false)
+
+						if TwintopInsanityBarSettings.demonhunter == nil or
+							TwintopInsanityBarSettings.demonhunter.havoc == nil or
+							TwintopInsanityBarSettings.demonhunter.havoc.displayText == nil then
+							settings.demonhunter.havoc.displayText.barText = TRB.Options.DemonHunter.HavocLoadDefaultBarTextSimpleSettings()
+						end
+
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
+						local settings = TRB.Options.DemonHunter.LoadDefaultSettings(true)
 						TRB.Data.settings = settings
 					end
 					FillSpecializationCache()
@@ -1373,6 +1382,16 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		return valid
 	end
 
+	function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+		local specId = GetSpecialization()
+		local settings = TRB.Data.settings.demonhunter
+		local spells = TRB.Data.spells
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+		if specId == 1 then
+		end
+		return nil
+	end
 
 	--HACK to fix FPS
 	local updateRateLimit = 0

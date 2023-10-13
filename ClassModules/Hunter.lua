@@ -1409,7 +1409,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		targetData:Cleanup(clearAll)
 	end
 
-	local function ConstructResourceBar(settings)		
+	local function ConstructResourceBar(settings)
 		local spells = TRB.Data.spells
 
 		local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
@@ -3170,12 +3170,33 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 
-					local settings = TRB.Options.Hunter.LoadDefaultSettings()
-					if TwintopInsanityBarSettings then
+					if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
 						TRB.Options:PortForwardSettings()
+
+						local settings = TRB.Options.Hunter.LoadDefaultSettings(false)
+
+						if TwintopInsanityBarSettings.hunter == nil or
+							TwintopInsanityBarSettings.hunter.beastMastery == nil or
+							TwintopInsanityBarSettings.hunter.beastMastery.displayText == nil then
+							settings.hunter.beastMastery.displayText.barText = TRB.Options.Hunter.BeastMasteryLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.hunter == nil or
+							TwintopInsanityBarSettings.hunter.marksmanship == nil or
+							TwintopInsanityBarSettings.hunter.marksmanship.displayText == nil then
+							settings.hunter.marksmanship.displayText.barText = TRB.Options.Hunter.MarksmanshipLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.hunter == nil or
+							TwintopInsanityBarSettings.hunter.survival == nil or
+							TwintopInsanityBarSettings.hunter.survival.displayText == nil then
+							settings.hunter.survival.displayText.barText = TRB.Options.Hunter.SurvivalLoadDefaultBarTextSimpleSettings()
+						end
+
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
+						local settings = TRB.Options.Hunter.LoadDefaultSettings(true)
 						TRB.Data.settings = settings
 					end
 					FillSpecializationCache()
@@ -3489,15 +3510,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				valid = true
 			end
 		elseif var == "$passive" then
-			if snapshotData.attributes.resource < TRB.Data.character.maxResource and
-				settings.generation.enabled and
-				((settings.generation.mode == "time" and settings.generation.time > 0) or
-				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-				valid = true
-			elseif specId == 1 and TRB.Functions.Class:IsValidVariableForSpec("$barbedShotFocus") then
-				valid = true
-			elseif specId == 3 and snapshots[spells.termsOfEngagement.id].buff.isActive then
-				valid = true
+			if settings.generation.enabled then
+				if snapshotData.attributes.resource < TRB.Data.character.maxResource and
+					((settings.generation.mode == "time" and settings.generation.time > 0) or
+					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+					valid = true
+				elseif specId == 1 and TRB.Functions.Class:IsValidVariableForSpec("$barbedShotFocus") then
+					valid = true
+				elseif specId == 3 and snapshots[spells.termsOfEngagement.id].buff.isActive then
+					valid = true
+				end
 			end
 		elseif var == "$regen" or var == "$regenFocus" or var == "$focusRegen" then
 			if settings.generation.enabled and
@@ -3525,6 +3547,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 		return valid
+	end
+
+	function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+		local specId = GetSpecialization()
+		local settings = TRB.Data.settings.hunter
+		local spells = TRB.Data.spells
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+		if specId == 1 then
+		elseif specId == 2 then
+		elseif specId == 3 then
+		end
+		return nil
 	end
 
 	--HACK to fix FPS

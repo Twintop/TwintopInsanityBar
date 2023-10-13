@@ -2077,7 +2077,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentEnergy
 		lookup["$casting"] = castingEnergy
-		lookup["$comboPoints"] = TRB.Data.character.resource2
+		lookup["$comboPoints"] = snapshotData.attributes.resource2
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 		lookup["$amplifyingPoisonCount"] = amplifyingPoisonCount
 		lookup["$amplifyingPoisonTime"] = amplifyingPoisonTime
@@ -2144,7 +2144,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
 		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
+		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 		lookupLogic["$amplifyingPoisonCount"] = amplifyingPoisonCount
 		lookupLogic["$amplifyingPoisonTime"] = amplifyingPoisonTime
@@ -2461,7 +2461,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentEnergy
 		lookup["$casting"] = castingEnergy
-		lookup["$comboPoints"] = TRB.Data.character.resource2
+		lookup["$comboPoints"] = snapshotData.attributes.resource2
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 		lookup["$atrophicPoisonCount"] = atrophicPoisonCount
 		lookup["$atrophicPoisonTime"] = atrophicPoisonTime
@@ -2521,7 +2521,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
 		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
+		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 		lookupLogic["$atrophicPoisonCount"] = atrophicPoisonCount
 		lookupLogic["$atrophicPoisonTime"] = atrophicPoisonTime
@@ -3618,12 +3618,27 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 
-					local settings = TRB.Options.Rogue.LoadDefaultSettings()
-					if TwintopInsanityBarSettings then
+					if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
 						TRB.Options:PortForwardSettings()
+
+						local settings = TRB.Options.Rogue.LoadDefaultSettings(false)
+
+						if TwintopInsanityBarSettings.rogue == nil or
+							TwintopInsanityBarSettings.rogue.assassination == nil or
+							TwintopInsanityBarSettings.rogue.assassination.displayText == nil then
+							settings.rogue.assassination.displayText.barText = TRB.Options.Rogue.AssassinationLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.rogue == nil or
+							TwintopInsanityBarSettings.rogue.outlaw == nil or
+							TwintopInsanityBarSettings.rogue.outlaw.displayText == nil then
+							settings.rogue.outlaw.displayText.barText = TRB.Options.Rogue.OutlawLoadDefaultBarTextSimpleSettings()
+						end
+
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
+						local settings = TRB.Options.Rogue.LoadDefaultSettings(true)
 						TRB.Data.settings = settings
 					end
 					FillSpecializationCache()
@@ -4081,6 +4096,19 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end
 
 		return valid
+	end
+
+	function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+		local specId = GetSpecialization()
+		local settings = TRB.Data.settings.rogue
+		local spells = TRB.Data.spells
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+		if specId == 1 then
+		elseif specId == 2 then
+		elseif specId == 3 then
+		end
+		return nil
 	end
 
 	--HACK to fix FPS

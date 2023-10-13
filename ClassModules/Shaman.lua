@@ -1296,10 +1296,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["$mana"] = currentMana
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentMana
-		lookup["$maelstromWeapon"] = TRB.Data.character.resource2
-		lookup["$comboPoints"] = TRB.Data.character.resource2
-		lookup["$maelstromWeaponMax"] = TRB.Data.character.maxResource2Raw
-		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
+		lookup["$maelstromWeapon"] = snapshotData.attributes.resource2
+		lookup["$comboPoints"] = snapshotData.attributes.resource2
+		lookup["$maelstromWeaponMax"] = TRB.Data.character.maxResource2
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 		lookup["$ascendanceTime"] = ascendanceTime
 		lookup["$fsCount"] = flameShockCount
 		lookup["$fsTime"] = flameShockTime
@@ -1311,10 +1311,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
 		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-		lookupLogic["$essence"] = TRB.Data.character.resource2
-		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
-		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2Raw
-		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
+		lookupLogic["$maelstromWeapon"] = snapshotData.attributes.resource2
+		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
+		lookupLogic["$maelstromWeaponMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 		lookupLogic["$ascendanceTime"] = _ascendanceTime
 		lookupLogic["$fsCount"] = _flameShockCount
 		lookupLogic["$fsTime"] = _flameShockTime
@@ -2030,9 +2030,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
 								cpColor = specSettings.colors.comboPoints.final
 							end
-						elseif snapshotData.attributes.resource2+1 == x then
-							local partial = UnitPartialPower("player", Enum.PowerType.Essence)
-							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
 						else
 							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 						end
@@ -2449,12 +2446,34 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 
-					local settings = TRB.Options.Shaman.LoadDefaultSettings()
-					if TwintopInsanityBarSettings then
+					if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
 						TRB.Options:PortForwardSettings()
+
+						local settings = TRB.Options.Shaman.LoadDefaultSettings(false)
+
+						if TwintopInsanityBarSettings.shaman == nil or
+							TwintopInsanityBarSettings.shaman.elemental == nil or
+							TwintopInsanityBarSettings.shaman.elemental.displayText == nil then
+							settings.shaman.elemental.displayText.barText = TRB.Options.Shaman.ElementalLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.core.experimental.specs.shaman.enhancement and
+							(TwintopInsanityBarSettings.shaman == nil or
+							TwintopInsanityBarSettings.shaman.enhancement == nil or
+							TwintopInsanityBarSettings.shaman.enhancement.displayText == nil) then
+							settings.shaman.enhancement.displayText.barText = TRB.Options.Shaman.EnhancementLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.shaman == nil or
+							TwintopInsanityBarSettings.shaman.restoration == nil or
+							TwintopInsanityBarSettings.shaman.restoration.displayText == nil then
+							settings.shaman.restoration.displayText.barText = TRB.Options.Shaman.RestorationLoadDefaultBarTextSimpleSettings()
+						end
+
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
+						local settings = TRB.Options.Shaman.LoadDefaultSettings(true)
 						TRB.Data.settings = settings
 					end
 					FillSpecializationCache()
@@ -2972,6 +2991,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end
 
 		return valid
+	end
+
+	function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+		local specId = GetSpecialization()
+		local settings = TRB.Data.settings.shaman
+		local spells = TRB.Data.spells
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+		if specId == 1 then
+		elseif specId == 2 then
+		elseif specId == 3 then
+		end
+		return nil
 	end
 
 	--HACK to fix FPS

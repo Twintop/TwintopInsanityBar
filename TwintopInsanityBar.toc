@@ -4,7 +4,7 @@
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 10.1.7.5
 ## X-ReleaseType: release
-## X-ReleaseDate: October 01, 2023
+## X-ReleaseDate: October 13, 2023
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -22,6 +22,7 @@ Libs\base64.lua
 Libs\json.lua
 Libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
 Libs\LibMarkdown\LibMarkdown.xml
+Libs\LibScrollingTable\lib-st.xml
 
 Classes\Snapshot.lua
 Classes\TimeToDie.lua

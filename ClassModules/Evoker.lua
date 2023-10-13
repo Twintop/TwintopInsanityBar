@@ -484,6 +484,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			
 			{ variable = "$essence", description = "Current Essence", printInSettings = true, color = false },
 			{ variable = "$comboPoints", description = "Current Essence", printInSettings = false, color = false },
+			{ variable = "$essenceRegenTime", description = "Remaining time until your next Essence finishes regenerating", printInSettings = true, color = false },
 			{ variable = "$essenceMax", description = "Maximum Essence", printInSettings = true, color = false },
 			{ variable = "$comboPointsMax", description = "Maximum Essence", printInSettings = false, color = false },
 
@@ -575,6 +576,12 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			{ variable = "$resourcePlusPassive", description = "Current + Passive Mana Total", printInSettings = false, color = false },
 			{ variable = "$manaTotal", description = "Current + Passive + Casting Mana Total", printInSettings = true, color = false },
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Mana Total", printInSettings = false, color = false },
+						
+			{ variable = "$essence", description = "Current Essence", printInSettings = true, color = false },
+			{ variable = "$comboPoints", description = "Current Essence", printInSettings = false, color = false },
+			{ variable = "$essenceRegenTime", description = "Remaining time until your next Essence finishes regenerating", printInSettings = true, color = false },
+			{ variable = "$essenceMax", description = "Maximum Essence", printInSettings = true, color = false },
+			{ variable = "$comboPointsMax", description = "Maximum Essence", printInSettings = false, color = false },
 
 			{ variable = "$ebTime", description = "Time remaining on your Essence Burst buff", printInSettings = true, color = false },
 			{ variable = "$ebStacks", description = "Current stack count on your Essence Burst buff", printInSettings = true, color = false },
@@ -661,9 +668,10 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },
 			{ variable = "$manaMax", description = "Maximum Mana", printInSettings = true, color = false },
 			{ variable = "$resourceMax", description = "Maximum Mana", printInSettings = false, color = false },
-
+			
 			{ variable = "$essence", description = "Current Essence", printInSettings = true, color = false },
 			{ variable = "$comboPoints", description = "Current Essence", printInSettings = false, color = false },
+			{ variable = "$essenceRegenTime", description = "Remaining time until your next Essence finishes regenerating", printInSettings = true, color = false },
 			{ variable = "$essenceMax", description = "Maximum Essence", printInSettings = true, color = false },
 			{ variable = "$comboPointsMax", description = "Maximum Essence", printInSettings = false, color = false },
 
@@ -797,6 +805,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		-- This probably needs to be pulled every refresh
 		snapshotData.attributes.manaRegen, _ = GetPowerRegen()
+		snapshotData.attributes.essenceRegen, _ = 1 / GetPowerRegenForPowerType(Enum.PowerType.Essence)
+		snapshotData.attributes.essencePartial = UnitPartialPower("player", Enum.PowerType.Essence)
+
 		local currentManaColor = specSettings.colors.text.current
 		--$mana
 		local manaPrecision = specSettings.manaPrecision or 1
@@ -808,6 +819,14 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		--$ecTicks
 		local _ebStacks = snapshots[spells.essenceBurst.id].buff.stacks
 		local ebStacks = string.format("%.0f", _ebStacks)
+
+		--$essenceRegenTime
+		local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
+		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
+			_essenceRegenTime = 0
+		end
+		local essenceRegenTime = string.format("%.1f", _essenceRegenTime)
+
 		----------------------------
 
 		local lookup = TRB.Data.lookup or {}
@@ -819,10 +838,11 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		lookup["$resource"] = currentMana
 		lookup["$ebTime"] = ebTime
 		lookup["$ebStacks"] = ebStacks
-		lookup["$essence"] = TRB.Data.character.resource2
-		lookup["$comboPoints"] = TRB.Data.character.resource2
-		lookup["$essenceMax"] = TRB.Data.character.maxResource2Raw
-		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
+		lookup["$essence"] = snapshotData.attributes.resource2
+		lookup["$essenceRegenTime"] = essenceRegenTime
+		lookup["$comboPoints"] = snapshotData.attributes.resource2
+		lookup["$essenceMax"] = TRB.Data.character.maxResource
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
@@ -833,10 +853,11 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 		lookupLogic["$ebTime"] = _ebTime
 		lookupLogic["$ebStacks"] = _ebStacks
-		lookupLogic["$essence"] = TRB.Data.character.resource2
-		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
-		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2Raw
-		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
+		lookupLogic["$essence"] = snapshotData.attributes.resource2
+		lookupLogic["$essenceRegenTime"] = _essenceRegenTime
+		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
+		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 		TRB.Data.lookupLogic = lookupLogic
 	end
 	
@@ -851,6 +872,8 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		-- This probably needs to be pulled every refresh
 		snapshotData.attributes.manaRegen, _ = GetPowerRegen()
+		snapshotData.attributes.essenceRegen, _ = 1 / GetPowerRegenForPowerType(Enum.PowerType.Essence)
+		snapshotData.attributes.essencePartial = UnitPartialPower("player", Enum.PowerType.Essence)
 
 		local currentManaColor = specSettings.colors.text.current
 		local castingManaColor = specSettings.colors.text.casting
@@ -966,6 +989,13 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local _ebStacks = snapshots[spells.essenceBurst.id].buff.stacks
 		local ebStacks = string.format("%.0f", _ebStacks)
 
+		--$essenceRegenTime
+		local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
+		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
+			_essenceRegenTime = 0
+		end
+		local essenceRegenTime = string.format("%.1f", _essenceRegenTime)
+
 		----------
 
 		Global_TwintopResourceBar.resource.passive = _passiveMana
@@ -1042,10 +1072,11 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		lookup["$potionCooldownSeconds"] = potionCooldownSeconds
 		lookup["$ebTime"] = ebTime
 		lookup["$ebStacks"] = ebStacks
-		lookup["$essence"] = TRB.Data.character.resource2
-		lookup["$comboPoints"] = TRB.Data.character.resource2
-		lookup["$essenceMax"] = TRB.Data.character.maxResource2Raw
-		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
+		lookup["$essence"] = snapshotData.attributes.resource2
+		lookup["$essenceRegenTime"] = essenceRegenTime
+		lookup["$comboPoints"] = snapshotData.attributes.resource2
+		lookup["$essenceMax"] = TRB.Data.character.maxResource2
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1084,10 +1115,11 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		lookupLogic["$potionCooldownSeconds"] = potionCooldown
 		lookupLogic["$ebTime"] = _ebTime
 		lookupLogic["$ebStacks"] = _ebStacks
-		lookupLogic["$essence"] = TRB.Data.character.resource2
-		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
-		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2Raw
-		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
+		lookupLogic["$essence"] = snapshotData.attributes.resource2
+		lookupLogic["$essenceRegenTime"] = _essenceRegenTime
+		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
+		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -1103,11 +1135,13 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		-- This probably needs to be pulled every refresh
 		snapshotData.attributes.manaRegen, _ = GetPowerRegen()
+		snapshotData.attributes.essenceRegen, _ = 1 / GetPowerRegenForPowerType(Enum.PowerType.Essence)
+		snapshotData.attributes.essencePartial = UnitPartialPower("player", Enum.PowerType.Essence)
+
 		local currentManaColor = specSettings.colors.text.current
 		--$mana
 		local manaPrecision = specSettings.manaPrecision or 1
 		local currentMana = string.format("|c%s%s|r", currentManaColor, TRB.Functions.String:ConvertToShortNumberNotation(normalizedMana, manaPrecision, "floor", true))
-		----------------------------
 
 		--$ebTime
 		local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
@@ -1115,6 +1149,15 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		--$ecTicks
 		local _ebStacks = snapshots[spells.essenceBurst.id].buff.stacks
 		local ebStacks = string.format("%.0f", _ebStacks)
+
+		--$essenceRegenTime
+		local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
+		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
+			_essenceRegenTime = 0
+		end
+		local essenceRegenTime = string.format("%.1f", _essenceRegenTime)
+
+		----------------------------
 
 		local lookup = TRB.Data.lookup or {}
 		lookup["#eb"] = spells.essenceBurst.icon
@@ -1125,10 +1168,11 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		lookup["$resource"] = currentMana
 		lookup["$ebTime"] = ebTime
 		lookup["$ebStacks"] = ebStacks
-		lookup["$essence"] = TRB.Data.character.resource2
-		lookup["$comboPoints"] = TRB.Data.character.resource2
-		lookup["$essenceMax"] = TRB.Data.character.maxResource2Raw
-		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
+		lookup["$essence"] = snapshotData.attributes.resource
+		lookup["$essenceRegenTime"] = essenceRegenTime
+		lookup["$comboPoints"] = snapshotData.attributes.resource2
+		lookup["$essenceMax"] = TRB.Data.character.maxResource2
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
@@ -1139,10 +1183,11 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
 		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
-		lookupLogic["$essence"] = TRB.Data.character.resource2
-		lookupLogic["$comboPoints"] = TRB.Data.character.resource2
-		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2Raw
-		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2Raw
+		lookupLogic["$essence"] = snapshotData.attributes.resource2
+		lookupLogic["$essenceRegenTime"] = _essenceRegenTime
+		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
+		lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -1349,13 +1394,13 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 					--[[
 					local partial = UnitPartialPower("player", Enum.PowerType.Essence) / 1000
-					local totalEssence = math.min(partial + snapshot.resource2, TRB.Data.character.maxResource2Raw)
+					local totalEssence = math.min(partial + snapshot.resource2, TRB.Data.character.maxResource2)
 					--print(partial, partial + snapshot.resource2, snapshot.resource2)
 
 					TRB.Frames.resource2Frames[1].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.base, true))
 					TRB.Frames.resource2Frames[1].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.border, true))
 					TRB.Frames.resource2Frames[1].containerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true))
-					TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[1].resourceFrame, totalEssence, TRB.Data.character.maxResource2Raw)
+					TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[1].resourceFrame, totalEssence, TRB.Data.character.maxResource2)
 					]]
 					
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
@@ -1690,8 +1735,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 								cpColor = specSettings.colors.comboPoints.final
 							end
 						elseif snapshotData.attributes.resource2+1 == x then
-							local partial = UnitPartialPower("player", Enum.PowerType.Essence)
-							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, partial, 1000)
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, snapshotData.attributes.essencePartial, 1000)
 						else
 							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 						end
@@ -1894,12 +1938,35 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				if not TRB.Details.addonData.loaded then
 					TRB.Details.addonData.loaded = true
 
-					local settings = TRB.Options.Evoker.LoadDefaultSettings()
-					if TwintopInsanityBarSettings then
+					if TwintopInsanityBarSettings and TRB.Functions.Table:Length(TwintopInsanityBarSettings) > 0 then
 						TRB.Options:PortForwardSettings()
+
+						local settings = TRB.Options.Evoker.LoadDefaultSettings(false)
+
+						if TwintopInsanityBarSettings.core.experimental.specs.evoker.devastation and
+							(TwintopInsanityBarSettings.evoker == nil or
+							TwintopInsanityBarSettings.evoker.devastation == nil or
+							TwintopInsanityBarSettings.evoker.devastation.displayText == nil) then
+							settings.evoker.devastation.displayText.barText = TRB.Options.Evoker.DevastationLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.evoker == nil or
+							TwintopInsanityBarSettings.evoker.preservation == nil or
+							TwintopInsanityBarSettings.evoker.preservation.displayText == nil then
+							settings.evoker.preservation.displayText.barText = TRB.Options.Evoker.PreservationLoadDefaultBarTextSimpleSettings()
+						end
+
+						if TwintopInsanityBarSettings.core.experimental.specs.evoker.augmentation and
+							(TwintopInsanityBarSettings.evoker == nil or
+							TwintopInsanityBarSettings.evoker.augmentation == nil or
+							TwintopInsanityBarSettings.evoker.augmentation.displayText == nil) then
+							settings.evoker.augmentation.displayText.barText = TRB.Options.Evoker.AugmentationLoadDefaultBarTextSimpleSettings()
+						end
+
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
+						local settings = TRB.Options.Evoker.LoadDefaultSettings(true)
 						TRB.Data.settings = settings
 					end
 					FillSpecializationCache()
@@ -2316,6 +2383,10 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			end
 		elseif var == "$comboPoints" or var == "$essence" then
 			valid = true
+		elseif var == "$essenceRegenTime" then
+			if snapshotData.attributes.resource2 < TRB.Data.character.maxResource2 then
+				valid = true
+			end
 		elseif var == "$comboPointsMax"or var == "$essenceMax" then
 			valid = true
 		elseif var == "$ebTime" then
@@ -2329,6 +2400,19 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		end
 
 		return valid
+	end
+
+	function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
+		local specId = GetSpecialization()
+		local settings = TRB.Data.settings.evoker
+		local spells = TRB.Data.spells
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+
+		if specId == 1 then
+		elseif specId == 2 then
+		elseif specId == 3 then
+		end
+		return nil
 	end
 
 	--HACK to fix FPS
