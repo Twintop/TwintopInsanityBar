@@ -3510,15 +3510,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				valid = true
 			end
 		elseif var == "$passive" then
-			if snapshotData.attributes.resource < TRB.Data.character.maxResource and
-				settings.generation.enabled and
-				((settings.generation.mode == "time" and settings.generation.time > 0) or
-				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
-				valid = true
-			elseif specId == 1 and TRB.Functions.Class:IsValidVariableForSpec("$barbedShotFocus") then
-				valid = true
-			elseif specId == 3 and snapshots[spells.termsOfEngagement.id].buff.isActive then
-				valid = true
+			if settings.generation.enabled then
+				if snapshotData.attributes.resource < TRB.Data.character.maxResource and
+					((settings.generation.mode == "time" and settings.generation.time > 0) or
+					(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
+					valid = true
+				elseif specId == 1 and TRB.Functions.Class:IsValidVariableForSpec("$barbedShotFocus") then
+					valid = true
+				elseif specId == 3 and snapshots[spells.termsOfEngagement.id].buff.isActive then
+					valid = true
+				end
 			end
 		elseif var == "$regen" or var == "$regenFocus" or var == "$focusRegen" then
 			if settings.generation.enabled and
