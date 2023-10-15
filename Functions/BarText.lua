@@ -25,6 +25,7 @@ local function ScanForLogicSymbols(input)
 	local index = 0
 
 	local all = {}
+	local ins = {}
 
 	local endLength = (string.len(input) + 1)
 
@@ -85,20 +86,14 @@ local function ScanForLogicSymbols(input)
 			e = endLength
 		end
 
-		--if k == k_1 then
-		--	k = endLength
-		--end
-
 		min = math.min(a, b, c, d, e, f, g, h, i, j, k, k_1, l, m, n, o, p, q, r, s, t)
 		index = index + 1
 
 		if min <= string.len(input) then
-			local ins = {
-				position = min,
-				level = currentLevel,
-				parenthesisLevel = currentParenthesisLevel,
-				index = index
-			}
+			ins.position = min
+			ins.level = currentLevel
+			ins.parenthesisLevel = currentParenthesisLevel
+			ins.index = index
 
 			if min == a then
 				currentLevel = currentLevel + 1
@@ -183,7 +178,13 @@ local function ScanForLogicSymbols(input)
 				break
 			end
 
-			table.insert(all, ins)
+			table.insert(all, {
+				position = ins.position,
+				level = ins.level,
+				parenthesisLevel = ins.parenthesisLevel,
+				index = ins.index,
+				symbol = ins.symbol
+			})
 		else
 			currentPosition = string.len(input) + 1
 			break
@@ -888,10 +889,6 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 					
 					textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
 					textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
-					--[[textFrames[i].font:SetJustifyH(fontJustifyHorizontal)
-					textFrames[i].font:SetFont(fontFace, fontSize, "OUTLINE")
-					textFrames[i].font:ClearAllPoints()
-					textFrames[i].font:SetPoint(relativeTo, relativeToFrame, relativeTo, e.position.xPos, e.position.yPos)]]
 				end
 			end
 		end
@@ -979,7 +976,7 @@ function TRB.Functions.BarText:CreateBarTextFrames(settings, classId, specId)
 	local textFramesEntries = TRB.Functions.Table:Length(textFrames)
 	-- We have extra frames we don't need now, probably because we changed talents/specs/deleted one in config. Hide extras.
 	if textFramesEntries > frameCount then
-		for i = frameCount, textFramesEntries do
+		for i = frameCount+1, textFramesEntries do
 			textFrames[i]:Hide()
 			textFrames[i].font:Hide()
 		end
