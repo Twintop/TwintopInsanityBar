@@ -7,7 +7,6 @@ TRB.Functions.BarText = {}
 local function TryUpdateText(frame, text)
 	frame.font:SetText(text)
 	frame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
-	frame.font:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
 end
 
 local function ScanForLogicSymbols(input)
