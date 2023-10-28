@@ -300,6 +300,10 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 				border:SetHeight(settings.comboPoints.height)
 				
 				resource:SetHeight(settings.comboPoints.height-(settings.comboPoints.border*2))
+						
+				container:SetFrameLevel(TRB.Data.constants.frameLevels.cpContainer)
+				border:SetFrameLevel(TRB.Data.constants.frameLevels.cpBorder)
+				resource:SetFrameLevel(TRB.Data.constants.frameLevels.cpResource)
 			else
 				container:Hide()
 			end

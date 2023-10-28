@@ -6,6 +6,12 @@ local LMD = LibStub("LibMarkdown-1.0")
 local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
+
+# 10.1.7.6-release (2023-10-15)
+## General
+
+- [#87 - FIX](#87) Fix an issue where adding a new bar text area and then deleting a bar text area would cause one of the remaining bar text areas to be hidden from the UI.
+
 ----
 
 # 10.2.0.0-beta01 (2023-10-01)
@@ -75,10 +81,9 @@ local content = [====[
 ----
 
 # 10.1.7.5-release (2023-10-13)
-
 ## General
 
-- [#87 - NEW](#87) Bar text has been massivelt improved!
+- [#87 - NEW](#87) Bar text has been massively improved!
 <br/>&emsp;&ensp;- You are no longer limited to three fixed bar text areas (left, center, and right). Now you can create and position an unlimited number of bar text areas.
 <br/>&emsp;&ensp;- Bar text areas can now be bound to any of the Resource Bar's UI elements (main Resource Bar, specific Combo Points/Chi/Essence) or to the overall game screen. Additionally, what part of the UI element (e.g. top left, center, bottom, etc.) and positional offsets are allowed.
 <br/>&emsp;&ensp;- Default values for the Font Face, Font Size, and Font Color can be set and enabled on a per-text area basis.

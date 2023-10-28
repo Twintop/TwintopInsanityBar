@@ -2862,7 +2862,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	local function DeleteBarTextRow(displayText, deleteClassId, deleteSpecId, row, btt)
 		btt:SetSelection()
 		table.remove(displayText.barText, row)
-		workingBarText = {}
+		workingBarText = {} --[[@as TRB.Classes.DisplayTextEntry]]
 		SetTableValues(displayText, btt)
 		TRB.Functions.BarText:CreateBarTextFrames(spec, deleteClassId, deleteSpecId)
 		_G["TwintopResourceBar_"..deleteClassId.."_"..deleteSpecId.."_BarTextOptionsFrame"]:Hide()
