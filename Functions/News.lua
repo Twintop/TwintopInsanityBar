@@ -7,30 +7,43 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 
-# 10.1.7.6-release (2023-10-15)
+# 10.2.0.0-release (2023-11-07)
 ## General
+### Healers
+- [#329 - UPDATE](#329) Symbol of Hope restores 2% mana per tick.
 
-- [#87 - FIX](#87) Fix an issue where adding a new bar text area and then deleting a bar text area would cause one of the remaining bar text areas to be hidden from the UI.
+## Demon Hunter
+### Havoc
 
-----
-
-# 10.2.0.0-beta01 (2023-10-01)
+- [#329 - NEW](#329) Add support for A Fire Inside.
+- [#329 - UPDATE](#329) Update Burning Hatred to generate 4 Fury per tick.
+- [#329 - UPDATE](#329) Update Chaos Nova's cost to 25 Fury.
 
 ## Druid
 ### Balance
 
 - [#329 - UPDATE](#329) Rattle the Stars now reduces the Astral Power cost of Starsurge and Starfall by 10%.
 
+### Feral
+
+- [#329 - UPDATE](#329) Relentless Predator's Energy cost reduction is now 10%
+
 ## Hunter
 ### Beast Mastery
 
+- [#329 - NEW](#329) Add Savagery support.
 - [#329 - UPDATE](#329) Remove Aspect of the Wild.
 
 ### Marksmanship
 
 - [#329 - UPDATE](#329) Actively refresh Trueshot duration remaining.
 
-### Rogue
+## Priest
+### Shadow
+- [#329 - UPDATE](#329) Update Mind Flay: Insanity's generation to 4 Insanity per tick.
+- [#329 - UPDATE](#329) Update Mind Spike: Insanity's generation to 8 Insanity.
+
+## Rogue
 
 - [#329 - UPDATE](#329) Feint now has charges.
 - [#329 - UPDATE](#329) Shiv's cost increased to 30 Energy.
@@ -44,6 +57,13 @@ local content = [====[
 ### Outlaw
 
 - [#329 - UPDATE](#329) Add Killing Spree threshold line.
+
+----
+
+# 10.1.7.6-release (2023-10-15)
+## General
+
+- [#87 - FIX](#87) Fix an issue where adding a new bar text area and then deleting a bar text area would cause one of the remaining bar text areas to be hidden from the UI.
 
 ----
 

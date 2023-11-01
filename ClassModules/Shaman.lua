@@ -492,7 +492,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				name = "",
 				icon = "",
 				duration = 4.0, --Hasted
-				manaPercent = 0.03,
+				manaPercent = 0.02,
 				ticks = 4,
 				tickId = 265144
 			},

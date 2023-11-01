@@ -216,10 +216,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				modifier = 2
 			},
 			rattleTheStars = {
-				id = 340049,
+				id = 393954,
 				name = "",
 				icon = "",
-				buffId = 393955,
 				modifier = -0.10,
 				isTalent = true
 			},
@@ -359,8 +358,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		specCache.balance.snapshotData.snapshots[specCache.balance.spells.starweaversWarp.id] = TRB.Classes.Snapshot:New(specCache.balance.spells.starweaversWarp)
 		---@type TRB.Classes.Snapshot
 		specCache.balance.snapshotData.snapshots[specCache.balance.spells.starweaversWeft.id] = TRB.Classes.Snapshot:New(specCache.balance.spells.starweaversWeft)
-		---@type TRB.Classes.Snapshot
-		specCache.balance.snapshotData.snapshots[specCache.balance.spells.rattleTheStars.id] = TRB.Classes.Snapshot:New(specCache.balance.spells.rattleTheStars)
 		---@type TRB.Classes.Snapshot
 		specCache.balance.snapshotData.snapshots[specCache.balance.spells.primordialArcanicPulsar.id] = TRB.Classes.Snapshot:New(specCache.balance.spells.primordialArcanicPulsar, nil, true)
 		specCache.balance.snapshotData.snapshots[specCache.balance.spells.primordialArcanicPulsar.id].buff:SetCustomProperties({
@@ -727,7 +724,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				isTalent = true,
-				resourceModifier = 0.8
+				resourceModifier = 0.9
 			},
 			circleOfLifeAndDeath = {
 				id = 391969,
@@ -931,7 +928,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				name = "",
 				icon = "",
 				duration = 4.0, --Hasted
-				manaPercent = 0.03,
+				manaPercent = 0.02,
 				ticks = 4,
 				tickId = 265144
 			},
@@ -3159,7 +3156,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local currentTime = GetTime()
 
-		local rattleTheStarsModifier = snapshotData.snapshots[spells.rattleTheStars.id].buff.stacks * spells.rattleTheStars.modifier
+		local rattleTheStarsModifier = 1
+
+		if talents:IsTalentActive(spells.rattleTheStars) then
+			rattleTheStarsModifier = 1+spells.rattleTheStars.modifier
+		end
+
 		local incarnationChosenOfEluneStarfallModifier = 0
 		local incarnationChosenOfEluneStarsurgeModifier = 0
 
@@ -3168,8 +3170,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			incarnationChosenOfEluneStarsurgeModifier = spells.elunesGuidance.modifierStarsurge
 		end
 
-		TRB.Data.character.starsurgeThreshold = (-spells.starsurge.resource + incarnationChosenOfEluneStarsurgeModifier) * (1+rattleTheStarsModifier)
-		TRB.Data.character.starfallThreshold = (-spells.starfall.resource + incarnationChosenOfEluneStarfallModifier) * (1+rattleTheStarsModifier)
+		TRB.Data.character.starsurgeThreshold = (-spells.starsurge.resource + incarnationChosenOfEluneStarsurgeModifier) * rattleTheStarsModifier
+		TRB.Data.character.starfallThreshold = (-spells.starfall.resource + incarnationChosenOfEluneStarfallModifier) * rattleTheStarsModifier
 
 		snapshotData.snapshots[spells.moonkinForm.id].buff:Refresh()
 		snapshotData.snapshots[spells.furyOfElune.id].buff:UpdateTicks(currentTime)
@@ -3179,10 +3181,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		snapshotData.snapshots[spells.eclipseSolar.id].buff:Refresh()
 		snapshotData.snapshots[spells.eclipseLunar.id].buff:Refresh()
 		snapshotData.snapshots[spells.starfall.id].buff:GetRemainingTime(currentTime)
-
-		if talents:IsTalentActive(spells.primordialArcanicPulsar) then
-			snapshotData.snapshots[spells.primordialArcanicPulsar.id].buff:Refresh()
-		end
+		snapshotData.snapshots[spells.primordialArcanicPulsar.id].buff:Refresh()
 	end
 
 	local function UpdateSnapshot_Feral()
@@ -3335,12 +3334,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 					TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
 
+
+					local rattleTheStarsModifier = 1
+					
+					if talents:IsTalentActive(spells.rattleTheStars) then
+						rattleTheStarsModifier = 1 + spells.rattleTheStars.modifier
+					end
+
 					local pairOffset = 0
 					for k, v in pairs(spells) do
 						local spell = spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							pairOffset = (spell.thresholdId - 1) * 3
-							local resourceAmount = spell.resource * (1 + (snapshotData.snapshots[spells.rattleTheStars.id].buff.stacks * spells.rattleTheStars.modifier))
+
+							local resourceAmount = spell.resource * rattleTheStarsModifier
 							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
@@ -3463,7 +3470,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										redrawThreshold = true
 									end
 
-									if redrawThreshold then										
+									if redrawThreshold then
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 									end
 
@@ -4170,10 +4177,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.starweaversWeft.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.rattleTheStars.buffId then
-						snapshotData.snapshots[spells.rattleTheStars.id].buff:Initialize(type)
-						TRB.Functions.Class:CheckCharacter()
-						triggerUpdate = true
 					elseif spellId == spells.newMoon.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							snapshotData.snapshots[spellId].attributes.currentSpellId = spells.halfMoon.id

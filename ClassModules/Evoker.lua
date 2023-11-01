@@ -189,7 +189,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				name = "",
 				icon = "",
 				duration = 4.0, --Hasted
-				manaPercent = 0.03,
+				manaPercent = 0.02,
 				ticks = 4,
 				tickId = 265144
 			},

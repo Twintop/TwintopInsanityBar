@@ -67,6 +67,36 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				isTalent = false,
 				baseline = true
 			},
+			immolationAura1 = {
+				id = 427912,
+				name = "",
+				icon = "",
+			},
+			immolationAura2 = {
+				id = 427913,
+				name = "",
+				icon = "",
+			},
+			immolationAura3 = {
+				id = 427914,
+				name = "",
+				icon = "",
+			},
+			immolationAura4 = {
+				id = 427915,
+				name = "",
+				icon = "",
+			},
+			immolationAura5 = {
+				id = 427916,
+				name = "",
+				icon = "",
+			},
+			immolationAura6 = {
+				id = 427917,
+				name = "",
+				icon = "",
+			},
 			metamorphosis = {
 				id = 162264,
 				name = "",
@@ -158,21 +188,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			   id = 179057,
 			   name = "",
 			   icon = "",
-			   resource = -30,
+			   resource = -25,
 			   texture = "",
 			   thresholdId = 3,
 			   settingKey = "chaosNova",
 			   hasCooldown = true,
-			   isSnowflake = true,
 			   thresholdUsable = false,
 			   isTalent = true
-			},
-			unleashedPower = {
-				id = 206477,
-				name = "",
-				icon = "",
-				resourceModifier = 0.5,
-				isTalent = true
 			},
 
 			-- Havoc Talent Abilities
@@ -194,7 +216,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				talentId = 320374,
 				name = "",
 				icon = "",
-				resourcePerTick = 5,
+				resourcePerTick = 4,
 				tickRate = 1,
 				hasTicks = true,
 				duration = 12,
@@ -226,7 +248,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				settingKey = "felEruption",
 				hasCooldown = true,
 				thresholdUsable = false,
-				isTalent = true
+				isTalent = false,
+				baseline = true
 			},
 			blindFury = {
 				id = 203550,
@@ -324,6 +347,18 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		---@type TRB.Classes.Snapshot
 		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.immolationAura.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.immolationAura)
 		---@type TRB.Classes.Snapshot
+		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.immolationAura1.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.immolationAura1)
+		---@type TRB.Classes.Snapshot
+		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.immolationAura2.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.immolationAura2)
+		---@type TRB.Classes.Snapshot
+		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.immolationAura3.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.immolationAura3)
+		---@type TRB.Classes.Snapshot
+		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.immolationAura4.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.immolationAura4)
+		---@type TRB.Classes.Snapshot
+		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.immolationAura5.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.immolationAura5)
+		---@type TRB.Classes.Snapshot
+		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.immolationAura6.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.immolationAura6)
+		---@type TRB.Classes.Snapshot
 		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.unboundChaos.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.unboundChaos)
 		---@type TRB.Classes.Snapshot
 		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.throwGlaive.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.throwGlaive)
@@ -373,7 +408,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "#momentum", icon = spells.momentum.icon, description = spells.momentum.name, printInSettings = true },
 			{ variable = "#tacticalRetreat", icon = spells.tacticalRetreat.icon, description = spells.tacticalRetreat.name, printInSettings = true },
 			{ variable = "#unboundChaos", icon = spells.unboundChaos.icon, description = spells.unboundChaos.name, printInSettings = true },
-			{ variable = "#unleashedPower", icon = spells.unleashedPower.icon, description = spells.unleashedPower.name, printInSettings = true },
 		}
 		specCache.havoc.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -541,13 +575,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local unboundChaosTime = string.format("%.1f", _unboundChaosTime)
 
 		--$bhFury
-		local bhFury = snapshotData.snapshots[spells.immolationAura.id].buff.resource
+		local bhFury = snapshotData.snapshots[spells.immolationAura.id].buff.resource + snapshotData.snapshots[spells.immolationAura1.id].buff.resource + snapshotData.snapshots[spells.immolationAura2.id].buff.resource + snapshotData.snapshots[spells.immolationAura3.id].buff.resource + snapshotData.snapshots[spells.immolationAura4.id].buff.resource + snapshotData.snapshots[spells.immolationAura5.id].buff.resource + snapshotData.snapshots[spells.immolationAura6.id].buff.resource
 
 		--$bhTicks and $iaTicks
-		local bhTicks = snapshotData.snapshots[spells.immolationAura.id].buff.ticks
+		local bhTicks = snapshotData.snapshots[spells.immolationAura.id].buff.ticks + snapshotData.snapshots[spells.immolationAura1.id].buff.ticks + snapshotData.snapshots[spells.immolationAura2.id].buff.ticks + snapshotData.snapshots[spells.immolationAura3.id].buff.ticks + snapshotData.snapshots[spells.immolationAura4.id].buff.ticks + snapshotData.snapshots[spells.immolationAura5.id].buff.ticks + snapshotData.snapshots[spells.immolationAura6.id].buff.ticks
 
 		--$bhTime and $iaTime
-		local _bhTime = snapshotData.snapshots[spells.immolationAura.id].buff:GetRemainingTime(currentTime)
+		local _bhTime = math.max(snapshotData.snapshots[spells.immolationAura.id].buff:GetRemainingTime(currentTime), snapshotData.snapshots[spells.immolationAura1.id].buff:GetRemainingTime(currentTime), snapshotData.snapshots[spells.immolationAura2.id].buff:GetRemainingTime(currentTime), snapshotData.snapshots[spells.immolationAura3.id].buff:GetRemainingTime(currentTime), snapshotData.snapshots[spells.immolationAura4.id].buff:GetRemainingTime(currentTime), snapshotData.snapshots[spells.immolationAura5.id].buff:GetRemainingTime(currentTime), snapshotData.snapshots[spells.immolationAura6.id].buff:GetRemainingTime(currentTime))
 		local bhTime = string.format("%.1f", _bhTime)
 
 		--$tacticalRetreatFury
@@ -618,7 +652,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookup["#momentum"] = spells.momentum.icon
 		lookup["#tacticalRetreat"] = spells.tacticalRetreat.icon
 		lookup["#unboundChaos"] = spells.unboundChaos.icon
-		lookup["#unleashedPower"] = spells.unleashedPower.icon
 		lookup["$metaTime"] = metamorphosisTime
 		lookup["$metamorphosisTime"] = metamorphosisTime
 		lookup["$bhFury"] = bhFury
@@ -745,8 +778,20 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		
 		if talents:IsTalentActive(TRB.Data.spells.burningHatred) then
 			snapshotData.snapshots[spells.immolationAura.id].buff:UpdateTicks(currentTime)
+			snapshotData.snapshots[spells.immolationAura1.id].buff:UpdateTicks(currentTime)
+			snapshotData.snapshots[spells.immolationAura2.id].buff:UpdateTicks(currentTime)
+			snapshotData.snapshots[spells.immolationAura3.id].buff:UpdateTicks(currentTime)
+			snapshotData.snapshots[spells.immolationAura4.id].buff:UpdateTicks(currentTime)
+			snapshotData.snapshots[spells.immolationAura5.id].buff:UpdateTicks(currentTime)
+			snapshotData.snapshots[spells.immolationAura6.id].buff:UpdateTicks(currentTime)
 		else
 			snapshotData.snapshots[spells.immolationAura.id].buff:GetRemainingTime(currentTime)
+			snapshotData.snapshots[spells.immolationAura1.id].buff:GetRemainingTime(currentTime)
+			snapshotData.snapshots[spells.immolationAura2.id].buff:GetRemainingTime(currentTime)
+			snapshotData.snapshots[spells.immolationAura3.id].buff:GetRemainingTime(currentTime)
+			snapshotData.snapshots[spells.immolationAura4.id].buff:GetRemainingTime(currentTime)
+			snapshotData.snapshots[spells.immolationAura5.id].buff:GetRemainingTime(currentTime)
+			snapshotData.snapshots[spells.immolationAura6.id].buff:GetRemainingTime(currentTime)
 		end
 
 		snapshotData.snapshots[spells.tacticalRetreat.id].buff:UpdateTicks(currentTime)
@@ -805,8 +850,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 					local passiveValue = 0
 					if specSettings.bar.showPassive then
-						if snapshotData.snapshots[spells.immolationAura.id].buff.resource > 0 then
-							passiveValue = passiveValue + snapshotData.snapshots[spells.immolationAura.id].buff.resource
+						if snapshotData.snapshots[spells.immolationAura.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura1.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura2.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura3.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura4.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura5.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura6.id].buff.resource > 0 then
+							passiveValue = passiveValue + snapshotData.snapshots[spells.immolationAura.id].buff.resource + snapshotData.snapshots[spells.immolationAura1.id].buff.resource + snapshotData.snapshots[spells.immolationAura2.id].buff.resource + snapshotData.snapshots[spells.immolationAura3.id].buff.resource + snapshotData.snapshots[spells.immolationAura4.id].buff.resource + snapshotData.snapshots[spells.immolationAura5.id].buff.resource + snapshotData.snapshots[spells.immolationAura6.id].buff.resource
 						end
 
 						if snapshotData.snapshots[spells.tacticalRetreat.id].buff.resource > 0 then
@@ -866,23 +911,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-								if spell.id == TRB.Data.spells.chaosNova.id then
-									if talents:IsTalentActive(TRB.Data.spells.unleashedPower) then
-										resourceAmount = resourceAmount * TRB.Data.spells.unleashedPower.resourceModifier
-									end
-
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
-
-									if snapshotData.snapshots[spells.chaosNova.id].cooldown:IsUnusable() then
-										thresholdColor = specSettings.colors.threshold.unusable
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif currentResource >= -resourceAmount then
-										thresholdColor = specSettings.colors.threshold.over
-									else
-										thresholdColor = specSettings.colors.threshold.under
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end
-								elseif spell.id == TRB.Data.spells.throwGlaive.id then
+								if spell.id == TRB.Data.spells.throwGlaive.id then
 									if talents:IsTalentActive(TRB.Data.spells.furiousThrows) then
 										resourceAmount = TRB.Data.spells.furiousThrows.resource
 										if snapshotData.snapshots[spells.throwGlaive.id].cooldown.charges == 0 then
@@ -1023,6 +1052,36 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					elseif spellId == spells.metamorphosis.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.immolationAura.id then
+						snapshotData.snapshots[spellId].buff:Initialize(type)
+						if type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
+							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
+						end
+					elseif spellId == spells.immolationAura1.id then
+						snapshotData.snapshots[spellId].buff:Initialize(type)
+						if type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
+							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
+						end
+					elseif spellId == spells.immolationAura2.id then
+						snapshotData.snapshots[spellId].buff:Initialize(type)
+						if type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
+							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
+						end
+					elseif spellId == spells.immolationAura3.id then
+						snapshotData.snapshots[spellId].buff:Initialize(type)
+						if type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
+							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
+						end
+					elseif spellId == spells.immolationAura4.id then
+						snapshotData.snapshots[spellId].buff:Initialize(type)
+						if type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
+							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
+						end
+					elseif spellId == spells.immolationAura5.id then
+						snapshotData.snapshots[spellId].buff:Initialize(type)
+						if type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
+							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
+						end
+					elseif spellId == spells.immolationAura6.id then
 						snapshotData.snapshots[spellId].buff:Initialize(type)
 						if type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
 							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
@@ -1200,8 +1259,20 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 			if talents:IsTalentActive(spells.burningHatred) then
 				snapshots[spells.immolationAura.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred.tickRate)
+				snapshots[spells.immolationAura1.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred.tickRate)
+				snapshots[spells.immolationAura2.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred.tickRate)
+				snapshots[spells.immolationAura3.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred.tickRate)
+				snapshots[spells.immolationAura4.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred.tickRate)
+				snapshots[spells.immolationAura5.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred.tickRate)
+				snapshots[spells.immolationAura6.id].buff:SetTickData(true, spells.burningHatred.resourcePerTick, spells.burningHatred.tickRate)
 			else
 				snapshots[spells.immolationAura.id].buff:SetTickData(false, 0, 0)
+				snapshots[spells.immolationAura1.id].buff:SetTickData(false, 0, 0)
+				snapshots[spells.immolationAura2.id].buff:SetTickData(false, 0, 0)
+				snapshots[spells.immolationAura3.id].buff:SetTickData(false, 0, 0)
+				snapshots[spells.immolationAura4.id].buff:SetTickData(false, 0, 0)
+				snapshots[spells.immolationAura5.id].buff:SetTickData(false, 0, 0)
+				snapshots[spells.immolationAura6.id].buff:SetTickData(false, 0, 0)
 			end
 		end
 	end
@@ -1311,19 +1382,19 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					valid = true
 				end
 			elseif var == "$bhFury" then
-				if snapshotData.snapshots[spells.immolationAura.id].buff.resource > 0 then
+				if snapshotData.snapshots[spells.immolationAura.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura1.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura2.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura3.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura4.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura5.id].buff.resource > 0 or snapshotData.snapshots[spells.immolationAura6.id].buff.resource > 0 then
 					valid = true
 				end
 			elseif var == "$bhTicks" or var == "$iaTicks" then
-				if snapshotData.snapshots[spells.immolationAura.id].buff.ticks > 0 then
+				if snapshotData.snapshots[spells.immolationAura.id].buff.ticks > 0 or snapshotData.snapshots[spells.immolationAura1.id].buff.ticks > 0 or snapshotData.snapshots[spells.immolationAura2.id].buff.ticks > 0 or snapshotData.snapshots[spells.immolationAura3.id].buff.ticks > 0 or snapshotData.snapshots[spells.immolationAura4.id].buff.ticks > 0 or snapshotData.snapshots[spells.immolationAura5.id].buff.ticks > 0 or snapshotData.snapshots[spells.immolationAura6.id].buff.ticks > 0 then
 					valid = true
 				end
 			elseif var == "$bhTime" or var == "$iaTime" then
-				if snapshotData.snapshots[spells.immolationAura.id].buff.isActive then
+				if snapshotData.snapshots[spells.immolationAura.id].buff.isActive or snapshotData.snapshots[spells.immolationAura1.id].buff.isActive or snapshotData.snapshots[spells.immolationAura2.id].buff.isActive or snapshotData.snapshots[spells.immolationAura3.id].buff.isActive or snapshotData.snapshots[spells.immolationAura4.id].buff.isActive or snapshotData.snapshots[spells.immolationAura5.id].buff.isActive or snapshotData.snapshots[spells.immolationAura6.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$ucTime" then
-				if snapshotData.snapshots[spells.immolationAura.id].buff.isActive then
+				if snapshotData.snapshots[spells.immolationAura.id].buff.isActive or snapshotData.snapshots[spells.immolationAura1.id].buff.isActive or snapshotData.snapshots[spells.immolationAura2.id].buff.isActive or snapshotData.snapshots[spells.immolationAura3.id].buff.isActive or snapshotData.snapshots[spells.immolationAura4.id].buff.isActive or snapshotData.snapshots[spells.immolationAura5.id].buff.isActive or snapshotData.snapshots[spells.immolationAura6.id].buff.isActive then
 					valid = true
 				end
 			elseif var == "$tacticalRetreatFury" then

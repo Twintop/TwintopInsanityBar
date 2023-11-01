@@ -13,7 +13,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
 	
-	local talents --[[@as TRB.Classes.Talents]]
+	---@type TRB.Classes.Talents
+	local talents
 
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
@@ -218,6 +219,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				hasCooldown = true,
 				beastialWrathCooldownReduction = 12,
 				isTalent = true
+			},
+			savagery = {
+				id = 424557,
+				name = "",
+				icon = "",
+				isTalent = true,
+				duration = 2
 			},
 			frenzy = {
 				id = 272790,
@@ -1352,23 +1360,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		specCache.survival.spells = spells
 	end
 
-	--[[
-	local function GetBeastialWrathCooldownRemainingTime()
-		local currentTime = GetTime()
-		local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
-		local spells = TRB.Data.spells
-		local snapshotData = TRB.Data.snapshotData --[ [@as TRB.Classes.SnapshotData] ]
-		local remainingTime = 0
-
-		if TRB.Data.snapshotData.beastialWrath.duration == gcd or TRB.Data.snapshotData.beastialWrath.startTime == 0 or TRB.Data.snapshotData.beastialWrath.duration == 0 then
-			remainingTime = 0
-		else
-			remainingTime = (TRB.Data.snapshotData.beastialWrath.startTime + TRB.Data.snapshotData.beastialWrath.duration) - currentTime
-		end
-
-		return remainingTime
-	end]]
-
 	local function CalculateAbilityResourceValue(resource, threshold)
 		local modifier = 1.0
 		if GetSpecialization() == 2 then
@@ -2189,7 +2180,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					table.remove(barbedShot.attributes.list, x)
 				else
 					activeCount = activeCount + 1
-					barbedShot.attributes.list[x].ticksRemaining = math.ceil((barbedShot.attributes.list[x].endTime - currentTime) / (spells.barbedShot.duration / spells.barbedShot.ticks))
+					barbedShot.attributes.list[x].ticksRemaining = math.ceil((barbedShot.attributes.list[x].endTime - currentTime) / ((spells.barbedShot.duration + (talents.talents[spells.savagery.id].currentRank * spells.savagery.duration)) / spells.barbedShot.ticks))
 					barbedShot.attributes.list[x].resource = CalculateAbilityResourceValue(barbedShot.attributes.list[x].ticksRemaining * spells.barbedShot.resource)
 					totalResource = totalResource + barbedShot.attributes.list[x].resource
 					totalTicksRemaining = totalTicksRemaining + barbedShot.attributes.list[x].ticksRemaining
@@ -2933,7 +2924,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 							table.insert(snapshots[spells.barbedShot.id].attributes.list, {
 								ticksRemaining = spells.barbedShot.ticks,
 								resource = snapshots[spells.barbedShot.id].attributes.ticksRemaining * spells.barbedShot.resource,
-								endTime = currentTime + spells.barbedShot.duration
+								endTime = currentTime + spells.barbedShot.duration + (talents.talents[spells.savagery.id].currentRank * spells.savagery.duration)
 							})
 						end
 					elseif spellId == spells.frenzy.id and destGUID == TRB.Data.character.petGuid then

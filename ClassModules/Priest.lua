@@ -197,7 +197,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				duration = 4.0, --Hasted
-				manaPercent = 0.03,
+				manaPercent = 0.02,
 				ticks = 4,
 				tickId = 265144
 			},
@@ -604,7 +604,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				duration = 4.0, --Hasted
-				manaPercent = 0.03,
+				manaPercent = 0.02,
 				ticks = 4,
 				tickId = 265144,
 				isTalent = true
@@ -1132,7 +1132,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				buffId = 391401,
-				resource = 3,
+				resource = 4,
 				isTalent = true
 			},
 			mindSpikeInsanity = {
@@ -1141,7 +1141,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				buffId = 407468,
 				talentId = 391403,
-				resource = 6,
+				resource = 8,
 				isTalent = true
 			},
 			deathspeaker = {
@@ -3391,8 +3391,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 		if specId == 3 then
 			local devouredDespair = snapshotData.snapshots[spells.devouredDespair.id]
-			if devouredDespair.buff.isActive and devouredDespair.buff.endTime ~= nil and devouredDespair.buff.endTime > currentTime then				
-				devouredDespair.attributes.ticks = TRB.Functions.Number:RoundTo(TRB.Functions.Spell:GetRemainingTime(devouredDespair, 0, "ceil", true))
+			if devouredDespair.buff.isActive then
+				devouredDespair.attributes.ticks = TRB.Functions.Number:RoundTo(devouredDespair.buff.remaining, 0, "ceil", true)
 			else
 				devouredDespair:Reset()
 				devouredDespair.attributes.ticks = 0
