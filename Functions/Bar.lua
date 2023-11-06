@@ -476,7 +476,6 @@ function TRB.Functions.Bar:Construct(settings)
 		end
 
 		TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
-		TRB.Functions.Threshold:RedrawThresholdLines(settings)
 
 		TRB.Functions.Bar:SetMinMax(settings)
 

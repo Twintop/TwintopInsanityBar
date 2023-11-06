@@ -222,6 +222,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 8,
 				settingKey = "shiv",
 				hasCooldown = true,
+				hasCharges = true,
 				isSnowflake = true,
 				cooldown = 25,
 				thresholdUsable = false,
@@ -264,7 +265,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				isTalent = true
 			},
 			subterfuge = {
-				id = 108208,
+				id = 115192,
 				name = "",
 				icon = "",
 				isTalent = true
@@ -333,9 +334,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				comboPoint = 5
 			},
-			--TODO: Finish implementing Shadow Dance
 			shadowDance = {
-				id = 185313,
+				id = 185422,
 				name = "",
 				icon = "",
 				isTalent = true
@@ -636,7 +636,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		---@type TRB.Classes.Snapshot
 		specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.dismantle.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.dismantle)
 		---@type TRB.Classes.Snapshot
-		specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.subterfuge.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.subterfuge, nil, true)
+		specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.subterfuge.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.subterfuge)
+		---@type TRB.Classes.Snapshot
+		specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.shadowDance.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.shadowDance)
 
 		specCache.assassination.barTextVariables = {
 			icons = {},
@@ -873,7 +875,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				isTalent = true
 			},
 			subterfuge = {
-				id = 108208,
+				id = 115192,
 				name = "",
 				icon = "",
 				isTalent = true
@@ -942,9 +944,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				comboPoint = 5
 			},
-			--TODO: Finish implementing Shadow Dance
 			shadowDance = {
-				id = 185313,
+				id = 185422,
 				name = "",
 				icon = "",
 				isTalent = true
@@ -1170,7 +1171,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				id = 51690,
 				name = "",
 				icon = "",
-				energy = -40,
+				resource = -40,
 				texture = "",
 				thresholdId = 21,
 				settingKey = "killingSpree",
@@ -1251,7 +1252,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		---@type TRB.Classes.Snapshot
 		specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.opportunity.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.opportunity)
 		---@type TRB.Classes.Snapshot
-		specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.subterfuge.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.subterfuge, nil, true)
+		specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.subterfuge.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.subterfuge)
+		---@type TRB.Classes.Snapshot
+		specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.shadowDance.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.shadowDance)
 		---@type TRB.Classes.Snapshot
 		specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.echoingReprimand,
 		{
@@ -1722,9 +1725,17 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end
 
+		local count = 0
+		local max = 0
 		for k, v in pairs(spells) do
 			local spell = spells[k]
 			if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+				count = count + 1
+
+				if spell.thresholdId > max then
+					max = spell.thresholdId
+				end
+
 				if resourceFrame.thresholds[spell.thresholdId] == nil then
 					resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, resourceFrame)
 				end
@@ -1734,9 +1745,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				resourceFrame.thresholds[spell.thresholdId]:Show()
 				resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 				resourceFrame.thresholds[spell.thresholdId]:Hide()
-				print(spell.name, spell.thresholdId)
 			end
 		end
+
 		TRB.Frames.resource2ContainerFrame:Show()
 
 		TRB.Functions.Bar:Construct(settings)
@@ -2669,6 +2680,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local currentTime = GetTime()
 		
 		snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
+		snapshots[spells.subterfuge.id].buff:GetRemainingTime(currentTime)
+		snapshots[spells.shadowDance.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.echoingReprimand_2CP.id].buff:GetRemainingTime(currentTime)
 		if snapshots[spells.echoingReprimand_2CP.id].buff.isActive then
 			snapshots[spells.echoingReprimand.id].attributes.enabled[2] = true
@@ -2718,7 +2731,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		snapshots[spells.improvedGarrote.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.blindside.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.sepsis.id].buff:GetRemainingTime(currentTime)
-		snapshots[spells.subterfuge.id].buff:GetRemainingTime(currentTime)
 
 		snapshots[spells.serratedBoneSpike.id].cooldown:Refresh()
 		snapshots[spells.garrote.id].cooldown:Refresh()
@@ -2732,8 +2744,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		---@type TRB.Classes.Snapshot[]
 		local snapshots = TRB.Data.snapshotData.snapshots
 		local currentTime = GetTime()
-
-		snapshots[spells.subterfuge.id].buff:GetRemainingTime(currentTime)
 
 		snapshots[spells.bladeRush.id].cooldown:Refresh()
 		snapshots[spells.bladeFlurry.id].cooldown:Refresh()
@@ -2816,6 +2826,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
+					local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.sepsis.id].buff.isActive or snapshots[spells.shadowDance.id].buff.isActive
 					local pairOffset = 0
 					for k, v in pairs(spells) do
 						local spell = spells[k]
@@ -2835,7 +2846,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
 								if spell.id == spells.ambush.id then
-									if snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.sepsis.id].buff.isActive then
+									if stealthViaBuff then
 										if snapshotData.attributes.resource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
 										else
@@ -2847,7 +2858,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 									else
 										showThreshold = false
 									end
-								elseif snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.sepsis.id].buff.isActive then
+								elseif stealthViaBuff then
 									if snapshotData.attributes.resource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
@@ -2952,7 +2963,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					end
 
 					local barBorderColor = specSettings.colors.bar.border
-					if IsStealthed() or snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.sepsis.id].buff.isActive then
+					if IsStealthed() or stealthViaBuff then
 						barBorderColor = specSettings.colors.bar.borderStealth
 					elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
@@ -3078,7 +3089,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
-
+					
+					local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.sepsis.id].buff.isActive or snapshots[spells.shadowDance.id].buff.isActive
 					local pairOffset = 0
 					for k, v in pairs(spells) do
 						local spell = spells[k]
@@ -3094,7 +3106,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								showThreshold = false
 							elseif spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
 								if spell.id == spells.ambush.id then
-									if snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.sepsis.id].buff.isActive then
+									if stealthViaBuff then
 										if snapshotData.attributes.resource >= -resourceAmount then
 											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
 										else
@@ -3104,7 +3116,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 									else
 										showThreshold = false
 									end
-								elseif snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.sepsis.id].buff.isActive then
+								elseif stealthViaBuff then
 									if snapshotData.attributes.resource >= -resourceAmount then
 										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
 									else
@@ -3238,7 +3250,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 					local barBorderColor = specSettings.colors.bar.border
 
-					if IsStealthed() or snapshots[spells.sepsis.id].buff.isActive then
+					if IsStealthed() or stealthViaBuff then
 						barBorderColor = specSettings.colors.bar.borderStealth
 					elseif snapshots[spells.rollTheBones.id].attributes.goodBuffs == true and snapshots[spells.rollTheBones.id].cooldown:IsUsable() then
 						barBorderColor = specSettings.colors.bar.borderRtbGood
@@ -3450,7 +3462,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				-- Spec agnostic
 				
 				if spellId == spells.subterfuge.id then
-					snapshots[spellId].buff:Initialize(type, true)
+					snapshots[spellId].buff:Initialize(type)
+				elseif spellId == spells.shadowDance.id then
+					snapshots[spellId].buff:Initialize(type)
 				elseif spellId == spells.crimsonVial.id then
 					if type == "SPELL_CAST_SUCCESS" then
 						snapshots[spellId].cooldown:Initialize()

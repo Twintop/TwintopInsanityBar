@@ -45,6 +45,7 @@ local content = [====[
 
 ## Rogue
 
+- [#329 - NEW](#329) Add Shadow Dance as a trigger to show stealth threshold lines.
 - [#329 - UPDATE](#329) Feint now has charges.
 - [#329 - UPDATE](#329) Shiv's cost increased to 30 Energy.
 
@@ -56,6 +57,8 @@ local content = [====[
 
 ### Outlaw
 
+- [#329 - NEW](#329) Add Subterfuge as a trigger to show stealth threshold lines.
+- [#329 - NEW](#329) Add Underhanded Upper Hand as a trigger to show stealth threshold lines.
 - [#329 - UPDATE](#329) Add Killing Spree threshold line.
 
 ----
