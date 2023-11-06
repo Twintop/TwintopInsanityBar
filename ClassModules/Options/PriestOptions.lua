@@ -781,7 +781,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					holyWordChastise="FFFF8080",
 					holyWordChastiseEnabled = true,
 					completeCooldown="FF00B500",
-					completeCooldownEnabled=true
+					completeCooldownEnabled=true,
+					sacredReverence="FF90FF64",
+					sacredReverenceEnabled=true
 				},
 				threshold={
 					unusable="FFFF0000",
@@ -2435,7 +2437,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.completeCooldownEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_completeCooldownEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.completeCooldownEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Enable complete cooldown color change?")
+		getglobal(f:GetName() .. 'Text'):SetText("Complete cooldown color change?")
 		f.tooltip = "When checked, when the hardcasting of a spell will cause its related Holy Word to finish coming off of cooldown, that associated Holy Word bar will change to this color as an indication."
 		f:SetChecked(spec.colors.comboPoints.completeCooldownEnabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -2445,7 +2447,24 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.colors.comboPoints.completeCooldown = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Color when your cast will complete the cooldown", spec.colors.comboPoints.completeCooldown, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.completeCooldown
 		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "completeCooldown")
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "sacredReverence")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.sacredReverenceEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_sacredReverenceEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.sacredReverenceEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Sacred Reverence (T31 4P) color change?")
+		f.tooltip = "When checked, the highest completed Holy Word: Sanctify and Holy Word: Serenity will be changed to this color if you have a stack of Sacred Reverence (T31 4P) causing the next cast to not consume a charge. If you have two stacks, up to two off cooldown charges will be this color."
+		f:SetChecked(spec.colors.comboPoints.sacredReverenceEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.comboPoints.sacredReverenceEnabled = self:GetChecked()
+		end)
+
+		controls.colors.comboPoints.sacredReverence = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Color when this Holy Word will not consume a charge when cast", spec.colors.comboPoints.sacredReverence, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.sacredReverence
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "sacredReverence")
 		end)
 
 		yCoord = yCoord - 30

@@ -804,6 +804,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				icon = "",
 				holyWordReduction = 2
+			},
+			sacredReverence = { -- T31 4P
+				id = 423510,
+				name = "",
+				icon = ""
 			}
 		}
 
@@ -863,6 +868,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.holy.snapshotData.snapshots[specCache.holy.spells.divineConversation.id] = TRB.Classes.Snapshot:New(specCache.holy.spells.divineConversation)
 		---@type TRB.Classes.Snapshot
 		specCache.holy.snapshotData.snapshots[specCache.holy.spells.prayerFocus.id] = TRB.Classes.Snapshot:New(specCache.holy.spells.prayerFocus)
+		---@type TRB.Classes.Snapshot
+		specCache.holy.snapshotData.snapshots[specCache.holy.spells.sacredReverence.id] = TRB.Classes.Snapshot:New(specCache.holy.spells.sacredReverence, nil, true)
 
 		-- Shadow
 		specCache.shadow.Global_TwintopResourceBar = {
@@ -1511,6 +1518,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#pom", icon = spells.prayerOfMending.icon, description = spells.prayerOfMending.name, printInSettings = true },
 			{ variable = "#prayerOfMending", icon = spells.prayerOfMending.icon, description = spells.prayerOfMending.name, printInSettings = false },
 			{ variable = "#renew", icon = spells.renew.icon, description = spells.renew.name, printInSettings = true },
+			{ variable = "#sacredReverence", icon = spells.sacredReverence.icon, description = spells.sacredReverence.name, printInSettings = true },
 			{ variable = "#smite", icon = spells.smite.icon, description = spells.smite.name, printInSettings = true },
 			{ variable = "#soh", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = true },
 			{ variable = "#symbolOfHope", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = false },
@@ -1596,6 +1604,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$hwSerenityCharges", description = "Number of charges left on Holy Word: Serenity", printInSettings = true, color = false },
 			{ variable = "$serenityCharges", description = "Number of charges left on Holy Word: Serenity", printInSettings = false, color = false },
 			{ variable = "$holyWordSerenityCharges", description = "Number of charges left on Holy Word: Serenity", printInSettings = false, color = false },
+			
+			{ variable = "$sacredReverenceStacks", description = "Number Sacred Reverence (T31 4P) stacks", printInSettings = true, color = false },
 
 			{ variable = "$apotheosisTime", description = "Time remaining on Apotheosis", printInSettings = true, color = false },
 			
@@ -2515,6 +2525,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$rwTime
 		local _rwTime = snapshots[spells.resonantWords.id].buff:GetRemainingTime(currentTime) or 0
 		local rwTime = string.format("%.1f", _rwTime)
+		
+		--$lightweaverStacks
+		local _sacredReverenceStacks = snapshots[spells.sacredReverence.id].buff.stacks or 0
+		local sacredReverenceStacks = string.format("%.0f", _sacredReverenceStacks)
 
 		-----------
 		--$swpCount and $swpTime
@@ -2626,6 +2640,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$lightweaverStacks"] = lightweaverStacks
 		lookup["$lightweaverTime"] = lightweaverTime
 		lookup["$apotheosisTime"] = apotheosisTime
+		lookup["$sacredReverenceStacks"] = sacredReverenceStacks
 		lookup["$swpCount"] = shadowWordPainCount
 		lookup["$swpTime"] = shadowWordPainTime
 		lookup["$rwTime"] = rwTime
@@ -2686,6 +2701,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$lightweaverStacks"] = _lightweaverStacks
 		lookupLogic["$lightweaverTime"] = _lightweaverTime
 		lookupLogic["$apotheosisTime"] = _apotheosisTime
+		lookupLogic["$sacredReverenceStacks"] = _sacredReverenceStacks
 		lookupLogic["$swpCount"] = _shadowWordPainCount
 		lookupLogic["$swpTime"] = _shadowWordPainTime
 		lookupLogic["$rwTime"] = rwTime
@@ -4103,8 +4119,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local cpBR, cpBG, cpBB, cpBA = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 					local cpBorderColor = specSettings.colors.comboPoints.border
 					local cpColor = specSettings.colors.comboPoints.base
+					local cpSacredReverenceColor = specSettings.colors.comboPoints.sacredReverence
 					local cpCompleteColor = specSettings.colors.comboPoints.completeCooldown
 					local currentCp = 1
+					local srBuff = snapshots[spells.sacredReverence.id].buff
 					
 					for x = 1, 3, 1 do
 						local spell
@@ -4125,7 +4143,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 						local cooldown = snapshots[spell.id].cooldown
 
-						if holyWordCooldownCompletes and spells[holyWordCooldownCompletesKey].id == spell.id then
+						if specSettings.colors.comboPoints.completeCooldownEnabled and holyWordCooldownCompletes and spells[holyWordCooldownCompletesKey].id == spell.id then
 							completes = true
 						end
 
@@ -4184,6 +4202,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							if cp2Time < 0 then
 								cp2Time = cp2Duration
 							end
+							
+							if specSettings.colors.comboPoints.sacredReverenceEnabled and spell.id ~= spells.holyWordChastise.id and srBuff.isActive and cp1Time == cp1Duration and (not hasCp2 or srBuff.stacks == 2 or (srBuff.stacks == 1 and cp2Time < cp2Duration)) then
+								cp1Color = cpSacredReverenceColor
+							end
 
 							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp1Time, cp1Duration)
 							TRB.Frames.resource2Frames[currentCp].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cp1Color, true))
@@ -4192,6 +4214,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							currentCp = currentCp + 1
 
 							if hasCp2 then
+								if specSettings.colors.comboPoints.sacredReverenceEnabled and srBuff.isActive and cooldown.charges == 2 then
+									cp2Color = cpSacredReverenceColor
+								end
+
 								TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp2Time, cp2Duration)
 								TRB.Frames.resource2Frames[currentCp].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cp2Color, true))
 								TRB.Frames.resource2Frames[currentCp].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
@@ -4599,6 +4625,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						snapshots[spellId].buff:Initialize(type, true)
 					elseif spellId == spells.prayerFocus.id then
 						snapshots[spellId].buff:Initialize(type, true)
+					elseif spellId == spells.sacredReverence.id then
+						snapshots[spellId].buff:Initialize(type, true)
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
 					if spellId == spells.voidform.id then
@@ -4846,7 +4874,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
 			lookup["#swp"] = spells.shadowWordPain.icon
 			lookup["#shadowWordPain"] = spells.shadowWordPain.icon
-			lookup["#shadowfiend"] = spells.shadowfiend.icon
+			lookup["#sacredReverence"] = spells.sacredReverence.icon
+			lookup["#sf"] = spells.shadowfiend.icon
 			lookup["#sf"] = spells.shadowfiend.icon
 			TRB.Data.lookup = lookup
 			TRB.Data.lookupLogic = {}
@@ -5236,6 +5265,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 			TRB.Details.addonData.registered = true
+			Twintop_Spells = TRB.Data.spells
+			Twintop_SnapshotData = TRB.Data.snapshotData
 		else
 			targetsTimerFrame:SetScript("OnUpdate", nil)
 			timerFrame:SetScript("OnUpdate", nil)
@@ -5530,6 +5561,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif var == "$hwSerenityCharges" or var == "$serenityCharges" or var == "$holyWordSerenityCharges" then
 				if snapshots[spells.holyWordSerenity.id].cooldown.charges > 0 then
+					valid = true
+				end
+			elseif var == "$sacredReverenceStacks" then
+				if snapshots[spells.sacredReverence.id].buff.isActive then
 					valid = true
 				end
 			end

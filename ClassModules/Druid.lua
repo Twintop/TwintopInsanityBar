@@ -4396,8 +4396,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.druid.balance)
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.druid.balance)
 
-			Twintop_Spells = spells
-			Twintop_SnapshotData = TRB.Data.snapshotData
 			if TRB.Data.barConstructedForSpec ~= "balance" then
 				talents = specCache.balance.talents
 				TRB.Data.barConstructedForSpec = "balance"

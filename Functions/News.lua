@@ -39,7 +39,13 @@ local content = [====[
 - [#329 - UPDATE](#329) Actively refresh Trueshot duration remaining.
 
 ## Priest
+### Holy
+
+- [#329 - NEW](#329) Add Holy Word color change support for Sacred Reverence (T31 4P) procs. Holy Word: Sanctify and Holy Word: Serenity will change colors based on the number of stacks of the buff you have, and, if you are able to cast the associated spell. This color change denotes that the cast will not consume a charge of the associated Holy Word.
+- (FIX) Respect the disabling of "Complete cooldown color change?" configuration option for Holy Words.
+
 ### Shadow
+
 - [#329 - UPDATE](#329) Update Mind Flay: Insanity's generation to 4 Insanity per tick.
 - [#329 - UPDATE](#329) Update Mind Spike: Insanity's generation to 8 Insanity.
 

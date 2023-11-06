@@ -227,6 +227,7 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
     local function ParseBuffData(buff, ...)
         local arg
         arg = select(3, ...)
+
         if arg ~= nil and arg ~= "" and (type(arg) == "string" or type(arg) == "number") then
             buff.stacks = math.floor(tonumber(arg))
         end
@@ -271,8 +272,8 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
     if id ~= nil then
         if eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REFRESH" or eventType == "SPELL_AURA_APPLIED_DOSE" then -- Gained buff
             self.isActive = true
+            ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
             if not simple and not self.alwaysSimple then
-                ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
                 self:GetRemainingTime()
             end
         elseif eventType == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
@@ -280,10 +281,7 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
                 self.stacks = self.stacks - 1
             end
         elseif eventType == "SPELL_AURA_REMOVED" or eventType == "SPELL_DISPEL" then -- Lost buff
-            self.isActive = false
-            if not simple and not self.alwaysSimple then
-                self:Reset()
-            end
+            self:Reset()
         elseif eventType == nil or eventType == "" then
             local currentTime = currentTime or GetTime()
             local foundId = ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
