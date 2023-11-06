@@ -1403,15 +1403,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		for k, v in pairs(spells) do
 			local spell = spells[k]
 			if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
-					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+				if resourceFrame.thresholds[spell.thresholdId] == nil then
+					resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, resourceFrame)
 				end
-				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+				TRB.Functions.Threshold:ResetThresholdLine(resourceFrame.thresholds[spell.thresholdId], settings, true)
+				TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
 
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
+				resourceFrame.thresholds[spell.thresholdId]:Show()
+				resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
+				resourceFrame.thresholds[spell.thresholdId]:Hide()
 			end
 		end
 

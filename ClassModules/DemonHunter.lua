@@ -324,6 +324,19 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 390195,
 				name = "",
 				icon = ""
+			},
+			felBarrage = {
+				id = 258925,
+				name = "",
+				icon = "",
+				resource = -10,
+				cooldown = 90,
+				texture = "",
+				thresholdId = 10,
+				settingKey = "felBarrage",
+				hasCooldown = true,
+				thresholdUsable = false,
+				isTalent = true
 			}
 		}
 
@@ -366,6 +379,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.tacticalRetreat.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.tacticalRetreat)
 		---@type TRB.Classes.Snapshot
 		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.chaosTheory.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.chaosTheory)
+		---@type TRB.Classes.Snapshot
+		specCache.havoc.snapshotData.snapshots[specCache.havoc.spells.felBarrage.id] = TRB.Classes.Snapshot:New(specCache.havoc.spells.felBarrage)
 	end
 
 	local function Setup_Havoc()
@@ -398,6 +413,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "#demonicAppetite", icon = spells.demonicAppetite.icon, description = spells.demonicAppetite.name, printInSettings = true },
 			{ variable = "#demonsBite", icon = spells.demonsBite.icon, description = spells.demonsBite.name, printInSettings = true },
 			{ variable = "#eyeBeam", icon = spells.eyeBeam.icon, description = spells.eyeBeam.name, printInSettings = true },
+			{ variable = "#felBarrage", icon = spells.felBarrage.icon, description = spells.felBarrage.name, printInSettings = true },
 			{ variable = "#felBlade", icon = spells.felBlade.icon, description = spells.felBlade.name, printInSettings = true },
 			{ variable = "#felEruption", icon = spells.felEruption.icon, description = spells.felEruption.name, printInSettings = true },
 			{ variable = "#firstBlood", icon = spells.firstBlood.icon, description = spells.firstBlood.name, printInSettings = true },
@@ -642,6 +658,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookup["#demonicAppetite"] = spells.demonicAppetite.icon
 		lookup["#demonsBite"] = spells.demonsBite.icon
 		lookup["#eyeBeam"] = spells.eyeBeam.icon
+		lookup["#felBarrage"] = spells.felBarrage.icon
 		lookup["#felBlade"] = spells.felBlade.icon
 		lookup["#felEruption"] = spells.felEruption.icon
 		lookup["#firstBlood"] = spells.firstBlood.icon
@@ -821,6 +838,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		snapshotData.snapshots[spells.chaosNova.id].cooldown:Refresh()
 		snapshotData.snapshots[spells.glaiveTempest.id].cooldown:Refresh()
 		snapshotData.snapshots[spells.throwGlaive.id].cooldown:Refresh()
+		snapshotData.snapshots[spells.felBarrage.id].cooldown:Refresh()
 	end
 
 	local function UpdateResourceBar()
@@ -1046,6 +1064,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							snapshotData.snapshots[spellId].cooldown:Initialize()
 						end
 					elseif spellId == spells.felEruption.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[spellId].cooldown:Initialize()
+						end
+					elseif spellId == spells.felBarrage.id then
 						if type == "SPELL_CAST_SUCCESS" then
 							snapshotData.snapshots[spellId].cooldown:Initialize()
 						end

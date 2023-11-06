@@ -724,6 +724,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				resource = -40,
 				comboPointsGenerated = 1,
 				stealth = true,
+				dirtyTricks = true,
 				texture = "",
 				thresholdId = 2,
 				settingKey = "cheapShot",
@@ -841,6 +842,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				resource = -35,
 				comboPointsGenerated = 0,
 				stealth = true,
+				dirtyTricks = true,
 				texture = "",
 				thresholdId = 9,
 				settingKey = "sap",
@@ -1723,15 +1725,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		for k, v in pairs(spells) do
 			local spell = spells[k]
 			if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
-					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+				if resourceFrame.thresholds[spell.thresholdId] == nil then
+					resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, resourceFrame)
 				end
-				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+				TRB.Functions.Threshold:ResetThresholdLine(resourceFrame.thresholds[spell.thresholdId], settings, true)
+				TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
 
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
+				resourceFrame.thresholds[spell.thresholdId]:Show()
+				resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
+				resourceFrame.thresholds[spell.thresholdId]:Hide()
+				print(spell.name, spell.thresholdId)
 			end
 		end
 		TRB.Frames.resource2ContainerFrame:Show()
@@ -2728,6 +2731,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local spells = TRB.Data.spells
 		---@type TRB.Classes.Snapshot[]
 		local snapshots = TRB.Data.snapshotData.snapshots
+		local currentTime = GetTime()
+
+		snapshots[spells.subterfuge.id].buff:GetRemainingTime(currentTime)
 
 		snapshots[spells.bladeRush.id].cooldown:Refresh()
 		snapshots[spells.bladeFlurry.id].cooldown:Refresh()
@@ -2816,8 +2822,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local viciousVenomsOffset = 0
 
-							if spell.viciousVenoms then
-								viciousVenomsOffset = spells.viciousVenoms.energyMod[TRB.Data.talents[spells.viciousVenoms.id].currentRank]
+							if talents:IsTalentActive(spells.viciousVenoms) then
+								viciousVenomsOffset = spells.viciousVenoms.energyMod[talents.talents[spells.viciousVenoms.id].currentRank]
 							end
 
 							local resourceAmount = CalculateAbilityResourceValue(spell.resource + viciousVenomsOffset, spell.nimbleFingers, spell.rushedSetup, spell.comboPoints)
@@ -2828,7 +2834,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
 							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
-								if spell.id == spells.ambush.id then		
+								if spell.id == spells.ambush.id then
 									if snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.sepsis.id].buff.isActive then
 										if snapshotData.attributes.resource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
@@ -2854,7 +2860,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							else
 								if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 									if spell.id == spells.shiv.id then
-										if not TRB.Functions.Talent:IsTalentActive(spell) then -- Talent not selected
+										if not talents:IsTalentActive(spell) then -- Talent not selected
 											showThreshold = false
 										elseif talents:IsTalentActive(spells.tinyToxicBlade) then -- Don't show this threshold
 											showThreshold = false
@@ -3084,9 +3090,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							local thresholdColor = specSettings.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
-							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
+							if spell.dirtyTricks == true and talents:IsTalentActive(spells.dirtyTricks) then
+								showThreshold = false
+							elseif spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
 								if spell.id == spells.ambush.id then
-									if snapshots[spells.sepsis.id].buff.isActive then
+									if snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.sepsis.id].buff.isActive then
 										if snapshotData.attributes.resource >= -resourceAmount then
 											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
 										else
@@ -3096,7 +3104,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 									else
 										showThreshold = false
 									end
-								elseif snapshots[spells.sepsis.id].buff.isActive then
+								elseif snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.sepsis.id].buff.isActive then
 									if snapshotData.attributes.resource >= -resourceAmount then
 										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
 									else
@@ -3314,8 +3322,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
-					elseif spellId == spells.subterfuge.id then
-						snapshots[spellId].buff:Initialize(type, true)
 					elseif spellId == spells.garrote.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 							if type == "SPELL_CAST_SUCCESS" then
@@ -3442,7 +3448,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				end
 
 				-- Spec agnostic
-				if spellId == spells.crimsonVial.id then
+				
+				if spellId == spells.subterfuge.id then
+					snapshots[spellId].buff:Initialize(type, true)
+				elseif spellId == spells.crimsonVial.id then
 					if type == "SPELL_CAST_SUCCESS" then
 						snapshots[spellId].cooldown:Initialize()
 					end

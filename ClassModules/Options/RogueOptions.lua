@@ -664,10 +664,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				},
 				-- PvP					
 				deathFromAbove = {
-					enabled = false, -- 21
+					enabled = false, -- 22
 				},
 				dismantle = {
-					enabled = false, -- 22
+					enabled = false, -- 23
 				},
 			},
 			generation = {

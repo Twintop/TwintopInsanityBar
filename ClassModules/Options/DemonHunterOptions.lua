@@ -222,6 +222,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				},
 				throwGlaive = {
 					enabled = true, -- 9
+				},
+				felBarrage = {
+					enabled = true, -- 10
 				}
 			},
 			displayBar = {
@@ -614,6 +617,17 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		f:SetChecked(spec.thresholds.eyeBeam.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.eyeBeam.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
+		controls.checkBoxes.felBarrageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_felBarrage", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.felBarrageThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Throw Glaive (Furious Throws)")
+		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Throw Glaive. Only visible if talented in to Furious Throws."
+		f:SetChecked(spec.thresholds.felBarrage.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.felBarrage.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25

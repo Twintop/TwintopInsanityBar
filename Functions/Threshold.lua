@@ -159,6 +159,9 @@ function TRB.Functions.Threshold:RedrawThresholdLines(settings)
 	local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
 	if entries > 0 then
 		for x = 1, entries do
+			if resourceFrame.thresholds[x] == nil then
+				print(x, "nil", entries)
+			end
 			TRB.Functions.Threshold:ResetThresholdLine(resourceFrame.thresholds[x], settings, true)
 		end
 	end
