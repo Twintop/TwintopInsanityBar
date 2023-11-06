@@ -16,6 +16,10 @@ local content = [====[
 ### Havoc
 
 - [#329 - NEW](#329) Add support for A Fire Inside.
+- [#329 - NEW](#329) Add support for Fel Barrage.
+<br/>&emsp;&ensp;- New threshold line that will show up when enabled and talented.
+<br/>&emsp;&ensp;- New bar text icon:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#felBarrage` -- Fel Barrage icon
 - [#329 - UPDATE](#329) Update Burning Hatred to generate 4 Fury per tick.
 - [#329 - UPDATE](#329) Update Chaos Nova's cost to 25 Fury.
 
@@ -41,7 +45,12 @@ local content = [====[
 ## Priest
 ### Holy
 
-- [#329 - NEW](#329) Add Holy Word color change support for Sacred Reverence (T31 4P) procs. Holy Word: Sanctify and Holy Word: Serenity will change colors based on the number of stacks of the buff you have, and, if you are able to cast the associated spell. This color change denotes that the cast will not consume a charge of the associated Holy Word.
+- [#329 - NEW](#329) Add Holy Word color change support for Sacred Reverence (T31 4P) procs.
+<br/>&emsp;&ensp;- Holy Word: Sanctify and Holy Word: Serenity will change colors based on the number of stacks of the buff you have, and, if you are able to cast the associated spell.
+<br/>&emsp;&ensp;- This color change denotes that the cast will not consume a charge of the associated Holy Word.
+<br/>&emsp;&ensp;- New bar text icons and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#sacredReverence` -- Sacred Reverence buff icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$sacredReverenceStacks` -- stacks on Sacred Reverence buff
 - (FIX) Respect the disabling of "Complete cooldown color change?" configuration option for Holy Words.
 
 ### Shadow
@@ -73,39 +82,6 @@ local content = [====[
 ## General
 
 - [#87 - FIX](#87) Fix an issue where adding a new bar text area and then deleting a bar text area would cause one of the remaining bar text areas to be hidden from the UI.
-
-----
-
-# 10.2.0.0-beta01 (2023-10-01)
-
-## Druid
-### Balance
-
-- [#329 - UPDATE](#329) Rattle the Stars now reduces the Astral Power cost of Starsurge and Starfall by 10%.
-
-## Hunter
-### Beast Mastery
-
-- [#329 - UPDATE](#329) Remove Aspect of the Wild.
-
-### Marksmanship
-
-- [#329 - UPDATE](#329) Actively refresh Trueshot duration remaining.
-
-### Rogue
-
-- [#329 - UPDATE](#329) Feint now has charges.
-- [#329 - UPDATE](#329) Shiv's cost increased to 30 Energy.
-
-### Assassination
-
-- [#329 - UPDATE](#329) Update Crimson Tempest's duration per combo point spent.
-- [#329 - UPDATE](#329) Remove Exsanguinate as the active version has no on-use Energy cost now.
-- [#329 - UPDATE](#329) Add Vicious Venoms support to increase the Energy cost of Mutilate and Ambush by 5/10.
-
-### Outlaw
-
-- [#329 - UPDATE](#329) Add Killing Spree threshold line.
 
 ----
 
