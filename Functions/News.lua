@@ -17,6 +17,11 @@ local content = [====[
 
 - (FIX) Add safeguards around the Holy Word bars to prevent occasional LUA errors.
 
+## Shaman
+### Elemental
+
+- (FIX) Ensure that bar border overcap color changes always occur if enabled.
+
 ----
 
 # 10.2.0.0-release (2023-11-07)
