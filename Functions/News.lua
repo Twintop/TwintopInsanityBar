@@ -7,6 +7,18 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 
+# 10.2.0.1-release (2023-11-20)
+## General
+
+- (FIX) Fix `$ttd` and `$ttdSeconds` always returning `false` when used as logic variables.
+
+## Priest
+### Holy
+
+- (FIX) Add safeguards around the Holy Word bars to prevent occasional LUA errors.
+
+----
+
 # 10.2.0.0-release (2023-11-07)
 ## General
 ### Healers

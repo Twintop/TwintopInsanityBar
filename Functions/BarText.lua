@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 TRB.Functions = TRB.Functions or {}
@@ -847,7 +846,7 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 		valid = true
 	elseif var == "$ttd" or var == "$ttdSeconds" then
 		local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
-		if targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and target ~= nil and target.timeToDie.time > 0 then
+		if targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and targetData.targets[targetData.currentTargetGuid] ~= nil and targetData.targets[targetData.currentTargetGuid].timeToDie.time > 0 then
 			valid = true
 		end
 	elseif var == "$inCombat" then
@@ -956,20 +955,23 @@ function TRB.Functions.BarText:CreateBarTextFrames(settings, classId, specId)
 			textFrames[frameCount]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
 			textFrames[frameCount]:SetFrameStrata(TRB.Data.settings.core.strata.level)
 
+---@diagnostic disable-next-line: undefined-field
+			local font = textFrames[frameCount].font
+
 			if relativeToFrame ~= nil and e.enabled then
-				textFrames[frameCount].font:SetTextColor(255/255, 255/255, 255/255, 1.0)
-				textFrames[frameCount].font:SetJustifyH(fontJustifyHorizontal)
-				textFrames[frameCount].font:SetFont(fontFace, fontSize, "OUTLINE")
-				textFrames[frameCount].font:Show()
-				textFrames[frameCount].font:ClearAllPoints()
-				textFrames[frameCount].font:SetPoint(relativeTo, relativeToFrame, relativeTo, e.position.xPos, e.position.yPos)				
+				font:SetTextColor(255/255, 255/255, 255/255, 1.0)
+				font:SetJustifyH(fontJustifyHorizontal)
+				font:SetFont(fontFace, fontSize, "OUTLINE")
+				font:Show()
+				font:ClearAllPoints()
+				font:SetPoint(relativeTo, relativeToFrame, relativeTo, e.position.xPos, e.position.yPos)				
 				textFrames[frameCount]:SetParent(relativeToFrame)
 				textFrames[frameCount]:ClearAllPoints()
-				textFrames[frameCount]:SetAllPoints(textFrames[frameCount].font)
+				textFrames[frameCount]:SetAllPoints(font)
 				textFrames[frameCount]:Show()
 			else
 				textFrames[frameCount]:Hide()
-				textFrames[frameCount].font:Hide()
+				font:Hide()
 			end
 		end
 	end
@@ -979,6 +981,7 @@ function TRB.Functions.BarText:CreateBarTextFrames(settings, classId, specId)
 	if textFramesEntries > frameCount then
 		for i = frameCount+1, textFramesEntries do
 			textFrames[i]:Hide()
+			---@diagnostic disable-next-line: undefined-field
 			textFrames[i].font:Hide()
 		end
 	end

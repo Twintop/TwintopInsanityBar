@@ -132,12 +132,24 @@ function TRB.Functions.Bar:GetPosition(settings)
 end
 
 function TRB.Functions.Bar:SetValue(settings, bar, value, maxResource)
-	maxResource = maxResource or TRB.Data.character.maxResource
 	value = value or 0
-	if settings ~= nil and settings.bar ~= nil and bar ~= nil and TRB.Data.character.maxResource ~= nil and TRB.Data.character.maxResource > 0 then
+	if settings ~= nil and settings.bar ~= nil and bar ~= nil then
 		local min, max = bar:GetMinMaxValues()
 		local factor = max / maxResource
-		bar:SetValue(math.min(value * factor, max))
+
+		if maxResource == 0 then
+			factor = max / 1
+		end
+
+		if factor ~= math.huge and max ~= math.huge then
+			bar:SetValue(math.min(value * factor, max))
+		end
+	end
+end
+
+function TRB.Functions.Bar:SetPrimaryValue(settings, bar, value)
+	if TRB.Data.character.maxResource ~= nil and TRB.Data.character.maxResource > 0 then
+		TRB.Functions.Bar:SetValue(settings, bar, value, TRB.Data.character.maxResource)
 	end
 end
 
@@ -320,9 +332,6 @@ function TRB.Functions.Bar:Construct(settings)
 		local castingFrame = TRB.Frames.castingFrame
 		local passiveFrame = TRB.Frames.passiveFrame
 		local barBorderFrame = TRB.Frames.barBorderFrame
-		local leftTextFrame = TRB.Frames.leftTextFrame
-		local middleTextFrame = TRB.Frames.middleTextFrame
-		local rightTextFrame = TRB.Frames.rightTextFrame
 
 		barContainerFrame:Show()
 		barContainerFrame:SetBackdrop({

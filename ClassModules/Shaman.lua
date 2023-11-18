@@ -1804,10 +1804,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local barBorderColor = specSettings.colors.bar.border
 
+					local passiveValue = 0
+
 					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-						local barBorderColor = specSettings.colors.bar.borderOvercap
+						barBorderColor = specSettings.colors.bar.borderOvercap
 
 						if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
 							snapshotData.audio.overcapCue = true
@@ -1815,8 +1818,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						end
 					else
 						snapshotData.audio.overcapCue = false
-					end
-					
+					end					
 
 					if specSettings.colors.bar.primalFracture.enabled and TRB.Functions.Class:IsValidVariableForSpec("$pfTime") then
 						barBorderColor = specSettings.colors.bar.primalFracture.color
@@ -1824,17 +1826,34 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
-					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
-
 					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = snapshotData.attributes.resource + snapshotData.casting.resourceFinal
+						castingBarValue = currentResource + snapshotData.casting.resourceFinal
 					else
-						castingBarValue = snapshotData.attributes.resource
+						castingBarValue = currentResource
 					end
 
-					TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
-
-					TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
+					passiveBarValue = castingBarValue + passiveValue
+					if castingBarValue < currentResource then --Using a spender
+						if -snapshotData.casting.resourceFinal > passiveValue then
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+						else
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+						end
+					else
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
+						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+					end
 
 					local barColor = specSettings.colors.bar.base
 
@@ -1844,7 +1863,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							pairOffset = (spell.thresholdId - 1) * 3
 							local resourceAmount = spell.resource
-							local currentResource = snapshotData.attributes.resource
 							--TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
@@ -1889,7 +1907,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 										if snapshots[spells.echoesOfGreatSundering.id].buff.isActive then
 											thresholdColor = specSettings.colors.threshold.echoesOfGreatSundering
 											frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
-										elseif snapshotData.attributes.resource >= -resourceAmount then
+										elseif currentResource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
 											frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 										else
@@ -1928,7 +1946,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						end
 					end
 
-					if snapshotData.attributes.resource >= TRB.Data.character.earthShockThreshold then
+					if currentResource >= TRB.Data.character.earthShockThreshold then
 						if specSettings.colors.bar.flashEnabled then
 							TRB.Functions.Bar:PulseFrame(barContainerFrame, specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 						else
@@ -1980,12 +1998,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
+					local passiveBarValue = 0
+					local castingBarValue = 0
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border
 
-					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
-					TRB.Functions.Bar:SetValue(specSettings, castingFrame, 0, 1)
-					TRB.Functions.Bar:SetValue(specSettings, passiveFrame, 0, 1)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
 
 					barContainerFrame:SetAlpha(1.0)
 
@@ -2052,7 +2073,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local currentMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local barBorderColor = specSettings.colors.bar.border
 
 					local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
@@ -2079,17 +2100,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
-					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentMana)
-
 					if CastingSpell() and specSettings.bar.showCasting  then
-						castingBarValue = currentMana + snapshotData.casting.resourceFinal
+						castingBarValue = currentResource + snapshotData.casting.resourceFinal
 					else
-						castingBarValue = currentMana
+						castingBarValue = currentResource
 					end
 
-					TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
-
-					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, snapshots[spells.aeratedManaPotionRank1.id].cooldown, snapshots[spells.conjuredChillglobe.id].cooldown, TRB.Data.character, resourceFrame, CalculateManaGain)
+					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentResource, castingBarValue, specSettings, snapshots[spells.aeratedManaPotionRank1.id].cooldown, snapshots[spells.conjuredChillglobe.id].cooldown, TRB.Data.character, resourceFrame, CalculateManaGain)
 
 					local passiveValue = 0
 					if specSettings.bar.showPassive then
@@ -2176,24 +2193,24 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					end
 
 					passiveBarValue = castingBarValue + passiveValue
-					if castingBarValue < snapshotData.attributes.resource then --Using a spender
+					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
-						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end

@@ -2782,6 +2782,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 					local passiveValue = 0
@@ -2796,32 +2797,32 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					end
 
 					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = snapshotData.attributes.resource + snapshotData.casting.resourceFinal
+						castingBarValue = currentResource + snapshotData.casting.resourceFinal
 					else
-						castingBarValue = snapshotData.attributes.resource
+						castingBarValue = currentResource
 					end
 
-					if castingBarValue < snapshotData.attributes.resource then --Using a spender
+					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
-						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -2847,7 +2848,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
 								if spell.id == spells.ambush.id then
 									if stealthViaBuff then
-										if snapshotData.attributes.resource >= -resourceAmount then
+										if currentResource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
 										else
 											thresholdColor = specSettings.colors.threshold.under
@@ -2859,7 +2860,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 										showThreshold = false
 									end
 								elseif stealthViaBuff then
-									if snapshotData.attributes.resource >= -resourceAmount then
+									if currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -2878,14 +2879,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 										elseif snapshots[spell.id].cooldown.charges == 0 then
 											thresholdColor = specSettings.colors.threshold.unusable
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-										elseif snapshotData.attributes.resource >= -resourceAmount then
+										elseif currentResource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
 										else
 											thresholdColor = specSettings.colors.threshold.under
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 										end
 									elseif spell.id == spells.sliceAndDice.id then
-										if snapshotData.attributes.resource >= -resourceAmount then
+										if currentResource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
 										else
 											thresholdColor = specSettings.colors.threshold.under
@@ -2907,7 +2908,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											elseif snapshots[spell.id].cooldown:IsUnusable() then
 												thresholdColor = specSettings.colors.threshold.unusable
 												frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-											elseif snapshotData.attributes.resource >= -resourceAmount then
+											elseif currentResource >= -resourceAmount then
 												thresholdColor = specSettings.colors.threshold.over
 											else
 												thresholdColor = specSettings.colors.threshold.under
@@ -2923,14 +2924,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 									if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif snapshotData.attributes.resource >= -resourceAmount then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								else -- This is an active/available/normal spell threshold
-									if snapshotData.attributes.resource >= -resourceAmount then
+									if currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -3046,6 +3047,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 					local passiveValue = 0
@@ -3060,32 +3062,32 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					end
 
 					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = snapshotData.attributes.resource + snapshotData.casting.resourceFinal
+						castingBarValue = currentResource + snapshotData.casting.resourceFinal
 					else
-						castingBarValue = snapshotData.attributes.resource
+						castingBarValue = currentResource
 					end
 
-					if castingBarValue < snapshotData.attributes.resource then --Using a spender
+					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
-						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -3107,7 +3109,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							elseif spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
 								if spell.id == spells.ambush.id then
 									if stealthViaBuff then
-										if snapshotData.attributes.resource >= -resourceAmount then
+										if currentResource >= -resourceAmount then
 											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
 										else
 											thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
@@ -3117,7 +3119,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 										showThreshold = false
 									end
 								elseif stealthViaBuff then
-									if snapshotData.attributes.resource >= -resourceAmount then
+									if currentResource >= -resourceAmount then
 										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.over
 									else
 										thresholdColor = TRB.Data.settings.rogue.outlaw.colors.threshold.under
@@ -3129,7 +3131,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							else
 								if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 									if spell.id == spells.sinisterStrike.id then
-										if snapshotData.attributes.resource >= -resourceAmount then
+										if currentResource >= -resourceAmount then
 											if snapshots[spells.skullAndCrossbones.id].buff.isActive then
 												thresholdColor = specSettings.colors.threshold.special
 												frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
@@ -3151,7 +3153,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 										end
 
-										if snapshotData.attributes.resource >= -resourceAmount then
+										if currentResource >= -resourceAmount then
 											if snapshots[spells.opportunity.id].buff.isActive then
 												thresholdColor = specSettings.colors.threshold.special
 												frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
@@ -3171,7 +3173,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 										if snapshots[spell.id].cooldown:IsUnusable() then
 											thresholdColor = specSettings.colors.threshold.unusable
 											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-										elseif snapshotData.attributes.resource >= -resourceAmount then
+										elseif currentResource >= -resourceAmount then
 											if snapshots[spells.ruthlessPrecision.id].buff.isActive then
 												thresholdColor = specSettings.colors.threshold.special
 												frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
@@ -3188,7 +3190,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 											end
 										end
 									elseif spell.id == spells.sliceAndDice.id then
-										if snapshotData.attributes.resource >= -resourceAmount then
+										if currentResource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
 										else
 											thresholdColor = specSettings.colors.threshold.under
@@ -3209,14 +3211,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 									if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif snapshotData.attributes.resource >= -resourceAmount then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								else -- This is an active/available/normal spell threshold
-									if snapshotData.attributes.resource >= -resourceAmount then
+									if currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under

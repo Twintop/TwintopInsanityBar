@@ -3583,7 +3583,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local currentMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local barBorderColor = specSettings.colors.bar.border
 
 					local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
@@ -3633,17 +3633,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
-					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentMana)
-
 					if CastingSpell() and specSettings.bar.showCasting  then
-						castingBarValue = currentMana + snapshotData.casting.resourceFinal
+						castingBarValue = currentResource + snapshotData.casting.resourceFinal
 					else
-						castingBarValue = currentMana
+						castingBarValue = currentResource
 					end
-
-					TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 					
-					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, snapshots[spells.aeratedManaPotionRank1.id].cooldown, snapshots[spells.conjuredChillglobe.id].cooldown, TRB.Data.character, resourceFrame, CalculateManaGain)
+					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentResource, castingBarValue, specSettings, snapshots[spells.aeratedManaPotionRank1.id].cooldown, snapshots[spells.conjuredChillglobe.id].cooldown, TRB.Data.character, resourceFrame, CalculateManaGain)
 
 					local shadowfiend = snapshots[spells.shadowfiend.id]
 
@@ -3781,24 +3777,24 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 
 					passiveBarValue = castingBarValue + passiveValue
-					if castingBarValue < snapshotData.attributes.resource then --Using a spender
+					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
-						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -3821,7 +3817,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local currentMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local barBorderColor = specSettings.colors.bar.border
 
 					local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
@@ -3897,17 +3893,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
-					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentMana)
-
 					if CastingSpell() and specSettings.bar.showCasting  then
-						castingBarValue = currentMana + snapshotData.casting.resourceFinal
+						castingBarValue = currentResource + snapshotData.casting.resourceFinal
 					else
-						castingBarValue = currentMana
+						castingBarValue = currentResource
 					end
-
-					TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
 					
-					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, snapshots[spells.aeratedManaPotionRank1.id].cooldown, snapshots[spells.conjuredChillglobe.id].cooldown, TRB.Data.character, resourceFrame, CalculateManaGain)
+					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentResource, castingBarValue, specSettings, snapshots[spells.aeratedManaPotionRank1.id].cooldown, snapshots[spells.conjuredChillglobe.id].cooldown, TRB.Data.character, resourceFrame, CalculateManaGain)
 
 					local shadowfiend = snapshots[spells.shadowfiend.id]
 
@@ -4045,24 +4037,24 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 
 					passiveBarValue = castingBarValue + passiveValue
-					if castingBarValue < snapshotData.attributes.resource then --Using a spender
+					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
-						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -4198,9 +4190,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							if cp1Time < 0 then
 								cp1Time = cp1Duration
 							end
-							
+
+							if cp1Time == math.huge or cp1Duration == math.huge then
+								cp1Time = 1
+								cp1Duration = 1
+							end
+
 							if cp2Time < 0 then
 								cp2Time = cp2Duration
+							end
+
+							if cp2Time == math.huge or cp2Duration == math.huge then
+								cp2Time = 1
+								cp2Duration = 1
 							end
 							
 							if specSettings.colors.comboPoints.sacredReverenceEnabled and spell.id ~= spells.holyWordChastise.id and srBuff.isActive and cp1Time == cp1Duration and (not hasCp2 or srBuff.stacks == 2 or (srBuff.stacks == 1 and cp2Time < cp2Duration)) then
@@ -4401,14 +4403,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif snapshotData.attributes.resource >= -resourceAmount then
+								elseif currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
-								if snapshotData.attributes.resource >= -resourceAmount then
+								if currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -4444,22 +4446,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					passiveBarValue = castingBarValue + passiveValue
 					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, currentResource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, currentResource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentResource)
-						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -5265,8 +5267,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 			TRB.Details.addonData.registered = true
-			Twintop_Spells = TRB.Data.spells
-			Twintop_SnapshotData = TRB.Data.snapshotData
 		else
 			targetsTimerFrame:SetScript("OnUpdate", nil)
 			timerFrame:SetScript("OnUpdate", nil)

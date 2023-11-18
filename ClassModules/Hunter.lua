@@ -2231,7 +2231,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		snapshots[spells.barrage.id].cooldown:Refresh()
 		snapshots[spells.wailingArrow.id].cooldown:Refresh()
 		
-		snapshots[spells.frenzy.id].buff:Refresh(currentTime, false, "pet")
+		snapshots[spells.frenzy.id].buff:Refresh(nil, false, "pet")
 	end
 
 	local function UpdateSnapshot_Marksmanship()
@@ -2289,6 +2289,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 					local passiveValue = 0
@@ -2303,32 +2304,32 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = snapshotData.attributes.resource + snapshotData.casting.resourceFinal
+						castingBarValue = currentResource + snapshotData.casting.resourceFinal
 					else
-						castingBarValue = snapshotData.attributes.resource
+						castingBarValue = currentResource
 					end
 
-					if castingBarValue < snapshotData.attributes.resource then --Using a spender
+					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
-						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -2358,7 +2359,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										snapshotData.audio.playedKillShotCue = false
-									elseif snapshotData.attributes.resource >= -resourceAmount then
+									elseif currentResource >= -resourceAmount then
 										if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
 											snapshotData.audio.playedKillShotCue = true
 											PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
@@ -2378,7 +2379,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									if snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif snapshotData.attributes.resource >= -resourceAmount or snapshots[spells.cobraSting.id].buff.isActive then
+									elseif currentResource >= -resourceAmount or snapshots[spells.cobraSting.id].buff.isActive then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -2393,14 +2394,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif snapshotData.attributes.resource >= -resourceAmount then
+								elseif currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
-								if snapshotData.attributes.resource >= -resourceAmount then
+								if currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -2503,6 +2504,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 					local borderColor = specSettings.colors.bar.border
 					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
@@ -2545,32 +2547,32 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = snapshotData.attributes.resource + snapshotData.casting.resourceFinal
+						castingBarValue = currentResource + snapshotData.casting.resourceFinal
 					else
-						castingBarValue = snapshotData.attributes.resource
+						castingBarValue = currentResource
 					end
 
-					if castingBarValue < snapshotData.attributes.resource then --Using a spender
+					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
-						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -2590,7 +2592,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								if spell.id == spells.arcaneShot.id then
 									if talents:IsTalentActive(spells.chimaeraShot) == true then
 										showThreshold = false
-									elseif snapshotData.attributes.resource >= -resourceAmount then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -2600,7 +2602,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									if snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif snapshots[spells.lockAndLoad.id].buff.isActive or snapshotData.attributes.resource >= -resourceAmount then
+									elseif snapshots[spells.lockAndLoad.id].buff.isActive or currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -2608,7 +2610,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									end
 
 									if specSettings.audio.aimedShot.enabled and (not snapshotData.audio.playedAimedShotCue) and snapshots[spells.aimedShot.id].cooldown:IsUsable() then
-										local remainingCd = snapshots[spells.aimedShot.id].cooldown.GetRemainingTime(currentTime)
+										local remainingCd = snapshots[spells.aimedShot.id].cooldown:GetRemainingTime()
 										local timeThreshold = 0
 										local castTime = select(4, GetSpellInfo(spell.id)) / 1000
 										if specSettings.audio.aimedShot.mode == "gcd" then
@@ -2639,7 +2641,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										snapshotData.audio.playedKillShotCue = false
-									elseif snapshotData.attributes.resource >= -resourceAmount then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 										if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
 											snapshotData.audio.playedKillShotCue = true
@@ -2659,14 +2661,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif snapshotData.attributes.resource >= -resourceAmount then
+								elseif currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
-								if snapshotData.attributes.resource >= -resourceAmount then
+								if currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -2717,6 +2719,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
@@ -2744,32 +2747,32 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = snapshotData.attributes.resource + snapshotData.casting.resourceFinal
+						castingBarValue = currentResource + snapshotData.casting.resourceFinal
 					else
-						castingBarValue = snapshotData.attributes.resource
+						castingBarValue = currentResource
 					end
 
-					if castingBarValue < snapshotData.attributes.resource then --Using a spender
+					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
-						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -2799,7 +2802,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										snapshotData.audio.playedKillShotCue = false
-									elseif snapshotData.attributes.resource >= -resourceAmount then
+									elseif currentResource >= -resourceAmount then
 										if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
 											snapshotData.audio.playedKillShotCue = true
 											PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
@@ -2814,7 +2817,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									if talents:IsTalentActive(spells.mongooseBite) then
 										showThreshold = false
 									else
-										if snapshotData.attributes.resource >= -resourceAmount then
+										if currentResource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
 										else
 											thresholdColor = specSettings.colors.threshold.under
@@ -2825,7 +2828,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									if not talents:IsTalentActive(spells.mongooseBite) then
 										showThreshold = false
 									else
-										if snapshotData.attributes.resource >= -resourceAmount then
+										if currentResource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
 										else
 											thresholdColor = specSettings.colors.threshold.under
@@ -2841,14 +2844,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								if snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif snapshotData.attributes.resource >= -resourceAmount then
+								elseif currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
-								if snapshotData.attributes.resource >= -resourceAmount then
+								if currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -3015,12 +3018,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					snapshotData.audio.playedKillShotCue = false
 				elseif spellId == spells.serpentSting.id then
 					if TRB.Functions.Class:InitializeTarget(destGUID) then
+---@diagnostic disable-next-line: param-type-mismatch
 						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 					end
 				end
 			end
 
 			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
+---@diagnostic disable-next-line: param-type-mismatch
 				targetData:Remove(destGUID)
 				RefreshTargetTracking()
 				triggerUpdate = true
