@@ -154,7 +154,7 @@ function TRB.Functions.Character:IsComboPointUser()
 	local specId = GetSpecialization()
 
 	if 	(classIndexId == 4) or -- Rogue
-		(classIndexId == 5 and specId == 2) or -- Holy Priest
+		(classIndexId == 5 and (specId == 1 or specId == 2)) or -- Discipline or Holy Priest
 		(classIndexId == 7 and specId == 2) or -- Enhancement Shaman
 		(classIndexId == 10 and specId == 3) or -- Windwalker Monk
 		(classIndexId == 11 and specId == 2) or -- Feral Druid

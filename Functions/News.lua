@@ -13,6 +13,13 @@ local content = [====[
 - (FIX) Fix `$ttd` and `$ttdSeconds` always returning `false` when used as logic variables.
 
 ## Priest
+### Discipline (experimental)
+- [#324 - NEW](#324) Add Power Word: Radiance cooldown bars in a similar style to the Holy Word cooldown bars for Holy Priest.
+<br/>&emsp;&ensp;- New bar text icons and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#pwRadiance`, `#powerWordRadiance` -- Power Word: Radiance ability icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$pwRadianceTime`, `$radianceTime`, `$powerWordRadianceTime` -- time remaining on Power Word: Radiance's cooldown for the current charge
+<br/>&emsp;&ensp;&emsp;&ensp;- `$pwRadianceCharges`, `$radianceCharges`, `$powerWordRadianceCharges` -- current number of available charges of Power Word: Radiance
+
 ### Holy
 
 - (FIX) Add safeguards around the Holy Word bars to prevent occasional LUA errors.

@@ -2376,6 +2376,15 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				"Combo Point 7",
 				"Screen",
 			}
+		elseif (classId == 5 and specId == 1) then -- Discipline Priest
+			relativeTo["Power Word: Radiance (1st Charge)"] = "PowerWord_Radiance_1"
+			relativeTo["Power Word: Radiance (2nd Charge)"] = "PowerWord_Radiance_2"
+			relativeToList = {
+				"Main Resource Bar",
+				"Power Word: Radiance (1st Charge)",
+				"Power Word: Radiance (2nd Charge)",
+				"Screen",
+			}
 		elseif (classId == 5 and specId == 2) then -- Holy Priest
 			relativeTo["Holy Word: Serenity (1st Charge)"] = "HolyWord_Serenity_1"
 			relativeTo["Holy Word: Serenity (2nd Charge)"] = "HolyWord_Serenity_2"

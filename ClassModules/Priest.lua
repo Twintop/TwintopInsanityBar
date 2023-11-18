@@ -167,6 +167,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 
 			-- Discipline Talent Abilities
+			powerWordRadiance = {
+				id = 194509,
+				icon = "",
+				name = "",
+				isTalent = true,
+				hasCharges = true
+			},
+			lightsPromise = {
+				id = 322115,
+				icon = "",
+				name = "",
+				isTalent = true
+			},
 			purgeTheWicked = {
 				id = 204213,
 				icon = "",
@@ -377,6 +390,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		})
 		---@type TRB.Classes.Snapshot
 		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.surgeOfLight)
+		---@type TRB.Classes.Snapshot
+		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.powerWordRadiance.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.powerWordRadiance)
 
 		specCache.discipline.barTextVariables = {
 			icons = {},
@@ -1350,19 +1365,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-			{ variable = "#sol", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = true },
-			{ variable = "#surgeOfLight", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = false },
-			
-			{ variable = "#swp", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = true },
-			{ variable = "#shadowWordPain", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = false },
-
 			{ variable = "#ptw", icon = spells.purgeTheWicked.icon, description = spells.purgeTheWicked.name, printInSettings = true },
 			{ variable = "#purgeTheWicked", icon = spells.purgeTheWicked.icon, description = spells.purgeTheWicked.name, printInSettings = false },
-			
+			{ variable = "#pwRadiance", icon = spells.powerWordRadiance.icon, description = spells.powerWordRadiance.name, printInSettings = true },
+			{ variable = "#powerWordRadiance", icon = spells.powerWordRadiance.icon, description = spells.powerWordRadiance.name, printInSettings = false },
 			{ variable = "#sf", icon = spells.shadowfiend.icon, description = "Shadowfiend / Mindbender", printInSettings = true },
 			{ variable = "#mindbender", icon = spells.mindbender.icon, description = "Mindbender", printInSettings = false },
 			{ variable = "#shadowfiend", icon = spells.shadowfiend.icon, description = "Shadowfiend", printInSettings = false },
-
+			{ variable = "#sol", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = true },
+			{ variable = "#surgeOfLight", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = false },
+			{ variable = "#swp", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = true },
+			{ variable = "#shadowWordPain", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = false },
 			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
 			{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
 
@@ -1428,6 +1441,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			{ variable = "$solStacks", description = "Number of Surge of Light stacks", printInSettings = true, color = false },
 			{ variable = "$solTime", description = "Time left on Surge of Light", printInSettings = true, color = false },
+						
+			{ variable = "$pwRadianceTime", description = "Time left on Power Word: Radiance's cooldown", printInSettings = true, color = false },
+			{ variable = "$radianceTime", description = "Time left on Power Word: Radiance's cooldown", printInSettings = false, color = false },
+			{ variable = "$powerWordRadianceTime", description = "Time left on Power Word: Radiance's cooldown", printInSettings = false, color = false },
+			
+			{ variable = "$pwRadianceCharges", description = "Number of charges left on Power Word: Radiance", printInSettings = true, color = false },
+			{ variable = "$radianceCharges", description = "Number of charges left on Power Word: Radiance", printInSettings = false, color = false },
+			{ variable = "$powerWordRadianceCharges", description = "Number of charges left on Power Word: Radiance", printInSettings = false, color = false },
 			
 			{ variable = "$sohMana", description = "Mana from Symbol of Hope", printInSettings = true, color = false },
 			{ variable = "$sohTime", description = "Time left on Symbol of Hope", printInSettings = true, color = false },
@@ -2199,6 +2220,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _solTime = snapshots[spells.surgeOfLight.id].buff:GetRemainingTime(currentTime) or 0
 		local solTime = string.format("%.1f", _solTime)
 
+		--$pwRadianceTime
+		local _pwRadianceTime = snapshots[spells.powerWordRadiance.id].cooldown.remaining
+		local pwRadianceTime = string.format("%.1f", _pwRadianceTime)
+		
+		--$pwRadianceCharges
+		local _pwRadianceCharges = snapshots[spells.powerWordRadiance.id].cooldown.charges
+		local pwRadianceCharges = string.format("%.0f", _pwRadianceCharges)
+
 		-----------
 		--$swpCount and $swpTime		
 		local _shadowWordPainCount
@@ -2313,6 +2342,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$sfTime"] = sfTime
 		lookup["$swpCount"] = shadowWordPainCount
 		lookup["$swpTime"] = shadowWordPainTime
+		lookup["$pwRadianceTime"] = pwRadianceTime
+		lookup["$radianceTime"] = pwRadianceTime
+		lookup["$powerWordRadianceTime"] = pwRadianceTime
+		lookup["$pwRadianceCharges"] = pwRadianceCharges
+		lookup["$radianceCharges"] = pwRadianceCharges
+		lookup["$powerWordRadianceCharges"] = pwRadianceCharges
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
@@ -2354,6 +2389,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$sfTime"] = _sfTime
 		lookupLogic["$swpCount"] = _shadowWordPainCount
 		lookupLogic["$swpTime"] = _shadowWordPainTime
+		lookupLogic["$pwRadianceTime"] = _pwRadianceTime
+		lookupLogic["$radianceTime"] = _pwRadianceTime
+		lookupLogic["$powerWordRadianceTime"] = _pwRadianceTime
+		lookupLogic["$pwRadianceCharges"] = _pwRadianceCharges
+		lookupLogic["$radianceCharges"] = _pwRadianceCharges
+		lookupLogic["$powerWordRadianceCharges"] = _pwRadianceCharges
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -3525,6 +3566,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function UpdateSnapshot_Discipline()
 		UpdateSnapshot()
 		UpdateSnapshot_Healers()
+		
+		local spells = TRB.Data.spells
+		---@type TRB.Classes.Snapshot[]
+		local snapshots = TRB.Data.snapshotData.snapshots
+
+		snapshots[spells.powerWordRadiance.id].cooldown:Refresh(true)
 	end
 
 	local function UpdateSnapshot_Holy()
@@ -3532,7 +3579,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateSnapshot()
 		UpdateSnapshot_Healers()
 		
-		local _
 		local spells = TRB.Data.spells
 		---@type TRB.Classes.Snapshot[]
 		local snapshots = TRB.Data.snapshotData.snapshots
@@ -3802,6 +3848,86 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local resourceBarColor = specSettings.colors.bar.base
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(resourceBarColor, true))
+					
+					if talents:IsTalentActive(spells.powerWordRadiance) and specSettings.colors.comboPoints.powerWordRadianceEnabled then
+						local cpBR, cpBG, cpBB, cpBA = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+						local cpBorderColor = specSettings.colors.comboPoints.border
+						local cpColor = specSettings.colors.comboPoints.powerWordRadiance
+						local currentCp = 1
+						
+						local spell = spells.powerWordRadiance
+						local cooldown = snapshots[spell.id].cooldown
+
+						local cp1Time = 1
+						local cp1Duration = 1
+						local cp1Color = cpColor
+						local cp2Time = 1
+						local cp2Duration = 1
+						local cp2Color = cpColor
+						local hasCp2 = false
+						if cooldown.maxCharges == 2 then -- Light's Promise
+							if cooldown.charges == 2 then
+								cp1Time = 1
+								cp1Duration = 1
+								cp2Time = 1
+								cp2Duration = 1
+								hasCp2 = true
+							elseif cooldown.charges == 1 then
+								cp1Time = 1
+								cp1Duration = 1
+								cp2Time = cooldown.duration - cooldown:GetRemainingTime(currentTime)
+								cp2Duration = cooldown.duration
+								hasCp2 = true
+							else
+								cp1Time = cooldown.duration - cooldown:GetRemainingTime(currentTime)
+								cp1Duration = cooldown.duration
+								cp2Time = 0
+								cp2Duration = 1
+								hasCp2 = true
+							end
+						else -- Baseline
+							hasCp2 = false
+							if cooldown.onCooldown then
+								cp1Time = cooldown.duration - cooldown:GetRemainingTime(currentTime)
+								cp1Duration = cooldown.duration
+							else
+								cp1Time = 1
+								cp1Duration = 1
+							end
+						end
+						
+						if cp1Time < 0 then
+							cp1Time = cp1Duration
+						end
+
+						if cp1Time == math.huge or cp1Duration == math.huge then
+							cp1Time = 1
+							cp1Duration = 1
+						end
+
+						if cp2Time < 0 then
+							cp2Time = cp2Duration
+						end
+
+						if cp2Time == math.huge or cp2Duration == math.huge then
+							cp2Time = 1
+							cp2Duration = 1
+						end
+
+						TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp1Time, cp1Duration)
+						TRB.Frames.resource2Frames[currentCp].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cp1Color, true))
+						TRB.Frames.resource2Frames[currentCp].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
+						TRB.Frames.resource2Frames[currentCp].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBA)
+						currentCp = currentCp + 1
+
+						if hasCp2 then
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[currentCp].resourceFrame, cp2Time, cp2Duration)
+							TRB.Frames.resource2Frames[currentCp].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cp2Color, true))
+							TRB.Frames.resource2Frames[currentCp].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
+							TRB.Frames.resource2Frames[currentCp].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBA)
+							currentCp = currentCp + 1
+						end
+					end
 				end
 
 				TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
@@ -4603,6 +4729,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 ---@diagnostic disable-next-line: param-type-mismatch
 							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
 						end
+					elseif spellId == spells.powerWordRadiance.id then
+						if type == "SPELL_CAST_SUCCESS" then -- Cast PW: Radiance
+							snapshots[spellId].cooldown:Initialize()
+						end
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "holy" then
 					if spellId == spells.apotheosis.id then
@@ -4787,6 +4917,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.discipline)
 
 			local lookup = TRB.Data.lookup or {}
+			lookup["#pwRadiance"] = spells.powerWordRadiance.icon
+			lookup["#radiance"] = spells.powerWordRadiance.icon
+			lookup["#powerWordRadiance"] = spells.powerWordRadiance.icon
 			lookup["#ptw"] = spells.purgeTheWicked.icon
 			lookup["#purgeTheWicked"] = spells.purgeTheWicked.icon
 			lookup["#swp"] = spells.shadowWordPain.icon
@@ -5125,6 +5258,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			else
 				snapshots[spells.shadowfiend.id].spell = spells.shadowfiend
 			end
+			
+			local totalPowerWordCharges = 0
+			
+			if talents:IsTalentActive(spells.powerWordRadiance) and TRB.Data.settings.priest.discipline.colors.comboPoints.powerWordRadianceEnabled then
+				totalPowerWordCharges = totalPowerWordCharges + 1
+				if talents:IsTalentActive(spells.lightsPromise) then
+					totalPowerWordCharges = totalPowerWordCharges + 1
+				end
+			end
+
+			TRB.Data.character.maxResource2 = totalPowerWordCharges
+			TRB.Functions.Bar:SetPosition(TRB.Data.settings.priest.discipline, TRB.Frames.barContainerFrame)
 		elseif specId == 2 then
 			TRB.Data.character.specName = "holy"
 ---@diagnostic disable-next-line: missing-parameter
@@ -5236,7 +5381,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
-			TRB.Data.resource2 = nil
+			TRB.Data.resource2 = "CUSTOM"
 			TRB.Data.resource2Factor = nil
 		elseif specId == 2 and TRB.Data.settings.core.enabled.priest.holy == true then
 			specSettings = TRB.Data.settings.priest.holy
@@ -5244,6 +5389,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Data.resource = Enum.PowerType.Mana
 			TRB.Data.resourceFactor = 1
 			TRB.Data.resource2 = "CUSTOM"
+			TRB.Data.resource2Factor = nil
 		elseif specId == 3 and TRB.Data.settings.core.enabled.priest.shadow == true then
 			specSettings = TRB.Data.settings.priest.shadow
 			TRB.Data.specSupported = true
@@ -5516,6 +5662,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					TRB.Functions.Class:IsValidVariableForSpec("$mrMana") then
 					valid = true
 				end
+			elseif var == "$pwRadianceTime" or var == "$radianceTime" or var == "$powerWordRadianceTime" then
+				if snapshots[spells.powerWordRadiance.id].cooldown.remaining > 0 then
+					valid = true
+				end
+			elseif var == "$pwRadianceCharges" or var == "$radianceCharges" or var == "$powerWordRadianceCharges" then
+				if snapshots[spells.powerWordRadiance.id].cooldown.charges > 0 then
+					valid = true
+				end
 			end
 		elseif specId == 2 then
 			if var == "$passive" then
@@ -5754,6 +5908,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 		if specId == 1 then
+			if TRB.Functions.String:StartsWith(relativeToFrame, "PowerWord_") then
+				if TRB.Functions.String:Contains(relativeToFrame, "Radiance") and settings.discipline.colors.comboPoints.powerWordRadianceEnabled and talents:IsTalentActive(spells.powerWordRadiance) then
+					if TRB.Functions.String:EndsWith(relativeToFrame, "1") then
+						return _G["TwintopResourceBarFrame_ComboPoint_1"]
+					elseif TRB.Functions.String:EndsWith(relativeToFrame, "2") and talents:IsTalentActive(spells.lightsPromise) then
+						return _G["TwintopResourceBarFrame_ComboPoint_2"]
+					end
+				end
+			end
 		elseif specId == 2 then
 			if TRB.Functions.String:StartsWith(relativeToFrame, "HolyWord_") then
 				if TRB.Functions.String:Contains(relativeToFrame, "Serenity") and settings.holy.colors.comboPoints.holyWordSerenityEnabled and talents:IsTalentActive(spells.holyWordSerenity) then

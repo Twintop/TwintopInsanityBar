@@ -3302,38 +3302,54 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						snapshotData.audio.overcapCue = false
 					end
 
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
-
 					if CastingSpell() and specSettings.bar.showCasting then
 						castingBarValue = currentResource + snapshotData.casting.resourceFinal
 					else
 						castingBarValue = currentResource
 					end
 
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
-
+					local passiveValue = 0
 					if specSettings.bar.showPassive then
-						passiveBarValue = currentResource + snapshotData.casting.resourceFinal + snapshotData.snapshots[spells.furyOfElune.id].buff.resource + snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource
+						passiveValue = snapshotData.snapshots[spells.furyOfElune.id].buff.resource + snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource
 
 						if talents:IsTalentActive(spells.naturesBalance) then
 							if affectingCombat then
-								passiveBarValue = passiveBarValue + spells.naturesBalance.resource
+								passiveValue = passiveValue + spells.naturesBalance.resource
 							elseif currentResource < 50 then
-								passiveBarValue = passiveBarValue + spells.naturesBalance.outOfCombatResource
+								passiveValue = passiveValue + spells.naturesBalance.outOfCombatResource
 							end
 						end
 
 						if talents:IsTalentActive(spells.naturesBalance) and (affectingCombat or (not affectingCombat and currentResource < 50)) then
-
 						else
-							passiveBarValue = currentResource + snapshotData.casting.resourceFinal + snapshotData.snapshots[spells.furyOfElune.id].buff.resource + snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource
+							passiveValue = snapshotData.snapshots[spells.furyOfElune.id].buff.resource + snapshotData.snapshots[spells.sunderedFirmament.id].buff.resource
 						end
-					else
-						passiveBarValue = castingBarValue
 					end
 
-					TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
-
+					if castingBarValue < currentResource then --Using a spender
+						if -snapshotData.casting.resourceFinal > passiveValue then
+							passiveBarValue = castingBarValue + passiveValue
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+						else
+							passiveBarValue = castingBarValue + passiveValue
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+						end
+					else
+						passiveBarValue = castingBarValue + passiveValue
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
+						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+					end
 
 					local rattleTheStarsModifier = 1
 					

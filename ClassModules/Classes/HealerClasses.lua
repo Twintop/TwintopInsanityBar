@@ -49,13 +49,7 @@ end
 ---Updates Innervate's values
 function TRB.Classes.Healer.Innervate:Update()
     if self.buff.isActive then
-        local manaRegen = 0
-
-        if TRB.Data.snapshotData ~= nil then
-            manaRegen = TRB.Data.snapshotData.attributes.manaRegen
-        else
-            manaRegen = TRB.Data.snapshot.manaRegen
-        end
+        local manaRegen = TRB.Data.snapshotData.attributes.manaRegen
         self.modifier = (100 + (self.buff.customProperties["modifier"] or 100)) / 100
         self.mana = self.buff:GetRemainingTime() * manaRegen * (1 - self.modifier)
     else
@@ -127,13 +121,7 @@ end
 ---Updates ManaTideTotem's values
 function TRB.Classes.Healer.ManaTideTotem:Update()
     if self.buff.isActive then
-        local manaRegen = 0
-        if TRB.Data.snapshotData ~= nil then
-            manaRegen = TRB.Data.snapshotData.attributes.manaRegen
-        else
-            manaRegen = TRB.Data.snapshot.manaRegen
-        end
-
+        local manaRegen = TRB.Data.snapshotData.attributes.manaRegen
         self.mana = self.buff:GetRemainingTime() * manaRegen / 2
     else
         self.mana = 0
@@ -193,20 +181,12 @@ function TRB.Classes.Healer.SymbolOfHope:Update()
         local nextTickRemaining = self.buff.remaining - ((self.buff.ticks - 1) * self.buff.tickRate)
         self.buff.manaRaw = 0
 
-        local casting
-        local manaRegen
-        local resource
+        ---@type TRB.Classes.SnapshotData
+        local snapshotData = TRB.Data.snapshotData
 
-        if TRB.Data.snapshotData ~= nil then
-            ---@type TRB.Classes.SnapshotCasting
-            casting = TRB.Data.snapshotData.casting
-            manaRegen = TRB.Data.snapshotData.attributes.manaRegen
-            resource = TRB.Data.snapshotData.attributes.resource
-        else
-            casting = TRB.Data.snapshot.casting
-            manaRegen = TRB.Data.snapshot.manaRegen
-            resource = TRB.Data.snapshot.resource
-        end
+        local casting = snapshotData.casting
+        local manaRegen = snapshotData.attributes.manaRegen
+        local resource = snapshotData.attributes.resource
 
         for x = 1, self.buff.ticks do
             local casterRegen = 0
@@ -346,13 +326,7 @@ end
 ---Updates PotionOfChilledClarity's values
 function TRB.Classes.Healer.PotionOfChilledClarity:Update()
     if self.buff.isActive then
-        local manaRegen = 0
-        if TRB.Data.snapshotData ~= nil then
-            manaRegen = TRB.Data.snapshotData.attributes.manaRegen
-        else
-            manaRegen = TRB.Data.snapshot.manaRegen
-        end
-
+        local manaRegen = TRB.Data.snapshotData.attributes.manaRegen
         self.modifier = (100 + (self.buff.customProperties["modifier"] or 100)) / 100
         self.mana = self.buff:GetRemainingTime() * manaRegen * (1 - self.modifier)
     else
@@ -409,13 +383,7 @@ end
 ---Updates ChanneledManaPotion's values
 function TRB.Classes.Healer.ChanneledManaPotion:Update()
     if self.buff.isActive then
-        local manaRegen = 0
-        if TRB.Data.snapshotData ~= nil then
-            manaRegen = TRB.Data.snapshotData.attributes.manaRegen
-        else
-            manaRegen = TRB.Data.snapshot.manaRegen
-        end
-
+        local manaRegen = TRB.Data.snapshotData.attributes.manaRegen
         self.ticks = TRB.Functions.Number:RoundTo(self.buff:GetRemainingTime(), 0, "ceil", true)
         self.mana = self.ticks * self.CalculateManaGainFunction(self.buff.customProperties["manaPerTick"] or 0, true) + (self.buff:GetRemainingTime() * manaRegen)
     else

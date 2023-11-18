@@ -202,7 +202,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 	---@type TRB.Classes.TargetData
 	local targetData = TRB.Data.snapshotData.targetData
 
-	local currentTime = GetTime()	
+	local currentTime = GetTime()
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate
 	self.characterCheckSinceLastUpdate  = self.characterCheckSinceLastUpdate  + sinceLastUpdate

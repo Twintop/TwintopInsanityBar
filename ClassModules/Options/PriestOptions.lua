@@ -19,6 +19,61 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	TRB.Options.Priest.Shadow = {}
 
 
+	local function DisciplineLoadExtraBarTextSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
+		local textSettings = {
+			{
+				useDefaultFontColor = false,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Left",
+				text = "{$pwRadianceTime&$hwSerenityCharges=0}[$pwRadianceTime]",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 14,
+				name = "HW Serenity 1",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = "Power Word: Radiance (1st Charge)",
+					yPos = 0,
+					relativeToFrame = "PowerWord_Radiance_1",
+				},
+				fontJustifyHorizontal = "LEFT",
+				useDefaultFontSize = false,
+				color = "ffffffff",
+				enabled = true,
+			},
+			{
+				useDefaultFontColor = false,
+				fontFace = "Fonts\\FRIZQT__.TTF",
+				useDefaultFontFace = false,
+				guid=TRB.Functions.String:Guid(),
+				fontJustifyHorizontalName = "Left",
+				text = "{$pwRadianceTime&$hwSerenityCharges=1}[$pwRadianceTime]",
+				fontFaceName = "Friz Quadrata TT",
+				fontSize = 14,
+				name = "HW Serenity 2",
+				position = {
+					relativeToName = "Center",
+					relativeTo = "CENTER",
+					xPos = 0,
+					relativeToFrameName = "Power Word: Radiance (2nd Charge)",
+					yPos = 0,
+					relativeToFrame = "PowerWord_Radiance_2",
+				},
+				fontJustifyHorizontal = "LEFT",
+				useDefaultFontSize = false,
+				color = "ffffffff",
+				enabled = true,
+			},
+		}
+
+		return textSettings
+	end
+
+
 	local function DisciplineLoadDefaultBarTextSimpleSettings()
 		---@type TRB.Classes.DisplayTextEntry[]
 		local textSettings = {
@@ -93,6 +148,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			}
 		}
 
+		local extraTextSettings = DisciplineLoadExtraBarTextSettings()
+
+		for x = 1, #extraTextSettings do
+			table.insert(textSettings, extraTextSettings[x])
+		end
 		return textSettings
 	end
 	TRB.Options.Priest.DisciplineLoadDefaultBarTextSimpleSettings = DisciplineLoadDefaultBarTextSimpleSettings
@@ -171,6 +231,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			}
 		}
 
+		local extraTextSettings = DisciplineLoadExtraBarTextSettings()
+
+		for x = 1, #extraTextSettings do
+			table.insert(textSettings, extraTextSettings[x])
+		end
 		return textSettings
 	end
 
@@ -246,6 +311,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				showPassive=true,
 				showCasting=true
 			},
+			comboPoints = {
+				width=25,
+				height=13,
+				xPos=0,
+				yPos=4,
+				border=1,
+				spacing=14,
+				relativeTo="TOP",
+				relativeToName="Above - Middle",
+				fullWidth=true,
+			},
 			shadowfiend={
 				mode="time",
 				swingsMax=4,
@@ -284,6 +360,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					surgeOfLightBorderChange2=true,
 					innervateBorderChange=true,
 					potionOfChilledClarityBorderChange=true,
+				},
+				comboPoints = {
+					border="FF000099",
+					base="FF000099", --required for generic combo point code
+					background="66000000",
+					--holyWordSerenity="FF00DDDD",
+					--holyWordSerenityEnabled = true,
+					powerWordRadiance="FFFFDD22",
+					powerWordRadianceEnabled = true,
+					--holyWordChastise="FFFF8080",
+					--holyWordChastiseEnabled = true,
+					--completeCooldown="FF00B500",
+					--completeCooldownEnabled=true,
+					--sacredReverence="FF90FF64",
+					--sacredReverenceEnabled=true
 				},
 				threshold={
 					unusable="FFFF0000",
@@ -334,7 +425,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				passiveBarName="Blizzard",
 				castingBar="Interface\\TargetingFrame\\UI-StatusBar",
 				castingBarName="Blizzard",
-				textureLock=true
+				textureLock=true,
+				comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+				comboPointsBackgroundName="Blizzard Tooltip",
+				comboPointsBorder="Interface\\Buttons\\WHITE8X8",
+				comboPointsBorderName="1 Pixel",
+				comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
+				comboPointsBarName="Blizzard",
 			}
 		}
 
@@ -1401,7 +1498,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 5, 1, yCoord)
 
-		yCoord = yCoord - 40
+		yCoord = yCoord - 30
+		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 5, 1, yCoord, "Mana", "Power Words")
+
+		yCoord = yCoord - 60
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 1, yCoord, false)
 
 		yCoord = yCoord - 30
@@ -1487,6 +1587,44 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetChecked(spec.colors.bar.surgeOfLightBorderChange2)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.surgeOfLightBorderChange2 = self:GetChecked()
+		end)
+
+		
+
+		yCoord = yCoord - 40
+		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Power Word Colors", oUi.xCoord, yCoord)
+		controls.colors.comboPoints = {}
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.holyWordSerenityComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_powerWordRadianceComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.holyWordSerenityComboPointEnabled
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Enable Power Word: Radiance")
+		f.tooltip = "Show the Power Word bar(s) for Power Word: Radiance"
+		f:SetChecked(spec.colors.comboPoints.powerWordRadianceEnabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.comboPoints.powerWordRadianceEnabled = self:GetChecked()
+			TRB.Functions.BarText:CreateBarTextFrames(spec)
+		end)
+
+		controls.colors.comboPoints.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Power Word: Radiance", spec.colors.comboPoints.powerWordRadiance, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.holyWordSerenity
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "powerWordRadiance")
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Power Word's border", spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.border
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
+		end)
+
+		yCoord = yCoord - 30
+		controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled Power Word background", spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.comboPoints.background
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
 		end)
 
 		yCoord = yCoord - 40
