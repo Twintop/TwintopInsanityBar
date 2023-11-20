@@ -7,7 +7,7 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 
-# 10.2.0.1-release (2023-11-20)
+# 10.2.0.1-release (2023-11-21)
 ## General
 
 - [#219 - UPDATE](#219) Add custom Time To Die override for the new world boss, Aurostor, at 20%.

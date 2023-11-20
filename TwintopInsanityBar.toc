@@ -4,7 +4,7 @@
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 10.2.0.1
 ## X-ReleaseType: release
-## X-ReleaseDate: November 20, 2023
+## X-ReleaseDate: November 21, 2023
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
