@@ -12,6 +12,7 @@ local content = [====[
 
 - [#219 - UPDATE](#219) Add custom Time To Die override for the new world boss, Aurostor, at 20%.
 - (FIX) Fix `$ttd` and `$ttdSeconds` always returning `false` when used as logic variables.
+- (FIX) Fix imports failing when not containing Evoker data.
 
 ## Priest
 ### Discipline (experimental)
@@ -30,6 +31,7 @@ local content = [====[
 <br/>&emsp;&ensp;- New bar text icons and variables:
 <br/>&emsp;&ensp;&emsp;&ensp;- `#sc`, `#shadowCovenant` -- Shadow Covenant ability icon
 <br/>&emsp;&ensp;&emsp;&ensp;- `$scTime`, `$shadowCovenantTime` -- time remaining on Shadow Covenant's buff
+- [#324 - FIX](#324) Fix importing to recognize Discipline Priest import strings.
 
 ### Holy
 

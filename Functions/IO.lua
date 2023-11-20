@@ -470,13 +470,20 @@ function TRB.Functions.IO:Import(input)
 		(configuration.rogue ~= nil and (configuration.rogue.assassination ~= nil or configuration.rogue.outlaw ~= nil)) or
 		(configuration.hunter ~= nil and (configuration.hunter.beastMastery ~= nil or configuration.hunter.marksmanship ~= nil or configuration.hunter.survival ~= nil)) or
 		(configuration.monk ~= nil and (configuration.monk.mistweaver ~= nil or configuration.monk.windwalker ~= nil)) or
-		(configuration.priest ~= nil and (configuration.priest.holy ~= nil or configuration.priest.shadow ~= nil)) or
+		(configuration.priest ~= nil and
+			((TRB.Data.settings.core.experimental.specs.priest.discipline and configuration.priest.discipline ~= nil) or
+			configuration.priest.holy ~= nil or
+			configuration.priest.shadow ~= nil)) or
 		(configuration.shaman ~= nil and
 			(configuration.shaman.elemental ~= nil or
 			configuration.shaman.restoration ~= nil or
 			(TRB.Data.settings.core.experimental.specs.shaman.enhancement and configuration.shaman.enhancement ~= nil))) or
 		(configuration.druid ~= nil and (configuration.druid.balance ~= nil or configuration.druid.feral ~= nil)) or
-		(configuration.evoker ~= nil and (TRB.Data.settings.core.experimental.specs.evoker.devastation and configuration.evoker.devastation ~= nil) or (configuration.evoker.preservation ~= nil) or (TRB.Data.settings.core.experimental.specs.evoker.augmentation and configuration.evoker.augmentation ~= nil))) then
+		(configuration.evoker ~= nil and
+			((TRB.Data.settings.core.experimental.specs.evoker.devastation and configuration.evoker.devastation ~= nil) or
+			(configuration.evoker.preservation ~= nil) or
+			(TRB.Data.settings.core.experimental.specs.evoker.augmentation and configuration.evoker.augmentation ~= nil))
+		)) then
 		return -3
 	end
 
