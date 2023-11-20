@@ -10,6 +10,7 @@ local content = [====[
 # 10.2.0.1-release (2023-11-20)
 ## General
 
+- [#219 - UPDATE](#219) Add custom Time To Die override for the new world boss, Aurostor, at 20%.
 - (FIX) Fix `$ttd` and `$ttdSeconds` always returning `false` when used as logic variables.
 
 ## Priest

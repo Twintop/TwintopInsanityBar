@@ -138,6 +138,7 @@ local unitDeathHealthPercentageList = {
     ["175732"] = SanctumOfDomination_SylvanasWindrunner,
 
     ---- Dragonflight ----
+    ["209574"] = 0.2, -- Aurostor
     --- Brackenhide Hollow ---
     ["186121"] = 0.045, -- Decatriarch Wratheye
     --- Uldaman: Legacy of Tyr ---
