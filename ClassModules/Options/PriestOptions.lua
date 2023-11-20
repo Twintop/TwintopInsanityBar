@@ -167,7 +167,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
-				text="{$potionCooldown}[#potionOfFrozenFocus $potionCooldown]",
+				text="{$potionCooldown}[#potionOfFrozenFocus $potionCooldown]||n#swp $swpCount",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
@@ -190,7 +190,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
-				text="",
+				text="{$raptureTime}[#rapture$raptureTime#rapture]||n{$scTime}[#sc$scTime#sc]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
@@ -322,6 +322,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				relativeToName="Above - Middle",
 				fullWidth=true,
 			},
+			endOfRapture = {
+				enabled=true,
+				mode="gcd",
+				gcdsMax=2,
+				timeMax=3.0
+			},
 			shadowfiend={
 				mode="time",
 				swingsMax=4,
@@ -354,10 +360,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					potionOfChilledClarity="FF9EC51E",
 					surgeOfLight1="FFFCE58E",
 					surgeOfLight2="FFAF9942",
+					shadowCovenant="FFC4A5E2",
+					rapture="FFFADA5E",
+					raptureEnd="FFFF0000",
 					spending="FFFFFFFF",
 					passive="FF8080FF",
 					surgeOfLightBorderChange1=true,
 					surgeOfLightBorderChange2=true,
+					shadowCovenantBorderChange=true,
 					innervateBorderChange=true,
 					potionOfChilledClarityBorderChange=true,
 				},
@@ -1510,8 +1520,32 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 70
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 5, 1, yCoord, "Mana")
 		
-		yCoord = yCoord - 30
 
+		yCoord = yCoord - 30
+		controls.colors.inRapture = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana while Rapture is active", spec.colors.bar.rapture, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.inRapture
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "rapture")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.endOfRapture = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Rapture", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.endOfRapture
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Rapture")
+		f.tooltip = "Changes the bar color when Rapture is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		f:SetChecked(spec.endOfRapture.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.endOfRapture.enabled = self:GetChecked()
+		end)
+
+		controls.colors.inRaptureEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Rapture is close to ending (as configured)", spec.colors.bar.raptureEnd, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.inRaptureEnd
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "raptureEnd")
+		end)
+
+		yCoord = yCoord - 30
 		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_1_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -1554,6 +1588,24 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 1, yCoord, "Mana", false, true)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.shadowCovenantBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_shadowCovenantEnabled", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.shadowCovenantBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Shadow Covenant")
+		f.tooltip = "This will change the bar border color when you have Shadow Covenant."
+		f:SetChecked(spec.colors.bar.shadowCovenantBorderChange)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.shadowCovenantBorderChange = self:GetChecked()
+			TRB.Functions.BarText:CreateBarTextFrames(spec)
+		end)
+		
+		controls.colors.shadowCovenant = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Shadow Covenant", spec.colors.bar.shadowCovenant, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.shadowCovenant
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "shadowCovenant")
+		end)
 
 		controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.surgeOfLight1
@@ -1588,7 +1640,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.surgeOfLightBorderChange2 = self:GetChecked()
 		end)
-
 		
 
 		yCoord = yCoord - 40
@@ -1635,6 +1686,60 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 5, 1, yCoord)
 		
+		yCoord = yCoord - 40
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Rapture Configuration", oUi.xCoord, yCoord)
+
+		yCoord = yCoord - 40
+		controls.checkBoxes.endOfRaptureModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Rapture_GCD", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfRaptureModeGCDs
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Rapture ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many GCDs remain until Rapture ends."
+		if spec.endOfRapture.mode == "gcd" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfRaptureModeGCDs:SetChecked(true)
+			controls.checkBoxes.endOfRaptureModeTime:SetChecked(false)
+			spec.endOfRapture.mode = "gcd"
+		end)
+
+		title = "Rapture GCDs - 0.75sec Floor"
+		controls.endOfRaptureGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfRapture.gcdsMax, 0.25, 2,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.endOfRaptureGCDs:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			spec.endOfRapture.gcdsMax = value
+		end)
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.endOfRaptureModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Rapture_Time", parent, "UIRadioButtonTemplate")
+		f = controls.checkBoxes.endOfRaptureModeTime
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Time until Rapture ends")
+		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
+		f.tooltip = "Change the bar color based on how many seconds remain until Rapture will end."
+		if spec.endOfRapture.mode == "time" then
+			f:SetChecked(true)
+		end
+		f:SetScript("OnClick", function(self, ...)
+			controls.checkBoxes.endOfRaptureModeGCDs:SetChecked(false)
+			controls.checkBoxes.endOfRaptureModeTime:SetChecked(true)
+			spec.endOfRapture.mode = "time"
+		end)
+
+		title = "Rapture Time Remaining"
+		controls.endOfRaptureTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfRapture.timeMax, 0.25, 2,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+		controls.endOfRaptureTime:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+			self.EditBox:SetText(value)
+			spec.endOfRapture.timeMax = value
+		end)
+
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.discipline = controls
 	end

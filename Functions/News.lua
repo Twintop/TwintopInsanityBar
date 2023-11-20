@@ -20,6 +20,16 @@ local content = [====[
 <br/>&emsp;&ensp;&emsp;&ensp;- `#pwRadiance`, `#powerWordRadiance` -- Power Word: Radiance ability icon
 <br/>&emsp;&ensp;&emsp;&ensp;- `$pwRadianceTime`, `$radianceTime`, `$powerWordRadianceTime` -- time remaining on Power Word: Radiance's cooldown for the current charge
 <br/>&emsp;&ensp;&emsp;&ensp;- `$pwRadianceCharges`, `$radianceCharges`, `$powerWordRadianceCharges` -- current number of available charges of Power Word: Radiance
+- [#324 - NEW](#324) Add Rapture support.
+<br/>&emsp;&ensp;- Bar color change while active with a second color change based on time or GCDs remaining.
+<br/>&emsp;&ensp;- New bar text icons and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#rapture` -- Rapture ability icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$raptureTime` -- time remaining on Rapture's buff
+- [#324 - NEW](#324) Add Shadow Covenant support.
+<br/>&emsp;&ensp;- Bar border color change while active.
+<br/>&emsp;&ensp;- New bar text icons and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#sc`, `#shadowCovenant` -- Shadow Covenant ability icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$scTime`, `$shadowCovenantTime` -- time remaining on Shadow Covenant's buff
 
 ### Holy
 

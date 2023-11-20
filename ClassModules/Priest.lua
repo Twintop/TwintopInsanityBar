@@ -180,6 +180,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				name = "",
 				isTalent = true
 			},
+			rapture = {
+				id = 47536,
+				icon = "",
+				name = "",
+				isTalent = true
+			},
+			shadowCovenant = {
+				id = 322105,
+				icon = "",
+				name = "",
+				talentId = 314867,
+				isTalent = true
+			},
 			purgeTheWicked = {
 				id = 204213,
 				icon = "",
@@ -392,6 +405,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.surgeOfLight)
 		---@type TRB.Classes.Snapshot
 		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.powerWordRadiance.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.powerWordRadiance)
+		---@type TRB.Classes.Snapshot
+		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.shadowCovenant.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.shadowCovenant)
+		---@type TRB.Classes.Snapshot
+		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.rapture.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.rapture)
 
 		specCache.discipline.barTextVariables = {
 			icons = {},
@@ -1369,6 +1386,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#purgeTheWicked", icon = spells.purgeTheWicked.icon, description = spells.purgeTheWicked.name, printInSettings = false },
 			{ variable = "#pwRadiance", icon = spells.powerWordRadiance.icon, description = spells.powerWordRadiance.name, printInSettings = true },
 			{ variable = "#powerWordRadiance", icon = spells.powerWordRadiance.icon, description = spells.powerWordRadiance.name, printInSettings = false },
+			{ variable = "#rapture", icon = spells.rapture.icon, description = spells.rapture.name, printInSettings = true },
+			{ variable = "#sc", icon = spells.shadowCovenant.icon, description = spells.shadowCovenant.name, printInSettings = true },
+			{ variable = "#shadowCovenant", icon = spells.shadowCovenant.icon, description = spells.shadowCovenant.name, printInSettings = false },
 			{ variable = "#sf", icon = spells.shadowfiend.icon, description = "Shadowfiend / Mindbender", printInSettings = true },
 			{ variable = "#mindbender", icon = spells.mindbender.icon, description = "Mindbender", printInSettings = false },
 			{ variable = "#shadowfiend", icon = spells.shadowfiend.icon, description = "Shadowfiend", printInSettings = false },
@@ -1441,7 +1461,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 			{ variable = "$solStacks", description = "Number of Surge of Light stacks", printInSettings = true, color = false },
 			{ variable = "$solTime", description = "Time left on Surge of Light", printInSettings = true, color = false },
-						
+			
+			{ variable = "$raptureTime", description = "Time remaining on Rapture", printInSettings = true, color = false },
+			
+			{ variable = "$scTime", description = "Time remaining on Shadow Covenant", printInSettings = true, color = false },
+			{ variable = "$shadowCovenantTime", description = "Time remaining on Shadow Covenant", printInSettings = false, color = false },
+
 			{ variable = "$pwRadianceTime", description = "Time left on Power Word: Radiance's cooldown", printInSettings = true, color = false },
 			{ variable = "$radianceTime", description = "Time left on Power Word: Radiance's cooldown", printInSettings = false, color = false },
 			{ variable = "$powerWordRadianceTime", description = "Time left on Power Word: Radiance's cooldown", printInSettings = false, color = false },
@@ -2220,6 +2245,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _solTime = snapshots[spells.surgeOfLight.id].buff:GetRemainingTime(currentTime) or 0
 		local solTime = string.format("%.1f", _solTime)
 
+		--$raptureTime
+		local _raptureTime = snapshots[spells.rapture.id].buff:GetRemainingTime(currentTime)
+		local raptureTime = string.format("%.1f", _raptureTime)
+
+		--$scTime
+		local _scTime = snapshots[spells.shadowCovenant.id].buff:GetRemainingTime(currentTime)
+		local scTime = string.format("%.1f", _scTime)
+
 		--$pwRadianceTime
 		local _pwRadianceTime = snapshots[spells.powerWordRadiance.id].cooldown.remaining
 		local pwRadianceTime = string.format("%.1f", _pwRadianceTime)
@@ -2348,6 +2381,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$pwRadianceCharges"] = pwRadianceCharges
 		lookup["$radianceCharges"] = pwRadianceCharges
 		lookup["$powerWordRadianceCharges"] = pwRadianceCharges
+		lookup["$raptureTime"] = raptureTime
+		lookup["$scTime"] = scTime
+		lookup["$shadowCovenantTime"] = scTime
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
@@ -2395,6 +2431,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$pwRadianceCharges"] = _pwRadianceCharges
 		lookupLogic["$radianceCharges"] = _pwRadianceCharges
 		lookupLogic["$powerWordRadianceCharges"] = _pwRadianceCharges
+		lookupLogic["$raptureTime"] = _raptureTime
+		lookupLogic["$scTime"] = _scTime
+		lookupLogic["$shadowCovenantTime"] = _scTime
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -3564,6 +3603,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function UpdateSnapshot_Discipline()
+		local currentTime = GetTime()
 		UpdateSnapshot()
 		UpdateSnapshot_Healers()
 		
@@ -3572,6 +3612,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		snapshots[spells.powerWordRadiance.id].cooldown:Refresh(true)
+		snapshots[spells.rapture.id].buff:GetRemainingTime(currentTime)
+		snapshots[spells.shadowCovenant.id].buff:Refresh()
 	end
 
 	local function UpdateSnapshot_Holy()
@@ -3660,6 +3702,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								snapshotData.audio.surgeOfLight2Cue = true
 								PlaySoundFile(specSettings.audio.surgeOfLight2.sound, coreSettings.audio.channel.channel)
 							end
+						end
+					end
+
+					if snapshots[spells.shadowCovenant.id].buff.isActive then
+						if specSettings.colors.bar.shadowCovenantBorderChange then
+							barBorderColor = specSettings.colors.bar.shadowCovenant
 						end
 					end
 
@@ -3846,6 +3894,29 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 
 					local resourceBarColor = specSettings.colors.bar.base
+
+					if snapshots[spells.rapture.id].buff.isActive then
+						local timeThreshold = 0
+						local useEndOfRaptureColor = false
+
+						if specSettings.endOfRapture.enabled then
+							useEndOfRaptureColor = true
+							if specSettings.endOfRapture.mode == "gcd" then
+								local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+								timeThreshold = gcd * specSettings.endOfRapture.gcdsMax
+							elseif specSettings.endOfRapture.mode == "time" then
+								timeThreshold = specSettings.endOfRapture.timeMax
+							end
+						end
+
+						if useEndOfRaptureColor and snapshots[spells.rapture.id].buff.remaining <= timeThreshold then
+							resourceBarColor = specSettings.colors.bar.raptureEnd
+						else
+							resourceBarColor = specSettings.colors.bar.rapture
+						end
+					elseif resourceBarColor == nil then
+						resourceBarColor = specSettings.colors.bar.base
+					end
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(resourceBarColor, true))
 					
@@ -4724,7 +4795,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 
 				if specId == 1 and TRB.Data.barConstructedForSpec == "discipline" then
-					if spellId == spells.purgeTheWicked.id then
+					if spellId == spells.rapture.id then
+						snapshots[spellId].buff:Initialize(type)
+					elseif spellId == spells.shadowCovenant.id then
+						snapshots[spellId].buff:Initialize(type)
+					elseif spellId == spells.purgeTheWicked.id then
 						if TRB.Functions.Class:InitializeTarget(destGUID) then
 ---@diagnostic disable-next-line: param-type-mismatch
 							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
@@ -4924,6 +4999,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			lookup["#purgeTheWicked"] = spells.purgeTheWicked.icon
 			lookup["#swp"] = spells.shadowWordPain.icon
 			lookup["#shadowWordPain"] = spells.shadowWordPain.icon
+			lookup["#rapture"] = spells.rapture.icon
+			lookup["#sc"] = spells.shadowCovenant.icon
+			lookup["#shadowCovenant"] = spells.shadowCovenant.icon
 			lookup["#innervate"] = spells.innervate.icon
 			lookup["#mr"] = spells.moltenRadiance.icon
 			lookup["#moltenRadiance"] = spells.moltenRadiance.icon
@@ -5668,6 +5746,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif var == "$pwRadianceCharges" or var == "$radianceCharges" or var == "$powerWordRadianceCharges" then
 				if snapshots[spells.powerWordRadiance.id].cooldown.charges > 0 then
+					valid = true
+				end
+			elseif var == "$raptureTime" then
+				if snapshots[spells.rapture.id].buff.isActive then
+					valid = true
+				end
+			elseif var == "$scTime" or var == "$shadowCovenantTime" then
+				if snapshots[spells.shadowCovenant.id].buff.isActive then
 					valid = true
 				end
 			end
