@@ -139,7 +139,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				texture = "",
 				thresholdId = 1,
 				settingKey = "earthShock",
-				thresholdUsable = false,
 				isTalent = true,
 				baseline = true,
 				isSnowflake = true
@@ -152,7 +151,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				texture = "",
 				thresholdId = 2,
 				settingKey = "earthquake",
-				thresholdUsable = false,
 				isTalent = true,
 				isSnowflake = true
 			},
@@ -251,7 +249,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				resource = -90,
 				thresholdId = 3,
 				settingKey = "elementalBlast",
-				thresholdUsable = false,
 				isTalent = true,
 				isSnowflake = true
 			},
@@ -514,8 +511,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 1,
-				settingKey = "aeratedManaPotionRank1",
-				thresholdUsable = false
+				settingKey = "aeratedManaPotionRank1"
 			},
 			aeratedManaPotionRank2 = {
 				itemId = 191385,
@@ -526,8 +522,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 2,
-				settingKey = "aeratedManaPotionRank2",
-				thresholdUsable = false
+				settingKey = "aeratedManaPotionRank2"
 			},
 			aeratedManaPotionRank3 = {
 				itemId = 191386,
@@ -538,8 +533,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 3,
-				settingKey = "aeratedManaPotionRank3",
-				thresholdUsable = false
+				settingKey = "aeratedManaPotionRank3"
 			},
 			potionOfFrozenFocusRank1 = {
 				id = 371033,
@@ -550,8 +544,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 4,
-				settingKey = "potionOfFrozenFocusRank1",
-				thresholdUsable = false
+				settingKey = "potionOfFrozenFocusRank1"
 			},
 			potionOfFrozenFocusRank2 = {
 				itemId = 191364,
@@ -561,8 +554,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 5,
-				settingKey = "potionOfFrozenFocusRank2",
-				thresholdUsable = false
+				settingKey = "potionOfFrozenFocusRank2"
 			},
 			potionOfFrozenFocusRank3 = {
 				itemId = 191365,
@@ -572,8 +564,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 6,
-				settingKey = "potionOfFrozenFocusRank3",
-				thresholdUsable = false
+				settingKey = "potionOfFrozenFocusRank3"
 			},
 			potionOfChilledClarity = {
 				id = 371052,
@@ -592,7 +583,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				texture = "",
 				thresholdId = 7,
 				settingKey = "conjuredChillglobe",
-				thresholdUsable = false,
 				mana = 4830,
 				duration = 10,
 				ticks = 10

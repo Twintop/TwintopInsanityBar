@@ -106,7 +106,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 1,
 				settingKey = "ambush",
-				thresholdUsable = false,
 				baseline = true,
 				viciousVenoms = true
 			},
@@ -121,7 +120,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 2,
 				settingKey = "cheapShot",
 				rushedSetup = true,
-				thresholdUsable = false,
 				baseline = true
 			},
 			crimsonVial = {
@@ -136,7 +134,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				hasCooldown = true,
 				cooldown = 30,
 				nimbleFingers = true,
-				thresholdUsable = false,
 				baseline = true
 			},
 			distract = {
@@ -151,7 +148,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				hasCooldown = true,
 				cooldown = 30,
 				rushedSetup = true,
-				thresholdUsable = false,
 				baseline = true
 			},
 			kidneyShot = {
@@ -166,7 +162,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				hasCooldown = true,
 				cooldown = 20,
 				rushedSetup = true,
-				thresholdUsable = false,
 				baseline = true
 			},
 			sliceAndDice = {
@@ -179,7 +174,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 6,
 				settingKey = "sliceAndDice",
 				hasCooldown = false,
-				thresholdUsable = false,
 				isSnowflake = true,
 				pandemicTimes = {
 					12 * 0.3, -- 0 CP, show same as if we had 1
@@ -205,7 +199,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				hasCooldown = true,
 				cooldown = 15,
 				nimbleFingers = true,
-				thresholdUsable = false,
 				hasCharges = true,
 				isTalent = false,
 				baseline = true
@@ -225,7 +218,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				hasCharges = true,
 				isSnowflake = true,
 				cooldown = 25,
-				thresholdUsable = false,
 				isTalent = true,
 				baseline = true
 			},
@@ -240,7 +232,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 9,
 				settingKey = "sap",
 				rushedSetup = true,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			nimbleFingers = {
@@ -260,7 +251,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 10,
 				settingKey = "gouge",
 				hasCooldown = true,
-				thresholdUsable = false,
 				cooldown = 15,
 				isTalent = true
 			},
@@ -294,7 +284,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 11,
 				settingKey = "echoingReprimand",
 				hasCooldown = true,
-				thresholdUsable = false,
 				cooldown = 45,
 				buffId = {					
 					323558, -- 2
@@ -351,7 +340,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 12,
 				settingKey = "envenom",
-				thresholdUsable = false,
 				baseline = true
 			},
 			fanOfKnives = {
@@ -363,7 +351,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 13,
 				settingKey = "fanOfKnives",
-				thresholdUsable = false,
 				baseline = true
 			},
 			garrote = {
@@ -377,7 +364,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "garrote",
 				hasCooldown = true,
 				cooldown = 6,
-				thresholdUsable = false,
 				pandemicTime = 18 * 0.3,
 				baseline = true,
 				isSnowflake = true
@@ -391,7 +377,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 15,
 				settingKey = "mutilate",
-				thresholdUsable = false,
 				baseline = true,
 				viciousVenoms = true
 			},
@@ -404,7 +389,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 16,
 				settingKey = "poisonedKnife",
-				thresholdUsable = false,
 				baseline = true
 			},
 			rupture = {
@@ -416,7 +400,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 17,
 				settingKey = "rupture",
-				thresholdUsable = false,
 				pandemicTimes = {
 					8 * 0.3, -- 0 CP, show same as if we had 1
 					8 * 0.3,
@@ -452,7 +435,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 18,
 				settingKey = "crimsonTempest",
-				thresholdUsable = false,
 				pandemicTimes = {
 					6 * 0.3, -- 0 CP, show same as if we had 1
 					6 * 0.3,
@@ -551,7 +533,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				comboPoints = true,
 				hasCooldown = true,
 				isPvp = true,
-				thresholdUsable = false,
 				cooldown = 30
 			},
 			dismantle = {
@@ -564,7 +545,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "dismantle",
 				hasCooldown = true,
 				isPvp = true,
-				thresholdUsable = false,
 				cooldown = 45
 			},
 
@@ -716,7 +696,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 1,
 				settingKey = "ambush",
-				thresholdUsable = false,
 				baseline = true
 			},
 			cheapShot = {
@@ -731,7 +710,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 2,
 				settingKey = "cheapShot",
 				rushedSetup = true,
-				thresholdUsable = false,
 				baseline = true
 			},
 			crimsonVial = {
@@ -746,7 +724,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				hasCooldown = true,
 				cooldown = 30,
 				nimbleFingers = true,
-				thresholdUsable = false,
 				baseline = true
 			},
 			distract = {
@@ -761,7 +738,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				hasCooldown = true,
 				cooldown = 30,
 				rushedSetup = true,
-				thresholdUsable = false,
 				baseline = true
 			},
 			kidneyShot = {
@@ -776,7 +752,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				hasCooldown = true,
 				cooldown = 20,
 				rushedSetup = true,
-				thresholdUsable = false,
 				baseline = true
 			},
 			sliceAndDice = {
@@ -789,7 +764,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 6,
 				settingKey = "sliceAndDice",
 				hasCooldown = false,
-				thresholdUsable = false,
 				isSnowflake = true,
 				pandemicTimes = {
 					12 * 0.3, -- 0 CP, show same as if we had 1
@@ -815,7 +789,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				hasCooldown = true,
 				cooldown = 15,
 				nimbleFingers = true,
-				thresholdUsable = false,
 				hasCharges = true,
 				isTalent = false,
 				baseline = true
@@ -833,7 +806,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "shiv",
 				hasCooldown = true,
 				cooldown = 25,
-				thresholdUsable = false,
 				isTalent = true,
 				baseline = true
 			},
@@ -849,7 +821,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 9,
 				settingKey = "sap",
 				rushedSetup = true,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			nimbleFingers = {
@@ -869,7 +840,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 10,
 				settingKey = "gouge",
 				hasCooldown = true,
-				thresholdUsable = false,
 				cooldown = 15,
 				dirtyTricks = true,
 				isTalent = true
@@ -904,7 +874,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 11,
 				settingKey = "echoingReprimand",
 				hasCooldown = true,
-				thresholdUsable = false,
 				cooldown = 45,
 				buffId = {
 					323558, -- 2
@@ -963,7 +932,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "betweenTheEyes",
 				hasCooldown = true,
 				isSnowflake = true,
-				thresholdUsable = false,
 				cooldown = 45,
 				restlessBlades = true,
 				baseline = true
@@ -977,7 +945,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 13,
 				settingKey = "dispatch",
-				thresholdUsable = false,
 				baseline = true
 			},
 			pistolShot = {
@@ -991,7 +958,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "pistolShot",
 				hasCooldown = false,
 				isSnowflake = true,
-				thresholdUsable = false,
 				baseline = true
 			},
 			sinisterStrike = {
@@ -1005,7 +971,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "sinisterStrike",
 				hasCooldown = false,
 				isSnowflake = true,
-				thresholdUsable = false,
 				baseline = true
 			},
 			opportunity = {
@@ -1025,7 +990,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 16,
 				settingKey = "bladeFlurry",
 				hasCooldown = true,
-				thresholdUsable = false,
 				cooldown = 30,
 				restlessBlades = true,
 				baseline = true,
@@ -1061,7 +1025,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 17,
 				settingKey = "rollTheBones",
 				hasCooldown = true,
-				thresholdUsable = false,
 				cooldown = 45,
 				restlessBlades = true
 			},
@@ -1129,7 +1092,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 19,
 				settingKey = "ghostlyStrike",
 				hasCooldown = true,
-				thresholdUsable = false,
 				isTalent = true,
 				cooldown = 35,
 				restlessBlades = true
@@ -1154,7 +1116,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "dreadblades",
 				hasCooldown = true,
 				isTalent = true,
-				thresholdUsable = false,
 				cooldown = 90,
 				restlessBlades = true
 			},
@@ -1178,7 +1139,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				comboPoints = true,
 				hasCooldown = true,
 				isTalent = true,
-				thresholdUsable = false,
 				cooldown = 90,
 				restlessBlades = true
 			},
@@ -1202,7 +1162,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				comboPoints = true,
 				hasCooldown = true,
 				isPvp = true,
-				thresholdUsable = false,
 				cooldown = 30
 			},
 			dismantle = {
@@ -1215,7 +1174,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "dismantle",
 				hasCooldown = true,
 				isPvp = true,
-				thresholdUsable = false,
 				cooldown = 45
 			},
 		}
@@ -1773,7 +1731,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local currentEnergyColor = specSettings.colors.text.current
 		local castingEnergyColor = specSettings.colors.text.casting
-
+		
 		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 			if specSettings.colors.text.overcapEnabled and overcap then
 				currentEnergyColor = specSettings.colors.text.overcap
@@ -1782,7 +1740,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				local _overThreshold = false
 				for k, v in pairs(spells) do
 					local spell = spells[k]
-					if	spell ~= nil and spell.thresholdUsable == true then
+					if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
 						_overThreshold = true
 						break
 					end
@@ -2247,7 +2205,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local currentEnergyColor = specSettings.colors.text.current
 		local castingEnergyColor = specSettings.colors.text.casting
-
+		
 		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 			if specSettings.colors.text.overcapEnabled and overcap then
 				currentEnergyColor = specSettings.colors.text.overcap
@@ -2256,7 +2214,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				local _overThreshold = false
 				for k, v in pairs(spells) do
 					local spell = spells[k]
-					if	spell ~= nil and spell.thresholdUsable == true then
+					if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
 						_overThreshold = true
 						break
 					end

@@ -71,7 +71,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				baseline = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			executeMinimum = {
@@ -86,7 +85,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				baseline = true,
 				hasCooldown = false,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			executeMaximum = {
@@ -101,7 +99,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				baseline = true,
 				hasCooldown = false,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			hamstring = {
@@ -113,8 +110,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 4,
 				settingKey = "hamstring",
 				isTalent = false,
-				baseline = true,
-				thresholdUsable = false
+				baseline = true
 			},
 			shieldBlock = {
 				id = 2565,
@@ -126,8 +122,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "shieldBlock",
 				isTalent = false,
 				baseline = true,
-				hasCooldown = true,
-				thresholdUsable = false
+				hasCooldown = true
 			},
 			slam = {
 				id = 1464,
@@ -139,8 +134,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "slam",
 				isTalent = false,
 				baseline = true,
-				hasCooldown = false,
-				thresholdUsable = false
+				hasCooldown = false
 			},
 			whirlwind = {
 				id = 1680,
@@ -152,8 +146,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "whirlwind",
 				isTalent = false,
 				baseline = true,
-				isSnowflake = true,
-				thresholdUsable = false
+				isSnowflake = true
 			},
 
 			-- Arms Baseline Abilities
@@ -176,8 +169,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 8,
 				settingKey = "impendingVictory",
 				isTalent = true,
-				hasCooldown = true,
-				thresholdUsable = false
+				hasCooldown = true
 			},
 			thunderClap = {
 				id = 396719,
@@ -189,7 +181,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "thunderClap",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			bloodAndThunder = {
@@ -218,7 +209,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "mortalStrike",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			improvedExecute = {
@@ -238,7 +228,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "rend",
 				isTalent = true,
 				hasCooldown = false,
-				thresholdUsable = false,
 				baseDuration = 15,
 				pandemic = true,
 				pandemicTime = 15 * 0.3
@@ -253,7 +242,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "cleave",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			ignorePain = {
@@ -266,7 +254,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "ignorePain",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				duration = 11
 			},
 			suddenDeath = {
@@ -373,7 +360,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				baseline = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			executeMinimum = {
@@ -388,7 +374,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				baseline = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			executeMaximum = {
@@ -403,7 +388,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				baseline = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			hamstring = {
@@ -415,8 +399,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 4,
 				settingKey = "hamstring",
 				isTalent = false,
-				baseline = true,
-				thresholdUsable = false
+				baseline = true
 			},
 			shieldBlock = {
 				id = 2565,
@@ -428,8 +411,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "shieldBlock",
 				isTalent = false,
 				baseline = true,
-				hasCooldown = true,
-				thresholdUsable = false
+				hasCooldown = true
 			},
 			slam = {
 				id = 1464,
@@ -442,7 +424,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				baseline = true,
 				hasCooldown = false,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			whirlwind = {
@@ -470,8 +451,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 7,
 				settingKey = "impendingVictory",
 				isTalent = true,
-				hasCooldown = true,
-				thresholdUsable = false
+				hasCooldown = true
 			},
 			thunderClap = {
 				id = 396719,
@@ -483,7 +463,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "thunderClap",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			bloodAndThunder = {
@@ -513,8 +492,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 9,
 				settingKey = "rampage",
 				isTalent = true,
-				hasCooldown = false,
-				thresholdUsable = false
+				hasCooldown = false
 			},
 			improvedExecute = {
 				id = 316402,
@@ -847,7 +825,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		local currentRageColor = specSettings.colors.text.current
 		local castingRageColor = specSettings.colors.text.casting
-
+		
 		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 			if specSettings.colors.text.overcapEnabled and overcap then
 				currentRageColor = specSettings.colors.text.overcap
@@ -856,7 +834,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				local _overThreshold = false
 				for k, v in pairs(spells) do
 					local spell = spells[k]
-					if spell ~= nil and spell.thresholdUsable == true then
+					if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= normalizedRage then
 						_overThreshold = true
 						break
 					end
@@ -1033,7 +1011,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		local currentRageColor = specSettings.colors.text.current
 		local castingRageColor = specSettings.colors.text.casting
-
+		
 		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 			if specSettings.colors.text.overcapEnabled and overcap then
 				currentRageColor = specSettings.colors.text.overcap
@@ -1042,7 +1020,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				local _overThreshold = false
 				for k, v in pairs(spells) do
 					local spell = spells[k]
-					if spell ~= nil and spell.thresholdUsable == true then
+					if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= normalizedRage then
 						_overThreshold = true
 						break
 					end

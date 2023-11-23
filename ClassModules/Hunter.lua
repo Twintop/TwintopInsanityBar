@@ -58,7 +58,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 1,
 				settingKey = "arcaneShot",
-				thresholdUsable = false,
 				baseline = true
 			},
 			revivePet = {
@@ -69,7 +68,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 2,
 				settingKey = "revivePet",
-				thresholdUsable = false,
 				baseline = true
 			},
 			wingClip = {
@@ -80,7 +78,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 3,
 				settingKey = "wingClip",
-				thresholdUsable = false,
 				baseline = true
 			},
 
@@ -95,7 +92,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "killCommand",
 				isSnowflake = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				baseline = true,
 				isTalent = true
 			},
@@ -115,8 +111,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "killShot",
 				healthMinimum = 0.2,
 				hasCooldown = true,
-				isSnowflake = true,
-				thresholdUsable = false
+				isSnowflake = true
 			},
 			scareBeast = {
 				id = 1513,
@@ -125,8 +120,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				resource = -25,
 				texture = "",
 				thresholdId = 6,
-				settingKey = "scareBeast",
-				thresholdUsable = false
+				settingKey = "scareBeast"
 			},
 			explosiveShot = {
 				id = 212431,
@@ -138,7 +132,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "explosiveShot",
 				hasCooldown = true,
 				cooldown = 30,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			barrage = {
@@ -151,7 +144,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "barrage",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				cooldown = 20
 			},
 			serpentSting = {
@@ -163,7 +155,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 9,
 				settingKey = "serpentSting",
 				isTalent = true,
-				thresholdUsable = false,
 				baseDuration = 18,
 				--pandemic = true,
 				--pandemicTime = 18 * 0.3
@@ -187,7 +178,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 10,
 				settingKey = "cobraShot",
 				killCommandCooldownReduction = 2,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			multiShot = {
@@ -198,7 +188,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 11,
 				settingKey = "multiShot",
-				thresholdUsable = false,
 				isTalent = true
 			},
 			barbedShot = {
@@ -255,7 +244,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 12,
 				settingKey = "aMurderOfCrows",
 				hasCooldown = true,
-				thresholdUsable = false,
 				cooldown = 60,
 				isTalent = true
 			},
@@ -293,7 +281,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 13,
 				settingKey = "wailingArrow",
-				thresholdUsable = false,
 				hasCooldown = true,
 				cooldown = 60,
 				isTalent = true
@@ -340,7 +327,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 14,
 				settingKey = "direBeastBasilisk",
-				thresholdUsable = false,
 				hasCooldown = true,
 				cooldown = 120,
 				isPvp = true,
@@ -353,7 +339,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 15,
 				settingKey = "direBeastHawk",
-				thresholdUsable = false,
 				hasCooldown = true,
 				cooldown = 30,
 				isPvp = true,
@@ -440,7 +425,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 1,
 				settingKey = "arcaneShot",
-				thresholdUsable = false,
 				baseline = true
 			},
 			revivePet = {
@@ -451,7 +435,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 2,
 				settingKey = "revivePet",
-				thresholdUsable = false,
 				baseline = true
 			},
 			wingClip = {
@@ -462,7 +445,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 3,
 				settingKey = "wingClip",
-				thresholdUsable = false,
 				baseline = true
 			},
 
@@ -476,7 +458,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 4,
 				settingKey = "killCommand",
 				hasCooldown = true,
-				thresholdUsable = false,
 				isTalent = true,
 				baseline = false
 			},
@@ -497,7 +478,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				healthMinimum = 0.2,
 				hasCooldown = true,
 				isSnowflake = true,
-				thresholdUsable = false,
 				baseline = true,
 				isTalent = true
 			},
@@ -508,8 +488,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				resource = -25,
 				texture = "",
 				thresholdId = 6,
-				settingKey = "scareBeast",
-				thresholdUsable = false
+				settingKey = "scareBeast"
 			},
 			explosiveShot = {
 				id = 212431,
@@ -521,7 +500,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "explosiveShot",
 				hasCooldown = true,
 				cooldown = 30,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			barrage = {
@@ -534,7 +512,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "barrage",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				cooldown = 20
 			},
 			serpentSting = {
@@ -546,7 +523,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 9,
 				settingKey = "serpentSting",
 				isTalent = true,
-				thresholdUsable = false,
 				baseDuration = 18,
 				--pandemic = true,
 				--pandemicTime = 18 * 0.3
@@ -578,7 +554,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "aimedShot",
 				hasCooldown = true,
 				isSnowflake = true,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			crackShot = {
@@ -612,7 +587,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 11,
 				settingKey = "chimaeraShot",
-				thresholdUsable = false,
 				isTalent = true
 			},
 			-- TODO: Add Deathblow support
@@ -630,7 +604,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 12,
 				settingKey = "multiShot",
-				thresholdUsable = false,
 				isTalent = true
 			},
 			burstingShot = {
@@ -642,7 +615,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 13,
 				settingKey = "burstingShot",
 				hasCooldown = true,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			-- TODO: Add Deadeye implementation
@@ -707,7 +679,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 14,
 				settingKey = "wailingArrow",
-				thresholdUsable = false,
 				hasCooldown = true,
 				cooldown = 60,
 				isTalent = true
@@ -722,7 +693,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 15,
 				settingKey = "sniperShot",
-				thresholdUsable = false,
 				hasCooldown = true,
 				cooldown = 10,
 				isPvp = true,
@@ -805,7 +775,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 1,
 				settingKey = "arcaneShot",
-				thresholdUsable = false,
 				baseline = true
 			},
 			revivePet = {
@@ -816,7 +785,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 2,
 				settingKey = "revivePet",
-				thresholdUsable = false,
 				baseline = true
 			},
 			wingClip = {
@@ -827,7 +795,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 3,
 				settingKey = "wingClip",
-				thresholdUsable = false,
 				baseline = true
 			},
 
@@ -842,7 +809,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				--settingKey = "killCommand",
 				isSnowflake = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				baseline = true,
 				isTalent = true
 			},
@@ -862,8 +828,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "killShot",
 				healthMinimum = 0.2,
 				hasCooldown = true,
-				isSnowflake = true,
-				thresholdUsable = false
+				isSnowflake = true
 			},
 			scareBeast = {
 				id = 1513,
@@ -872,8 +837,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				resource = -25,
 				texture = "",
 				thresholdId = 6,
-				settingKey = "scareBeast",
-				thresholdUsable = false
+				settingKey = "scareBeast"
 			},
 			explosiveShot = {
 				id = 212431,
@@ -885,7 +849,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "explosiveShot",
 				hasCooldown = true,
 				cooldown = 30,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			barrage = {
@@ -898,7 +861,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "barrage",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				cooldown = 20
 			},
 			serpentSting = {
@@ -910,7 +872,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 9,
 				settingKey = "serpentSting",
 				isTalent = true,
-				thresholdUsable = false,
 				baseDuration = 18,
 				--pandemic = true,
 				--pandemicTime = 18 * 0.3
@@ -934,7 +895,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 10,
 				isSnowflake = true,
 				settingKey = "raptorStrike",
-				thresholdUsable = false,
 				isTalent = true
 			},
 			guerrillaTactics = {
@@ -975,7 +935,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 11,
 				settingKey = "carve",
 				hasCooldown = true,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			butchery = {
@@ -988,8 +947,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				hasCharges = true,
 				texture = "",
 				thresholdId = 12,
-				settingKey = "butchery",
-				thresholdUsable = false
+				settingKey = "butchery"
 			},
 			mongooseBite = {
 				id = 259387,
@@ -1000,7 +958,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 4, --NOTE this take's Kill Command's stypical threshold ID only so all the rest at the class level stay consistent!
 				settingKey = "mongooseBite",
-				thresholdUsable = false,
 				isTalent = true
 			},
 			flankingStrike = {
@@ -1009,7 +966,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				resource = 30,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			coordinatedAssault = {
@@ -1440,12 +1396,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 			if specSettings.colors.text.overcapEnabled and overcap then
 				currentFocusColor = specSettings.colors.text.overcap
-				castingFocusColor = specSettings.colors.text.overcap
 			elseif specSettings.colors.text.overThresholdEnabled then
 				local _overThreshold = false
 				for k, v in pairs(spells) do
 					local spell = spells[k]
-					if	spell ~= nil and spell.thresholdUsable == true then
+					if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
 						_overThreshold = true
 						break
 					end
@@ -1453,7 +1408,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 				if _overThreshold then
 					currentFocusColor = specSettings.colors.text.overThreshold
-					castingFocusColor = specSettings.colors.text.overThreshold
 				end
 			end
 		end
@@ -1673,7 +1627,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local currentFocusColor = specSettings.colors.text.current
 		local castingFocusColor = specSettings.colors.text.casting
-
+		
 		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 			if specSettings.colors.text.overcapEnabled and overcap then
 				currentFocusColor = specSettings.colors.text.overcap
@@ -1682,7 +1636,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				local _overThreshold = false
 				for k, v in pairs(spells) do
 					local spell = spells[k]
-					if	spell ~= nil and spell.thresholdUsable == true then
+					if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
 						_overThreshold = true
 						break
 					end
@@ -1867,7 +1821,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local currentFocusColor = specSettings.colors.text.current
 		local castingFocusColor = specSettings.colors.text.casting
-
+		
 		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 			if specSettings.colors.text.overcapEnabled and overcap then
 				currentFocusColor = specSettings.colors.text.overcap
@@ -1876,7 +1830,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				local _overThreshold = false
 				for k, v in pairs(spells) do
 					local spell = spells[k]
-					if	spell ~= nil and spell.thresholdUsable == true then
+					if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
 						_overThreshold = true
 						break
 					end
@@ -2082,12 +2036,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if specId == 1 then
 				if currentSpell == nil then
 					local spellName = select(1, currentChannel)
-					if spellName == spells.barrage.name then
-						spells.barrage.thresholdUsable = false
-					else
-						TRB.Functions.Character:ResetCastingSnapshotData()
-						return false
-					end
+					TRB.Functions.Character:ResetCastingSnapshotData()
+					return false
 					--See Priest implementation for handling channeled spells
 				else
 					local spellName = select(1, currentSpell)

@@ -170,8 +170,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 1,
-				settingKey = "aeratedManaPotionRank1",
-				thresholdUsable = false
+				settingKey = "aeratedManaPotionRank1"
 			},
 			aeratedManaPotionRank2 = {
 				itemId = 191385,
@@ -182,8 +181,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 2,
-				settingKey = "aeratedManaPotionRank2",
-				thresholdUsable = false
+				settingKey = "aeratedManaPotionRank2"
 			},
 			aeratedManaPotionRank3 = {
 				itemId = 191386,
@@ -194,8 +192,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 3,
-				settingKey = "aeratedManaPotionRank3",
-				thresholdUsable = false
+				settingKey = "aeratedManaPotionRank3"
 			},
 			potionOfFrozenFocusRank1 = {
 				id = 371033,
@@ -206,8 +203,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 4,
-				settingKey = "potionOfFrozenFocusRank1",
-				thresholdUsable = false
+				settingKey = "potionOfFrozenFocusRank1"
 			},
 			potionOfFrozenFocusRank2 = {
 				itemId = 191364,
@@ -217,8 +213,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 5,
-				settingKey = "potionOfFrozenFocusRank2",
-				thresholdUsable = false
+				settingKey = "potionOfFrozenFocusRank2"
 			},
 			potionOfFrozenFocusRank3 = {
 				itemId = 191365,
@@ -228,8 +223,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 6,
-				settingKey = "potionOfFrozenFocusRank3",
-				thresholdUsable = false
+				settingKey = "potionOfFrozenFocusRank3"
 			},
 			potionOfChilledClarity = {
 				id = 371052,
@@ -248,7 +242,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				texture = "",
 				thresholdId = 7,
 				settingKey = "conjuredChillglobe",
-				thresholdUsable = false,
 				mana = 4830,
 				duration = 10,
 				ticks = 10
@@ -367,7 +360,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				texture = "",
 				thresholdId = 1,
 				settingKey = "cracklingJadeLightning",
-				thresholdUsable = false,
 				isTalent = false,
 				baseline = true
 			},
@@ -382,7 +374,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				settingKey = "expelHarm",
 				hasCooldown = true,
 				cooldown = 15,
-				thresholdUsable = false,
 				isTalent = false,
 				baseline = true
 			},
@@ -411,7 +402,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				texture = "",
 				thresholdId = 3,
 				settingKey = "tigerPalm",
-				thresholdUsable = false,
 				isTalent = false,
 				baseline = true
 			},
@@ -433,7 +423,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				texture = "",
 				thresholdId = 4,
 				settingKey = "vivify",
-				thresholdUsable = false,
 				isTalent = false,
 				baseline = true
 			},
@@ -460,7 +449,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				settingKey = "detox",
 				hasCooldown = true,
 				cooldown = 8,
-				thresholdUsable = false,
 				isTalent = true,
 				baseline = true -- TODO: Check this in a future build
 			},
@@ -473,8 +461,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				texture = "",
 				thresholdId = 6,
 				settingKey = "disable",
-				hasCooldown = false,
-				thresholdUsable = false
+				hasCooldown = false
 			},
 			paralysis = {
 				id = 115078,
@@ -487,7 +474,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				settingKey = "paralysis",
 				hasCooldown = true,
 				cooldown = 45,
-				thresholdUsable = false,
 				isTalent = true,
 			},
 			paralysisRank2 = {
@@ -1253,7 +1239,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		local currentEnergyColor = specSettings.colors.text.current
 		local castingEnergyColor = specSettings.colors.text.casting
-
+		
 		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 			if specSettings.colors.text.overcapEnabled and overcap then
 				currentEnergyColor = specSettings.colors.text.overcap
@@ -1262,7 +1248,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				local _overThreshold = false
 				for k, v in pairs(spells) do
 					local spell = spells[k]
-					if	spell ~= nil and spell.thresholdUsable == true then
+					if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
 						_overThreshold = true
 						break
 					end

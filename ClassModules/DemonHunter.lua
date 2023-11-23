@@ -113,7 +113,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				thresholdId = 9,
 				settingKey = "throwGlaive",
 				hasCooldown = true,
-				thresholdUsable = false,
 				hasCharges = true,
 				isSnowflake = true,
 				isTalent = false,
@@ -131,7 +130,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				thresholdId = 2,
 				settingKey = "bladeDance",
 				hasCooldown = true,
-				thresholdUsable = false,
 				demonForm = false,
 				isTalent = false,
 				baseline = true
@@ -145,7 +143,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			   thresholdId = 4,
 			   settingKey = "chaosStrike",
 			   hasCooldown = false,
-			   thresholdUsable = false,
 			   isSnowflake = true,
 			   demonForm = false,
 			   isTalent = false,
@@ -160,7 +157,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				thresholdId = 1,
 				settingKey = "annihilation",
 				hasCooldown = false,
-				thresholdUsable = false,
 				--isSnowflake = true,
 				demonForm = true,
 				isTalent = false,
@@ -176,7 +172,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				thresholdId = 5,
 				settingKey = "deathSweep",
 				hasCooldown = true,
-				thresholdUsable = false,
 				demonForm = true,
 				--isSnowflake = true,
 				isTalent = false,
@@ -193,7 +188,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			   thresholdId = 3,
 			   settingKey = "chaosNova",
 			   hasCooldown = true,
-			   thresholdUsable = false,
 			   isTalent = true
 			},
 
@@ -208,7 +202,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				thresholdId = 6,
 				settingKey = "eyeBeam",
 				hasCooldown = true,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			burningHatred = {
@@ -247,7 +240,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				thresholdId = 8,
 				settingKey = "felEruption",
 				hasCooldown = true,
-				thresholdUsable = false,
 				isTalent = false,
 				baseline = true
 			},
@@ -271,7 +263,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				thresholdId = 7,
 				settingKey = "glaiveTempest",
 				hasCooldown = true,
-				thresholdUsable = false,
 				isTalent = true
 			},
 
@@ -335,7 +326,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				thresholdId = 10,
 				settingKey = "felBarrage",
 				hasCooldown = true,
-				thresholdUsable = false,
 				isTalent = true
 			}
 		}
@@ -550,7 +540,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		---@type TRB.Classes.SnapshotData
 		local snapshotData = TRB.Data.snapshotData
 		local specSettings = TRB.Data.settings.demonhunter.havoc
-		local normalizedFury = snapshotData.attributes.resource / TRB.Data.resourceFactor
+		local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 		--Spec specific implementation
 
 		--$overcap
@@ -566,7 +556,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				local _overThreshold = false
 				for k, v in pairs(spells) do
 					local spell = spells[k]
-					if	spell ~= nil and spell.thresholdUsable == true then
+					if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= normalizedResource then
 						_overThreshold = true
 						break
 					end
@@ -612,7 +602,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		--$fury
 		local resourcePrecision = specSettings.resourcePrecision or 0
-		local currentFury = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(normalizedFury, resourcePrecision, "floor"))
+		local currentFury = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(normalizedResource, resourcePrecision, "floor"))
 		--$casting
 		local _castingFury = snapshotData.casting.resourceFinal
 		local castingFury = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_castingFury, resourcePrecision, "floor"))
@@ -621,17 +611,17 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local passiveFury = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.Number:RoundTo(_passiveFury, resourcePrecision, "floor"))
 		
 		--$furyTotal
-		local _furyTotal = math.min(_passiveFury + snapshotData.casting.resourceFinal + normalizedFury, TRB.Data.character.maxResource)
+		local _furyTotal = math.min(_passiveFury + snapshotData.casting.resourceFinal + normalizedResource, TRB.Data.character.maxResource)
 		local furyTotal = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(_furyTotal, resourcePrecision, "floor"))
 		--$furyPlusCasting
-		local _furyPlusCasting = math.min(snapshotData.casting.resourceFinal + normalizedFury, TRB.Data.character.maxResource)
+		local _furyPlusCasting = math.min(snapshotData.casting.resourceFinal + normalizedResource, TRB.Data.character.maxResource)
 		local furyPlusCasting = string.format("|c%s%s|r", castingFuryColor, TRB.Functions.Number:RoundTo(_furyPlusCasting, resourcePrecision, "floor"))
 		--$furyPlusPassive
-		local _furyPlusPassive = math.min(_passiveFury + normalizedFury, TRB.Data.character.maxResource)
+		local _furyPlusPassive = math.min(_passiveFury + normalizedResource, TRB.Data.character.maxResource)
 		local furyPlusPassive = string.format("|c%s%s|r", currentFuryColor, TRB.Functions.Number:RoundTo(_furyPlusPassive, resourcePrecision, "floor"))
 		----------------------------
 
-		Global_TwintopResourceBar.resource.resource = normalizedFury
+		Global_TwintopResourceBar.resource.resource = normalizedResource
 		Global_TwintopResourceBar.resource.passive = _passiveFury
 		Global_TwintopResourceBar.resource.burningHatred = bhFury
 		Global_TwintopResourceBar.resource.tacticalRetreat = tacticalRetreatFury
@@ -711,12 +701,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookupLogic["$furyPlusCasting"] = _furyPlusCasting
 		lookupLogic["$furyTotal"] = _furyTotal
 		lookupLogic["$furyMax"] = TRB.Data.character.maxResource
-		lookupLogic["$fury"] = normalizedFury
+		lookupLogic["$fury"] = normalizedResource
 		lookupLogic["$resourcePlusCasting"] = _furyPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _furyPlusPassive
 		lookupLogic["$resourceTotal"] = _furyTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
-		lookupLogic["$resource"] = normalizedFury
+		lookupLogic["$resource"] = normalizedResource
 		lookupLogic["$casting"] = _castingFury
 		lookupLogic["$passive"] = _passiveFury
 		lookupLogic["$overcap"] = overcap

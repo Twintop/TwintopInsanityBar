@@ -104,7 +104,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				resource = -40,
 				thresholdId = 1,
 				settingKey = "starsurge",
-				thresholdUsable = false,
 				isTalent = true,
 				baseline = true,
 				isSnowflake = true
@@ -117,7 +116,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				resource = -80,
 				thresholdId = 2,
 				settingKey = "starsurge2",
-				thresholdUsable = false,
 				isTalent = true,
 				baseline = true,
 				isSnowflake = true
@@ -130,7 +128,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				resource = -120,
 				thresholdId = 3,
 				settingKey = "starsurge3",
-				thresholdUsable = false,
 				isTalent = true,
 				baseline = true,
 				isSnowflake = true
@@ -193,7 +190,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				resource = -50,
 				thresholdId = 4,
 				settingKey = "starfall",
-				thresholdUsable = false,
 				pandemic = true,
 				pandemicTime = 8 * 0.3,
 				isTalent = true,
@@ -422,7 +418,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				texture = "",
 				thresholdId = 1,
 				settingKey = "rake",
-				thresholdUsable = false,
 				hasSnapshot = true,
 				pandemic = true,
 				pandemicTime = 15 * 0.3,
@@ -443,7 +438,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				thresholdId = 2,
 				texture = "",
 				settingKey = "thrash",
-				thresholdUsable = false,
 				hasSnapshot = true,
 				pandemic = true,
 				pandemicTime = 15 * 0.3,
@@ -462,7 +456,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				thresholdId = 4,
 				texture = "",
 				settingKey = "rip",
-				thresholdUsable = false,
 				hasSnapshot = true,
 				pandemicTimes = {
 					8 * 0.3, -- 0 CP, show same as if we had 1
@@ -490,7 +483,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				settingKey = "maim",
 				hasCooldown = true,
 				cooldown = 20,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			sunfire = {
@@ -515,7 +507,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				thresholdId = 6,
 				settingKey = "ferociousBite",
 				isSnowflake = true, -- Really between 25-50 energy, minus Relentless Predator
-				thresholdUsable = false,
 				relentlessPredator = true
 			},
 			ferociousBiteMinimum = {
@@ -528,7 +519,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				thresholdId = 7,
 				settingKey = "ferociousBiteMinimum",
 				isSnowflake = true,
-				thresholdUsable = false,
 				relentlessPredator = true
 			},
 			ferociousBiteMaximum = {
@@ -541,7 +531,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				thresholdId = 8,
 				settingKey = "ferociousBiteMaximum",
 				isSnowflake = true,
-				thresholdUsable = false,
 				relentlessPredator = true
 			},
 			prowl = {
@@ -560,7 +549,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				texture = "",
 				thresholdId = 9,
 				settingKey = "shred",
-				thresholdUsable = false,
 				isClearcasting = true
 			},
 			swipe = {
@@ -572,7 +560,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				thresholdId = 3,
 				texture = "",
 				settingKey = "swipe",
-				thresholdUsable = false,
 				isSnowflake = true,
 				isTalent = false,
 				baseline = true
@@ -614,8 +601,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				thresholdId = 10,
 				texture = "",
 				settingKey = "primalWrath",
-				isTalent = true,
-				thresholdUsable = false
+				isTalent = true
 			},
 			lunarInspiration = {
 				id = 155580,
@@ -633,7 +619,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				texture = "",
 				settingKey = "moonfire",
 				isSnowflake = true,
-				thresholdUsable = false,
 				hasSnapshot = true,
 				pandemic = true,
 				pandemicTime = 16 * 0.3,
@@ -675,7 +660,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				isSnowflake = true,
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isClearcasting = true,
 				hasCharges = true
 			},
@@ -697,7 +681,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				settingKey = "bloodtalons",
 				isTalent = true,
 				--isSnowflake = true,
-				thresholdUsable = false,
 				modifier = 1.25
 			},
 			feralFrenzy = {
@@ -710,8 +693,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				texture = "",
 				settingKey = "feralFrenzy",
 				isTalent = true,
-				hasCooldown = true,
-				thresholdUsable = false
+				hasCooldown = true
 			},
 			incarnationAvatarOfAshamane = {
 				id = 102543,
@@ -950,8 +932,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 1,
-				settingKey = "aeratedManaPotionRank1",
-				thresholdUsable = false
+				settingKey = "aeratedManaPotionRank1"
 			},
 			aeratedManaPotionRank2 = {
 				itemId = 191385,
@@ -962,8 +943,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 2,
-				settingKey = "aeratedManaPotionRank2",
-				thresholdUsable = false
+				settingKey = "aeratedManaPotionRank2"
 			},
 			aeratedManaPotionRank3 = {
 				itemId = 191386,
@@ -974,8 +954,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 3,
-				settingKey = "aeratedManaPotionRank3",
-				thresholdUsable = false
+				settingKey = "aeratedManaPotionRank3"
 			},
 			potionOfFrozenFocusRank1 = {
 				id = 371033,
@@ -986,8 +965,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 4,
-				settingKey = "potionOfFrozenFocusRank1",
-				thresholdUsable = false
+				settingKey = "potionOfFrozenFocusRank1"
 			},
 			potionOfFrozenFocusRank2 = {
 				itemId = 191364,
@@ -997,8 +975,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 5,
-				settingKey = "potionOfFrozenFocusRank2",
-				thresholdUsable = false
+				settingKey = "potionOfFrozenFocusRank2"
 			},
 			potionOfFrozenFocusRank3 = {
 				itemId = 191365,
@@ -1008,8 +985,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 6,
-				settingKey = "potionOfFrozenFocusRank3",
-				thresholdUsable = false
+				settingKey = "potionOfFrozenFocusRank3"
 			},
 			potionOfChilledClarity = {
 				id = 371052,
@@ -1028,7 +1004,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				texture = "",
 				thresholdId = 7,
 				settingKey = "conjuredChillglobe",
-				thresholdUsable = false,
 			},
 
 			-- Alchemist Stone
@@ -2165,7 +2140,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				local _overThreshold = false
 				for k, v in pairs(spells) do
 					local spell = spells[k]
-					if	spell ~= nil and spells.thresholdUsable == true then
+					if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
 						_overThreshold = true
 						break
 					end

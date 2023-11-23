@@ -189,6 +189,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, threshold, showTh
 		local currentTime = GetTime()
 		local frameLevel = currentFrameLevel
 		local outOfRange = settings.thresholds.outOfRange == true and UnitAffectingCombat("player") and IsSpellInRange(spell.name, "target") == 0
+		local thresholdUsable = false
 
 		if outOfRange then
 			thresholdColor = settings.colors.threshold.outOfRange
@@ -210,13 +211,11 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, threshold, showTh
 ---@diagnostic disable-next-line: undefined-field
 		threshold.icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(thresholdColor, true))
 		if currentFrameLevel >= TRB.Data.constants.frameLevels.thresholdOver then
-			spell.thresholdUsable = true
-		else
-			spell.thresholdUsable = false
+			thresholdUsable = true
 		end
-
+		
 		if settings.thresholds.icons.desaturated == true then
-			threshold.icon.texture:SetDesaturated(not spell.thresholdUsable or outOfRange)
+			threshold.icon.texture:SetDesaturated(not thresholdUsable or outOfRange)
 		end
 		
 		if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshot.cooldown:GetRemainingTime(currentTime) > 0 and (snapshot.maxCharges == nil or snapshot.charges < snapshot.maxCharges) then
@@ -226,7 +225,6 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, threshold, showTh
 		end
 	else
 		threshold:Hide()
-		spell.thresholdUsable = false
 	end
 end
 

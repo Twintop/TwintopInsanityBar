@@ -734,8 +734,6 @@ function TRB.Functions.News:BuildNewsPopup()
 	newsPanelParent:SetBackdropColor(0, 0, 0, 1)
 	newsPanelParent:ClearAllPoints()
 	newsPanelParent:SetPoint("TOPLEFT", 5, -30)
-	--newsPanelParent:SetPoint("BOTTOMRIGHT", 300, -500)
-	--return newsPanel]]
 
 	TRB.Functions.OptionsUi:BuildSectionHeader(newsFrame, "Twintop's Resource Bar Updates", oUi.xCoord, 0)
     local closeButton = TRB.Functions.OptionsUi:BuildButton(newsFrame, "Close", 510, -10, 100, 25)

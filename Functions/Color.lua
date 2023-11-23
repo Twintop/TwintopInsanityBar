@@ -2,19 +2,37 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Color = {}
 
+---Converts a hexdecimal AARRGGBB string to separate numerical RGBA values, either out of 0-255 or 0.0 - 1.0
+---@param s string # Hexdecimal string
+---@param normalize boolean? # Should this be normalized to 0.0 - 1.0?
+---@param percentColorAdjust number? # How much we scale this color down
+---@param percentAlphaAdjust number? # How much we scale the alpha down
+---@return number, number, number, number
+function TRB.Functions.Color:GetRGBAFromString(s, normalize, percentColorAdjust, percentAlphaAdjust)
+	if percentColorAdjust == nil or percentColorAdjust > 1 then
+		percentColorAdjust = 1
+	elseif percentColorAdjust < 0 then
+		percentColorAdjust = 0
+	end
 
-function TRB.Functions.Color:GetRGBAFromString(s, normalize)
+	if percentAlphaAdjust == nil or percentAlphaAdjust > 1 then
+		percentAlphaAdjust = 1
+	elseif percentAlphaAdjust < 0 then
+		percentAlphaAdjust = 0
+	end
+
 	local _a = 1
 	local _r = 0
 	local _g = 1
 	local _b = 0
 
 	if not (s == nil) then
-		_a = min(255, tonumber(string.sub(s, 1, 2), 16))
-		_r = min(255, tonumber(string.sub(s, 3, 4), 16))
-		_g = min(255, tonumber(string.sub(s, 5, 6), 16))
-		_b = min(255, tonumber(string.sub(s, 7, 8), 16))
+		_a = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 1, 2), 16)) * percentAlphaAdjust, 0, floor, true)
+		_r = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 3, 4), 16)) * percentColorAdjust, 0, floor, true)
+		_g = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 5, 6), 16)) * percentColorAdjust, 0, floor, true)
+		_b = TRB.Functions.Number:RoundTo(min(255, tonumber(string.sub(s, 7, 8), 16)) * percentColorAdjust, 0, floor, true)
 	end
+
 	if normalize then
 		return _r/255, _g/255, _b/255, _a/255
 	else
