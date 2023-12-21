@@ -7,6 +7,18 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 
+# 10.2.0.2-release (2023-12-22)
+
+## Priest
+### Shadow
+- [#334 - NEW](#334) Add Death's Torment (T31 4P bonus) support.
+<br/>&emsp;&ensp;- Optional bar border color changes and audio cues when at max stacks or a lower number of stacks that can be configured between 1 - 11.
+<br/>&emsp;&ensp;- New bar text icons and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#deathsTorment` -- Death's Torment buff icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$deathsTormentStacks` -- current number of stacks of the Death's Torment buff.
+
+----
+
 # 10.2.0.1-release (2023-11-21)
 ## General
 

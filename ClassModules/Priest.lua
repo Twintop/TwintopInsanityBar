@@ -1283,12 +1283,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				isTalent = true,
 				duration = 20
 			},
+			deathsTorment = { -- T31 4P
+				id = 423726,
+				name = "",
+				icon = "",
+				maxStacks = 12
+			},
 		}
 
 		specCache.shadow.snapshotData.audio = {
 			playedDpCue = false,
 			playedMdCue = false,
-			overcapCue = false
+			overcapCue = false,
+			deathsTormentCue = false,
+			deathsTormentMaxCue = false
 		}
 		---@type TRB.Classes.Snapshot
 		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.voidform.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.voidform)
@@ -1344,6 +1352,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.idolOfYoggSaron.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.idolOfYoggSaron)
 		---@type TRB.Classes.Snapshot
 		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.thingFromBeyond.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.thingFromBeyond)
+		---@type TRB.Classes.Snapshot
+		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.deathsTorment.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.deathsTorment)
 	end
 
 	local function Setup_Discipline()
@@ -1771,6 +1781,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			
 			{ variable = "#ys", icon = spells.idolOfYoggSaron.icon, description = spells.idolOfYoggSaron.name, printInSettings = true },
 			{ variable = "#idolOfYoggSaron", icon = spells.idolOfYoggSaron.icon, description = spells.idolOfYoggSaron.name, printInSettings = false },
+
+			{ variable = "#deathsTorment", icon = spells.deathsTorment.icon, description = spells.deathsTorment.name, printInSettings = true },			
 		}
 		specCache.shadow.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -1863,6 +1875,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$ysStacks", description = "Number of Yogg Saron stacks", printInSettings = true, color = false },
 			{ variable = "$ysRemainingStacks", description = "Number of Yogg Saron stacks until next Thing from Beyond", printInSettings = true, color = false },
 			{ variable = "$tfbTime", description = "Time remaining on Thing from Beyond", printInSettings = true, color = false },
+			
+			{ variable = "$deathsTormentStacks", description = "Number of Death's Torment stacks", printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
@@ -2974,6 +2988,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$tfbTime
 		local _tfbTime = snapshots[spells.thingFromBeyond.id].buff:GetRemainingTime(currentTime)
 		local tfbTime = string.format("%.1f", _tfbTime)
+		
+		--$deathsTormentStacks
+		local deathsTormentStacks = snapshots[spells.deathsTorment.id].buff.stacks or 0
 
 		--$cttvEquipped
 		local cttvEquipped = TRB.Functions.Class:IsValidVariableForSpec("$cttvEquipped")
@@ -3043,6 +3060,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$ysTime"] = ysTime
 		lookup["$ysStacks"] = ysStacks
 		lookup["$ysRemainingStacks"] = ysRemainingStacks
+		lookup["$deathsTormentStacks"] = deathsTormentStacks
 		lookup["$tfbTime"] = tfbTime
 		lookup["$siTime"] = siTime
 		lookup["$mindBlastCharges"] = mindBlastCharges
@@ -3092,6 +3110,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$ysTime"] = _ysTime
 		lookupLogic["$ysStacks"] = ysStacks
 		lookupLogic["$ysRemainingStacks"] = ysRemainingStacks
+		lookupLogic["$deathsTormentStacks"] = deathsTormentStacks
 		lookupLogic["$tfbTime"] = _tfbTime
 		lookupLogic["$siTime"] = _siTime
 		lookupLogic["$mindBlastCharges"] = mindBlastCharges
@@ -3130,7 +3149,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
-		-- Do nothing for now
+		
 		snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw * innervate.modifier * potionOfChilledClarity.modifier
 	end
 
@@ -3141,7 +3160,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local snapshotData = TRB.Data.snapshotData
 		local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
-		-- Do nothing for now
+		
 		snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw * innervate.modifier * potionOfChilledClarity.modifier
 	end
 
@@ -3458,7 +3477,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	end
 
 	local function UpdateShadowfiendValues()
-		local currentTime = GetTime()
 		local specId = GetSpecialization()
 		local _
 		local spells = TRB.Data.spells
@@ -3492,7 +3510,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		-- TODO: Add separate counts for Tendril vs Lasher?
 		if TRB.Functions.Table:Length(TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList) > 0 then
-			for vtGuid,v in pairs(TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList) do
+			for vtGuid, v in pairs(TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList) do
 				if TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList[vtGuid] ~= nil and TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList[vtGuid].startTime ~= nil then
 					local endTime = TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.activeList[vtGuid].startTime + TRB.Data.spells.lashOfInsanity_Tendril.duration
 					local timeRemaining = endTime - currentTime
@@ -3540,7 +3558,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining = totalTicksRemaining_Tendril + totalTicksRemaining_Lasher
 		TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.numberActive = totalActive
 		TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.resourceRaw = totalInsanity_Tendril + totalInsanity_Lasher
-		-- Fortress of the Mind does not apply but other Insanity boosting effects do.
 		TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.resourceFinal = CalculateResourceGain(TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.resourceRaw)
 	end
 
@@ -4445,8 +4462,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						barBorderColor = specSettings.colors.bar.borderMindFlayInsanity
 					end
 
+					if specSettings.colors.bar.deathsTorment.enabled and snapshots[spells.deathsTorment.id].buff.stacks >= specSettings.deathsTorment.stacks then
+						barBorderColor = specSettings.colors.bar.deathsTorment.color
+					end
+
 					if specSettings.colors.bar.deathspeaker.enabled and TRB.Functions.Class:IsValidVariableForSpec("$deathspeakerTime") then
 						barBorderColor = specSettings.colors.bar.deathspeaker.color
+					end
+					
+					if specSettings.colors.bar.deathsTormentMax.enabled and snapshots[spells.deathsTorment.id].buff.stacks == spells.deathsTorment.maxStacks then
+						barBorderColor = specSettings.colors.bar.deathsTormentMax.color
 					end
 					
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
@@ -4864,6 +4889,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								PlaySoundFile(TRB.Data.settings.priest.shadow.audio.deathspeaker.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
+					elseif spellId == spells.deathsTorment.id then
+						snapshots[spells.deathsTorment.id].buff:Initialize(type)
+						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" or type == "SPELL_AURA_APPLIED_DOSE" then
+							if TRB.Data.settings.priest.shadow.audio.deathsTormentMax.enabled and not snapshotData.audio.deathsTormentMaxCue and snapshots[spells.deathsTorment.id].buff.stacks == spells.deathsTorment.maxStacks then
+								PlaySoundFile(TRB.Data.settings.priest.shadow.audio.deathsTormentMax.sound, TRB.Data.settings.core.audio.channel.channel)
+								snapshotData.audio.deathsTormentCue = true
+								snapshotData.audio.deathsTormentMaxCue = true
+							elseif TRB.Data.settings.priest.shadow.audio.deathsTorment.enabled and not snapshotData.audio.deathsTormentCue and snapshots[spells.deathsTorment.id].buff.stacks >= settings.deathsTorment.stacks then
+								PlaySoundFile(TRB.Data.settings.priest.shadow.audio.deathsTorment.sound, TRB.Data.settings.core.audio.channel.channel)
+								snapshotData.audio.deathsTormentCue = true
+							end
+						elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_AURA_REMOVED_DOSE" then
+							snapshotData.audio.deathsTormentCue = false
+							snapshotData.audio.deathsTormentMaxCue = false
+						end
 					elseif spellId == spells.twistOfFate.id then
 						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.shadowyInsight.id then
@@ -5144,6 +5184,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			lookup["#swd"] = spells.deathspeaker.icon
 			lookup["#shadowWordDeath"] = spells.deathspeaker.icon
 			lookup["#deathspeaker"] = spells.deathspeaker.icon
+			lookup["#deathsTorment"] = spells.deathsTorment.icon
 			TRB.Data.lookup = lookup
 			TRB.Data.lookupLogic = {}
 

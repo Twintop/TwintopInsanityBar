@@ -1270,6 +1270,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				relative=0,
 				fixed=100
 			},
+			deathsTorment={
+				stacks = 9
+			},
 			colors={
 				text={
 					currentInsanity="FFC2A3E0",
@@ -1303,6 +1306,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					devouringPlagueUsableCasting="FFFFFFFF",
 					instantMindBlast={
 						color = "FFC2A3E0",
+						enabled = true
+					},
+					deathsTorment = {
+						color = "FFFCACAC",
+						enabled = true
+					},
+					deathsTormentMax = {
+						color = "FFFF4040",
 						enabled = true
 					},
 					inVoidform="FF431863",
@@ -1354,6 +1365,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				},
 				deathspeaker={
 					name = "Deathspeaker Proc",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName="TRB: Boxing Arena Gong"
+				},
+				deathsTorment={
+					name = "Death's Torment",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName="TRB: Boxing Arena Gong"
+				},
+				deathsTormentMax={
+					name = "Death's Torment (Max Stacks)",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName="TRB: Boxing Arena Gong"
@@ -3739,6 +3762,40 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "deathspeaker")
 		end)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.deathsTormentBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Border_Option_deathsTormentBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.deathsTormentBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Death's Torment at or above X stacks")
+		f.tooltip = "This will change the bar border color when you have X or more stacks of Death's Torment, based on configuration under the 'Audio & Tracking' tab."
+		f:SetChecked(spec.colors.bar.deathsTorment.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.deathsTorment.enabled = self:GetChecked()
+		end)
+
+		controls.colors.deathsTorment = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Death's Torment", spec.colors.bar.deathsTorment.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.deathsTorment
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "deathsTorment")
+		end)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.deathsTormentMaxBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Border_Option_deathsTormentMaxBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.deathsTormentMaxBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Death's Torment max stacks")
+		f.tooltip = "This will change the bar border color when you are at maximum stacks of Death's Torment."
+		f:SetChecked(spec.colors.bar.deathsTormentMax.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.deathsTormentMax.enabled = self:GetChecked()
+		end)
+
+		controls.colors.deathsTormentMax = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Death's Torment max stacks", spec.colors.bar.deathsTormentMax.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.deathsTormentMax
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "deathsTormentMax")
+		end)
 
 		yCoord = yCoord - 40
 		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", oUi.xCoord, yCoord)
@@ -4385,6 +4442,138 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			PlaySoundFile(spec.audio.deathspeaker.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
+		
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.deathsTormentProc = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_deathsTorment_Sound", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.deathsTormentProc
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Death's Torment is at or above X stacks")
+		f.tooltip = "Play an audio cue when the Death's Torment buff is at or above X stacks, per configuration settings below."
+		f:SetChecked(spec.audio.deathsTorment.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.audio.deathsTorment.enabled = self:GetChecked()
+
+			if spec.audio.deathsTorment.enabled then
+				PlaySoundFile(spec.audio.deathsTorment.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.deathsTormentProcAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_3_deathsTorment_ProcAudio", parent)
+		controls.dropDown.deathsTormentProcAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.deathsTormentProcAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.deathsTormentProcAudio, spec.audio.deathsTorment.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.deathsTormentProcAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.deathsTormentProcAudio, function(self, level, menuList)
+			local entries = 25
+			local info = LibDD:UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					LibDD:UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == spec.audio.deathsTorment.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						LibDD:UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.deathsTormentProcAudio:SetValue(newValue, newName)
+			spec.audio.deathsTorment.sound = newValue
+			spec.audio.deathsTorment.soundName = newName
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.deathsTormentProcAudio, newName)
+			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
+			PlaySoundFile(spec.audio.deathsTorment.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+		
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.deathsTormentMaxProc = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_deathsTormentMax_Sound", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.deathsTormentMaxProc
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Death's Torment is at maximum stacks.")
+		f.tooltip = "Play an audio cue when the Death's Torment buff is at maximum stacks."
+		f:SetChecked(spec.audio.deathsTormentMax.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.audio.deathsTormentMax.enabled = self:GetChecked()
+
+			if spec.audio.deathsTormentMax.enabled then
+				PlaySoundFile(spec.audio.deathsTormentMax.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.deathsTormentMaxProcAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_3_deathsTormentMax_ProcAudio", parent)
+		controls.dropDown.deathsTormentMaxProcAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.deathsTormentMaxProcAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.deathsTormentMaxProcAudio, spec.audio.deathsTormentMax.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.deathsTormentMaxProcAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.deathsTormentMaxProcAudio, function(self, level, menuList)
+			local entries = 25
+			local info = LibDD:UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = "Sounds " .. i+1
+					info.menuList = i
+					LibDD:UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == spec.audio.deathsTormentMax.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						LibDD:UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.deathsTormentMaxProcAudio:SetValue(newValue, newName)
+			spec.audio.deathsTormentMax.sound = newValue
+			spec.audio.deathsTormentMax.soundName = newName
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.deathsTormentMaxProcAudio, newName)
+			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
+			PlaySoundFile(spec.audio.deathsTormentMax.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
 
 		yCoord = yCoord - 60
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Auspicious Spirits Tracking", oUi.xCoord, yCoord)
@@ -4504,6 +4693,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 			self.EditBox:SetText(value)
 			spec.mindbender.timeMax = value
+		end)		
+
+
+		yCoord = yCoord - 30
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Death's Torment (T31 4P)", oUi.xCoord, yCoord)
+
+		yCoord = yCoord - 60
+		title = "Stacks before border change and audio cue"
+		controls.deathsTorment = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 11, spec.deathsTorment.stacks, 1, 0,
+										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+		controls.deathsTorment:SetScript("OnValueChanged", function(self, value)
+			value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+			value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+			self.EditBox:SetText(value)
+			spec.deathsTorment.stacks = value
 		end)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
