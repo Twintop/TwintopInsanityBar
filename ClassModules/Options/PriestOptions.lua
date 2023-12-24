@@ -375,16 +375,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					border="FF000099",
 					base="FF000099", --required for generic combo point code
 					background="66000000",
-					--holyWordSerenity="FF00DDDD",
-					--holyWordSerenityEnabled = true,
 					powerWordRadiance="FFFFDD22",
-					powerWordRadianceEnabled = true,
-					--holyWordChastise="FFFF8080",
-					--holyWordChastiseEnabled = true,
-					--completeCooldown="FF00B500",
-					--completeCooldownEnabled=true,
-					--sacredReverence="FF90FF64",
-					--sacredReverenceEnabled=true
+					powerWordRadianceEnabled = true
 				},
 				threshold={
 					unusable="FFFF0000",
@@ -1252,7 +1244,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				showPassive=true,
 				showCasting=true
 			},
-			mindbender={
+			mindbender={ --TODO: Rename this shadowfiend to be consistent with Discipline and Holy
 				mode="gcd",
 				swingsMax=4,
 				gcdsMax=2,
@@ -2116,7 +2108,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Shadowfiend Tracking", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Shadowfiend/Mindbender Tracking", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.shadowfiend = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Shadowfiend_Enabled", parent, "ChatConfigCheckButtonTemplate")
@@ -2146,7 +2138,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.shadowfiend.mode = "gcd"
 		end)
 
-		title = "Shadowfiend GCDs - 0.75sec Floor"
+		title = "Shadowfiend/Mindbender GCDs - 0.75sec Floor"
 		controls.shadowfiendGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 10, spec.shadowfiend.gcdsMax, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.shadowfiendGCDs:SetScript("OnValueChanged", function(self, value)
@@ -2172,7 +2164,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.shadowfiend.mode = "swing"
 		end)
 
-		title = "Shadowfiend Swings - No Floor"
+		title = "Shadowfiend/Mindbender Swings - No Floor"
 		controls.shadowfiendSwings = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 10, spec.shadowfiend.swingsMax, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.shadowfiendSwings:SetScript("OnValueChanged", function(self, value)
@@ -2197,7 +2189,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.shadowfiend.mode = "time"
 		end)
 
-		title = "Shadowfiend Remaining (sec)"
+		title = "Shadowfiend/Mindbender Remaining (sec)"
 		controls.shadowfiendTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.shadowfiend.timeMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.shadowfiendTime:SetScript("OnValueChanged", function(self, value)
@@ -3290,7 +3282,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Shadowfiend Tracking", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Shadowfiend/Mindbender Tracking", oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.shadowfiend = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Shadowfiend_Enabled", parent, "ChatConfigCheckButtonTemplate")
@@ -3815,7 +3807,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.mindbender = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Shadowfiend / Mindbender / Wrathful Faerie Insanity Gain", spec.colors.threshold.mindbender, 300, 25, oUi.xCoord2, yCoord-60)
+		controls.colors.threshold.mindbender = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Shadowfiend / Mindbender Insanity Gain", spec.colors.threshold.mindbender, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.mindbender
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "mindbender")
@@ -4747,7 +4739,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes = {}
 		controls.dropDown = {}
 		controls.buttons = controls.buttons or {}
-
+		
 		interfaceSettingsFrame.shadowDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Priest_Shadow", UIParent)
 		interfaceSettingsFrame.shadowDisplayPanel.name = "Shadow Priest"
 ---@diagnostic disable-next-line: undefined-field
@@ -4827,11 +4819,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function ConstructOptionsPanel(specCache)
 		TRB.Options:ConstructOptionsPanel()
-		
-		if TRB.Data.settings.core.experimental.specs.priest.discipline then
-			DisciplineConstructOptionsPanel(specCache.discipline)
-		end
-		
+		DisciplineConstructOptionsPanel(specCache.discipline)
 		HolyConstructOptionsPanel(specCache.holy)
 		ShadowConstructOptionsPanel(specCache.shadow)
 	end

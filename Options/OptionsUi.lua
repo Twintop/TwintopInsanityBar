@@ -16,7 +16,7 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 	f:SetSize(sizeX-36, sizeY)
 	f:EnableMouseWheel(true)
 	f:SetObeyStepOnDrag(true)
-	f:SetOrientation("Horizontal")
+	f:SetOrientation("HORIZONTAL")
 	---@diagnostic disable-next-line: missing-fields
 	f:SetBackdrop({
 	   bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
@@ -2333,8 +2333,6 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		local relativeTo = {}
 		relativeTo["Main Resource Bar"] = "Resource"
 		relativeTo["Screen"] = "UIParent"
-		--relativeTo["Center"] = "CENTER"
-		--relativeTo["Right"] = "RIGHT"
 		local relativeToList = {
 			"Main Resource Bar",
 			"Screen"

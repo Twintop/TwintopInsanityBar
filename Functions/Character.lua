@@ -29,7 +29,7 @@ function TRB.Functions.Character:UpdateSnapshot()
 
 	if TRB.Data.resource2 ~= nil then
 		if TRB.Data.resource2 == "SPELL" and TRB.Data.resource2Id ~= nil then
-			local _, _, stacks, _, duration, endTime, _, _, _, spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.resource2Id)
+			local stacks = select(3, TRB.Functions.Aura:FindBuffById(TRB.Data.resource2Id))
 			snapshotData.attributes.resource2 = stacks or 0
 		elseif TRB.Data.resource2 == "CUSTOM" then
 			-- Do nothing

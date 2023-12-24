@@ -167,6 +167,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 
 			-- Discipline Talent Abilities
+			atonement = {
+				id = 194384,
+				icon = "",
+				name = "",
+				isTalent = true,
+				isBuff = true,
+				duration = 15
+			},
+			evangelism = {
+				id = 246287,
+				icon = "",
+				name = "",
+				atonementMod = 6
+			},
 			powerWordRadiance = {
 				id = 194509,
 				icon = "",
@@ -402,6 +416,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.shadowCovenant.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.shadowCovenant)
 		---@type TRB.Classes.Snapshot
 		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.rapture.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.rapture)
+		---@type TRB.Classes.Snapshot
+		specCache.discipline.snapshotData.snapshots[specCache.discipline.spells.atonement.id] = TRB.Classes.Snapshot:New(specCache.discipline.spells.atonement, {
+			minRemainingTime = 0,
+			maxRemainingTime = 0
+		})
 
 		specCache.discipline.barTextVariables = {
 			icons = {},
@@ -1375,6 +1394,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
+			{ variable = "#atonement", icon = spells.atonement.icon, description = spells.atonement.name, printInSettings = true },
 			{ variable = "#ptw", icon = spells.purgeTheWicked.icon, description = spells.purgeTheWicked.name, printInSettings = true },
 			{ variable = "#purgeTheWicked", icon = spells.purgeTheWicked.icon, description = spells.purgeTheWicked.name, printInSettings = false },
 			{ variable = "#pwRadiance", icon = spells.powerWordRadiance.icon, description = spells.powerWordRadiance.name, printInSettings = true },
@@ -1389,6 +1409,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "#surgeOfLight", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = false },
 			{ variable = "#swp", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = true },
 			{ variable = "#shadowWordPain", icon = spells.shadowWordPain.icon, description = spells.shadowWordPain.name, printInSettings = false },
+
 			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
 			{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
 
@@ -1451,6 +1472,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$resourcePlusPassive", description = "Current + Passive Mana Total", printInSettings = false, color = false },
 			{ variable = "$manaTotal", description = "Current + Passive + Casting Mana Total", printInSettings = true, color = false },
 			{ variable = "$resourceTotal", description = "Current + Passive + Casting Mana Total", printInSettings = false, color = false },
+			
+			{ variable = "$atonementCount", description = "Number of Atonements active on friendly targets", printInSettings = true, color = false },
+			{ variable = "$atonementTime", description = "Time remaining on Atonement on your current friendly target", printInSettings = true, color = false },
+			{ variable = "$atonementMinTime", description = "Time until your oldest Atonement buff expires", printInSettings = true, color = false },
+			{ variable = "$atonementMaxTime", description = "Time until your newest Atonement buff expires", printInSettings = true, color = false },
 
 			{ variable = "$solStacks", description = "Number of Surge of Light stacks", printInSettings = true, color = false },
 			{ variable = "$solTime", description = "Time left on Surge of Light", printInSettings = true, color = false },
@@ -1972,7 +1998,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 		end
 
-		if specId == 1 and TRB.Data.settings.core.experimental.specs.priest.discipline then
+		if specId == 1 then
 			for x = 1, 9 do
 				if TRB.Frames.resourceFrame.thresholds[x] == nil then
 					TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
@@ -2066,7 +2092,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		TRB.Functions.Bar:Construct(settings)
 
-		if (specId == 1 and TRB.Data.settings.core.experimental.specs.priest.discipline) or
+		if specId == 1 or
 			specId == 2 or
 			specId == 3 then
 			TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
@@ -2257,6 +2283,27 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$pwRadianceCharges
 		local _pwRadianceCharges = snapshots[spells.powerWordRadiance.id].cooldown.charges
 		local pwRadianceCharges = string.format("%.0f", _pwRadianceCharges)
+		
+		--$atonementMinTime
+		local _atonementMinTime = snapshots[spells.atonement.id].attributes.minRemainingTime
+		local atonementMinTime = string.format("%.1f", _atonementMinTime)
+		
+		--$atonementMaxTime
+		local _atonementMaxTime = snapshots[spells.atonement.id].attributes.maxRemainingTime
+		local atonementMaxTime = string.format("%.1f", _atonementMaxTime)
+
+		
+		--$atonementTime
+		local _atonementTime = 0
+
+		if target ~= nil then
+			_atonementTime = target.spells[spells.atonement.id].remainingTime or 0
+		end
+		local atonementTime = string.format("%.1f", _atonementTime)
+
+		--$atonementCount
+		local _atonementCount = snapshotData.targetData.count[spells.atonement.id] or 0
+		local atonementCount = string.format("%s", _atonementCount)
 
 		-----------
 		--$swpCount and $swpTime		
@@ -2320,6 +2367,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		Global_TwintopResourceBar.dots = {
 			swpCount = _shadowWordPainCount or 0
 		}
+		Global_TwintopResourceBar.atonement = {
+			count = _atonementCount,
+			targetTime = _atonementTime,
+			minTime = _atonementMinTime,
+			maxTime = _atonementMaxTime
+		}
 
 
 		local lookup = TRB.Data.lookup
@@ -2381,6 +2434,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$raptureTime"] = raptureTime
 		lookup["$scTime"] = scTime
 		lookup["$shadowCovenantTime"] = scTime
+		lookup["$atonementMinTime"] = atonementMinTime
+		lookup["$atonementMaxTime"] = atonementMaxTime
+		lookup["$atonementTime"] = atonementTime
+		lookup["$atonementCount"] = atonementCount
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
@@ -2431,6 +2488,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$raptureTime"] = _raptureTime
 		lookupLogic["$scTime"] = _scTime
 		lookupLogic["$shadowCovenantTime"] = _scTime
+		lookupLogic["$atonementMinTime"] = _atonementMinTime
+		lookupLogic["$atonementMaxTime"] = _atonementMaxTime
+		lookupLogic["$atonementTime"] = _atonementTime
+		lookupLogic["$atonementCount"] = _atonementCount
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -3561,6 +3622,32 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.resourceFinal = CalculateResourceGain(TRB.Data.snapshotData.snapshots[spells.idolOfCthun.id].attributes.resourceRaw)
 	end
 
+	local function UpdateAtonement()
+		local spells = TRB.Data.spells
+		local atonement = TRB.Data.snapshotData.snapshots[spells.atonement.id] --[[@as TRB.Classes.Snapshot]]
+		local targets = TRB.Data.snapshotData.targetData.targets
+		local minRemainingTime = nil
+		local maxRemainingTime = nil
+		local currentTime = GetTime()
+		if TRB.Functions.Table:Length(targets) > 0 then
+			for guid, target in pairs(targets) do
+				if target.spells[spells.atonement.id].active and target.spells[spells.atonement.id].endTime ~= nil then
+					local remainingTime = (target.spells[spells.atonement.id].endTime - currentTime)
+					if remainingTime > 0 and remainingTime > (maxRemainingTime or 0) then
+						maxRemainingTime = remainingTime
+					end
+				
+					if remainingTime > 0 and remainingTime < (minRemainingTime or 999) then
+						minRemainingTime = remainingTime
+					end
+				end
+			end
+		end
+
+		atonement.attributes.minRemainingTime = minRemainingTime or 0
+		atonement.attributes.maxRemainingTime = maxRemainingTime or 0
+	end
+
 	local function UpdateSnapshot()
 		TRB.Functions.Character:UpdateSnapshot()
 		UpdateShadowfiendValues()
@@ -3606,6 +3693,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local currentTime = GetTime()
 		UpdateSnapshot()
 		UpdateSnapshot_Healers()
+		UpdateAtonement()
 		
 		local spells = TRB.Data.spells
 		---@type TRB.Classes.Snapshot[]
@@ -3614,6 +3702,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		snapshots[spells.powerWordRadiance.id].cooldown:Refresh(true)
 		snapshots[spells.rapture.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.shadowCovenant.id].buff:Refresh()
+
+		Twintop_Data = TRB.Data
 	end
 
 	local function UpdateSnapshot_Holy()
@@ -4805,6 +4895,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if specId == 1 and TRB.Data.barConstructedForSpec == "discipline" then
 					if spellId == spells.rapture.id then
 						snapshots[spellId].buff:Initialize(type)
+					elseif spellId == spells.atonement.id then
+						if TRB.Functions.Class:InitializeTarget(destGUID, true, true) then
+							---@diagnostic disable-next-line: param-type-mismatch
+							triggerUpdate = targetData:HandleCombatLogBuff(spellId, type, destGUID)
+						end
 					elseif spellId == spells.shadowCovenant.id then
 						snapshots[spellId].buff:Initialize(type)
 					elseif spellId == spells.purgeTheWicked.id then
@@ -4815,6 +4910,18 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					elseif spellId == spells.powerWordRadiance.id then
 						if type == "SPELL_CAST_SUCCESS" then -- Cast PW: Radiance
 							snapshots[spellId].cooldown:Initialize()
+						end
+					elseif spellId == spells.evangelism.id then
+						if type == "SPELL_CAST_SUCCESS" then -- Cast PW: Radiance
+							local targets = TRB.Data.snapshotData.targetData.targets
+							if TRB.Functions.Table:Length(targets) > 0 then
+								for guid, target in pairs(targets) do
+									if target.spells[spells.atonement.id].active and target.spells[spells.atonement.id].endTime ~= nil then
+										target.spells[spells.atonement.id].endTime = target.spells[spells.atonement.id].endTime + spells.evangelism.atonementMod
+										target.spells[spells.atonement.id].remainingTime = target.spells[spells.atonement.id].remainingTime + spells.evangelism.atonementMod
+									end
+								end
+							end
 						end
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "holy" then
@@ -4998,7 +5105,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
-		if specId == 1 and TRB.Data.settings.core.experimental.specs.priest.discipline then
+		if specId == 1 then
 			specCache.discipline.talents:GetTalents()
 			FillSpellData_Discipline()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.discipline)
@@ -5009,6 +5116,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			local targetData = TRB.Data.snapshotData.targetData
 			targetData:AddSpellTracking(spells.shadowWordPain)
 			targetData:AddSpellTracking(spells.purgeTheWicked)
+			targetData:AddSpellTracking(spells.atonement)
 
 			TRB.Functions.RefreshLookupData = RefreshLookupData_Discipline
 			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.priest.discipline)
@@ -5217,10 +5325,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 						local settings = TRB.Options.Priest.LoadDefaultSettings(false)
 
-						if TwintopInsanityBarSettings.core.experimental.specs.priest.discipline and
-							(TwintopInsanityBarSettings.priest == nil or
+						if TwintopInsanityBarSettings.priest == nil or
 							TwintopInsanityBarSettings.priest.discipline == nil or
-							TwintopInsanityBarSettings.priest.discipline.displayText == nil) then
+							TwintopInsanityBarSettings.priest.discipline.displayText == nil then
 							settings.priest.discipline.displayText.barText = TRB.Options.Priest.DisciplineLoadDefaultBarTextSimpleSettings()
 						end
 
@@ -5303,7 +5410,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		---@type TRB.Classes.Snapshot[]
 		local snapshots = TRB.Data.snapshotData.snapshots
 
-		if specId == 1 and TRB.Data.settings.core.experimental.specs.priest.discipline then
+		if specId == 1 then
 			TRB.Data.character.specName = "discipline"
 ---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
@@ -5478,7 +5585,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	function TRB.Functions.Class:EventRegistration()
 		local specId = GetSpecialization()
 		local specSettings
-		if specId == 1 and TRB.Data.settings.core.enabled.priest.discipline == true and TRB.Data.settings.core.experimental.specs.priest.discipline then
+		if specId == 1 and TRB.Data.settings.core.enabled.priest.discipline == true then
 			specSettings = TRB.Data.settings.priest.discipline
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
@@ -5534,7 +5641,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		---@type TRB.Classes.SnapshotData
 		local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-		if specId == 1 and TRB.Data.settings.core.experimental.specs.priest.discipline then
+		if specId == 1 then
 			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.priest.discipline.displayBar.alwaysShow) and (
@@ -5594,7 +5701,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 	end
 
-	function TRB.Functions.Class:InitializeTarget(guid, selfInitializeAllowed)
+	function TRB.Functions.Class:InitializeTarget(guid, selfInitializeAllowed, isFriend)
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
 			return false
 		end
@@ -5605,7 +5712,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		if guid ~= nil and guid ~= "" then
 			if not targetData:CheckTargetExists(guid) then
-				targetData:InitializeTarget(guid)
+				targetData:InitializeTarget(guid, isFriend)
+			end
+			if isFriend then
+				targets[guid].isFriend = true
 			end
 			targets[guid].lastUpdate = currentTime
 			return true
@@ -5778,6 +5888,26 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			elseif var == "$scTime" or var == "$shadowCovenantTime" then
 				if snapshots[spells.shadowCovenant.id].buff.isActive then
+					valid = true
+				end
+			elseif var == "$atonementCount" then
+				if snapshotData.targetData.count[spells.atonement.id] > 0 then
+					valid = true
+				end
+			elseif var == "$atonementTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitIsFriend("player", "target") and
+					target ~= nil and
+					((target.spells[spells.atonement.id] ~= nil and
+					target.spells[spells.atonement.id].remainingTime > 0)) then
+					valid = true
+				end
+			elseif var == "$atonementMinTime" then
+				if snapshots[spells.atonement.id].attributes.minRemainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$atonementMaxTime" then
+				if snapshots[spells.atonement.id].attributes.maxRemainingTime > 0 then
 					valid = true
 				end
 			end
@@ -6083,8 +6213,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	function TRB.Functions.Class:TriggerResourceBarUpdates()
 		local specId = GetSpecialization()
-		if (specId ~= 1 and specId ~= 2 and specId ~= 3) or
-			(specId == 1 and not TRB.Data.settings.core.experimental.specs.priest.discipline) then
+		if (specId ~= 1 and specId ~= 2 and specId ~= 3) then
 			TRB.Functions.Bar:HideResourceBar(true)
 			return
 		end

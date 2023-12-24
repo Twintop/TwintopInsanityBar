@@ -7,15 +7,46 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 
-# 10.2.0.2-release (2023-12-22)
+# 10.2.0.2-release (2023-12-25)
+# General
+
+- [#324 - NEW](#324) Discipline Priest moved out of Experimental and is now available and enabled by default.
+<br/>&emsp;&ensp;- Tracks Mana and Power Word: Solace as resources.
+<br/>&emsp;&ensp;- Tracks Rapture, allowing for bar color changes and bar text.
+<br/>&emsp;&ensp;- Tracks Shadow Covenant, allowing for bar border color changes and bar text.
+<br/>&emsp;&ensp;- Tracks Surge of Light stacks and allows for border color changes, audio cues, and bar text.
+<br/>&emsp;&ensp;- Tracks Atonement buffs with bar text.
+<br/>&emsp;&ensp;- Tracks Shadow Word: Pain / Purge the Wicked debuffs with bar text.
+<br/>&emsp;&ensp;- Threshold lines denoting how much mana will be restored from using an Aerated Mana Potion, Potion of Frozen Focus, or Conjured Chillglobe.
+<br/>&emsp;&ensp;- Mana regeneration support for:
+<br/>&emsp;&ensp;&emsp;&ensp;- Symbol of Hope (Holy Priest)
+<br/>&emsp;&ensp;&emsp;&ensp;- Innervate (Druid)
+<br/>&emsp;&ensp;&emsp;&ensp;- Mana Tide Totem (Restoration Shaman)
+<br/>&emsp;&ensp;&emsp;&ensp;- Shadowfiend and Mindbender
+<br/>&emsp;&ensp;&emsp;&ensp;- Potion of Frozen Focus
+<br/>&emsp;&ensp;&emsp;&ensp;- Potion of Chilled Clarity
+<br/>&emsp;&ensp;&emsp;&ensp;- Molten Radiance
 
 ## Priest
+### Discipline
+
+- [#324 - NEW](#324) Add Atonement tracking support.
+<br/>&emsp;&ensp;- This behaves in a similar way as Mark of the Crane does for Windwalker where you can track the total number out, duration remaining on your current target, and the maximum and minimum remaining time on all buffs out.
+<br/>&emsp;&ensp;- New bar text icons and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#atonement` -- Atonement buff icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$atonementCount` -- total number of active Atonements out
+<br/>&emsp;&ensp;&emsp;&ensp;- `$atonementTime` -- how long is left on your target's Atonements buff
+<br/>&emsp;&ensp;&emsp;&ensp;- `$atonementMinTime` -- how long is left on your oldest Atonements buff across all targets
+<br/>&emsp;&ensp;&emsp;&ensp;- `$atonementMaxTime` -- how long is left on your most recently cast Atonement buff across all targets
+
 ### Shadow
+
 - [#334 - NEW](#334) Add Death's Torment (T31 4P bonus) support.
 <br/>&emsp;&ensp;- Optional bar border color changes and audio cues when at max stacks or a lower number of stacks that can be configured between 1 - 11.
 <br/>&emsp;&ensp;- New bar text icons and variables:
 <br/>&emsp;&ensp;&emsp;&ensp;- `#deathsTorment` -- Death's Torment buff icon
-<br/>&emsp;&ensp;&emsp;&ensp;- `$deathsTormentStacks` -- current number of stacks of the Death's Torment buff.
+<br/>&emsp;&ensp;&emsp;&ensp;- `$deathsTormentStacks` -- current number of stacks of the Death's Torment buff
+- (FIX) Include Holy Word settings when exporting bar configuration.
 
 ----
 
@@ -28,6 +59,7 @@ local content = [====[
 
 ## Priest
 ### Discipline (experimental)
+
 - [#324 - NEW](#324) Add Power Word: Radiance cooldown bars in a similar style to the Holy Word cooldown bars for Holy Priest.
 <br/>&emsp;&ensp;- New bar text icons and variables:
 <br/>&emsp;&ensp;&emsp;&ensp;- `#pwRadiance`, `#powerWordRadiance` -- Power Word: Radiance ability icon
@@ -59,6 +91,7 @@ local content = [====[
 # 10.2.0.0-release (2023-11-07)
 ## General
 ### Healers
+
 - [#329 - UPDATE](#329) Symbol of Hope restores 2% mana per tick.
 
 ## Demon Hunter

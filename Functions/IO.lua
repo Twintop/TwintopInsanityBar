@@ -44,8 +44,13 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			end 
 		elseif classId == 5 then -- Priests
 			if specId == 1 then -- Discipline
+				configuration.endOfRapture = settings.endOfRapture
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
 			elseif specId == 2 then -- Holy
 				configuration.endOfApotheosis = settings.endOfApotheosis
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
 			elseif specId == 3 then -- Shadow
 				configuration.endOfVoidform = settings.endOfVoidform
 			end
@@ -269,11 +274,8 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			end
 		elseif classId == 5 and settings.priest ~= nil then -- Priest
 			configuration.priest = {}
-			
-			if TRB.Data.settings.core.experimental.specs.priest.discipline then
-				if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.priest.discipline) > 0 then -- Discipline
-					configuration.priest.discipline = ExportConfigurationSections(5, 1, settings.priest.discipline, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
-				end
+			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.priest.discipline) > 0 then -- Discipline
+				configuration.priest.discipline = ExportConfigurationSections(5, 1, settings.priest.discipline, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 
 			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.priest.holy) > 0 then -- Holy
@@ -372,10 +374,8 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Priests
-		if TRB.Data.settings.core.experimental.specs.priest.discipline then
-			-- Discipline
+		-- Discipline
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(5, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-		end
 		-- Holy
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(5, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Shadow
@@ -466,19 +466,30 @@ function TRB.Functions.IO:Import(input)
 	end
 
 	if not (configuration.core ~= nil or
-		(configuration.warrior ~= nil and (configuration.warrior.arms ~= nil or configuration.warrior.fury ~= nil)) or
-		(configuration.rogue ~= nil and (configuration.rogue.assassination ~= nil or configuration.rogue.outlaw ~= nil)) or
-		(configuration.hunter ~= nil and (configuration.hunter.beastMastery ~= nil or configuration.hunter.marksmanship ~= nil or configuration.hunter.survival ~= nil)) or
-		(configuration.monk ~= nil and (configuration.monk.mistweaver ~= nil or configuration.monk.windwalker ~= nil)) or
+		(configuration.warrior ~= nil and
+			(configuration.warrior.arms ~= nil or
+			configuration.warrior.fury ~= nil)) or
+		(configuration.rogue ~= nil and
+			(configuration.rogue.assassination ~= nil or
+			configuration.rogue.outlaw ~= nil)) or
+		(configuration.hunter ~= nil and
+			(configuration.hunter.beastMastery ~= nil or
+			configuration.hunter.marksmanship ~= nil or
+			configuration.hunter.survival ~= nil)) or
+		(configuration.monk ~= nil and
+			(configuration.monk.mistweaver ~= nil or
+			configuration.monk.windwalker ~= nil)) or
 		(configuration.priest ~= nil and
-			((TRB.Data.settings.core.experimental.specs.priest.discipline and configuration.priest.discipline ~= nil) or
+			(configuration.priest.discipline ~= nil or
 			configuration.priest.holy ~= nil or
 			configuration.priest.shadow ~= nil)) or
 		(configuration.shaman ~= nil and
 			(configuration.shaman.elemental ~= nil or
 			configuration.shaman.restoration ~= nil or
 			(TRB.Data.settings.core.experimental.specs.shaman.enhancement and configuration.shaman.enhancement ~= nil))) or
-		(configuration.druid ~= nil and (configuration.druid.balance ~= nil or configuration.druid.feral ~= nil)) or
+		(configuration.druid ~= nil and
+			(configuration.druid.balance ~= nil or
+			configuration.druid.feral ~= nil)) or
 		(configuration.evoker ~= nil and
 			((TRB.Data.settings.core.experimental.specs.evoker.devastation and configuration.evoker.devastation ~= nil) or
 			(configuration.evoker.preservation ~= nil) or
