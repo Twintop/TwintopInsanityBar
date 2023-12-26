@@ -7,8 +7,8 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 
-# 10.2.0.2-release (2023-12-25)
-# General
+# 10.2.0.2-release (2023-12-26)
+## General
 
 - [#324 - NEW](#324) Discipline Priest moved out of Experimental and is now available and enabled by default.
 <br/>&emsp;&ensp;- Tracks Mana and Power Word: Solace as resources.
@@ -41,6 +41,7 @@ local content = [====[
 
 ### Holy
 
+- [#335 - NEW](#335) Add Symbol of Hope threshold line showing how much mana will be gained by using it. Includes configuration options to show the line when on cooldown and how much remaining mana percent you should have before showing.
 - (FIX) Include Holy Word settings when exporting bar configuration.
 
 ### Shadow

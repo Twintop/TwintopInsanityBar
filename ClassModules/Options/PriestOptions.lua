@@ -84,7 +84,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
-				text="",
+				text="$atonementCount",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
@@ -107,7 +107,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
-				text="",
+				text="{$raptureTime}[$raptureTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
@@ -167,7 +167,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
-				text="{$potionCooldown}[#potionOfFrozenFocus $potionCooldown]||n#swp $swpCount",
+				text="#atonement $atonementCount ($atonementMinTime)||n{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
@@ -249,12 +249,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icons = {
 					showCooldown=true,
 					border=2,
-					relativeTo = "TOP",
-					relativeToName = "Above",
+					relativeTo = "BOTTOM",
+					relativeToName = "Below",
 					enabled=true,
 					desaturated=true,
 					xPos=0,
-					yPos=-12,
+					yPos=12,
 					width=24,
 					height=24
 				},
@@ -748,7 +748,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					enabled=true,
 					desaturated=true,
 					xPos=0,
-					yPos=-12,
+					yPos=12,
 					width=24,
 					height=24
 				},
@@ -777,6 +777,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				shadowfiend = {
 					enabled = true, -- 8
 					cooldown = false
+				},
+				symbolOfHope = {
+					enabled = true, -- 9
+					cooldown = false,
+					minimumManaPercent = 25
 				},
 				potionCooldown = {
 					enabled=true,

@@ -649,6 +649,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icon = "",
 				duration = 4.0, --Hasted
 				manaPercent = 0.02,
+				thresholdId = 9,
+				settingKey = "symbolOfHope",
 				ticks = 4,
 				tickId = 265144,
 				isTalent = true
@@ -2034,7 +2036,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[8], spells.shadowfiend.settingKey, TRB.Data.settings.priest.discipline)
 			end
 		elseif specId == 2 then
-			for x = 1, 8 do
+			for x = 1, 9 do
 				if TRB.Frames.resourceFrame.thresholds[x] == nil then
 					TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
@@ -2062,6 +2064,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.priest.holy)
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], spells.conjuredChillglobe.settingKey, TRB.Data.settings.priest.holy)
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[8], spells.shadowfiend.settingKey, TRB.Data.settings.priest.holy)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[9], spells.symbolOfHope.settingKey, TRB.Data.settings.priest.holy)
 			TRB.Frames.resource2ContainerFrame:Show()
 		elseif specId == 3 then
 			for x = 1, 3 do
@@ -3651,6 +3654,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function UpdateSnapshot()
 		TRB.Functions.Character:UpdateSnapshot()
 		UpdateShadowfiendValues()
+		Twintop_Data = TRB.Data
 	end
 
 	local function UpdateSnapshot_Healers()
@@ -3702,8 +3706,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		snapshots[spells.powerWordRadiance.id].cooldown:Refresh(true)
 		snapshots[spells.rapture.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.shadowCovenant.id].buff:Refresh()
-
-		Twintop_Data = TRB.Data
 	end
 
 	local function UpdateSnapshot_Holy()
@@ -3721,6 +3723,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.resonantWords.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime)
+		
+		local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
+		symbolOfHope.cooldown:Refresh()
 	end
 
 	local function UpdateSnapshot_Shadow()
@@ -4218,6 +4223,40 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							end
 						else
 							resourceFrame.thresholds[8]:Hide()
+						end
+					else
+						resourceFrame.thresholds[8]:Hide()
+					end
+
+					local currentManaPercent = (currentResource / TRB.Data.character.maxResource) * 100
+ 
+					if talents:IsTalentActive(spells.symbolOfHope) and not symbolOfHope.buff.isActive and currentManaPercent <= specSettings.thresholds.symbolOfHope.minimumManaPercent then
+						local symbolOfHopeThresholdColor = specSettings.colors.threshold.over
+						if specSettings.thresholds.symbolOfHope.enabled and (not symbolOfHope.cooldown:IsUnusable() or specSettings.thresholds.symbolOfHope.cooldown) then
+							local symbolOfHopeMana = symbolOfHope:CalculateTime(spells.symbolOfHope.ticks+1, (spells.symbolOfHope.duration / (1 + (snapshotData.attributes.haste / 100))) / spells.symbolOfHope.ticks, 0, true)
+
+							if symbolOfHope.cooldown:IsUnusable() then
+								symbolOfHopeThresholdColor = specSettings.colors.threshold.unusable
+							end
+
+							if symbolOfHopeMana > 0 and (castingBarValue + symbolOfHopeMana) < TRB.Data.character.maxResource then
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[9], resourceFrame, specSettings.thresholds.width, (castingBarValue + symbolOfHopeMana), TRB.Data.character.maxResource)
+					---@diagnostic disable-next-line: undefined-field
+								resourceFrame.thresholds[9].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(symbolOfHopeThresholdColor, true))
+					---@diagnostic disable-next-line: undefined-field
+								resourceFrame.thresholds[9].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(symbolOfHopeThresholdColor, true))
+								resourceFrame.thresholds[9]:Show()
+
+								if specSettings.thresholds.icons.showCooldown and symbolOfHope.cooldown.remaining > 0 then
+									resourceFrame.thresholds[9].icon.cooldown:SetCooldown(symbolOfHope.cooldown.startTime, symbolOfHope.cooldown.duration)
+								else
+									resourceFrame.thresholds[9].icon.cooldown:SetCooldown(0, 0)
+								end
+							else
+								resourceFrame.thresholds[9]:Hide()
+							end
+						else
+							resourceFrame.thresholds[9]:Hide()
 						end
 					else
 						resourceFrame.thresholds[8]:Hide()
@@ -4949,6 +4988,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						snapshots[spellId].buff:Initialize(type, true)
 					elseif spellId == spells.sacredReverence.id then
 						snapshots[spellId].buff:Initialize(type, true)
+					elseif spellId == spells.symbolOfHope.id then
+						if type == "SPELL_CAST_SUCCESS" then
+							snapshots[spellId].cooldown:Initialize()
+						end
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
 					if spellId == spells.voidform.id then
@@ -5123,6 +5166,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.priest.discipline)
 
 			local lookup = TRB.Data.lookup or {}
+			lookup["#atonement"] = spells.atonement.icon
 			lookup["#pwRadiance"] = spells.powerWordRadiance.icon
 			lookup["#radiance"] = spells.powerWordRadiance.icon
 			lookup["#powerWordRadiance"] = spells.powerWordRadiance.icon

@@ -1780,8 +1780,14 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 
 	controls.colors.threshold = {}
 
+	local overText = "Mana gain from potions and items (when usable)"
+
+	if classId == 5 then
+		overText = "Mana gain from potions, items, and abilities (when usable)"
+	end
+
 	yCoord = yCoord - 25
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana gain from potions and items (when usable)", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-0)
+	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, overText, spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-0)
 	f = controls.colors.threshold.over
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
@@ -1919,6 +1925,47 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.shadowfiend.enabled)
 		end)
 		yCoord = yCoord - 20
+
+		if specId == 2 then		
+			--NOTE: the order of these checkboxes is reversed!
+			yCoord = yCoord - 25
+			controls.checkBoxes.symbolOfHopeThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_symbolOfHope_cooldown", parent, "ChatConfigCheckButtonTemplate")
+			f = controls.checkBoxes.symbolOfHopeThresholdShowCooldown
+			f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
+			getglobal(f:GetName() .. 'Text'):SetText("Show while on cooldown?")
+			---@diagnostic disable-next-line: inject-field
+			f.tooltip = "Show the Symbol of Hope threshold line when the ability is on cooldown."
+			f:SetChecked(spec.thresholds.symbolOfHope.cooldown)
+			f:SetScript("OnClick", function(self, ...)
+				spec.thresholds.symbolOfHope.cooldown = self:GetChecked()
+			end)
+			
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.symbolOfHopeThresholdShowCooldown, spec.thresholds.symbolOfHope.enabled)
+			
+			controls.checkBoxes.symbolOfHopeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_symbolOfHope", parent, "ChatConfigCheckButtonTemplate")
+			f = controls.checkBoxes.symbolOfHopeThresholdShow
+			f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+			getglobal(f:GetName() .. 'Text'):SetText("Symbol of Hope")
+			---@diagnostic disable-next-line: inject-field
+			f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use Symbol of Hope."
+			f:SetChecked(spec.thresholds.symbolOfHope.enabled)
+			f:SetScript("OnClick", function(self, ...)
+				spec.thresholds.symbolOfHope.enabled = self:GetChecked()
+				TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.symbolOfHopeThresholdShowCooldown, spec.thresholds.symbolOfHope.enabled)
+			end)
+
+			local title = "Min. mana% remaining before showing Symbol of Hope"
+			controls.symbolOfHopePercent = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 100, 25, 5, 5,
+											oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord-20)
+			controls.symbolOfHopePercent:SetScript("OnValueChanged", function(self, value)
+				value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+				value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+				self.EditBox:SetText(value)
+				spec.thresholds.symbolOfHope.minimumManaPercent = value
+			end)
+
+			yCoord = yCoord - 20
+		end
 	end
 
 	yCoord = yCoord - 25

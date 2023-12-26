@@ -164,6 +164,39 @@ function TRB.Classes.Healer.SymbolOfHope:Reset()
     self.buff:Reset()
 end
 
+---comment
+---@param totalTicks integer
+---@param tickRate number
+---@param nextTickRemaining number
+---@param forceManaInclusion boolean?
+---@return number
+function TRB.Classes.Healer.SymbolOfHope:CalculateTime(totalTicks, tickRate, nextTickRemaining, forceManaInclusion)
+    local manaRaw = 0
+
+    ---@type TRB.Classes.SnapshotData
+    local snapshotData = TRB.Data.snapshotData
+    local casting = snapshotData.casting
+    local manaRegen = snapshotData.attributes.manaRegen
+    local resource = snapshotData.attributes.resource
+
+    for x = 1, totalTicks do
+        local casterRegen = 0
+        if casting.spellId == self.spell.id or forceManaInclusion then
+            if x == 1 then
+                casterRegen = nextTickRemaining * manaRegen
+            else
+                casterRegen = manaRegen * tickRate
+            end
+        end
+
+        local estimatedManaMissing = TRB.Data.character.maxResource - (casterRegen + manaRaw + (resource / TRB.Data.resourceFactor))
+        local nextTick = self.spell.manaPercent * math.max(0, math.min(TRB.Data.character.maxResource, estimatedManaMissing))
+        manaRaw = manaRaw + nextTick + casterRegen
+    end
+
+    return manaRaw
+end
+
 ---Updates SymbolOfHope's values
 function TRB.Classes.Healer.SymbolOfHope:Update()
     self.buff:Refresh(nil, nil, nil)
@@ -179,30 +212,9 @@ function TRB.Classes.Healer.SymbolOfHope:Update()
         end
 
         local nextTickRemaining = self.buff.remaining - ((self.buff.ticks - 1) * self.buff.tickRate)
-        self.buff.manaRaw = 0
-
-        ---@type TRB.Classes.SnapshotData
-        local snapshotData = TRB.Data.snapshotData
-
-        local casting = snapshotData.casting
-        local manaRegen = snapshotData.attributes.manaRegen
-        local resource = snapshotData.attributes.resource
-
-        for x = 1, self.buff.ticks do
-            local casterRegen = 0
-            if casting.spellId == self.spell.id then
-                if x == 1 then
-                    casterRegen = nextTickRemaining * manaRegen
-                else
-                    casterRegen = manaRegen * self.buff.tickRate
-                end
-            end
-
-            local estimatedManaMissing = TRB.Data.character.maxResource - (casterRegen + self.buff.manaRaw + (resource / TRB.Data.resourceFactor))
-            local nextTick = self.spell.manaPercent * math.max(0, math.min(TRB.Data.character.maxResource, estimatedManaMissing))
-            self.buff.manaRaw = self.buff.manaRaw + nextTick + casterRegen
-        end
+        local manaRaw = self:CalculateTime(self.buff.ticks, self.buff.tickRate, nextTickRemaining)
         
+        self.buff.manaRaw = manaRaw
         self.buff.mana = self.buff.CalculateManaGainFunction(self.buff.manaRaw, false)
     end
 end
