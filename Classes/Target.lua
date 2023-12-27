@@ -3,12 +3,12 @@ local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
 
 ---@class TRB.Classes.TargetData
----@field public targets TRB.Classes.Target[]
+---@field public targets table<string, TRB.Classes.Target>
 ---@field public currentTargetGuid string?
 ---@field public ttdIsActive boolean
 ---@field public count table
 ---@field public custom table
----@field public trackedSpells TRB.Classes.TargetSpell[]
+---@field public trackedSpells table<integer, TRB.Classes.TargetSpell>
 TRB.Classes.TargetData = {}
 TRB.Classes.TargetData.__index = TRB.Classes.TargetData
 
@@ -17,13 +17,13 @@ TRB.Classes.TargetData.__index = TRB.Classes.TargetData
 function TRB.Classes.TargetData:New()
     local self = {}
     setmetatable(self, TRB.Classes.TargetData)
-    ---@type TRB.Classes.Target[]
+    ---@type table<string, TRB.Classes.Target>
     self.targets = {}
     self.currentTargetGuid = nil
     self.ttdIsActive = false
     self.count = {}
     self.custom = {}
-    ---@type TRB.Classes.TargetSpell[]
+    ---@type table<integer, TRB.Classes.TargetSpell>
     self.trackedSpells = {}
 
     return self
@@ -161,17 +161,15 @@ end
 ---@param clearAll boolean # Should we forcibly clean up all target data including targets we may still have active snapshotted data for?
 function TRB.Classes.TargetData:Cleanup(clearAll)
     if clearAll == true then
-        ---@type TRB.Classes.Target[]
+        ---@type table<string, TRB.Classes.Target>
         self.targets = {}
     else
         local currentTime = GetTime()
         for guid, _ in pairs(self.targets) do
             local target = self.targets[guid]
             if not target.isFriend and (currentTime - target.lastUpdate) > 10 and target.guid ~= self.currentTargetGuid then
----@diagnostic disable-next-line: param-type-mismatch
                 self:Remove(guid)
             elseif target.isFriend and (currentTime - target.lastUpdate) > 30 and target.guid ~= self.currentTargetGuid then
----@diagnostic disable-next-line: param-type-mismatch
                 self:Remove(guid)
             end
         end
@@ -198,7 +196,7 @@ end
 ---@field public guid string
 ---@field public timeToDie TRB.Classes.TimeToDie
 ---@field public lastUpdate number?
----@field public spells TRB.Classes.TargetSpell[]
+---@field public spells table<integer, TRB.Classes.TargetSpell>
 ---@field public isFriend boolean
 TRB.Classes.Target = {}
 TRB.Classes.Target.__index = TRB.Classes.Target

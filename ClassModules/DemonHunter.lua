@@ -1263,7 +1263,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Fury)
 		
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		if GetSpecialization() == 1 then

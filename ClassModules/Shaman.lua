@@ -1741,7 +1741,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		UpdateSnapshot()
 		local _
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		local currentTime = GetTime()

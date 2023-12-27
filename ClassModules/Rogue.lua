@@ -1247,7 +1247,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.killingSpree.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.killingSpree)
 		---@type TRB.Classes.Snapshot
 		specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.rollTheBones.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.rollTheBones, {
-			---@type TRB.Classes.Snapshot[]
+			---@type table<integer, TRB.Classes.Snapshot>
 			buffs = {
 				[specCache.outlaw.spells.broadside.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.broadside, {
 					fromCountTheOdds = false
@@ -3200,7 +3200,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local spells = TRB.Data.spells
 		---@type TRB.Classes.Snapshot
 		local rollTheBones = TRB.Data.snapshotData.snapshots[spells.rollTheBones.id]
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local buffs = rollTheBones.attributes.buffs
 		local currentTime = GetTime()
 				
@@ -3234,7 +3234,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	local function UpdateSnapshot()
 		TRB.Functions.Character:UpdateSnapshot()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 		local currentTime = GetTime()
 		
@@ -3283,7 +3283,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	local function UpdateSnapshot_Assassination()
 		UpdateSnapshot()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 		local currentTime = GetTime()
 
@@ -3300,7 +3300,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		UpdateSnapshot()
 		UpdateRollTheBones()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 		local currentTime = GetTime()
 

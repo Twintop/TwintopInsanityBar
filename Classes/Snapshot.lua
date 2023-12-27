@@ -5,7 +5,7 @@ TRB.Classes = TRB.Classes or {}
 
 ---@class TRB.Classes.SnapshotData
 ---@field public targetData TRB.Classes.TargetData
----@field public snapshots TRB.Classes.Snapshot[]
+---@field public snapshots table<integer, TRB.Classes.Snapshot>
 ---@field public casting TRB.Classes.SnapshotCasting
 ---@field public audio table
 ---@field public attributes table
@@ -20,7 +20,7 @@ function TRB.Classes.SnapshotData:New(attributes)
     setmetatable(self, TRB.Classes.SnapshotData)
     ---@type TRB.Classes.TargetData
     self.targetData = TRB.Classes.TargetData:New()
-    ---@type TRB.Classes.Snapshot[]
+    ---@type table<integer, TRB.Classes.Snapshot>
     self.snapshots = {}
     self.casting = TRB.Classes.SnapshotCasting:New()
     self.audio = {}

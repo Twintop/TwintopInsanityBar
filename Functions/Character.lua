@@ -70,7 +70,7 @@ end
 
 ---Fills the specialization cache with a combination of global and spec specific settings
 ---@param settings table
----@param cache TRB.Classes.SharedSpecSetting[] # The full cache of all specs for the current class
+---@param cache table<string, TRB.Classes.SharedSpecSetting> # The full cache of all specs for the current class
 ---@param className string # Class name
 ---| '"demonhunter"' # Demon Hunter
 ---| '"druid"' # Druid 

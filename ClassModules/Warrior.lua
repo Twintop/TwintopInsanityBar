@@ -1155,7 +1155,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local function CastingSpell()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 		local currentTime = GetTime()
 		local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
@@ -1195,7 +1195,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		TRB.Functions.Character:UpdateSnapshot()
 		
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		snapshots[spells.impendingVictory.id].cooldown:Refresh()
@@ -1208,7 +1208,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		UpdateSnapshot()
 
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)
@@ -1223,7 +1223,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		UpdateSnapshot()
 
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)

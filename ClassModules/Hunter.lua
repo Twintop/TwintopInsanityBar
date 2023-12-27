@@ -2160,7 +2160,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Functions.Character:UpdateSnapshot()
 
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 		
 		snapshots[spells.killShot.id].cooldown:Refresh()
@@ -2173,7 +2173,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local currentTime = GetTime()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		snapshots[spells.beastialWrath.id].cooldown:Refresh()
@@ -2188,7 +2188,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		UpdateSnapshot()
 		
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		snapshots[spells.aimedShot.id].cooldown:Refresh()
@@ -2205,7 +2205,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		
 		local currentTime = GetTime()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		snapshots[spells.termsOfEngagement.id].buff:UpdateTicks(currentTime)
@@ -2968,14 +2968,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					snapshotData.audio.playedKillShotCue = false
 				elseif entry.spellId == spells.serpentSting.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
----@diagnostic disable-next-line: param-type-mismatch
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				end
 			end
 
 			if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
----@diagnostic disable-next-line: param-type-mismatch
 				targetData:Remove(entry.destinationGuid)
 				RefreshTargetTracking()
 				triggerUpdate = true

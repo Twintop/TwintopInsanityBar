@@ -1290,7 +1290,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		
 		local _
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 		
 		local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]

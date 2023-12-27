@@ -2104,7 +2104,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function CalculateHolyWordCooldown(base, spellId)
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 		local mod = 1
 		local divineConversationValue = 0
@@ -3660,7 +3660,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function UpdateSnapshot_Healers()
 		local _
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		local currentTime = GetTime()
@@ -3700,7 +3700,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateAtonement()
 		
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		snapshots[spells.powerWordRadiance.id].cooldown:Refresh(true)
@@ -3714,7 +3714,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateSnapshot_Healers()
 		
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		snapshots[spells.holyWordSerenity.id].cooldown:Refresh(true)
@@ -3733,7 +3733,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		UpdateSnapshot()
 		UpdateExternalCallToTheVoidValues()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 		
 		snapshots[spells.voidform.id].buff:Refresh()
@@ -4873,7 +4873,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if entry.destinationGuid == TRB.Data.character.guid then
 				if (specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (specId == 2 and TRB.Data.barConstructedForSpec == "holy") then -- Let's check raid effect mana stuff
 					if settings.passiveGeneration.symbolOfHope and (entry.spellId == spells.symbolOfHope.tickId or entry.spellId == spells.symbolOfHope.id) then
-						---@diagnostic disable-next-line: param-type-mismatch
 						local castByToken = UnitTokenFromGUID(entry.sourceGuid)
 						local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 						symbolOfHope.buff:Initialize(entry.type, nil, castByToken)
@@ -4936,14 +4935,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						snapshots[entry.spellId].buff:Initialize(entry.type)
 					elseif entry.spellId == spells.atonement.id then
 						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid, true, true) then
-							---@diagnostic disable-next-line: param-type-mismatch
 							triggerUpdate = targetData:HandleCombatLogBuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
 					elseif entry.spellId == spells.shadowCovenant.id then
 						snapshots[entry.spellId].buff:Initialize(entry.type)
 					elseif entry.spellId == spells.purgeTheWicked.id then
 						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
----@diagnostic disable-next-line: param-type-mismatch
 							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
 					elseif entry.spellId == spells.powerWordRadiance.id then
@@ -5000,12 +4997,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						snapshots[entry.spellId].buff:Initialize(entry.type)
 					elseif entry.spellId == spells.vampiricTouch.id then
 						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-							---@diagnostic disable-next-line: param-type-mismatch
 							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
 					elseif entry.spellId == spells.devouringPlague.id then
 						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-							---@diagnostic disable-next-line: param-type-mismatch
 							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
 					elseif settings.auspiciousSpiritsTracker and talents:IsTalentActive(spells.auspiciousSpirits) and entry.spellId == spells.auspiciousSpirits.idSpawn and entry.type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
@@ -5018,7 +5013,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 						triggerUpdate = true
 					elseif settings.auspiciousSpiritsTracker and talents:IsTalentActive(spells.auspiciousSpirits) and entry.spellId == spells.auspiciousSpirits.idImpact and (entry.type == "SPELL_DAMAGE" or entry.type == "SPELL_MISSED" or entry.type == "SPELL_ABSORBED") then --Auspicious Spirit Hit
-						---@diagnostic disable-next-line: param-type-mismatch
 						if targetData:CheckTargetExists(entry.destinationGuid) then
 							targetData.targets[entry.destinationGuid].spells[spells.auspiciousSpirits.id].count = targetData.targets[entry.destinationGuid].spells[spells.auspiciousSpirits.id].count - 1
 							targetData.count[spells.auspiciousSpirits.id] = targetData.count[spells.auspiciousSpirits.id] - 1
@@ -5089,7 +5083,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				-- Spec agnostic
 				if entry.spellId == spells.shadowWordPain.id then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
-						---@diagnostic disable-next-line: param-type-mismatch
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				end
@@ -5107,7 +5100,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 
 			if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				---@diagnostic disable-next-line: param-type-mismatch
 				targetData:Remove(entry.destinationGuid)
 				RefreshTargetTracking()
 				triggerUpdate = true
@@ -5451,7 +5443,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.character.className = "priest"
 		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		if specId == 1 then
