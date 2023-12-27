@@ -808,25 +808,28 @@ function TRB.Functions.News:BuildNewsPopup()
     simpleHtml:SetPoint("BOTTOMRIGHT", newsPanel, "BOTTOMRIGHT", 5, -35)
 	simpleHtml:SetWidth(600)
     
+---@diagnostic disable-next-line: param-type-mismatch
     simpleHtml:SetFontObject("h1", "SubzoneTextFont")
     simpleHtml:SetTextColor("h1", 0, 0.6, 1, 1)
 
+---@diagnostic disable-next-line: param-type-mismatch
     simpleHtml:SetFontObject("h2", "Fancy22Font")
     simpleHtml:SetTextColor("h2", 0, 1, 0, 1)
 
+---@diagnostic disable-next-line: param-type-mismatch
     simpleHtml:SetFontObject("h3", "NumberFontNormalLarge")
     simpleHtml:SetTextColor("h3", 0, 0.8, 0.4, 1)
 
+---@diagnostic disable-next-line: param-type-mismatch
     simpleHtml:SetFontObject("p", "GameFontNormal")
     simpleHtml:SetTextColor("p", 1, 1, 1, 1)
 
     simpleHtml:SetHyperlinkFormat("[|cff3399ff|H%s|h%s|h|r]")
 
     simpleHtml:SetScript("OnHyperlinkClick", 
-        function(f, link, text, ...) 
-            if link=="window:close" then  
+        function(f, link, text, ...)
+            if link=="window:close" then
                 TRB.Functions.News:Hide()
-                --f:GetParent():Hide() 
             elseif link:match("https?://") then
                 StaticPopup_Show("LIBMARKDOWNDEMOFRAME_URL", nil, nil, { title = text, url = link })
             elseif link:match("^#%d+$") then

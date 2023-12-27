@@ -362,6 +362,7 @@ function TRB.Functions.OptionsUi:BuildButton(parent, text, posX, posY, width, he
 	f:SetWidth(width)
 	f:SetHeight(height)
 	f:SetText(text)
+---@diagnostic disable-next-line: param-type-mismatch
 	f:SetNormalFontObject("GameFontNormal")
 	---@diagnostic disable-next-line: inject-field
 	f.ntex = f:CreateTexture()
@@ -669,7 +670,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 
 		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 		controls.borderWidth.MaxLabel:SetText(tostring(maxBorderSize))
-		controls.borderWidth.EditBox:SetText(borderSize)
+		controls.borderWidth.EditBox:SetText(tostring(borderSize))
 
 		if GetSpecialization() == specId then
 			TRB.Functions.Bar:SetHeight(spec)
@@ -2342,6 +2343,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	local barTextEntryEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_TextEnabled", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	barTextEntryEnabled:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
 	getglobal(barTextEntryEnabled:GetName() .. 'Text'):SetText("Enabled")
+---@diagnostic disable-next-line: inject-field
 	barTextEntryEnabled.tooltip = "Is this Bar Text enabled and will be shown?"
 
 	yCoord = yCoord - 40
@@ -2645,6 +2647,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	local useDefaultFontFace = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontFace", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontFace:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-60)
 	getglobal(useDefaultFontFace:GetName() .. 'Text'):SetText("Use default Font Face")
+	---@diagnostic disable-next-line: inject-field
 	useDefaultFontFace.tooltip = "This will make this bar text area use the default font face instead of the font face chosen above."
 	useDefaultFontFace:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontFace = self:GetChecked()
@@ -2692,7 +2695,6 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		LibDD:CloseDropDownMenus()
 		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
 	end
-
 	
 	yCoord = yCoord - 100
 	title = "Font Size"
@@ -2707,13 +2709,13 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	local useDefaultFontSize = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontSize", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontSize:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-40)
 	getglobal(useDefaultFontSize:GetName() .. 'Text'):SetText("Use default Font Size")
+	---@diagnostic disable-next-line: inject-field
 	useDefaultFontSize.tooltip = "This will make this bar text area use the default font size instead of the font size chosen above."
 	useDefaultFontSize:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontSize = self:GetChecked()
 		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
 	end)
 
-	--yCoord = yCoord - 30
 	controls.colors = controls.colors or {}
 	controls.colors.barText = controls.colors.barText or {}
 	controls.colors.barText.color = TRB.Functions.OptionsUi:BuildColorPicker(barTextOptionsFrame, "Font Color", "FFFFFFFF",
@@ -2726,6 +2728,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	local useDefaultFontColor = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontColor", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontColor:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	getglobal(useDefaultFontColor:GetName() .. 'Text'):SetText("Use default Font Color")
+	---@diagnostic disable-next-line: inject-field
 	useDefaultFontColor.tooltip = "This will make this bar text area use the default font color instead of the font color chosen above."
 	useDefaultFontColor:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontColor = self:GetChecked()
@@ -2741,7 +2744,6 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 													590, 45, oUi.xCoord, yCoord)
 	barText:SetCursorPosition(0)
 
-	---comment
 	---@param displayText TRB.Classes.DisplayText
 	---@param btt table # LibScrollingTable
 	local function SetTableValues(displayText, btt)
@@ -2757,36 +2759,15 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 						},
 						{
 							value = displayText.barText[i].name,
-							--["args"] = nil,
-							--[[["color"] = {
-								["r"] = r,
-								["g"] = g,
-								["b"] = b,
-								["a"] = a,
-							},]]
-							--["colorargs"] = nil,
-							--["DoCellUpdate"] = nil,
 						},
 						{
 							value = displayText.barText[i].position.relativeToFrameName,
 						},
 						{
 							value = displayText.barText[i].text,
-							--[[["color"] = {
-								["r"] = r,
-								["g"] = g,
-								["b"] = b,
-								["a"] = a,
-							},]]
 						},
 						{
 							value = "X",
-							--[[["color"] = {
-								["r"] = 1,
-								["g"] = 0,
-								["b"] = 0,
-								["a"] = 1,
-							}]]
 						}
 					}
 				})
@@ -2796,7 +2777,6 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		btt:EnableSelection(true)
 	end
 
-	---comment
 	---@return TRB.Classes.DisplayTextEntry
 	local function GetNewDisplayTextEntry()
 		return {
@@ -2824,7 +2804,6 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		}
 	end
 
-	---comment
 	---@param guid string
 	---@param dt TRB.Classes.DisplayText
 	local function FillBarTextEditorFields(guid, dt)
