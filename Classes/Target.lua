@@ -106,7 +106,7 @@ end
 ---Handles updating the targetData and associated target's debuff tracking of a spell
 ---@param spellId integer # Spell ID of the debuff we are updating
 ---@param type trbAuraEventType # Event Type sourced from the combat log event
----@param guid any # GUID of the target we are updating
+---@param guid string # GUID of the target we are updating
 ---@return boolean # Should this trigger a full bar update?
 function TRB.Classes.TargetData:HandleCombatLogDebuff(spellId, type, guid)
     if self.trackedSpells[spellId] == nil then

@@ -2862,121 +2862,121 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local targetData = snapshotData.targetData
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
+			local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
-			if sourceGUID == TRB.Data.character.guid then
+			if entry.sourceGuid == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "beastMastery" then --Beast Mastery
-					if spellId == spells.barrage.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					if entry.spellId == spells.barrage.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.barbedShot.id then
-						snapshots[spellId].cooldown:Initialize()
-					elseif spellId == spells.barbedShot.buffId[1] or spellId == spells.barbedShot.buffId[2] or spellId == spells.barbedShot.buffId[3] or spellId == spells.barbedShot.buffId[4] or spellId == spells.barbedShot.buffId[5] then
-						if type == "SPELL_AURA_APPLIED" then -- Gain Barbed Shot buff
+					elseif entry.spellId == spells.barbedShot.id then
+						snapshots[entry.spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.barbedShot.buffId[1] or entry.spellId == spells.barbedShot.buffId[2] or entry.spellId == spells.barbedShot.buffId[3] or entry.spellId == spells.barbedShot.buffId[4] or entry.spellId == spells.barbedShot.buffId[5] then
+						if entry.type == "SPELL_AURA_APPLIED" then -- Gain Barbed Shot buff
 							table.insert(snapshots[spells.barbedShot.id].attributes.list, {
 								ticksRemaining = spells.barbedShot.ticks,
 								resource = snapshots[spells.barbedShot.id].attributes.ticksRemaining * spells.barbedShot.resource,
 								endTime = currentTime + spells.barbedShot.duration + (talents.talents[spells.savagery.id].currentRank * spells.savagery.duration)
 							})
 						end
-					elseif spellId == spells.frenzy.id and destGUID == TRB.Data.character.petGuid then
-						snapshots[spellId].buff:Initialize(type, nil, "pet")
-					elseif spellId == spells.killCommand.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.frenzy.id and entry.destinationGuid == TRB.Data.character.petGuid then
+						snapshots[entry.spellId].buff:Initialize(entry.type, nil, "pet")
+					elseif entry.spellId == spells.killCommand.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.beastialWrath.id then
-						snapshots[spellId].cooldown:Initialize()
-					elseif spellId == spells.cobraSting.id then
-						snapshots[spellId].buff:Initialize(type, true)
-					elseif spellId == spells.wailingArrow.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.beastialWrath.id then
+						snapshots[entry.spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.cobraSting.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type, true)
+					elseif entry.spellId == spells.wailingArrow.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.aMurderOfCrows.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.aMurderOfCrows.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.direPack.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.callOfTheWild.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.beastCleave.buffId then
-						snapshots[spells.beastCleave.id].buff:Initialize(type)
-					elseif spellId == spells.direBeastBasilisk.id then
-						snapshots[spellId].cooldown:Initialize()
-					elseif spellId == spells.direBeastHawk.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.direPack.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.callOfTheWild.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.beastCleave.buffId then
+						snapshots[spells.beastCleave.id].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.direBeastBasilisk.id then
+						snapshots[entry.spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.direBeastHawk.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "marksmanship" then --Marksmanship
-					if spellId == spells.burstingShot.id then
-						snapshots[spellId].cooldown:Initialize()
-					elseif spellId == spells.aimedShot.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					if entry.spellId == spells.burstingShot.id then
+						snapshots[entry.spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.aimedShot.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 							snapshotData.audio.playedAimedShotCue = false
 						end
-					elseif spellId == spells.barrage.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.barrage.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.explosiveShot.id then
-						snapshots[spellId].cooldown:Initialize()
-					elseif spellId == spells.trueshot.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.steadyFocus.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.lockAndLoad.id then
-						snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
+					elseif entry.spellId == spells.explosiveShot.id then
+						snapshots[entry.spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.trueshot.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.steadyFocus.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.lockAndLoad.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.enabled then
 								PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
-					elseif spellId == spells.eagletalonsTrueFocus.id then
-						snapshots[spellId].buff:Initialize(type, true)
-					elseif spellId == spells.wailingArrow.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.eagletalonsTrueFocus.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type, true)
+					elseif entry.spellId == spells.wailingArrow.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.sniperShot.id then
-						snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.sniperShot.id then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "survival" then --Survival
-					if spellId == spells.carve.id then
-						snapshots[spellId].cooldown:Initialize()
-					elseif spellId == spells.flankingStrike.id then
-						snapshots[spellId].cooldown:Initialize()
-					elseif spellId == spells.termsOfEngagement.id then
-						snapshots[spells.termsOfEngagement.id].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" then
+					if entry.spellId == spells.carve.id then
+						snapshots[entry.spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.flankingStrike.id then
+						snapshots[entry.spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.termsOfEngagement.id then
+						snapshots[spells.termsOfEngagement.id].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" then
 							snapshots[spells.termsOfEngagement.id].buff:UpdateTicks(currentTime)
 						end
-					elseif spellId == spells.coordinatedAssault.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.wildfireBomb.id then
-						snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.coordinatedAssault.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.wildfireBomb.id then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				end
 
 				-- Spec agnostic
 
-				if spellId == spells.killShot.id then
+				if entry.spellId == spells.killShot.id then
 					snapshotData.audio.playedKillShotCue = false
-				elseif spellId == spells.serpentSting.id then
-					if TRB.Functions.Class:InitializeTarget(destGUID) then
+				elseif entry.spellId == spells.serpentSting.id then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 ---@diagnostic disable-next-line: param-type-mismatch
-						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				end
 			end
 
-			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
+			if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
 ---@diagnostic disable-next-line: param-type-mismatch
-				targetData:Remove(destGUID)
+				targetData:Remove(entry.destinationGuid)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end

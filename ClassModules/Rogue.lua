@@ -21,7 +21,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 	local specCache = {
 		assassination = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
-		outlaw = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
+		outlaw = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
+		subtlety = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
 	}
 
 	local function FillSpecializationCache()
@@ -1285,6 +1286,606 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.trueBearing.id] = specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.rollTheBones.id].attributes.buffs[specCache.outlaw.spells.trueBearing.id]
 
 		specCache.outlaw.barTextVariables = {
+			icons = {},
+			values = {}
+		}
+
+		-- Subtlety
+		specCache.subtlety.Global_TwintopResourceBar = {
+			ttd = 0,
+			resource = {
+				resource = 0,
+				casting = 0,
+				passive = 0,
+				regen = 0
+			},
+			dots = {
+			},
+			isPvp = false
+		}
+
+		specCache.subtlety.character = {
+			guid = UnitGUID("player"),
+			specGroup = GetActiveSpecGroup(),
+			specId = 1,
+			maxResource = 100,
+			maxResource2 = 5,
+			effects = {
+			}
+		}
+
+		specCache.subtlety.spells = {
+			-- Class Poisons
+			cripplingPoison = {
+				id = 3409,
+				name = "",
+				icon = "",
+				isTalent = false
+			},
+			woundPoison = {
+				id = 8680,
+				name = "",
+				icon = "",
+				isTalent = false
+			},
+			numbingPoison = {
+				id = 5760,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+			atrophicPoison = {
+				id = 392388,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+
+			-- subtlety Poisons
+			deadlyPoison = {
+				id = 2818,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+			amplifyingPoison = {
+				id = 383414,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+
+			-- Rogue Class Baseline Abilities
+			stealth = {
+				id = 1784,
+				name = "",
+				icon = ""
+			},
+			ambush = {
+				id = 8676,
+				name = "",
+				icon = "",
+				resource = -50,
+				comboPointsGenerated = 2,
+				stealth = true,
+				texture = "",
+				thresholdId = 1,
+				settingKey = "ambush",
+				baseline = true,
+				viciousVenoms = true
+			},
+			cheapShot = {
+				id = 1833,
+				name = "",
+				icon = "",
+				resource = -40,
+				comboPointsGenerated = 1,
+				stealth = true,
+				texture = "",
+				thresholdId = 2,
+				settingKey = "cheapShot",
+				rushedSetup = true,
+				baseline = true
+			},
+			crimsonVial = {
+				id = 185311,
+				name = "",
+				icon = "",
+				resource = -20,
+				comboPointsGenerated = 0,
+				texture = "",
+				thresholdId = 3,
+				settingKey = "crimsonVial",
+				hasCooldown = true,
+				cooldown = 30,
+				nimbleFingers = true,
+				baseline = true
+			},
+			distract = {
+				id = 1725,
+				name = "",
+				icon = "",
+				resource = -30,
+				comboPointsGenerated = 0,
+				texture = "",
+				thresholdId = 4,
+				settingKey = "distract",
+				hasCooldown = true,
+				cooldown = 30,
+				rushedSetup = true,
+				baseline = true
+			},
+			kidneyShot = {
+				id = 408,
+				name = "",
+				icon = "",
+				resource = -25,
+				comboPoints = true,
+				texture = "",
+				thresholdId = 5,
+				settingKey = "kidneyShot",
+				hasCooldown = true,
+				cooldown = 20,
+				rushedSetup = true,
+				baseline = true
+			},
+			sliceAndDice = {
+				id = 315496,
+				name = "",
+				icon = "",
+				resource = -25,
+				comboPoints = true,
+				texture = "",
+				thresholdId = 6,
+				settingKey = "sliceAndDice",
+				hasCooldown = false,
+				isSnowflake = true,
+				pandemicTimes = {
+					12 * 0.3, -- 0 CP, show same as if we had 1
+					12 * 0.3,
+					18 * 0.3,
+					24 * 0.3,
+					30 * 0.3,
+					36 * 0.3,
+					42 * 0.3,
+					48 * 0.3
+				},
+				baseline = true
+			},
+			feint = {
+				id = 1966,
+				name = "",
+				icon = "",
+				resource = -35,
+				comboPointsGenerated = 0,
+				texture = "",
+				thresholdId = 7,
+				settingKey = "feint",
+				hasCooldown = true,
+				cooldown = 15,
+				nimbleFingers = true,
+				hasCharges = true,
+				isTalent = false,
+				baseline = true
+			},
+
+			--Rogue Talent Abilities
+			shiv = {
+				id = 5938,
+				name = "",
+				icon = "",
+				resource = -30,
+				comboPointsGenerated = 1,
+				texture = "",
+				thresholdId = 8,
+				settingKey = "shiv",
+				hasCooldown = true,
+				hasCharges = true,
+				isSnowflake = true,
+				cooldown = 25,
+				isTalent = true,
+				baseline = true
+			},
+			sap = {
+				id = 6770,
+				name = "",
+				icon = "",
+				resource = -35,
+				comboPointsGenerated = 0,
+				stealth = true,
+				texture = "",
+				thresholdId = 9,
+				settingKey = "sap",
+				rushedSetup = true,
+				isTalent = true
+			},
+			nimbleFingers = {
+				id = 378427,
+				name = "",
+				icon = "",
+				resourceMod = -10,
+				isTalent = true
+			},
+			gouge = {
+				id = 1776,
+				name = "",
+				icon = "",
+				resource = -25,
+				comboPointsGenerated = 1,
+				texture = "",
+				thresholdId = 10,
+				settingKey = "gouge",
+				hasCooldown = true,
+				cooldown = 15,
+				isTalent = true
+			},
+			subterfuge = {
+				id = 115192,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+			rushedSetup = {
+				id = 378803,
+				name = "",
+				icon = "",
+				resourceMod = 0.8,
+				isTalent = true
+			},
+			tightSpender = {
+				id = 381621,
+				name = "",
+				icon = "",
+				resourceMod = 0.9,
+				isTalent = true
+			},
+			echoingReprimand = {
+				id = 385616,
+				name = "",
+				icon = "",
+				resource = -10,
+				comboPointsGenerated = 2,
+				texture = "",
+				thresholdId = 11,
+				settingKey = "echoingReprimand",
+				hasCooldown = true,
+				cooldown = 45,
+				buffId = {					
+					323558, -- 2
+					323559, -- 3
+					323560, -- 4
+					354835, -- 4
+					354838, -- 5
+				}
+			},
+			echoingReprimand_2CP = {
+				id = 323558,
+				name = "",
+				icon = "",
+				comboPoint = 2
+			},
+			echoingReprimand_3CP = {
+				id = 323559,
+				name = "",
+				icon = "",
+				comboPoint = 3
+			},
+			echoingReprimand_4CP = {
+				id = 323560,
+				name = "",
+				icon = "",
+				comboPoint = 4
+			},
+			echoingReprimand_4CP2 = {
+				id = 354835,
+				name = "",
+				icon = "",
+				comboPoint = 4
+			},
+			echoingReprimand_5CP = {
+				id = 354838,
+				name = "",
+				icon = "",
+				comboPoint = 5
+			},
+			shadowDance = {
+				id = 185422,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+
+			-- Subtlety Baseline Abilities
+			envenom = {
+				id = 32645,
+				name = "",
+				icon = "",
+				resource = -35,
+				comboPoints = true,
+				texture = "",
+				thresholdId = 12,
+				settingKey = "envenom",
+				baseline = true
+			},
+			fanOfKnives = {
+				id = 51723,
+				name = "",
+				icon = "",
+				resource = -35,
+				comboPointsGenerated = 1,
+				texture = "",
+				thresholdId = 13,
+				settingKey = "fanOfKnives",
+				baseline = true
+			},
+			garrote = {
+				id = 703,
+				name = "",
+				icon = "",
+				resource = -45,
+				comboPointsGenerated = 1,
+				texture = "",
+				thresholdId = 14,
+				settingKey = "garrote",
+				hasCooldown = true,
+				cooldown = 6,
+				pandemicTime = 18 * 0.3,
+				baseline = true,
+				isSnowflake = true
+			},
+			mutilate = {
+				id = 1329,
+				name = "",
+				icon = "",
+				resource = -50,
+				comboPointsGenerated = 2,
+				texture = "",
+				thresholdId = 15,
+				settingKey = "mutilate",
+				baseline = true,
+				viciousVenoms = true
+			},
+			poisonedKnife = {
+				id = 185565,
+				name = "",
+				icon = "",
+				resource = -40,
+				comboPointsGenerated = 1,
+				texture = "",
+				thresholdId = 16,
+				settingKey = "poisonedKnife",
+				baseline = true
+			},
+			rupture = {
+				id = 1943,
+				name = "",
+				icon = "",
+				resource = -25,
+				comboPoints = true,
+				texture = "",
+				thresholdId = 17,
+				settingKey = "rupture",
+				pandemicTimes = {
+					8 * 0.3, -- 0 CP, show same as if we had 1
+					8 * 0.3,
+					12 * 0.3,
+					16 * 0.3,
+					20 * 0.3,
+					24 * 0.3,
+					28 * 0.3,
+					32 * 0.3,
+				},
+				baseline = true
+			},
+
+			-- Subtlety Spec Abilities
+			internalBleeding = {
+				id = 381627,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+			lightweightShiv = {
+				id = 394983,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+			crimsonTempest = {
+				id = 121411,
+				name = "",
+				icon = "",
+				resource = -30,
+				comboPoints = true,
+				texture = "",
+				thresholdId = 18,
+				settingKey = "crimsonTempest",
+				pandemicTimes = {
+					6 * 0.3, -- 0 CP, show same as if we had 1
+					6 * 0.3,
+					8 * 0.3,
+					10 * 0.3,
+					12 * 0.3,
+					14 * 0.3,
+					16 * 0.3,
+					18 * 0.3, -- Kyrian ability buff
+				},
+				isTalent = true
+			},
+			improvedGarrote = {
+				id = 381632,
+				name = "",
+				icon = "",
+				stealthBuffId = 392401,
+				buffId = 392403,
+				isTalent = true
+			},
+			viciousVenoms = {
+				id = 381634,
+				name = "",
+				icon = "",
+				isTalent = true,
+				energyMod = {
+					[0] = 0,
+					[1] = -5,
+					[2] = -10
+				}
+			},
+			-- TODO: Add Doomblade as a bleed
+			blindside = {
+				id = 121153,
+				name = "",
+				icon = "",
+				duration = 10,
+				isTalent = true
+			},
+			tinyToxicBlade = {
+				id = 381800,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+			serratedBoneSpike = {
+				id = 385424,
+				name = "",
+				icon = "",
+				resource = -15,
+				comboPointsGenerated = 2,
+				texture = "",
+				thresholdId = 19,
+				settingKey = "serratedBoneSpike",
+				hasCooldown = true,
+				debuffId = 394036,
+				isTalent = true
+			},
+			sepsis = {
+				id = 385408,
+				name = "",
+				icon = "",
+				resource = -25,
+				comboPointsGenerated = 1,
+				texture = "",
+				thresholdId = 20,
+				settingKey = "sepsis",
+				hasCooldown = true,
+				cooldown = 90,
+				buffId = 375939,
+				isTalent = true
+			},
+			kingsbane = {
+				id = 385627,
+				name = "",
+				icon = "",
+				resource = -35,
+				comboPointsGenerated = 1,
+				texture = "",
+				thresholdId = 21,
+				settingKey = "kingsbane",
+				hasCooldown = true,
+				cooldown = 60,
+				isTalent = true
+			},
+
+			-- PvP
+			deathFromAbove = {
+				id = 269513,
+				name = "",
+				icon = "",
+				resource = -25,
+				texture = "",
+				thresholdId = 22,
+				settingKey = "deathFromAbove",
+				comboPoints = true,
+				hasCooldown = true,
+				isPvp = true,
+				cooldown = 30
+			},
+			dismantle = {
+				id = 207777,
+				name = "",
+				icon = "",
+				resource = -25,
+				texture = "",
+				thresholdId = 23,
+				settingKey = "dismantle",
+				hasCooldown = true,
+				isPvp = true,
+				cooldown = 45
+			},
+
+			adrenalineRush = {
+				id = 13750,
+				name = "",
+				icon = "",
+			},
+		}
+
+		specCache.subtlety.snapshotData.attributes.resourceRegen = 0
+		specCache.subtlety.snapshotData.attributes.comboPoints = 0
+		specCache.subtlety.snapshotData.audio = {
+			overcapCue = false
+		}
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.crimsonVial.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.crimsonVial)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.distract.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.distract)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.kidneyShot.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.kidneyShot)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.sliceAndDice)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shiv.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shiv)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.feint.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.feint)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.gouge.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.gouge)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.garrote.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.garrote)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.improvedGarrote.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.improvedGarrote, {
+			isActiveStealth = false
+		})
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.echoingReprimand,
+		{
+			enabled = {
+				[1] = false,
+				[2] = false,
+				[3] = false,
+				[4] = false,
+				[5] = false,
+				[6] = false,
+				[7] = false,
+			}
+		})
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.echoingReprimand_2CP.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.echoingReprimand_2CP)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.echoingReprimand_3CP.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.echoingReprimand_3CP)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.echoingReprimand_4CP.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.echoingReprimand_4CP)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.echoingReprimand_4CP2.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.echoingReprimand_4CP2)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.echoingReprimand_5CP.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.echoingReprimand_5CP)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.serratedBoneSpike.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.serratedBoneSpike)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.sepsis.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.sepsis)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.kingsbane.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.kingsbane)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.deathFromAbove)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.blindside.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.blindside)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.dismantle.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.dismantle)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.subterfuge.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.subterfuge)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shadowDance.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shadowDance)
+
+		specCache.subtlety.barTextVariables = {
 			icons = {},
 			values = {}
 		}
@@ -3283,120 +3884,120 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local targetData = snapshotData.targetData
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
+			local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
-			if sourceGUID == TRB.Data.character.guid then
+			if entry.sourceGuid == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "assassination" then --Assassination
-					if spellId == spells.blindside.id then
-						snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
+					if entry.spellId == spells.blindside.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.rogue.assassination.audio.blindside.enabled then
 								PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
-					elseif spellId == spells.garrote.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_CAST_SUCCESS" then
+					elseif entry.spellId == spells.garrote.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							if entry.type == "SPELL_CAST_SUCCESS" then
 								if not((talents:IsTalentActive(spells.subterfuge) and IsStealthed()) or snapshots[spells.subterfuge.id].buff.isActive) then
-									snapshots[spellId].cooldown:Initialize()
+									snapshots[entry.spellId].cooldown:Initialize()
 								end
 
 								if snapshots[spells.improvedGarrote.id].attributes.isActiveStealth or snapshots[spells.improvedGarrote.id].attributes.isActiveStealth then									
-									snapshots[spellId].cooldown:Reset()
+									snapshots[entry.spellId].cooldown:Reset()
 								end
 							end
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif spellId == spells.rupture.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+					elseif entry.spellId == spells.rupture.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif spellId == spells.internalBleeding.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+					elseif entry.spellId == spells.internalBleeding.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif spellId == spells.crimsonTempest.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+					elseif entry.spellId == spells.crimsonTempest.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif spellId == spells.deadlyPoison.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+					elseif entry.spellId == spells.deadlyPoison.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif spellId == spells.amplifyingPoison.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+					elseif entry.spellId == spells.amplifyingPoison.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif spellId == spells.kingsbane.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.kingsbane.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.serratedBoneSpike.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.serratedBoneSpike.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.serratedBoneSpike.debuffId then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+					elseif entry.spellId == spells.serratedBoneSpike.debuffId then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif spellId == spells.crimsonVial.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.crimsonVial.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.improvedGarrote.stealthBuffId then
-						snapshots[spells.improvedGarrote.id].buff:Initialize(type, true)
-					elseif spellId == spells.improvedGarrote.buffId then
-						snapshots[spells.improvedGarrote.id].buff:Initialize(type)
+					elseif entry.spellId == spells.improvedGarrote.stealthBuffId then
+						snapshots[spells.improvedGarrote.id].buff:Initialize(entry.type, true)
+					elseif entry.spellId == spells.improvedGarrote.buffId then
+						snapshots[spells.improvedGarrote.id].buff:Initialize(entry.type)
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "outlaw" then
-					if spellId == spells.betweenTheEyes.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					if entry.spellId == spells.betweenTheEyes.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.bladeFlurry.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.bladeFlurry.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.dreadblades.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.dreadblades.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.ghostlyStrike.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.ghostlyStrike.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.gouge.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.gouge.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.killingSpree.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.killingSpree.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.rollTheBones.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.rollTheBones.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.opportunity.id then
-						snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
+					elseif entry.spellId == spells.opportunity.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.rogue.outlaw.audio.opportunity.enabled then
 								PlaySoundFile(TRB.Data.settings.rogue.outlaw.audio.opportunity.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
-					elseif spellId == spells.broadside.id or spellId == spells.buriedTreasure.id or spellId == spells.grandMelee.id or spellId == spells.ruthlessPrecision.id or spellId == spells.skullAndCrossbones.id or spellId == spells.trueBearing.id then
-						snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-							if snapshots[spellId].buff.duration > spells.countTheOdds.duration then
-								snapshots[spellId].attributes.fromCountTheOdds = false
+					elseif entry.spellId == spells.broadside.id or entry.spellId == spells.buriedTreasure.id or entry.spellId == spells.grandMelee.id or entry.spellId == spells.ruthlessPrecision.id or entry.spellId == spells.skullAndCrossbones.id or entry.spellId == spells.trueBearing.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
+							if snapshots[entry.spellId].buff.duration > spells.countTheOdds.duration then
+								snapshots[entry.spellId].attributes.fromCountTheOdds = false
 							else
-								snapshots[spellId].attributes.fromCountTheOdds = true
+								snapshots[entry.spellId].attributes.fromCountTheOdds = true
 							end
-						elseif type == "SPELL_AURA_REMOVED" then
-							snapshots[spellId].attributes.fromCountTheOdds = false
+						elseif entry.type == "SPELL_AURA_REMOVED" then
+							snapshots[entry.spellId].attributes.fromCountTheOdds = false
 						end
-					elseif spellId == spells.keepItRolling.id then
-						if type == "SPELL_CAST_SUCCESS" then
+					elseif entry.spellId == spells.keepItRolling.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
 							if snapshots[spells.broadside.id].buff.isActive then
 								snapshots[spells.broadside.id].buff.duration = snapshots[spells.broadside.id].buff.duration + spells.keepItRolling.duration
 							end
@@ -3421,82 +4022,82 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 				-- Spec agnostic
 				
-				if spellId == spells.subterfuge.id then
-					snapshots[spellId].buff:Initialize(type)
-				elseif spellId == spells.shadowDance.id then
-					snapshots[spellId].buff:Initialize(type)
-				elseif spellId == spells.crimsonVial.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Initialize()
+				if entry.spellId == spells.subterfuge.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.shadowDance.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.crimsonVial.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif spellId == spells.sliceAndDice.id then
-					snapshots[spellId].buff:Initialize(type)
-				elseif spellId == spells.distract.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Initialize()
+				elseif entry.spellId == spells.sliceAndDice.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.distract.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif spellId == spells.feint.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Initialize()
+				elseif entry.spellId == spells.feint.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif spellId == spells.kidneyShot.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Initialize()
+				elseif entry.spellId == spells.kidneyShot.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif spellId == spells.shiv.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Initialize()
+				elseif entry.spellId == spells.shiv.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif spellId == spells.adrenalineRush.id then
-					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REMOVED" then -- For right now, just redo the CheckCharacter() to get update Energy values
+				elseif entry.spellId == spells.adrenalineRush.id then
+					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REMOVED" then -- For right now, just redo the CheckCharacter() to get update Energy values
 						TRB.Functions.Class:CheckCharacter()
 					end
-				elseif spellId == spells.echoingReprimand.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Initialize()
+				elseif entry.spellId == spells.echoingReprimand.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif spellId == spells.echoingReprimand_2CP.id or spellId == spells.echoingReprimand_3CP.id or spellId == spells.echoingReprimand_4CP.id or spellId == spells.echoingReprimand_4CP2.id or spellId == spells.echoingReprimand_5CP.id then
-					snapshots[spellId].buff:Initialize(type)
-				elseif spellId == spells.sepsis.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Initialize()
+				elseif entry.spellId == spells.echoingReprimand_2CP.id or entry.spellId == spells.echoingReprimand_3CP.id or entry.spellId == spells.echoingReprimand_4CP.id or entry.spellId == spells.echoingReprimand_4CP2.id or entry.spellId == spells.echoingReprimand_5CP.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.sepsis.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif spellId == spells.sepsis.buffId then
-					snapshots[spellId].buff:Initialize(type)
-					if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
+				elseif entry.spellId == spells.sepsis.buffId then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
+					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 						if TRB.Data.settings.rogue.assassination.audio.sepsis.enabled then
 							PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					end
-				elseif spellId == spells.cripplingPoison.id then
-					if TRB.Functions.Class:InitializeTarget(destGUID) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+				elseif entry.spellId == spells.cripplingPoison.id then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
-				elseif spellId == spells.woundPoison.id then
-					if TRB.Functions.Class:InitializeTarget(destGUID) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+				elseif entry.spellId == spells.woundPoison.id then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
-				elseif spellId == spells.numbingPoison.id then
-					if TRB.Functions.Class:InitializeTarget(destGUID) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+				elseif entry.spellId == spells.numbingPoison.id then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
-				elseif spellId == spells.atrophicPoison.id then
-					if TRB.Functions.Class:InitializeTarget(destGUID) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+				elseif entry.spellId == spells.atrophicPoison.id then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
-				elseif spellId == spells.deathFromAbove.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Initialize()
+				elseif entry.spellId == spells.deathFromAbove.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif spellId == spells.dismantle.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Initialize()
+				elseif entry.spellId == spells.dismantle.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				end
 			end
 
-			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				targetData:Remove(destGUID)
+			if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
+				targetData:Remove(entry.destinationGuid)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end

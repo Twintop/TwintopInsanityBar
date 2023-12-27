@@ -1654,73 +1654,73 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local targetData = snapshotData.targetData
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
+			local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
-			if sourceGUID == TRB.Data.character.guid then
+			if entry.sourceGuid == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "arms" then --Arms
-					if spellId == spells.mortalStrike.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					if entry.spellId == spells.mortalStrike.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.cleave.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.cleave.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.ignorePain.id then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.ignorePain.id then
+						if entry.type == "SPELL_CAST_SUCCESS" or entry.type == "SPELL_AURA_APPLIED" then
+							snapshots[entry.spellId].cooldown:Initialize()
 							-- This API call isn't working. Manual override for now.
 							--snapshot.ignorePain.startTime, snapshot.ignorePain.duration, _, _ = GetSpellCooldown(spells.ignorePain.id)
 							--snapshot.ignorePain.startTime = currentTime
 							--snapshot.ignorePain.duration = spells.ignorePain.duration
 						end
-					elseif spellId == spells.suddenDeath.id then
-						snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
+					elseif entry.spellId == spells.suddenDeath.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_APPLIED_DOSE" or entry.type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.warrior.arms.audio.suddenDeath.enabled then
 								PlaySoundFile(TRB.Data.settings.warrior.arms.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
-					elseif spellId == spells.battlelord.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.rend.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+					elseif entry.spellId == spells.battlelord.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.rend.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif spellId == spells.deepWounds.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+					elseif entry.spellId == spells.deepWounds.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "fury" then
-					if spellId == spells.enrage.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.whirlwind.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].buff:Initialize(type)
+					if entry.spellId == spells.enrage.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.whirlwind.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].buff:Initialize(entry.type)
 						end
-					elseif spellId == spells.suddenDeath.id then
-						snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
+					elseif entry.spellId == spells.suddenDeath.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_APPLIED_DOSE" or entry.type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.warrior.fury.audio.suddenDeath.enabled then
 								PlaySoundFile(TRB.Data.settings.warrior.fury.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
-					elseif spellId == spells.ravager.id then
-						if type == "SPELL_CAST_SUCCESS" then -- Ravager used
+					elseif entry.spellId == spells.ravager.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then -- Ravager used
 							local duration = spells.ravager.duration * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)
-							snapshots[spellId].buff:InitializeCustom(duration)
+							snapshots[entry.spellId].buff:InitializeCustom(duration)
 			
 							if talents:IsTalentActive(spells.stormOfSteel) then
-								snapshots[spellId].buff:SetTickData(true, spells.ravager.resourcePerTick + spells.stormOfSteel.resourcePerTick, spells.ravager.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
+								snapshots[entry.spellId].buff:SetTickData(true, spells.ravager.resourcePerTick + spells.stormOfSteel.resourcePerTick, spells.ravager.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
 							else
-								snapshots[spellId].buff:SetTickData(true, spells.ravager.resourcePerTick, spells.ravager.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
+								snapshots[entry.spellId].buff:SetTickData(true, spells.ravager.resourcePerTick, spells.ravager.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
 							end
 
-							snapshots[spellId].buff:UpdateTicks(currentTime)
+							snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 						end
-					elseif spellId == spells.ravager.energizeId then
-						if type == "SPELL_ENERGIZE" then
+					elseif entry.spellId == spells.ravager.energizeId then
+						if entry.type == "SPELL_ENERGIZE" then
 							if snapshots[spells.ravager.id].buff.isActive then
 								snapshots[spells.ravager.id].buff:UpdateTicks(currentTime)
 							end
@@ -1729,27 +1729,27 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				end
 
 				-- Spec Agnostic
-				if spellId == spells.impendingVictory.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Initialize()
+				if entry.spellId == spells.impendingVictory.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif spellId == spells.thunderClap.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Initialize()
+				elseif entry.spellId == spells.thunderClap.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif spellId == spells.execute.id and not talents:IsTalentActive(spells.improvedExecute) then
-					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Initialize()
+				elseif entry.spellId == spells.execute.id and not talents:IsTalentActive(spells.improvedExecute) then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif spellId == spells.shieldBlock.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Initialize()
+				elseif entry.spellId == spells.shieldBlock.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				end
 			end
 
-			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				targetData:Remove(destGUID)
+			if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
+				targetData:Remove(entry.destinationGuid)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end

@@ -1025,96 +1025,96 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local snapshotData = TRB.Data.snapshotData
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
+			local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
-			if sourceGUID == TRB.Data.character.guid then 
+			if entry.sourceGuid == TRB.Data.character.guid then 
 				if specId == 1 and TRB.Data.barConstructedForSpec == "havoc" then --Havoc
-					if spellId == spells.bladeDance.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Initialize()
+					if entry.spellId == spells.bladeDance.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.deathSweep.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.deathSweep.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.chaosNova.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.chaosNova.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.eyeBeam.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.eyeBeam.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.glaiveTempest.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.glaiveTempest.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.throwGlaive.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.throwGlaive.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.felEruption.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.felEruption.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.felBarrage.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.felBarrage.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.metamorphosis.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.immolationAura.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
+					elseif entry.spellId == spells.metamorphosis.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.immolationAura.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
+							snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 						end
-					elseif spellId == spells.immolationAura1.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
+					elseif entry.spellId == spells.immolationAura1.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
+							snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 						end
-					elseif spellId == spells.immolationAura2.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
+					elseif entry.spellId == spells.immolationAura2.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
+							snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 						end
-					elseif spellId == spells.immolationAura3.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
+					elseif entry.spellId == spells.immolationAura3.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
+							snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 						end
-					elseif spellId == spells.immolationAura4.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
+					elseif entry.spellId == spells.immolationAura4.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
+							snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 						end
-					elseif spellId == spells.immolationAura5.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
+					elseif entry.spellId == spells.immolationAura5.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
+							snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 						end
-					elseif spellId == spells.immolationAura6.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
-							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
+					elseif entry.spellId == spells.immolationAura6.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" then -- Gain Burning Hatred
+							snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 						end
-					elseif spellId == spells.unboundChaos.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.chaosTheory.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.tacticalRetreat.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" then -- Gain Tactical Retreat
-							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
+					elseif entry.spellId == spells.unboundChaos.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.chaosTheory.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.tacticalRetreat.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" then -- Gain Tactical Retreat
+							snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 						end
 					end
 				end
 			end
 
-			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
+			if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
 				---@type TRB.Classes.TargetData
 				local targetData = TRB.Data.snapshotData.targetData
-				targetData:Remove(destGUID)
+				targetData:Remove(entry.destinationGuid)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end

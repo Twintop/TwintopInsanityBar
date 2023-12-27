@@ -4088,7 +4088,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local targetData = snapshotData.targetData --[[@as TRB.Classes.TargetData]]
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
+			local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
 			local settings
 			if specId == 1 then
@@ -4099,236 +4099,236 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				settings = TRB.Data.settings.druid.restoration
 			end
 
-			if destGUID == TRB.Data.character.guid then
+			if entry.destinationGuid == TRB.Data.character.guid then
 				if specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then -- Let's check raid effect mana stuff
-					if settings.passiveGeneration.symbolOfHope and (spellId == spells.symbolOfHope.tickId or spellId == spells.symbolOfHope.id) then
+					if settings.passiveGeneration.symbolOfHope and (entry.spellId == spells.symbolOfHope.tickId or entry.spellId == spells.symbolOfHope.id) then
 						local symbolOfHope = snapshotData.snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
-						local castByToken = UnitTokenFromGUID(sourceGUID)
-						symbolOfHope.buff:Initialize(type, nil, castByToken)
-					elseif settings.passiveGeneration.innervate and spellId == spells.innervate.id then
+						local castByToken = UnitTokenFromGUID(entry.sourceGuid)
+						symbolOfHope.buff:Initialize(entry.type, nil, castByToken)
+					elseif settings.passiveGeneration.innervate and entry.spellId == spells.innervate.id then
 						local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
-						innervate.buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+						innervate.buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							snapshotData.audio.innervateCue = false
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
 							snapshotData.audio.innervateCue = false
 						end
-					elseif settings.passiveGeneration.manaTideTotem and spellId == spells.manaTideTotem.id then
+					elseif settings.passiveGeneration.manaTideTotem and entry.spellId == spells.manaTideTotem.id then
 						local manaTideTotem = snapshotData.snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
-						manaTideTotem:Initialize(type)
-					elseif spellId == spells.moltenRadiance.id then
+						manaTideTotem:Initialize(entry.type)
+					elseif entry.spellId == spells.moltenRadiance.id then
 						local moltenRadiance = snapshotData.snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
-						moltenRadiance.buff:Initialize(type)
+						moltenRadiance.buff:Initialize(entry.type)
 					end
 				end
 			end
 
-			if sourceGUID == TRB.Data.character.guid then
+			if entry.sourceGuid == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "balance" then
-					if spellId == spells.moonfire.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+					if entry.spellId == spells.moonfire.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif spellId == spells.stellarFlare.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+					elseif entry.spellId == spells.stellarFlare.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif spellId == spells.sunfire.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+					elseif entry.spellId == spells.sunfire.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif spellId == spells.furyOfElune.id then
-						if type == "SPELL_AURA_APPLIED" then -- Gain Fury of Elune
-							snapshotData.snapshots[spellId].buff:InitializeCustom(spells.furyOfElune.duration)
-							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
-						elseif type == "SPELL_PERIODIC_ENERGIZE" then
-							snapshotData.snapshots[spellId].buff:UpdateTicks(currentTime)
+					elseif entry.spellId == spells.furyOfElune.id then
+						if entry.type == "SPELL_AURA_APPLIED" then -- Gain Fury of Elune
+							snapshotData.snapshots[entry.spellId].buff:InitializeCustom(spells.furyOfElune.duration)
+							snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
+						elseif entry.type == "SPELL_PERIODIC_ENERGIZE" then
+							snapshotData.snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 						end
-					elseif spellId == spells.sunderedFirmament.buffId then
-						snapshotData.snapshots[spells.sunderedFirmament.id].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" then -- Gain Fury of Elune
+					elseif entry.spellId == spells.sunderedFirmament.buffId then
+						snapshotData.snapshots[spells.sunderedFirmament.id].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" then -- Gain Fury of Elune
 							snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
-						elseif type == "SPELL_PERIODIC_ENERGIZE" then
+						elseif entry.type == "SPELL_PERIODIC_ENERGIZE" then
 							snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
 						end
-					elseif spellId == spells.eclipseSolar.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.eclipseLunar.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.celestialAlignment.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.incarnationChosenOfElune.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.starfall.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.starweaversWarp.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.starweaversWeft.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.newMoon.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].attributes.currentSpellId = spells.halfMoon.id
-							snapshotData.snapshots[spellId].attributes.currentKey = "halfMoon"
-							snapshotData.snapshots[spellId].attributes.checkAfter = currentTime + 20
+					elseif entry.spellId == spells.eclipseSolar.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.eclipseLunar.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.celestialAlignment.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.incarnationChosenOfElune.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.starfall.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.starweaversWarp.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.starweaversWeft.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.newMoon.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[entry.spellId].attributes.currententry.spellId = spells.halfMoon.id
+							snapshotData.snapshots[entry.spellId].attributes.currentKey = "halfMoon"
+							snapshotData.snapshots[entry.spellId].attributes.checkAfter = currentTime + 20
 						end
-					elseif spellId == spells.halfMoon.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].attributes.currentSpellId = spells.fullMoon.id
-							snapshotData.snapshots[spellId].attributes.currentKey = "fullMoon"
-							snapshotData.snapshots[spellId].attributes.checkAfter = currentTime + 20
+					elseif entry.spellId == spells.halfMoon.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[entry.spellId].attributes.currententry.spellId = spells.fullMoon.id
+							snapshotData.snapshots[entry.spellId].attributes.currentKey = "fullMoon"
+							snapshotData.snapshots[entry.spellId].attributes.checkAfter = currentTime + 20
 						end
-					elseif spellId == spells.fullMoon.id then
-						if type == "SPELL_CAST_SUCCESS" then
+					elseif entry.spellId == spells.fullMoon.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
 							-- New Moon doesn't like to behave when we do this
-							snapshotData.snapshots[spellId].attributes.currentSpellId = spells.newMoon.id
-							snapshotData.snapshots[spellId].attributes.currentKey = "newMoon"
-							snapshotData.snapshots[spellId].attributes.checkAfter = currentTime + 20
+							snapshotData.snapshots[entry.spellId].attributes.currententry.spellId = spells.newMoon.id
+							snapshotData.snapshots[entry.spellId].attributes.currentKey = "newMoon"
+							snapshotData.snapshots[entry.spellId].attributes.checkAfter = currentTime + 20
 							spells.newMoon.currentIcon = select(3, GetSpellInfo(202767)) -- Use the old Legion artifact spell ID since New Moon's icon returns incorrect for several seconds after casting Full Moon
 						end
-					elseif spellId == spells.touchTheCosmos.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
+					elseif entry.spellId == spells.touchTheCosmos.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "feral" then
-					if spellId == spells.moonfire.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-								snapshotData.targetData.targets[destGUID].spells[spellId].snapshot = GetCurrentSnapshot(spells.moonfire.bonuses)
+					if entry.spellId == spells.moonfire.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+							if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
+								snapshotData.targetData.targets[entry.destinationGuid].spells[entry.spellId].snapshot = GetCurrentSnapshot(spells.moonfire.bonuses)
 								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								snapshotData.targetData.targets[destGUID].spells[spellId].snapshot = 0
-								triggerUpdate = true
-							end
-						end
-					elseif spellId == spells.rake.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-								snapshotData.targetData.targets[destGUID].spells[spellId].snapshot = GetCurrentSnapshot(spells.rake.bonuses)
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								snapshotData.targetData.targets[destGUID].spells[spellId].snapshot = 0
+							elseif entry.type == "SPELL_AURA_REMOVED" then
+								snapshotData.targetData.targets[entry.destinationGuid].spells[entry.spellId].snapshot = 0
 								triggerUpdate = true
 							end
 						end
-					elseif spellId == spells.rip.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-								snapshotData.targetData.targets[destGUID].spells[spellId].snapshot = GetCurrentSnapshot(spells.rip.bonuses)
+					elseif entry.spellId == spells.rake.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+							if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
+								snapshotData.targetData.targets[entry.destinationGuid].spells[entry.spellId].snapshot = GetCurrentSnapshot(spells.rake.bonuses)
 								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								snapshotData.targetData.targets[destGUID].spells[spellId].snapshot = 0
-								triggerUpdate = true
-							end
-						end
-					elseif spellId == spells.thrash.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-								snapshotData.targetData.targets[destGUID].spells[spellId].snapshot = GetCurrentSnapshot(spells.thrash.bonuses)
-								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								snapshotData.targetData.targets[destGUID].spells[spellId].snapshot = 0
+							elseif entry.type == "SPELL_AURA_REMOVED" then
+								snapshotData.targetData.targets[entry.destinationGuid].spells[entry.spellId].snapshot = 0
 								triggerUpdate = true
 							end
 						end
-					elseif spellId == spells.shadowmeld.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.prowl.id or spellId == spells.prowl.idIncarnation then
-						snapshotData.snapshots[spells.prowl.id].buff:Initialize(type)
-					elseif spellId == spells.suddenAmbush.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_REMOVED" then
-							snapshotData.snapshots[spellId].attributes.endTimeLeeway = currentTime + 0.1
+					elseif entry.spellId == spells.rip.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+							if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
+								snapshotData.targetData.targets[entry.destinationGuid].spells[entry.spellId].snapshot = GetCurrentSnapshot(spells.rip.bonuses)
+								triggerUpdate = true
+							elseif entry.type == "SPELL_AURA_REMOVED" then
+								snapshotData.targetData.targets[entry.destinationGuid].spells[entry.spellId].snapshot = 0
+								triggerUpdate = true
+							end
 						end
-					elseif spellId == spells.berserk.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" or type == "SPELL_AURA_REMOVED" then
-							if type == "SPELL_AURA_APPLIED" then
+					elseif entry.spellId == spells.thrash.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+							if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
+								snapshotData.targetData.targets[entry.destinationGuid].spells[entry.spellId].snapshot = GetCurrentSnapshot(spells.thrash.bonuses)
+								triggerUpdate = true
+							elseif entry.type == "SPELL_AURA_REMOVED" then
+								snapshotData.targetData.targets[entry.destinationGuid].spells[entry.spellId].snapshot = 0
+								triggerUpdate = true
+							end
+						end
+					elseif entry.spellId == spells.shadowmeld.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.prowl.id or entry.spellId == spells.prowl.idIncarnation then
+						snapshotData.snapshots[spells.prowl.id].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.suddenAmbush.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_REMOVED" then
+							snapshotData.snapshots[entry.spellId].attributes.endTimeLeeway = currentTime + 0.1
+						end
+					elseif entry.spellId == spells.berserk.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" or entry.type == "SPELL_AURA_REMOVED" then
+							if entry.type == "SPELL_AURA_APPLIED" then
 								snapshotData.snapshots[spells.berserk.id].attributes.lastTick = currentTime
 							end
 							UpdateBerserkIncomingComboPoints()
 						end
-					elseif spellId == spells.incarnationAvatarOfAshamane.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" or type == "SPELL_AURA_REMOVED" then
-							if type == "SPELL_AURA_APPLIED" then
+					elseif entry.spellId == spells.incarnationAvatarOfAshamane.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" or entry.type == "SPELL_AURA_REMOVED" then
+							if entry.type == "SPELL_AURA_APPLIED" then
 								snapshotData.snapshots[spells.berserk.id].attributes.lastTick = currentTime
 							end
 							UpdateBerserkIncomingComboPoints()
 						end
-					elseif spellId == spells.berserk.energizeId then
-						if type == "SPELL_ENERGIZE" then
+					elseif entry.spellId == spells.berserk.energizeId then
+						if entry.type == "SPELL_ENERGIZE" then
 							snapshotData.snapshots[spells.berserk.id].attributes.lastTick = currentTime
 						end
-					elseif spellId == spells.clearcasting.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.tigersFury.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.clearcasting.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.tigersFury.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.bloodtalons.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Initialize()
-						elseif type == "SPELL_AURA_REMOVED" then
-							snapshotData.snapshots[spellId].attributes.endTimeLeeway = currentTime + 0.1
+					elseif entry.spellId == spells.bloodtalons.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[entry.spellId].cooldown:Initialize()
+						elseif entry.type == "SPELL_AURA_REMOVED" then
+							snapshotData.snapshots[entry.spellId].attributes.endTimeLeeway = currentTime + 0.1
 						end
-					elseif spellId == spells.apexPredatorsCraving.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
+					elseif entry.spellId == spells.apexPredatorsCraving.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 							if settings.audio.apexPredatorsCraving.enabled then
 								PlaySoundFile(settings.audio.apexPredatorsCraving.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
-					elseif spellId == spells.predatorRevealed.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" or type == "SPELL_AURA_REMOVED" then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
+					elseif entry.spellId == spells.predatorRevealed.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" or entry.type == "SPELL_AURA_REMOVED" then
+							if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 								snapshotData.snapshots[spells.predatorRevealed.id].attributes.lastTick = currentTime
 							end
 							UpdatePredatorRevealed()
 						end
-					elseif spellId == spells.predatorRevealed.energizeId then
-						if type == "SPELL_ENERGIZE" then
+					elseif entry.spellId == spells.predatorRevealed.energizeId then
+						if entry.type == "SPELL_ENERGIZE" then
 							snapshotData.snapshots[spells.predatorRevealed.id].attributes.lastTick = currentTime
 						end
-					elseif spellId == spells.brutalSlash.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.brutalSlash.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[entry.spellId].cooldown:Initialize()
 						end
 					end
 				elseif specId == 4 and TRB.Data.barConstructedForSpec == "restoration" then
-					if spellId == spells.potionOfFrozenFocusRank1.spellId or spellId == spells.potionOfFrozenFocusRank2.spellId or spellId == spells.potionOfFrozenFocusRank3.spellId then
+					if entry.spellId == spells.potionOfFrozenFocusRank1.spellId or entry.spellId == spells.potionOfFrozenFocusRank2.spellId or entry.spellId == spells.potionOfFrozenFocusRank3.spellId then
 						local channeledManaPotion = snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
-						channeledManaPotion.buff:Initialize(type)
-					elseif spellId == spells.potionOfChilledClarity.id then
+						channeledManaPotion.buff:Initialize(entry.type)
+					elseif entry.spellId == spells.potionOfChilledClarity.id then
 						local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
-						potionOfChilledClarity.buff:Initialize(type)
-					elseif spellId == spells.efflorescence.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshotData.snapshots[spellId].buff:InitializeCustom(spells.efflorescence.duration)
+						potionOfChilledClarity.buff:Initialize(entry.type)
+					elseif entry.spellId == spells.efflorescence.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[entry.spellId].buff:InitializeCustom(spells.efflorescence.duration)
 						end
-					elseif spellId == spells.moonfire.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+					elseif entry.spellId == spells.moonfire.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif spellId == spells.sunfire.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+					elseif entry.spellId == spells.sunfire.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif spellId == spells.clearcasting.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.incarnationTreeOfLife.id then
-						snapshotData.snapshots[spellId].buff:Initialize(type)
+					elseif entry.spellId == spells.clearcasting.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.incarnationTreeOfLife.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 					end
 				end
 			end
 
-			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				targetData:Remove(destGUID)
+			if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
+				targetData:Remove(entry.destinationGuid)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end

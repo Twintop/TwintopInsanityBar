@@ -818,11 +818,409 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		return settings
 	end
 
+
+	local function SubtletyLoadDefaultBarTextSimpleSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
+		local textSettings = {
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="{$rtbBuffTime}[#rollTheBones $rtbBuffTime]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
+			},
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
+				text="{$sadTime}[#sliceAndDice $sadTime]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
+			},
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="{$passive}[$passive + ]$energy",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
+			}
+		}
+
+		return textSettings
+	end
+	TRB.Options.RogueSubtletyLoadDefaultBarTextSimpleSettings = SubtletyLoadDefaultBarTextSimpleSettings
+	
+	local function SubtletyLoadDefaultBarTextAdvancedSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
+		local textSettings = {
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="{$rtbBuffTime}[#rollTheBones $rtbBuffTime #rollTheBones]{$ttd}[||nTTD: $ttd]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
+			},
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
+				text="{$sadTime}[#sad $sadTime #sad]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
+			},
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="{$casting}[#casting$casting+]{$regen}[$regen+]$energy",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=22,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
+			}
+		}
+
+		return textSettings
+	end
+
+	local function SubtletyLoadDefaultSettings(includeBarText)
+		local settings = {
+			hastePrecision=2,
+			thresholds = {
+				width = 2,
+				overlapBorder=true,
+				outOfRange=true,
+				icons = {
+					showCooldown=true,
+					border=2,
+					relativeTo = "BOTTOM",
+					relativeToName = "Below",
+					enabled=true,
+					desaturated=true,
+					xPos=0,
+					yPos=12,
+					width=24,
+					height=24
+				},
+				-- Rogue
+				ambush = { --
+					enabled = true, -- 1
+				},
+				cheapShot = { --
+					enabled = false, -- 2
+				},
+				crimsonVial = { --
+					enabled = true, -- 3
+				},
+				distract = { --
+					enabled = false, -- 4
+				},
+				kidneyShot = { --
+					enabled = false, -- 5
+				},
+				sliceAndDice = { --
+					enabled = true, -- 6
+				},
+				feint = { --
+					enabled = true, -- 7
+				},
+				-- Rogue Talents
+				shiv = { --
+					enabled = false, -- 8
+				},
+				sap = { --
+					enabled = false, -- 9
+				},
+				gouge = { --
+					enabled = false, -- 10
+				},
+				echoingReprimand = { --
+					enabled = true, -- 11
+				},
+				-- Outlaw
+				betweenTheEyes = {
+					enabled = true, -- 12
+				},
+				dispatch = {
+					enabled = true, -- 13
+				},
+				pistolShot = {
+					enabled = true, -- 14
+				},
+				sinisterStrike = {
+					enabled = true, -- 15
+				},
+				bladeFlurry = {
+					enabled = true, -- 16
+				},
+				rollTheBones = {
+					enabled = true, -- 17
+				},
+				sepsis = { --
+					enabled = true, -- 18
+				},
+				ghostlyStrike = {
+					enabled = true, -- 19
+				},
+				dreadblades = {
+					enabled = true, -- 20
+				},
+				killingSpree = {
+					enabled = true, -- 21
+				},
+				-- PvP					
+				deathFromAbove = {
+					enabled = false, -- 22
+				},
+				dismantle = {
+					enabled = false, -- 23
+				},
+			},
+			generation = {
+				mode="gcd",
+				gcds=1,
+				time=1.5,
+				enabled=true
+			},
+			displayBar = {
+				alwaysShow=false,
+				notZeroShow=true,
+				neverShow=false
+			},
+			overcap={
+				mode="relative",
+				relative=0,
+				fixed=100
+			},
+			bar = {
+				width=555,
+				height=34,
+				xPos=0,
+				yPos=-200,
+				border=4,
+				dragAndDrop=false,
+				pinToPersonalResourceDisplay=false,
+				showPassive=true,
+				showCasting=true
+			},
+			comboPoints = {
+				width=25,
+				height=13,
+				xPos=0,
+				yPos=4,
+				border=1,
+				spacing=14,
+				relativeTo="TOP",
+				relativeToName="Above - Middle",
+				fullWidth=true,
+				consistentUnfilledColor = false
+			},
+			colors = {
+				text = {
+					current="FFFFFF00",
+					casting="FFFFFFFF",
+					spending="FF555555",
+					passive="FFD59900",
+					overcap="FFFF0000",
+					overThreshold="FF00FF00",
+					overThresholdEnabled=false,
+					overcapEnabled=true,
+					dots={
+						enabled=true,
+						up="FFFFFFFF",
+						down="FFFF0000",
+						pandemic="FFFFFF00"
+					}
+				},
+				bar = {
+					border="FFFFD300",
+					borderOvercap="FFFF0000",
+					borderStealth="FF000000",
+					borderRtbBad="FFFF8888",
+					borderRtbGood="FF00FF00",
+					background="66000000",
+					base="FFFFFF00",
+					noSliceAndDice="FFFF0000",
+					sliceAndDicePandemic="FFFF9900",
+					casting="FFFFFFFF",
+					spending="FF555555",
+					passive="FF9F4500",
+					overcapEnabled=true,
+				},
+				comboPoints = {
+					border="FFFFD300",
+					background="66000000",
+					base="FFFFFF00",
+					penultimate="FFFF9900",
+					final="FFFF0000",
+					echoingReprimand="FF68CCEF",
+					sameColor=false
+				},
+				threshold = {
+					under="FFFFFFFF",
+					over="FF00FF00",
+					unusable="FFFF0000",
+					special="FFFF00FF",
+					restlessBlades="FFFFFF00",
+					outOfRange="FF440000"
+				}
+			},
+			displayText={
+				default = {
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = "Left",
+					fontSize=18,
+					color = "FFFFFFFF",
+				},
+				barText = {}
+			},
+			audio = {
+				overcap={
+					name = "Overcap",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+				opportunity={
+					name = "Opportunity Proc",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+				sepsis={
+					name = "Sepsis Proc",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				},
+			},
+			textures = {
+				background="Interface\\Tooltips\\UI-Tooltip-Background",
+				backgroundName="Blizzard Tooltip",
+				border="Interface\\Buttons\\WHITE8X8",
+				borderName="1 Pixel",
+				resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
+				resourceBarName="Blizzard",
+				passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
+				passiveBarName="Blizzard",
+				castingBar="Interface\\TargetingFrame\\UI-StatusBar",
+				castingBarName="Blizzard",
+				textureLock=true,
+				comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+				comboPointsBackgroundName="Blizzard Tooltip",
+				comboPointsBorder="Interface\\Buttons\\WHITE8X8",
+				comboPointsBorderName="1 Pixel",
+				comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
+				comboPointsBarName="Blizzard",
+			}
+		}
+
+		if includeBarText then
+			settings.displayText.barText = OutlawLoadDefaultBarTextSimpleSettings()
+		end
+
+		return settings
+	end
+
 	local function LoadDefaultSettings()
 		local settings = TRB.Options.LoadDefaultSettings()
 
 		settings.rogue.assassination = AssassinationLoadDefaultSettings()
 		settings.rogue.outlaw = OutlawLoadDefaultSettings()
+		settings.rogue.subtlety = SubtletyLoadDefaultSettings()
 		return settings
 	end
 	TRB.Options.Rogue.LoadDefaultSettings = LoadDefaultSettings

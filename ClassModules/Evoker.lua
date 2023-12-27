@@ -1745,7 +1745,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local snapshots = snapshotData.snapshots
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
+			local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 			
 			local settings
 			if specId == 1 then
@@ -1754,66 +1754,66 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				settings = TRB.Data.settings.evoker.preservation
 			end
 
-			if destGUID == TRB.Data.character.guid then
+			if entry.destinationGuid == TRB.Data.character.guid then
 				if specId == 2 and TRB.Data.barConstructedForSpec == "preservation" then -- Let's check raid effect mana stuff
-					if settings.passiveGeneration.symbolOfHope and (spellId == spells.symbolOfHope.tickId or spellId == spells.symbolOfHope.id) then
+					if settings.passiveGeneration.symbolOfHope and (entry.spellId == spells.symbolOfHope.tickId or entry.spellId == spells.symbolOfHope.id) then
 						local symbolOfHope = snapshotData.snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
-						local castByToken = UnitTokenFromGUID(sourceGUID)
-						symbolOfHope.buff:Initialize(type, nil, castByToken)
-					elseif settings.passiveGeneration.innervate and spellId == spells.innervate.id then
+						local castByToken = UnitTokenFromGUID(entry.sourceGuid)
+						symbolOfHope.buff:Initialize(entry.type, nil, castByToken)
+					elseif settings.passiveGeneration.innervate and entry.spellId == spells.innervate.id then
 						local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
-						innervate.buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+						innervate.buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							snapshotData.audio.innervateCue = false
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
 							snapshotData.audio.innervateCue = false
 						end
-					elseif settings.passiveGeneration.manaTideTotem and spellId == spells.manaTideTotem.id then
+					elseif settings.passiveGeneration.manaTideTotem and entry.spellId == spells.manaTideTotem.id then
 						local manaTideTotem = snapshotData.snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
-						manaTideTotem:Initialize(type)
-					elseif spellId == spells.moltenRadiance.id then
+						manaTideTotem:Initialize(entry.type)
+					elseif entry.spellId == spells.moltenRadiance.id then
 						local moltenRadiance = snapshotData.snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
-						moltenRadiance.buff:Initialize(type)
+						moltenRadiance.buff:Initialize(entry.type)
 					end
 				end
 			end	
 
-			if sourceGUID == TRB.Data.character.guid then
+			if entry.sourceGuid == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "devastation" then --Devastation					
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "preservation" then
-					if spellId == spells.potionOfFrozenFocusRank1.spellId or spellId == spells.potionOfFrozenFocusRank2.spellId or spellId == spells.potionOfFrozenFocusRank3.spellId then
+					if entry.spellId == spells.potionOfFrozenFocusRank1.spellId or entry.spellId == spells.potionOfFrozenFocusRank2.spellId or entry.spellId == spells.potionOfFrozenFocusRank3.spellId then
 						local channeledManaPotion = snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
-						channeledManaPotion.buff:Initialize(type)
-					elseif spellId == spells.potionOfChilledClarity.id then
+						channeledManaPotion.buff:Initialize(entry.type)
+					elseif entry.spellId == spells.potionOfChilledClarity.id then
 						local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
-						potionOfChilledClarity.buff:Initialize(type)
-					elseif spellId == spells.emeraldCommunion.id then
-						if type == "SPELL_PERIODIC_ENERGIZE" then
-							if not snapshots[spellId].buff.isActive then
+						potionOfChilledClarity.buff:Initialize(entry.type)
+					elseif entry.spellId == spells.emeraldCommunion.id then
+						if entry.type == "SPELL_PERIODIC_ENERGIZE" then
+							if not snapshots[entry.spellId].buff.isActive then
 								local duration = spells.emeraldCommunion.duration * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)								
-								snapshots[spellId].buff:InitializeCustom(duration)
-								snapshots[spellId].buff:SetTickData(true, CalculateManaGain(spells.emeraldCommunion.resourcePerTick * TRB.Data.character.maxResource, false), spells.emeraldCommunion.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
+								snapshots[entry.spellId].buff:InitializeCustom(duration)
+								snapshots[entry.spellId].buff:SetTickData(true, CalculateManaGain(spells.emeraldCommunion.resourcePerTick * TRB.Data.character.maxResource, false), spells.emeraldCommunion.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
 							end
-							snapshots[spellId].buff:UpdateTicks(currentTime)
+							snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 						end
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "augmentation" then --Augmentation
 				end
 
 				-- Spec Agnostic
-				if spellId == spells.essenceBurst.id then
-					snapshots[spellId].buff:Initialize(type)
-					if type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
+				if entry.spellId == spells.essenceBurst.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
+					if entry.type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
 						snapshotData.audio.essenceBurst2Cue = false
-					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+					elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
 						snapshotData.audio.essenceBurstCue = false
 						snapshotData.audio.essenceBurst2Cue = false
 					end
 				end
 			end
 
-			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				targetData:Remove(destGUID)
+			if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
+				targetData:Remove(entry.destinationGuid)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end

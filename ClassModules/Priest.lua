@@ -4859,7 +4859,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local targetData = snapshotData.targetData
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName, _, auraType = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
+			local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
 			local settings
 			if specId == 1 then
@@ -4870,38 +4870,38 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				settings = TRB.Data.settings.priest.shadow
 			end
 
-			if destGUID == TRB.Data.character.guid then
+			if entry.destinationGuid == TRB.Data.character.guid then
 				if (specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (specId == 2 and TRB.Data.barConstructedForSpec == "holy") then -- Let's check raid effect mana stuff
-					if settings.passiveGeneration.symbolOfHope and (spellId == spells.symbolOfHope.tickId or spellId == spells.symbolOfHope.id) then
+					if settings.passiveGeneration.symbolOfHope and (entry.spellId == spells.symbolOfHope.tickId or entry.spellId == spells.symbolOfHope.id) then
 						---@diagnostic disable-next-line: param-type-mismatch
-						local castByToken = UnitTokenFromGUID(sourceGUID)
+						local castByToken = UnitTokenFromGUID(entry.sourceGuid)
 						local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
-						symbolOfHope.buff:Initialize(type, nil, castByToken)
-					elseif settings.passiveGeneration.innervate and spellId == spells.innervate.id then
+						symbolOfHope.buff:Initialize(entry.type, nil, castByToken)
+					elseif settings.passiveGeneration.innervate and entry.spellId == spells.innervate.id then
 						local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
-						innervate.buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+						innervate.buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							snapshotData.audio.innervateCue = false
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
 							snapshotData.audio.innervateCue = false
 						end
-					elseif settings.passiveGeneration.manaTideTotem and spellId == spells.manaTideTotem.id then
+					elseif settings.passiveGeneration.manaTideTotem and entry.spellId == spells.manaTideTotem.id then
 						local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
-						manaTideTotem.buff:Initialize(type)
-					elseif spellId == spells.potionOfChilledClarity.id then
+						manaTideTotem.buff:Initialize(entry.type)
+					elseif entry.spellId == spells.potionOfChilledClarity.id then
 						local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
-						potionOfChilledClarity.buff:Initialize(type)
-					elseif spellId == spells.moltenRadiance.id then
+						potionOfChilledClarity.buff:Initialize(entry.type)
+					elseif entry.spellId == spells.moltenRadiance.id then
 						local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
-						moltenRadiance.buff:Initialize(type)
-					elseif settings.shadowfiend.enabled and type == "SPELL_ENERGIZE" and spellId == snapshots[spells.shadowfiend.id].spell.energizeId and sourceName == snapshots[spells.shadowfiend.id].spell.name then
+						moltenRadiance.buff:Initialize(entry.type)
+					elseif settings.shadowfiend.enabled and entry.type == "SPELL_ENERGIZE" and entry.spellId == snapshots[spells.shadowfiend.id].spell.energizeId and entry.sourceName == snapshots[spells.shadowfiend.id].spell.name then
 						snapshots[spells.shadowfiend.id].attributes.swingTime = currentTime
 						snapshots[spells.shadowfiend.id].cooldown:Refresh(true)
 						triggerUpdate = true
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
-					if settings.mindbender.enabled and type == "SPELL_ENERGIZE" and (spellId == spells.mindbender.energizeId or spellId == spells.shadowfiend.energizeId) and sourceName == spells.shadowfiend.name then
-						if sourceGUID == snapshots[spells.shadowfiend.id].attributes.guid then
+					if settings.mindbender.enabled and entry.type == "SPELL_ENERGIZE" and (entry.spellId == spells.mindbender.energizeId or entry.spellId == spells.shadowfiend.energizeId) and entry.sourceName == spells.shadowfiend.name then
+						if entry.sourceGuid == snapshots[spells.shadowfiend.id].attributes.guid then
 							snapshots[spells.shadowfiend.id].attributes.swingTime = currentTime
 							snapshots[spells.shadowfiend.id].cooldown:Refresh(true)
 						end
@@ -4910,48 +4910,48 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				end
 			end
 			
-			if sourceGUID == TRB.Data.character.guid then
+			if entry.sourceGuid == TRB.Data.character.guid then
 				if (specId == 1 and TRB.Data.barConstructedForSpec == "discipline") or (specId == 2 and TRB.Data.barConstructedForSpec == "holy") then -- Let's check raid effect mana stuff
-					if spellId == spells.potionOfFrozenFocusRank1.spellId or spellId == spells.potionOfFrozenFocusRank2.spellId or spellId == spells.potionOfFrozenFocusRank3.spellId then
+					if entry.spellId == spells.potionOfFrozenFocusRank1.spellId or entry.spellId == spells.potionOfFrozenFocusRank2.spellId or entry.spellId == spells.potionOfFrozenFocusRank3.spellId then
 						local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
-						channeledManaPotion.buff:Initialize(type)
-					elseif spellId == spells.surgeOfLight.id then
-						snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
+						channeledManaPotion.buff:Initialize(entry.type)
+					elseif entry.spellId == spells.surgeOfLight.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
 							snapshotData.audio.surgeOfLight2Cue = false
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
 							snapshotData.audio.surgeOfLightCue = false
 							snapshotData.audio.surgeOfLight2Cue = false
 						end
-					elseif type == "SPELL_SUMMON" and (spellId == spells.shadowfiend.id or (specId == 1 and spellId == spells.mindbender.id)) then
+					elseif entry.type == "SPELL_SUMMON" and (entry.spellId == spells.shadowfiend.id or (specId == 1 and entry.spellId == spells.mindbender.id)) then
 						local currentSf = snapshots[spells.shadowfiend.id].attributes
 						local totemId = 1
-						currentSf.guid = sourceGUID
+						currentSf.guid = entry.sourceGuid
 						currentSf.totemId = totemId
 					end
 				end
 
 				if specId == 1 and TRB.Data.barConstructedForSpec == "discipline" then
-					if spellId == spells.rapture.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.atonement.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID, true, true) then
+					if entry.spellId == spells.rapture.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.atonement.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid, true, true) then
 							---@diagnostic disable-next-line: param-type-mismatch
-							triggerUpdate = targetData:HandleCombatLogBuff(spellId, type, destGUID)
+							triggerUpdate = targetData:HandleCombatLogBuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif spellId == spells.shadowCovenant.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.purgeTheWicked.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
+					elseif entry.spellId == spells.shadowCovenant.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.purgeTheWicked.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 ---@diagnostic disable-next-line: param-type-mismatch
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif spellId == spells.powerWordRadiance.id then
-						if type == "SPELL_CAST_SUCCESS" then -- Cast PW: Radiance
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.powerWordRadiance.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then -- Cast PW: Radiance
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.evangelism.id then
-						if type == "SPELL_CAST_SUCCESS" then -- Cast PW: Radiance
+					elseif entry.spellId == spells.evangelism.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then -- Cast PW: Radiance
 							local targets = TRB.Data.snapshotData.targetData.targets
 							if TRB.Functions.Table:Length(targets) > 0 then
 								for guid, target in pairs(targets) do
@@ -4964,51 +4964,51 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						end
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "holy" then
-					if spellId == spells.apotheosis.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.lightweaver.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.resonantWords.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.holyWordSerenity.id then
-						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Serenity
-							snapshots[spellId].cooldown:Initialize()
+					if entry.spellId == spells.apotheosis.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.lightweaver.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.resonantWords.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.holyWordSerenity.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then -- Cast HW: Serenity
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.holyWordSanctify.id then
-						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Sanctify
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.holyWordSanctify.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then -- Cast HW: Sanctify
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.holyWordChastise.id then
-						if type == "SPELL_CAST_SUCCESS" then -- Cast HW: Chastise
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.holyWordChastise.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then -- Cast HW: Chastise
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.divineConversation.id then
-						snapshots[spellId].buff:Initialize(type, true)
-					elseif spellId == spells.prayerFocus.id then
-						snapshots[spellId].buff:Initialize(type, true)
-					elseif spellId == spells.sacredReverence.id then
-						snapshots[spellId].buff:Initialize(type, true)
-					elseif spellId == spells.symbolOfHope.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.divineConversation.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type, true)
+					elseif entry.spellId == spells.prayerFocus.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type, true)
+					elseif entry.spellId == spells.sacredReverence.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type, true)
+					elseif entry.spellId == spells.symbolOfHope.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
-					if spellId == spells.voidform.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.darkAscension.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.vampiricTouch.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
+					if entry.spellId == spells.voidform.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.darkAscension.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.vampiricTouch.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 							---@diagnostic disable-next-line: param-type-mismatch
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif spellId == spells.devouringPlague.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
+					elseif entry.spellId == spells.devouringPlague.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 							---@diagnostic disable-next-line: param-type-mismatch
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif settings.auspiciousSpiritsTracker and talents:IsTalentActive(spells.auspiciousSpirits) and spellId == spells.auspiciousSpirits.idSpawn and type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
+					elseif settings.auspiciousSpiritsTracker and talents:IsTalentActive(spells.auspiciousSpirits) and entry.spellId == spells.auspiciousSpirits.idSpawn and entry.type == "SPELL_CAST_SUCCESS" then -- Shadowy Apparition Spawned
 						for guid, _ in pairs(targetData.targets) do
 							if targetData.targets[guid].spells[spells.vampiricTouch.id].active then
 								targetData.targets[guid].spells[spells.auspiciousSpirits.id].active = true
@@ -5017,31 +5017,31 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							targetData.count[spells.auspiciousSpirits.id] = targetData.count[spells.auspiciousSpirits.id] + 1
 						end
 						triggerUpdate = true
-					elseif settings.auspiciousSpiritsTracker and talents:IsTalentActive(spells.auspiciousSpirits) and spellId == spells.auspiciousSpirits.idImpact and (type == "SPELL_DAMAGE" or type == "SPELL_MISSED" or type == "SPELL_ABSORBED") then --Auspicious Spirit Hit
+					elseif settings.auspiciousSpiritsTracker and talents:IsTalentActive(spells.auspiciousSpirits) and entry.spellId == spells.auspiciousSpirits.idImpact and (entry.type == "SPELL_DAMAGE" or entry.type == "SPELL_MISSED" or entry.type == "SPELL_ABSORBED") then --Auspicious Spirit Hit
 						---@diagnostic disable-next-line: param-type-mismatch
-						if targetData:CheckTargetExists(destGUID) then
-							targetData.targets[destGUID].spells[spells.auspiciousSpirits.id].count = targetData.targets[destGUID].spells[spells.auspiciousSpirits.id].count - 1
+						if targetData:CheckTargetExists(entry.destinationGuid) then
+							targetData.targets[entry.destinationGuid].spells[spells.auspiciousSpirits.id].count = targetData.targets[entry.destinationGuid].spells[spells.auspiciousSpirits.id].count - 1
 							targetData.count[spells.auspiciousSpirits.id] = targetData.count[spells.auspiciousSpirits.id] - 1
 						end
 						triggerUpdate = true
-					elseif type == "SPELL_ENERGIZE" and spellId == spells.shadowCrash.id then
+					elseif entry.type == "SPELL_ENERGIZE" and entry.spellId == spells.shadowCrash.id then
 						triggerUpdate = true
-					elseif spellId == spells.mindDevourer.buffId then
-						snapshots[spells.mindDevourer.id].buff:Initialize(type)
-					elseif spellId == spells.devouredDespair.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.mindFlayInsanity.buffId or spellId == spells.mindSpikeInsanity.buffId then
-						snapshots[spells.surgeOfInsanity.id].buff:Initialize(type)
-					elseif spellId == spells.deathspeaker.buffId then
-						snapshots[spells.deathspeaker.id].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" then
+					elseif entry.spellId == spells.mindDevourer.buffId then
+						snapshots[spells.mindDevourer.id].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.devouredDespair.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.mindFlayInsanity.buffId or entry.spellId == spells.mindSpikeInsanity.buffId then
+						snapshots[spells.surgeOfInsanity.id].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.deathspeaker.buffId then
+						snapshots[spells.deathspeaker.id].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" then
 							if TRB.Data.settings.priest.shadow.audio.deathspeaker.enabled then
 								PlaySoundFile(TRB.Data.settings.priest.shadow.audio.deathspeaker.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
-					elseif spellId == spells.deathsTorment.id then
-						snapshots[spells.deathsTorment.id].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" or type == "SPELL_AURA_APPLIED_DOSE" then
+					elseif entry.spellId == spells.deathsTorment.id then
+						snapshots[spells.deathsTorment.id].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" or entry.type == "SPELL_AURA_APPLIED_DOSE" then
 							if TRB.Data.settings.priest.shadow.audio.deathsTormentMax.enabled and not snapshotData.audio.deathsTormentMaxCue and snapshots[spells.deathsTorment.id].buff.stacks == spells.deathsTorment.maxStacks then
 								PlaySoundFile(TRB.Data.settings.priest.shadow.audio.deathsTormentMax.sound, TRB.Data.settings.core.audio.channel.channel)
 								snapshotData.audio.deathsTormentCue = true
@@ -5050,65 +5050,65 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								PlaySoundFile(TRB.Data.settings.priest.shadow.audio.deathsTorment.sound, TRB.Data.settings.core.audio.channel.channel)
 								snapshotData.audio.deathsTormentCue = true
 							end
-						elseif type == "SPELL_AURA_REMOVED" or type == "SPELL_AURA_REMOVED_DOSE" then
+						elseif entry.type == "SPELL_AURA_REMOVED" or entry.type == "SPELL_AURA_REMOVED_DOSE" then
 							snapshotData.audio.deathsTormentCue = false
 							snapshotData.audio.deathsTormentMaxCue = false
 						end
-					elseif spellId == spells.twistOfFate.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.shadowyInsight.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.mindMelt.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.idolOfYoggSaron.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.thingFromBeyond.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif type == "SPELL_SUMMON" and settings.voidTendrilTracker and (spellId == spells.idolOfCthun_Tendril.id or spellId == spells.idolOfCthun_Lasher.id) then
-						InitializeVoidTendril(destGUID)
-						if spellId == spells.idolOfCthun_Tendril.id then
-							snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].type = "Tendril"
-						elseif spellId == spells.idolOfCthun_Lasher.id then
-							snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].type = "Lasher"
-							snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].targetsHit = 0
-							snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].hasStruckTargets = true
+					elseif entry.spellId == spells.twistOfFate.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.shadowyInsight.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.mindMelt.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.idolOfYoggSaron.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.thingFromBeyond.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.type == "SPELL_SUMMON" and settings.voidTendrilTracker and (entry.spellId == spells.idolOfCthun_Tendril.id or entry.spellId == spells.idolOfCthun_Lasher.id) then
+						InitializeVoidTendril(entry.destinationGuid)
+						if entry.spellId == spells.idolOfCthun_Tendril.id then
+							snapshots[spells.idolOfCthun.id].attributes.activeList[entry.destinationGuid].type = "Tendril"
+						elseif entry.spellId == spells.idolOfCthun_Lasher.id then
+							snapshots[spells.idolOfCthun.id].attributes.activeList[entry.destinationGuid].type = "Lasher"
+							snapshots[spells.idolOfCthun.id].attributes.activeList[entry.destinationGuid].targetsHit = 0
+							snapshots[spells.idolOfCthun.id].attributes.activeList[entry.destinationGuid].hasStruckTargets = true
 						end
 
 						snapshots[spells.idolOfCthun.id].attributes.numberActive = snapshots[spells.idolOfCthun.id].attributes.numberActive + 1
 						snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining = snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining + spells.lashOfInsanity_Tendril.ticks
-						snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].startTime = currentTime
-						snapshots[spells.idolOfCthun.id].attributes.activeList[destGUID].tickTime = currentTime
-					elseif type == "SPELL_SUMMON" and settings.mindbender.enabled and (spellId == spells.shadowfiend.id or spellId == spells.mindbender.id) then
+						snapshots[spells.idolOfCthun.id].attributes.activeList[entry.destinationGuid].startTime = currentTime
+						snapshots[spells.idolOfCthun.id].attributes.activeList[entry.destinationGuid].tickTime = currentTime
+					elseif entry.type == "SPELL_SUMMON" and settings.mindbender.enabled and (entry.spellId == spells.shadowfiend.id or entry.spellId == spells.mindbender.id) then
 						local currentSf = snapshots[spells.shadowfiend.id].attributes
 						local totemId = 1
-						currentSf.guid = sourceGUID
+						currentSf.guid = entry.sourceGuid
 						currentSf.totemId = totemId
 					end
 				end
 
 				-- Spec agnostic
-				if spellId == spells.shadowWordPain.id then
-					if TRB.Functions.Class:InitializeTarget(destGUID) then
+				if entry.spellId == spells.shadowWordPain.id then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						---@diagnostic disable-next-line: param-type-mismatch
-						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				end
-			elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" and settings.voidTendrilTracker and (spellId == spells.idolOfCthun_Tendril.idTick or spellId == spells.idolOfCthun_Lasher.idTick) and CheckVoidTendrilExists(sourceGUID) then
-				if spellId == spells.idolOfCthun_Lasher.idTick and type == "SPELL_DAMAGE" then
-					if currentTime > (snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].tickTime + 0.1) then --This is a new tick
-						snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].targetsHit = 0
+			elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" and settings.voidTendrilTracker and (entry.spellId == spells.idolOfCthun_Tendril.idTick or entry.spellId == spells.idolOfCthun_Lasher.idTick) and CheckVoidTendrilExists(entry.sourceGuid) then
+				if entry.spellId == spells.idolOfCthun_Lasher.idTick and entry.type == "SPELL_DAMAGE" then
+					if currentTime > (snapshots[spells.idolOfCthun.id].attributes.activeList[entry.sourceGuid].tickTime + 0.1) then --This is a new tick
+						snapshots[spells.idolOfCthun.id].attributes.activeList[entry.sourceGuid].targetsHit = 0
 					end
-					snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].targetsHit = snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].targetsHit + 1
-					snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].tickTime = currentTime
-					snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].hasStruckTargets = true
+					snapshots[spells.idolOfCthun.id].attributes.activeList[entry.sourceGuid].targetsHit = snapshots[spells.idolOfCthun.id].attributes.activeList[entry.sourceGuid].targetsHit + 1
+					snapshots[spells.idolOfCthun.id].attributes.activeList[entry.sourceGuid].tickTime = currentTime
+					snapshots[spells.idolOfCthun.id].attributes.activeList[entry.sourceGuid].hasStruckTargets = true
 				else
-					snapshots[spells.idolOfCthun.id].attributes.activeList[sourceGUID].tickTime = currentTime
+					snapshots[spells.idolOfCthun.id].attributes.activeList[entry.sourceGuid].tickTime = currentTime
 				end
 			end
 
-			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
+			if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
 				---@diagnostic disable-next-line: param-type-mismatch
-				targetData:Remove(destGUID)
+				targetData:Remove(entry.destinationGuid)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end

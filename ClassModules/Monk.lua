@@ -2035,7 +2035,7 @@ elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not s
 		local targetData = snapshotData.targetData
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
+			local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
 			local settings
 			if specId == 2 then
@@ -2044,118 +2044,118 @@ elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not s
 				settings = TRB.Data.settings.monk.windwalker
 			end
 
-			if destGUID == TRB.Data.character.guid then
+			if entry.destinationGuid == TRB.Data.character.guid then
 				if specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver" then -- Let's check raid effect mana stuff
-					if settings.passiveGeneration.symbolOfHope and (spellId == spells.symbolOfHope.tickId or spellId == spells.symbolOfHope.id) then
-						local castByToken = UnitTokenFromGUID(sourceGUID)
+					if settings.passiveGeneration.symbolOfHope and (entry.spellId == spells.symbolOfHope.tickId or entry.spellId == spells.symbolOfHope.id) then
+						local castByToken = UnitTokenFromGUID(entry.sourceGuid)
 						local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
-						symbolOfHope.buff:Initialize(type, nil, castByToken)
-					elseif settings.passiveGeneration.innervate and spellId == spells.innervate.id then
+						symbolOfHope.buff:Initialize(entry.type, nil, castByToken)
+					elseif settings.passiveGeneration.innervate and entry.spellId == spells.innervate.id then
 						local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
-						innervate.buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+						innervate.buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							snapshotData.audio.innervateCue = false
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
 							snapshotData.audio.innervateCue = false
 						end
-					elseif settings.passiveGeneration.manaTideTotem and spellId == spells.manaTideTotem.id then
+					elseif settings.passiveGeneration.manaTideTotem and entry.spellId == spells.manaTideTotem.id then
 						local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
-						manaTideTotem.buff:Initialize(type)
-					elseif spellId == spells.potionOfChilledClarity.id then
+						manaTideTotem.buff:Initialize(entry.type)
+					elseif entry.spellId == spells.potionOfChilledClarity.id then
 						local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
-						potionOfChilledClarity.buff:Initialize(type)
-					elseif spellId == spells.moltenRadiance.id then
+						potionOfChilledClarity.buff:Initialize(entry.type)
+					elseif entry.spellId == spells.moltenRadiance.id then
 						local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
-						moltenRadiance.buff:Initialize(type)
-					elseif spellId == spells.vivaciousVivification.id then
-						snapshots[spellId].buff:Initialize(type, true)
+						moltenRadiance.buff:Initialize(entry.type)
+					elseif entry.spellId == spells.vivaciousVivification.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type, true)
 					end
 				end
 			end
 
-			if sourceGUID == TRB.Data.character.guid then
+			if entry.sourceGuid == TRB.Data.character.guid then
 				if specId == 2 and TRB.Data.barConstructedForSpec == "mistweaver" then
-					if spellId == spells.potionOfFrozenFocusRank1.spellId or spellId == spells.potionOfFrozenFocusRank2.spellId or spellId == spells.potionOfFrozenFocusRank3.spellId then
+					if entry.spellId == spells.potionOfFrozenFocusRank1.spellId or entry.spellId == spells.potionOfFrozenFocusRank2.spellId or entry.spellId == spells.potionOfFrozenFocusRank3.spellId then
 						local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
-						channeledManaPotion.buff:Initialize(type)
-					elseif spellId == spells.soulfangInfusion.id then
-						snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" then -- Gain Soulfang Infusion
-							snapshots[spellId].buff:SetTickData(true, CalculateManaGain(TRB.Data.character.maxResource * spells.soulfangInfusion.resourcePerTick, false), spells.soulfangInfusion.tickRate)
-							snapshots[spellId].buff:UpdateTicks(currentTime)
+						channeledManaPotion.buff:Initialize(entry.type)
+					elseif entry.spellId == spells.soulfangInfusion.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" then -- Gain Soulfang Infusion
+							snapshots[entry.spellId].buff:SetTickData(true, CalculateManaGain(TRB.Data.character.maxResource * spells.soulfangInfusion.resourcePerTick, false), spells.soulfangInfusion.tickRate)
+							snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 						end
-					elseif spellId == spells.manaTea.id then
-						snapshots[spellId].buff:Initialize(type)
+					elseif entry.spellId == spells.manaTea.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "windwalker" then --Windwalker
-					if spellId == spells.strikeOfTheWindlord.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].buff:Initialize(type)
+					if entry.spellId == spells.strikeOfTheWindlord.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].buff:Initialize(entry.type)
 						end
-					elseif spellId == spells.serenity.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.danceOfChiJi.id then
-						snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
+					elseif entry.spellId == spells.serenity.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.danceOfChiJi.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.enabled and not snapshotData.audio.playedDanceOfChiJiCue then
 								snapshotData.audio.playedDanceOfChiJiCue = true
 								PlaySoundFile(TRB.Data.settings.monk.windwalker.audio.danceOfChiJi.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
-						elseif type == "SPELL_AURA_REMOVED" then
+						elseif entry.type == "SPELL_AURA_REMOVED" then
 							snapshotData.audio.playedDanceOfChiJiCue = false
 						end
-					elseif spellId == spells.markOfTheCrane.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
-								ApplyMarkOfTheCrane(destGUID)
+					elseif entry.spellId == spells.markOfTheCrane.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
+								ApplyMarkOfTheCrane(entry.destinationGuid)
 								triggerUpdate = true
-							elseif type == "SPELL_AURA_REMOVED" then
-								triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+							elseif entry.type == "SPELL_AURA_REMOVED" then
+								triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 							end
 						end
-					elseif spellId == spells.tigerPalm.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_DAMAGE" then
-								ApplyMarkOfTheCrane(destGUID)
-								triggerUpdate = true
-							end
-						end
-					elseif spellId == spells.blackoutKick.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_DAMAGE" then
-								ApplyMarkOfTheCrane(destGUID)
+					elseif entry.spellId == spells.tigerPalm.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							if entry.type == "SPELL_DAMAGE" then
+								ApplyMarkOfTheCrane(entry.destinationGuid)
 								triggerUpdate = true
 							end
 						end
-					elseif spellId == spells.risingSunKick.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							if type == "SPELL_DAMAGE" then
-								ApplyMarkOfTheCrane(destGUID)
+					elseif entry.spellId == spells.blackoutKick.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							if entry.type == "SPELL_DAMAGE" then
+								ApplyMarkOfTheCrane(entry.destinationGuid)
 								triggerUpdate = true
 							end
 						end
-					elseif spellId == spells.detox.id then
-						if type == "SPELL_DISPEL" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.risingSunKick.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							if entry.type == "SPELL_DAMAGE" then
+								ApplyMarkOfTheCrane(entry.destinationGuid)
+								triggerUpdate = true
+							end
 						end
-					elseif spellId == spells.expelHarm.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.detox.id then
+						if entry.type == "SPELL_DISPEL" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.paralysis.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.expelHarm.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
+						end
+					elseif entry.spellId == spells.paralysis.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 
 							if talents:IsTalentActive(spells.paralysisRank2) then
-								snapshots[spellId].cooldown.duration = snapshots[spellId].cooldown.duration + spells.paralysisRank2.cooldownMod
+								snapshots[entry.spellId].cooldown.duration = snapshots[entry.spellId].cooldown.duration + spells.paralysisRank2.cooldownMod
 							end
 						end
 					end
 				end
 			end
 
-			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				targetData:Remove(destGUID)
+			if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
+				targetData:Remove(entry.destinationGuid)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end

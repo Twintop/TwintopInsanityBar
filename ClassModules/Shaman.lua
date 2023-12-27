@@ -2248,7 +2248,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local targetData = snapshotData.targetData
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
+			local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
 			local settings
 			if specId == 1 then
@@ -2259,41 +2259,41 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				settings = TRB.Data.settings.shaman.restoration
 			end
 
-			if destGUID == TRB.Data.character.guid then
+			if entry.destinationGuid == TRB.Data.character.guid then
 				if specId == 3 and TRB.Data.barConstructedForSpec == "restoration" then -- Let's check raid effect mana stuff
-					if settings.passiveGeneration.symbolOfHope and (spellId == spells.symbolOfHope.tickId or spellId == spells.symbolOfHope.id) then
-						local castByToken = UnitTokenFromGUID(sourceGUID)
+					if settings.passiveGeneration.symbolOfHope and (entry.spellId == spells.symbolOfHope.tickId or entry.spellId == spells.symbolOfHope.id) then
+						local castByToken = UnitTokenFromGUID(entry.sourceGuid)
 						local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
-						symbolOfHope.buff:Initialize(type, nil, castByToken)
-					elseif settings.passiveGeneration.innervate and spellId == spells.innervate.id then
+						symbolOfHope.buff:Initialize(entry.type, nil, castByToken)
+					elseif settings.passiveGeneration.innervate and entry.spellId == spells.innervate.id then
 						local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
-						innervate.buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+						innervate.buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							snapshotData.audio.innervateCue = false
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
 							snapshotData.audio.innervateCue = false
 						end
-					elseif settings.passiveGeneration.manaTideTotem and spellId == spells.manaTideTotem.id then
+					elseif settings.passiveGeneration.manaTideTotem and entry.spellId == spells.manaTideTotem.id then
 						local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 						local duration = spells.manaTideTotem.duration
-						if sourceGUID == TRB.Data.character.guid and TRB.Functions.Table:IsTalentActive(spells.resonantWaters) then
+						if entry.sourceGuid == TRB.Data.character.guid and TRB.Functions.Table:IsTalentActive(spells.resonantWaters) then
 							duration = spells.manaTideTotem.duration + spells.resonantWaters.duration
 						end
-						manaTideTotem:Initialize(type, duration)
-					elseif spellId == spells.potionOfChilledClarity.id then
+						manaTideTotem:Initialize(entry.type, duration)
+					elseif entry.spellId == spells.potionOfChilledClarity.id then
 						local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
-						potionOfChilledClarity.buff:Initialize(type)
-					elseif spellId == spells.moltenRadiance.id then
+						potionOfChilledClarity.buff:Initialize(entry.type)
+					elseif entry.spellId == spells.moltenRadiance.id then
 						local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
-						moltenRadiance.buff:Initialize(type)
+						moltenRadiance.buff:Initialize(entry.type)
 					end
 				end
 			end
 
-			if sourceGUID == TRB.Data.character.guid then
+			if entry.sourceGuid == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "elemental" then
-					if spellId == spells.chainLightning.id or spellId == spells.lavaBeam.id then
-						if type == "SPELL_DAMAGE" then
+					if entry.spellId == spells.chainLightning.id or entry.spellId == spells.lavaBeam.id then
+						if entry.type == "SPELL_DAMAGE" then
 							local chainLightning = snapshots[spells.chainLightning.id]
 							if chainLightning.attributes.hitTime == nil or currentTime > (chainLightning.attributes.hitTime + 0.1) then --This is a new hit
 								chainLightning.attributes.targetsHit = 0
@@ -2302,40 +2302,40 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 							chainLightning.attributes.hitTime = currentTime
 							chainLightning.attributes.hasStruckTargets = true
 						end
-					elseif spellId == spells.icefury.id then
-						snapshots[spells.icefury.id].buff:Initialize(type)
+					elseif entry.spellId == spells.icefury.id then
+						snapshots[spells.icefury.id].buff:Initialize(entry.type)
 						snapshots[spells.icefury.id].attributes.resource = snapshots[spells.icefury.id].buff.stacks * spells.frostShock.resource
-					elseif spellId == spells.stormkeeper.id then
-						snapshots[spells.stormkeeper.id].buff:Initialize(type)
-					elseif spellId == spells.surgeOfPower.id then
-						snapshots[spells.surgeOfPower.id].buff:Initialize(type)
-					elseif spellId == spells.powerOfTheMaelstrom.id then
-						snapshots[spells.powerOfTheMaelstrom.id].buff:Initialize(type)
-					elseif spellId == spells.echoesOfGreatSundering.id then
-						snapshots[spells.echoesOfGreatSundering.id].buff:Initialize(type)
-					elseif spellId == spells.primalFracture.id then
-						snapshots[spells.primalFracture.id].buff:Initialize(type)
+					elseif entry.spellId == spells.stormkeeper.id then
+						snapshots[spells.stormkeeper.id].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.surgeOfPower.id then
+						snapshots[spells.surgeOfPower.id].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.powerOfTheMaelstrom.id then
+						snapshots[spells.powerOfTheMaelstrom.id].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.echoesOfGreatSundering.id then
+						snapshots[spells.echoesOfGreatSundering.id].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.primalFracture.id then
+						snapshots[spells.primalFracture.id].buff:Initialize(entry.type)
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "enhancement" then
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "restoration" then
-					if spellId == spells.potionOfFrozenFocusRank1.spellId or spellId == spells.potionOfFrozenFocusRank2.spellId or spellId == spells.potionOfFrozenFocusRank3.spellId then
+					if entry.spellId == spells.potionOfFrozenFocusRank1.spellId or entry.spellId == spells.potionOfFrozenFocusRank2.spellId or entry.spellId == spells.potionOfFrozenFocusRank3.spellId then
 						local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
-						channeledManaPotion.buff:Initialize(type)
+						channeledManaPotion.buff:Initialize(entry.type)
 					end
 				end
 
 				-- Spec agnostic abilities
-				if spellId == spells.ascendance.id then
-					snapshots[spellId].buff:Initialize(type)
-				elseif spellId == spells.flameShock.id then
-					if TRB.Functions.Class:InitializeTarget(destGUID) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+				if entry.spellId == spells.ascendance.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.flameShock.id then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				end
 			end
 
-			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				targetData:Remove(destGUID)
+			if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
+				targetData:Remove(entry.destinationGuid)
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end
