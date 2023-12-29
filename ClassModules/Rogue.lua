@@ -1772,7 +1772,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			},
 		}
 
-		--[[
 		specCache.subtlety.snapshotData.attributes.resourceRegen = 0
 		specCache.subtlety.snapshotData.attributes.comboPoints = 0
 		specCache.subtlety.snapshotData.audio = {
@@ -1842,7 +1841,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			icons = {},
 			values = {}
 		}
-		]]
 	end
 
 	local function Setup_Assassination()

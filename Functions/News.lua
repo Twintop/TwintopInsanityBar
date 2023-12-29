@@ -7,7 +7,16 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 
-# 10.2.0.2-release (2023-12-29)
+# 10.2.0.4-release (2024-01-01)
+## General
+
+## Rogue
+### Subtlety
+- [NEW - #285](#285)
+
+----
+
+# 10.2.0.3-release (2023-12-29)
 ## General
 
 - (FIX) Correct an issue where bar text defaults would not be created on a new installation.
