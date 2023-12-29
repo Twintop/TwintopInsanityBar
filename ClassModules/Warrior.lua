@@ -757,8 +757,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local currentTime = GetTime()
 		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local targetData = snapshotData.targetData
 
 		if specId == 1 then
@@ -809,8 +808,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local function RefreshLookupData_Arms()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local specSettings = TRB.Data.settings.warrior.arms
 		---@type TRB.Classes.TargetData
@@ -995,8 +993,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local function RefreshLookupData_Fury()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local specSettings = TRB.Data.settings.warrior.fury
 		---@type TRB.Classes.TargetData
@@ -1240,8 +1237,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local coreSettings = TRB.Data.settings.core
 		local classSettings = TRB.Data.settings.warrior
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 
@@ -1648,8 +1644,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local _
 		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local targetData = snapshotData.targetData
 
@@ -2047,8 +2042,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return valid
 		end
 		local specId = GetSpecialization()
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local targetData = snapshotData.targetData
 		local target = targetData.targets[targetData.currentTargetGuid]

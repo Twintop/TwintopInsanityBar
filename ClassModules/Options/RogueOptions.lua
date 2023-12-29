@@ -1215,12 +1215,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		return settings
 	end
 
-	local function LoadDefaultSettings()
+	local function LoadDefaultSettings(includeBarText)
 		local settings = TRB.Options.LoadDefaultSettings()
 
-		settings.rogue.assassination = AssassinationLoadDefaultSettings()
-		settings.rogue.outlaw = OutlawLoadDefaultSettings()
-		settings.rogue.subtlety = SubtletyLoadDefaultSettings()
+		settings.rogue.assassination = AssassinationLoadDefaultSettings(includeBarText)
+		settings.rogue.outlaw = OutlawLoadDefaultSettings(includeBarText)
+		--settings.rogue.subtlety = SubtletyLoadDefaultSettings(includeBarText)
 		return settings
 	end
 	TRB.Options.Rogue.LoadDefaultSettings = LoadDefaultSettings

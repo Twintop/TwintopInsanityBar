@@ -1341,20 +1341,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				isTalent = true
 			},
 
-			-- subtlety Poisons
-			deadlyPoison = {
-				id = 2818,
-				name = "",
-				icon = "",
-				isTalent = true
-			},
-			amplifyingPoison = {
-				id = 383414,
-				name = "",
-				icon = "",
-				isTalent = true
-			},
-
 			-- Rogue Class Baseline Abilities
 			stealth = {
 				id = 1784,
@@ -1596,64 +1582,27 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			},
 
 			-- Subtlety Baseline Abilities
-			envenom = {
-				id = 32645,
-				name = "",
-				icon = "",
-				resource = -35,
-				comboPoints = true,
-				texture = "",
-				thresholdId = 12,
-				settingKey = "envenom",
-				baseline = true
-			},
-			fanOfKnives = {
-				id = 51723,
-				name = "",
-				icon = "",
-				resource = -35,
-				comboPointsGenerated = 1,
-				texture = "",
-				thresholdId = 13,
-				settingKey = "fanOfKnives",
-				baseline = true
-			},
-			garrote = {
-				id = 703,
-				name = "",
-				icon = "",
-				resource = -45,
-				comboPointsGenerated = 1,
-				texture = "",
-				thresholdId = 14,
-				settingKey = "garrote",
-				hasCooldown = true,
-				cooldown = 6,
-				pandemicTime = 18 * 0.3,
-				baseline = true,
-				isSnowflake = true
-			},
-			mutilate = {
-				id = 1329,
-				name = "",
-				icon = "",
-				resource = -50,
-				comboPointsGenerated = 2,
-				texture = "",
-				thresholdId = 15,
-				settingKey = "mutilate",
-				baseline = true,
-				viciousVenoms = true
-			},
-			poisonedKnife = {
-				id = 185565,
+			backstab = {
+				id = 53,
 				name = "",
 				icon = "",
 				resource = -40,
 				comboPointsGenerated = 1,
 				texture = "",
-				thresholdId = 16,
-				settingKey = "poisonedKnife",
+				thresholdId = 12,
+				settingKey = "backstab",
+				baseline = true,
+				snowflake = true
+			},
+			blackPowder = {
+				id = 319175,
+				name = "",
+				icon = "",
+				resource = -35,
+				comboPoints = true,
+				texture = "",
+				thresholdId = 13,
+				settingKey = "blackPowder",
 				baseline = true
 			},
 			rupture = {
@@ -1663,7 +1612,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				resource = -25,
 				comboPoints = true,
 				texture = "",
-				thresholdId = 17,
+				thresholdId = 14,
 				settingKey = "rupture",
 				pandemicTimes = {
 					8 * 0.3, -- 0 CP, show same as if we had 1
@@ -1677,85 +1626,80 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				},
 				baseline = true
 			},
+			shadowstrike = {
+				id = 185438,
+				name = "",
+				icon = "",
+				resource = -45,
+				comboPointsGenerated = 2,
+				stealth = true,
+				texture = "",
+				thresholdId = 15,
+				settingKey = "shadowstrike",
+				baseline = true
+			},
+			shurikenStorm = {
+				id = 197835,
+				name = "",
+				icon = "",
+				resource = -45,
+				comboPointsGenerated = 1,
+				texture = "",
+				thresholdId = 16,
+				settingKey = "shurikenStorm",
+				baseline = true
+			},
+			shurikenToss = {
+				id = 114014,
+				name = "",
+				icon = "",
+				resource = -40,
+				comboPointsGenerated = 1,
+				texture = "",
+				thresholdId = 17,
+				settingKey = "shurikenToss",
+				baseline = true
+			},
 
-			-- Subtlety Spec Abilities
-			internalBleeding = {
-				id = 381627,
+			-- Subtlety Spec Abilities			
+			shadowBlades = {
+				id = 121471,
 				name = "",
 				icon = "",
 				isTalent = true
 			},
-			lightweightShiv = {
-				id = 394983,
+			gloomblade = {
+				id = 200758,
 				name = "",
 				icon = "",
-				isTalent = true
+				resource = -40,
+				texture = "",
+				thresholdId = 18,
+				settingKey = "gloomblade",
+				isTalent = true,
+				snowflake = true
 			},
-			crimsonTempest = {
-				id = 121411,
+			secretTechnique = {
+				id = 280719,
 				name = "",
 				icon = "",
 				resource = -30,
 				comboPoints = true,
 				texture = "",
-				thresholdId = 18,
-				settingKey = "crimsonTempest",
-				pandemicTimes = {
-					6 * 0.3, -- 0 CP, show same as if we had 1
-					6 * 0.3,
-					8 * 0.3,
-					10 * 0.3,
-					12 * 0.3,
-					14 * 0.3,
-					16 * 0.3,
-					18 * 0.3, -- Kyrian ability buff
-				},
-				isTalent = true
-			},
-			improvedGarrote = {
-				id = 381632,
-				name = "",
-				icon = "",
-				stealthBuffId = 392401,
-				buffId = 392403,
-				isTalent = true
-			},
-			viciousVenoms = {
-				id = 381634,
-				name = "",
-				icon = "",
-				isTalent = true,
-				energyMod = {
-					[0] = 0,
-					[1] = -5,
-					[2] = -10
-				}
-			},
-			-- TODO: Add Doomblade as a bleed
-			blindside = {
-				id = 121153,
-				name = "",
-				icon = "",
-				duration = 10,
-				isTalent = true
-			},
-			tinyToxicBlade = {
-				id = 381800,
-				name = "",
-				icon = "",
-				isTalent = true
-			},
-			serratedBoneSpike = {
-				id = 385424,
-				name = "",
-				icon = "",
-				resource = -15,
-				comboPointsGenerated = 2,
-				texture = "",
 				thresholdId = 19,
-				settingKey = "serratedBoneSpike",
+				settingKey = "secretTechnique",
 				hasCooldown = true,
-				debuffId = 394036,
+				isTalent = true
+			},
+			shurikenTornado = {
+				id = 277925,
+				name = "",
+				icon = "",
+				resource = -60,
+				comboPointsGenerated = 1,
+				texture = "",
+				thresholdId = 20,
+				settingKey = "shurikenTornado",
 				isTalent = true
 			},
 			sepsis = {
@@ -1765,24 +1709,23 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				resource = -25,
 				comboPointsGenerated = 1,
 				texture = "",
-				thresholdId = 20,
+				thresholdId = 21,
 				settingKey = "sepsis",
 				hasCooldown = true,
 				cooldown = 90,
 				buffId = 375939,
 				isTalent = true
 			},
-			kingsbane = {
-				id = 385627,
+			goremawsBite = {
+				id = 426591,
 				name = "",
 				icon = "",
-				resource = -35,
-				comboPointsGenerated = 1,
+				resource = -25,
+				comboPointsGenerated = 3,
 				texture = "",
-				thresholdId = 21,
-				settingKey = "kingsbane",
+				thresholdId = 22,
+				settingKey = "goremawsBite",
 				hasCooldown = true,
-				cooldown = 60,
 				isTalent = true
 			},
 
@@ -1793,12 +1736,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				resource = -25,
 				texture = "",
-				thresholdId = 22,
+				thresholdId = 23,
 				settingKey = "deathFromAbove",
 				comboPoints = true,
 				hasCooldown = true,
-				isPvp = true,
-				cooldown = 30
+				isPvp = true
 			},
 			dismantle = {
 				id = 207777,
@@ -1806,11 +1748,21 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				resource = -25,
 				texture = "",
-				thresholdId = 23,
+				thresholdId = 24,
 				settingKey = "dismantle",
 				hasCooldown = true,
-				isPvp = true,
-				cooldown = 45
+				isPvp = true
+			},
+			shadowyDuel = {
+				id = 207736,
+				name = "",
+				icon = "",
+				resource = -50,
+				texture = "",
+				thresholdId = 25,
+				settingKey = "dismantle",
+				hasCooldown = true,
+				isPvp = true
 			},
 
 			adrenalineRush = {
@@ -1820,6 +1772,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			},
 		}
 
+		--[[
 		specCache.subtlety.snapshotData.attributes.resourceRegen = 0
 		specCache.subtlety.snapshotData.attributes.comboPoints = 0
 		specCache.subtlety.snapshotData.audio = {
@@ -1889,6 +1842,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			icons = {},
 			values = {}
 		}
+		]]
 	end
 
 	local function Setup_Assassination()

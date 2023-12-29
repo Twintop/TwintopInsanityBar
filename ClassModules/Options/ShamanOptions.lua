@@ -957,11 +957,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		return settings
 	end
 
-	local function LoadDefaultSettings()
+	local function LoadDefaultSettings(includeBarText)
 		local settings = TRB.Options.LoadDefaultSettings()
-		settings.shaman.elemental = ElementalLoadDefaultSettings()
-		settings.shaman.enhancement = EnhancementLoadDefaultSettings()
-		settings.shaman.restoration = RestorationLoadDefaultSettings()
+		settings.shaman.elemental = ElementalLoadDefaultSettings(includeBarText)
+		settings.shaman.enhancement = EnhancementLoadDefaultSettings(includeBarText)
+		settings.shaman.restoration = RestorationLoadDefaultSettings(includeBarText)
 
 		return settings
 	end

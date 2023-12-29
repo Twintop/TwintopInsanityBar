@@ -1152,12 +1152,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		return settings
 	end
 
-	local function LoadDefaultSettings()
+	local function LoadDefaultSettings(includeBarText)
 		local settings = TRB.Options.LoadDefaultSettings()
 
-		settings.druid.balance = BalanceLoadDefaultSettings()
-		settings.druid.feral = FeralLoadDefaultSettings()
-		settings.druid.restoration = RestorationLoadDefaultSettings()
+		settings.druid.balance = BalanceLoadDefaultSettings(includeBarText)
+		settings.druid.feral = FeralLoadDefaultSettings(includeBarText)
+		settings.druid.restoration = RestorationLoadDefaultSettings(includeBarText)
 		return settings
 	end
 	TRB.Options.Druid.LoadDefaultSettings = LoadDefaultSettings

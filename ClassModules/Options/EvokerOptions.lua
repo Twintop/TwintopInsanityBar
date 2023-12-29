@@ -1150,11 +1150,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		return settings
 	end
 
-	local function LoadDefaultSettings()
+	local function LoadDefaultSettings(includeBarText)
 		local settings = TRB.Options.LoadDefaultSettings()
-		settings.evoker.devastation = DevastationLoadDefaultSettings()
-		settings.evoker.preservation = PreservationLoadDefaultSettings()
-		settings.evoker.augmentation = AugmentationLoadDefaultSettings()
+		settings.evoker.devastation = DevastationLoadDefaultSettings(includeBarText)
+		settings.evoker.preservation = PreservationLoadDefaultSettings(includeBarText)
+		settings.evoker.augmentation = AugmentationLoadDefaultSettings(includeBarText)
 
 		return settings
 	end

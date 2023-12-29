@@ -789,8 +789,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 	local function RefreshLookupData_Devastation()
 		local currentTime = GetTime()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local specSettings = TRB.Data.settings.evoker.devastation
 		--Spec specific implementation
@@ -856,8 +855,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 	
 	local function RefreshLookupData_Preservation()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local specSettings = TRB.Data.settings.evoker.preservation
 		local currentTime = GetTime()
@@ -1119,8 +1117,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 	local function RefreshLookupData_Augmentation()
 		local currentTime = GetTime()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local specSettings = TRB.Data.settings.evoker.augmentation
 		--Spec specific implementation
@@ -1200,8 +1197,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 	local function UpdateCastingResourceFinal_Preservation()
 		-- Do nothing for now
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		-- Do nothing for now

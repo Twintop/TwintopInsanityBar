@@ -1944,8 +1944,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local currentTime = GetTime()
 		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 		---@type TRB.Classes.TargetData
 		local targetData = snapshotData.targetData
@@ -2500,8 +2499,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function RefreshLookupData_Holy()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local specSettings = TRB.Data.settings.priest.holy
 		---@type TRB.Classes.Target
@@ -2852,8 +2850,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function RefreshLookupData_Shadow()
 		local specSettings = TRB.Data.settings.priest.shadow
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local targetData = snapshotData.targetData
 		local target = targetData.targets[targetData.currentTargetGuid]
@@ -3220,8 +3217,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function UpdateCastingResourceFinal_Holy()
 		-- Do nothing for now
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		
@@ -3544,8 +3540,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local specId = GetSpecialization()
 		local _
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local shadowfiend = snapshotData.snapshots[spells.shadowfiend.id]
 
 		UpdateSpecificShadowfiendValues(shadowfiend)

@@ -656,11 +656,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		return settings
 	end
 
-	local function LoadDefaultSettings()
+	local function LoadDefaultSettings(includeBarText)
 		local settings = TRB.Options.LoadDefaultSettings()
 
-		settings.warrior.arms = ArmsLoadDefaultSettings()
-		settings.warrior.fury = FuryLoadDefaultSettings()
+		settings.warrior.arms = ArmsLoadDefaultSettings(includeBarText)
+		settings.warrior.fury = FuryLoadDefaultSettings(includeBarText)
 		return settings
 	end
 	TRB.Options.Warrior.LoadDefaultSettings = LoadDefaultSettings

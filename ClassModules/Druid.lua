@@ -1523,8 +1523,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function GetCurrentMoonSpell()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local moon = snapshotData.snapshots[spells.newMoon.id]
 		local currentTime = GetTime()
 		if talents:IsTalentActive(TRB.Data.spells.newMoon) and (moon.attributes.checkAfter == nil or currentTime >= moon.attributes.checkAfter) then
@@ -1552,8 +1551,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	
 	local function CalculateAbilityResourceValue(resource, threshold, relentlessPredator)
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local modifier = 1.0
 		local specId = GetSpecialization()
 
@@ -1572,8 +1570,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 		---@type TRB.Classes.TargetData
 		local targetData = snapshotData.targetData
@@ -1581,10 +1578,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 
 	local function TargetsCleanup(clearAll)
-		---@type TRB.Classes.Snapshot
-		local snapshotData = TRB.Data.snapshotDataData
-		---@type TRB.Classes.TargetData
-		local targetData = TRB.Data.snapshotData.targetData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local targetData = snapshotData.targetData
 		local specId = GetSpecialization()
 
 		if specId == 1 then
@@ -1679,8 +1674,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function GetBerserkRemainingTime()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		if talents:IsTalentActive(TRB.Data.spells.incarnationAvatarOfAshamane) then
 			return snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].cooldown.remaining
 		else
@@ -1690,8 +1684,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function GetEclipseRemainingTime()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local remainingTime = 0
 		local icon = nil
 
@@ -1714,8 +1707,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function GetCurrentSnapshot(bonuses)
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshotValue = 1.0
 
 		if bonuses.tigersFury == true and snapshotData.snapshots[spells.tigersFury.id].buff.isActive then
@@ -1746,8 +1738,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function RefreshLookupData_Balance()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local specSettings = TRB.Data.settings.druid.balance
 		---@type TRB.Classes.Target
 		local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
@@ -2107,8 +2098,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	
 	local function RefreshLookupData_Feral()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local specSettings = TRB.Data.settings.druid.feral
 		---@type TRB.Classes.Target
 		local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
@@ -2649,8 +2639,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 	local function RefreshLookupData_Restoration()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local specSettings = TRB.Data.settings.druid.restoration
 		---@type TRB.Classes.Target
@@ -2954,8 +2943,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 	end
 
 	local function FillSnapshotDataCasting_Balance(spell)
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local currentTime = GetTime()
 		snapshotData.casting.startTime = currentTime
 		snapshotData.casting.resourceRaw = spell.resource
@@ -3165,8 +3153,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		UpdatePredatorRevealed()
 		
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local currentTime = GetTime()
 
 		snapshotData.attributes.bleeds.moonfire = GetCurrentSnapshot(spells.moonfire.bonuses)
@@ -3245,8 +3232,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local coreSettings = TRB.Data.settings.core
 		local classSettings = TRB.Data.settings.druid
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 		if specId == 1 then
 			local specSettings = classSettings.balance

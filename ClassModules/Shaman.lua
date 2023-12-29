@@ -1565,7 +1565,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 	local function FillSnapshotDataCasting(spell, resourceMod)
 		local spells = TRB.Data.spells
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 		resourceMod = resourceMod or 0
 		local resourceMultMod = 1
@@ -1592,8 +1592,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function UpdateCastingResourceFinal_Restoration()
 		-- Do nothing for now
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		-- Do nothing for now
@@ -2663,7 +2662,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	function TRB.Functions.Class:HideResourceBar(force)
 		local affectingCombat = UnitAffectingCombat("player")
 		local specId = GetSpecialization()
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]] or TRB.Classes.SnapshotData:New()
 
 		if specId == 1 then
 			if not TRB.Data.specSupported or force or GetSpecialization() ~= 1 or ((not affectingCombat) and

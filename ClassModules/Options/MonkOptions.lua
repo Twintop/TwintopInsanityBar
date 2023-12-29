@@ -667,11 +667,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		return settings
 	end
 	
-	local function LoadDefaultSettings()
+	local function LoadDefaultSettings(includeBarText)
 		local settings = TRB.Options.LoadDefaultSettings()
 
-		settings.monk.mistweaver = MistweaverLoadDefaultSettings()
-		settings.monk.windwalker = WindwalkerLoadDefaultSettings()
+		settings.monk.mistweaver = MistweaverLoadDefaultSettings(includeBarText)
+		settings.monk.windwalker = WindwalkerLoadDefaultSettings(includeBarText)
 
 		return settings
 	end

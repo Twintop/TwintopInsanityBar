@@ -1064,12 +1064,12 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		return settings
 	end
 
-	local function LoadDefaultSettings()
+	local function LoadDefaultSettings(includeBarText)
 		local settings = TRB.Options.LoadDefaultSettings()
 
-		settings.hunter.beastMastery = BeastMasteryLoadDefaultSettings()
-		settings.hunter.marksmanship = MarksmanshipLoadDefaultSettings()
-		settings.hunter.survival = SurvivalLoadDefaultSettings()
+		settings.hunter.beastMastery = BeastMasteryLoadDefaultSettings(includeBarText)
+		settings.hunter.marksmanship = MarksmanshipLoadDefaultSettings(includeBarText)
+		settings.hunter.survival = SurvivalLoadDefaultSettings(includeBarText)
 		return settings
 	end
 	TRB.Options.Hunter.LoadDefaultSettings = LoadDefaultSettings

@@ -172,9 +172,7 @@ end
 ---@return number
 function TRB.Classes.Healer.SymbolOfHope:CalculateTime(totalTicks, tickRate, nextTickRemaining, forceManaInclusion)
     local manaRaw = 0
-
-    ---@type TRB.Classes.SnapshotData
-    local snapshotData = TRB.Data.snapshotData
+    local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
     local casting = snapshotData.casting
     local manaRegen = snapshotData.attributes.manaRegen
     local resource = snapshotData.attributes.resource

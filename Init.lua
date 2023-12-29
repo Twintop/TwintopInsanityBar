@@ -132,7 +132,6 @@ TRB.Data.character = {
 	guid = UnitGUID("player"),
 	className = "",
 	specName = "",
----@diagnostic disable-next-line: missing-parameter
 	specGroup = GetActiveSpecGroup(),
 	maxResource = 100,
 	talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]],
@@ -186,12 +185,10 @@ TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 -- We're going to make these as StatusBars so we can use them for Death Knight runes and Warlock soulshards in the future
 if classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 13 then
 	TRB.Frames.resource2Frames = {}
-	---@diagnostic disable-next-line: param-type-mismatch
 	TRB.Frames.resource2ContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame2", TRB.Frames.barContainerFrame, "BackdropTemplate")
 	
 	for x = 1, 10 do
 		TRB.Frames.resource2Frames[x] = {}
-		---@diagnostic disable-next-line: param-type-mismatch
 		TRB.Frames.resource2Frames[x].containerFrame = CreateFrame("Frame", "TwintopResourceBarFrame_ComboPoint_"..x, TRB.Frames.resource2ContainerFrame, "BackdropTemplate")
 		TRB.Frames.resource2Frames[x].borderFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
 		TRB.Frames.resource2Frames[x].resourceFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
@@ -229,7 +226,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 		elseif guid ~= TRB.Data.character.guid and targetData.ttdIsActive then
 			targetData:InitializeTarget(guid)
 			local target = targetData.targets[targetData.currentTargetGuid]
-			if self.ttdSinceLastUpdate >= target.timeToDie.settings.sampleRate then -- in seconds			
+			if self.ttdSinceLastUpdate >= target.timeToDie.settings.sampleRate then
 				target.timeToDie:Update(currentTime)
 				self.ttdSinceLastUpdate = 0
 			end
@@ -270,7 +267,6 @@ function SlashCmdList.TWINTOP(msg)
 	elseif cmd == "news" then
 		TRB.Functions.News:Show()
 	else
-		--Settings.OpenToCategory(TRB.Frames.interfaceSettingsFrameContainer.panel)
 		if TRB.Data.barConstructedForSpec == nil then
 			InterfaceOptionsFrame_OpenToCategory(TRB.Frames.interfaceSettingsFrameContainer.panel)
 		else

@@ -537,8 +537,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	local function RefreshLookupData_Havoc()
 		local currentTime = GetTime()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local specSettings = TRB.Data.settings.demonhunter.havoc
 		local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 		--Spec specific implementation
@@ -726,8 +725,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 	local function CastingSpell()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-
 		local currentTime = GetTime()
 		local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
 		local currentChannelName, _, _, currentChannelStartTime, currentChannelEndTime, _, _, currentChannelId = UnitChannelInfo("player")
@@ -776,8 +773,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		UpdateSnapshot()		
 		
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local _
 		snapshotData.snapshots[spells.chaosNova.id].buff:GetRemainingTime(currentTime)
 		snapshotData.snapshots[spells.felEruption.id].buff:GetRemainingTime(currentTime)
@@ -838,8 +834,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local coreSettings = TRB.Data.settings.core
 		local classSettings = TRB.Data.settings.demonhunter
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 		if specId == 1 then
 			local specSettings = classSettings.havoc
@@ -1021,8 +1016,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local _
 		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 			local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
@@ -1378,8 +1372,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end
 		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local settings = nil
 		local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 		if specId == 1 then

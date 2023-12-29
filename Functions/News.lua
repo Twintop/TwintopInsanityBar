@@ -7,6 +7,18 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 
+# 10.2.0.2-release (2023-12-29)
+## General
+
+- (FIX) Correct an issue where bar text defaults would not be created on a new installation.
+- (HOUSEKEEPING) Adjust linting.
+
+## Shaman
+
+- (FIX) Fix an issue where the Shaman module may not load correctly if the Enhancement experimental feature was disabled.
+
+----
+
 # 10.2.0.2-release (2023-12-26)
 ## General
 
