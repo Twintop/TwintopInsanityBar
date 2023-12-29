@@ -27,7 +27,7 @@ Currently supported specs:
 - Evoker - Devastation (Experimental/Minimal), Preservation, Augmentation (Experimental/Minimal)
 - Hunter - Beast Mastery, Marksmanship, Survival
 - Monk - Mistweaver, Windwalker
-- Priest - Holy, Shadow
+- Priest - Discipline, Holy, Shadow
 - Rogue - Assassination, Outlaw
 - Shaman - Elemental, Enhancement (Experimental/Minimal), Restoration
 - Warrior - Arms, Fury
