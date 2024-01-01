@@ -1347,18 +1347,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				name = "",
 				icon = ""
 			},
-			ambush = {
-				id = 8676,
+			eviscerate = { -- This is technically a Rogue ability but is missing from the other specs
+				id = 196819,
 				name = "",
 				icon = "",
-				resource = -50,
-				comboPointsGenerated = 2,
-				stealth = true,
+				resource = -35,
+				comboPoints = true,
 				texture = "",
 				thresholdId = 1,
-				settingKey = "ambush",
-				baseline = true,
-				viciousVenoms = true
+				settingKey = "eviscerate",
+				baseline = true
 			},
 			cheapShot = {
 				id = 1833,
@@ -1727,6 +1725,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				hasCooldown = true,
 				isTalent = true
 			},
+
 
 			-- PvP
 			deathFromAbove = {
@@ -3502,8 +3501,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$ruptureTime"] = ruptureTime
 		lookup["$sadTime"] = sadTime
 		lookup["$sliceAndDiceTime"] = sadTime
-		lookup["$blindsideTime"] = blindsideTime
-		lookup["$isBleeding"] = ""
 		lookup["$inStealth"] = ""
 
 		if TRB.Data.character.maxResource == snapshotData.attributes.resource then
@@ -3551,8 +3548,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookupLogic["$ruptureTime"] = _ruptureTime
 		lookupLogic["$sadTime"] = _sadTime
 		lookupLogic["$sliceAndDiceTime"] = _sadTime
-		lookupLogic["$blindsideTime"] = _blindsideTime
-		lookupLogic["$isBleeding"] = ""
 		lookupLogic["$inStealth"] = ""
 
 		if TRB.Data.character.maxResource == snapshotData.attributes.resource then
