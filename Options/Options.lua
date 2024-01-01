@@ -310,6 +310,15 @@ local function LoadDefaultSettings()
 						font = true,
 						textures = true,
 						thresholds = true
+					},
+					subtlety = {
+						specEnable = false,
+						bar = true,
+						comboPoints = true,
+						displayBar = true,
+						font = true,
+						textures = true,
+						thresholds = true
 					}
 				},
 				shaman = {
@@ -392,7 +401,8 @@ local function LoadDefaultSettings()
 				},
 				rogue = {
 					assassination = true,
-					outlaw = true
+					outlaw = true,
+					subtlety = true
 				},
 				shaman = {
 					elemental = true,
@@ -446,6 +456,7 @@ local function LoadDefaultSettings()
 		rogue = {
 			assassination = {},
 			outlaw = {},
+			subtlety = {}
 		},
 		shaman = {
 			elemental = {},
@@ -1723,6 +1734,40 @@ local function ConstructImportExportPanel()
 	controls.exportButton_Rogue_Outlaw_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Rogue_Outlaw_BarText:SetScript("OnClick", function(self, ...)
 		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Outlaw Rogue (Bar Text).", 4, 2, false, false, false, true, false)
+	end)
+
+	yCoord = yCoord - 25
+	specName = "Subtlety"
+	controls.labels.rogueSubtlety = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+
+	buttonOffset = oUi.xCoord + oUi.xPadding + 100
+	controls.buttons.exportButton_Rogue_Subtlety_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Rogue_Subtlety_All:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Subtlety Rogue (All).", 4, 3, true, true, true, true, false)
+	end)
+
+	buttonOffset = buttonOffset + buttonSpacing + 50
+	controls.exportButton_Rogue_Subtlety_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Rogue_Subtlety_BarDisplay:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Subtlety Rogue (Bar Display).", 4, 3, true, false, false, false, false)
+	end)
+
+	buttonOffset = buttonOffset + buttonSpacing + 80
+	controls.exportButton_Rogue_Subtlety_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Rogue_Subtlety_FontAndText:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Subtlety Rogue (Font & Text).", 4, 3, false, true, false, false, false)
+	end)
+
+	buttonOffset = buttonOffset + buttonSpacing + 90
+	controls.exportButton_Rogue_Subtlety_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Rogue_Subtlety_AudioAndTracking:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Subtlety Rogue (Audio & Tracking).", 4, 3, false, false, true, false, false)
+	end)
+
+	buttonOffset = buttonOffset + buttonSpacing + 120
+	controls.exportButton_Rogue_Subtlety_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Rogue_Subtlety_BarText:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Subtlety Rogue (Bar Text).", 4, 3, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 35

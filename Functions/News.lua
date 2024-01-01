@@ -11,6 +11,9 @@ local content = [====[
 ## General
 
 ## Rogue
+### Assassination
+- (FIX) Correct LUA error, and bar behavior, when using Sepsis.
+
 ### Subtlety
 - [NEW - #285](#285)
 

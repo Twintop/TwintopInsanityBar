@@ -1466,11 +1466,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 8,
 				settingKey = "shiv",
 				hasCooldown = true,
-				hasCharges = true,
-				isSnowflake = true,
 				cooldown = 25,
-				isTalent = true,
-				baseline = true
+				isTalent = true
 			},
 			sap = {
 				id = 6770,
@@ -1592,7 +1589,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 12,
 				settingKey = "backstab",
 				baseline = true,
-				snowflake = true
+				isSnowflake = true
 			},
 			blackPowder = {
 				id = 319175,
@@ -1677,7 +1674,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 18,
 				settingKey = "gloomblade",
 				isTalent = true,
-				snowflake = true
+				isSnowflake = true
 			},
 			secretTechnique = {
 				id = 280719,
@@ -1700,6 +1697,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 20,
 				settingKey = "shurikenTornado",
+				hasCooldown = true,
 				isTalent = true
 			},
 			sepsis = {
@@ -1720,6 +1718,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				id = 426591,
 				name = "",
 				icon = "",
+				buffId = 426593,
 				resource = -25,
 				comboPointsGenerated = 3,
 				texture = "",
@@ -1782,22 +1781,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		---@type TRB.Classes.Snapshot
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.distract.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.distract)
 		---@type TRB.Classes.Snapshot
-		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.kidneyShot.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.kidneyShot)
-		---@type TRB.Classes.Snapshot
-		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.sliceAndDice)
-		---@type TRB.Classes.Snapshot
-		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shiv.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shiv)
-		---@type TRB.Classes.Snapshot
-		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.feint.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.feint)
-		---@type TRB.Classes.Snapshot
-		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.gouge.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.gouge)
-		---@type TRB.Classes.Snapshot
-		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.garrote.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.garrote)
-		---@type TRB.Classes.Snapshot
-		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.improvedGarrote.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.improvedGarrote, {
-			isActiveStealth = false
-		})
-		---@type TRB.Classes.Snapshot
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.echoingReprimand,
 		{
 			enabled = {
@@ -1821,17 +1804,31 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		---@type TRB.Classes.Snapshot
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.echoingReprimand_5CP.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.echoingReprimand_5CP)
 		---@type TRB.Classes.Snapshot
-		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.serratedBoneSpike.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.serratedBoneSpike)
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.feint.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.feint)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.gouge.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.gouge)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.kidneyShot.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.kidneyShot)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shiv.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shiv)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.sliceAndDice)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.goremawsBite.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.goremawsBite)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.secretTechnique.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.secretTechnique)
 		---@type TRB.Classes.Snapshot
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.sepsis.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.sepsis)
 		---@type TRB.Classes.Snapshot
-		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.kingsbane.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.kingsbane)
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shadowBlades.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shadowBlades)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shurikenTornado.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shurikenTornado)
 		---@type TRB.Classes.Snapshot
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.deathFromAbove)
 		---@type TRB.Classes.Snapshot
-		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.blindside.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.blindside)
-		---@type TRB.Classes.Snapshot
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.dismantle.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.dismantle)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shadowyDuel.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shadowyDuel)
 		---@type TRB.Classes.Snapshot
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.subterfuge.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.subterfuge)
 		---@type TRB.Classes.Snapshot
@@ -1849,14 +1846,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end
 
 		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "rogue", "assassination")
-	end
-
-	local function Setup_Outlaw()
-		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
-			return
-		end
-
-		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "rogue", "outlaw")
 	end
 
 	local function FillSpellData_Assassination()
@@ -2012,6 +2001,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		specCache.assassination.spells = spells
 	end
 
+	local function Setup_Outlaw()
+		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
+			return
+		end
+
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "rogue", "outlaw")
+	end
+
 	local function FillSpellData_Outlaw()
 		Setup_Outlaw()
 		local spells = TRB.Functions.Spell:FillSpellData(specCache.outlaw.spells)
@@ -2163,6 +2160,150 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		specCache.outlaw.spells = spells
 	end
 
+	local function Setup_Subtlety()
+		if TRB.Data.character and TRB.Data.character.specId == GetSpecialization() then
+			return
+		end
+
+		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "rogue", "subtlety")
+	end
+
+	local function FillSpellData_Subtlety()
+		Setup_Subtlety()
+		local spells = TRB.Functions.Spell:FillSpellData(specCache.subtlety.spells)
+
+		-- This is done here so that we can get icons for the options menu!
+		specCache.subtlety.barTextVariables.icons = {
+			{ variable = "#casting", icon = "", description = "The icon of the Energy generating spell you are currently hardcasting", printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+
+			{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
+			{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
+			{ variable = "#cripplingPoison", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = true },
+			{ variable = "#cp", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = false },
+			{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
+			{ variable = "#echoingReprimand", icon = spells.echoingReprimand.icon, description = spells.echoingReprimand.name, printInSettings = true },
+			{ variable = "#numbingPoison", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = true },
+			{ variable = "#np", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = false },
+			{ variable = "#rupture", icon = spells.rupture.icon, description = spells.rupture.name, printInSettings = true },
+			{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
+			{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
+			{ variable = "#sepsis", icon = spells.sepsis.icon, description = spells.sepsis.name, printInSettings = true },
+			{ variable = "#stealth", icon = spells.stealth.icon, description = spells.stealth.name, printInSettings = true },
+			{ variable = "#woundPoison", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = true },
+			{ variable = "#wp", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = false },
+		}
+		specCache.subtlety.barTextVariables.values = {
+			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
+			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
+			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
+			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
+			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
+			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
+			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
+			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
+			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
+			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+
+			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
+			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
+			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
+			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
+			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
+			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
+			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
+			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			
+			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+			{ variable = "$inStealth", description = "Are you currently considered to be in stealth? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+
+
+			{ variable = "$energy", description = "Current Energy", printInSettings = true, color = false },
+			{ variable = "$resource", description = "Current Energy", printInSettings = false, color = false },
+			{ variable = "$energyMax", description = "Maximum Energy", printInSettings = true, color = false },
+			{ variable = "$resourceMax", description = "Maximum Energy", printInSettings = false, color = false },
+			{ variable = "$casting", description = "Builder Energy from Hardcasting Spells", printInSettings = false, color = false },
+			{ variable = "$casting", description = "Spender Energy from Hardcasting Spells", printInSettings = false, color = false },
+			{ variable = "$passive", description = "Energy from Passive Sources including Regen and Barbed Shot buffs", printInSettings = true, color = false },
+			{ variable = "$regen", description = "Energy from Passive Regen", printInSettings = true, color = false },
+			{ variable = "$regenEnergy", description = "Energy from Passive Regen", printInSettings = false, color = false },
+			{ variable = "$resourceRegen", description = "Energy from Passive Regen", printInSettings = false, color = false },
+			{ variable = "$energyPlusCasting", description = "Current + Casting Energy Total", printInSettings = false, color = false },
+			{ variable = "$resourcePlusCasting", description = "Current + Casting Energy Total", printInSettings = false, color = false },
+			{ variable = "$energyPlusPassive", description = "Current + Passive Energy Total", printInSettings = true, color = false },
+			{ variable = "$resourcePlusPassive", description = "Current + Passive Energy Total", printInSettings = false, color = false },
+			{ variable = "$energyTotal", description = "Current + Passive + Casting Energy Total", printInSettings = true, color = false },
+			{ variable = "$resourceTotal", description = "Current + Passive + Casting Energy Total", printInSettings = false, color = false },
+			
+			{ variable = "$comboPoints", description = "Current Combo Points", printInSettings = true, color = false },
+			{ variable = "$comboPointsMax", description = "Maximum Combo Points", printInSettings = true, color = false },
+
+			--[[
+			{ variable = "$rtbCount", description = "Current number of Roll the Bones buffs active", printInSettings = true, color = false },
+			{ variable = "$rollTheBonesCount", description = "Current number of Roll the Bones buffs active", printInSettings = false, color = false },
+
+			{ variable = "$rtbTemporaryCount", description = "Current number of full Roll the Bones buffs active", printInSettings = true, color = false },
+			{ variable = "$rollTheBonesTemporaryCount", description = "Current number of temporary Roll the Bones buffs (from Count the Odds) active", printInSettings = false, color = false },
+
+			{ variable = "$rtbAllCount", description = "Current number of Roll the Bones buffs active from all sources", printInSettings = true, color = false },
+			{ variable = "$rollTheBonesAllCount", description = "Current number of Roll the Bones buffs active from all sources", printInSettings = false, color = false },
+			
+			{ variable = "$rtbBuffTime", description = "Time remaining on your Roll the Bones buffs (not from Count the Odds)", printInSettings = true, color = false },
+			{ variable = "$rollTheBonesBuffTime", description = "Time remaining on your Roll the Bones buffs (not from Count the Odds)", printInSettings = false, color = false },
+			
+			{ variable = "$rtbGoodBuff", description = "Are the current Roll the Bones buffs good or not? Good is defined as any two buffs, Broadside, or True Bearing. Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$rollTheBonesGoodBuff", description = "Are the current Roll the Bones buffs good or not? Good is defined as any two buffs, Broadside, or True Bearing. Logic variable only!", printInSettings = false, color = false },
+
+			{ variable = "$broadsideTime", description = "Time remaining on Broadside buff (from Roll the Bones)", printInSettings = true, color = false },
+			{ variable = "$buriedTreasureTime", description = "Time remaining on Burried Treasure buff (from Roll the Bones)", printInSettings = true, color = false },
+			{ variable = "$grandMeleeTime", description = "Time remaining on Grand Melee buff (from Roll the Bones)", printInSettings = true, color = false },
+			{ variable = "$ruthlessPrecisionTime", description = "Time remaining on Ruthless Precision buff (from Roll the Bones)", printInSettings = true, color = false },
+			{ variable = "$skullAndCrossbonesTime", description = "Time remaining on Skull and Crossbones buff (from Roll the Bones)", printInSettings = true, color = false },
+			{ variable = "$trueBearingTime", description = "Time remaining on True Bearing buff (from Roll the Bones)", printInSettings = true, color = false },
+			]]
+
+			{ variable = "$sadTime", description = "Time remaining on Slice and Dice buff", printInSettings = true, color = false },
+			{ variable = "$sliceAndDiceTime", description = "Time remaining on Slice and Dice buff", printInSettings = false, color = false },
+
+			-- Proc
+			{ variable = "$opportunityTime", description = "Time remaining on Opportunity proc", printInSettings = true, color = false },
+
+			-- Poisons
+			{ variable = "$atrophicPoisonCount", description = "Number of Atrophic Poisons active on targets", printInSettings = false, color = false },
+			{ variable = "$atrophicPoisonTime", description = "Time remaining on Atrophic Poison on your current target", printInSettings = false, color = false },
+
+			{ variable = "$cpCount", description = "Number of Crippling Poisons active on targets", printInSettings = true, color = false },
+			{ variable = "$cripplingPoisonCount", description = "Number of Crippling Poisons active on targets", printInSettings = false, color = false },
+			{ variable = "$cpTime", description = "Time remaining on Crippling Poison on your current target", printInSettings = true, color = false },
+			{ variable = "$cripplingPoisonTime", description = "Time remaining on Crippling Poisons on your current target", printInSettings = false, color = false },
+
+			{ variable = "$npCount", description = "Number of Numbing Poisons active on targets", printInSettings = true, color = false },
+			{ variable = "$numbingPoisonCount", description = "Number of Numbing Poisons active on targets", printInSettings = false, color = false },
+			{ variable = "$npTime", description = "Time remaining on Numbing Poison on your current target", printInSettings = true, color = false },
+			{ variable = "$numbingPoisonTime", description = "Time remaining on Numbing Poison on your current target", printInSettings = false, color = false },
+			
+			{ variable = "$wpCount", description = "Number of Wound Poisons active on targets", printInSettings = true, color = false },
+			{ variable = "$woundPoisonCount", description = "Number of Wound Poisons active on targets", printInSettings = false, color = false },
+			{ variable = "$wpTime", description = "Time remaining on Wound Poison on your current target", printInSettings = true, color = false },
+			{ variable = "$woundPoisonTime", description = "Time remaining on Wound Poison on your current target", printInSettings = false, color = false },
+
+			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+		}
+
+		specCache.subtlety.spells = spells
+	end
+
 	local function IsTargetBleeding(guid)
 		local spells = TRB.Data.spells
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -2217,6 +2358,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			targetData:UpdateDebuffs(currentTime)
 		elseif specId == 2 then -- Outlaw
 			targetData:UpdateDebuffs(currentTime)
+		elseif specId == 3 then -- Outlaw
+			targetData:UpdateDebuffs(currentTime)
 		end
 	end
 
@@ -2263,7 +2406,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		TRB.Functions.Bar:Construct(settings)
 		
-		if specId == 1 or specId == 2 then
+		if specId == 1 or specId == 2 or specId == 3 then
 			TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 		end
 	end
@@ -2278,6 +2421,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		-- This probably needs to be pulled every refresh
 		snapshotData.attributes.resourceRegen, _ = GetPowerRegen()
+
 
 		--$overcap
 		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
@@ -3112,6 +3256,320 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
+	local function RefreshLookupData_Subtlety()
+		local specSettings = TRB.Data.settings.rogue.subtlety
+		local spells = TRB.Data.spells
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+		local snapshots = snapshotData.snapshots
+		local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
+		local currentTime = GetTime()
+
+		-- This probably needs to be pulled every refresh
+		snapshotData.attributes.resourceRegen, _ = GetPowerRegen()
+
+
+		--$overcap
+		local overcap = TRB.Functions.Class:IsValidVariableForSpec("$overcap")
+
+		local currentEnergyColor = specSettings.colors.text.current
+		local castingEnergyColor = specSettings.colors.text.casting
+		
+		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+			if specSettings.colors.text.overcapEnabled and overcap then
+				currentEnergyColor = specSettings.colors.text.overcap
+				castingEnergyColor = specSettings.colors.text.overcap
+			elseif specSettings.colors.text.overThresholdEnabled then
+				local _overThreshold = false
+				for k, v in pairs(spells) do
+					local spell = spells[k]
+					if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
+						_overThreshold = true
+						break
+					end
+				end
+
+				if _overThreshold then
+					currentEnergyColor = specSettings.colors.text.overThreshold
+					castingEnergyColor = specSettings.colors.text.overThreshold
+				end
+			end
+		end
+
+		if snapshotData.casting.resourceFinal < 0 then
+			castingEnergyColor = specSettings.colors.text.spending
+		end
+
+		--$energy
+		local currentEnergy = string.format("|c%s%.0f|r", currentEnergyColor, snapshotData.attributes.resource)
+		--$casting
+		local castingEnergy = string.format("|c%s%.0f|r", castingEnergyColor, snapshotData.casting.resourceFinal)
+		--$passive
+		local _regenEnergy = 0
+		local _passiveEnergy
+		local _passiveEnergyMinusRegen
+
+		local _gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
+
+		if specSettings.generation.enabled then
+			if specSettings.generation.mode == "time" then
+				_regenEnergy = snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0)
+			else
+				_regenEnergy = snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * _gcd)
+			end
+		end
+
+		--$regenEnergy
+		local regenEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _regenEnergy)
+
+		_passiveEnergy = _regenEnergy
+		_passiveEnergyMinusRegen = _passiveEnergy - _regenEnergy
+
+		local passiveEnergy = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergy)
+		local passiveEnergyMinusRegen = string.format("|c%s%.0f|r", specSettings.colors.text.passive, _passiveEnergyMinusRegen)
+		--$energyTotal
+		local _energyTotal = math.min(_passiveEnergy + snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
+		local energyTotal = string.format("|c%s%.0f|r", currentEnergyColor, _energyTotal)
+		--$energyPlusCasting
+		local _energyPlusCasting = math.min(snapshotData.casting.resourceFinal + snapshotData.attributes.resource, TRB.Data.character.maxResource)
+		local energyPlusCasting = string.format("|c%s%.0f|r", castingEnergyColor, _energyPlusCasting)
+		--$energyPlusPassive
+		local _energyPlusPassive = math.min(_passiveEnergy + snapshotData.attributes.resource, TRB.Data.character.maxResource)
+		local energyPlusPassive = string.format("|c%s%.0f|r", currentEnergyColor, _energyPlusPassive)
+		
+		--$ruptureCount and $ruptureTime
+		local _ruptureCount = snapshotData.targetData.count[spells.rupture.id] or 0
+		local ruptureCount = tostring(_ruptureCount)
+		local _ruptureTime = 0
+		local ruptureTime
+		
+		-- Poisons
+		--$cpCount and $cpTime
+		local _cpCount = snapshotData.targetData.count[spells.cripplingPoison.id] or 0
+		local cpCount = tostring(_cpCount)
+		local _cpTime = 0
+		local cpTime
+						
+		--$npCount and $npTime
+		local _npCount = snapshotData.targetData.count[spells.numbingPoison.id] or 0
+		local npCount = tostring(_npCount)
+		local _npTime = 0
+		local npTime
+				
+		--$atrophicPoisonCount and $atrophicPoisonTime
+		local _atrophicPoisonCount = snapshotData.targetData.count[spells.atrophicPoison.id] or 0
+		local atrophicPoisonCount = tostring(_atrophicPoisonCount)
+		local _atrophicPoisonTime = 0
+		local atrophicPoisonTime
+				
+		--$wpCount and $wpTime
+		local _wpCount = snapshotData.targetData.count[spells.woundPoison.id] or 0
+		local wpCount = tostring(_wpCount)
+		local _wpTime = 0
+		local wpTime
+
+		if target ~= nil then
+			_ruptureTime = target.spells[spells.rupture.id].remainingTime or 0
+			_cpTime = target.spells[spells.cripplingPoison.id].remainingTime or 0
+			_npTime = target.spells[spells.numbingPoison.id].remainingTime or 0
+			_atrophicPoisonTime = target.spells[spells.atrophicPoison.id].remainingTime or 0
+			_wpTime = target.spells[spells.woundPoison.id].remainingTime or 0
+		end
+
+		if specSettings.colors.text.dots.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
+			-- Bleeds
+			if _ruptureTime > spells.rupture.pandemicTimes[snapshotData.attributes.resource2 + 1] then
+				ruptureCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _ruptureCount)
+				ruptureTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _ruptureTime)
+			elseif _ruptureTime > 0 then
+				ruptureCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _ruptureCount)
+				ruptureTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _ruptureTime)
+			else
+				ruptureCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _ruptureCount)
+				ruptureTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+			end
+
+			--Poisons
+			if _cpTime > 0 then
+				cpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _cpCount)
+				cpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _cpTime)
+			else
+				cpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _cpCount)
+				cpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+			end
+
+			if _npTime > 0 then
+				npCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _npCount)
+				npTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _npTime)
+			else
+				npCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _npCount)
+				npTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+			end
+
+			if _wpTime > 0 then
+				wpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _wpCount)
+				wpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _wpTime)
+			else
+				wpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _wpCount)
+				wpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+			end
+
+			if _atrophicPoisonTime > 0 then
+				atrophicPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _atrophicPoisonCount)
+				atrophicPoisonTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _atrophicPoisonTime)
+			else
+				atrophicPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _atrophicPoisonCount)
+				atrophicPoisonTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+			end
+		else
+			-- Bleeds
+			ruptureTime = string.format("%.1f", _ruptureTime)
+
+			-- Poisons
+			atrophicPoisonTime = string.format("%.1f", _atrophicPoisonTime)
+			cpTime = string.format("%.1f", _cpTime)
+			npTime = string.format("%.1f", _npTime)
+			wpTime = string.format("%.1f", _wpTime)
+		end
+		
+
+		--$sadTime
+		local _sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
+		local sadTime
+		
+		if _sadTime > spells.sliceAndDice.pandemicTimes[snapshotData.attributes.resource2 + 1] then
+			sadTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _sadTime)
+		elseif _sadTime > 0 then
+			sadTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _sadTime)
+		else
+			sadTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+		end
+
+		----------------------------
+
+		Global_TwintopResourceBar.resource.passive = _passiveEnergy
+		Global_TwintopResourceBar.resource.regen = _regenEnergy
+		Global_TwintopResourceBar.dots = {
+			atrophicPoisonCount = _atrophicPoisonCount,
+			cripplingPoisonCount = _cpCount,
+			numbingPoisonCount = _npCount,
+			woundPoisonCount = _wpCount,
+			ruptureCount = _ruptureCount
+		}
+
+		local lookup = TRB.Data.lookup or {}
+		lookup["#cripplingPoison"] = spells.cripplingPoison.icon
+		lookup["#cp"] = spells.cripplingPoison.icon
+		lookup["#deathFromAbove"] = spells.deathFromAbove.icon
+		lookup["#dismantle"] = spells.dismantle.icon
+		lookup["#echoingReprimand"] = spells.echoingReprimand.icon
+		lookup["#numbingPoison"] = spells.numbingPoison.icon
+		lookup["#np"] = spells.numbingPoison.icon
+		lookup["#rupture"] = spells.rupture.icon
+		lookup["#sad"] = spells.sliceAndDice.icon
+		lookup["#sliceAndDice"] = spells.sliceAndDice.icon
+		lookup["#sepsis"] = spells.sepsis.icon
+		lookup["#stealth"] = spells.stealth.icon
+		lookup["#woundPoison"] = spells.woundPoison.icon
+		lookup["#wp"] = spells.woundPoison.icon
+
+		lookup["$energyPlusCasting"] = energyPlusCasting
+		lookup["$energyTotal"] = energyTotal
+		lookup["$energyMax"] = TRB.Data.character.maxResource
+		lookup["$energy"] = currentEnergy
+		lookup["$resourcePlusCasting"] = energyPlusCasting
+		lookup["$resourcePlusPassive"] = energyPlusPassive
+		lookup["$resourceTotal"] = energyTotal
+		lookup["$resourceMax"] = TRB.Data.character.maxResource
+		lookup["$resource"] = currentEnergy
+		lookup["$casting"] = castingEnergy
+		lookup["$comboPoints"] = snapshotData.attributes.resource2
+		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+		lookup["$atrophicPoisonCount"] = atrophicPoisonCount
+		lookup["$atrophicPoisonTime"] = atrophicPoisonTime
+		lookup["$cpCount"] = cpCount
+		lookup["$cripplingPoisonCount"] = cpCount
+		lookup["$cpTime"] = cpTime
+		lookup["$cripplingPoisonTime"] = cpTime
+		lookup["$npCount"] = npCount
+		lookup["$numbingPoisonCount"] = npCount
+		lookup["$npTime"] = npTime
+		lookup["$numbingPoisonTime"] = npTime
+		lookup["$wpCount"] = wpCount
+		lookup["$woundPoisonCount"] = wpCount
+		lookup["$wpTime"] = wpTime
+		lookup["$woundPoisonTime"] = wpTime
+		lookup["$ruptureCount"] = ruptureCount
+		lookup["$ruptureTime"] = ruptureTime
+		lookup["$sadTime"] = sadTime
+		lookup["$sliceAndDiceTime"] = sadTime
+		lookup["$blindsideTime"] = blindsideTime
+		lookup["$isBleeding"] = ""
+		lookup["$inStealth"] = ""
+
+		if TRB.Data.character.maxResource == snapshotData.attributes.resource then
+			lookup["$passive"] = passiveEnergyMinusRegen
+		else
+			lookup["$passive"] = passiveEnergy
+		end
+
+		lookup["$regen"] = regenEnergy
+		lookup["$regenEnergy"] = regenEnergy
+		lookup["$resourceRegen"] = regenEnergy
+		lookup["$overcap"] = overcap
+		lookup["$resourceOvercap"] = overcap
+		lookup["$energyOvercap"] = overcap
+		TRB.Data.lookup = lookup
+
+		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
+		lookupLogic["$energyTotal"] = _energyTotal
+		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
+		lookupLogic["$energy"] = snapshotData.attributes.resource
+		lookupLogic["$resourcePlusCasting"] = _energyPlusCasting
+		lookupLogic["$resourcePlusPassive"] = _energyPlusPassive
+		lookupLogic["$resourceTotal"] = _energyTotal
+		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
+		lookupLogic["$resource"] = snapshotData.attributes.resource
+		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
+		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
+		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
+		lookupLogic["$atrophicPoisonCount"] = atrophicPoisonCount
+		lookupLogic["$atrophicPoisonTime"] = atrophicPoisonTime
+		lookupLogic["$cpCount"] = _cpCount
+		lookupLogic["$cripplingPoisonCount"] = _cpCount
+		lookupLogic["$cpTime"] = _cpTime
+		lookupLogic["$cripplingPoisonTime"] = _cpTime
+		lookupLogic["$npCount"] = _npCount
+		lookupLogic["$numbingPoisonCount"] = _npCount
+		lookupLogic["$npTime"] = _npTime
+		lookupLogic["$numbingPoisonTime"] = _npTime
+		lookupLogic["$wpCount"] = _wpCount
+		lookupLogic["$woundPoisonCount"] = _wpCount
+		lookupLogic["$wpTime"] = _wpTime
+		lookupLogic["$woundPoisonTime"] = _wpTime
+		lookupLogic["$ruptureCount"] = _ruptureCount
+		lookupLogic["$ruptureTime"] = _ruptureTime
+		lookupLogic["$sadTime"] = _sadTime
+		lookupLogic["$sliceAndDiceTime"] = _sadTime
+		lookupLogic["$blindsideTime"] = _blindsideTime
+		lookupLogic["$isBleeding"] = ""
+		lookupLogic["$inStealth"] = ""
+
+		if TRB.Data.character.maxResource == snapshotData.attributes.resource then
+			lookupLogic["$passive"] = _passiveEnergyMinusRegen
+		else
+			lookupLogic["$passive"] = _passiveEnergy
+		end
+
+		lookupLogic["$regen"] = _regenEnergy
+		lookupLogic["$regenEnergy"] = _regenEnergy
+		lookupLogic["$resourceRegen"] = _regenEnergy
+		lookupLogic["$overcap"] = overcap
+		lookupLogic["$resourceOvercap"] = overcap
+		lookupLogic["$energyOvercap"] = overcap
+		TRB.Data.lookupLogic = lookupLogic
+	end
+
 	local function FillSnapshotDataCasting(spell)
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local currentTime = GetTime()
@@ -3131,7 +3589,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.Character:ResetCastingSnapshotData()
 			return false
 		else
-			if specId == 1 or specId == 2 then
+			if specId == 1 or specId == 2 or specId == 3 then
 				if currentSpell == nil then
 					local spellName = select(1, currentChannel)
 						TRB.Functions.Character:ResetCastingSnapshotData()
@@ -3225,6 +3683,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		snapshots[spells.echoingReprimand.id].cooldown:Refresh()
 		snapshots[spells.distract.id].cooldown:Refresh()
 		snapshots[spells.feint.id].cooldown:Refresh()
+		snapshots[spells.gouge.id].cooldown:Refresh()
 		snapshots[spells.kidneyShot.id].cooldown:Refresh()
 		snapshots[spells.shiv.id].cooldown:Refresh()
 		snapshots[spells.deathFromAbove.id].cooldown:Refresh()
@@ -3261,13 +3720,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		snapshots[spells.betweenTheEyes.id].cooldown:Refresh()
 		snapshots[spells.dreadblades.id].cooldown:Refresh()
 		snapshots[spells.ghostlyStrike.id].cooldown:Refresh()
-		snapshots[spells.gouge.id].cooldown:Refresh()
 		snapshots[spells.rollTheBones.id].cooldown:Refresh()
 	end
 
 	local function UpdateSnapshot_Subtlety()
 		UpdateSnapshot()
+		local spells = TRB.Data.spells
+		---@type table<integer, TRB.Classes.Snapshot>
+		local snapshots = TRB.Data.snapshotData.snapshots
 		local currentTime = GetTime()
+		
+		snapshots[spells.sepsis.id].buff:GetRemainingTime(currentTime)
+		snapshots[spells.goremawsBite.id].buff:GetRemainingTime(currentTime)
+		
+		snapshots[spells.goremawsBite.id].cooldown:Refresh()
+		snapshots[spells.secretTechnique.id].cooldown:Refresh()
+		snapshots[spells.shurikenTornado.id].cooldown:Refresh()
 	end
 
 	local function UpdateResourceBar()
@@ -3822,11 +4290,220 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				end
 			end
 			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+		elseif specId == 3 then
+			local specSettings = classSettings.subtlety
+			UpdateSnapshot_Subtlety()
+			TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(specSettings, TRB.Frames.barContainerFrame)
+
+			if snapshotData.attributes.isTracking then
+				TRB.Functions.Bar:HideResourceBar()
+
+				if specSettings.displayBar.neverShow == false then
+					refreshText = true
+					local passiveBarValue = 0
+					local castingBarValue = 0
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
+					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
+
+					local passiveValue = 0
+					if specSettings.bar.showPassive then
+						if specSettings.generation.enabled then
+							if specSettings.generation.mode == "time" then
+								passiveValue = (snapshotData.attributes.resourceRegen * (specSettings.generation.time or 3.0))
+							else
+								passiveValue = (snapshotData.attributes.resourceRegen * ((specSettings.generation.gcds or 2) * gcd))
+							end
+						end
+					end
+
+					if CastingSpell() and specSettings.bar.showCasting then
+						castingBarValue = currentResource + snapshotData.casting.resourceFinal
+					else
+						castingBarValue = currentResource
+					end
+
+					if castingBarValue < currentResource then --Using a spender
+						if -snapshotData.casting.resourceFinal > passiveValue then
+							passiveBarValue = castingBarValue + passiveValue
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+						else
+							passiveBarValue = castingBarValue + passiveValue
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
+							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
+							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+						end
+					else
+						passiveBarValue = castingBarValue + passiveValue
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
+						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
+						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+					end
+
+					local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.sepsis.id].buff.isActive or snapshots[spells.shadowDance.id].buff.isActive
+					local pairOffset = 0
+					for k, v in pairs(spells) do
+						local spell = spells[k]
+						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+							local resourceAmount = CalculateAbilityResourceValue(spell.resource, spell.nimbleFingers, spell.rushedSetup, spell.comboPoints)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+
+							local showThreshold = true
+							local thresholdColor = specSettings.colors.threshold.over
+							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+
+							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
+								if spell.id == spells.ambush.id then
+									if stealthViaBuff then
+										if currentResource >= -resourceAmount then
+											thresholdColor = specSettings.colors.threshold.over
+										else
+											thresholdColor = specSettings.colors.threshold.under
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+										end
+									else
+										showThreshold = false
+									end
+								elseif stealthViaBuff then
+									if currentResource >= -resourceAmount then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								else
+									showThreshold = false
+								end
+							else
+								if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+									if spell.id == spells.sliceAndDice.id then
+										if currentResource >= -resourceAmount then
+											thresholdColor = specSettings.colors.threshold.over
+										else
+											thresholdColor = specSettings.colors.threshold.under
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+										end
+
+										if snapshots[spell.id].buff:GetRemainingTime(currentTime) > spells.sliceAndDice.pandemicTimes[snapshotData.attributes.resource2 + 1] then
+											frameLevel = TRB.Data.constants.frameLevels.thresholdBase
+										else
+											frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+										end
+									end
+								elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
+									showThreshold = false
+								elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+									showThreshold = false
+								elseif spell.hasCooldown then
+									if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+										thresholdColor = specSettings.colors.threshold.unusable
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+									elseif currentResource >= -resourceAmount then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								else -- This is an active/available/normal spell threshold
+									if currentResource >= -resourceAmount then
+										thresholdColor = specSettings.colors.threshold.over
+									else
+										thresholdColor = specSettings.colors.threshold.under
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+									end
+								end
+							end
+
+							if spell.comboPoints == true and snapshotData.attributes.resource2 == 0 then
+								thresholdColor = specSettings.colors.threshold.unusable
+								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+							end
+
+							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spell.id], specSettings)
+						end
+						pairOffset = pairOffset + 3
+					end
+
+					local barColor = specSettings.colors.bar.base
+
+					local affectingCombat = UnitAffectingCombat("player")
+
+					if affectingCombat then
+						local sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
+						if sadTime == 0 then
+							barColor = specSettings.colors.bar.noSliceAndDice
+						elseif sadTime < spells.sliceAndDice.pandemicTimes[snapshotData.attributes.resource2 + 1] then
+							barColor = specSettings.colors.bar.sliceAndDicePandemic
+						end
+					end
+
+					local barBorderColor = specSettings.colors.bar.border
+					if IsStealthed() or stealthViaBuff then
+						barBorderColor = specSettings.colors.bar.borderStealth
+					elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
+						barBorderColor = specSettings.colors.bar.borderOvercap
+
+						if specSettings.audio.overcap.enabled and snapshotData.audio.overcapCue == false then
+							snapshotData.audio.overcapCue = true
+							PlaySoundFile(specSettings.audio.overcap.sound, coreSettings.audio.channel.channel)
+						end
+					else
+						snapshotData.audio.overcapCue = false
+					end
+
+					barContainerFrame:SetAlpha(1.0)
+
+					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
+
+					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
+					
+					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
+
+					for x = 1, TRB.Data.character.maxResource2 do
+						local cpBorderColor = specSettings.colors.comboPoints.border
+						local cpColor = specSettings.colors.comboPoints.base
+						local cpBR = cpBackgroundRed
+						local cpBG = cpBackgroundGreen
+						local cpBB = cpBackgroundBlue
+
+						if snapshotData.attributes.resource2 >= x then
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 1, 1)
+							if (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2 - 1)) or (not specSettings.comboPoints.sameColor and x == (TRB.Data.character.maxResource2 - 1)) then
+								cpColor = specSettings.colors.comboPoints.penultimate
+							elseif (specSettings.comboPoints.sameColor and snapshotData.attributes.resource2 == (TRB.Data.character.maxResource2)) or x == TRB.Data.character.maxResource2 then
+								cpColor = specSettings.colors.comboPoints.final
+							end
+						else
+							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
+						end
+
+						if snapshots[spells.echoingReprimand.id].attributes.enabled[x] then
+							cpColor = specSettings.colors.comboPoints.echoingReprimand
+							cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
+
+							if not specSettings.comboPoints.consistentUnfilledColor then
+								cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
+							end
+						end
+
+						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
+						TRB.Frames.resource2Frames[x].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(cpBorderColor, true))
+						TRB.Frames.resource2Frames[x].containerFrame:SetBackdropColor(cpBR, cpBG, cpBB, cpBackgroundAlpha)
+					end
+				end
+			end
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 		end
 	end
 
 	barContainerFrame:SetScript("OnEvent", function(self, event, ...)
-		local currentTime = GetTime()
 		local triggerUpdate = false
 		local _
 		local specId = GetSpecialization()
@@ -3839,7 +4516,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
 			if entry.sourceGuid == TRB.Data.character.guid then
-				if specId == 1 and TRB.Data.barConstructedForSpec == "assassination" then --Assassination
+				if specId == 1 and TRB.Data.barConstructedForSpec == "assassination" then
 					if entry.spellId == spells.blindside.id then
 						snapshots[entry.spellId].buff:Initialize(entry.type)
 						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
@@ -3970,6 +4647,23 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							end
 						end
 					end
+				elseif specId == 3 and TRB.Data.barConstructedForSpec == "subtlety" then
+					if entry.spellId == spells.goremawsBite.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
+						end
+					elseif entry.spellId == spells.goremawsBite.buffId then
+						
+						snapshots[spells.goremawsBite.id].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.secretTechnique.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
+						end
+					elseif entry.spellId == spells.shurikenTornado.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
+						end
+					end
 				end
 
 				-- Spec agnostic
@@ -4015,7 +4709,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				elseif entry.spellId == spells.sepsis.buffId then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
+					snapshots[spells.sepsis.id].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 						if TRB.Data.settings.rogue.assassination.audio.sepsis.enabled then
 							PlaySoundFile(TRB.Data.settings.rogue.assassination.audio.sepsis.sound, TRB.Data.settings.core.audio.channel.channel)
@@ -4145,6 +4839,32 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			else
 				TRB.Functions.Bar:SetPosition(TRB.Data.settings.rogue.outlaw, TRB.Frames.barContainerFrame)
 			end
+		elseif specId == 3 then
+			specCache.subtlety.talents:GetTalents()
+			FillSpellData_Subtlety()
+			TRB.Functions.Character:LoadFromSpecializationCache(specCache.subtlety)
+			
+			local spells = TRB.Data.spells
+			---@type TRB.Classes.TargetData
+			TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
+			local targetData = TRB.Data.snapshotData.targetData
+			targetData:AddSpellTracking(spells.rupture)
+			targetData:AddSpellTracking(spells.atrophicPoison)
+			targetData:AddSpellTracking(spells.cripplingPoison)
+			targetData:AddSpellTracking(spells.numbingPoison)
+			targetData:AddSpellTracking(spells.woundPoison)
+
+			TRB.Functions.RefreshLookupData = RefreshLookupData_Subtlety
+			TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.rogue.subtlety)
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.subtlety)
+
+			if TRB.Data.barConstructedForSpec ~= "subtlety" then
+				talents = specCache.subtlety.talents
+				TRB.Data.barConstructedForSpec = "subtlety"
+				ConstructResourceBar(specCache.subtlety.settings)
+			else
+				TRB.Functions.Bar:SetPosition(TRB.Data.settings.rogue.subtlety, TRB.Frames.barContainerFrame)
+			end
 		else
 			TRB.Data.barConstructedForSpec = nil
 		end
@@ -4180,6 +4900,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							settings.rogue.outlaw.displayText.barText = TRB.Options.Rogue.OutlawLoadDefaultBarTextSimpleSettings()
 						end
 
+						if TwintopInsanityBarSettings.rogue == nil or
+							TwintopInsanityBarSettings.rogue.subtlety == nil or
+							TwintopInsanityBarSettings.rogue.subtlety.displayText == nil then
+							settings.rogue.subtlety.displayText.barText = TRB.Options.Rogue.SubtletyLoadDefaultBarTextSimpleSettings()
+						end
+
 						TRB.Data.settings = TRB.Functions.Table:Merge(settings, TwintopInsanityBarSettings)
 						TRB.Data.settings = TRB.Options:CleanupSettings(TRB.Data.settings)
 					else
@@ -4213,11 +4939,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						C_Timer.After(1, function()
 							TRB.Data.settings.rogue.assassination = TRB.Functions.LibSharedMedia:ValidateLsmValues("Assassination Rogue", TRB.Data.settings.rogue.assassination)
 							TRB.Data.settings.rogue.outlaw = TRB.Functions.LibSharedMedia:ValidateLsmValues("Outlaw Rogue", TRB.Data.settings.rogue.outlaw)
-							--TRB.Data.settings.rogue.subtlety = TRB.Functions.LibSharedMedia:ValidateLsmValues("Subtlety Rogue", TRB.Data.settings.rogue.subtlety)
+							TRB.Data.settings.rogue.subtlety = TRB.Functions.LibSharedMedia:ValidateLsmValues("Subtlety Rogue", TRB.Data.settings.rogue.subtlety)
 							
 							FillSpellData_Assassination()
 							FillSpellData_Outlaw()
-							--FillSpellData_Subtlety()
+							FillSpellData_Subtlety()
 							TRB.Data.barConstructedForSpec = nil
 							SwitchSpec()
 							TRB.Options.Rogue.ConstructOptionsPanel(specCache)
@@ -4250,6 +4976,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			settings = TRB.Data.settings.rogue.assassination
 		elseif specId == 2 then
 			settings = TRB.Data.settings.rogue.outlaw
+		elseif specId == 3 then
+			settings = TRB.Data.settings.rogue.subtlety
 		end
 		
 		if settings ~= nil then
@@ -4267,6 +4995,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Data.specSupported = true
 		elseif specId == 2 and TRB.Data.settings.core.enabled.rogue.outlaw == true then
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.outlaw)
+			TRB.Data.specSupported = true
+		elseif specId == 3 and TRB.Data.settings.core.enabled.rogue.subtlety == true then
+			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.rogue.subtlety)
 			TRB.Data.specSupported = true
 		else
 			TRB.Data.specSupported = false
@@ -4343,6 +5074,24 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					TRB.Frames.barContainerFrame:Show()
 				end
 			end
+		elseif specId == 3 then
+			if not TRB.Data.specSupported or force or ((not affectingCombat) and
+				(not UnitInVehicle("player")) and (
+					(not TRB.Data.settings.rogue.subtlety.displayBar.alwaysShow) and (
+						(not TRB.Data.settings.rogue.subtlety.displayBar.notZeroShow) or
+						(TRB.Data.settings.rogue.subtlety.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource)
+					)
+				)) then
+				TRB.Frames.barContainerFrame:Hide()
+				snapshotData.attributes.isTracking = false
+			else
+				snapshotData.attributes.isTracking = true
+				if TRB.Data.settings.rogue.subtlety.displayBar.neverShow == true then
+					TRB.Frames.barContainerFrame:Hide()
+				else
+					TRB.Frames.barContainerFrame:Show()
+				end
+			end
 		else
 			TRB.Frames.barContainerFrame:Hide()
 			snapshotData.attributes.isTracking = false
@@ -4383,6 +5132,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			settings = TRB.Data.settings.rogue.assassination
 		elseif specId == 2 then
 			settings = TRB.Data.settings.rogue.outlaw
+		elseif specId == 3 then
+			settings = TRB.Data.settings.rogue.subtlety
 		else
 			return false
 		end
@@ -4524,7 +5275,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					valid = true
 				end
 			end
-		--[[elseif specId == 3 then --Survivial]]
+		elseif specId == 3 then --Subtlety
 		end
 
 		if var == "$resource" or var == "$energy" then
@@ -4661,7 +5412,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 	function TRB.Functions.Class:TriggerResourceBarUpdates()
 		local specId = GetSpecialization()
-		if specId ~= 1 and specId ~= 2 then
+		if specId ~= 1 and specId ~= 2 and specId ~= 3 then
 			TRB.Functions.Bar:HideResourceBar(true)
 			return
 		end

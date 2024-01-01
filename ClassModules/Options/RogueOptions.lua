@@ -829,7 +829,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
-				text="{$rtbBuffTime}[#rollTheBones $rtbBuffTime]",
+				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
@@ -1029,42 +1029,48 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					enabled = true, -- 11
 				},
 				-- Outlaw
-				betweenTheEyes = {
+				backstab = {
 					enabled = true, -- 12
 				},
-				dispatch = {
+				blackPowder = {
 					enabled = true, -- 13
 				},
-				pistolShot = {
+				rupture = {
 					enabled = true, -- 14
 				},
-				sinisterStrike = {
+				shadowstrike = {
 					enabled = true, -- 15
 				},
-				bladeFlurry = {
+				shurikenStorm = {
 					enabled = true, -- 16
 				},
-				rollTheBones = {
+				shurikenToss = {
 					enabled = true, -- 17
 				},
-				sepsis = { --
+				gloomblade = { --
 					enabled = true, -- 18
 				},
-				ghostlyStrike = {
+				secretTechnique = {
 					enabled = true, -- 19
 				},
-				dreadblades = {
+				shurikenTornado = {
 					enabled = true, -- 20
 				},
-				killingSpree = {
+				sepsis = {
 					enabled = true, -- 21
+				},
+				goremawsBite = {
+					enabled = true, -- 22
 				},
 				-- PvP					
 				deathFromAbove = {
-					enabled = false, -- 22
+					enabled = false, -- 23
 				},
 				dismantle = {
-					enabled = false, -- 23
+					enabled = false, -- 24
+				},
+				shadowyDuel = {
+					enabled = false, -- 25
 				},
 			},
 			generation = {
@@ -1209,7 +1215,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		}
 
 		if includeBarText then
-			settings.displayText.barText = OutlawLoadDefaultBarTextSimpleSettings()
+			settings.displayText.barText = SubtletyLoadDefaultBarTextSimpleSettings()
 		end
 
 		return settings
@@ -1220,7 +1226,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		settings.rogue.assassination = AssassinationLoadDefaultSettings(includeBarText)
 		settings.rogue.outlaw = OutlawLoadDefaultSettings(includeBarText)
-		--settings.rogue.subtlety = SubtletyLoadDefaultSettings(includeBarText)
+		settings.rogue.subtlety = SubtletyLoadDefaultSettings(includeBarText)
 		return settings
 	end
 	TRB.Options.Rogue.LoadDefaultSettings = LoadDefaultSettings

@@ -41,6 +41,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Outlaw
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
+			elseif specId == 3 then -- Subtlety
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
 			end 
 		elseif classId == 5 then -- Priests
 			if specId == 1 then -- Discipline
@@ -113,6 +116,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 4 then -- Rogue
 			if specId == 1 then -- Assassination
 			elseif specId == 2 then -- Outlaw
+			elseif specId == 3 then -- Subtlety
 			end 
 		elseif classId == 5 then -- Priests
 			if specId == 1 then -- Discipline
@@ -165,6 +169,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			if specId == 1 then -- Assassination
 				configuration.generation = settings.generation
 			elseif specId == 2 then -- Outlaw
+				configuration.generation = settings.generation
+			elseif specId == 3 then -- Subtlety
 				configuration.generation = settings.generation
 			end
 		elseif classId == 5 then -- Priests
@@ -271,6 +277,10 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 
 			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.rogue.outlaw) > 0 then -- Outlaw
 				configuration.rogue.outlaw = ExportConfigurationSections(4, 2, settings.rogue.outlaw, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
+
+			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.rogue.subtlety) > 0 then -- Subtlety
+				configuration.rogue.subtlety = ExportConfigurationSections(4, 3, settings.rogue.subtlety, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 5 and settings.priest ~= nil then -- Priest
 			configuration.priest = {}
@@ -386,6 +396,8 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(4, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Outlaw
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(4, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		-- Subtlety
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(4, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Shamans
 		-- Elemental
@@ -471,7 +483,8 @@ function TRB.Functions.IO:Import(input)
 			configuration.warrior.fury ~= nil)) or
 		(configuration.rogue ~= nil and
 			(configuration.rogue.assassination ~= nil or
-			configuration.rogue.outlaw ~= nil)) or
+			configuration.rogue.outlaw ~= nil or
+			configuration.rogue.subtlety ~= nil)) or
 		(configuration.hunter ~= nil and
 			(configuration.hunter.beastMastery ~= nil or
 			configuration.hunter.marksmanship ~= nil or

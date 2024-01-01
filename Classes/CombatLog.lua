@@ -11,6 +11,8 @@ TRB.Classes.CombatLogEntry = {}
 ---@field public spellId integer
 
 
+---Gets the most recent combat log event and returns an object containing the combat log contents we care about.
+---@return TRB.Classes.CombatLogEntry
 function TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
     ---@type TRB.Classes.CombatLogEntry
 ---@diagnostic disable-next-line: missing-fields

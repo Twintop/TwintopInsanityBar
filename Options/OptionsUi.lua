@@ -2423,6 +2423,25 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				"Combo Point 7",
 				"Screen",
 			}
+		elseif (classId == 4 and specId == 3) then -- Subtlety Rogue
+			relativeTo["Combo Point 1"] = "ComboPoint_1"
+			relativeTo["Combo Point 2"] = "ComboPoint_2"
+			relativeTo["Combo Point 3"] = "ComboPoint_3"
+			relativeTo["Combo Point 4"] = "ComboPoint_4"
+			relativeTo["Combo Point 5"] = "ComboPoint_5"
+			relativeTo["Combo Point 6"] = "ComboPoint_6"
+			relativeTo["Combo Point 7"] = "ComboPoint_7"
+			relativeToList = {
+				"Main Resource Bar",
+				"Combo Point 1",
+				"Combo Point 2",
+				"Combo Point 3",
+				"Combo Point 4",
+				"Combo Point 5",
+				"Combo Point 6",
+				"Combo Point 7",
+				"Screen",
+			}
 		elseif (classId == 5 and specId == 1) then -- Discipline Priest
 			relativeTo["Power Word: Radiance (1st Charge)"] = "PowerWord_Radiance_1"
 			relativeTo["Power Word: Radiance (2nd Charge)"] = "PowerWord_Radiance_2"

@@ -25,6 +25,7 @@ function TRB.Classes.SnapshotData:New(attributes)
     self.casting = TRB.Classes.SnapshotCasting:New()
     self.audio = {}
     self.attributes = attributes or {}
+    self.attributes.resource = self.attributes.resource or 0
 
     return self
 end

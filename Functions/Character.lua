@@ -97,6 +97,7 @@ end
 ---| '"shadow"' # Shadow (Priest)
 ---| '"assassination"' # Assassination (Rogue)
 ---| '"outlaw"' # Outlaw (Rogue)
+---| '"subtlety"' # Subtlety (Rogue)
 ---| '"elemental"' # Elemental (Shaman)
 ---| '"enhancement"' # Enhancement (Shaman)
 ---| '"arms"' # Arms (Warrior)
