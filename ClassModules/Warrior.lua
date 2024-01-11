@@ -190,13 +190,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				resourceMod = -10,
 				isTalent = true
 			},
-			
-			spearOfBastion = {
-				id = 376079,
-				name = "",
-				icon = "",
-				resource = 20
-			},
 
 			--Arms Talent abilities
 			mortalStrike = {
@@ -473,13 +466,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = true
 			},
 
-			spearOfBastion = {
-				id = 376079,
-				name = "",
-				icon = "",
-				resource = 20
-			},
-
 			-- Fury Talent abilities
 			
 			--Talents
@@ -595,7 +581,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "#rend", icon = spells.rend.icon, description = "Rend", printInSettings = true },
 			{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = "Shield Block", printInSettings = true },
 			{ variable = "#slam", icon = spells.slam.icon, description = "Slam", printInSettings = true },
-			{ variable = "#spearOfBastion", icon = spells.spearOfBastion.icon, description = "Spear of Bastion", printInSettings = true },
 			{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = "Whirlwind", printInSettings = true },			
 		}
 		specCache.arms.barTextVariables.values = {
@@ -676,7 +661,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = "Impending Victory", printInSettings = true },
 			{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = "Shield Block", printInSettings = true },
 			{ variable = "#slam", icon = spells.slam.icon, description = "Slam", printInSettings = true },
-			{ variable = "#spearOfBastion", icon = spells.spearOfBastion.icon, description = "Spear of Bastion", printInSettings = true },
 			{ variable = "#ravager", icon = spells.ravager.icon, description = "Ravager", printInSettings = true },
 			{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = "Whirlwind", printInSettings = true }
 		}
@@ -943,7 +927,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#rend"] = spells.rend.icon
 		lookup["#shieldBlock"] = spells.shieldBlock.icon
 		lookup["#slam"] = spells.slam.icon
-		lookup["#spearOfBastion"] = spells.spearOfBastion.icon
 		lookup["#whirlwind"] = spells.whirlwind.icon
 		lookup["$rend"] = talents:IsTalentActive(spells.rend)
 		lookup["$rendCount"] = rendCount
@@ -1092,7 +1075,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#ravager"] = spells.ravager.icon
 		lookup["#shieldBlock"] = spells.shieldBlock.icon
 		lookup["#slam"] = spells.slam.icon
-		lookup["#spearOfBastion"] = spells.spearOfBastion.icon
 		lookup["#whirlwind"] = spells.whirlwind.icon
 		lookup["$suddenDeathTime"] = suddenDeathTime
 		lookup["$enrageTime"] = enrageTime
