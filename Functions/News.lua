@@ -7,6 +7,15 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 
+# 10.2.5.0-release (2024-01-16)
+## General
+- (UPDATE) Update TOC for patch 10.2.5.
+
+## Warrior
+- Remove Spear of Bastion (now Champion's Spear) references as they are not used for any calculations or data display.
+
+----
+
 # 10.2.0.4-release (2024-01-01)
 ## General
 
