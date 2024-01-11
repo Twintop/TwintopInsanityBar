@@ -1,10 +1,10 @@
-## Interface: 100200
+## Interface: 100205
 ## Title: Twintop's Resource Bar
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 10.2.0.4
+## Version: 10.2.5.0
 ## X-ReleaseType: release
-## X-ReleaseDate: January 01, 2024
+## X-ReleaseDate: January 16, 2024
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
