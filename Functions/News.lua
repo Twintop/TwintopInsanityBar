@@ -7,11 +7,19 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 
+## Rogue
+
+- (FIX) Don't show Echoing Reprimand threshold line when it is enabled and you are not talented in to it.
+- (FIX) Show Gouge threshold as being unusable while on cooldown.
+
+
 # 10.2.5.0-release (2024-01-16)
 ## General
+
 - (UPDATE) Update TOC for patch 10.2.5.
 
 ## Warrior
+
 - Remove Spear of Bastion (now Champion's Spear) references as they are not used for any calculations or data display.
 
 ----
@@ -21,9 +29,11 @@ local content = [====[
 
 ## Rogue
 ### Assassination
+
 - (FIX) Correct LUA error, and bar behavior, when using Sepsis.
 
 ### Subtlety
+
 - [NEW - #285](#285)
 
 ----

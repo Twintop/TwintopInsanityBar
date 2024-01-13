@@ -998,35 +998,35 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				eviscerate = {
 					enabled = true, -- 1
 				},
-				cheapShot = { --
+				cheapShot = {
 					enabled = false, -- 2
 				},
-				crimsonVial = { --
+				crimsonVial = {
 					enabled = true, -- 3
 				},
-				distract = { --
+				distract = {
 					enabled = false, -- 4
 				},
-				kidneyShot = { --
+				kidneyShot = {
 					enabled = false, -- 5
 				},
-				sliceAndDice = { --
+				sliceAndDice = {
 					enabled = true, -- 6
 				},
-				feint = { --
+				feint = {
 					enabled = true, -- 7
 				},
 				-- Rogue Talents
-				shiv = { --
+				shiv = {
 					enabled = false, -- 8
 				},
-				sap = { --
+				sap = {
 					enabled = false, -- 9
 				},
-				gouge = { --
+				gouge = {
 					enabled = false, -- 10
 				},
-				echoingReprimand = { --
+				echoingReprimand = {
 					enabled = true, -- 11
 				},
 				-- Subtlety

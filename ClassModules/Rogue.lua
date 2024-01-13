@@ -222,7 +222,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				isTalent = true,
 				baseline = true
 			},
-			sap = {
+			sap = { -- Baseline
 				id = 6770,
 				name = "",
 				icon = "",
@@ -233,7 +233,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 9,
 				settingKey = "sap",
 				rushedSetup = true,
-				isTalent = true
+				baseline = true
 			},
 			nimbleFingers = {
 				id = 378427,
@@ -286,6 +286,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "echoingReprimand",
 				hasCooldown = true,
 				cooldown = 45,
+				isTalent = true,
 				buffId = {					
 					323558, -- 2
 					323559, -- 3
@@ -810,7 +811,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				isTalent = true,
 				baseline = true
 			},
-			sap = {
+			sap = { -- Baseline
 				id = 6770,
 				name = "",
 				icon = "",
@@ -822,7 +823,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 9,
 				settingKey = "sap",
 				rushedSetup = true,
-				isTalent = true
+				baseline = true
 			},
 			nimbleFingers = {
 				id = 378427,
@@ -876,6 +877,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "echoingReprimand",
 				hasCooldown = true,
 				cooldown = 45,
+				isTalent = true,
 				buffId = {
 					323558, -- 2
 					323559, -- 3
@@ -1467,7 +1469,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				cooldown = 25,
 				isTalent = true
 			},
-			sap = {
+			sap = { -- Baseline
 				id = 6770,
 				name = "",
 				icon = "",
@@ -1478,7 +1480,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 9,
 				settingKey = "sap",
 				rushedSetup = true,
-				isTalent = true
+				baseline = true
 			},
 			nimbleFingers = {
 				id = 378427,
@@ -1531,6 +1533,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "echoingReprimand",
 				hasCooldown = true,
 				cooldown = 45,
+				isTalent = true,
 				buffId = {					
 					323558, -- 2
 					323559, -- 3
@@ -4346,7 +4349,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					local pairOffset = 0
 					for k, v in pairs(spells) do
 						local spell = spells[k]
-						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then							
 							local resourceAmount = CalculateAbilityResourceValue(spell.resource, spell.nimbleFingers, spell.rushedSetup, spell.comboPoints)
 							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
 
@@ -4355,7 +4358,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
 							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
-								if spell.id == spells.ambush.id then
+								--[[if spell.id == spells.ambush.id then
 									if stealthViaBuff then
 										if currentResource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
@@ -4366,7 +4369,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 									else
 										showThreshold = false
 									end
-								elseif stealthViaBuff then
+								else]]
+								if stealthViaBuff then
 									if currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
@@ -4590,10 +4594,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						if entry.type == "SPELL_CAST_SUCCESS" then
 							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif entry.spellId == spells.gouge.id then
-						if entry.type == "SPELL_CAST_SUCCESS" then
-							snapshots[entry.spellId].cooldown:Initialize()
-						end
 					elseif entry.spellId == spells.killingSpree.id then
 						if entry.type == "SPELL_CAST_SUCCESS" then
 							snapshots[entry.spellId].cooldown:Initialize()
@@ -4726,6 +4726,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
+				elseif entry.spellId == spells.gouge.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
+					end
 				elseif entry.spellId == spells.deathFromAbove.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
@@ -4733,7 +4737,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				elseif entry.spellId == spells.dismantle.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
-					end
+					end					
 				end
 			end
 
