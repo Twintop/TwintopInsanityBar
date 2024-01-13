@@ -12,6 +12,15 @@ local content = [====[
 - (FIX) Don't show Echoing Reprimand threshold line when it is enabled and you are not talented in to it.
 - (FIX) Show Gouge threshold as being unusable while on cooldown.
 
+### Assassination
+
+- (FIX) Correct LUA error, and bar behavior, when using Sepsis.
+
+### Subtlety
+
+- [NEW - #285](#285)
+
+----
 
 # 10.2.5.0-release (2024-01-16)
 ## General
@@ -21,20 +30,6 @@ local content = [====[
 ## Warrior
 
 - Remove Spear of Bastion (now Champion's Spear) references as they are not used for any calculations or data display.
-
-----
-
-# 10.2.0.4-release (2024-01-01)
-## General
-
-## Rogue
-### Assassination
-
-- (FIX) Correct LUA error, and bar behavior, when using Sepsis.
-
-### Subtlety
-
-- [NEW - #285](#285)
 
 ----
 
