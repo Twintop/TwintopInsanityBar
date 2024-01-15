@@ -7,6 +7,7 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 
+# 10.2.5.1-release (2024-01-16)
 ## Rogue
 
 - (FIX) Don't show Echoing Reprimand threshold line when it is enabled and you are not talented in to it.

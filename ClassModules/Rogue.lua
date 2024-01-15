@@ -1371,7 +1371,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				thresholdId = 2,
 				settingKey = "cheapShot",
 				rushedSetup = true,
-				baseline = true
+				baseline = true,
+				isSnowflake = true
 			},
 			crimsonVial = {
 				id = 185311,
@@ -1728,7 +1729,19 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				hasCooldown = true,
 				isTalent = true
 			},
-
+			shadowFocus = {
+				id = 108209,
+				name = "",
+				icon = "",
+				isTalent = true,
+				resourceMod = 0.9
+			},
+			shotInTheDark = {
+				id = 257506,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
 
 			-- PvP
 			deathFromAbove = {
@@ -1835,6 +1848,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.subterfuge.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.subterfuge)
 		---@type TRB.Classes.Snapshot
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shadowDance.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shadowDance)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shotInTheDark.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shotInTheDark, nil, true)
 
 		specCache.subtlety.barTextVariables = {
 			icons = {},
@@ -2327,20 +2342,25 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	end
 	
 	local function CalculateAbilityResourceValue(resource, nimbleFingers, rushedSetup, comboPoints)
+		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
+		local snapshots = TRB.Data.snapshotData.snapshots --[[@as TRB.Classes.SnapshotData]]
 		local modifier = 1.0
 
 		if comboPoints == true and talents:IsTalentActive(spells.tightSpender) then
 			modifier = modifier * spells.tightSpender.resourceMod
 		end
 
-		-- TODO: validate how Nimble Fingers reduces resource costs. Is it before or after percentage modifiers? Assuming before for now
-		if nimbleFingers == true and talents:IsTalentActive(spells.nimbleFingers) then
-			resource = resource + spells.nimbleFingers.resourceMod
-		end
-
 		if rushedSetup == true and talents:IsTalentActive(spells.rushedSetup) then
 			modifier = modifier * spells.rushedSetup.resourceMod
+		end
+
+		if specId == 3 and (snapshots[spells.shadowDance.id].buff.isActive or IsStealthed()) and talents:IsTalentActive(spells.shadowFocus) then
+			modifier = modifier * spells.shadowFocus.resourceMod
+		end
+
+		if nimbleFingers == true and talents:IsTalentActive(spells.nimbleFingers) then
+			resource = resource + spells.nimbleFingers.resourceMod
 		end
 
 		return resource * modifier
@@ -4356,7 +4376,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
 							local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
-
+						
 							if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
 								--[[if spell.id == spells.ambush.id then
 									if stealthViaBuff then
@@ -4395,6 +4415,37 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 										else
 											frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 										end
+									elseif spell.id == spells.backstab.id then
+										if talents:IsTalentActive(spells.gloomblade) then
+											showThreshold = false
+										else
+											if currentResource >= -resourceAmount then
+												thresholdColor = specSettings.colors.threshold.over
+											else
+												thresholdColor = specSettings.colors.threshold.under
+												frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+											end
+										end
+									elseif spell.id == spells.gloomblade.id then
+										if not talents:IsTalentActive(spells.gloomblade) then
+											showThreshold = false
+										else
+											if currentResource >= -resourceAmount then
+												thresholdColor = specSettings.colors.threshold.over
+											else
+												thresholdColor = specSettings.colors.threshold.under
+												frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+											end
+										end
+									elseif spell.id == spells.cheapShot.id then
+										if snapshots[spells.shotInTheDark.id].buff.isActive then
+											thresholdColor = specSettings.colors.threshold.special
+										elseif currentResource >= -resourceAmount then
+											thresholdColor = specSettings.colors.threshold.over
+										else
+											thresholdColor = specSettings.colors.threshold.under
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+										end
 									end
 								elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 									showThreshold = false
@@ -4420,9 +4471,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								end
 							end
 
-							if spell.comboPoints == true and snapshotData.attributes.resource2 == 0 then
-								thresholdColor = specSettings.colors.threshold.unusable
-								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+							if spell.comboPoints == true then
+								if snapshotData.attributes.resource2 == 0 then
+									thresholdColor = specSettings.colors.threshold.unusable
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+								elseif snapshots[spells.goremawsBite.id].buff.isActive and snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+									thresholdColor = specSettings.colors.threshold.special
+								end
 							end
 
 							TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spell.id], specSettings)
@@ -4658,6 +4713,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						if entry.type == "SPELL_CAST_SUCCESS" then
 							snapshots[entry.spellId].cooldown:Initialize()
 						end
+					elseif entry.spellId == spells.shotInTheDark.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type, true)
 					end
 				end
 
