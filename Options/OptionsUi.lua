@@ -205,22 +205,28 @@ function TRB.Functions.OptionsUi:EditBoxSetTextMinMax(box, value)
 end
 
 function TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, a, callback)
-	ColorPickerFrame.func, ColorPickerFrame.opacityFunc, ColorPickerFrame.cancelFunc = 
-		callback, callback, callback
-	ColorPickerFrame:SetColorRGB(r, g, b)
-	ColorPickerFrame.hasOpacity, ColorPickerFrame.opacity = (a ~= nil), a
-	ColorPickerFrame.previousValues = {r, g, b, a}
-	ColorPickerFrame:Hide() -- Need to run the OnShow handler.
-	ColorPickerFrame:Show()
+	ColorPickerFrame:SetupColorPickerAndShow({
+		swatchFunc = callback,
+		opacityFunc = callback,
+		cancelFunc = callback,--cancelCallback,
+		r = r,
+		g = g,
+		b = b,
+		opacity = 1-a,
+		hasOpacity = (a ~= nil)
+	})
 end
 
 function TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
 	local r, g, b, a
 	if color then
-		r, g, b, a = unpack(color)
+		r = color.r
+		g = color.g
+		b = color.b
+		a = color.a
 	else
 		r, g, b = ColorPickerFrame:GetColorRGB()
-		a = OpacitySliderFrame:GetValue()
+		a = ColorPickerFrame:GetColorAlpha()
 	end
 	return r, g, b, a
 end
@@ -229,9 +235,9 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorContr
 	if button == "LeftButton" then
 		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorTable[key].color, true)
 		TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
-			local r, g, b, a = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
-			colorControlsTable[key].Texture:SetColorTexture(r, g, b, 1-a)
-			colorTable[key].color = TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, 1-a)
+			local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
+			colorControlsTable[key].Texture:SetColorTexture(r_1, g_1, b_1, a_1)
+			colorTable[key].color = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
 		
 			if frameType == "backdrop" then
 				TRB.Functions.Color:SetBackdropColor(frames, colorTable[key].color, true, specId)
@@ -250,9 +256,9 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, colorTable, colorC
 	if button == "LeftButton" then
 		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorTable[key], true)
 		TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
-			local r, g, b, a = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
-			colorControlsTable[key].Texture:SetColorTexture(r, g, b, 1-a)
-			colorTable[key] = TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, 1-a)
+			local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
+			colorControlsTable[key].Texture:SetColorTexture(r_1, g_1, b_1, a_1)
+			colorTable[key] = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
 		
 			if frameType == "backdrop" then
 				TRB.Functions.Color:SetBackdropColor(frames, colorTable[key], true, specId)
