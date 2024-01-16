@@ -4477,6 +4477,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 								elseif snapshots[spells.goremawsBite.id].buff.isActive and snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.special
+									frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 								end
 							end
 
