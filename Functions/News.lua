@@ -20,7 +20,7 @@ local content = [====[
 
 ## Warrior
 
-- Remove Spear of Bastion (now Champion's Spear) references as they are not used for any calculations or data display.
+- (UPDATE) Remove Spear of Bastion (now Champion's Spear) references as they are not used for any calculations or data display.
 
 ----
 
