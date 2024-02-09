@@ -1659,6 +1659,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				settingKey = "shurikenToss",
 				baseline = true
 			},
+			shadowTechniques = {
+				id = 196911,
+				name = "",
+				icojn = ""
+			},
 
 			-- Subtlety Spec Abilities			
 			shadowBlades = {
@@ -1850,6 +1855,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shadowDance.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shadowDance)
 		---@type TRB.Classes.Snapshot
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shotInTheDark.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shotInTheDark, nil, true)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shadowTechniques.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shadowTechniques, nil, true)
 
 		specCache.subtlety.barTextVariables = {
 			icons = {},
@@ -4538,7 +4545,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						else
 							TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[x].resourceFrame, 0, 1)
 						end
-
 						if snapshots[spells.echoingReprimand.id].attributes.enabled[x] then
 							cpColor = specSettings.colors.comboPoints.echoingReprimand
 							cpBorderColor = specSettings.colors.comboPoints.echoingReprimand
@@ -4546,6 +4552,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							if not specSettings.comboPoints.consistentUnfilledColor then
 								cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
 							end
+						--elseif x > snapshotData.attributes.resource2 and (snapshots[spells.shadowTechniques.id].buff.stacks + snapshotData.attributes.resource2) >= x then
+						--	cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.shadowTechniques, true)
 						end
 
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
@@ -4715,6 +4723,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							snapshots[entry.spellId].cooldown:Initialize()
 						end
 					elseif entry.spellId == spells.shotInTheDark.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type, true)
+					elseif entry.spellId == spells.shadowTechniques.id then
 						snapshots[entry.spellId].buff:Initialize(entry.type, true)
 					end
 				end

@@ -27,10 +27,16 @@ local content = [====[
 ## General
 
 - (UPDATE) Update TOC for patch 10.2.5.
+- (UPDATE) Adjust how color pickers work to match API changes in 10.2.5.
+
+## Rogue
+### Assassination
+
+- (FIX) Correct LUA error, and bar behavior, when using Sepsis.
 
 ## Warrior
 
-- Remove Spear of Bastion (now Champion's Spear) references as they are not used for any calculations or data display.
+- (UPDATE) Remove Spear of Bastion (now Champion's Spear) references as they are not used for any calculations or data display.
 
 ----
 
