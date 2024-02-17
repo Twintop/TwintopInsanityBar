@@ -360,7 +360,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{
 				name = "currentResource",
 				dataType = "number",
-				index = 16
+				index = 1
 			}
 		})
 		---@type TRB.Classes.Snapshot

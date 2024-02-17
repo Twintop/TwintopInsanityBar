@@ -25,7 +25,7 @@ function TRB.Classes.Healer.Innervate:New(spell)
         {
             name = "modifier",
             dataType = "number",
-            index = 16
+            index = 1
         }
     }
     ---@type TRB.Classes.Snapshot
@@ -79,7 +79,7 @@ function TRB.Classes.Healer.ManaTideTotem:New(spell)
         {
             name = "manaPerTick",
             dataType = "number",
-            index = 16
+            index = 1
         }
     }
     ---@type TRB.Classes.Snapshot
@@ -312,7 +312,7 @@ function TRB.Classes.Healer.PotionOfChilledClarity:New(spell)
         {
             name = "modifier",
             dataType = "number",
-            index = 17
+            index = 2
         }
     }
     ---@type TRB.Classes.Snapshot
@@ -368,7 +368,7 @@ function TRB.Classes.Healer.ChanneledManaPotion:New(spell, calculateManaGainFunc
         {
             name = "manaPerTick",
             dataType = "number",
-            index = 16
+            index = 1
         }
     }
     ---@type TRB.Classes.Snapshot
@@ -424,7 +424,7 @@ function TRB.Classes.Healer.MoltenRadiance:New(spell)
         {
             name = "manaPerTick",
             dataType = "number",
-            index = 18
+            index = 3
         }
     }
     ---@type TRB.Classes.Snapshot

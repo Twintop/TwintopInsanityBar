@@ -1339,7 +1339,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		})
 		---@type TRB.Classes.Snapshot
 		specCache.shadow.snapshotData.snapshots[specCache.shadow.spells.devouredDespair.id] = TRB.Classes.Snapshot:New(specCache.shadow.spells.devouredDespair, {
-			resource = 0,
+			resourceRaw = 0,
+			resourceFinal = 0,
 			ticks = 0
 		})
 		---@type TRB.Classes.Snapshot
@@ -3648,6 +3649,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	local function UpdateSnapshot()
 		TRB.Functions.Character:UpdateSnapshot()
+		--TODO #339: Comment out to reduce load while testing
 		UpdateShadowfiendValues()
 		Twintop_Data = TRB.Data
 	end
@@ -3726,17 +3728,20 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	local function UpdateSnapshot_Shadow()
 		local currentTime = GetTime()
 		UpdateSnapshot()
+		--TODO #339: Comment out to reduce load while testing
 		UpdateExternalCallToTheVoidValues()
 		local spells = TRB.Data.spells
 		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 		
+		--TODO #339: Comment out to reduce load while testing
 		snapshots[spells.voidform.id].buff:Refresh()
 		snapshots[spells.darkAscension.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.surgeOfInsanity.id].buff:Refresh()
 		snapshots[spells.deathspeaker.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
-
+		
+		--TODO #339: Comment out to reduce load while testing
 		snapshots[spells.mindBlast.id].cooldown:Refresh()
 	end
 
@@ -4839,22 +4844,25 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 				end
 			end
+			
+			--TODO #339: Comment out to reduce load while testing
 			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 		end
 	end
 
 	barContainerFrame:SetScript("OnEvent", function(self, event, ...)
-		local currentTime = GetTime()
 		local triggerUpdate = false
-		local _
-		local specId = GetSpecialization()
-		local spells = TRB.Data.spells
-		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-		local snapshots = snapshotData.snapshots
-		local targetData = snapshotData.targetData
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+			local currentTime = GetTime()
+			local _
+			local specId = GetSpecialization()
+			local spells = TRB.Data.spells
+			local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+			local snapshots = snapshotData.snapshots
+			local targetData = snapshotData.targetData
 			local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
+			--local _, type, _, sourceGuid, sourceName, _, _, destinationGuid, _, _, _, spellId, _ = CombatLogGetCurrentEventInfo()
 
 			local settings
 			if specId == 1 then
@@ -6241,6 +6249,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 	--HACK to fix FPS
 	local updateRateLimit = 0
+	local updateMemory = 0
+	local highMemory = 0
+	local currentMemory = 0
 
 	function TRB.Functions.Class:TriggerResourceBarUpdates()
 		local specId = GetSpecialization()
@@ -6255,5 +6266,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			updateRateLimit = currentTime
 			UpdateResourceBar()
 		end
+
+		--TODO #339: Remove commented out to do memory load testing
+		--[[if updateMemory + 5 < currentTime then
+			updateMemory = currentTime
+			UpdateAddOnMemoryUsage()
+			currentMemory = GetAddOnMemoryUsage("TwintopInsanityBar")
+			print(string.format("%.2f (%.2f)", currentMemory, highMemory))
+			if currentMemory > highMemory then
+				highMemory = currentMemory
+			end
+		end]]
 	end
 end

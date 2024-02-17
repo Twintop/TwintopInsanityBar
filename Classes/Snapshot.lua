@@ -66,6 +66,7 @@ end
 
 
 ---@class TRB.Classes.SnapshotBuff
+---@field public auraInstanceId integer?
 ---@field public isActive boolean
 ---@field public endTime number?
 ---@field public duration number
@@ -120,6 +121,7 @@ end
 
 ---Resets the object to default values
 function TRB.Classes.SnapshotBuff:Reset()
+    self.auraInstanceId = nil
     self.isActive = false
     self.endTime = nil
     self.duration = 0
@@ -205,56 +207,26 @@ function TRB.Classes.SnapshotBuff:InitializeCustom(duration)
     self:GetRemainingTime()
 end
 
----Refreshes the buff information for the snapshot
----@param eventType trbAuraEventType? # Event type sourced from the combat log event. If not provided, will do a generic buff update
----@param simple boolean? # Just updates isActive. If not provided, defaults to `false`
----@param unit UnitId? # Unit we want to check to update. If not provided, defaults to `player`
-function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
-    -- If this is a custom buff, don't do any of the following checks and instead just update the remaining time.
-    if self.isCustom then
-        self:GetRemainingTime()
-        return
-    end
-    
-    unit = unit or "player"
-    if simple == nil then
-        simple = false
-    end
 
-    ---Parse the buff
-    ---@param buff TRB.Classes.SnapshotBuff # The snapshot buff we are updating
-    ---@param ... unknown # Tuple of data returned from FindBuffById
-    ---@return integer? # The SpellID of the buff, if found
-    local function ParseBuffData(buff, ...)
-        local arg
-        arg = select(3, ...)
-
-        if arg ~= nil and arg ~= "" and (type(arg) == "string" or type(arg) == "number") then
-            buff.stacks = math.floor(tonumber(arg))
-        end
-
-        if not buff.alwaysSimple then
-            arg = select(5, ...)
-            if arg ~= nil and arg ~= "" and (type(arg) == "string" or type(arg) == "number") then
-                buff.duration = tonumber(arg)
-            end
-
-            arg = select(6, ...)
-            if arg ~= nil and arg ~= "" and (type(arg) == "string" or type(arg) == "number") then
-                buff.endTime = tonumber(arg)
-            end
-        end
+---Parse the buff
+---@param buff TRB.Classes.SnapshotBuff # The snapshot buff we are updating
+---@param aura AuraData # Data about the buff
+---@return integer? # The SpellID of the buff, if found
+local function ParseBuffData(buff, aura)
+    if aura ~= nil then
+        buff.auraInstanceId = aura.auraInstanceID
+        buff.stacks = aura.charges
+        buff.duration = aura.duration
+        buff.endTime = aura.expirationTime
 
         if buff.customPropertiesDefinitions ~= nil then
-            for i, prop in ipairs(buff.customPropertiesDefinitions) do
-                arg = select(prop.index, ...)
-                buff.customProperties[prop.name] = arg
-
+            for _, prop in ipairs(buff.customPropertiesDefinitions) do
+                buff.customProperties[prop.name] = aura.points[prop.index]
                 if buff.customProperties[prop.name] ~= nil then
                     if prop.dataType == "number" then
-                        buff.customProperties[prop.name] = tonumber(arg)
+                        buff.customProperties[prop.name] = tonumber(buff.customProperties[prop.name])
                     elseif prop.dataType == "integer" then
-                        buff.customProperties[prop.name] = math.floor(tonumber(arg))
+                        buff.customProperties[prop.name] = math.floor(tonumber(buff.customProperties[prop.name]))
                     end
                 else
                     if prop.dataType == "number" then
@@ -266,14 +238,44 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
             end
         end
 
-        return select(10, ...)
+        return aura.spellId
+    end
+    
+
+    if buff.customPropertiesDefinitions ~= nil then
+        for _, prop in ipairs(buff.customPropertiesDefinitions) do
+            if prop.dataType == "number" then
+                buff.customProperties[prop.name] = 0
+            elseif prop.dataType == "integer" then
+                buff.customProperties[prop.name] = 0
+            end
+        end
+    end
+end
+
+---Refreshes the buff information for the snapshot
+---@param eventType trbAuraEventType? # Event type sourced from the combat log event. If not provided, will do a generic buff update
+---@param simple boolean? # Just updates isActive. If not provided, defaults to `false`
+---@param unit UnitId? # Unit we want to check to update. If not provided, defaults to `player`
+function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
+    -- If this is a custom buff, don't do any of the following checks and instead just update the remaining time.
+    if self.isCustom then
+        self:GetRemainingTime()
+        --print("Buff Refresh", self.parent.spell.buffId or self.parent.spell.spellId or self.parent.spell.id)
+        return
+    end
+    
+    unit = unit or "player"
+    if simple == nil then
+        simple = false
     end
 
     local id = self.parent.spell.buffId or self.parent.spell.spellId or self.parent.spell.id or nil
+    --print("Buff Refresh", id)
     if id ~= nil then
         if eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REFRESH" or eventType == "SPELL_AURA_APPLIED_DOSE" then -- Gained buff
             self.isActive = true
-            ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
+            ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
             if not simple and not self.alwaysSimple then
                 self:GetRemainingTime()
             end
@@ -285,11 +287,11 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
             self:Reset()
         elseif eventType == nil or eventType == "" then
             local currentTime = currentTime or GetTime()
-            local foundId = ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
+            local foundId = ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
             if simple or self.alwaysSimple then
                 self.isActive = foundId == id
             else
-                ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
+                ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
                 if self.endTime ~= nil and self.endTime > currentTime then
                     self.isActive = true
                     self:GetRemainingTime()
@@ -397,6 +399,7 @@ end
 ---@param retryForce boolean? # Allow the cooldown to retry a force on the next call to Refresh()
 function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
     if self.parent.spell ~= nil and self.parent.spell.id ~= nil and (force or self.parent.spell.hasCharges or self.onCooldown) then
+        --print("Cooldown Refresh", self.parent.spell.id)
         local startTime = nil
         local duration = 0
         if self.parent.spell.hasCharges == true then

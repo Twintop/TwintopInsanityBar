@@ -19,7 +19,8 @@ function TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
     local entry = {}
 
 ---@diagnostic disable-next-line: assign-type-mismatch
+    --local _, type, _, sourceGuid, sourceName, _, _, destinationGuid, _, _, _, spellId, _ = CombatLogGetCurrentEventInfo()
+    --return type, sourceGuid, sourceName, destinationGuid, spellId
     _, entry.type, _, entry.sourceGuid, entry.sourceName, _, _, entry.destinationGuid, _, _, _, entry.spellId, _ = CombatLogGetCurrentEventInfo()
-
     return entry
 end
