@@ -44,12 +44,13 @@ TRB.Classes.Snapshot.__index = TRB.Classes.Snapshot
 ---@param spell table # Spell we are snapshotting
 ---@param attributes table? # Custom attributes to be tracked
 ---@param alwaysSimpleBuff boolean? # Should the buff tracking always run in simple mode?
+---@param onlyRefreshOnRequest boolean? # Should the buff refresh only occur when explictly requested?
 ---@return TRB.Classes.Snapshot
-function TRB.Classes.Snapshot:New(spell, attributes, alwaysSimpleBuff)
+function TRB.Classes.Snapshot:New(spell, attributes, alwaysSimpleBuff, onlyRefreshOnRequest)
     local self = {}
     setmetatable(self, TRB.Classes.Snapshot)
     self.spell = spell
-    self.buff = TRB.Classes.SnapshotBuff:New(self, alwaysSimpleBuff)
+    self.buff = TRB.Classes.SnapshotBuff:New(self, alwaysSimpleBuff, onlyRefreshOnRequest)
     self.cooldown = TRB.Classes.SnapshotCooldown:New(self)
     self:Reset()
     self.attributes = attributes or {}
@@ -73,6 +74,7 @@ end
 ---@field public remaining number
 ---@field public endTimeLeeway number
 ---@field public stacks integer
+---@field public applications integer
 ---@field public customPropertiesDefinitions TRB.Classes.BuffCustomProperty[]
 ---@field public customProperties table
 ---@field public alwaysSimple boolean?
@@ -82,14 +84,19 @@ end
 ---@field public ticks number
 ---@field public resource number
 ---@field public isCustom boolean
+---@field private refreshRequested boolean
+---@field private refreshEmbargo number?
+---@field private onlyRefreshOnRequest boolean
 ---@field protected parent TRB.Classes.Snapshot
 TRB.Classes.SnapshotBuff = {}
 TRB.Classes.SnapshotBuff.__index = TRB.Classes.SnapshotBuff
 
 ---Creates a new Snapshot object
 ---@param parent TRB.Classes.Snapshot
+---@param alwaysSimpleBuff boolean? # Should the buff tracking always run in simple mode?
+---@param onlyRefreshOnRequest boolean? # Should the buff refresh only occur when explictly requested?
 ---@return TRB.Classes.SnapshotBuff
-function TRB.Classes.SnapshotBuff:New(parent, alwaysSimpleBuff)
+function TRB.Classes.SnapshotBuff:New(parent, alwaysSimpleBuff, onlyRefreshOnRequest)
     local self = {}
     setmetatable(self, TRB.Classes.SnapshotBuff)
 
@@ -97,6 +104,12 @@ function TRB.Classes.SnapshotBuff:New(parent, alwaysSimpleBuff)
         self.alwaysSimple = alwaysSimpleBuff
     else
         self.alwaysSimple = false
+    end
+
+    if onlyRefreshOnRequest ~= nil then
+        self.onlyRefreshOnRequest = onlyRefreshOnRequest
+    else
+        self.onlyRefreshOnRequest = false
     end
 
     self.parent = parent
@@ -128,10 +141,21 @@ function TRB.Classes.SnapshotBuff:Reset()
     self.remaining = 0
     self.endTimeLeeway = 0
     self.stacks = 0
+    self.applications = 0
     self.ticks = 0
     self.resource = 0
     self.isCustom = false
-    self.customProperties = {}
+    self.refreshRequested = false
+
+    if self.customPropertiesDefinitions ~= nil then
+        for _, prop in ipairs(self.customPropertiesDefinitions) do
+            if prop.dataType == "number" then
+                self.customProperties[prop.name] = 0
+            elseif prop.dataType == "integer" then
+                self.customProperties[prop.name] = 0
+            end
+        end
+    end
 end
 
 ---@param hasTicks boolean # Does this spell have ticks?
@@ -176,6 +200,8 @@ function TRB.Classes.SnapshotBuff:GetRemainingTime(currentTime, useLeeway)
 	return remainingTime
 end
 
+---Updates the number of ticks remaining on a buff
+---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
 function TRB.Classes.SnapshotBuff:UpdateTicks(currentTime)
     if self.hasTicks then
         currentTime = currentTime or GetTime()
@@ -193,6 +219,9 @@ function TRB.Classes.SnapshotBuff:Initialize(eventType, simple, unit)
     unit = unit or "player"
     if simple == nil then
         simple = false
+    end
+    if self.onlyRefreshOnRequest then
+        self.refreshRequested = true
     end
     self:Refresh(eventType, simple, unit)
 end
@@ -216,6 +245,7 @@ local function ParseBuffData(buff, aura)
     if aura ~= nil then
         buff.auraInstanceId = aura.auraInstanceID
         buff.stacks = aura.charges
+        buff.applications = aura.applications
         buff.duration = aura.duration
         buff.endTime = aura.expirationTime
 
@@ -239,18 +269,16 @@ local function ParseBuffData(buff, aura)
         end
 
         return aura.spellId
+    else
+        buff:Reset()
     end
-    
+end
 
-    if buff.customPropertiesDefinitions ~= nil then
-        for _, prop in ipairs(buff.customPropertiesDefinitions) do
-            if prop.dataType == "number" then
-                buff.customProperties[prop.name] = 0
-            elseif prop.dataType == "integer" then
-                buff.customProperties[prop.name] = 0
-            end
-        end
-    end
+---Requests a refresh of the buff after the embargo has passed, if specified
+---@param embargo number? # Timestamp to embargo the refresh until
+function TRB.Classes.SnapshotBuff:RequestRefresh(embargo)
+    self.refreshRequested = true
+    self.refreshEmbargo = embargo
 end
 
 ---Refreshes the buff information for the snapshot
@@ -265,6 +293,17 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
         return
     end
     
+    if self.onlyRefreshOnRequest then
+        if self.refreshRequested == false then
+            return
+        elseif self.refreshEmbargo ~= nil and self.refreshEmbargo > GetTime() then
+            return
+        else
+            self.refreshRequested = false
+            self.refreshEmbargo = nil
+        end
+    end
+
     unit = unit or "player"
     if simple == nil then
         simple = false

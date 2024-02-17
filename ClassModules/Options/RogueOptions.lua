@@ -1152,7 +1152,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					penultimate="FFFF9900",
 					final="FFFF0000",
 					echoingReprimand="FF68CCEF",
-					shadowTechniques="FF763BAF",
+					shadowTechniques="FFFF00FF",
 					sameColor=false
 				},
 				threshold = {
@@ -3643,7 +3643,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 		end)
 
-		controls.colors.comboPoints.shadowTechniques = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Combo Point when available from Shadow Techniques", spec.colors.comboPoints.shadowTechniques, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.shadowTechniques = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Combo Point that will generate from Shadow Techniques", spec.colors.comboPoints.shadowTechniques, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.shadowTechniques
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "shadowTechniques")

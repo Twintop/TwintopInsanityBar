@@ -1747,6 +1747,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				isTalent = true
 			},
+			flagellation = {
+				id = 384631,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
 
 			-- PvP
 			deathFromAbove = {
@@ -1856,7 +1862,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		---@type TRB.Classes.Snapshot
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shotInTheDark.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shotInTheDark, nil, true)
 		---@type TRB.Classes.Snapshot
-		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shadowTechniques.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shadowTechniques, nil, true)
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shadowTechniques.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shadowTechniques, nil, true, true)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.flagellation.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.flagellation)
 
 		specCache.subtlety.barTextVariables = {
 			icons = {},
@@ -2208,12 +2216,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "#cp", icon = spells.cripplingPoison.icon, description = spells.cripplingPoison.name, printInSettings = false },
 			{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
 			{ variable = "#echoingReprimand", icon = spells.echoingReprimand.icon, description = spells.echoingReprimand.name, printInSettings = true },
+			{ variable = "#flagellation", icon = spells.flagellation.icon, description = spells.flagellation.name, printInSettings = true },
 			{ variable = "#numbingPoison", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = true },
 			{ variable = "#np", icon = spells.numbingPoison.icon, description = spells.numbingPoison.name, printInSettings = false },
 			{ variable = "#rupture", icon = spells.rupture.icon, description = spells.rupture.name, printInSettings = true },
 			{ variable = "#sad", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = true },
 			{ variable = "#sliceAndDice", icon = spells.sliceAndDice.icon, description = spells.sliceAndDice.name, printInSettings = false },
 			{ variable = "#sepsis", icon = spells.sepsis.icon, description = spells.sepsis.name, printInSettings = true },
+			{ variable = "#shadowTechniques", icon = spells.shadowTechniques.icon, description = spells.shadowTechniques.name, printInSettings = true },
 			{ variable = "#stealth", icon = spells.stealth.icon, description = spells.stealth.name, printInSettings = true },
 			{ variable = "#woundPoison", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = true },
 			{ variable = "#wp", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = false },
@@ -2271,7 +2281,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			
 			{ variable = "$comboPoints", description = "Current Combo Points", printInSettings = true, color = false },
 			{ variable = "$comboPointsMax", description = "Maximum Combo Points", printInSettings = true, color = false },
+			{ variable = "$shadowTechniquesCount", description = "Total number of stored Combo Points from Shadow Techniques", printInSettings = true, color = false },
 
+			{ variable = "$flagellationTime", description = "Time remaining on Flagellation", printInSettings = true, color = false },
 			--[[
 			{ variable = "$rtbCount", description = "Current number of Roll the Bones buffs active", printInSettings = true, color = false },
 			{ variable = "$rollTheBonesCount", description = "Current number of Roll the Bones buffs active", printInSettings = false, color = false },
@@ -3473,6 +3485,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			sadTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
 		end
 
+		--$flagellationTime
+		local _flagellationTime = snapshots[spells.flagellation.id].buff:GetRemainingTime(currentTime)
+		local flagellationTime = string.format("%.1f", _flagellationTime)
+
+		--$shadowTechniquesCount
+		local shadowTechniquesCount = snapshots[spells.shadowTechniques.id].buff.applications or 0
+
 		----------------------------
 
 		Global_TwintopResourceBar.resource.passive = _passiveEnergy
@@ -3491,12 +3510,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["#deathFromAbove"] = spells.deathFromAbove.icon
 		lookup["#dismantle"] = spells.dismantle.icon
 		lookup["#echoingReprimand"] = spells.echoingReprimand.icon
+		lookup["#flagellation"] = spells.flagellation.icon
 		lookup["#numbingPoison"] = spells.numbingPoison.icon
 		lookup["#np"] = spells.numbingPoison.icon
 		lookup["#rupture"] = spells.rupture.icon
 		lookup["#sad"] = spells.sliceAndDice.icon
 		lookup["#sliceAndDice"] = spells.sliceAndDice.icon
 		lookup["#sepsis"] = spells.sepsis.icon
+		lookup["#shadowTechniques"] = spells.shadowTechniques.icon
 		lookup["#stealth"] = spells.stealth.icon
 		lookup["#woundPoison"] = spells.woundPoison.icon
 		lookup["#wp"] = spells.woundPoison.icon
@@ -3513,6 +3534,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$casting"] = castingEnergy
 		lookup["$comboPoints"] = snapshotData.attributes.resource2
 		lookup["$comboPointsMax"] = TRB.Data.character.maxResource2
+		lookup["$shadowTechniquesCount"] = shadowTechniquesCount
 		lookup["$atrophicPoisonCount"] = atrophicPoisonCount
 		lookup["$atrophicPoisonTime"] = atrophicPoisonTime
 		lookup["$cpCount"] = cpCount
@@ -3531,6 +3553,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$ruptureTime"] = ruptureTime
 		lookup["$sadTime"] = sadTime
 		lookup["$sliceAndDiceTime"] = sadTime
+		lookup["$flagellationTime"] = flagellationTime
 		lookup["$inStealth"] = ""
 
 		if TRB.Data.character.maxResource == snapshotData.attributes.resource then
@@ -3560,8 +3583,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 		lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
 		lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
-		lookupLogic["$atrophicPoisonCount"] = atrophicPoisonCount
-		lookupLogic["$atrophicPoisonTime"] = atrophicPoisonTime
+		lookupLogic["$shadowTechniquesCount"] = shadowTechniquesCount
+		lookupLogic["$atrophicPoisonCount"] = _atrophicPoisonCount
+		lookupLogic["$atrophicPoisonTime"] = _atrophicPoisonTime
 		lookupLogic["$cpCount"] = _cpCount
 		lookupLogic["$cripplingPoisonCount"] = _cpCount
 		lookupLogic["$cpTime"] = _cpTime
@@ -3578,6 +3602,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookupLogic["$ruptureTime"] = _ruptureTime
 		lookupLogic["$sadTime"] = _sadTime
 		lookupLogic["$sliceAndDiceTime"] = _sadTime
+		lookupLogic["$flagellationTime"] = _flagellationTime
 		lookupLogic["$inStealth"] = ""
 
 		if TRB.Data.character.maxResource == snapshotData.attributes.resource then
@@ -3757,6 +3782,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		
 		snapshots[spells.sepsis.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.goremawsBite.id].buff:GetRemainingTime(currentTime)
+		snapshots[spells.flagellation.id].buff:GetRemainingTime(currentTime)
+		snapshots[spells.shadowTechniques.id].buff:Refresh()
 		
 		snapshots[spells.goremawsBite.id].cooldown:Refresh()
 		snapshots[spells.secretTechnique.id].cooldown:Refresh()
@@ -3772,7 +3799,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local spells = TRB.Data.spells
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
-		local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
+		--local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 
 		if specId == 1 then
 			local specSettings = classSettings.assassination
@@ -4552,8 +4579,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 							if not specSettings.comboPoints.consistentUnfilledColor then
 								cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.echoingReprimand, true)
 							end
-						--elseif x > snapshotData.attributes.resource2 and (snapshots[spells.shadowTechniques.id].buff.stacks + snapshotData.attributes.resource2) >= x then
-						--	cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.shadowTechniques, true)
+						elseif x > snapshotData.attributes.resource2 and (snapshots[spells.shadowTechniques.id].buff.applications + snapshotData.attributes.resource2) >= x then
+							cpBR, cpBG, cpBB, _ = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.shadowTechniques, true)
 						end
 
 						TRB.Frames.resource2Frames[x].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(cpColor, true))
@@ -4725,8 +4752,26 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					elseif entry.spellId == spells.shotInTheDark.id then
 						snapshots[entry.spellId].buff:Initialize(entry.type, true)
 					elseif entry.spellId == spells.shadowTechniques.id then
+						print(entry.type)
 						snapshots[entry.spellId].buff:Initialize(entry.type, true)
+					elseif entry.spellId == spells.flagellation.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
 					end
+
+					-- Shadow Techniques check workaround until a spellId dictionary can be added
+					if entry.spellId == spells.cheapShot.id or
+						entry.spellId == spells.shiv.id or
+						entry.spellId == spells.gouge.id or
+						entry.spellId == spells.echoingReprimand.id or
+						entry.spellId == spells.backstab.id or
+						entry.spellId == spells.shadowstrike.id or
+						entry.spellId == spells.shurikenStorm.id or
+						entry.spellId == spells.shurikenToss.id or
+						entry.spellId == spells.shurikenTornado.id or
+						entry.spellId == spells.sepsis.id or
+						entry.spellId == spells.goremawsBite.id then
+						snapshots[spells.shadowTechniques.id].buff:RequestRefresh(GetTime() + 0.05)
+						end
 				end
 
 				-- Spec agnostic
@@ -5343,6 +5388,15 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				end
 			end
 		elseif specId == 3 then --Subtlety
+			if var == "$shadowTechniquesCount" then
+				if snapshots[spells.shadowTechniques.id].buff.isActive then
+					valid = true
+				end
+			elseif var == "$flagellationTime" then
+				if snapshots[spells.flagellation.id].buff.isActive then
+					valid = true
+				end
+			end
 		end
 
 		if var == "$resource" or var == "$energy" then
