@@ -2598,92 +2598,92 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			-- Bleeds
 			if _ctTime > spells.crimsonTempest.pandemicTimes[snapshotData.attributes.resource2 + 1] then
 				ctCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _ctCount)
-				ctTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _ctTime)
+				ctTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_ctTime))
 			elseif _ctTime > 0 then
 				ctCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _ctCount)
-				ctTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _ctTime)
+				ctTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_ctTime))
 			else
 				ctCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _ctCount)
-				ctTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				ctTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if _garroteTime > spells.garrote.pandemicTime then
 				garroteCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _garroteCount)
-				garroteTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _garroteTime)
+				garroteTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_garroteTime))
 			elseif _garroteTime > 0 then
 				garroteCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _garroteCount)
-				garroteTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _garroteTime)
+				garroteTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_garroteTime))
 			else
 				garroteCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _garroteCount)
-				garroteTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				garroteTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 						
 			if _ibTime > 0 then
 				ibCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _ibCount)
-				ibTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _ibTime)
+				ibTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_ibTime))
 			else
 				ibCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _ibCount)
-				ibTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				ibTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if _ruptureTime > spells.rupture.pandemicTimes[snapshotData.attributes.resource2 + 1] then
 				ruptureCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _ruptureCount)
-				ruptureTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _ruptureTime)
+				ruptureTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
 			elseif _ruptureTime > 0 then
 				ruptureCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _ruptureCount)
-				ruptureTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _ruptureTime)
+				ruptureTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
 			else
 				ruptureCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _ruptureCount)
-				ruptureTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				ruptureTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			--Poisons
 			if _cpTime > 0 then
 				cpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _cpCount)
-				cpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _cpTime)
+				cpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_cpTime))
 			else
 				cpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _cpCount)
-				cpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				cpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if _dpTime > 0 then
 				dpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _dpCount)
-				dpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _dpTime)
+				dpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_dpTime))
 			else
 				dpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _dpCount)
-				dpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				dpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if _npTime > 0 then
 				npCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _npCount)
-				npTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _npTime)
+				npTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_npTime))
 			else
 				npCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _npCount)
-				npTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				npTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if _wpTime > 0 then
 				wpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _wpCount)
-				wpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _wpTime)
+				wpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_wpTime))
 			else
 				wpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _wpCount)
-				wpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				wpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if _atrophicPoisonTime > 0 then
 				atrophicPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _atrophicPoisonCount)
-				atrophicPoisonTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _atrophicPoisonTime)
+				atrophicPoisonTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime))
 			else
 				atrophicPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _atrophicPoisonCount)
-				atrophicPoisonTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				atrophicPoisonTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if _amplifyingPoisonTime > 0 then
 				amplifyingPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _amplifyingPoisonCount)
-				amplifyingPoisonTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _amplifyingPoisonTime)
+				amplifyingPoisonTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_amplifyingPoisonTime))
 			else
 				amplifyingPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _amplifyingPoisonCount)
-				amplifyingPoisonTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				amplifyingPoisonTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if _sbsOnTarget == false and talents:IsTalentActive(spells.serratedBoneSpike) then
@@ -2693,18 +2693,18 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		else
 			-- Bleeds
-			ctTime = string.format("%.1f", _ctTime)
-			garroteTime = string.format("%.1f", _garroteTime)
-			ibTime = string.format("%.1f", _ibTime)
-			ruptureTime = string.format("%.1f", _ruptureTime)
+			ctTime = TRB.Functions.BarText:TimerPrecision(_ctTime)
+			garroteTime = TRB.Functions.BarText:TimerPrecision(_garroteTime)
+			ibTime = TRB.Functions.BarText:TimerPrecision(_ibTime)
+			ruptureTime = TRB.Functions.BarText:TimerPrecision(_ruptureTime)
 
 			-- Poisons
-			amplifyingPoisonTime = string.format("%.1f", _amplifyingPoisonTime)
-			atrophicPoisonTime = string.format("%.1f", _atrophicPoisonTime)
-			cpTime = string.format("%.1f", _cpTime)
-			dpTime = string.format("%.1f", _dpTime)
-			npTime = string.format("%.1f", _npTime)
-			wpTime = string.format("%.1f", _wpTime)
+			amplifyingPoisonTime = TRB.Functions.BarText:TimerPrecision(_amplifyingPoisonTime)
+			atrophicPoisonTime = TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime)
+			cpTime = TRB.Functions.BarText:TimerPrecision(_cpTime)
+			dpTime = TRB.Functions.BarText:TimerPrecision(_dpTime)
+			npTime = TRB.Functions.BarText:TimerPrecision(_npTime)
+			wpTime = TRB.Functions.BarText:TimerPrecision(_wpTime)
 		end
 		
 
@@ -2713,17 +2713,17 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local sadTime
 		
 		if _sadTime > spells.sliceAndDice.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-			sadTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _sadTime)
+			sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_sadTime))
 		elseif _sadTime > 0 then
-			sadTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _sadTime)
+			sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_sadTime))
 		else
-			sadTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+			sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		
 		--$blindsideTime
 		local _blindsideTime = snapshots[spells.blindside.id].buff:GetRemainingTime(currentTime)
-		local blindsideTime = string.format("%.1f", _blindsideTime)
+		local blindsideTime = TRB.Functions.BarText:TimerPrecision(_blindsideTime)
 
 		----------------------------
 
@@ -3021,41 +3021,41 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			--Poisons
 			if _atrophicPoisonTime > 0 then
 				atrophicPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _atrophicPoisonCount)
-				atrophicPoisonTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _atrophicPoisonTime)
+				atrophicPoisonTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime))
 			else
 				atrophicPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _atrophicPoisonCount)
-				atrophicPoisonTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				atrophicPoisonTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if _cpTime > 0 then
 				cpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _cpCount)
-				cpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _cpTime)
+				cpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_cpTime))
 			else
 				cpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _cpCount)
-				cpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				cpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if _npTime > 0 then
 				npCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _npCount)
-				npTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _npTime)
+				npTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_npTime))
 			else
 				npCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _npCount)
-				npTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				npTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if _wpTime > 0 then
 				wpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _wpCount)
-				wpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _wpTime)
+				wpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_wpTime))
 			else
 				wpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _wpCount)
-				wpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				wpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
 			-- Poisons
-			atrophicPoisonTime = string.format("%.1f", _atrophicPoisonTime)
-			cpTime = string.format("%.1f", _cpTime)
-			npTime = string.format("%.1f", _npTime)
-			wpTime = string.format("%.1f", _wpTime)
+			atrophicPoisonTime = TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime)
+			cpTime = TRB.Functions.BarText:TimerPrecision(_cpTime)
+			npTime = TRB.Functions.BarText:TimerPrecision(_npTime)
+			wpTime = TRB.Functions.BarText:TimerPrecision(_wpTime)
 		end
 
 		--$sadTime
@@ -3063,11 +3063,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local sadTime
 		
 		if _sadTime > spells.sliceAndDice.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-			sadTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _sadTime)
+			sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_sadTime))
 		elseif _sadTime > 0 then
-			sadTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _sadTime)
+			sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_sadTime))
 		else
-			sadTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+			sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		local rollTheBones = snapshots[spells.rollTheBones.id]
@@ -3077,36 +3077,36 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		--$rtbBuffTime
 		local _rtbBuffTime = snapshots[spells.rollTheBones.id].buff.remaining
-		local rtbBuffTime = string.format("%.1f", _rtbBuffTime)
+		local rtbBuffTime = TRB.Functions.BarText:TimerPrecision(_rtbBuffTime)
 
 		--$broadsideTime
 		local _broadsideTime = snapshots[spells.broadside.id].buff:GetRemainingTime(currentTime)
-		local broadsideTime = string.format("%.1f", _broadsideTime)
+		local broadsideTime = TRB.Functions.BarText:TimerPrecision(_broadsideTime)
 
 		--$buriedTreasureTime
 		local _buriedTreasureTime = snapshots[spells.buriedTreasure.id].buff:GetRemainingTime(currentTime)
-		local buriedTreasureTime = string.format("%.1f", _buriedTreasureTime)
+		local buriedTreasureTime = TRB.Functions.BarText:TimerPrecision(_buriedTreasureTime)
 
 		--$grandMeleeTime
 		local _grandMeleeTime = snapshots[spells.grandMelee.id].buff:GetRemainingTime(currentTime)
-		local grandMeleeTime = string.format("%.1f", _grandMeleeTime)
+		local grandMeleeTime = TRB.Functions.BarText:TimerPrecision(_grandMeleeTime)
 
 		--$ruthlessPrecisionTime
 		local _ruthlessPrecisionTime = snapshots[spells.ruthlessPrecision.id].buff:GetRemainingTime(currentTime)
-		local ruthlessPrecisionTime = string.format("%.1f", _ruthlessPrecisionTime)
+		local ruthlessPrecisionTime = TRB.Functions.BarText:TimerPrecision(_ruthlessPrecisionTime)
 
 		--$skullAndCrossbonesTime
 		local _skullAndCrossbonesTime = snapshots[spells.skullAndCrossbones.id].buff:GetRemainingTime(currentTime)
-		local skullAndCrossbonesTime = string.format("%.1f", _skullAndCrossbonesTime)
+		local skullAndCrossbonesTime = TRB.Functions.BarText:TimerPrecision(_skullAndCrossbonesTime)
 
 		--$trueBearingTime
 		local _trueBearingTime = snapshots[spells.trueBearing.id].buff:GetRemainingTime(currentTime)
-		local trueBearingTime = string.format("%.1f", _trueBearingTime)
+		local trueBearingTime = TRB.Functions.BarText:TimerPrecision(_trueBearingTime)
 
 		
 		--$opportunityTime
 		local _opportunityTime = snapshots[spells.opportunity.id].buff:GetRemainingTime(currentTime)
-		local opportunityTime = string.format("%.1f", _opportunityTime)
+		local opportunityTime = TRB.Functions.BarText:TimerPrecision(_opportunityTime)
 
 		----------------------------
 
@@ -3397,56 +3397,56 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			-- Bleeds
 			if _ruptureTime > spells.rupture.pandemicTimes[snapshotData.attributes.resource2 + 1] then
 				ruptureCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _ruptureCount)
-				ruptureTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _ruptureTime)
+				ruptureTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
 			elseif _ruptureTime > 0 then
 				ruptureCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _ruptureCount)
-				ruptureTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _ruptureTime)
+				ruptureTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
 			else
 				ruptureCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _ruptureCount)
-				ruptureTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				ruptureTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			--Poisons
 			if _cpTime > 0 then
 				cpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _cpCount)
-				cpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _cpTime)
+				cpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_cpTime))
 			else
 				cpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _cpCount)
-				cpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				cpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if _npTime > 0 then
 				npCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _npCount)
-				npTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _npTime)
+				npTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_npTime))
 			else
 				npCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _npCount)
-				npTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				npTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if _wpTime > 0 then
 				wpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _wpCount)
-				wpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _wpTime)
+				wpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_wpTime))
 			else
 				wpCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _wpCount)
-				wpTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				wpTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if _atrophicPoisonTime > 0 then
 				atrophicPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _atrophicPoisonCount)
-				atrophicPoisonTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _atrophicPoisonTime)
+				atrophicPoisonTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime))
 			else
 				atrophicPoisonCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _atrophicPoisonCount)
-				atrophicPoisonTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				atrophicPoisonTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
 			-- Bleeds
-			ruptureTime = string.format("%.1f", _ruptureTime)
+			ruptureTime = TRB.Functions.BarText:TimerPrecision(_ruptureTime)
 
 			-- Poisons
-			atrophicPoisonTime = string.format("%.1f", _atrophicPoisonTime)
-			cpTime = string.format("%.1f", _cpTime)
-			npTime = string.format("%.1f", _npTime)
-			wpTime = string.format("%.1f", _wpTime)
+			atrophicPoisonTime = TRB.Functions.BarText:TimerPrecision(_atrophicPoisonTime)
+			cpTime = TRB.Functions.BarText:TimerPrecision(_cpTime)
+			npTime = TRB.Functions.BarText:TimerPrecision(_npTime)
+			wpTime = TRB.Functions.BarText:TimerPrecision(_wpTime)
 		end
 		
 
@@ -3455,16 +3455,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local sadTime
 		
 		if _sadTime > spells.sliceAndDice.pandemicTimes[snapshotData.attributes.resource2 + 1] then
-			sadTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _sadTime)
+			sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_sadTime))
 		elseif _sadTime > 0 then
-			sadTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _sadTime)
+			sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_sadTime))
 		else
-			sadTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+			sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
 		--$flagellationTime
 		local _flagellationTime = snapshots[spells.flagellation.id].buff:GetRemainingTime(currentTime)
-		local flagellationTime = string.format("%.1f", _flagellationTime)
+		local flagellationTime = TRB.Functions.BarText:TimerPrecision(_flagellationTime)
 
 		--$shadowTechniquesCount
 		local shadowTechniquesCount = snapshots[spells.shadowTechniques.id].buff.applications or 0

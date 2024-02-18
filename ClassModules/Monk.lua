@@ -1010,7 +1010,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local sohTicks = string.format("%.0f", _sohTicks)
 		--$sohTime
 		local _sohTime = symbolOfHope.buff:GetRemainingTime(currentTime)
-		local sohTime = string.format("%.1f", _sohTime)
+		local sohTime = TRB.Functions.BarText:TimerPrecision(_sohTime)
 
 		local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		--$innervateMana
@@ -1018,7 +1018,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local innervateMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
 		--$innervateTime
 		local _innervateTime = innervate.buff:GetRemainingTime(currentTime)
-		local innervateTime = string.format("%.1f", _innervateTime)
+		local innervateTime = TRB.Functions.BarText:TimerPrecision(_innervateTime)
 
 		local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		--$potionOfChilledClarityMana
@@ -1026,7 +1026,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
 		--$potionOfChilledClarityTime
 		local _potionOfChilledClarityTime = potionOfChilledClarity.buff:GetRemainingTime(currentTime)
-		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
+		local potionOfChilledClarityTime = TRB.Functions.BarText:TimerPrecision(_potionOfChilledClarityTime)
 		
 		local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 		--$mttMana
@@ -1034,7 +1034,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
 		local _mttTime = manaTideTotem.buff:GetRemainingTime(currentTime)
-		local mttTime = string.format("%.1f", _mttTime)
+		local mttTime = TRB.Functions.BarText:TimerPrecision(_mttTime)
 		
 		local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 		--$mrMana
@@ -1042,11 +1042,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
 		--$mrTime
 		local _mrTime = moltenRadiance.buff.remaining
-		local mrTime = string.format("%.1f", _mrTime)
+		local mrTime = TRB.Functions.BarText:TimerPrecision(_mrTime)
 
 		--$potionCooldownSeconds
 		local _potionCooldown = snapshots[spells.aeratedManaPotionRank1.id].cooldown.remaining
-		local potionCooldownSeconds = string.format("%.1f", _potionCooldown)
+		local potionCooldownSeconds = TRB.Functions.BarText:TimerPrecision(_potionCooldown)
 		local _potionCooldownMinutes = math.floor(_potionCooldown / 60)
 		local _potionCooldownSeconds = _potionCooldown % 60
 		--$potionCooldown
@@ -1061,7 +1061,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local potionOfFrozenFocusTicks = string.format("%.0f", _potionOfFrozenFocusTicks)
 		--$potionOfFrozenFocusTime
 		local _potionOfFrozenFocusTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
-		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
+		local potionOfFrozenFocusTime = TRB.Functions.BarText:TimerPrecision(_potionOfFrozenFocusTime)
 		
 		local soulfangInfusion = snapshots[spells.soulfangInfusion.id] --[[@as TRB.Classes.Snapshot]]
 		--$siMana
@@ -1072,12 +1072,12 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local siTicks = string.format("%.0f", _siTicks)
 		--$siTime
 		local _siTime = soulfangInfusion.buff:GetRemainingTime(currentTime)
-		local siTime = string.format("%.1f", _siTime)
+		local siTime = TRB.Functions.BarText:TimerPrecision(_siTime)
 		
 		local manaTea = snapshots[spells.manaTea.id] --[[@as TRB.Classes.Snapshot]]
 		--$mrTime
 		local _mtTime = manaTea.buff.remaining
-		local mtTime = string.format("%.1f", _mtTime)
+		local mtTime = TRB.Functions.BarText:TimerPrecision(_mtTime)
 
 		--$passive
 		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana + _siMana
@@ -1304,19 +1304,19 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		
 		--$serenityTime
 		local _serenityTime = snapshots[spells.serenity.id].buff:GetRemainingTime(currentTime)
-		local serenityTime = string.format("%.1f", _serenityTime)
+		local serenityTime = TRB.Functions.BarText:TimerPrecision(_serenityTime)
 		
 		--$danceOfChiJiTime
 		local _danceOfChiJiTime = snapshots[spells.danceOfChiJi.id].buff:GetRemainingTime(currentTime)
-		local danceOfChiJiTime = string.format("%.1f", _danceOfChiJiTime)
+		local danceOfChiJiTime = TRB.Functions.BarText:TimerPrecision(_danceOfChiJiTime)
 		
 		--$motcMinTime
 		local _motcMinTime = (snapshots[spells.markOfTheCrane.id].attributes.minEndTime or 0) - currentTime
-		local motcMinTime = string.format("%.1f", _motcMinTime)
+		local motcMinTime = TRB.Functions.BarText:TimerPrecision(_motcMinTime)
 		
 		--$motcMaxTime
 		local _motcMaxTime = (snapshots[spells.markOfTheCrane.id].attributes.maxEndTime or 0) - currentTime
-		local motcMaxTime = string.format("%.1f", _motcMaxTime)
+		local motcMaxTime = TRB.Functions.BarText:TimerPrecision(_motcMaxTime)
 
 		
 		local targetMotcId = GetGuidPositionInMarkOfTheCraneList(targetData.currentTargetGuid)
@@ -1339,19 +1339,19 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				if not IsTargetLowestInMarkOfTheCraneList() then
 					motcCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, snapshots[spells.markOfTheCrane.id].attributes.count)
 					motcActiveCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
-					motcTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _motcTime)
+					motcTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_motcTime))
 				else
 					motcCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, snapshots[spells.markOfTheCrane.id].attributes.count)
 					motcActiveCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
-					motcTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _motcTime)
+					motcTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_motcTime))
 				end
 			else
 				motcCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, snapshots[spells.markOfTheCrane.id].attributes.count)
 				motcActiveCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, snapshots[spells.markOfTheCrane.id].attributes.activeCount)
-				motcTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				motcTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			motcTime = string.format("%.1f", _motcTime)
+			motcTime = TRB.Functions.BarText:TimerPrecision(_motcTime)
 		end
 
 		----------------------------

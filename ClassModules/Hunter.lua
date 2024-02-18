@@ -1447,17 +1447,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		--$barbedShotTime
 		local _barbedShotTime = snapshots[spells.barbedShot.id].buff:GetRemainingTime(currentTime)
-		local barbedShotTime = string.format("%.1f", _barbedShotTime)
+		local barbedShotTime = TRB.Functions.BarText:TimerPrecision(_barbedShotTime)
 		
 		--$beastCleaveTime
 		local _beastCleaveTime = snapshots[spells.beastCleave.id].buff:GetRemainingTime(currentTime)
-		local beastCleaveTime = string.format("%.1f", _beastCleaveTime)
+		local beastCleaveTime = TRB.Functions.BarText:TimerPrecision(_beastCleaveTime)
 
 		if talents:IsTalentActive(spells.bloodFrenzy) and (snapshots[spells.callOfTheWild.id].buff:GetRemainingTime(currentTime)) > (snapshots[spells.beastCleave.id].buff.remaining) then
 			_beastCleaveTime = snapshots[spells.callOfTheWild.id].buff.remaining
 		end
 
-		beastCleaveTime = string.format("%.1f", _beastCleaveTime)
+		beastCleaveTime = TRB.Functions.BarText:TimerPrecision(_beastCleaveTime)
 		
 		_passiveFocus = _regenFocus + _barbedShotFocus
 		_passiveFocusMinusRegen = _passiveFocus - _regenFocus
@@ -1476,7 +1476,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		--$frenzyTime
 		local _frenzyTime = snapshots[spells.frenzy.id].buff:GetRemainingTime(currentTime)
-		local frenzyTime = string.format("%.1f", _frenzyTime)
+		local frenzyTime = TRB.Functions.BarText:TimerPrecision(_frenzyTime)
 
 		--$frenzyStacks
 		local frenzyStacks = snapshots[spells.frenzy.id].buff.stacks or 0
@@ -1497,17 +1497,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if target ~= nil and target.spells[spells.serpentSting.id].active then
 				--if target.spells[spells.serpentSting.id].remainingTime > spells.serpentSting.pandemicTime then
 					serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _serpentStingCount)
-					serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _serpentStingTime)
+					serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 				--[[else
 					serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _serpentStingCount)
-					serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _serpentStingTime)
+					serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 				end]]
 			else
 				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			serpentStingTime = string.format("%.1f", _serpentStingTime)
+			serpentStingTime = TRB.Functions.BarText:TimerPrecision(_serpentStingTime)
 		end
 
 		----------------------------
@@ -1688,15 +1688,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		--$trueshotTime
 		local _trueshotTime = snapshots[spells.trueshot.id].buff:GetRemainingTime(currentTime)
-		local trueshotTime = string.format("%.1f", _trueshotTime)
+		local trueshotTime = TRB.Functions.BarText:TimerPrecision(_trueshotTime)
 
 		--$steadyFocusTime
 		local _steadyFocusTime = snapshots[spells.steadyFocus.id].buff:GetRemainingTime(currentTime)
-		local steadyFocusTime = string.format("%.1f", _steadyFocusTime)
+		local steadyFocusTime = TRB.Functions.BarText:TimerPrecision(_steadyFocusTime)
 
 		--$lockAndLoadTime
 		local _lockAndLoadTime = snapshots[spells.lockAndLoad.id].buff:GetRemainingTime(currentTime)
-		local lockAndLoadTime = string.format("%.1f", _lockAndLoadTime)
+		local lockAndLoadTime = TRB.Functions.BarText:TimerPrecision(_lockAndLoadTime)
 
 		--$ssCount and $ssTime
 		local _serpentStingCount = targetData.count[spells.serpentSting.id] or 0
@@ -1711,19 +1711,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 			if target ~= nil and target.spells[spells.serpentSting.id].active then
-				--if _serpentStingTime > spells.serpentSting.pandemicTime then
+				--if target.spells[spells.serpentSting.id].remainingTime > spells.serpentSting.pandemicTime then
 					serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _serpentStingCount)
-					serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _serpentStingTime)
+					serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 				--[[else
 					serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _serpentStingCount)
-					serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _serpentStingTime)
+					serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 				end]]
 			else
 				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			serpentStingTime = string.format("%.1f", _serpentStingTime)
+			serpentStingTime = TRB.Functions.BarText:TimerPrecision(_serpentStingTime)
 		end
 
 		----------------------------
@@ -1890,7 +1890,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		--$coordinatedAssaultTime
 		local _coordinatedAssaultTime = snapshots[spells.coordinatedAssault.id].buff:GetRemainingTime(currentTime)
-		local coordinatedAssaultTime = string.format("%.1f", _coordinatedAssaultTime)
+		local coordinatedAssaultTime = TRB.Functions.BarText:TimerPrecision(_coordinatedAssaultTime)
 
 		--$wildfireBombCharges
 		local wildfireBombCharges = snapshots[spells.wildfireBomb.id].cooldown.charges
@@ -1908,19 +1908,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 			if target ~= nil and target.spells[spells.serpentSting.id].active then
-				--if _serpentStingTime > spells.serpentSting.pandemicTime then
+				--if target.spells[spells.serpentSting.id].remainingTime > spells.serpentSting.pandemicTime then
 					serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _serpentStingCount)
-					serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _serpentStingTime)
+					serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 				--[[else
 					serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _serpentStingCount)
-					serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _serpentStingTime)
+					serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 				end]]
 			else
 				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			serpentStingTime = string.format("%.1f", _serpentStingTime)
+			serpentStingTime = TRB.Functions.BarText:TimerPrecision(_serpentStingTime)
 		end
 
 		----------------------------

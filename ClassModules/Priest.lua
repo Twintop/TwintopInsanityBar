@@ -2174,7 +2174,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local sohTicks = string.format("%.0f", _sohTicks)
 		--$sohTime
 		local _sohTime = symbolOfHope.buff:GetRemainingTime(currentTime)
-		local sohTime = string.format("%.1f", _sohTime)
+		local sohTime = TRB.Functions.BarText:TimerPrecision(_sohTime)
 
 		local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		--$innervateMana
@@ -2182,7 +2182,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local innervateMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
 		--$innervateTime
 		local _innervateTime = innervate.buff:GetRemainingTime(currentTime)
-		local innervateTime = string.format("%.1f", _innervateTime)
+		local innervateTime = TRB.Functions.BarText:TimerPrecision(_innervateTime)
 
 		local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		--$potionOfChilledClarityMana
@@ -2190,7 +2190,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
 		--$potionOfChilledClarityTime
 		local _potionOfChilledClarityTime = potionOfChilledClarity.buff:GetRemainingTime(currentTime)
-		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
+		local potionOfChilledClarityTime = TRB.Functions.BarText:TimerPrecision(_potionOfChilledClarityTime)
 		
 		local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 		--$mttMana
@@ -2198,7 +2198,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
 		local _mttTime = manaTideTotem.buff:GetRemainingTime(currentTime)
-		local mttTime = string.format("%.1f", _mttTime)
+		local mttTime = TRB.Functions.BarText:TimerPrecision(_mttTime)
 		
 		local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 		--$mrMana
@@ -2206,11 +2206,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
 		--$mrTime
 		local _mrTime = moltenRadiance.buff.remaining
-		local mrTime = string.format("%.1f", _mrTime)
+		local mrTime = TRB.Functions.BarText:TimerPrecision(_mrTime)
 
 		--$potionCooldownSeconds
 		local _potionCooldown = snapshots[spells.aeratedManaPotionRank1.id].cooldown.remaining
-		local potionCooldownSeconds = string.format("%.1f", _potionCooldown)
+		local potionCooldownSeconds = TRB.Functions.BarText:TimerPrecision(_potionCooldown)
 		local _potionCooldownMinutes = math.floor(_potionCooldown / 60)
 		local _potionCooldownSeconds = _potionCooldown % 60
 		--$potionCooldown
@@ -2225,7 +2225,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local potionOfFrozenFocusTicks = string.format("%.0f", _potionOfFrozenFocusTicks)
 		--$potionOfFrozenFocusTime
 		local _potionOfFrozenFocusTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
-		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
+		local potionOfFrozenFocusTime = TRB.Functions.BarText:TimerPrecision(_potionOfFrozenFocusTime)
 		
 		--$sfMana
 		local _sfMana = snapshots[spells.shadowfiend.id].attributes.resourceFinal or 0
@@ -2238,7 +2238,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local sfSwings = string.format("%.0f", _sfSwings)
 		--$sfTime
 		local _sfTime = snapshots[spells.shadowfiend.id].attributes.remaining.time
-		local sfTime = string.format("%.1f", _sfTime)
+		local sfTime = TRB.Functions.BarText:TimerPrecision(_sfTime)
 
 		--$passive
 		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _sfMana + _mrMana
@@ -2269,19 +2269,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local solStacks = string.format("%.0f", _solStacks)
 		--$solTime
 		local _solTime = snapshots[spells.surgeOfLight.id].buff:GetRemainingTime(currentTime) or 0
-		local solTime = string.format("%.1f", _solTime)
+		local solTime = TRB.Functions.BarText:TimerPrecision(_solTime)
 
 		--$raptureTime
 		local _raptureTime = snapshots[spells.rapture.id].buff:GetRemainingTime(currentTime)
-		local raptureTime = string.format("%.1f", _raptureTime)
+		local raptureTime = TRB.Functions.BarText:TimerPrecision(_raptureTime)
 
 		--$scTime
 		local _scTime = snapshots[spells.shadowCovenant.id].buff:GetRemainingTime(currentTime)
-		local scTime = string.format("%.1f", _scTime)
+		local scTime = TRB.Functions.BarText:TimerPrecision(_scTime)
 
 		--$pwRadianceTime
 		local _pwRadianceTime = snapshots[spells.powerWordRadiance.id].cooldown.remaining
-		local pwRadianceTime = string.format("%.1f", _pwRadianceTime)
+		local pwRadianceTime = TRB.Functions.BarText:TimerPrecision(_pwRadianceTime)
 		
 		--$pwRadianceCharges
 		local _pwRadianceCharges = snapshots[spells.powerWordRadiance.id].cooldown.charges
@@ -2289,11 +2289,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 		--$atonementMinTime
 		local _atonementMinTime = snapshots[spells.atonement.id].attributes.minRemainingTime
-		local atonementMinTime = string.format("%.1f", _atonementMinTime)
+		local atonementMinTime = TRB.Functions.BarText:TimerPrecision(_atonementMinTime)
 		
 		--$atonementMaxTime
 		local _atonementMaxTime = snapshots[spells.atonement.id].attributes.maxRemainingTime
-		local atonementMaxTime = string.format("%.1f", _atonementMaxTime)
+		local atonementMaxTime = TRB.Functions.BarText:TimerPrecision(_atonementMaxTime)
 
 		
 		--$atonementTime
@@ -2302,7 +2302,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		if target ~= nil then
 			_atonementTime = target.spells[spells.atonement.id].remainingTime or 0
 		end
-		local atonementTime = string.format("%.1f", _atonementTime)
+		local atonementTime = TRB.Functions.BarText:TimerPrecision(_atonementTime)
 
 		--$atonementCount
 		local _atonementCount = snapshotData.targetData.count[spells.atonement.id] or 0
@@ -2333,17 +2333,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if target ~= nil and (target.spells[spells.shadowWordPain.id].active or target.spells[spells.purgeTheWicked.id].active) then
 				if _shadowWordPainTime > spells.shadowWordPain.pandemicTime then
 					shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _shadowWordPainCount)
-					shadowWordPainTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _shadowWordPainTime)
+					shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 				else
 					shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _shadowWordPainCount)
-					shadowWordPainTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _shadowWordPainTime)
+					shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 				end
 			else
 				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			shadowWordPainTime = string.format("%.1f", _shadowWordPainTime)
+			shadowWordPainTime = TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime)
 		end
 
 		Global_TwintopResourceBar.resource.passive = _passiveMana
@@ -2534,7 +2534,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local sohTicks = string.format("%.0f", _sohTicks)
 		--$sohTime
 		local _sohTime = symbolOfHope.buff:GetRemainingTime(currentTime)
-		local sohTime = string.format("%.1f", _sohTime)
+		local sohTime = TRB.Functions.BarText:TimerPrecision(_sohTime)
 
 		local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		--$innervateMana
@@ -2542,7 +2542,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local innervateMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
 		--$innervateTime
 		local _innervateTime = innervate.buff:GetRemainingTime(currentTime)
-		local innervateTime = string.format("%.1f", _innervateTime)
+		local innervateTime = TRB.Functions.BarText:TimerPrecision(_innervateTime)
 
 		local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		--$potionOfChilledClarityMana
@@ -2550,7 +2550,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
 		--$potionOfChilledClarityTime
 		local _potionOfChilledClarityTime = potionOfChilledClarity.buff:GetRemainingTime(currentTime)
-		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
+		local potionOfChilledClarityTime = TRB.Functions.BarText:TimerPrecision(_potionOfChilledClarityTime)
 		
 		local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 		--$mttMana
@@ -2558,7 +2558,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
 		local _mttTime = manaTideTotem.buff:GetRemainingTime(currentTime)
-		local mttTime = string.format("%.1f", _mttTime)
+		local mttTime = TRB.Functions.BarText:TimerPrecision(_mttTime)
 		
 		local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 		--$mrMana
@@ -2566,11 +2566,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
 		--$mrTime
 		local _mrTime = moltenRadiance.buff.remaining
-		local mrTime = string.format("%.1f", _mrTime)
+		local mrTime = TRB.Functions.BarText:TimerPrecision(_mrTime)
 
 		--$potionCooldownSeconds
 		local _potionCooldown = snapshots[spells.aeratedManaPotionRank1.id].cooldown.remaining
-		local potionCooldownSeconds = string.format("%.1f", _potionCooldown)
+		local potionCooldownSeconds = TRB.Functions.BarText:TimerPrecision(_potionCooldown)
 		local _potionCooldownMinutes = math.floor(_potionCooldown / 60)
 		local _potionCooldownSeconds = _potionCooldown % 60
 		--$potionCooldown
@@ -2585,7 +2585,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local potionOfFrozenFocusTicks = string.format("%.0f", _potionOfFrozenFocusTicks)
 		--$potionOfFrozenFocusTime
 		local _potionOfFrozenFocusTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
-		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
+		local potionOfFrozenFocusTime = TRB.Functions.BarText:TimerPrecision(_potionOfFrozenFocusTime)
 		
 		--$sfMana
 		local _sfMana = snapshots[spells.shadowfiend.id].attributes.resourceFinal or 0
@@ -2598,7 +2598,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local sfSwings = string.format("%.0f", _sfSwings)
 		--$sfTime
 		local _sfTime = snapshots[spells.shadowfiend.id].attributes.remaining.time
-		local sfTime = string.format("%.1f", _sfTime)
+		local sfTime = TRB.Functions.BarText:TimerPrecision(_sfTime)
 
 		--$passive
 		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _sfMana + _mrMana
@@ -2626,15 +2626,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		--$hwChastiseTime
 		local _hwChastiseTime = snapshots[spells.holyWordChastise.id].cooldown.remaining
-		local hwChastiseTime = string.format("%.1f", _hwChastiseTime)
+		local hwChastiseTime = TRB.Functions.BarText:TimerPrecision(_hwChastiseTime)
 
 		--$hwSanctifyTime
 		local _hwSanctifyTime = snapshots[spells.holyWordSanctify.id].cooldown.remaining
-		local hwSanctifyTime = string.format("%.1f", _hwSanctifyTime)
+		local hwSanctifyTime = TRB.Functions.BarText:TimerPrecision(_hwSanctifyTime)
 
 		--$hwSerenityTime
 		local _hwSerenityTime = snapshots[spells.holyWordSerenity.id].cooldown.remaining
-		local hwSerenityTime = string.format("%.1f", _hwSerenityTime)
+		local hwSerenityTime = TRB.Functions.BarText:TimerPrecision(_hwSerenityTime)
 		
 		--$hwSanctifyCharges
 		local _hwSanctifyCharges = snapshots[spells.holyWordSanctify.id].cooldown.charges
@@ -2646,25 +2646,25 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		--$apotheosisTime
 		local _apotheosisTime = snapshots[spells.apotheosis.id].buff:GetRemainingTime(currentTime)
-		local apotheosisTime = string.format("%.1f", _apotheosisTime)
+		local apotheosisTime = TRB.Functions.BarText:TimerPrecision(_apotheosisTime)
 
 		--$solStacks
 		local _solStacks = snapshots[spells.surgeOfLight.id].buff.stacks or 0
 		local solStacks = string.format("%.0f", _solStacks)
 		--$solTime
 		local _solTime = snapshots[spells.surgeOfLight.id].buff:GetRemainingTime(currentTime) or 0
-		local solTime = string.format("%.1f", _solTime)
+		local solTime = TRB.Functions.BarText:TimerPrecision(_solTime)
 
 		--$lightweaverStacks
 		local _lightweaverStacks = snapshots[spells.lightweaver.id].buff.stacks or 0
 		local lightweaverStacks = string.format("%.0f", _lightweaverStacks)
 		--$lightweaverTime
 		local _lightweaverTime = snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime) or 0
-		local lightweaverTime = string.format("%.1f", _lightweaverTime)
+		local lightweaverTime = TRB.Functions.BarText:TimerPrecision(_lightweaverTime)
 		
 		--$rwTime
 		local _rwTime = snapshots[spells.resonantWords.id].buff:GetRemainingTime(currentTime) or 0
-		local rwTime = string.format("%.1f", _rwTime)
+		local rwTime = TRB.Functions.BarText:TimerPrecision(_rwTime)
 		
 		--$lightweaverStacks
 		local _sacredReverenceStacks = snapshots[spells.sacredReverence.id].buff.stacks or 0
@@ -2686,17 +2686,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if target ~= nil and target.spells[spells.shadowWordPain.id].active then
 				if _shadowWordPainTime > spells.shadowWordPain.pandemicTime then
 					shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _shadowWordPainCount)
-					shadowWordPainTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _shadowWordPainTime)
+					shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 				else
 					shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _shadowWordPainCount)
-					shadowWordPainTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _shadowWordPainTime)
+					shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 				end
 			else
 				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			shadowWordPainTime = string.format("%.1f", _shadowWordPainTime)
+			shadowWordPainTime = TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime)
 		end
 
 		Global_TwintopResourceBar.resource.passive = _passiveMana
@@ -2857,6 +2857,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local target = targetData.targets[targetData.currentTargetGuid]
 		local currentTime = GetTime()
 		local normalizedInsanity = snapshotData.attributes.resource / TRB.Data.resourceFactor
+
+
 		--$vfTime
 		local _voidformTime = snapshots[spells.voidform.id].buff:GetRemainingTime(currentTime)
 
@@ -2865,7 +2867,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			_voidformTime = snapshots[spells.darkAscension.id].buff.remaining
 		end
 
-		local voidformTime = string.format("%.1f", _voidformTime)
+		local voidformTime = TRB.Functions.BarText:TimerPrecision(_voidformTime)
 		----------
 
 		--$overcap
@@ -2908,7 +2910,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local mbSwings = string.format("%.0f", _mbSwings)
 		--$mbTime
 		local _mbTime = snapshots[spells.shadowfiend.id].attributes.remaining.time
-		local mbTime = string.format("%.1f", _mbTime)
+		local mbTime = TRB.Functions.BarText:TimerPrecision(_mbTime)
 		--$loiInsanity
 		local _loiInsanity = snapshots[spells.idolOfCthun.id].attributes.resourceFinal
 		local loiInsanity = string.format("%s", TRB.Functions.Number:RoundTo(_loiInsanity, resourcePrecision, "floor"))
@@ -2964,9 +2966,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		--$dpTime
 		local devouringPlagueTime
 		if target ~= nil then
-			devouringPlagueTime = string.format("%.1f", target.spells[spells.devouringPlague.id].remainingTime or 0)
+			devouringPlagueTime = TRB.Functions.BarText:TimerPrecision(target.spells[spells.devouringPlague.id].remainingTime or 0)
 		else
-			devouringPlagueTime = string.format("%.1f", 0)
+			devouringPlagueTime = TRB.Functions.BarText:TimerPrecision(0)
 		end
 
 		if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
@@ -2974,31 +2976,31 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				if (not talents:IsTalentActive(TRB.Data.spells.misery) and target.spells[spells.shadowWordPain.id].remainingTime > spells.shadowWordPain.pandemicTime) or
 					(talents:IsTalentActive(TRB.Data.spells.misery) and target.spells[spells.shadowWordPain.id].remainingTime > spells.shadowWordPain.miseryPandemicTime) then
 					shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _shadowWordPainCount)
-					shadowWordPainTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _shadowWordPainTime)
+					shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 				else
 					shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _shadowWordPainCount)
-					shadowWordPainTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _shadowWordPainTime)
+					shadowWordPainTime = string.format("|c%s%sf|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 				end
 			else
 				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if target ~= nil and target.spells[spells.vampiricTouch.id].active then
 				if target.spells[spells.vampiricTouch.id].remainingTime > spells.vampiricTouch.pandemicTime then
 					vampiricTouchCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _vampiricTouchCount)
-					vampiricTouchTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _vampiricTouchTime)
+					vampiricTouchTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_vampiricTouchTime))
 				else
 					vampiricTouchCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _vampiricTouchCount)
-					vampiricTouchTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _vampiricTouchTime)
+					vampiricTouchTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_vampiricTouchTime))
 				end
 			else
 				vampiricTouchCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _vampiricTouchCount)
-				vampiricTouchTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				vampiricTouchTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			shadowWordPainTime = string.format("%.1f", _shadowWordPainTime)
-			vampiricTouchTime = string.format("%.1f", _vampiricTouchTime)
+			shadowWordPainTime = TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime)
+			vampiricTouchTime = TRB.Functions.BarText:TimerPrecision(_vampiricTouchTime)
 		end
 
 		--$dpCount
@@ -3006,11 +3008,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		--$mdTime
 		local _mdTime = snapshots[spells.mindDevourer.id].buff:GetRemainingTime(currentTime)
-		local mdTime = string.format("%.1f", _mdTime)
+		local mdTime = TRB.Functions.BarText:TimerPrecision(_mdTime)
 		
 		--$mfiTime
 		local _mfiTime = snapshots[spells.surgeOfInsanity.id].buff:GetRemainingTime(currentTime)
-		local mfiTime = string.format("%.1f", _mfiTime)
+		local mfiTime = TRB.Functions.BarText:TimerPrecision(_mfiTime)
 
 		--$mfiStacks
 		local _mfiStacks = snapshots[spells.surgeOfInsanity.id].buff.stacks or 0
@@ -3018,11 +3020,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 		--$deathspeakerTime
 		local _deathspeakerTime = snapshots[spells.deathspeaker.id].buff:GetRemainingTime(currentTime)
-		local deathspeakerTime = string.format("%.1f", _deathspeakerTime)
+		local deathspeakerTime = TRB.Functions.BarText:TimerPrecision(_deathspeakerTime)
 
 		--$tofTime
 		local _tofTime = snapshots[spells.twistOfFate.id].buff:GetRemainingTime(currentTime)
-		local tofTime = string.format("%.1f", _tofTime)
+		local tofTime = TRB.Functions.BarText:TimerPrecision(_tofTime)
 		
 		--$mindBlastCharges
 		local mindBlastCharges = snapshots[spells.mindBlast.id].cooldown.charges or 0
@@ -3032,24 +3034,24 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		--$siTime
 		local _siTime = snapshots[spells.shadowyInsight.id].buff:GetRemainingTime(currentTime)
-		local siTime = string.format("%.1f", _siTime)
+		local siTime = TRB.Functions.BarText:TimerPrecision(_siTime)
 		
 		--$mmTime
 		local _mmTime = snapshots[spells.mindMelt.id].buff:GetRemainingTime(currentTime)
-		local mmTime = string.format("%.1f", _mmTime)
+		local mmTime = TRB.Functions.BarText:TimerPrecision(_mmTime)
 		--$mmStacks
 		local mmStacks = snapshots[spells.mindMelt.id].buff.stacks or 0
 		
 		--$ysTime
 		local _ysTime = snapshots[spells.idolOfYoggSaron.id].buff:GetRemainingTime(currentTime)
-		local ysTime = string.format("%.1f", _ysTime)
+		local ysTime = TRB.Functions.BarText:TimerPrecision(_ysTime)
 		--$ysStacks
 		local ysStacks = snapshots[spells.idolOfYoggSaron.id].buff.stacks or 0
 		--$ysRemainingStacks
 		local ysRemainingStacks = (TRB.Data.spells.idolOfYoggSaron.requiredStacks - ysStacks) or TRB.Data.spells.idolOfYoggSaron.requiredStacks
 		--$tfbTime
 		local _tfbTime = snapshots[spells.thingFromBeyond.id].buff:GetRemainingTime(currentTime)
-		local tfbTime = string.format("%.1f", _tfbTime)
+		local tfbTime = TRB.Functions.BarText:TimerPrecision(_tfbTime)
 		
 		--$deathsTormentStacks
 		local deathsTormentStacks = snapshots[spells.deathsTorment.id].buff.stacks or 0

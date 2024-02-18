@@ -573,11 +573,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		--$metamorphosisTime
 		local _metamorphosisTime = snapshotData.snapshots[spells.metamorphosis.id].buff:GetRemainingTime(currentTime)
-		local metamorphosisTime = string.format("%.1f", _metamorphosisTime)
+		local metamorphosisTime = TRB.Functions.BarText:TimerPrecision(_metamorphosisTime)
 
 		--$metamorphosisTime
 		local _unboundChaosTime = snapshotData.snapshots[spells.unboundChaos.id].buff:GetRemainingTime(currentTime)
-		local unboundChaosTime = string.format("%.1f", _unboundChaosTime)
+		local unboundChaosTime = TRB.Functions.BarText:TimerPrecision(_unboundChaosTime)
 
 		--$bhFury
 		local bhFury = snapshotData.snapshots[spells.immolationAura.id].buff.resource + snapshotData.snapshots[spells.immolationAura1.id].buff.resource + snapshotData.snapshots[spells.immolationAura2.id].buff.resource + snapshotData.snapshots[spells.immolationAura3.id].buff.resource + snapshotData.snapshots[spells.immolationAura4.id].buff.resource + snapshotData.snapshots[spells.immolationAura5.id].buff.resource + snapshotData.snapshots[spells.immolationAura6.id].buff.resource
@@ -587,7 +587,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		--$bhTime and $iaTime
 		local _bhTime = math.max(snapshotData.snapshots[spells.immolationAura.id].buff:GetRemainingTime(currentTime), snapshotData.snapshots[spells.immolationAura1.id].buff:GetRemainingTime(currentTime), snapshotData.snapshots[spells.immolationAura2.id].buff:GetRemainingTime(currentTime), snapshotData.snapshots[spells.immolationAura3.id].buff:GetRemainingTime(currentTime), snapshotData.snapshots[spells.immolationAura4.id].buff:GetRemainingTime(currentTime), snapshotData.snapshots[spells.immolationAura5.id].buff:GetRemainingTime(currentTime), snapshotData.snapshots[spells.immolationAura6.id].buff:GetRemainingTime(currentTime))
-		local bhTime = string.format("%.1f", _bhTime)
+		local bhTime = TRB.Functions.BarText:TimerPrecision(_bhTime)
 
 		--$tacticalRetreatFury
 		local tacticalRetreatFury = snapshotData.snapshots[spells.tacticalRetreat.id].buff.resource
@@ -597,7 +597,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		--$tacticalRetreatTime
 		local _tacticalRetreatTime = snapshotData.snapshots[spells.tacticalRetreat.id].buff:GetRemainingTime(currentTime)
-		local tacticalRetreatTime = string.format("%.1f", _tacticalRetreatTime)
+		local tacticalRetreatTime = TRB.Functions.BarText:TimerPrecision(_tacticalRetreatTime)
 
 		--$fury
 		local resourcePrecision = specSettings.resourcePrecision or 0

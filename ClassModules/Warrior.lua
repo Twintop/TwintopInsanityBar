@@ -835,7 +835,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		--$suddenDeathTime
 		local _suddenDeathTime = snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)
-		local suddenDeathTime = string.format("%.1f", _suddenDeathTime)
+		local suddenDeathTime = TRB.Functions.BarText:TimerPrecision(_suddenDeathTime)
 
 		--$rage
 		local resourcePrecision = specSettings.resourcePrecision or 0
@@ -882,31 +882,31 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			if target ~= nil and target.spells[spells.rend.id].active then
 				if _rendTime > ((spells.rend.baseDuration + TRB.Data.character.pandemicModifier) * 0.3) then
 					rendCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _rendCount)
-					rendTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _rendTime)
+					rendTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_rendTime))
 				else
 					rendCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _rendCount)
-					rendTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _rendTime)
+					rendTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_rendTime))
 				end
 			else
 				rendCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _rendCount)
-				rendTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				rendTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if target ~= nil and target.spells[spells.deepWounds.id].active then
 				if _deepWoundsTime > ((spells.deepWounds.baseDuration + TRB.Data.character.pandemicModifier) * 0.3) then
 					deepWoundsCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _deepWoundsCount)
-					deepWoundsTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _deepWoundsTime)
+					deepWoundsTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_deepWoundsTime))
 				else
 					deepWoundsCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _deepWoundsCount)
-					deepWoundsTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _deepWoundsTime)
+					deepWoundsTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_deepWoundsTime))
 				end
 			else
 				deepWoundsCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _deepWoundsCount)
-				deepWoundsTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				deepWoundsTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			rendTime = string.format("%.1f", _rendTime)
-			deepWoundsTime = string.format("%.1f", _deepWoundsTime)
+			rendTime = TRB.Functions.BarText:TimerPrecision(_rendTime)
+			deepWoundsTime = TRB.Functions.BarText:TimerPrecision(_deepWoundsTime)
 		end
 		----------------------------
 
@@ -1045,17 +1045,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		--$enrageTime
 		local _enrageTime = snapshots[spells.enrage.id].buff:GetRemainingTime(currentTime)
-		local enrageTime = string.format("%.1f", _enrageTime)
+		local enrageTime = TRB.Functions.BarText:TimerPrecision(_enrageTime)
 		
 		--$whirlwindTime
 		local _whirlwindTime = snapshots[spells.whirlwind.id].buff:GetRemainingTime(currentTime)
-		local whirlwindTime = string.format("%.1f", _whirlwindTime)
+		local whirlwindTime = TRB.Functions.BarText:TimerPrecision(_whirlwindTime)
 		--$whirlwindStacks
 		local whirlwindStacks = snapshots[spells.enrage.id].buff.stacks
 
 		--$suddenDeathTime
 		local _suddenDeathTime = snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)
-		local suddenDeathTime = string.format("%.1f", _suddenDeathTime)
+		local suddenDeathTime = TRB.Functions.BarText:TimerPrecision(_suddenDeathTime)
 
 		----------------------------
 

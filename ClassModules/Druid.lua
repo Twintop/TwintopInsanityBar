@@ -1829,45 +1829,45 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			if target ~= nil and target.spells[spells.moonfire.id].active then
 				if _moonfireTime > (TRB.Data.character.pandemicModifier * spells.moonfire.pandemicTime) then
 					moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _moonfireCount)
-					moonfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _moonfireTime)
+					moonfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_moonfireTime))
 				else
 					moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _moonfireCount)
-					moonfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _moonfireTime)
+					moonfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_moonfireTime))
 				end
 			else
 				moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _moonfireCount)
-				moonfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				moonfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if target ~= nil and target.spells[spells.stellarFlare.id].active then
 				if _stellarFlareTime > (TRB.Data.character.pandemicModifier * spells.stellarFlare.pandemicTime) then
 					stellarFlareCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _stellarFlareCount)
-					stellarFlareTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _stellarFlareTime)
+					stellarFlareTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_stellarFlareTime))
 				else
 					stellarFlareCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _stellarFlareCount)
-					stellarFlareTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _stellarFlareTime)
+					stellarFlareTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_stellarFlareTime))
 				end
 			else
 				stellarFlareCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _stellarFlareCount)
-				stellarFlareTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				stellarFlareTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if target ~= nil and target.spells[spells.sunfire.id].active then
 				if _sunfireTime > (TRB.Data.character.pandemicModifier * spells.sunfire.pandemicTime) then
 					sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _sunfireCount)
-					sunfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _sunfireTime)
+					sunfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_sunfireTime))
 				else
 					sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _sunfireCount)
-					sunfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _sunfireTime)
+					sunfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_sunfireTime))
 				end
 			else
 				sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _sunfireCount)
-				sunfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				sunfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			sunfireTime = string.format("%.1f", _sunfireTime)
-			moonfireTime = string.format("%.1f", _moonfireTime)
-			stellarFlareTime = string.format("%.1f", _stellarFlareTime)
+			sunfireTime = TRB.Functions.BarText:TimerPrecision(_sunfireTime)
+			moonfireTime = TRB.Functions.BarText:TimerPrecision(_moonfireTime)
+			stellarFlareTime = TRB.Functions.BarText:TimerPrecision(_stellarFlareTime)
 		end
 
 
@@ -1878,7 +1878,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		elseif snapshotData.snapshots[spells.starweaversWarp.id].buff.isActive then
 			_starweaverTime = snapshotData.snapshots[spells.starweaversWeft.id].buff:GetRemainingTime(currentTime)
 		end
-		local starweaverTime = string.format("%.1f", _starweaverTime)
+		local starweaverTime = TRB.Functions.BarText:TimerPrecision(_starweaverTime)
 
 		----------
 		--$foeAstralPower
@@ -1887,7 +1887,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local foeTicks = snapshotData.snapshots[spells.furyOfElune.id].buff.ticks
 		--$foeTime
 		local _foeTime = snapshotData.snapshots[spells.furyOfElune.id].buff:GetRemainingTime(currentTime)
-		local foeTime = string.format("%.1f", _foeTime)
+		local foeTime = TRB.Functions.BarText:TimerPrecision(_foeTime)
 		
 		----------
 		--$foeAstralPower
@@ -1896,7 +1896,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local sunderedFirmamentTicks = snapshotData.snapshots[spells.sunderedFirmament.id].buff.ticks
 		--$foeTime
 		local _sunderedFirmamentTime = snapshotData.snapshots[spells.sunderedFirmament.id].buff:GetRemainingTime(currentTime)
-		local sunderedFirmamentTime = string.format("%.1f",_sunderedFirmamentTime)
+		local sunderedFirmamentTime = TRB.Functions.BarText:TimerPrecision(_sunderedFirmamentTime)
 		
 		--New Moon
 		local currentMoonIcon = spells.newMoon.icon
@@ -1917,12 +1917,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				_moonCooldownTotal = snapshotData.snapshots[spells.newMoon.id].cooldown.remainingTotal
 			end
 		end
-		local moonCooldown = string.format("%.1f", _moonCooldown)
-		local moonCooldownTotal = string.format("%.1f", _moonCooldownTotal)
+		local moonCooldown = TRB.Functions.BarText:TimerPrecision(_moonCooldown)
+		local moonCooldownTotal = TRB.Functions.BarText:TimerPrecision(_moonCooldownTotal)
 
 		--$eclipseTime
 		local _eclispeTime, eclipseIcon = GetEclipseRemainingTime()
-		local eclipseTime = string.format("%.1f", _eclispeTime)
+		local eclipseTime = TRB.Functions.BarText:TimerPrecision(_eclispeTime)
 
 		--#starweaver
 
@@ -2260,13 +2260,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				ripSnapshot = string.format("|c%s%.0f|r", ripColor, TRB.Functions.Number:RoundTo(100 * _ripSnapshot, 0, "floor"))
 				ripCurrent = string.format("|c%s%.0f|r", ripColor, TRB.Functions.Number:RoundTo(100 * _currentSnapshotRip, 0, "floor"))
 				ripPercent = string.format("|c%s%.0f|r", ripColor, TRB.Functions.Number:RoundTo(100 * _ripPercent, 0, "floor"))
-				ripTime = string.format("|c%s%.1f|r", ripColor, _ripTime)
+				ripTime = string.format("|c%s%s|r", ripColor, TRB.Functions.BarText:TimerPrecision(_ripTime))
 			else
 				ripCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _ripCount)
 				ripSnapshot = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
 				ripCurrent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotRip, 0, "floor"))
 				ripPercent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
-				ripTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				ripTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if target ~= nil and target.spells[spells.rake.id].active then
@@ -2283,13 +2283,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				rakeSnapshot = string.format("|c%s%.0f|r", rakeColor, TRB.Functions.Number:RoundTo(100 * _rakeSnapshot, 0, "floor"))
 				rakeCurrent = string.format("|c%s%.0f|r", rakeColor, TRB.Functions.Number:RoundTo(100 * _currentSnapshotRake, 0, "floor"))
 				rakePercent = string.format("|c%s%.0f|r", rakeColor, TRB.Functions.Number:RoundTo(100 * _rakePercent, 0, "floor"))
-				rakeTime = string.format("|c%s%.1f|r", rakeColor, _rakeTime)
+				rakeTime = string.format("|c%s%s|r", rakeColor, TRB.Functions.BarText:TimerPrecision(_rakeTime))
 			else
 				rakeCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _rakeCount)
 				rakeSnapshot = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
 				rakeCurrent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotRake, 0, "floor"))
 				rakePercent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
-				rakeTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				rakeTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if target ~= nil and target.spells[spells.thrash.id].active then
@@ -2306,13 +2306,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				thrashSnapshot = string.format("|c%s%.0f|r", thrashColor, TRB.Functions.Number:RoundTo(100 * _thrashSnapshot, 0, "floor"))
 				thrashCurrent = string.format("|c%s%.0f|r", thrashColor, TRB.Functions.Number:RoundTo(100 * _currentSnapshotThrash, 0, "floor"))
 				thrashPercent = string.format("|c%s%.0f|r", thrashColor, TRB.Functions.Number:RoundTo(100 * _thrashPercent, 0, "floor"))
-				thrashTime = string.format("|c%s%.1f|r", thrashColor, _thrashTime)
+				thrashTime = string.format("|c%s%s|r", thrashColor, TRB.Functions.BarText:TimerPrecision(_thrashTime))
 			else
 				thrashCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _thrashCount)
 				thrashSnapshot = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
 				thrashCurrent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotThrash, 0, "floor"))
 				thrashPercent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
-				thrashTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				thrashTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if talents:IsTalentActive(spells.lunarInspiration) == true and target ~= nil and target.spells[spells.moonfire.id].active then
@@ -2329,18 +2329,18 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				moonfireSnapshot = string.format("|c%s%.0f|r", moonfireColor, TRB.Functions.Number:RoundTo(100 * _moonfireSnapshot, 0, "floor"))
 				moonfireCurrent = string.format("|c%s%.0f|r", moonfireColor, TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor"))
 				moonfirePercent = string.format("|c%s%.0f|r", moonfireColor, TRB.Functions.Number:RoundTo(100 * _moonfirePercent, 0, "floor"))
-				moonfireTime = string.format("|c%s%.1f|r", moonfireColor, _moonfireTime)
+				moonfireTime = string.format("|c%s%s|r", moonfireColor, TRB.Functions.BarText:TimerPrecision(_moonfireTime))
 			else
 				moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _moonfireCount)
 				moonfireSnapshot = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
 				moonfireCurrent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor"))
 				moonfirePercent = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, 0)
-				moonfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				moonfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			ripTime = string.format("%.1f", _ripTime)
-			rakeTime = string.format("%.1f", _rakeTime)
-			thrashTime = string.format("%.1f", _thrashTime)
+			ripTime = TRB.Functions.BarText:TimerPrecision(_ripTime)
+			rakeTime = TRB.Functions.BarText:TimerPrecision(_rakeTime)
+			thrashTime = TRB.Functions.BarText:TimerPrecision(_thrashTime)
 
 			ripSnapshot = TRB.Functions.Number:RoundTo(100 * _ripSnapshot, 0, "floor", true)
 			rakeSnapshot = TRB.Functions.Number:RoundTo(100 * _rakeSnapshot, 0, "floor", true)
@@ -2355,12 +2355,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			thrashPercent = TRB.Functions.Number:RoundTo(100 * _thrashPercent, 0, "floor", true)
 
 			if talents:IsTalentActive(spells.lunarInspiration) == true then
-				moonfireTime = string.format("%.1f", _moonfireTime)
+				moonfireTime = TRB.Functions.BarText:TimerPrecision(_moonfireTime)
 				moonfireSnapshot = TRB.Functions.Number:RoundTo(100 * _moonfireSnapshot, 0, "floor", true)
 				moonfireCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor", true)
 				moonfirePercent = TRB.Functions.Number:RoundTo(100 * _moonfirePercent, 0, "floor", true)
 			else
-				moonfireTime = string.format("%.1f", 0)
+				moonfireTime = TRB.Functions.BarText:TimerPrecision(0)
 				moonfireSnapshot = 0
 				moonfireCurrent = TRB.Functions.Number:RoundTo(100 * _currentSnapshotMoonfire, 0, "floor", true)
 				moonfirePercent = 0
@@ -2374,60 +2374,60 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		--$brutalSlashCooldownTotal
 		local _brutalSlashCooldownTotal = snapshotData.snapshots[spells.brutalSlash.id].cooldown.remainingTotal
 
-		local brutalSlashCooldown = string.format("%.1f", _brutalSlashCooldown)
-		local brutalSlashCooldownTotal = string.format("%.1f", _brutalSlashCooldownTotal)
+		local brutalSlashCooldown = TRB.Functions.BarText:TimerPrecision(_brutalSlashCooldown)
+		local brutalSlashCooldownTotal = TRB.Functions.BarText:TimerPrecision(_brutalSlashCooldownTotal)
 		
 		--$bloodtalonsStacks
 		local bloodtalonsStacks = snapshotData.snapshots[spells.bloodtalons.id].buff.stacks or 0
 
 		--$bloodtalonsTime
 		local _bloodtalonsTime = snapshotData.snapshots[spells.bloodtalons.id].buff:GetRemainingTime(currentTime)
-		local bloodtalonsTime = string.format("%.1f", _bloodtalonsTime)
+		local bloodtalonsTime = TRB.Functions.BarText:TimerPrecision(_bloodtalonsTime)
 		
 		--$tigersFuryTime
 		local _tigersFuryTime = snapshotData.snapshots[spells.tigersFury.id].buff:GetRemainingTime(currentTime)
-		local tigersFuryTime = string.format("%.1f", _tigersFuryTime)
+		local tigersFuryTime = TRB.Functions.BarText:TimerPrecision(_tigersFuryTime)
 		
 		--$tigersFuryCooldownTime
 		local _tigersFuryCooldownTime = snapshotData.snapshots[spells.tigersFury.id].cooldown:GetRemainingTime(currentTime)
-		local tigersFuryCooldownTime = string.format("%.1f", _tigersFuryCooldownTime)
+		local tigersFuryCooldownTime = TRB.Functions.BarText:TimerPrecision(_tigersFuryCooldownTime)
 
 		--$suddenAmbushTime
 		local _suddenAmbushTime = snapshotData.snapshots[spells.suddenAmbush.id].buff:GetRemainingTime(currentTime)
-		local suddenAmbushTime = string.format("%.1f", _suddenAmbushTime)
+		local suddenAmbushTime = TRB.Functions.BarText:TimerPrecision(_suddenAmbushTime)
 		
 		--$clearcastingStacks
 		local clearcastingStacks = snapshotData.snapshots[spells.clearcasting.id].buff.stacks
 
 		--$clearcastingTime
 		local _clearcastingTime = snapshotData.snapshots[spells.clearcasting.id].buff:GetRemainingTime(currentTime)
-		local clearcastingTime = string.format("%.1f", _clearcastingTime)
+		local clearcastingTime = TRB.Functions.BarText:TimerPrecision(_clearcastingTime)
 
 		--$berserkTime (and $incarnationTime)
 		local _berserkTime = GetBerserkRemainingTime()
-		local berserkTime = string.format("%.1f", _berserkTime)
+		local berserkTime = TRB.Functions.BarText:TimerPrecision(_berserkTime)
 
 		--$incarnationTicks 
 		local _incarnationTicks = snapshotData.snapshots[spells.berserk.id].attributes.ticks
 		
 		--$incarnationTickTime
 		local _incarnationTickTime = snapshotData.snapshots[spells.berserk.id].attributes.untilNextTick
-		local incarnationTickTime = string.format("%.1f", _incarnationTickTime)
+		local incarnationTickTime = TRB.Functions.BarText:TimerPrecision(_incarnationTickTime)
 
 		--$apexPredatorsCravingTime
 		local _apexPredatorsCravingTime = snapshotData.snapshots[spells.apexPredatorsCraving.id].buff:GetRemainingTime(currentTime)
-		local apexPredatorsCravingTime = string.format("%.1f", _apexPredatorsCravingTime)
+		local apexPredatorsCravingTime = TRB.Functions.BarText:TimerPrecision(_apexPredatorsCravingTime)
 		
 		--$predatorRevealedTime
 		local _predatorRevealedTime = snapshotData.snapshots[spells.predatorRevealed.id].buff:GetRemainingTime(currentTime)
-		local predatorRevealedTime = string.format("%.1f", _predatorRevealedTime)
+		local predatorRevealedTime = TRB.Functions.BarText:TimerPrecision(_predatorRevealedTime)
 
 		--$predatorRevealedTicks 
 		local _predatorRevealedTicks = snapshotData.snapshots[spells.predatorRevealed.id].attributes.ticks
 		
 		--$predatorRevealedTickTime
 		local _predatorRevealedTickTime = snapshotData.snapshots[spells.predatorRevealed.id].attributes.untilNextTick
-		local predatorRevealedTickTime = string.format("%.1f", _predatorRevealedTickTime)
+		local predatorRevealedTickTime = TRB.Functions.BarText:TimerPrecision(_predatorRevealedTickTime)
 
 		--$incarnationNextCp
 		local incarnationNextCp = 0
@@ -2670,7 +2670,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local sohTicks = string.format("%.0f", _sohTicks)
 		--$sohTime
 		local _sohTime = symbolOfHope.buff:GetRemainingTime(currentTime)
-		local sohTime = string.format("%.1f", _sohTime)
+		local sohTime = TRB.Functions.BarText:TimerPrecision(_sohTime)
 
 		local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		--$innervateMana
@@ -2678,7 +2678,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local innervateMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
 		--$innervateTime
 		local _innervateTime = innervate.buff:GetRemainingTime(currentTime)
-		local innervateTime = string.format("%.1f", _innervateTime)
+		local innervateTime = TRB.Functions.BarText:TimerPrecision(_innervateTime)
 
 		local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		--$potionOfChilledClarityMana
@@ -2686,7 +2686,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
 		--$potionOfChilledClarityTime
 		local _potionOfChilledClarityTime = potionOfChilledClarity.buff:GetRemainingTime(currentTime)
-		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
+		local potionOfChilledClarityTime = TRB.Functions.BarText:TimerPrecision(_potionOfChilledClarityTime)
 		
 		local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 		--$mttMana
@@ -2694,7 +2694,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
 		local _mttTime = manaTideTotem.buff:GetRemainingTime(currentTime)
-		local mttTime = string.format("%.1f", _mttTime)
+		local mttTime = TRB.Functions.BarText:TimerPrecision(_mttTime)
 		
 		local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 		--$mrMana
@@ -2702,11 +2702,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
 		--$mrTime
 		local _mrTime = moltenRadiance.buff.remaining
-		local mrTime = string.format("%.1f", _mrTime)
+		local mrTime = TRB.Functions.BarText:TimerPrecision(_mrTime)
 
 		--$potionCooldownSeconds
 		local _potionCooldown = snapshots[spells.aeratedManaPotionRank1.id].cooldown.remaining
-		local potionCooldownSeconds = string.format("%.1f", _potionCooldown)
+		local potionCooldownSeconds = TRB.Functions.BarText:TimerPrecision(_potionCooldown)
 		local _potionCooldownMinutes = math.floor(_potionCooldown / 60)
 		local _potionCooldownSeconds = _potionCooldown % 60
 		--$potionCooldown
@@ -2721,7 +2721,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local potionOfFrozenFocusTicks = string.format("%.0f", _potionOfFrozenFocusTicks)
 		--$potionOfFrozenFocusTime
 		local _potionOfFrozenFocusTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
-		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
+		local potionOfFrozenFocusTime = TRB.Functions.BarText:TimerPrecision(_potionOfFrozenFocusTime)
 
 		--$passive
 		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana
@@ -2750,15 +2750,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		--$efflorescenceTime
 		local _efflorescenceTime = snapshots[spells.efflorescence.id].buff:GetRemainingTime(currentTime) --TODO: This isn't actually how this works, double check/fix it
-		local efflorescenceTime = string.format("%.1f", _efflorescenceTime)
+		local efflorescenceTime = TRB.Functions.BarText:TimerPrecision(_efflorescenceTime)
 	
 		--$clearcastingTime
 		local _clearcastingTime = snapshots[spells.clearcasting.id].buff:GetRemainingTime(currentTime)
-		local clearcastingTime = string.format("%.1f", _clearcastingTime)
+		local clearcastingTime = TRB.Functions.BarText:TimerPrecision(_clearcastingTime)
 
 		--$incarnationTime
 		local _incarnationTime = snapshots[spells.incarnationTreeOfLife.id].buff:GetRemainingTime(currentTime)
-		local incarnationTime = string.format("%.1f", _incarnationTime)
+		local incarnationTime = TRB.Functions.BarText:TimerPrecision(_incarnationTime)
 
 		--$reforestationStacks
 		local reforestationStacks = snapshots[spells.reforestation.id].buff.stacks
@@ -2790,31 +2790,31 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			if target ~= nil and target.spells[spells.moonfire.id].active then
 				if _moonfireTime > spells.moonfire.pandemicTime then
 					moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _moonfireCount)
-					moonfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _moonfireTime)
+					moonfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_moonfireTime))
 				else
 					moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _moonfireCount)
-					moonfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _moonfireTime)
+					moonfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_moonfireTime))
 				end
 			else
 				moonfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _moonfireCount)
-				moonfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				moonfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if target ~= nil and target.spells[spells.sunfire.id].active then
 				if _sunfireTime > spells.sunfire.pandemicTime then
 					sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _sunfireCount)
-					sunfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _sunfireTime)
+					sunfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_sunfireTime))
 				else
 					sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _sunfireCount)
-					sunfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _sunfireTime)
+					sunfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_sunfireTime))
 				end
 			else
 				sunfireCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _sunfireCount)
-				sunfireTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				sunfireTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			sunfireTime = string.format("%.1f", _sunfireTime)
-			moonfireTime = string.format("%.1f", _moonfireTime)
+			sunfireTime = TRB.Functions.BarText:TimerPrecision(_sunfireTime)
+			moonfireTime = TRB.Functions.BarText:TimerPrecision(_moonfireTime)
 		end
 
 

@@ -1096,17 +1096,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			if target ~= nil and target.spells[spells.flameShock.id].active then
 				if _flameShockTime > spells.flameShock.pandemicTime then
 					flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _flameShockCount)
-					flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _flameShockTime)
+					flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 				else
 					flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _flameShockCount)
-					flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _flameShockTime)
+					flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 				end
 			else
 				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _flameShockCount)
-				flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			flameShockTime = string.format("%.1f", _flameShockTime)
+			flameShockTime = TRB.Functions.BarText:TimerPrecision(_flameShockTime)
 		end
 
 		----------
@@ -1117,25 +1117,25 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local icefuryStacks = snapshots[spells.icefury.id].buff.stacks or 0
 		--$ifStacks
 		local _icefuryTime = snapshots[spells.icefury.id].buff:GetRemainingTime(currentTime)
-		local icefuryTime = string.format("%.1f", _icefuryTime)
+		local icefuryTime = TRB.Functions.BarText:TimerPrecision(_icefuryTime)
 
 		--$skStacks
 		local stormkeeperStacks = snapshots[spells.stormkeeper.id].buff.stacks or 0
 		--$skStacks
 		local _stormkeeperTime = snapshots[spells.stormkeeper.id].buff:GetRemainingTime(currentTime)
-		local stormkeeperTime = string.format("%.1f", _stormkeeperTime)
+		local stormkeeperTime = TRB.Functions.BarText:TimerPrecision(_stormkeeperTime)
 
 		--$eogsTime
 		local _eogsTime = snapshots[spells.echoesOfGreatSundering.id].buff:GetRemainingTime(currentTime)
-		local eogsTime = string.format("%.1f", _eogsTime)
+		local eogsTime = TRB.Functions.BarText:TimerPrecision(_eogsTime)
 
 		--$pfTime
 		local _pfTime = snapshots[spells.primalFracture.id].buff:GetRemainingTime(currentTime)
-		local pfTime = string.format("%.1f", _pfTime)
+		local pfTime = TRB.Functions.BarText:TimerPrecision(_pfTime)
 
 		--$ascendanceTime
 		local _ascendanceTime = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
-		local ascendanceTime = string.format("%.1f", _ascendanceTime)
+		local ascendanceTime = TRB.Functions.BarText:TimerPrecision(_ascendanceTime)
 
 		----------------------------
 
@@ -1257,22 +1257,22 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			if target ~= nil and target.spells[spells.flameShock.id].active then
 				if _flameShockTime > spells.flameShock.pandemicTime then
 					flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _flameShockCount)
-					flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _flameShockTime)
+					flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 				else
 					flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _flameShockCount)
-					flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _flameShockTime)
+					flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 				end
 			else
 				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _flameShockCount)
-				flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			flameShockTime = string.format("%.1f", _flameShockTime)
+			flameShockTime = TRB.Functions.BarText:TimerPrecision(_flameShockTime)
 		end
 
 		--$ascendanceTime
 		local _ascendanceTime = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
-		local ascendanceTime = string.format("%.1f", _ascendanceTime)
+		local ascendanceTime = TRB.Functions.BarText:TimerPrecision(_ascendanceTime)
 
 		----------------------------
 		Global_TwintopResourceBar.dots = {
@@ -1344,7 +1344,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local sohTicks = string.format("%.0f", _sohTicks)
 		--$sohTime
 		local _sohTime = symbolOfHope.buff:GetRemainingTime(currentTime)
-		local sohTime = string.format("%.1f", _sohTime)
+		local sohTime = TRB.Functions.BarText:TimerPrecision(_sohTime)
 
 		local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		--$innervateMana
@@ -1352,7 +1352,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local innervateMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
 		--$innervateTime
 		local _innervateTime = innervate.buff:GetRemainingTime(currentTime)
-		local innervateTime = string.format("%.1f", _innervateTime)
+		local innervateTime = TRB.Functions.BarText:TimerPrecision(_innervateTime)
 
 		local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		--$potionOfChilledClarityMana
@@ -1360,7 +1360,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
 		--$potionOfChilledClarityTime
 		local _potionOfChilledClarityTime = potionOfChilledClarity.buff:GetRemainingTime(currentTime)
-		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
+		local potionOfChilledClarityTime = TRB.Functions.BarText:TimerPrecision(_potionOfChilledClarityTime)
 		
 		local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 		--$mttMana
@@ -1368,7 +1368,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
 		local _mttTime = manaTideTotem.buff:GetRemainingTime(currentTime)
-		local mttTime = string.format("%.1f", _mttTime)
+		local mttTime = TRB.Functions.BarText:TimerPrecision(_mttTime)
 		
 		local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 		--$mrMana
@@ -1376,11 +1376,11 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
 		--$mrTime
 		local _mrTime = moltenRadiance.buff.remaining
-		local mrTime = string.format("%.1f", _mrTime)
+		local mrTime = TRB.Functions.BarText:TimerPrecision(_mrTime)
 
 		--$potionCooldownSeconds
 		local _potionCooldown = snapshots[spells.aeratedManaPotionRank1.id].cooldown.remaining
-		local potionCooldownSeconds = string.format("%.1f", _potionCooldown)
+		local potionCooldownSeconds = TRB.Functions.BarText:TimerPrecision(_potionCooldown)
 		local _potionCooldownMinutes = math.floor(_potionCooldown / 60)
 		local _potionCooldownSeconds = _potionCooldown % 60
 		--$potionCooldown
@@ -1395,7 +1395,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local potionOfFrozenFocusTicks = string.format("%.0f", _potionOfFrozenFocusTicks)
 		--$potionOfFrozenFocusTime
 		local _potionOfFrozenFocusTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
-		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
+		local potionOfFrozenFocusTime = TRB.Functions.BarText:TimerPrecision(_potionOfFrozenFocusTime)
 
 		--$passive
 		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana
@@ -1438,22 +1438,22 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			if target ~= nil and target.spells[spells.flameShock.id].active then
 				if _flameShockTime > spells.flameShock.pandemicTime then
 					flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _flameShockCount)
-					flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _flameShockTime)
+					flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 				else
 					flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _flameShockCount)
-					flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _flameShockTime)
+					flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_flameShockTime))
 				end
 			else
 				flameShockCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _flameShockCount)
-				flameShockTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				flameShockTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			flameShockTime = string.format("%.1f", _flameShockTime)
+			flameShockTime = TRB.Functions.BarText:TimerPrecision(_flameShockTime)
 		end
 
 		--$ascendanceTime
 		local _ascendanceTime = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
-		local ascendanceTime = string.format("%.1f", _ascendanceTime)
+		local ascendanceTime = TRB.Functions.BarText:TimerPrecision(_ascendanceTime)
 
 		Global_TwintopResourceBar.resource.passive = _passiveMana
 		Global_TwintopResourceBar.resource.potionOfSpiritualClarity = _channeledMana or 0

@@ -61,6 +61,11 @@ local function LoadDefaultSettings()
 				level="BACKGROUND",
 				name="Background"
 			},
+			timers = {
+				precisionLow = 1,
+				precisionHigh = 0,
+				precisionThreshold = 5
+			},
 			thresholds = {
 				width = 2,
 				overlapBorder=true,
@@ -290,7 +295,7 @@ local function LoadDefaultSettings()
 						font = false,
 						textures = false,
 						thresholds = false
-					}					
+					}
 				},
 				rogue = {
 					assassination = {
@@ -555,6 +560,72 @@ local function ConstructAddonOptionsPanel()
 		self.EditBox:SetText(value)
 		TRB.Data.settings.core.ttd.precision = value
 	end)
+
+
+
+
+
+
+
+
+
+
+
+	yCoord = yCoord - 40
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Timer Precision", oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 50
+	title = "Below X sec Time Precision"
+	controls.timersLowPrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, TRB.Data.settings.core.timers.precisionLow, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.timersLowPrecision:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		TRB.Data.settings.core.timers.precisionLow = value
+	end)
+	
+	title = "Above X sec Time Precision"
+	controls.timersHighPrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, TRB.Data.settings.core.timers.precisionHigh, 1, 0,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
+	controls.timersHighPrecision:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+
+		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+		self.EditBox:SetText(value)
+		TRB.Data.settings.core.timers.precisionHigh = value
+	end)
+
+
+	yCoord = yCoord - 60
+	title = "Precision Threshold (seconds)"
+	controls.timersPrecisionThreshold = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 600, TRB.Data.settings.core.timers.precisionThreshold, 0.1, 2,
+									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
+	controls.timersPrecisionThreshold:SetScript("OnValueChanged", function(self, value)
+		local min, max = self:GetMinMaxValues()
+		if value > max then
+			value = max
+		elseif value < min then
+			value = min
+		end
+		
+		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
+		self.EditBox:SetText(value)
+		TRB.Data.settings.core.timers.precisionThreshold = value
+	end)
+
+
 
 	yCoord = yCoord - 40
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Character and Player Settings", oUi.xCoord, yCoord)

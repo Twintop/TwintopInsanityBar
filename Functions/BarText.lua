@@ -985,3 +985,14 @@ function TRB.Functions.BarText:CreateBarTextFrames(settings, classId, specId)
 		end
 	end
 end
+
+---Returns a string formatted time value based on settings for precision
+---@param value number # Timer value to format
+---@return string # String formatted value with correct precision based on thresholds
+function TRB.Functions.BarText:TimerPrecision(value)
+	if value >= TRB.Data.settings.core.timers.precisionThreshold then
+		return string.format("%."..TRB.Data.settings.core.timers.precisionHigh.."f", value)
+	else
+		return string.format("%."..TRB.Data.settings.core.timers.precisionLow.."f", value)
+	end
+end

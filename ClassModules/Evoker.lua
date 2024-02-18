@@ -807,7 +807,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		
 		--$ebTime
 		local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
-		local ebTime = string.format("%.1f", _ebTime)
+		local ebTime = TRB.Functions.BarText:TimerPrecision(_ebTime)
 		--$ecTicks
 		local _ebStacks = snapshots[spells.essenceBurst.id].buff.stacks
 		local ebStacks = string.format("%.0f", _ebStacks)
@@ -817,7 +817,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
 			_essenceRegenTime = 0
 		end
-		local essenceRegenTime = string.format("%.1f", _essenceRegenTime)
+		local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
 
 		----------------------------
 
@@ -884,7 +884,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local ecTicks = string.format("%.0f", _ecTicks)
 		--$ecTime
 		local _ecTime = snapshots[spells.emeraldCommunion.id].buff:GetRemainingTime(currentTime)
-		local ecTime = string.format("%.1f", _ecTime)
+		local ecTime = TRB.Functions.BarText:TimerPrecision(_ecTime)
 		local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 		--$sohMana
 		local _sohMana = symbolOfHope.buff.mana
@@ -894,7 +894,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local sohTicks = string.format("%.0f", _sohTicks)
 		--$sohTime
 		local _sohTime = symbolOfHope.buff:GetRemainingTime(currentTime)
-		local sohTime = string.format("%.1f", _sohTime)
+		local sohTime = TRB.Functions.BarText:TimerPrecision(_sohTime)
 
 		local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		--$innervateMana
@@ -902,7 +902,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local innervateMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
 		--$innervateTime
 		local _innervateTime = innervate.buff:GetRemainingTime(currentTime)
-		local innervateTime = string.format("%.1f", _innervateTime)
+		local innervateTime = TRB.Functions.BarText:TimerPrecision(_innervateTime)
 
 		local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		--$potionOfChilledClarityMana
@@ -910,7 +910,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
 		--$potionOfChilledClarityTime
 		local _potionOfChilledClarityTime = potionOfChilledClarity.buff:GetRemainingTime(currentTime)
-		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
+		local potionOfChilledClarityTime = TRB.Functions.BarText:TimerPrecision(_potionOfChilledClarityTime)
 		
 		local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 		--$mttMana
@@ -918,7 +918,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
 		local _mttTime = manaTideTotem.buff:GetRemainingTime(currentTime)
-		local mttTime = string.format("%.1f", _mttTime)
+		local mttTime = TRB.Functions.BarText:TimerPrecision(_mttTime)
 		
 		local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 		--$mrMana
@@ -926,11 +926,11 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
 		--$mrTime
 		local _mrTime = moltenRadiance.buff.remaining
-		local mrTime = string.format("%.1f", _mrTime)
+		local mrTime = TRB.Functions.BarText:TimerPrecision(_mrTime)
 
 		--$potionCooldownSeconds
 		local _potionCooldown = snapshots[spells.aeratedManaPotionRank1.id].cooldown.remaining
-		local potionCooldownSeconds = string.format("%.1f", _potionCooldown)
+		local potionCooldownSeconds = TRB.Functions.BarText:TimerPrecision(_potionCooldown)
 		local _potionCooldownMinutes = math.floor(_potionCooldown / 60)
 		local _potionCooldownSeconds = _potionCooldown % 60
 		--$potionCooldown
@@ -945,7 +945,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local potionOfFrozenFocusTicks = string.format("%.0f", _potionOfFrozenFocusTicks)
 		--$potionOfFrozenFocusTime
 		local _potionOfFrozenFocusTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
-		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
+		local potionOfFrozenFocusTime = TRB.Functions.BarText:TimerPrecision(_potionOfFrozenFocusTime)
 
 		--$passive
 		local _passiveMana = _ecMana + _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana
@@ -975,7 +975,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		--$ebTime
 		local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
-		local ebTime = string.format("%.1f", _ebTime)
+		local ebTime = TRB.Functions.BarText:TimerPrecision(_ebTime)
 		--$ecTicks
 		local _ebStacks = snapshots[spells.essenceBurst.id].buff.stacks
 		local ebStacks = string.format("%.0f", _ebStacks)
@@ -985,7 +985,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
 			_essenceRegenTime = 0
 		end
-		local essenceRegenTime = string.format("%.1f", _essenceRegenTime)
+		local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
 
 		----------
 
@@ -1135,7 +1135,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		--$ebTime
 		local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
-		local ebTime = string.format("%.1f", _ebTime)
+		local ebTime = TRB.Functions.BarText:TimerPrecision(_ebTime)
 		--$ecTicks
 		local _ebStacks = snapshots[spells.essenceBurst.id].buff.stacks
 		local ebStacks = string.format("%.0f", _ebStacks)
@@ -1145,7 +1145,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
 			_essenceRegenTime = 0
 		end
-		local essenceRegenTime = string.format("%.1f", _essenceRegenTime)
+		local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
 
 		----------------------------
 
