@@ -2284,29 +2284,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$shadowTechniquesCount", description = "Total number of stored Combo Points from Shadow Techniques", printInSettings = true, color = false },
 
 			{ variable = "$flagellationTime", description = "Time remaining on Flagellation", printInSettings = true, color = false },
-			--[[
-			{ variable = "$rtbCount", description = "Current number of Roll the Bones buffs active", printInSettings = true, color = false },
-			{ variable = "$rollTheBonesCount", description = "Current number of Roll the Bones buffs active", printInSettings = false, color = false },
-
-			{ variable = "$rtbTemporaryCount", description = "Current number of full Roll the Bones buffs active", printInSettings = true, color = false },
-			{ variable = "$rollTheBonesTemporaryCount", description = "Current number of temporary Roll the Bones buffs (from Count the Odds) active", printInSettings = false, color = false },
-
-			{ variable = "$rtbAllCount", description = "Current number of Roll the Bones buffs active from all sources", printInSettings = true, color = false },
-			{ variable = "$rollTheBonesAllCount", description = "Current number of Roll the Bones buffs active from all sources", printInSettings = false, color = false },
-			
-			{ variable = "$rtbBuffTime", description = "Time remaining on your Roll the Bones buffs (not from Count the Odds)", printInSettings = true, color = false },
-			{ variable = "$rollTheBonesBuffTime", description = "Time remaining on your Roll the Bones buffs (not from Count the Odds)", printInSettings = false, color = false },
-			
-			{ variable = "$rtbGoodBuff", description = "Are the current Roll the Bones buffs good or not? Good is defined as any two buffs, Broadside, or True Bearing. Logic variable only!", printInSettings = true, color = false },
-			{ variable = "$rollTheBonesGoodBuff", description = "Are the current Roll the Bones buffs good or not? Good is defined as any two buffs, Broadside, or True Bearing. Logic variable only!", printInSettings = false, color = false },
-
-			{ variable = "$broadsideTime", description = "Time remaining on Broadside buff (from Roll the Bones)", printInSettings = true, color = false },
-			{ variable = "$buriedTreasureTime", description = "Time remaining on Burried Treasure buff (from Roll the Bones)", printInSettings = true, color = false },
-			{ variable = "$grandMeleeTime", description = "Time remaining on Grand Melee buff (from Roll the Bones)", printInSettings = true, color = false },
-			{ variable = "$ruthlessPrecisionTime", description = "Time remaining on Ruthless Precision buff (from Roll the Bones)", printInSettings = true, color = false },
-			{ variable = "$skullAndCrossbonesTime", description = "Time remaining on Skull and Crossbones buff (from Roll the Bones)", printInSettings = true, color = false },
-			{ variable = "$trueBearingTime", description = "Time remaining on True Bearing buff (from Roll the Bones)", printInSettings = true, color = false },
-			]]
 
 			{ variable = "$sadTime", description = "Time remaining on Slice and Dice buff", printInSettings = true, color = false },
 			{ variable = "$sliceAndDiceTime", description = "Time remaining on Slice and Dice buff", printInSettings = false, color = false },

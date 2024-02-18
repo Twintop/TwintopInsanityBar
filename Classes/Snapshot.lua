@@ -290,14 +290,14 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
     -- If this is a custom buff, don't do any of the following checks and instead just update the remaining time.
     if self.isCustom then
         self:GetRemainingTime()
-        --print("Buff Refresh", self.parent.spell.buffId or self.parent.spell.spellId or self.parent.spell.id)
         return
     end
     
     if self.onlyRefreshOnRequest then
-        if self.refreshRequested == false then
-            return
-        elseif self.refreshEmbargo ~= nil and self.refreshEmbargo > GetTime() then
+        if self.refreshRequested == false or self.refreshEmbargo ~= nil and self.refreshEmbargo > GetTime() then
+            if self.isActive then
+                self:GetRemainingTime()
+            end
             return
         else
             self.refreshRequested = false
@@ -311,7 +311,6 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
     end
 
     local id = self.parent.spell.buffId or self.parent.spell.spellId or self.parent.spell.id or nil
-    --print("Buff Refresh", id)
     if id ~= nil then
         if eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REFRESH" or eventType == "SPELL_AURA_APPLIED_DOSE" then -- Gained buff
             self.isActive = true
@@ -439,7 +438,6 @@ end
 ---@param retryForce boolean? # Allow the cooldown to retry a force on the next call to Refresh()
 function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
     if self.parent.spell ~= nil and self.parent.spell.id ~= nil and (force or self.parent.spell.hasCharges or self.onCooldown) then
-        --print("Cooldown Refresh", self.parent.spell.id)
         local startTime = nil
         local duration = 0
         if self.parent.spell.hasCharges == true then
