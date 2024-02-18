@@ -4846,7 +4846,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			
 			--TODO #339: Comment out to reduce load while testing
-			--TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 		end
 	end
 
@@ -6267,7 +6267,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		--TODO #339: Remove commented out to do memory load testing
-		if updateMemory + 5 < currentTime then
+		--[[if updateMemory + 5 < currentTime then
 			updateMemory = currentTime
 			UpdateAddOnMemoryUsage()
 			currentMemory = GetAddOnMemoryUsage("TwintopInsanityBar")
@@ -6275,6 +6275,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if currentMemory > highMemory then
 				highMemory = currentMemory
 			end
-		end
+		end]]
 	end
 end

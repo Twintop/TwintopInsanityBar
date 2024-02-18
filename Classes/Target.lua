@@ -371,18 +371,19 @@ function TRB.Classes.TargetSpell:Update(currentTime)
         if self.autoUpdate then
             if self.isDot then
                 if self.spell.isBuff then
-                    local expiration = select(6, TRB.Functions.Aura:FindBuffById(self.id, unitToken, "player"))
-                    if expiration ~= nil then
+                    local buff = TRB.Functions.Aura:FindBuffById(self.id, unitToken, "player")
+                    if buff ~= nil then
                         self.active = true
-                        self.remainingTime = expiration - currentTime
-                        self.endTime = expiration
+                        self.remainingTime = buff.expirationTime - currentTime
+                        self.endTime = buff
+                        .expirationTime
                     end
                 else
-                    local expiration = select(6, TRB.Functions.Aura:FindDebuffById(self.id, unitToken, "player"))
-                    if expiration ~= nil then
+                    local debuff = TRB.Functions.Aura:FindDebuffById(self.id, unitToken, "player")
+                    if debuff ~= nil then
                         self.active = true
-                        self.remainingTime = expiration - currentTime
-                        self.endTime = expiration
+                        self.remainingTime = debuff.expirationTime - currentTime
+                        self.endTime = debuff.expirationTime
                     end
                 end
             end

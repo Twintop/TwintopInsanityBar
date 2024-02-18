@@ -1,5 +1,4 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.BarText = {}
 
@@ -455,12 +454,12 @@ local function AddToBarTextCache(input)
 	--Only loop through this while we're not at the end of the string AND we haven't done 1000 checks. This is a sanity checker to prevent an infinite run for some reason!
 	while p <= string.len(input) and infinity < 1000 do
 		infinity = infinity + 1
-		local a, b, c, d, z, a1, b1, c1, d1, z1
+		local a, b, c, d, z, z1
 		local match = false
-		a, a1 = string.find(input, "#", p)
-		b, b1 = string.find(input, "%$", p)
-		c, c1 = string.find(input, "|", p)
-		d, d1 = string.find(input, "%%", p)
+		a, _ = string.find(input, "#", p)
+		b, _ = string.find(input, "%$", p)
+		c, _ = string.find(input, "|", p)
+		d, _ = string.find(input, "%%", p)
 		if a ~= nil and (b == nil or a < b) and (c == nil or a < c) and (d == nil or a < d) then
 			if string.sub(input, a+1, a+6) == "spell_" then
 				z, z1 = string.find(input, "_", a+7)
@@ -859,37 +858,37 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 end
 
 function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
-	if settings ~= nil and settings.bar ~= nil then
-		TRB.Functions.BarText:RefreshLookupDataBase(settings)
-		TRB.Functions.RefreshLookupData()
+	--Always refresh the lookup data as this also updates the global variable used by other addons/WAs
+	TRB.Functions.BarText:RefreshLookupDataBase(settings)
+	TRB.Functions.RefreshLookupData()
 	
-		if refreshText then
-			---@type Frame[]
-			local textFrames = TRB.Frames.textFrames
-			local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
-
-			local entries = TRB.Functions.Table:Length(displayText.barText)
-			if entries > 0 then
-				for i = 1, entries do
-					local e = displayText.barText[i]
-					local color = e.color
-					
-					if e.useDefaultFontColor then
-						color = displayText.default.color
-					end
-
-					local barText = {
-						text = e.text,
-						color = string.format("|c%s", color)
-					}
-
-					local returnText = GetReturnText(barText)
-
-					local pcallResult = pcall(TryUpdateText, textFrames[i], returnText)
-					
-					textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
-					textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
+	--Only parse bar text if we're we need to refresh the text
+	if settings ~= nil and settings.bar ~= nil and refreshText then
+		---@type Frame[]
+		local textFrames = TRB.Frames.textFrames
+		local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
+		local entries = TRB.Functions.Table:Length(displayText.barText)
+		if entries > 0 then
+			for i = 1, entries do
+				local e = displayText.barText[i]
+				local color = e.color
+				
+				if e.useDefaultFontColor then
+					color = displayText.default.color
 				end
+
+				local barText = {
+					text = e.text,
+					color = string.format("|c%s", color)
+				}
+
+				local returnText = GetReturnText(barText)
+
+				--local pcallResult = pcall(TryUpdateText, textFrames[i], returnText)
+				pcall(TryUpdateText, textFrames[i], returnText)
+				
+				textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+				textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
 			end
 		end
 	end
