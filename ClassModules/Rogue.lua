@@ -4486,7 +4486,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								if snapshotData.attributes.resource2 == 0 then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif snapshots[spells.goremawsBite.id].buff.isActive and snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
+								elseif snapshots[spells.goremawsBite.id].buff.isActive and (snapshotData.snapshots[spell.id] == nil or snapshotData.snapshots[spell.id].cooldown:IsUsable()) then
 									thresholdColor = specSettings.colors.threshold.special
 									frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 								end
@@ -5365,7 +5365,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		elseif specId == 3 then --Subtlety
 			if var == "$shadowTechniquesCount" then
-				if snapshots[spells.shadowTechniques.id].buff.isActive then
+				if snapshots[spells.shadowTechniques.id].buff.applications > 0 then
 					valid = true
 				end
 			elseif var == "$flagellationTime" then
