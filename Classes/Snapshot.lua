@@ -122,6 +122,7 @@ function TRB.Classes.SnapshotBuff:New(parent, alwaysSimpleBuff, onlyRefreshOnReq
 
     self:Reset()
     self.customPropertiesDefinitions = {}
+    self.customProperties = {}
 
     return self
 end

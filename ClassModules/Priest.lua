@@ -4846,7 +4846,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			end
 			
 			--TODO #339: Comment out to reduce load while testing
-			TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
+			--TRB.Functions.BarText:UpdateResourceBarText(specSettings, refreshText)
 		end
 	end
 
@@ -4862,7 +4862,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			local snapshots = snapshotData.snapshots
 			local targetData = snapshotData.targetData
 			local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
-			--local _, type, _, sourceGuid, sourceName, _, _, destinationGuid, _, _, _, spellId, _ = CombatLogGetCurrentEventInfo()
 
 			local settings
 			if specId == 1 then
@@ -6268,7 +6267,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end
 
 		--TODO #339: Remove commented out to do memory load testing
-		--[[if updateMemory + 5 < currentTime then
+		if updateMemory + 5 < currentTime then
 			updateMemory = currentTime
 			UpdateAddOnMemoryUsage()
 			currentMemory = GetAddOnMemoryUsage("TwintopInsanityBar")
@@ -6276,6 +6275,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if currentMemory > highMemory then
 				highMemory = currentMemory
 			end
-		end]]
+		end
 	end
 end

@@ -4752,7 +4752,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					elseif entry.spellId == spells.shotInTheDark.id then
 						snapshots[entry.spellId].buff:Initialize(entry.type, true)
 					elseif entry.spellId == spells.shadowTechniques.id then
-						print(entry.type)
 						snapshots[entry.spellId].buff:Initialize(entry.type, true)
 					elseif entry.spellId == spells.flagellation.id then
 						snapshots[entry.spellId].buff:Initialize(entry.type)
@@ -4771,7 +4770,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						entry.spellId == spells.sepsis.id or
 						entry.spellId == spells.goremawsBite.id then
 						snapshots[spells.shadowTechniques.id].buff:RequestRefresh(GetTime() + 0.05)
-						end
+					end
 				end
 
 				-- Spec agnostic
