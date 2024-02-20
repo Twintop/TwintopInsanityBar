@@ -2883,7 +2883,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						end
 					elseif entry.spellId == spells.frenzy.id and entry.destinationGuid == TRB.Data.character.petGuid then
 						snapshots[entry.spellId].buff:Initialize(entry.type, nil, "pet")
-						print(snapshots[entry.spellId].buff.isActive, snapshots[entry.spellId].buff.remaining)
 					elseif entry.spellId == spells.killCommand.id then
 						if entry.type == "SPELL_CAST_SUCCESS" then
 							snapshots[entry.spellId].cooldown:Initialize()

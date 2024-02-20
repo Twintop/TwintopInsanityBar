@@ -317,7 +317,6 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
             if unit == "player" then
                 ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
             else
-                print(id, unit)
                 ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
             end
             if not simple and not self.alwaysSimple then
