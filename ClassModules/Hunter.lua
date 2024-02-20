@@ -2165,7 +2165,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		
 		snapshots[spells.killShot.id].cooldown:Refresh()
 		snapshots[spells.killCommand.id].cooldown:Refresh()
-		Twintop_Data = TRB.Data
 	end
 
 	local function UpdateSnapshot_BeastMastery()

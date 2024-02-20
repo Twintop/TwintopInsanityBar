@@ -3653,7 +3653,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Functions.Character:UpdateSnapshot()
 		--TODO #339: Comment out to reduce load while testing
 		UpdateShadowfiendValues()
-		Twintop_Data = TRB.Data
+		--Twintop_Data = TRB.Data
 	end
 
 	local function UpdateSnapshot_Healers()
