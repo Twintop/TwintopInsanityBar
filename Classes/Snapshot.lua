@@ -314,7 +314,12 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
     if id ~= nil then
         if eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REFRESH" or eventType == "SPELL_AURA_APPLIED_DOSE" then -- Gained buff
             self.isActive = true
-            ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
+            if unit == "player" then
+                ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
+            else
+                print(id, unit)
+                ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
+            end
             if not simple and not self.alwaysSimple then
                 self:GetRemainingTime()
             end
@@ -326,11 +331,17 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
             self:Reset()
         elseif eventType == nil or eventType == "" then
             local currentTime = currentTime or GetTime()
-            local foundId = ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
+            local foundId = nil
+            
+            if unit == "player" then
+                foundId = ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
+            else
+                foundId = ParseBuffData(self, TRB.Functions.Aura:FindBuffById(id, unit))
+            end
+
             if simple or self.alwaysSimple then
                 self.isActive = foundId == id
             else
-                ParseBuffData(self, C_UnitAuras.GetPlayerAuraBySpellID(id))
                 if self.endTime ~= nil and self.endTime > currentTime then
                     self.isActive = true
                     self:GetRemainingTime()

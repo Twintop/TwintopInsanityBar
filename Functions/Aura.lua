@@ -15,7 +15,7 @@ function TRB.Functions.Aura:FindBuffById(spellId, onWhom, byWhom)
 		if not buffData then
 			return
 		elseif spellId == buffData.spellId and (byWhom == nil or byWhom == buffData.sourceUnit) then
-			return debuffData
+			return buffData
 		end
 	end
 end
