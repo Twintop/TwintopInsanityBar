@@ -7,7 +7,28 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 
-# 10.2.5.1-release (2024-01-16)
+# 10.2.5.1-release (2024-02-20)
+## General
+
+- [#285 - NEW](#285) Add support for Subtlety Rogue, tracking Energy and Combo Points.
+<br/>&emsp;&ensp;- Combo Point colors for the border and fill, including different colors of the penultimate and final combo point.
+<br/>&emsp;&ensp;&emsp;&ensp;- Extra colors to show extra gains from Shadow Techniques or bonus finisher effects from Echoing Reprimand.
+<br/>&emsp;&ensp;- Configurable threshold lines for all builders, finishers, utility, and PvP abilities. Some threshold lines have extra logic to determine when they are shown, e.g. only while Stealthed or with an appropriate buff that allows them to be used.
+<br/>&emsp;&ensp;- Bar color change when Slice and Dice is not up or is within the pandemic refresh window (based on current number of Combo Points).
+<br/>&emsp;&ensp;- Counts of current total applications poisons out on targets.
+<br/>&emsp;&ensp;- Timers for poisons, Flagellation buff, and Slice and Dice remaining.
+<br/>&emsp;&ensp;- Bar Text variables and icons for customization.
+<br/>&emsp;&ensp;- Importing and Exporting support.
+<br/>&emsp;&ensp;- Further enhancements will be coming in subsequent releases as part of [#341](#341).
+- [#340 - NEW](#340) Add a global customization for how much precision to show in timers in bar text. Three new options allow you to configure a "high" and "low" timer amount and vary the precision at some changeover point.
+<br/>&emsp;&ensp;- Example: I want 0 decimals shown for long duration timers and 1 decimal shown for short duration timers. If my changeover point is 5 seconds, above 5 seconds I will not see any decimals (i.e, `9`) and below 5 seconds I will see 1 decimal (i.e., `4.6`).
+- [#339 - FIX](#339) Fix memory leaks due to Blizzard APIs (`UnitBuff` and `UnitDebuff`) becoming deprecated. More adjustments are in the works to further improve the bar's memory usage.
+
+## Hunter
+### Beast Mastery
+
+- (FIX) Correctly track the Frenzy buff on the Hunter's pet.
+
 ## Rogue
 
 - (FIX) Don't show Echoing Reprimand threshold line when it is enabled and you are not talented in to it.
@@ -19,7 +40,7 @@ local content = [====[
 
 ### Subtlety
 
-- [NEW - #285](#285)
+- [NEW - #285](#285) Add support for Subtlety Rogue, tracking Energy and Combo Points.
 
 ----
 

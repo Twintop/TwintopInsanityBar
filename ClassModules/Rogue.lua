@@ -2288,8 +2288,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$sadTime", description = "Time remaining on Slice and Dice buff", printInSettings = true, color = false },
 			{ variable = "$sliceAndDiceTime", description = "Time remaining on Slice and Dice buff", printInSettings = false, color = false },
 
-			-- Proc
-			{ variable = "$opportunityTime", description = "Time remaining on Opportunity proc", printInSettings = true, color = false },
+			-- Bleeds
+			{ variable = "$ruptureCount", description = "Number of Rupture bleeds active on targets", printInSettings = true, color = false },
+			{ variable = "$ruptureTime", description = "Time remaining on Rupture on your current target", printInSettings = true, color = false },
 
 			-- Poisons
 			{ variable = "$atrophicPoisonCount", description = "Number of Atrophic Poisons active on targets", printInSettings = false, color = false },
@@ -4722,6 +4723,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					elseif entry.spellId == spells.goremawsBite.buffId then
 						
 						snapshots[spells.goremawsBite.id].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.rupture.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						end
 					elseif entry.spellId == spells.secretTechnique.id then
 						if entry.type == "SPELL_CAST_SUCCESS" then
 							snapshots[entry.spellId].cooldown:Initialize()
@@ -5374,6 +5379,18 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				end
 			elseif var == "$flagellationTime" then
 				if snapshots[spells.flagellation.id].buff.isActive then
+					valid = true
+				end
+			elseif var == "$ruptureCount" then
+				if snapshotData.targetData.count[spells.rupture.id] > 0 then
+					valid = true
+				end
+			elseif var == "$ruptureTime" then
+				if not UnitIsDeadOrGhost("target") and
+					UnitCanAttack("player", "target") and
+					target ~= nil and
+					target.spells[spells.rupture.id] ~= nil and
+					target.spells[spells.rupture.id].remainingTime > 0 then
 					valid = true
 				end
 			end

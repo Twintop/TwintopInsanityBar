@@ -907,7 +907,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				enabled = true,
 				name="Left",
 				guid=TRB.Functions.String:Guid(),
-				text="#shadowTechniques $shadowTechniquesCount||n{$ttd}[TTD: $ttd]",
+				text="#shadowTechniques $shadowTechniquesCount    #rupture $ruptureCount {$ruptureTime}[ $ruptureTime]||n{$ttd}[TTD: $ttd] ",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
