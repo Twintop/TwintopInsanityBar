@@ -1358,7 +1358,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 1,
 				settingKey = "eviscerate",
-				baseline = true
+				baseline = true,
+				isSnowflake = true
 			},
 			cheapShot = {
 				id = 1833,
@@ -1602,7 +1603,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 13,
 				settingKey = "blackPowder",
-				baseline = true
+				baseline = true,
+				isSnowflake = true
 			},
 			rupture = {
 				id = 1943,
@@ -1623,7 +1625,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					28 * 0.3,
 					32 * 0.3,
 				},
-				baseline = true
+				baseline = true,
+				isSnowflake = true
 			},
 			shadowstrike = {
 				id = 185438,
@@ -1646,7 +1649,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				texture = "",
 				thresholdId = 16,
 				settingKey = "shurikenStorm",
-				baseline = true
+				baseline = true,
+				isSnowflake = true
 			},
 			shurikenToss = {
 				id = 114014,
@@ -1662,7 +1666,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			shadowTechniques = {
 				id = 196911,
 				name = "",
-				icojn = ""
+				icon = ""
+			},
+			symbolsOfDeath = {
+				id = 212283,
+				name = "",
+				icon = "",
+				baseline = true
 			},
 
 			-- Subtlety Spec Abilities			
@@ -1753,6 +1763,39 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				icon = "",
 				isTalent = true
 			},
+			silentStorm = {
+				id = 385727,
+				name = "",
+				icon = "",
+			},
+			finalityBlackPowder = {
+				id = 385948,
+				name = "",
+				icon = "",
+			},
+			finalityEviscerate = {
+				id = 385949,
+				name = "",
+				icon = "",
+			},
+			finalityRupture = {
+				id = 385951,
+				name = "",
+				icon = "",
+			},
+			shadowcraft = {
+				id = 426594,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+			inevitability = {
+				id = 382512,
+				name = "",
+				icon = "",
+				isTalent = true
+			},
+
 
 			-- PvP
 			deathFromAbove = {
@@ -1840,6 +1883,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		---@type TRB.Classes.Snapshot
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.sliceAndDice)
 		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.symbolsOfDeath.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.symbolsOfDeath)
+		---@type TRB.Classes.Snapshot
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.goremawsBite.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.goremawsBite)
 		---@type TRB.Classes.Snapshot
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.secretTechnique.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.secretTechnique)
@@ -1865,6 +1910,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shadowTechniques.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shadowTechniques, nil, true, true)
 		---@type TRB.Classes.Snapshot
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.flagellation.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.flagellation)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.silentStorm.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.silentStorm, nil, true)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.finalityBlackPowder.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.finalityBlackPowder, nil, true)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.finalityEviscerate.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.finalityEviscerate, nil, true)
+		---@type TRB.Classes.Snapshot
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.finalityRupture.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.finalityRupture, nil, true)
 
 		specCache.subtlety.barTextVariables = {
 			icons = {},
@@ -2319,20 +2372,20 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 	end
 
 	local function IsTargetBleeding(guid)
-		local spells = TRB.Data.spells
-		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-		if guid == nil then
-			guid = snapshotData.targetData.currentTargetGuid
-		end
-		
-		local target = snapshotData.targetData.targets[guid] --[[@as TRB.Classes.Target]]
-
-		if target == nil then
-			return false
-		end
-
 		local specId = GetSpecialization()
 		if specId == 1 then -- Assassination
+			local spells = TRB.Data.spells
+			local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+			if guid == nil then
+				guid = snapshotData.targetData.currentTargetGuid
+			end
+			
+			local target = snapshotData.targetData.targets[guid] --[[@as TRB.Classes.Target]]
+
+			if target == nil then
+				return false
+			end
+		
 			return target.spells[spells.garrote.id].active or target.spells[spells.rupture.id].active or target.spells[spells.internalBleeding.id].active or target.spells[spells.crimsonTempest.id].active
 		end
 		return false
@@ -3741,7 +3794,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local spells = TRB.Data.spells
 		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
-		local currentTime = GetTime()
 
 		snapshots[spells.bladeRush.id].cooldown:Refresh()
 		snapshots[spells.bladeFlurry.id].cooldown:Refresh()
@@ -3758,6 +3810,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local snapshots = TRB.Data.snapshotData.snapshots
 		local currentTime = GetTime()
 		
+		snapshots[spells.symbolsOfDeath.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.sepsis.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.goremawsBite.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.flagellation.id].buff:GetRemainingTime(currentTime)
@@ -4451,7 +4504,48 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 										end
 									elseif spell.id == spells.cheapShot.id then
 										if snapshots[spells.shotInTheDark.id].buff.isActive then
+											thresholdColor = specSettings.colors.threshold.over
+											frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+										elseif currentResource >= -resourceAmount then
+											thresholdColor = specSettings.colors.threshold.over
+										else
+											thresholdColor = specSettings.colors.threshold.under
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+										end
+									elseif spell.id == spells.shurikenStorm.id then
+										if snapshots[spells.silentStorm.id].buff.isActive then
 											thresholdColor = specSettings.colors.threshold.special
+											frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+										elseif currentResource >= -resourceAmount then
+											thresholdColor = specSettings.colors.threshold.over
+										else
+											thresholdColor = specSettings.colors.threshold.under
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+										end
+									elseif spell.id == spells.blackPowder.id then
+										if snapshots[spells.finalityBlackPowder.id].buff.isActive then
+											thresholdColor = specSettings.colors.threshold.special
+											frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+										elseif currentResource >= -resourceAmount then
+											thresholdColor = specSettings.colors.threshold.over
+										else
+											thresholdColor = specSettings.colors.threshold.under
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+										end
+									elseif spell.id == spells.eviscerate.id then
+										if snapshots[spells.finalityEviscerate.id].buff.isActive then
+											thresholdColor = specSettings.colors.threshold.special
+											frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
+										elseif currentResource >= -resourceAmount then
+											thresholdColor = specSettings.colors.threshold.over
+										else
+											thresholdColor = specSettings.colors.threshold.under
+											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
+										end
+									elseif spell.id == spells.rupture.id then
+										if snapshots[spells.finalityRupture.id].buff.isActive then
+											thresholdColor = specSettings.colors.threshold.special
+											frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 										elseif currentResource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
 										else
@@ -4487,8 +4581,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 								if snapshotData.attributes.resource2 == 0 then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif snapshots[spells.goremawsBite.id].buff.isActive and (snapshotData.snapshots[spell.id] == nil or snapshotData.snapshots[spell.id].cooldown:IsUsable()) then
-									thresholdColor = specSettings.colors.threshold.special
+								elseif thresholdColor ~= specSettings.colors.threshold.special and snapshots[spells.goremawsBite.id].buff.isActive and (snapshotData.snapshots[spell.id] == nil or snapshotData.snapshots[spell.id].cooldown:IsUsable()) then
+									thresholdColor = specSettings.colors.threshold.over
 									frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 								end
 							end
@@ -4512,7 +4606,12 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					end
 
 					local barBorderColor = specSettings.colors.bar.border
-					if IsStealthed() or stealthViaBuff then
+					
+					if snapshots[spells.symbolsOfDeath.id].buff.isActive and
+						snapshots[spells.shadowTechniques.id].buff.applications >= TRB.Data.character.maxResource2 and
+						talents:IsTalentActive(spells.shadowcraft) then
+						barBorderColor = specSettings.colors.bar.borderShadowcraft
+					elseif stealthViaBuff or IsStealthed() then
 						barBorderColor = specSettings.colors.bar.borderStealth
 					elseif specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderColor = specSettings.colors.bar.borderOvercap
@@ -4737,9 +4836,19 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						end
 					elseif entry.spellId == spells.shotInTheDark.id then
 						snapshots[entry.spellId].buff:Initialize(entry.type, true)
+					elseif entry.spellId == spells.silentStorm.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type, true)
+					elseif entry.spellId == spells.finalityBlackPowder.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type, true)
+					elseif entry.spellId == spells.finalityEviscerate.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type, true)
+					elseif entry.spellId == spells.finalityRupture.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type, true)
 					elseif entry.spellId == spells.shadowTechniques.id then
 						snapshots[entry.spellId].buff:Initialize(entry.type, true)
 					elseif entry.spellId == spells.flagellation.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.symbolsOfDeath.id then
 						snapshots[entry.spellId].buff:Initialize(entry.type)
 					end
 
@@ -4756,6 +4865,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 						entry.spellId == spells.sepsis.id or
 						entry.spellId == spells.goremawsBite.id then
 						snapshots[spells.shadowTechniques.id].buff:RequestRefresh(GetTime() + 0.05)
+					end
+
+					if snapshots[spells.symbolsOfDeath.id].buff.isActive and
+						talents:IsTalentActive(spells.inevitability) and
+						(entry.spellId == spells.backstab or
+						entry.spellId == spells.Shadowstrike) then
+						snapshots[spells.symbolsOfDeath.id].buff:RequestRefresh(GetTime() + 0.05)
 					end
 				end
 

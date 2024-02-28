@@ -1134,8 +1134,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					border="FFFFD300",
 					borderOvercap="FFFF0000",
 					borderStealth="FF000000",
-					borderRtbBad="FFFF8888",
-					borderRtbGood="FF00FF00",
+					borderShadowcraft = "FF431863",
 					background="66000000",
 					base="FFFFFF00",
 					noSliceAndDice="FFFF0000",
@@ -1152,7 +1151,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					penultimate="FFFF9900",
 					final="FFFF0000",
 					echoingReprimand="FF68CCEF",
-					shadowTechniques="FFFF00FF",
+					shadowTechniques="FF431863",
 					sameColor=false
 				},
 				threshold = {
@@ -3599,6 +3598,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 3, yCoord, "Energy", true, false)
 
 		yCoord = yCoord - 30
+		controls.colors.borderShadowcraft = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border color when Shadowcraft will grant full Combo Points after using a finisher", spec.colors.bar.borderStealth, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.borderShadowcraft
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderShadowcraft")
+		end)
+
+		yCoord = yCoord - 30
 		controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border color when you are stealth (via any ability or proc)", spec.colors.bar.borderStealth, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderStealth
 		f:SetScript("OnMouseDown", function(self, button, ...)
@@ -3702,15 +3708,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
-		--[[
-		controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, "SPECIAL EFFECT PLACEHOLDER", spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-90)
+		controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Finality or Silent Storm buff up for ability", spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.threshold.special
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "special")
 		end)
-		]]
 
-		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Out of range of current target to use ability", spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)--120)
+		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Out of range of current target to use ability", spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-120)
 		f = controls.colors.threshold.outOfRange
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
@@ -3718,7 +3722,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOutOfRange
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)--150)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-150)
 		getglobal(f:GetName() .. 'Text'):SetText("Change threshold line color when out of range?")
 		f.tooltip = "When checked, while in combat threshold lines will change color when you are unable to use the ability due to being out of range of your current target."
 		f:SetChecked(spec.thresholds.outOfRange)
@@ -3728,7 +3732,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
-		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)--170)
+		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-170)
 		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
 		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
 		f:SetChecked(spec.thresholds.overlapBorder)

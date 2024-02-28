@@ -7,6 +7,22 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 
+# 10.2.5.2-release (2024-02-29)
+## General
+
+- (FIX) Fix errors when attempting to change the base bar border color.
+
+## Rogue
+### Subtlety
+
+- [#341 - NEW](#341) Add threshold color change support for abilities buffed by Finality.
+- [#341 - NEW](#341) Add threshold color change support for Shuriken Storm when buffed by Silent Storm.
+- [#341 - NEW](#341) Add Symbols of Death tracking.
+TODO: bar text
+- [#341 - NEW](#341) Add bar border color change when Shadowcraft will proc on your next finishing move use.
+
+---
+
 # 10.2.5.1-release (2024-02-20)
 ## General
 
