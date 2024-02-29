@@ -18,7 +18,9 @@ local content = [====[
 - [#341 - NEW](#341) Add threshold color change support for abilities buffed by Finality.
 - [#341 - NEW](#341) Add threshold color change support for Shuriken Storm when buffed by Silent Storm.
 - [#341 - NEW](#341) Add Symbols of Death tracking.
-TODO: bar text
+<br/>&emsp;&ensp;- New bar text icons and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#sod` or `#symbolsOfDeath` -- Symbols of Death buff icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$sodTime` or `$symbolsOfDeathTime` -- how long is left on Symbols of Death buff
 - [#341 - NEW](#341) Add bar border color change when Shadowcraft will proc on your next finishing move use.
 
 ---

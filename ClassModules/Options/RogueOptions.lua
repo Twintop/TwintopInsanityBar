@@ -930,7 +930,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				enabled = true,
 				name="Middle",
 				guid=TRB.Functions.String:Guid(),
-				text="{$sadTime}[#sad $sadTime #sad]",
+				text="{$sadTime}[#sad $sadTime #sad]|n{$sodTime}[#sod $sodTime #sod] ",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",

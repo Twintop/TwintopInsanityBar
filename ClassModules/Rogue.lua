@@ -1883,7 +1883,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		---@type TRB.Classes.Snapshot
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.sliceAndDice)
 		---@type TRB.Classes.Snapshot
-		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.symbolsOfDeath.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.symbolsOfDeath)
+		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.symbolsOfDeath.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.symbolsOfDeath, nil, false, true)
 		---@type TRB.Classes.Snapshot
 		specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.goremawsBite.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.goremawsBite)
 		---@type TRB.Classes.Snapshot
@@ -2278,6 +2278,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "#sepsis", icon = spells.sepsis.icon, description = spells.sepsis.name, printInSettings = true },
 			{ variable = "#shadowTechniques", icon = spells.shadowTechniques.icon, description = spells.shadowTechniques.name, printInSettings = true },
 			{ variable = "#stealth", icon = spells.stealth.icon, description = spells.stealth.name, printInSettings = true },
+			{ variable = "#sod", icon = spells.symbolsOfDeath.icon, description = spells.symbolsOfDeath.name, printInSettings = true },
+			{ variable = "#symbolsOfDeath", icon = spells.symbolsOfDeath.icon, description = spells.symbolsOfDeath.name, printInSettings = false },
 			{ variable = "#woundPoison", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = true },
 			{ variable = "#wp", icon = spells.woundPoison.icon, description = spells.woundPoison.name, printInSettings = false },
 		}
@@ -2335,6 +2337,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			{ variable = "$comboPoints", description = "Current Combo Points", printInSettings = true, color = false },
 			{ variable = "$comboPointsMax", description = "Maximum Combo Points", printInSettings = true, color = false },
 			{ variable = "$shadowTechniquesCount", description = "Total number of stored Combo Points from Shadow Techniques", printInSettings = true, color = false },
+
+			{ variable = "$sodTime", description = "Time remaining on Symbols of Death buff", printInSettings = true, color = false },
+			{ variable = "$symbolsOfDeathTime", description = "Time remaining on Symbols of Death buff", printInSettings = false, color = false },
 
 			{ variable = "$flagellationTime", description = "Time remaining on Flagellation", printInSettings = true, color = false },
 
@@ -3520,6 +3525,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local _flagellationTime = snapshots[spells.flagellation.id].buff:GetRemainingTime(currentTime)
 		local flagellationTime = TRB.Functions.BarText:TimerPrecision(_flagellationTime)
 
+		--$sodTime
+		local _sodTime = snapshots[spells.symbolsOfDeath.id].buff:GetRemainingTime(currentTime)
+		local sodTime = TRB.Functions.BarText:TimerPrecision(_sodTime)
+
 		--$shadowTechniquesCount
 		local shadowTechniquesCount = snapshots[spells.shadowTechniques.id].buff.applications or 0
 
@@ -3547,6 +3556,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["#rupture"] = spells.rupture.icon
 		lookup["#sad"] = spells.sliceAndDice.icon
 		lookup["#sliceAndDice"] = spells.sliceAndDice.icon
+		lookup["#sod"] = spells.symbolsOfDeath.icon
+		lookup["#symbolsOfDeath"] = spells.symbolsOfDeath.icon
 		lookup["#sepsis"] = spells.sepsis.icon
 		lookup["#shadowTechniques"] = spells.shadowTechniques.icon
 		lookup["#stealth"] = spells.stealth.icon
@@ -3585,6 +3596,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$sadTime"] = sadTime
 		lookup["$sliceAndDiceTime"] = sadTime
 		lookup["$flagellationTime"] = flagellationTime
+		lookup["$sodTime"] = sodTime
+		lookup["$symbolsOfDeathTime"] = sodTime
 		lookup["$inStealth"] = ""
 
 		if TRB.Data.character.maxResource == snapshotData.attributes.resource then
@@ -3634,6 +3647,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookupLogic["$sadTime"] = _sadTime
 		lookupLogic["$sliceAndDiceTime"] = _sadTime
 		lookupLogic["$flagellationTime"] = _flagellationTime
+		lookupLogic["$sodTime"] = _sodTime
+		lookupLogic["$symbolsOfDeathTime"] = _sodTime
 		lookupLogic["$inStealth"] = ""
 
 		if TRB.Data.character.maxResource == snapshotData.attributes.resource then
@@ -3810,11 +3825,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local snapshots = TRB.Data.snapshotData.snapshots
 		local currentTime = GetTime()
 		
-		snapshots[spells.symbolsOfDeath.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.sepsis.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.goremawsBite.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.flagellation.id].buff:GetRemainingTime(currentTime)
 		snapshots[spells.shadowTechniques.id].buff:Refresh()
+		snapshots[spells.symbolsOfDeath.id].buff:Refresh()
 		
 		snapshots[spells.goremawsBite.id].cooldown:Refresh()
 		snapshots[spells.secretTechnique.id].cooldown:Refresh()
@@ -4869,8 +4884,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 					if snapshots[spells.symbolsOfDeath.id].buff.isActive and
 						talents:IsTalentActive(spells.inevitability) and
-						(entry.spellId == spells.backstab or
-						entry.spellId == spells.Shadowstrike) then
+						(entry.spellId == spells.backstab.id or
+						entry.spellId == spells.shadowstrike.id) then
 						snapshots[spells.symbolsOfDeath.id].buff:RequestRefresh(GetTime() + 0.05)
 					end
 				end
@@ -5507,6 +5522,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					target ~= nil and
 					target.spells[spells.rupture.id] ~= nil and
 					target.spells[spells.rupture.id].remainingTime > 0 then
+					valid = true
+				end
+			elseif var == "$sodTime" or var == "$symbolsOfDeathTime" then
+				if snapshots[spells.symbolsOfDeath.id].buff.isActive then
 					valid = true
 				end
 			end
