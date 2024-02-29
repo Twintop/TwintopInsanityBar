@@ -1112,11 +1112,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				RefreshTargetTracking()
 				triggerUpdate = true
 			end
-
-			if UnitIsDeadOrGhost("player") then -- We died/are dead go ahead and purge the list
-				TargetsCleanup(true)
-				triggerUpdate = true
-			end
 		end
 
 		if triggerUpdate then

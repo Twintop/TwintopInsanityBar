@@ -3653,7 +3653,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Functions.Character:UpdateSnapshot()
 		--TODO #339: Comment out to reduce load while testing
 		UpdateShadowfiendValues()
-		--Twintop_Data = TRB.Data
 	end
 
 	local function UpdateSnapshot_Healers()
@@ -5106,12 +5105,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
 				targetData:Remove(entry.destinationGuid)
 				RefreshTargetTracking()
-				triggerUpdate = true
-			end
-
-			if UnitIsDeadOrGhost("player") then -- We died/are dead go ahead and purge the list
-			--if UnitIsDeadOrGhost("player") or not UnitAffectingCombat("player") or event == "PLAYER_REGEN_ENABLED" then -- We died, or, exited combat, go ahead and purge the list
-				TargetsCleanup(true)
 				triggerUpdate = true
 			end
 		end

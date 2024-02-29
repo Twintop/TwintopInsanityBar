@@ -4966,18 +4966,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				elseif entry.spellId == spells.dismantle.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
-					end					
+					end
 				end
 			end
 
 			if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
 				targetData:Remove(entry.destinationGuid)
 				RefreshTargetTracking()
-				triggerUpdate = true
-			end
-
-			if UnitIsDeadOrGhost("player") then -- We died/are dead go ahead and purge the list
-				TargetsCleanup(true)
 				triggerUpdate = true
 			end
 		end

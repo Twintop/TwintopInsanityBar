@@ -10,6 +10,7 @@ local content = [====[
 # 10.2.5.2-release (2024-02-29)
 ## General
 
+- [#343 - FIX](#343) Allow target tracking, including Time To Die calculations and DoT status, to continue even when dead.
 - (FIX) Fix errors when attempting to change the base bar border color.
 
 ## Rogue

@@ -57,7 +57,7 @@ function TRB.Functions.Character:UpdateSnapshot()
 	snapshotData.attributes.strength, _, _, _ = UnitStat("player", 1)
 	snapshotData.attributes.agility, _, _, _ = UnitStat("player", 2)
 	snapshotData.attributes.stamina, _, _, _ = UnitStat("player", 3)
-	snapshotData.attributes.intellect, _, _, _ = UnitStat("player", 4)
+	snapshotData.attributes.intellect, _, _, _ = UnitStat("player", 4)	
 end
 
 function TRB.Functions.Character:LoadFromSpecializationCache(cache)
