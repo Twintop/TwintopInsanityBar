@@ -777,9 +777,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		end
 
 		
-		if (specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation) or
-		(specId == 2) or
-		(specId == 3 and TRB.Data.settings.core.experimental.specs.evoker.augmentation) then
+		if specId == 1 or specId == 2 or specId == 3 then
 			TRB.Frames.resource2ContainerFrame:Show()
 			TRB.Functions.Bar:Construct(settings)
 			TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
@@ -1843,7 +1841,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
-		if specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation then
+		if specId == 1 then
 			specCache.devastation.talents:GetTalents()
 			FillSpellData_Devastation()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.devastation)
@@ -1877,7 +1875,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				TRB.Data.barConstructedForSpec = "preservation"
 				ConstructResourceBar(specCache.preservation.settings)
 			end
-		elseif specId == 3 and TRB.Data.settings.core.experimental.specs.evoker.augmentation then
+		elseif specId == 3 then
 			specCache.augmentation.talents:GetTalents()
 			FillSpellData_Augmentation()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.augmentation)
@@ -1918,10 +1916,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 						local settings = TRB.Options.Evoker.LoadDefaultSettings(false)
 
-						if TwintopInsanityBarSettings.core.experimental.specs.evoker.devastation and
-							(TwintopInsanityBarSettings.evoker == nil or
+						if TwintopInsanityBarSettings.evoker == nil or
 							TwintopInsanityBarSettings.evoker.devastation == nil or
-							TwintopInsanityBarSettings.evoker.devastation.displayText == nil) then
+							TwintopInsanityBarSettings.evoker.devastation.displayText == nil then
 							settings.evoker.devastation.displayText.barText = TRB.Options.Evoker.DevastationLoadDefaultBarTextSimpleSettings()
 						end
 
@@ -1931,10 +1928,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							settings.evoker.preservation.displayText.barText = TRB.Options.Evoker.PreservationLoadDefaultBarTextSimpleSettings()
 						end
 
-						if TwintopInsanityBarSettings.core.experimental.specs.evoker.augmentation and
-							(TwintopInsanityBarSettings.evoker == nil or
+						if TwintopInsanityBarSettings.evoker == nil or
 							TwintopInsanityBarSettings.evoker.augmentation == nil or
-							TwintopInsanityBarSettings.evoker.augmentation.displayText == nil) then
+							TwintopInsanityBarSettings.evoker.augmentation.displayText == nil then
 							settings.evoker.augmentation.displayText.barText = TRB.Options.Evoker.AugmentationLoadDefaultBarTextSimpleSettings()
 						end
 
@@ -2006,7 +2002,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		TRB.Data.character.maxResource2 = 1
 		local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
 		local settings = nil
-		if specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation then
+		if specId == 1 then
 			settings = TRB.Data.settings.evoker.devastation
 			TRB.Data.character.specName = "devastation"
 		elseif specId == 2 then
@@ -2052,7 +2048,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			TRB.Data.character.items.alchemyStone = alchemyStone
 			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
 			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
-		elseif specId == 3 and TRB.Data.settings.core.experimental.specs.evoker.augmentation then
+		elseif specId == 3 then
 			settings = TRB.Data.settings.evoker.augmentation
 			TRB.Data.character.specName = "augmentation"
 		end
@@ -2067,7 +2063,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 	function TRB.Functions.Class:EventRegistration()
 		local specId = GetSpecialization()
-		if specId == 1 and TRB.Data.settings.core.enabled.evoker.devastation and TRB.Data.settings.core.experimental.specs.evoker.devastation then
+		if specId == 1 and TRB.Data.settings.core.enabled.evoker.devastation then
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.devastation)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
@@ -2081,7 +2077,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			TRB.Data.resourceFactor = 1
 			TRB.Data.resource2 = Enum.PowerType.Essence
 			TRB.Data.resourceFactor = 1
-		elseif specId == 3 and TRB.Data.settings.core.enabled.evoker.augmentation and TRB.Data.settings.core.experimental.specs.evoker.augmentation then
+		elseif specId == 3 and TRB.Data.settings.core.enabled.evoker.augmentation then
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.augmentation)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
@@ -2123,7 +2119,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 		local specId = GetSpecialization()
 
-		if specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation then
+		if specId == 1 then
 			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.evoker.devastation.displayBar.alwaysShow) and (
@@ -2395,9 +2391,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 	function TRB.Functions.Class:TriggerResourceBarUpdates()
 		local specId = GetSpecialization()
-		if (specId ~= 1 and specId ~= 2 and specId ~= 3) or
-			(specId == 1 and not TRB.Data.settings.core.experimental.specs.evoker.devastation) or
-			(specId == 3 and not TRB.Data.settings.core.experimental.specs.evoker.augmentation) then
+		if (specId ~= 1 and specId ~= 2 and specId ~= 3) then
 			TRB.Functions.Bar:HideResourceBar(true)
 			return
 		end

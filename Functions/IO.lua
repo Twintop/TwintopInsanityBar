@@ -344,21 +344,17 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		elseif classId == 13 and settings.evoker ~= nil then -- Evoker
 			configuration.evoker = {}
 			
-			if TRB.Data.settings.core.experimental.specs.evoker.devastation then
-				if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.devastation) > 0 then -- Devastation
-					configuration.evoker.devastation = ExportConfigurationSections(13, 1, settings.evoker.devastation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
-				end
+			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.devastation) > 0 then -- Devastation
+				configuration.evoker.devastation = ExportConfigurationSections(13, 1, settings.evoker.devastation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
-			
+
 			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.preservation) > 0 then -- Preservation
 				configuration.evoker.preservation = ExportConfigurationSections(13, 2, settings.evoker.preservation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 			
-			if TRB.Data.settings.core.experimental.specs.evoker.augmentation then
-				if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.augmentation) > 0 then -- Augmentation
-					configuration.evoker.augmentation = ExportConfigurationSections(13, 1, settings.evoker.augmentation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
-				end
-			end	
+			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.augmentation) > 0 then -- Augmentation
+				configuration.evoker.augmentation = ExportConfigurationSections(13, 1, settings.evoker.augmentation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
 		end
 	elseif classId == nil and specId == nil then -- Everything
 		-- Instead of just dumping the whole table, let's clean it up
@@ -422,18 +418,12 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(12, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		
 		-- Evoker
-		if TRB.Data.settings.core.experimental.specs.evoker.devastation then
-			-- Devastation
-			configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-		end
-
+		-- Devastation
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Preservation
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-
-		if TRB.Data.settings.core.experimental.specs.evoker.augmentation then
-			-- Augmentation
-			configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-		end
+		-- Augmentation
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 	end
 
 	if includeCore then
@@ -504,9 +494,9 @@ function TRB.Functions.IO:Import(input)
 			(configuration.druid.balance ~= nil or
 			configuration.druid.feral ~= nil)) or
 		(configuration.evoker ~= nil and
-			((TRB.Data.settings.core.experimental.specs.evoker.devastation and configuration.evoker.devastation ~= nil) or
-			(configuration.evoker.preservation ~= nil) or
-			(TRB.Data.settings.core.experimental.specs.evoker.augmentation and configuration.evoker.augmentation ~= nil))
+			(configuration.evoker.devastation ~= nil or
+			configuration.evoker.preservation ~= nil or
+			configuration.evoker.augmentation ~= nil)
 		)) then
 		return -3
 	end

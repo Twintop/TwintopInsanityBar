@@ -7,6 +7,24 @@ local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
 
+# 10.2.5.3-release (2024-03-0?)
+## General
+
+- [#259 - NEW](#259) Devastation Evoker moved out of Experimental and is now available and enabled by default.
+<br/>&emsp;&ensp;- Implementation is still fairly minimal, if you have any requests please let me know!
+<br/>&emsp;&ensp;- Tracks Essence and Mana as resources.
+<br/>&emsp;&ensp;- Shows current regen state and time remaining for Essence.
+<br/>&emsp;&ensp;- Tracks Essence Burst, allowing for bar border color changes, bar text, and audio cues.
+<br/>&emsp;&ensp;- Bar Text variables and icons for customization.
+- [#312 - NEW](#312) Augmentation Evoker moved out of Experimental and is now available and enabled by default.
+<br/>&emsp;&ensp;- Implementation is still fairly minimal, if you have any requests please let me know!
+<br/>&emsp;&ensp;- Tracks Essence and Mana as resources.
+<br/>&emsp;&ensp;- Shows current regen state and time remaining for Essence.
+<br/>&emsp;&ensp;- Tracks Essence Burst, allowing for bar border color changes, bar text, and audio cues.
+<br/>&emsp;&ensp;- Bar Text variables and icons for customization.
+
+---
+
 # 10.2.5.2-release (2024-02-29)
 ## General
 
