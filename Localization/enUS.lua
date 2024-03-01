@@ -67,3 +67,58 @@ L["ExportMessagePostfixAudioTracking_Function"] = function() return "(" .. L["Ex
 L["ExportMessagePostfixBarText_Function"] = function() return "(" .. L["ExportMessageBarText"] .. ")" end
 L["ExportMessageGlobalOptions"] = L["GlobalOptions"]
 L["ExportMessageGlobalOptionsOnly"] = L["GlobalOptions"] .. " Only"
+
+-- OptionsUi.lua
+--- ToggleCheckboxOnOff
+L["Enabled"] = "Enabled"
+L["Disabled"] = "Disabled"
+
+--- GenerateBarDimensionsOptions
+L["BarPositionSize"] = "Bar Position and Size"
+L["BarWidth"] = "Bar Width"
+L["BarHeight"] = "Bar Height"
+L["BarHorizontalPosition"] = "Bar Horizontal Position"
+L["BarVerticalPosition"] = "Bar Vertical Position"
+L["BarBorderWidth"] = "Bar Border Width"
+L["ThresholdLineWidth"] = "Threshold Line Width"
+L["DragAndDropEnabled"] = "Drag & Drop Movement Enabled"
+L["DragAndDropTooltip"] = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
+L["PinToPRDEnabled"] = "Pin to Personal Resource Display"
+L["PinToPRDTooltip"] = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
+
+--- GenerateComboPointDimensionsOptions
+L["SecondaryPositionAndSize"] = "%s Position and Size"
+L["SecondaryWidth"] = "%s Width"
+L["SecondaryHeight"] = "%s Height"
+L["SecondaryHorizontalPosition"] = "%s Horizontal Position (Relative)"
+L["SecondaryVerticalPosition"] = "%s Vertical Position (Relative)"
+L["SecondaryBorderWidth"] = "%s Border Width"
+L["SecondaryRelativeTo"] = "Relative Position of %s to %s Bar"
+L["SecondaryFullBarWidth"] = "%s are full bar width?"
+L["SecondaryFullBarWidthTooltip"] = "Makes the %s bars take up the same total width of the bar, spaced according to %s Spacing (above). The horizontal position adjustment will be ignored and the width of %s bars will be automatically calculated and will ignore the value set above."
+
+--- GenerateBarTexturesOptions
+L["BarAndSecondardTexturesHeader"] = "Bar and %s Textures"
+L["BarTexturesHeader"] = "Bar Textures"
+L["MainBarTexture"] = "Main Bar Texture"
+L["CastingBarTexture"] = "Casting Bar Texture"
+L["PassiveBarTexture"] = "Passive Bar Texture"
+L["SecondaryBarTexture"] = "%s Bar Texture"
+L["StatusBarTextures"] = "Status Bar Textures"
+L["UseSameTexture"] = "Use the same texture for all bars?"
+L["UseSameTextureTooltip"] = "This will lock the texture for each part of the bar to be the same."
+L["BorderTexture"] = "Border Texture"
+L["SecondaryBorderTexture"] = "%s Border Texture"
+L["BorderTextures"] = "Border Textures"
+L["BackgroundTexture"] = "Background (Empty Bar) Texture"
+L["SecondaryBackgroundTexture"] = "%s Background (Empty Bar) Texture"
+L["BackgroundTextures"] = "Background Textures"
+L["TextureLock"] = "Use the same texture for all bars, borders, and backgrounds (respectively)"
+L["TextureLockTooltip"] = "This will lock the texture for each type of texture to be the same for all parts of the bar. E.g.: All bar textures will be the same, all border textures will be the same, and all background textures will be the same."
+
+--- GenerateBarDisplayOptions
+L["BarDisplay"] = "Bar Display"
+L["FlashAlpha"] = "%s Flash Alpha"
+L["FlashPeriod"] = "%s Flash Period (sec)"
+L["AlwaysShowBar"] = "Always show bar"
+L["AlwaysShowBarTooltip"] = "This will make the Resource Bar always visible on your UI, even when out of combat."

@@ -27,8 +27,19 @@ Libs\LibScrollingTable\lib-st.xml
 Localization\Localization.lua
 Localization\enUS.lua
 Localization\deDE.lua
+Localization\enCN.lua
+Localization\enGB.lua
+Localization\enTW.lua
 Localization\esES.lua
 Localization\esMX.lua
+Localization\frFR.lua
+Localization\itIT.lua
+Localization\koKR.lua
+Localization\ptBR.lua
+Localization\ptPT.lua
+Localization\ruRU.lua
+Localization\zhCN.lua
+Localization\zhTW.lua
 
 Classes\CombatLog.lua
 Classes\Snapshot.lua

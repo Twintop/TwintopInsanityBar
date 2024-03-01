@@ -895,7 +895,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		return textSettings
 	end
-	TRB.Options.RogueSubtletyLoadDefaultBarTextSimpleSettings = SubtletyLoadDefaultBarTextSimpleSettings
+	TRB.Options.Rogue.SubtletyLoadDefaultBarTextSimpleSettings = SubtletyLoadDefaultBarTextSimpleSettings
 	
 	local function SubtletyLoadDefaultBarTextAdvancedSettings()
 		---@type TRB.Classes.DisplayTextEntry[]
@@ -1339,16 +1339,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 4, 1, yCoord)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 4, 1, yCoord, "Energy", "Combo Point")
+		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 4, 1, yCoord, POWER_TYPE_ENERGY, COMBO_POINTS_POWER)
 
 		yCoord = yCoord - 60
-		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 1, yCoord, true, "Combo Point")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 1, yCoord, true, COMBO_POINTS_POWER)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 1, yCoord, "Energy", "notFull", false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 1, yCoord, POWER_TYPE_ENERGY, "notFull", false)
 
 		yCoord = yCoord - 70
-		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 1, yCoord, "Energy")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 1, yCoord, POWER_TYPE_ENERGY)
 
 		yCoord = yCoord - 30
 		controls.colors.sliceAndDicePandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy when Slice and Dice is within Pandemic refresh range (current CPs)", spec.colors.bar.sliceAndDicePandemic, 300, 25, oUi.xCoord2, yCoord)
@@ -1389,7 +1389,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 1, yCoord, "Energy", true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 1, yCoord, POWER_TYPE_ENERGY, true, false)
 
 		yCoord = yCoord - 30
 		controls.colors.borderStealth = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border color when you are stealth (via any ability or proc)", spec.colors.bar.borderStealth, 300, 25, oUi.xCoord2, yCoord)
@@ -1404,7 +1404,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
-		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Combo Points", spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, COMBO_POINTS_POWER, spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPoints.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
@@ -1809,7 +1809,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 4, 1, yCoord)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 1, yCoord, "Energy", 170)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 1, yCoord, POWER_TYPE_ENERGY, 170)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.assassination = controls
 	end
@@ -2441,16 +2441,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 4, 2, yCoord)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 4, 2, yCoord, "Energy", "Combo Point")
+		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 4, 2, yCoord, POWER_TYPE_ENERGY, COMBO_POINTS_POWER)
 
 		yCoord = yCoord - 60
-		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 2, yCoord, true, "Combo Point")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 2, yCoord, true, COMBO_POINTS_POWER)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 2, yCoord, "Energy", "notFull", false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 2, yCoord, POWER_TYPE_ENERGY, "notFull", false)
 
 		yCoord = yCoord - 70
-		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 2, yCoord, "Energy")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 2, yCoord, POWER_TYPE_ENERGY)
 
 		yCoord = yCoord - 30
 		controls.colors.sliceAndDicePandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy when Slice and Dice is within Pandemic refresh range (current CPs)", spec.colors.bar.sliceAndDicePandemic, 300, 25, oUi.xCoord2, yCoord)
@@ -2491,7 +2491,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 2, yCoord, "Energy", true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 2, yCoord, POWER_TYPE_ENERGY, true, false)
 
 		yCoord = yCoord - 30
 		controls.colors.borderRtbGood = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border color when you should not use Roll the Bones (keep current rolls)", spec.colors.bar.borderRtbGood, 300, 25, oUi.xCoord2, yCoord)
@@ -2521,7 +2521,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
-		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Combo Points", spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, COMBO_POINTS_POWER, spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPoints.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
@@ -2915,7 +2915,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 4, 2, yCoord)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 2, yCoord, "Energy", 170)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 2, yCoord, POWER_TYPE_ENERGY, 170)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.outlaw = controls
 	end
@@ -3545,16 +3545,16 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 4, 3, yCoord)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 4, 3, yCoord, "Energy", "Combo Point")
+		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 4, 3, yCoord, POWER_TYPE_ENERGY, COMBO_POINTS_POWER)
 
 		yCoord = yCoord - 60
-		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 3, yCoord, true, "Combo Point")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 4, 3, yCoord, true, COMBO_POINTS_POWER)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 3, yCoord, "Energy", "notFull", false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 4, 3, yCoord, POWER_TYPE_ENERGY, "notFull", false)
 
 		yCoord = yCoord - 70
-		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 3, yCoord, "Energy")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 3, yCoord, POWER_TYPE_ENERGY)
 
 		yCoord = yCoord - 30
 		controls.colors.sliceAndDicePandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy when Slice and Dice is within Pandemic refresh range (current CPs)", spec.colors.bar.sliceAndDicePandemic, 300, 25, oUi.xCoord2, yCoord)
@@ -3595,7 +3595,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 3, yCoord, "Energy", true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 3, yCoord, POWER_TYPE_ENERGY, true, false)
 
 		yCoord = yCoord - 30
 		controls.colors.borderShadowcraft = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border color when Shadowcraft will grant full Combo Points after using a finisher", spec.colors.bar.borderStealth, 300, 25, oUi.xCoord2, yCoord)
@@ -3617,7 +3617,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
-		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Combo Points", spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, COMBO_POINTS_POWER, spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPoints.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
@@ -4023,7 +4023,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 4, 3, yCoord)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 3, yCoord, "Energy", 170)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 4, 3, yCoord, POWER_TYPE_ENERGY, 170)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.subtlety = controls
 	end

@@ -123,7 +123,7 @@ local unitDeathHealthPercentageList = {
     ---- Battle for Azeroth ----
     --- Uldir ---
     ["135452"] = 0.1, -- MOTHER
-    -- Battle of Dazar'alor ---
+    --- Battle of Dazar'alor ---
     ["165396"] = 0.055, -- Lady Jaina Proudmoore
 
     ---- Shadowlands ----

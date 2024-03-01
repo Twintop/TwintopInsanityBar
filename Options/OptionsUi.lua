@@ -4,6 +4,7 @@ TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = {}
 local oUi = TRB.Data.constants.optionsUi
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
+local L = TRB.Localization
 
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
 function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
@@ -622,13 +623,13 @@ function TRB.Functions.OptionsUi:ToggleCheckboxOnOff(checkbox, enable, changeTex
 		getglobal(checkbox:GetName().."Text"):SetTextColor(0, 1, 0)
 
 		if changeText == true then
-			getglobal(checkbox:GetName().."Text"):SetText("Enabled")
+			getglobal(checkbox:GetName().."Text"):SetText(L["Enabled"])
 		end
 	else
 		getglobal(checkbox:GetName().."Text"):SetTextColor(1, 0, 0)
 		
 		if changeText == true then
-			getglobal(checkbox:GetName().."Text"):SetText("Disabled")
+			getglobal(checkbox:GetName().."Text"):SetText(L["Disabled"])
 		end
 	end
 end
@@ -642,10 +643,10 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
 
-	controls.barPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Position and Size", oUi.xCoord, yCoord)
+	controls.barPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarPositionSize"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 40
-	title = "Bar Width"
+	title = L["BarWidth"]
 	controls.width = TRB.Functions.OptionsUi:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.width:SetScript("OnValueChanged", function(self, value)
@@ -664,7 +665,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		end
 	end)
 
-	title = "Bar Height"
+	title = L["BarHeight"]
 	controls.height = TRB.Functions.OptionsUi:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.height:SetScript("OnValueChanged", function(self, value)
@@ -684,7 +685,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		end
 	end)
 
-	title = "Bar Horizontal Position"
+	title = L["BarHorizontalPosition"]
 	yCoord = yCoord - 60
 	controls.horizontal = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.bar.xPos, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
@@ -700,7 +701,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		end
 	end)
 
-	title = "Bar Vertical Position"
+	title = L["BarVerticalPosition"]
 	controls.vertical = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.bar.yPos, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.vertical:SetScript("OnValueChanged", function(self, value)
@@ -715,7 +716,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		end
 	end)
 
-	title = "Bar Border Width"
+	title = L["BarBorderWidth"]
 	yCoord = yCoord - 60
 	controls.borderWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
@@ -766,7 +767,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	end)
 
 	if spec.thresholds ~= nil then
-		title = "Threshold Line Width"
+		title = L["ThresholdLineWidth"]
 		controls.thresholdWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
@@ -786,9 +787,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.lockPosition
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
+	getglobal(f:GetName() .. 'Text'):SetText(L["DragAndDropEnabled"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
+	f.tooltip = L["DragAndDropTooltip"]
 	f:SetChecked(spec.bar.dragAndDrop)
 	f:SetScript("OnClick", function(self, ...)
 		spec.bar.dragAndDrop = self:GetChecked()
@@ -801,9 +802,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.pinToPRD
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
+	getglobal(f:GetName() .. 'Text'):SetText(L["PinToPRDEnabled"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
+	f.tooltip = L["PinToPRDTooltip"]
 	f:SetChecked(spec.bar.pinToPersonalResourceDisplay)
 	f:SetScript("OnClick", function(self, ...)
 		spec.bar.pinToPersonalResourceDisplay = self:GetChecked()
@@ -820,11 +821,11 @@ end
 
 function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, secondaryResourceString)
 	if primaryResourceString == nil then
-		primaryResourceString = "Energy"
+		primaryResourceString = POWER_TYPE_ENERGY
 	end
 	
 	if secondaryResourceString == nil then
-		secondaryResourceString = "Combo Point"
+		secondaryResourceString = COMBO_POINTS_POWER
 	end
 
 	local _, className, _ = GetClassInfo(classId)
@@ -836,10 +837,10 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
 
-	controls.comboPointPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, secondaryResourceString .. " Position and Size", oUi.xCoord, yCoord)
+	controls.comboPointPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["SecondaryPositionAndSize"], secondaryResourceString), oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 40
-	title = secondaryResourceString .. " Width"
+	title = string.format(L["SecondaryWidth"], secondaryResourceString)
 	controls.comboPointWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, TRB.Functions.Number:RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.width, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.comboPointWidth:SetScript("OnValueChanged", function(self, value)
@@ -862,7 +863,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		end
 	end)
 
-	title = secondaryResourceString .. " Height"
+	title = string.format(L["SecondaryHeight"], secondaryResourceString)
 	controls.comboPointHeight = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, sanityCheckValues.barMaxHeight, spec.comboPoints.height, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.comboPointHeight:SetScript("OnValueChanged", function(self, value)
@@ -885,9 +886,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		end
 	end)
 
-
-
-	title = secondaryResourceString .. " Horizontal Position (Relative)"
+	title = string.format(L["SecondaryHorizontalPosition"], secondaryResourceString)
 	yCoord = yCoord - 60
 	controls.comboPointHorizontal = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.comboPoints.xPos, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
@@ -900,7 +899,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		end
 	end)
 
-	title = secondaryResourceString .. " Vertical Position (Relative)"
+	title = string.format(L["SecondaryVerticalPosition"], secondaryResourceString)
 	controls.comboPointVertical = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.comboPoints.yPos, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.comboPointVertical:SetScript("OnValueChanged", function(self, value)
@@ -912,7 +911,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		end
 	end)
 
-	title = secondaryResourceString .. " Border Width"
+	title = string.format(L["SecondaryBorderWidth"], secondaryResourceString)
 	yCoord = yCoord - 60
 	controls.comboPointBorderWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, maxBorderHeight, spec.comboPoints.border, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
@@ -949,7 +948,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	yCoord = yCoord - 40
 	-- Create the dropdown, and configure its appearance
 	controls.dropDown.comboPointsRelativeTo = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_comboPointsRelativeTo", parent)
-	controls.dropDown.comboPointsRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Relative Position of "..secondaryResourceString.." to "..primaryResourceString.." Bar", oUi.xCoord, yCoord)
+	controls.dropDown.comboPointsRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["SecondaryRelativeTo"], secondaryResourceString, primaryResourceString), oUi.xCoord, yCoord)
 	controls.dropDown.comboPointsRelativeTo.label.font:SetFontObject(GameFontNormal)
 	controls.dropDown.comboPointsRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.comboPointsRelativeTo, oUi.dropdownWidth)
@@ -960,6 +959,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	LibDD:UIDropDownMenu_Initialize(controls.dropDown.comboPointsRelativeTo, function(self, level, menuList)
 		local entries = 25
 		local info = LibDD:UIDropDownMenu_CreateInfo()
+		-- TODO: Make these dropdown values localizable
 		local relativeTo = {}
 		relativeTo["Above - Left"] = "TOPLEFT"
 		relativeTo["Above - Middle"] = "TOP"
@@ -1001,9 +1001,9 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	controls.checkBoxes.comboPointsFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_comboPointsFullWidth", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.comboPointsFullWidth
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-30)
-	getglobal(f:GetName() .. 'Text'):SetText(secondaryResourceString .. " are full bar width?")
+	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["SecondaryFullBarWidth"], secondaryResourceString))
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "Makes the "..secondaryResourceString.." bars take up the same total width of the bar, spaced according to "..secondaryResourceString.." Spacing (above). The horizontal position adjustment will be ignored and the width of "..secondaryResourceString.." bars will be automatically calculated and will ignore the value set above."
+	f.tooltip = string.format(L["SecondaryFullBarWidthTooltip"], secondaryResourceString, secondaryResourceString, secondaryResourceString)
 	f:SetChecked(spec.comboPoints.fullWidth)
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.fullWidth = self:GetChecked()
@@ -1075,42 +1075,42 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	end
 	
 	if secondaryResourceString == nil then
-		secondaryResourceString = "Combo Point"
+		secondaryResourceString = COMBO_POINTS_POWER
 	end
 
 	local _, className, _ = GetClassInfo(classId)
 	local f = nil
 	
 	if includeComboPoints then
-		controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar and "..secondaryResourceString.." Textures", oUi.xCoord, yCoord)
+		controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["BarTexturesHeader"], secondaryResourceString), oUi.xCoord, yCoord)
 	else
-		controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Textures", oUi.xCoord, yCoord)
+		controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarTexturesHeader"], oUi.xCoord, yCoord)
 	end
 		
 	controls.dropDown.textures = {}
 
 	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "resourceBar", "Main Bar Texture", "Status Bar Textures")
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "resourceBar", L["MainBarTexture"], L["StatusBarTextures"])
 	-- Implement the function to change the texture
 	function controls.dropDown.textures.resourceBar:SetValue(newValue, newName)
 		TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "resource", specId, includeComboPoints)
 	end
 
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "castingBar", "Casting Bar Texture", "Status Bar Textures")
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "castingBar", L["CastingBarTexture"], L["StatusBarTextures"])
 	-- Implement the function to change the texture
 	function controls.dropDown.textures.castingBar:SetValue(newValue, newName)
 		TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "casting", specId, includeComboPoints)
 	end
 
 	yCoord = yCoord - 60
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "passiveBar", "Passive Bar Texture", "Status Bar Textures")
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "passiveBar", L["PassiveBarTexture"], L["StatusBarTextures"])
 	-- Implement the function to change the texture
 	function controls.dropDown.textures.passiveBar:SetValue(newValue, newName)
 		TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "passive", specId, includeComboPoints)
 	end
 
 	if includeComboPoints then
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "comboPointsBar", secondaryResourceString.." Bar Texture", "Status Bar Textures")
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "comboPointsBar", string.format(L["SecondaryBarTexture"], secondaryResourceString), L["StatusBarTextures"])
 		-- Implement the function to change the texture
 		function controls.dropDown.textures.comboPointsBar:SetValue(newValue, newName)
 			TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "comboPoints", specId, includeComboPoints)
@@ -1121,9 +1121,9 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	f = controls.checkBoxes.textureLock
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	f:SetChecked(spec.textures.textureLock)
-	getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
+	getglobal(f:GetName() .. 'Text'):SetText(L["UseSameTexture"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "This will lock the texture for each part of the bar to be the same."
+	f.tooltip = L["UseSameTextureTooltip"]
 
 	f:SetScript("OnClick", function(self, ...)
 		spec.textures.textureLock = self:GetChecked()
@@ -1180,7 +1180,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	end)
 
 	yCoord = yCoord - 60
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "border", "Border Texture", "Border Textures")
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "border", L["BorderTexture"], L["BorderTextures"])
 	-- Implement the function to change the texture
 	function controls.dropDown.textures.border:SetValue(newValue, newName)
 		spec.textures.border = newValue
@@ -1231,7 +1231,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		LibDD:CloseDropDownMenus()
 	end
 	
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "background", "Background (Empty Bar) Texture", "Background Textures")
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "background", L["BackgroundTexture"], L["BackgroundTextures"])
 	-- Implement the function to change the texture
 	function controls.dropDown.textures.background:SetValue(newValue, newName)
 		spec.textures.background = newValue
@@ -1275,7 +1275,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 
 	if includeComboPoints then
 		yCoord = yCoord - 60
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "comboPointsBorder", secondaryResourceString.." Border Texture", "Border Textures")
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "comboPointsBorder", string.format(L["SecondaryBorderTexture"], secondaryResourceString), L["BorderTextures"])
 		-- Implement the function to change the texture
 		function controls.dropDown.textures.comboPointsBorder:SetValue(newValue, newName)
 			spec.textures.comboPointsBorder = newValue
@@ -1326,7 +1326,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			LibDD:CloseDropDownMenus()
 		end
 
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "comboPointsBackground", secondaryResourceString.." Background (Empty Bar) Texture", "Background Textures")
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "comboPointsBackground", string.format(L["SecondaryBackgroundTexture"], secondaryResourceString), L["BackgroundTextures"])
 		-- Implement the function to change the texture
 		function controls.dropDown.textures.comboPointsBackground:SetValue(newValue, newName)
 			spec.textures.comboPointsBackground = newValue
@@ -1372,9 +1372,9 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		yCoord = yCoord - 60
 		f = controls.checkBoxes.textureLock
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars, borders, and backgrounds (respectively)")
+		getglobal(f:GetName() .. 'Text'):SetText(L["TextureLock"])
 		---@diagnostic disable-next-line: inject-field
-		f.tooltip = "This will lock the texture for each type of texture to be the same for all parts of the bar. E.g.: All bar textures will be the same, all border textures will be the same, and all background textures will be the same."
+		f.tooltip = L["TextureLockTooltip"]
 	else
 		yCoord = yCoord - 30
 	end
@@ -1387,11 +1387,11 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	local f = nil
 	local title = ""
 
-	controls.barDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display", oUi.xCoord, yCoord)
+	controls.barDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplay"], oUi.xCoord, yCoord)
 
 	if includeFlashAlpha then
 		yCoord = yCoord - 50
-		title = flashAlphaName.." Flash Alpha"
+		title = string.format(L["FlashAlpha"], flashAlphaName)
 		controls.flashAlpha = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
@@ -1401,7 +1401,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 			spec.colors.bar.flashAlpha = value
 		end)
 
-		title = flashAlphaName.." Flash Period (sec)"
+		title = string.format(L["FlashPeriod"], flashAlphaName)
 		controls.flashPeriod = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, spec.colors.bar.flashPeriod, 0.05, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
@@ -1417,10 +1417,10 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_AlwaysShow", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.alwaysShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Always show bar")
+	getglobal(f:GetName() .. 'Text'):SetText(L["AlwaysShowBar"])
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
+	f.tooltip = L["AlwaysShowBarTooltip"]
 	f:SetChecked(spec.displayBar.alwaysShow)
 	f:SetScript("OnClick", function(self, ...)
 		controls.checkBoxes.alwaysShow:SetChecked(true)
@@ -2012,13 +2012,13 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 end
 
 function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, includeOvercap)
-	local _, className, _ = GetClassInfo(classId)
+	--local _, className, _ = GetClassInfo(classId)
 	local f = nil
 	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors + Changing", oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 	controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, primaryResourceString, spec.colors.bar.base, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.base		
+	f = controls.colors.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
 	end)

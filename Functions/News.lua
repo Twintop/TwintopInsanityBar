@@ -6,10 +6,15 @@ local LMD = LibStub("LibMarkdown-1.0")
 local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
+*Localization of the addon has begun! If you're interested in helping, please [visit the GitHub issue](#8) and let Twintop know. Thank you!*
 
-# 10.2.5.3-release (2024-03-0?)
+# 10.2.5.3-release (2024-03-02)
 ## General
 
+- [#8 - NEW](#8) Localization of the options menus has begun! Currently ported over areas include:
+<br/>&emsp;&ensp;- Global Options
+<br/>&emsp;&ensp;- Import/Export
+<br/>&emsp;&ensp;- Shared Options UI components, i.e. bar position, bar style, combo points.
 - [#259 - NEW](#259) Devastation Evoker moved out of Experimental and is now available and enabled by default.
 <br/>&emsp;&ensp;- Implementation is still fairly minimal, if you have any requests please let me know!
 <br/>&emsp;&ensp;- Tracks Essence and Mana as resources.
@@ -22,6 +27,11 @@ local content = [====[
 <br/>&emsp;&ensp;- Shows current regen state and time remaining for Essence.
 <br/>&emsp;&ensp;- Tracks Essence Burst, allowing for bar border color changes, bar text, and audio cues.
 <br/>&emsp;&ensp;- Bar Text variables and icons for customization.
+
+## Rogue
+### Subtlety
+
+- [#341 - FIX](#341) Fix issues with Subtlety default bar text not being loaded and causing Lua errors.
 
 ---
 
