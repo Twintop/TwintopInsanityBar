@@ -11,7 +11,7 @@ local content = [====[
 # 10.2.5.3-release (2024-03-02)
 ## General
 
-- [#8 - NEW](#8) Localization of the options menus has begun! Currently ported over areas include:
+- [#8 - NEW](#8) Localization of the options menus has begun *(finally)*! While few actual translations are available as of yet, some areas that now support localization include:
 <br/>&emsp;&ensp;- Global Options
 <br/>&emsp;&ensp;- Import/Export
 <br/>&emsp;&ensp;- Shared Options UI components, i.e. bar position, bar style, combo points.
