@@ -1,5 +1,6 @@
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
+
+local L = TRB.Localization
 
 TRB.Options = {}
 
@@ -27,15 +28,7 @@ TRB.Options.fonts.options.tabNormalSmall = f3
 TRB.Options.fonts.options.exportSpec = f4
 
 TRB.Options.variables = {}
-local barTextInstructions = string.format("For more detailed information about Bar Text customization, see the TRB Wiki on GitHub.\n\n")
-barTextInstructions = string.format("%sFor conditional display (only if $VARIABLE is active/non-zero):\n    {$VARIABLE}[$VARIABLE is TRUE output]\n\n", barTextInstructions)
-barTextInstructions = string.format("%sBoolean AND (&), OR (|), NOT (!), and parenthises in logic for conditional display is supported:\n    {$A&$B}[Both are TRUE output]\n    {$A|$B}[One or both is TRUE output]\n    {!$A}[$A is FALSE output]\n    {!$A&($B|$C)}[$A is FALSE and $B or $C is TRUE output]\n\n", barTextInstructions)
-barTextInstructions = string.format("%sExpressions are also supported (+, -, *, /) and comparison symbols (>, >=, <, <=, =, !=):\n    {$VARIABLE*2>=$OTHERVAR}[$VARIABLE is at least twice as large as $OTHERVAR output]\n\n", barTextInstructions)
-barTextInstructions = string.format("%sIF/ELSE is supported:\n    {$VARIABLE}[$VARIABLE is TRUE output][$VARIABLE is FALSE output]\n    {$VARIABLE>2}[$VARIABLE is more than 2 output][$VARIABLE is less than 2 output]\n\n", barTextInstructions)
-barTextInstructions = string.format("%sIF/ELSE includes NOT support:\n    {!$VARIABLE}[$VARIABLE is FALSE output][$VARIABLE is TRUE output]\n\n", barTextInstructions)
-barTextInstructions = string.format("%sLogic can be nexted inside IF/ELSE blocks:\n    {$A}[$A is TRUE output][$A is FALSE and {$B}[$B is TRUE][$B is FALSE] output]\n\n", barTextInstructions)
-barTextInstructions = string.format("%sTo display icons use:\n    #ICONVARIABLENAME", barTextInstructions)
-TRB.Options.variables.barTextInstructions = barTextInstructions
+TRB.Options.variables.barTextInstructions = L["BarTextInstructions"]
 
 local function LoadDefaultSettings()
 	local settings = {
@@ -485,14 +478,14 @@ local function ConstructAddonOptionsPanel()
 
 	interfaceSettingsFrame.optionsPanel = CreateFrame("Frame", "TwintopResourceBar_Options_General", UIParent)
 	---@diagnostic disable-next-line: inject-field
-	interfaceSettingsFrame.optionsPanel.name = "Global Options"
+	interfaceSettingsFrame.optionsPanel.name = L["GlobalOptions"]
 	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.optionsPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.optionsPanel, "Global Options")
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.optionsPanel, L["GlobalOptions"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
 
 	parent = interfaceSettingsFrame.optionsPanel
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Global Options", oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GlobalOptions"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 	---@diagnostic disable-next-line: inject-field
@@ -504,11 +497,11 @@ local function ConstructAddonOptionsPanel()
 
 	yCoord = 5
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Time To Die", oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["TTD"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 50
 
-	title = "Sampling Rate (seconds)"
+	title = L["SamplingRate"]
 	controls.ttdSamplingRate = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.05, 2, TRB.Data.settings.core.ttd.sampleRate, 0.05, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.ttdSamplingRate:SetScript("OnValueChanged", function(self, value)
@@ -525,7 +518,7 @@ local function ConstructAddonOptionsPanel()
 		TRB.Data.settings.core.ttd.sampleRate = value
 	end)
 
-	title = "Sample Size"
+	title = L["SampleSize"]
 	controls.ttdSampleSize = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 1000, TRB.Data.settings.core.ttd.numEntries, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.ttdSampleSize:SetScript("OnValueChanged", function(self, value)
@@ -541,7 +534,7 @@ local function ConstructAddonOptionsPanel()
 	end)
 
 	yCoord = yCoord - 60
-	title = "Time To Die Precision"
+	title = L["TTDPrecision"]
 	controls.ttdPrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, TRB.Data.settings.core.ttd.precision, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.ttdPrecision:SetScript("OnValueChanged", function(self, value)
@@ -557,21 +550,11 @@ local function ConstructAddonOptionsPanel()
 		TRB.Data.settings.core.ttd.precision = value
 	end)
 
-
-
-
-
-
-
-
-
-
-
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Timer Precision", oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["TimerPrecision"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 50
-	title = "Below X sec Time Precision"
+	title = L["TimerBelowPrecision"]
 	controls.timersLowPrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, TRB.Data.settings.core.timers.precisionLow, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.timersLowPrecision:SetScript("OnValueChanged", function(self, value)
@@ -587,7 +570,7 @@ local function ConstructAddonOptionsPanel()
 		TRB.Data.settings.core.timers.precisionLow = value
 	end)
 	
-	title = "Above X sec Time Precision"
+	title = L["TimerBelowPrecision"]
 	controls.timersHighPrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, TRB.Data.settings.core.timers.precisionHigh, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.timersHighPrecision:SetScript("OnValueChanged", function(self, value)
@@ -605,7 +588,7 @@ local function ConstructAddonOptionsPanel()
 
 
 	yCoord = yCoord - 60
-	title = "Precision Threshold (seconds)"
+	title = L["TimerPrecisionThreshold"]
 	controls.timersPrecisionThreshold = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 600, TRB.Data.settings.core.timers.precisionThreshold, 0.1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.timersPrecisionThreshold:SetScript("OnValueChanged", function(self, value)
@@ -624,11 +607,11 @@ local function ConstructAddonOptionsPanel()
 
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Character and Player Settings", oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["CharacterPlayerSettings"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 50
 
-	title = "Character Data Refresh Rate (seconds)"
+	title = L["DataRefreshRate"]
 	controls.characterRefreshRate = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.05, 60, TRB.Data.settings.core.dataRefreshRate, 0.05, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.characterRefreshRate:SetScript("OnValueChanged", function(self, value)
@@ -645,7 +628,7 @@ local function ConstructAddonOptionsPanel()
 		TRB.Data.settings.core.dataRefreshRate = value
 	end)
 
-	title = "Player Reaction Time Latency (seconds)"
+	title = L["ReactionTimeLatency"]
 	controls.reactionTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.00, 1, TRB.Data.settings.core.reactionTime, 0.05, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.reactionTime:SetScript("OnValueChanged", function(self, value)
@@ -663,14 +646,14 @@ local function ConstructAddonOptionsPanel()
 	end)
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Frame Strata", oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["FrameStrata"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 
 	-- Create the dropdown, and configure its appearance
 ---@diagnostic disable-next-line: undefined-field
 	controls.dropDown.strata = LibDD:Create_UIDropDownMenu("TwintopResourceBar_FrameStrata", parent)
-	controls.dropDown.strata.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Frame Strata Level To Draw Bar On", oUi.xCoord, yCoord)
+	controls.dropDown.strata.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["FrameStrataDescription"], oUi.xCoord, yCoord)
 	controls.dropDown.strata.label.font:SetFontObject(GameFontNormal)
 	controls.dropDown.strata:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 ---@diagnostic disable-next-line: undefined-field
@@ -741,14 +724,14 @@ local function ConstructAddonOptionsPanel()
 
 
 	yCoord = yCoord - 60
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Channel", oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioChannel"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 
 	-- Create the dropdown, and configure its appearance
 ---@diagnostic disable-next-line: undefined-field
 	controls.dropDown.audioChannel = LibDD:Create_UIDropDownMenu("TwintopResourceBar_FrameAudioChannel", parent)
-	controls.dropDown.audioChannel.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Channel To Use", oUi.xCoord, yCoord)
+	controls.dropDown.audioChannel.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioChannelDescription"], oUi.xCoord, yCoord)
 	controls.dropDown.audioChannel.label.font:SetFontObject(GameFontNormal)
 	controls.dropDown.audioChannel:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 	---@diagnostic disable-next-line: undefined-field
@@ -792,16 +775,16 @@ local function ConstructAddonOptionsPanel()
 	end
 
 	yCoord = yCoord - 60
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Experimental Features", oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ExperimentalFeatures"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.experimentalShamanEnhancement = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Shaman_Enhancement", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.experimentalShamanEnhancement
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	---@diagnostic disable-next-line: undefined-field
-	getglobal(f:GetName() .. 'Text'):SetText("Enhancement Shaman support")
+	getglobal(f:GetName() .. 'Text'):SetText(L["ExperimentalEnhancementShaman"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "This will enable experimental Enhancement Shaman support within the bar. If you change this setting and are currently logged in on a Shaman, you'll need to reload your UI before Enhancement Shaman configuration options become available."
+	f.tooltip = L["ExperimentalEnhancementShamanTooltip"]
 	f:SetChecked(TRB.Data.settings.core.experimental.specs.shaman.enhancement)
 	f:SetScript("OnClick", function(self, ...)
 		TRB.Data.settings.core.experimental.specs.shaman.enhancement = self:GetChecked()
@@ -827,14 +810,14 @@ local function ConstructImportExportPanel()
 
 	interfaceSettingsFrame.importExportPanel = CreateFrame("Frame", "TwintopResourceBar_Options_ImportExport", UIParent)
 	---@diagnostic disable-next-line: inject-field
-	interfaceSettingsFrame.importExportPanel.name = "Import/Export"
+	interfaceSettingsFrame.importExportPanel.name = string.format("%s/%s", L["Import"], L["Export"])
 	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.importExportPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.importExportPanel, "Import/Export")
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.importExportPanel, string.format("%s/%s", L["Import"], L["Export"]))
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.importExportPanel)
 
 	parent = interfaceSettingsFrame.importExportPanel
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Import/Export", oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format("%s/%s", L["Import"], L["Export"]), oUi.xCoord, yCoord)
 	controls.labels = controls.labels or {}
 	controls.buttons = controls.buttons or {}
 
@@ -847,12 +830,12 @@ local function ConstructImportExportPanel()
 	parent = parent.panel.scrollFrame.scrollChild
 
 	yCoord = 5
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Import Settings Configuration", oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ImportSettingsConfiguration"], oUi.xCoord, yCoord)
 
 
 	StaticPopupDialogs["TwintopResourceBar_ImportError"] = {
-		text = "Twintop's Resource Bar import failed. Please check the settings configuration string that you entered and try again.",
-		button1 = "OK",
+		text = L["ImportErrorGenericMessage"],
+		button1 = L["OK"],
 		OnAccept = function(self)
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end,
@@ -863,8 +846,8 @@ local function ConstructImportExportPanel()
 	}
 
 	StaticPopupDialogs["TwintopResourceBar_ImportReload"] = {
-		text = "Import successful. Please click OK to reload UI.",
-		button1 = "OK",
+		text = L["ImportReloadMessage"],
+		button1 = L["OK"],
 		OnAccept = function(self)
 			C_UI.Reload()
 		end,
@@ -875,7 +858,7 @@ local function ConstructImportExportPanel()
 	}
 
 	StaticPopupDialogs["TwintopResourceBar_Import"] = {
-		text = "Paste in a Twintop's Resource Bar configuration string to have that configuration be imported. Your UI will be reloaded automatically.",
+		text = L["ImportMessage"],
 		button1 = "Import",
 		button2 = "Cancel",
 		hasEditBox = true,
@@ -889,9 +872,9 @@ local function ConstructImportExportPanel()
 				StaticPopup_Show("TwintopResourceBar_ImportReload")
 			else
 				if result == -3 then
-					StaticPopupDialogs["TwintopResourceBar_ImportError"].text = "Twintop's Resource Bar import failed. There were no valid classes, specs, or settings values found. Please check the settings configuration string that you entered and try again."
+					StaticPopupDialogs["TwintopResourceBar_ImportError"].text = L["ImportErrorNoValidMessage"]
 				else
-					StaticPopupDialogs["TwintopResourceBar_ImportError"].text = "Twintop's Resource Bar import failed. Please check the settings configuration string that you entered and try again."
+					StaticPopupDialogs["TwintopResourceBar_ImportError"].text = L["ImportErrorGenericMessage"]
 				end
 
 				StaticPopup_Show("TwintopResourceBar_ImportError")
@@ -907,7 +890,7 @@ local function ConstructImportExportPanel()
 	}
 
 	yCoord = yCoord - 40
-	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import existing Settings Configuration string", oUi.xCoord, yCoord, 300, 30)
+	controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ImportExisting"], oUi.xCoord, yCoord, 300, 30)
 	controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 		StaticPopup_Show("TwintopResourceBar_Import")
 	end)
@@ -938,1112 +921,1110 @@ local function ConstructImportExportPanel()
 
 
 	yCoord = yCoord - 40
-	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Export Settings Configuration", oUi.xCoord, yCoord)
-
-	local exportPopupBoilerplate = "Copy the string below to share your Twintop's Resource Bar configuration for "
+	controls.textCustomSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ExportSettingsConfiguration"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 35
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Everything = TRB.Functions.OptionsUi:BuildButton(parent, "All Classes/Specs + Global Options", buttonOffset, yCoord, 230, 20)
+	controls.buttons.exportButton_Everything = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAllClassesSpecs"] .. " + " .. L["GlobalOptions"], buttonOffset, yCoord, 230, 20)
 	controls.buttons.exportButton_Everything:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "All Classes/Specs + Global Options.", nil, nil, true, true, true, true, true)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessageAllClassesSpecs"] .. " + " .. L["GlobalOptions"] .. ".", nil, nil, true, true, true, true, true)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 230
-	controls.exportButton_All_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Global Options Only", buttonOffset, yCoord, 200, 20)
+	controls.exportButton_All_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["GlobalOptionsOnly"], buttonOffset, yCoord, 200, 20)
 	controls.exportButton_All_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Global Options Only.", nil, -1, false, false, false, false, true)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["GlobalOptionsOnly"] .. ".", nil, -1, false, false, false, false, true)
 	end)
 
 	yCoord = yCoord - 35
-	controls.labels.druid = TRB.Functions.OptionsUi:BuildLabel(parent, "All Classes/Specs", oUi.xCoord, yCoord, 110, 20)
+	controls.labels.druid = TRB.Functions.OptionsUi:BuildLabel(parent, L["ExportMessageAllClassesSpecs"], oUi.xCoord, yCoord, 110, 20)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_All_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_All_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_All_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "All Classes/Specs (All).", nil, nil, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessageAllClassesSpecs"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", nil, nil, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_All_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_All_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_All_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "All Classes/Specs (Bar Display).", nil, nil, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessageAllClassesSpecs"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", nil, nil, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_All_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_All_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_All_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "All Classes/Specs (Font & Text).", nil, nil, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessageAllClassesSpecs"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", nil, nil, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_All_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_All_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_All_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "All Classes/Specs (Audio & Tracking).", nil, nil, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessageAllClassesSpecs"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", nil, nil, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_All_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_All_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_All_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "All Classes/Specs (Bar Text).", nil, nil, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessageAllClassesSpecs"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", nil, nil, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 35
-	controls.labels.demonhunter = TRB.Functions.OptionsUi:BuildLabel(parent, "Demon Hunter", oUi.xCoord, yCoord, 110, 20)
+	controls.labels.demonhunter = TRB.Functions.OptionsUi:BuildLabel(parent, L["DemonHunter"], oUi.xCoord, yCoord, 110, 20)
 
 	yCoord = yCoord - 25
-	specName = "Havoc"
+	specName = L["DemonHunterHavoc"]
 	controls.labels.demonhunterHavoc = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_DemonHunter_Havoc_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_DemonHunter_Havoc_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_DemonHunter_Havoc_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Havoc Demon Hunter (All).", 12, 1, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavoc"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 12, 1, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_DemonHunter_Havoc_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_DemonHunter_Havoc_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_DemonHunter_Havoc_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Havoc Demon Hunter (Bar Display).", 12, 1, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavoc"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 12, 1, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_DemonHunter_Havoc_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_DemonHunter_Havoc_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_DemonHunter_Havoc_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Havoc Demon Hunter (Font & Text).", 12, 1, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavoc"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 12, 1, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_DemonHunter_Havoc_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_DemonHunter_Havoc_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_DemonHunter_Havoc_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Havoc Demon Hunter (Audio & Tracking).", 12, 1, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavoc"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 12, 1, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_DemonHunter_Havoc_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_DemonHunter_Havoc_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_DemonHunter_Havoc_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Havoc Demon Hunter (Bar Text).", 12, 1, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavoc"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 12, 1, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 35
-	controls.labels.druid = TRB.Functions.OptionsUi:BuildLabel(parent, "Druid", oUi.xCoord, yCoord, 110, 20)
+	controls.labels.druid = TRB.Functions.OptionsUi:BuildLabel(parent, L["Druid"], oUi.xCoord, yCoord, 110, 20)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Druid_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Druid_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Druid_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Druid specializations (All).", 11, nil, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 11, nil, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Druid_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Druid_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Druid_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Druid specializations (Bar Display).", 11, nil, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 11, nil, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Druid_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Druid_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Druid_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Druid specializations (Font & Text).", 11, nil, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 11, nil, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Druid_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Druid_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Druid_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Druid specializations (Audio & Tracking).", 11, nil, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 11, nil, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Druid_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Druid_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Druid_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Druid specializations (Bar Text).", 11, nil, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 11, nil, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 25
-	specName = "Balance"
+	specName = L["DruidBalance"]
 	controls.labels.druidBalance = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Druid_Balance_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Druid_Balance_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Druid_Balance_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Balance Druid (All).", 11, 1, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidBalance"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 11, 1, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Druid_Balance_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Druid_Balance_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Druid_Balance_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Balance Druid (Bar Display).", 11, 1, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidBalance"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 11, 1, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Druid_Balance_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Druid_Balance_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Druid_Balance_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Balance Druid (Font & Text).", 11, 1, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidBalance"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 11, 1, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Druid_Balance_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Druid_Balance_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Druid_Balance_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Balance Druid (Audio & Tracking).", 11, 1, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidBalance"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 11, 1, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Druid_Balance_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Druid_Balance_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Druid_Balance_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Balance Druid (Bar Text).", 11, 1, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidBalance"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 11, 1, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 25
-	specName = "Feral"
+	specName = L["DruidFeral"]
 	controls.labels.druidFeral = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Druid_Feral_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Druid_Feral_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Druid_Feral_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Feral Druid (All).", 11, 2, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidFeral"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 11, 2, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Druid_Feral_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Druid_Feral_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Druid_Feral_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Feral Druid (Bar Display).", 11, 2, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidFeral"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 11, 2, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Druid_Feral_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Druid_Feral_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Druid_Feral_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Feral Druid (Font & Text).", 11, 2, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidFeral"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 11, 2, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Druid_Feral_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Druid_Feral_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Druid_Feral_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Feral Druid (Audio & Tracking).", 11, 2, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidFeral"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 11, 2, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Druid_Feral_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Druid_Feral_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Druid_Feral_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Feral Druid (Bar Text).", 11, 2, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidFeral"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 11, 2, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 25
-	specName = "Restoration"
+	specName = L["DruidRestoration"]
 	controls.labels.druidRestoration = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Druid_Restoration_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Druid_Restoration_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Druid_Restoration_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Restoration Druid (All).", 11, 4, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidRestoration"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 11, 4, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Druid_Restoration_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Druid_Restoration_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Druid_Restoration_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Bar Display).", 11, 4, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidRestoration"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 11, 4, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Druid_Restoration_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Druid_Restoration_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Druid_Restoration_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Font & Text).", 11, 4, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidRestoration"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 11, 4, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Druid_Restoration_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Druid_Restoration_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Druid_Restoration_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Audio & Tracking).", 11, 4, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidRestoration"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 11, 4, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Druid_Restoration_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Druid_Restoration_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Druid_Restoration_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Restoration Druid (Bar Text).", 11, 4, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DruidRestoration"] .. " " .. L["Druid"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 11, 4, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 35
-	controls.labels.evoker = TRB.Functions.OptionsUi:BuildLabel(parent, "Evoker", oUi.xCoord, yCoord, 110, 20)
+	controls.labels.evoker = TRB.Functions.OptionsUi:BuildLabel(parent, L["Evoker"], oUi.xCoord, yCoord, 110, 20)
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
 	
-	controls.buttons.exportButton_Evoker_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Evoker_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Evoker_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (All).", 13, nil, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 13, nil, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Evoker_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Evoker_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Evoker_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (Bar Display).", 13, nil, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 13, nil, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Evoker_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Evoker_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Evoker_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (Font & Text).", 13, nil, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 13, nil, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Evoker_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Evoker_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Evoker_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (Audio & Tracking).", 13, nil, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 13, nil, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Evoker_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Evoker_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Evoker_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Evoker specializations (Bar Text).", 13, nil, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 13, nil, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 25
-	specName = "Devastation"
+	specName = L["EvokerDevastation"]
 	controls.labels.druidDevastation = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Evoker_Devastation_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Evoker_Devastation_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Evoker_Devastation_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (All).", 13, 1, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 13, 1, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Evoker_Devastation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Evoker_Devastation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Evoker_Devastation_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (Bar Display).", 13, 1, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 13, 1, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Evoker_Devastation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Evoker_Devastation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Evoker_Devastation_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (Font & Text).", 13, 1, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 13, 1, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Evoker_Devastation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Evoker_Devastation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Evoker_Devastation_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (Audio & Tracking).", 13, 1, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 13, 1, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Evoker_Devastation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Evoker_Devastation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Evoker_Devastation_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Devastation Evoker (Bar Text).", 13, 1, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 13, 1, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 25
-	specName = "Preservation"
+	specName = L["EvokerPreservation"]
 	controls.labels.druidPreservation = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Evoker_Preservation_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Evoker_Preservation_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Evoker_Preservation_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (All).", 13, 2, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 13, 2, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Evoker_Preservation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Evoker_Preservation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Evoker_Preservation_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (Bar Display).", 13, 2, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 13, 2, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Evoker_Preservation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Evoker_Preservation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Evoker_Preservation_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (Font & Text).", 13, 2, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 13, 2, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Evoker_Preservation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Evoker_Preservation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Evoker_Preservation_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (Audio & Tracking).", 13, 2, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 13, 2, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Evoker_Preservation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Evoker_Preservation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Evoker_Preservation_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Preservation Evoker (Bar Text).", 13, 2, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 13, 2, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 25
-	specName = "Augmentation"
+	specName = L["EvokerAugmentation"]
 	controls.labels.druidAugmentation = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Evoker_Augmentation_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Evoker_Augmentation_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Evoker_Augmentation_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (All).", 13, 3, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 13, 3, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Evoker_Augmentation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Evoker_Augmentation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Evoker_Augmentation_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (Bar Display).", 13, 3, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 13, 3, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Evoker_Augmentation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Evoker_Augmentation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Evoker_Augmentation_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (Font & Text).", 13, 3, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 13, 3, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Evoker_Augmentation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Evoker_Augmentation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Evoker_Augmentation_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (Audio & Tracking).", 13, 3, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 13, 3, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Evoker_Augmentation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Evoker_Augmentation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Evoker_Augmentation_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Augmentation Evoker (Bar Text).", 13, 3, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 13, 3, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 35
-	controls.labels.hunter = TRB.Functions.OptionsUi:BuildLabel(parent, "Hunter", oUi.xCoord, yCoord, 110, 20)
+	controls.labels.hunter = TRB.Functions.OptionsUi:BuildLabel(parent, L["Hunter"], oUi.xCoord, yCoord, 110, 20)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Hunter_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Hunter_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Hunter_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Hunter specializations (All).", 3, nil, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 3, nil, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Hunter_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Hunter_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Hunter_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Hunter specializations (Bar Display).", 3, nil, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 3, nil, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Hunter_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Hunter_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Hunter_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Hunter specializations (Font & Text).", 3, nil, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 3, nil, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Hunter_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Hunter_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Hunter_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Hunter specializations (Audio & Tracking).", 3, nil, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 3, nil, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Hunter_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Hunter_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Hunter_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Hunter specializations (Bar Text).", 3, nil, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 3, nil, false, false, false, true, false)
 	end)
 
 
 	yCoord = yCoord - 25
-	specName = "Beast Mastery"
+	specName = L["HunterBeastMastery"]
 	controls.labels.hunterBeastMastery = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Hunter_BeastMastery_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Hunter_BeastMastery_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Hunter_BeastMastery_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Beast Mastery Hunter (All).", 3, 1, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMastery"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 3, 1, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Hunter_BeastMastery_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Hunter_BeastMastery_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Hunter_BeastMastery_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Beast Mastery Hunter (Bar Display).", 3, 1, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMastery"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 3, 1, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Hunter_BeastMastery_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Hunter_BeastMastery_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Hunter_BeastMastery_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Beast Mastery Hunter (Font & Text).", 3, 1, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMastery"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 3, 1, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Hunter_BeastMastery_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Hunter_BeastMastery_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Hunter_BeastMastery_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Beast Mastery Hunter (Audio & Tracking).", 3, 1, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMastery"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 3, 1, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Hunter_BeastMastery_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Hunter_BeastMastery_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Hunter_BeastMastery_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Beast Mastery Hunter (Bar Text).", 3, 1, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterBeastMastery"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 3, 1, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 25
-	specName = "Marksmanship"
+	specName = L["HunterMarksmanship"]
 	controls.labels.hunterMarksmanship = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Hunter_Marksmanship_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Hunter_Marksmanship_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Hunter_Marksmanship_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Marksmanship Hunter (All).", 3, 2, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanship"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 3, 2, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Hunter_Marksmanship_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Hunter_Marksmanship_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Hunter_Marksmanship_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Marksmanship Hunter (Bar Display).", 3, 2, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanship"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 3, 2, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Hunter_Marksmanship_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Hunter_Marksmanship_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Hunter_Marksmanship_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Marksmanship Hunter (Font & Text).", 3, 2, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanship"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 3, 2, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Hunter_Marksmanship_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Hunter_Marksmanship_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Hunter_Marksmanship_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Marksmanship Hunter (Audio & Tracking).", 3, 2, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanship"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 3, 2, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Hunter_Marksmanship_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Hunter_Marksmanship_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Hunter_Marksmanship_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Marksmanship Hunter (Bar Text).", 3, 2, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterMarksmanship"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 3, 2, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 25
-	specName = "Survival"
+	specName = L["HunterSurvival"]
 	controls.labels.hunterSurvival = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Hunter_Survival_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Hunter_Survival_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Hunter_Survival_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Survival Hunter (All).", 3, 3, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvival"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 3, 3, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Hunter_Survival_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Hunter_Survival_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Hunter_Survival_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Survival Hunter (Bar Display).", 3, 3, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvival"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 3, 3, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Hunter_Survival_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Hunter_Survival_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Hunter_Survival_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Survival Hunter (Font & Text).", 3, 3, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvival"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 3, 3, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Hunter_Survival_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Hunter_Survival_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Hunter_Survival_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Survival Hunter (Audio & Tracking).", 3, 3, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvival"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 3, 3, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Hunter_Survival_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Hunter_Survival_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Hunter_Survival_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Survival Hunter (Bar Text).", 3, 3, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["HunterSurvival"] .. " " .. L["Hunter"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 3, 3, false, false, false, true, false)
 	end)
 	
 
 	yCoord = yCoord - 35
-	controls.labels.monk = TRB.Functions.OptionsUi:BuildLabel(parent, "Monk", oUi.xCoord, yCoord, 110, 20)
+	controls.labels.monk = TRB.Functions.OptionsUi:BuildLabel(parent, L["Monk"], oUi.xCoord, yCoord, 110, 20)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Monk_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Monk_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Monk_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Monk specializations (All).", 10, nil, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 10, nil, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Monk_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Monk_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Monk_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Monk specializations (Bar Display).", 10, nil, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 10, nil, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Monk_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Monk_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Monk_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Monk specializations (Font & Text).", 10, nil, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 10, nil, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Monk_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Monk_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Monk_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Monk specializations (Audio & Tracking).", 10, nil, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 10, nil, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Monk_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Monk_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Monk_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Monk specializations (Bar Text).", 10, nil, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 10, nil, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 25
-	specName = "Mistweaver"
+	specName = L["MonkMistweaver"]
 	controls.labels.monkMistweaver = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Monk_Mistweaver_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Monk_Mistweaver_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Monk_Mistweaver_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (All).", 10, 2, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaver"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 10, 2, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Monk_Mistweaver_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Monk_Mistweaver_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Monk_Mistweaver_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (Bar Display).", 10, 2, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaver"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 10, 2, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Monk_Mistweaver_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Monk_Mistweaver_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Monk_Mistweaver_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (Font & Text).", 10, 2, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaver"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 10, 2, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Monk_Mistweaver_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Monk_Mistweaver_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Monk_Mistweaver_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (Audio & Tracking).", 10, 2, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaver"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 10, 2, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Monk_Mistweaver_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Monk_Mistweaver_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Monk_Mistweaver_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Mistweaver Monk (Bar Text).", 10, 2, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaver"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 10, 2, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 25
-	specName = "Windwalker"
+	specName = L["MonkWindwalker"]
 	controls.labels.monkWindwalker = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Monk_Windwalker_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Monk_Windwalker_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Monk_Windwalker_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Windwalker Monk (All).", 10, 3, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalker"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 10, 3, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Monk_Windwalker_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Monk_Windwalker_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Monk_Windwalker_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Windwalker Monk (Bar Display).", 10, 3, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalker"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 10, 3, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Monk_Windwalker_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Monk_Windwalker_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Monk_Windwalker_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Windwalker Monk (Font & Text).", 10, 3, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalker"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 10, 3, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Monk_Windwalker_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Monk_Windwalker_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Monk_Windwalker_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Windwalker Monk (Audio & Tracking).", 10, 3, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalker"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 10, 3, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Monk_Windwalker_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Monk_Windwalker_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Monk_Windwalker_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Windwalker Monk (Bar Text).", 10, 3, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalker"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 10, 3, false, false, false, true, false)
 	end)
 	
 
 	yCoord = yCoord - 35
-	controls.labels.priest = TRB.Functions.OptionsUi:BuildLabel(parent, "Priest", oUi.xCoord, yCoord, 110, 20)
+	controls.labels.priest = TRB.Functions.OptionsUi:BuildLabel(parent, L["Priest"], oUi.xCoord, yCoord, 110, 20)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Priest_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Priest_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Priest_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Priest specializations (All).", 5, nil, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 5, nil, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Priest_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Priest_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Priest_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Priest specializations (Bar Display).", 5, nil, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 5, nil, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Priest_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Priest_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Priest_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Priest specializations (Font & Text).", 5, nil, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 5, nil, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Priest_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Priest_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Priest_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Priest specializations (Audio & Tracking).", 5, nil, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 5, nil, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Priest_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Priest_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Priest_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Priest specializations (Bar Text).", 5, nil, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 5, nil, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 25
-	specName = "Discipline"
+	specName = L["PriestDiscipline"]
 	controls.labels.priestDiscipline = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 	
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Priest_Discipline_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Priest_Discipline_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Priest_Discipline_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Discipline Priest (All).", 5, 1, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestDiscipline"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 5, 1, true, true, true, true, false)
 	end)
 	
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Priest_Discipline_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Priest_Discipline_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Priest_Discipline_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Discipline Priest (Bar Display).", 5, 1, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestDiscipline"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 5, 1, true, false, false, false, false)
 	end)
 	
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Priest_Discipline_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Priest_Discipline_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Priest_Discipline_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Discipline Priest (Font & Text).", 5, 1, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestDiscipline"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 5, 1, false, true, false, false, false)
 	end)
 	
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Priest_Discipline_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Priest_Discipline_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Priest_Discipline_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Discipline Priest (Audio & Tracking).", 5, 1, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestDiscipline"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 5, 1, false, false, true, false, false)
 	end)
 	
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Priest_Discipline_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Priest_Discipline_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Priest_Discipline_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Discipline Priest (Bar Text).", 5, 1, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestDiscipline"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 5, 1, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 25
-	specName = "Holy"
+	specName = L["PriestHoly"]
 	controls.labels.priestHoly = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Priest_Holy_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Priest_Holy_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Priest_Holy_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Holy Priest (All).", 5, 2, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestHoly"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 5, 2, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Priest_Holy_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Priest_Holy_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Priest_Holy_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Holy Priest (Bar Display).", 5, 2, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestHoly"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 5, 2, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Priest_Holy_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Priest_Holy_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Priest_Holy_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Holy Priest (Font & Text).", 5, 2, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestHoly"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 5, 2, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Priest_Holy_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Priest_Holy_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Priest_Holy_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Holy Priest (Audio & Tracking).", 5, 2, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestHoly"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 5, 2, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Priest_Holy_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Priest_Holy_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Priest_Holy_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Holy Priest (Bar Text).", 5, 2, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestHoly"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 5, 2, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 25
-	specName = "Shadow"
+	specName = L["PriestShadow"]
 	controls.labels.priestShadow = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Priest_Shadow_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Priest_Shadow_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Priest_Shadow_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Shadow Priest (All).", 5, 3, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestShadow"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 5, 3, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Priest_Shadow_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Priest_Shadow_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Priest_Shadow_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Shadow Priest (Bar Display).", 5, 3, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestShadow"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 5, 3, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Priest_Shadow_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Priest_Shadow_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Priest_Shadow_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Shadow Priest (Font & Text).", 5, 3, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestShadow"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 5, 3, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Priest_Shadow_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Priest_Shadow_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Priest_Shadow_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Shadow Priest (Audio & Tracking).", 5, 3, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestShadow"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 5, 3, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Priest_Shadow_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Priest_Shadow_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Priest_Shadow_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Shadow Priest (Bar Text).", 5, 3, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PriestShadow"] .. " " .. L["Priest"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 5, 3, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 35
-	controls.labels.rogue = TRB.Functions.OptionsUi:BuildLabel(parent, "Rogue", oUi.xCoord, yCoord, 110, 20)
+	controls.labels.rogue = TRB.Functions.OptionsUi:BuildLabel(parent, L["Rogue"], oUi.xCoord, yCoord, 110, 20)
 	
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Rogue_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Rogue_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Rogue_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Rogue specializations (All).", 4, nil, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 4, nil, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Rogue_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Rogue_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Rogue_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Rogue specializations (Bar Display).", 4, nil, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 4, nil, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Rogue_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Rogue_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Rogue_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Rogue specializations (Font & Text).", 4, nil, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 4, nil, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Rogue_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Rogue_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Rogue_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Rogue specializations (Audio & Tracking).", 4, nil, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 4, nil, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Rogue_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Rogue_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Rogue_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Rogue specializations (Bar Text).", 4, nil, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 4, nil, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 25
-	specName = "Assassination"
+	specName = L["RogueAssassination"]
 	controls.labels.rogueAssassination = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Rogue_Assassination_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Rogue_Assassination_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Rogue_Assassination_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Assassination Rogue (All).", 4, 1, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassination"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 4, 1, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Rogue_Assassination_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Rogue_Assassination_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Rogue_Assassination_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Assassination Rogue (Bar Display).", 4, 1, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassination"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 4, 1, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Rogue_Assassination_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Rogue_Assassination_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Rogue_Assassination_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Assassination Rogue (Font & Text).", 4, 1, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassination"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 4, 1, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Rogue_Assassination_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Rogue_Assassination_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Rogue_Assassination_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Assassination Rogue (Audio & Tracking).", 4, 1, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassination"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 4, 1, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Rogue_Assassination_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Rogue_Assassination_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Rogue_Assassination_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Assassination Rogue (Bar Text).", 4, 1, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassination"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 4, 1, false, false, false, true, false)
 	end)
 
 
 	yCoord = yCoord - 25
-	specName = "Outlaw"
+	specName = L["RogueOutlaw"]
 	controls.labels.rogueOutlaw = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Rogue_Outlaw_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Rogue_Outlaw_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Rogue_Outlaw_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Outlaw Rogue (All).", 4, 2, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlaw"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 4, 2, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Rogue_Outlaw_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Rogue_Outlaw_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Rogue_Outlaw_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Outlaw Rogue (Bar Display).", 4, 2, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlaw"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 4, 2, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Rogue_Outlaw_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Rogue_Outlaw_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Rogue_Outlaw_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Outlaw Rogue (Font & Text).", 4, 2, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlaw"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 4, 2, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Rogue_Outlaw_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Rogue_Outlaw_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Rogue_Outlaw_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Outlaw Rogue (Audio & Tracking).", 4, 2, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlaw"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 4, 2, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Rogue_Outlaw_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Rogue_Outlaw_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Rogue_Outlaw_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Outlaw Rogue (Bar Text).", 4, 2, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlaw"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 4, 2, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 25
-	specName = "Subtlety"
+	specName = L["RogueSubtlety"]
 	controls.labels.rogueSubtlety = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Rogue_Subtlety_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Rogue_Subtlety_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Rogue_Subtlety_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Subtlety Rogue (All).", 4, 3, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtlety"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 4, 3, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Rogue_Subtlety_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Rogue_Subtlety_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Rogue_Subtlety_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Subtlety Rogue (Bar Display).", 4, 3, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtlety"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 4, 3, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Rogue_Subtlety_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Rogue_Subtlety_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Rogue_Subtlety_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Subtlety Rogue (Font & Text).", 4, 3, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtlety"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 4, 3, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Rogue_Subtlety_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Rogue_Subtlety_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Rogue_Subtlety_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Subtlety Rogue (Audio & Tracking).", 4, 3, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtlety"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 4, 3, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Rogue_Subtlety_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Rogue_Subtlety_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Rogue_Subtlety_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Subtlety Rogue (Bar Text).", 4, 3, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtlety"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 4, 3, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 35
-	controls.labels.shaman = TRB.Functions.OptionsUi:BuildLabel(parent, "Shaman", oUi.xCoord, yCoord, 110, 20)
+	controls.labels.shaman = TRB.Functions.OptionsUi:BuildLabel(parent, L["Shaman"], oUi.xCoord, yCoord, 110, 20)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Shaman_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Shaman_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Shaman_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Shaman specializations (All).", 7, nil, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 7, nil, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Shaman_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Shaman_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Shaman_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Shaman specializations (Bar Display).", 7, nil, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 7, nil, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Shaman_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Shaman_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Shaman_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Shaman specializations (Font & Text).", 7, nil, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 7, nil, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Shaman_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Shaman_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Shaman_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Shaman specializations (Audio & Tracking).", 7, nil, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 7, nil, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Shaman_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Shaman_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Shaman_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Shaman specializations (Bar Text).", 7, nil, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 7, nil, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 25
-	specName = "Elemental"
+	specName = L["ShamanElemental"]
 	controls.labels.shamanElemental = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Shaman_Elemental_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Shaman_Elemental_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Shaman_Elemental_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Elemental Shaman (All).", 7, 1, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElemental"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 7, 1, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Shaman_Elemental_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Shaman_Elemental_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Shaman_Elemental_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Elemental Shaman (Bar Display).", 7, 1, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElemental"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 7, 1, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Shaman_Elemental_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Shaman_Elemental_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Shaman_Elemental_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Elemental Shaman (Font & Text).", 7, 1, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElemental"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 7, 1, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Shaman_Elemental_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Shaman_Elemental_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Shaman_Elemental_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Elemental Shaman (Audio & Tracking).", 7, 1, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElemental"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 7, 1, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Shaman_Elemental_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Shaman_Elemental_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Shaman_Elemental_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Elemental Shaman (Bar Text).", 7, 1, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElemental"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 7, 1, false, false, false, true, false)
 	end)
 
 	if TRB.Data.settings.core.experimental.specs.shaman.enhancement then
 		yCoord = yCoord - 25
-		specName = "Enhancement"
+		specName = L["ShamanEnhancement"]
 		controls.labels.shamanEnhancement = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 		
 		buttonOffset = oUi.xCoord + oUi.xPadding + 100
-		controls.buttons.exportButton_Shaman_Enhancement_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+		controls.buttons.exportButton_Shaman_Enhancement_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 		controls.buttons.exportButton_Shaman_Enhancement_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Enhancement Shaman (All).", 7, 2, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancement"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 7, 2, true, true, true, true, false)
 		end)
 		
 		buttonOffset = buttonOffset + buttonSpacing + 50
-		controls.exportButton_Shaman_Enhancement_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+		controls.exportButton_Shaman_Enhancement_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 		controls.exportButton_Shaman_Enhancement_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Enhancement Shaman (Bar Display).", 7, 2, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancement"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 7, 2, true, false, false, false, false)
 		end)
 		
 		buttonOffset = buttonOffset + buttonSpacing + 80
-		controls.exportButton_Shaman_Enhancement_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+		controls.exportButton_Shaman_Enhancement_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 		controls.exportButton_Shaman_Enhancement_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Enhancement Shaman (Font & Text).", 7, 2, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancement"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 7, 2, false, true, false, false, false)
 		end)
 		
 		buttonOffset = buttonOffset + buttonSpacing + 90
-		controls.exportButton_Shaman_Enhancement_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+		controls.exportButton_Shaman_Enhancement_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 		controls.exportButton_Shaman_Enhancement_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Enhancement Shaman (Audio & Tracking).", 7, 2, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancement"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 7, 2, false, false, true, false, false)
 		end)
 		
 		buttonOffset = buttonOffset + buttonSpacing + 120
-		controls.exportButton_Shaman_Enhancement_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+		controls.exportButton_Shaman_Enhancement_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 		controls.exportButton_Shaman_Enhancement_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Enhancement Shaman (Bar Text).", 7, 2, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancement"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 7, 2, false, false, false, true, false)
 		end)
 	end
 
 	yCoord = yCoord - 25
-	specName = "Restoration"
+	specName = L["ShamanRestoration"]
 	controls.labels.shamanRestoration = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Shaman_Restoration_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Shaman_Restoration_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Shaman_Restoration_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Restoration Shaman (All).", 7, 3, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestoration"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 7, 3, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Shaman_Restoration_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Shaman_Restoration_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Shaman_Restoration_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Restoration Shaman (Bar Display).", 7, 3, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestoration"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 7, 3, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Shaman_Restoration_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Shaman_Restoration_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Shaman_Restoration_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Restoration Shaman (Font & Text).", 7, 3, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestoration"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 7, 3, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Shaman_Restoration_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Shaman_Restoration_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Shaman_Restoration_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Restoration Shaman (Audio & Tracking).", 7, 3, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestoration"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 7, 3, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Shaman_Restoration_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Shaman_Restoration_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Shaman_Restoration_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Restoration Shaman (Bar Text).", 7, 3, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestoration"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 7, 3, false, false, false, true, false)
 	end)
 
 
 	yCoord = yCoord - 35
-	controls.labels.warrior = TRB.Functions.OptionsUi:BuildLabel(parent, "Warrior", oUi.xCoord, yCoord, 110, 20)
+	controls.labels.warrior = TRB.Functions.OptionsUi:BuildLabel(parent, L["Warrior"], oUi.xCoord, yCoord, 110, 20)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Warrior_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Warrior_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Warrior_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Warrior specializations (All).", 1, nil, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 1, nil, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Warrior_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Warrior_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Warrior_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Warrior specializations (Bar Display).", 1, nil, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 1, nil, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Warrior_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Warrior_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Warrior_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Warrior specializations (Font & Text).", 1, nil, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 1, nil, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Warrior_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Warrior_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Warrior_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Warrior specializations (Audio & Tracking).", 1, nil, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 1, nil, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Warrior_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Warrior_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Warrior_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "all Warrior specializations (Bar Text).", 1, nil, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessagePrefixAll"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixSpecializations"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 1, nil, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 25
-	specName = "Arms"
+	specName = L["WarriorArms"]
 	controls.labels.warriorArms = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Warrior_Arms_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Warrior_Arms_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Warrior_Arms_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Arms Warrior (All).", 1, 1, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArms"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 1, 1, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Warrior_Arms_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Warrior_Arms_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Warrior_Arms_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Arms Warrior (Bar Display).", 1, 1, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArms"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 1, 1, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Warrior_Arms_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Warrior_Arms_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Warrior_Arms_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Arms Warrior (Font & Text).", 1, 1, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArms"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 1, 1, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Warrior_Arms_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Warrior_Arms_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Warrior_Arms_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Arms Warrior (Audio & Tracking).", 1, 1, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArms"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 1, 1, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Warrior_Arms_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Warrior_Arms_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Warrior_Arms_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Arms Warrior (Bar Text).", 1, 1, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArms"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 1, 1, false, false, false, true, false)
 	end)
 
 
 	yCoord = yCoord - 25
-	specName = "Fury"
+	specName = L["WarriorFury"]
 	controls.labels.warriorFury = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
-	controls.buttons.exportButton_Warrior_Fury_All = TRB.Functions.OptionsUi:BuildButton(parent, "All", buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Warrior_Fury_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
 	controls.buttons.exportButton_Warrior_Fury_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Fury Warrior (All).", 1, 2, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFury"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixAll_Function"]() .. ".", 1, 2, true, true, true, true, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 50
-	controls.exportButton_Warrior_Fury_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Display", buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Warrior_Fury_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
 	controls.exportButton_Warrior_Fury_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Fury Warrior (Bar Display).", 1, 2, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFury"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixBarDisplay_Function"]() .. ".", 1, 2, true, false, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 80
-	controls.exportButton_Warrior_Fury_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Font & Text", buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Warrior_Fury_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
 	controls.exportButton_Warrior_Fury_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Fury Warrior (Font & Text).", 1, 2, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFury"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixFontText_Function"]() .. ".", 1, 2, false, true, false, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 90
-	controls.exportButton_Warrior_Fury_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Audio & Tracking", buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Warrior_Fury_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
 	controls.exportButton_Warrior_Fury_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Fury Warrior (Audio & Tracking).", 1, 2, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFury"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixAudioTracking_Function"]() .. ".", 1, 2, false, false, true, false, false)
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 120
-	controls.exportButton_Warrior_Fury_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Bar Text", buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Warrior_Fury_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
 	controls.exportButton_Warrior_Fury_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(exportPopupBoilerplate .. "Fury Warrior (Bar Text).", 1, 2, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFury"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixBarText_Function"]() .. ".", 1, 2, false, false, false, true, false)
 	end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -2062,7 +2043,7 @@ function TRB.Options:ConstructOptionsPanel()
 
 	interfaceSettingsFrame.panel = CreateFrame("Frame", "TwintopResourceBarPanel")
 	---@diagnostic disable-next-line: inject-field
-	interfaceSettingsFrame.panel.name = "Twintop's Resource Bar"
+	interfaceSettingsFrame.panel.name = L["TwintopsResourceBar"]
 	interfaceSettingsFrame.panel:HookScript("OnShow", function(self)
 	end)
 	local parent = interfaceSettingsFrame.panel
@@ -2070,7 +2051,7 @@ function TRB.Options:ConstructOptionsPanel()
 
 	interfaceSettingsFrame.controls.barPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, TRB.Details.addonTitle, oUi.xCoord+oUi.xPadding, yCoord)
 
-	local newsButton = TRB.Functions.OptionsUi:BuildButton(parent, "Show News Popup", 510, yCoord, 200, 40)
+	local newsButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ShowNewsPopup"], 510, yCoord, 200, 40)
 	newsButton:ClearAllPoints()
 	newsButton:SetPoint("TOPRIGHT", yCoord, 5)
     newsButton:SetScript("OnClick", function(self, ...)
@@ -2078,19 +2059,19 @@ function TRB.Options:ConstructOptionsPanel()
     end)
 
 	yCoord = yCoord - 40
-	interfaceSettingsFrame.controls.labels.infoAuthor = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "Author:", TRB.Details.addonAuthor .. " - " .. TRB.Details.addonAuthorServer, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 15)
+	interfaceSettingsFrame.controls.labels.infoAuthor = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, L["Author"] .. ":", TRB.Details.addonAuthor .. " - " .. TRB.Details.addonAuthorServer, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 15)
 	yCoord = yCoord - 40
-	interfaceSettingsFrame.controls.labels.infoVersion = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "Version:", TRB.Details.addonVersion, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 15)
+	interfaceSettingsFrame.controls.labels.infoVersion = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, L["Version"] .. ":", TRB.Details.addonVersion, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 15)
 	yCoord = yCoord - 40
-	interfaceSettingsFrame.controls.labels.infoReleased = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "Released:", TRB.Details.addonReleaseDate, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 15)
+	interfaceSettingsFrame.controls.labels.infoReleased = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, L["Released"] .. ":", TRB.Details.addonReleaseDate, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 15)
 	yCoord = yCoord - 40
-	interfaceSettingsFrame.controls.labels.infoSupport = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "Supported Specs (Dragonflight):", TRB.Details.supportedSpecs, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 300)
+	interfaceSettingsFrame.controls.labels.infoSupport = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, L["SupportedSpecs"] .. ":", TRB.Details.supportedSpecs, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 300)
 
 
 	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.panel.yCoord = yCoord
 	local layout
-	TRB.Details.addonCategory, layout = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.panel, "Twintop's Resource Bar")
+	TRB.Details.addonCategory, layout = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.panel, L["TwintopsResourceBar"])
 	--Settings.RegisterAddOnCategory(TRB.Details.addonCategory)
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.panel)
 

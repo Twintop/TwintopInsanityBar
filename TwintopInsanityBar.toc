@@ -24,6 +24,12 @@ Libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
 Libs\LibMarkdown\LibMarkdown.xml
 Libs\LibScrollingTable\lib-st.xml
 
+Localization\Localization.lua
+Localization\enUS.lua
+Localization\deDE.lua
+Localization\esES.lua
+Localization\esMX.lua
+
 Classes\CombatLog.lua
 Classes\Snapshot.lua
 Classes\TimeToDie.lua
