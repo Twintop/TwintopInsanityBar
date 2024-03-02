@@ -10,7 +10,7 @@ local content = [====[
 
 ---
 
-# 10.2.5.4-release (2023-03-02)
+# 10.2.5.4-release (2023-03-03)
 ## General
 - [#339 - FIX](#339) Fix various buff stack counts from not being properly tracked. See specifics for each specialization below.
 - (FIX) Prevent some calculations that require a target from failing even when you do have a valid target.

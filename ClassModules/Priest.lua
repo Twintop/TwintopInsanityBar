@@ -5037,7 +5037,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							end
 						end
 					elseif entry.spellId == spells.deathsTorment.id then
-						print(entry.type)
 						snapshots[spells.deathsTorment.id].buff:Initialize(entry.type)
 						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" or entry.type == "SPELL_AURA_APPLIED_DOSE" then
 							if TRB.Data.settings.priest.shadow.audio.deathsTormentMax.enabled and not snapshotData.audio.deathsTormentMaxCue and snapshots[spells.deathsTorment.id].buff.applications == spells.deathsTorment.maxStacks then
