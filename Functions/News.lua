@@ -44,7 +44,12 @@ local content = [====[
 
 ### Shadow
 
-- [#339 - FIX](#339) Fix application tracking for Death's Torment, Mind Melt, and Idol of Yogg-Saron.
+- [#339 - FIX](#339) Fix application tracking for Death's Torment, Idol of Yogg-Saron, Mind Melt, and Surge of Insanity.
+
+## Shaman
+### Elemental
+
+- [#339 - FIX](#339) Fix application tracking for Icefury and Stormkeeper.
 
 ## Warrior
 ### Fury
