@@ -1051,7 +1051,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local _whirlwindTime = snapshots[spells.whirlwind.id].buff:GetRemainingTime(currentTime)
 		local whirlwindTime = TRB.Functions.BarText:TimerPrecision(_whirlwindTime)
 		--$whirlwindStacks
-		local whirlwindStacks = snapshots[spells.enrage.id].buff.stacks
+		local whirlwindStacks = snapshots[spells.whirlwind.id].buff.applications
 
 		--$suddenDeathTime
 		local _suddenDeathTime = snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)
@@ -1302,9 +1302,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										healthMinimum = spells.massacre.healthMinimum
 									end
 
-									local suddenDeathTime = snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)
-
-									if suddenDeathTime > 0 then
+									if snapshots[spells.suddenDeath.id].buff.isActive then
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -spells.execute.resourceMax, TRB.Data.character.maxResource)
 									else
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, math.min(math.max(-resourceAmount, normalizedResource), -spells.execute.resourceMax), TRB.Data.character.maxResource)
@@ -1312,11 +1310,11 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 									if UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
 										showThreshold = false
-									elseif spell.settingKey == "executeMinimum" and (targetUnitHealth >= healthMinimum) and suddenDeathTime == 0 then
+									elseif spell.settingKey == "executeMinimum" and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
 										showThreshold = false
-									elseif spell.settingKey == "executeMaximum"  and (targetUnitHealth >= healthMinimum) and suddenDeathTime == 0 then
+									elseif spell.settingKey == "executeMaximum"  and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
 										showThreshold = false
-									elseif spell.settingKey == "execute" and (targetUnitHealth >= healthMinimum) and suddenDeathTime == 0 then
+									elseif spell.settingKey == "execute" and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
 										showThreshold = false
 									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
@@ -1485,6 +1483,16 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					end
 
 					local pairOffset = 0
+					local targetUnitHealth
+					if target ~= nil then
+						targetUnitHealth = target:GetHealthPercent()
+					end
+										
+					local healthMinimum = spells.execute.healthMinimum
+					if talents:IsTalentActive(spells.massacre) then
+						healthMinimum = spells.massacre.healthMinimum
+					end
+
 					for k, v in pairs(spells) do
 						local spell = spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
@@ -1504,26 +1512,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									if talents:IsTalentActive(spells.improvedExecute) then
 										showThreshold = false
 									else
-										local targetUnitHealth
-										if target ~= nil then
-											targetUnitHealth = target:GetHealthPercent()
-										end
-										
-										local healthMinimum = spells.execute.healthMinimum
-										
-										if talents:IsTalentActive(spells.massacre) then
-											healthMinimum = spells.massacre.healthMinimum
-										end
-
-										local suddenDeathTime = snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)
-
 										if UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
 											showThreshold = false
-										elseif spell.settingKey == "executeMinimum" and (targetUnitHealth >= healthMinimum) and suddenDeathTime == 0 then
+										elseif spell.settingKey == "executeMinimum" and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
 											showThreshold = false
-										elseif spell.settingKey == "executeMaximum"  and (targetUnitHealth >= healthMinimum) and suddenDeathTime == 0 then
+										elseif spell.settingKey == "executeMaximum"  and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
 											showThreshold = false
-										elseif spell.settingKey == "execute" and (targetUnitHealth >= healthMinimum) and suddenDeathTime == 0 then
+										elseif spell.settingKey == "execute" and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
 											showThreshold = false
 										else
 											if spell.settingKey == "execute" then
@@ -1646,10 +1641,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					elseif entry.spellId == spells.ignorePain.id then
 						if entry.type == "SPELL_CAST_SUCCESS" or entry.type == "SPELL_AURA_APPLIED" then
 							snapshots[entry.spellId].cooldown:Initialize()
-							-- This API call isn't working. Manual override for now.
-							--snapshot.ignorePain.startTime, snapshot.ignorePain.duration, _, _ = GetSpellCooldown(spells.ignorePain.id)
-							--snapshot.ignorePain.startTime = currentTime
-							--snapshot.ignorePain.duration = spells.ignorePain.duration
 						end
 					elseif entry.spellId == spells.suddenDeath.id then
 						snapshots[entry.spellId].buff:Initialize(entry.type)
@@ -1673,9 +1664,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					if entry.spellId == spells.enrage.id then
 						snapshots[entry.spellId].buff:Initialize(entry.type)
 					elseif entry.spellId == spells.whirlwind.id then
-						if entry.type == "SPELL_CAST_SUCCESS" then
-							snapshots[entry.spellId].buff:Initialize(entry.type)
-						end
+						snapshots[entry.spellId].buff:Initialize(entry.type)
 					elseif entry.spellId == spells.suddenDeath.id then
 						snapshots[entry.spellId].buff:Initialize(entry.type)
 						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_APPLIED_DOSE" or entry.type == "SPELL_AURA_REFRESH" then

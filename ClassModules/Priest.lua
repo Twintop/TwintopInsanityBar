@@ -2265,7 +2265,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local manaPercent = string.format("|c%s%s|r", currentManaColor, TRB.Functions.Number:RoundTo(_manaPercent*100, manaPrecision, "floor"))
 
 		--$solStacks
-		local _solStacks = snapshots[spells.surgeOfLight.id].buff.stacks or 0
+		local _solStacks = snapshots[spells.surgeOfLight.id].buff.applications or 0
 		local solStacks = string.format("%.0f", _solStacks)
 		--$solTime
 		local _solTime = snapshots[spells.surgeOfLight.id].buff:GetRemainingTime(currentTime) or 0
@@ -2649,14 +2649,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local apotheosisTime = TRB.Functions.BarText:TimerPrecision(_apotheosisTime)
 
 		--$solStacks
-		local _solStacks = snapshots[spells.surgeOfLight.id].buff.stacks or 0
+		local _solStacks = snapshots[spells.surgeOfLight.id].buff.applications or 0
 		local solStacks = string.format("%.0f", _solStacks)
 		--$solTime
 		local _solTime = snapshots[spells.surgeOfLight.id].buff:GetRemainingTime(currentTime) or 0
 		local solTime = TRB.Functions.BarText:TimerPrecision(_solTime)
 
 		--$lightweaverStacks
-		local _lightweaverStacks = snapshots[spells.lightweaver.id].buff.stacks or 0
+		local _lightweaverStacks = snapshots[spells.lightweaver.id].buff.applications or 0
 		local lightweaverStacks = string.format("%.0f", _lightweaverStacks)
 		--$lightweaverTime
 		local _lightweaverTime = snapshots[spells.lightweaver.id].buff:GetRemainingTime(currentTime) or 0
@@ -2667,7 +2667,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local rwTime = TRB.Functions.BarText:TimerPrecision(_rwTime)
 		
 		--$lightweaverStacks
-		local _sacredReverenceStacks = snapshots[spells.sacredReverence.id].buff.stacks or 0
+		local _sacredReverenceStacks = snapshots[spells.sacredReverence.id].buff.applications or 0
 		local sacredReverenceStacks = string.format("%.0f", _sacredReverenceStacks)
 
 		-----------
@@ -3015,7 +3015,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local mfiTime = TRB.Functions.BarText:TimerPrecision(_mfiTime)
 
 		--$mfiStacks
-		local _mfiStacks = snapshots[spells.surgeOfInsanity.id].buff.stacks or 0
+		local _mfiStacks = snapshots[spells.surgeOfInsanity.id].buff.applications or 0
 		local mfiStacks = string.format("%.0f", _mfiStacks)
 		
 		--$deathspeakerTime
@@ -3040,13 +3040,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local _mmTime = snapshots[spells.mindMelt.id].buff:GetRemainingTime(currentTime)
 		local mmTime = TRB.Functions.BarText:TimerPrecision(_mmTime)
 		--$mmStacks
-		local mmStacks = snapshots[spells.mindMelt.id].buff.stacks or 0
+		local mmStacks = snapshots[spells.mindMelt.id].buff.applications or 0
 		
 		--$ysTime
 		local _ysTime = snapshots[spells.idolOfYoggSaron.id].buff:GetRemainingTime(currentTime)
 		local ysTime = TRB.Functions.BarText:TimerPrecision(_ysTime)
 		--$ysStacks
-		local ysStacks = snapshots[spells.idolOfYoggSaron.id].buff.stacks or 0
+		local ysStacks = snapshots[spells.idolOfYoggSaron.id].buff.applications or 0
 		--$ysRemainingStacks
 		local ysRemainingStacks = (TRB.Data.spells.idolOfYoggSaron.requiredStacks - ysStacks) or TRB.Data.spells.idolOfYoggSaron.requiredStacks
 		--$tfbTime
@@ -3054,7 +3054,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local tfbTime = TRB.Functions.BarText:TimerPrecision(_tfbTime)
 		
 		--$deathsTormentStacks
-		local deathsTormentStacks = snapshots[spells.deathsTorment.id].buff.stacks or 0
+		local deathsTormentStacks = snapshots[spells.deathsTorment.id].buff.applications or 0
 
 		--$cttvEquipped
 		local cttvEquipped = TRB.Functions.Class:IsValidVariableForSpec("$cttvEquipped")
@@ -3778,7 +3778,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 
 					if snapshots[spells.surgeOfLight.id].buff.isActive then
-						if snapshots[spells.surgeOfLight.id].buff.stacks == 1 then
+						if snapshots[spells.surgeOfLight.id].buff.applications == 1 then
 							if specSettings.colors.bar.surgeOfLightBorderChange1 then
 								barBorderColor = specSettings.colors.bar.surgeOfLight1
 							end
@@ -3789,7 +3789,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							end
 						end
 
-						if snapshots[spells.surgeOfLight.id].buff.stacks == 2 then
+						if snapshots[spells.surgeOfLight.id].buff.applications == 2 then
 							if specSettings.colors.bar.surgeOfLightBorderChange2 then
 								barBorderColor = specSettings.colors.bar.surgeOfLight2
 							end
@@ -4147,7 +4147,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					end
 
 					if snapshots[spells.surgeOfLight.id].buff.isActive then
-						if snapshots[spells.surgeOfLight.id].buff.stacks == 1 then
+						if snapshots[spells.surgeOfLight.id].buff.applications == 1 then
 							if specSettings.colors.bar.surgeOfLightBorderChange1 then
 								barBorderColor = specSettings.colors.bar.surgeOfLight1
 							end
@@ -4158,7 +4158,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							end
 						end
 
-						if snapshots[spells.surgeOfLight.id].buff.stacks == 2 then
+						if snapshots[spells.surgeOfLight.id].buff.applications == 2 then
 							if specSettings.colors.bar.surgeOfLightBorderChange2 then
 								barBorderColor = specSettings.colors.bar.surgeOfLight2
 							end
@@ -4532,7 +4532,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 								cp2Duration = 1
 							end
 							
-							if specSettings.colors.comboPoints.sacredReverenceEnabled and spell.id ~= spells.holyWordChastise.id and srBuff.isActive and cp1Time == cp1Duration and (not hasCp2 or srBuff.stacks == 2 or (srBuff.stacks == 1 and cp2Time < cp2Duration)) then
+							if specSettings.colors.comboPoints.sacredReverenceEnabled and spell.id ~= spells.holyWordChastise.id and srBuff.isActive and cp1Time == cp1Duration and (not hasCp2 or srBuff.applications == 2 or (srBuff.applications == 1 and cp2Time < cp2Duration)) then
 								cp1Color = cpSacredReverenceColor
 							end
 
@@ -4592,7 +4592,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						barBorderColor = specSettings.colors.bar.borderMindFlayInsanity
 					end
 
-					if specSettings.colors.bar.deathsTorment.enabled and snapshots[spells.deathsTorment.id].buff.stacks >= specSettings.deathsTorment.stacks then
+					if specSettings.colors.bar.deathsTorment.enabled and snapshots[spells.deathsTorment.id].buff.applications >= specSettings.deathsTorment.stacks then
 						barBorderColor = specSettings.colors.bar.deathsTorment.color
 					end
 
@@ -4600,7 +4600,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						barBorderColor = specSettings.colors.bar.deathspeaker.color
 					end
 					
-					if specSettings.colors.bar.deathsTormentMax.enabled and snapshots[spells.deathsTorment.id].buff.stacks == spells.deathsTorment.maxStacks then
+					if specSettings.colors.bar.deathsTormentMax.enabled and snapshots[spells.deathsTorment.id].buff.applications == spells.deathsTorment.maxStacks then
 						barBorderColor = specSettings.colors.bar.deathsTormentMax.color
 					end
 					
@@ -5037,13 +5037,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							end
 						end
 					elseif entry.spellId == spells.deathsTorment.id then
+						print(entry.type)
 						snapshots[spells.deathsTorment.id].buff:Initialize(entry.type)
 						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" or entry.type == "SPELL_AURA_APPLIED_DOSE" then
-							if TRB.Data.settings.priest.shadow.audio.deathsTormentMax.enabled and not snapshotData.audio.deathsTormentMaxCue and snapshots[spells.deathsTorment.id].buff.stacks == spells.deathsTorment.maxStacks then
+							if TRB.Data.settings.priest.shadow.audio.deathsTormentMax.enabled and not snapshotData.audio.deathsTormentMaxCue and snapshots[spells.deathsTorment.id].buff.applications == spells.deathsTorment.maxStacks then
 								PlaySoundFile(TRB.Data.settings.priest.shadow.audio.deathsTormentMax.sound, TRB.Data.settings.core.audio.channel.channel)
 								snapshotData.audio.deathsTormentCue = true
 								snapshotData.audio.deathsTormentMaxCue = true
-							elseif TRB.Data.settings.priest.shadow.audio.deathsTorment.enabled and not snapshotData.audio.deathsTormentCue and snapshots[spells.deathsTorment.id].buff.stacks >= settings.deathsTorment.stacks then
+							elseif TRB.Data.settings.priest.shadow.audio.deathsTorment.enabled and not snapshotData.audio.deathsTormentCue and snapshots[spells.deathsTorment.id].buff.applications >= settings.deathsTorment.stacks then
 								PlaySoundFile(TRB.Data.settings.priest.shadow.audio.deathsTorment.sound, TRB.Data.settings.core.audio.channel.channel)
 								snapshotData.audio.deathsTormentCue = true
 							end

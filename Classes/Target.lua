@@ -285,7 +285,6 @@ end
 function TRB.Classes.Target:GetHealthPercent()
     -- TODO: Look in to hooking in to nameplates to get the info we need for this
     local unitToken = UnitTokenFromGUID(self.guid)
-
 	if unitToken ~= nil then
 		local health = UnitHealth(unitToken)
 		local maxHealth = UnitHealthMax(unitToken)

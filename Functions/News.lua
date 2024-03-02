@@ -8,6 +8,52 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 *Localization of the addon has begun! If you're interested in helping, please [visit the GitHub issue](#8) and let Twintop know. Thank you!*
 
+---
+
+# 10.2.5.4-release (2023-03-02)
+## General
+- [#339 - FIX](#339) Fix various buff stack counts from not being properly tracked. See specifics for each specialization below.
+- (FIX) Prevent some calculations that require a target from failing even when you do have a valid target.
+
+## Druid
+### Feral
+
+- [#339 - FIX](#339) Fix application tracking for Bloodtalons and Moment of Clarity.
+
+### Restoration
+
+- [#339 - FIX](#339) Fix application tracking for Reforestation.
+
+## Evoker
+
+- [#339 - FIX](#339) Fix application tracking for Essence Burst.
+
+## Hunter
+### Beast Mastery
+
+- [#339 - FIX](#339) Fix application tracking for Frenzy.
+
+## Priest
+### Discipline
+
+- [#339 - FIX](#339) Fix application tracking for Surge of Light.
+
+### Holy
+
+- [#339 - FIX](#339) Fix application tracking for Lightweaver, Sacred Reverence, and Surge of Light.
+
+### Shadow
+
+- [#339 - FIX](#339) Fix application tracking for Death's Torment, Mind Melt, and Idol of Yogg-Saron.
+
+## Warrior
+### Fury
+
+- [#339 - FIX](#339) Fix application tracking for Whirlwind.
+- (FIX) Fix Execute thresholds not being displayed at correct times.
+
+---
+
 # 10.2.5.3-release (2024-03-02)
 ## General
 

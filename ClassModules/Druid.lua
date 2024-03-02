@@ -1050,15 +1050,13 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		---@type TRB.Classes.Healer.PotionOfChilledClarity
 		specCache.restoration.snapshotData.snapshots[specCache.restoration.spells.potionOfChilledClarity.id] = TRB.Classes.Healer.PotionOfChilledClarity:New(specCache.restoration.spells.potionOfChilledClarity)
 		---@type TRB.Classes.Snapshot
-		specCache.restoration.snapshotData.snapshots[specCache.restoration.spells.reforestation.id] = TRB.Classes.Snapshot:New(specCache.restoration.spells.reforestation)
+		specCache.restoration.snapshotData.snapshots[specCache.restoration.spells.reforestation.id] = TRB.Classes.Snapshot:New(specCache.restoration.spells.reforestation, nil, true)
 		---@type TRB.Classes.Snapshot
 		specCache.restoration.snapshotData.snapshots[specCache.restoration.spells.conjuredChillglobe.id] = TRB.Classes.Snapshot:New(specCache.restoration.spells.conjuredChillglobe)
 		---@type TRB.Classes.Healer.MoltenRadiance
 		specCache.restoration.snapshotData.snapshots[specCache.restoration.spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(specCache.restoration.spells.moltenRadiance)
 		---@type TRB.Classes.Snapshot
 		specCache.restoration.snapshotData.snapshots[specCache.restoration.spells.incarnationTreeOfLife.id] = TRB.Classes.Snapshot:New(specCache.restoration.spells.incarnationTreeOfLife)
-		---@type TRB.Classes.Snapshot
-		specCache.restoration.snapshotData.snapshots[specCache.restoration.spells.reforestation.id] = TRB.Classes.Snapshot:New(specCache.restoration.spells.reforestation)
 
 		specCache.restoration.barTextVariables = {
 			icons = {},
@@ -1716,11 +1714,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			snapshotValue = snapshotValue * (TRB.Data.spells.tigersFury.modifier + tfBonus)
 		end
 
-		if bonuses.momentOfClarity == true and talents:IsTalentActive(TRB.Data.spells.momentOfClarity) == true and ((snapshotData.snapshots[spells.clearcasting.id].buff.stacks ~= nil and snapshotData.snapshots[spells.clearcasting.id].buff.stacks > 0) or snapshotData.snapshots[spells.clearcasting.id].buff:GetRemainingTime(nil, true) > 0) then
+		if bonuses.momentOfClarity == true and talents:IsTalentActive(TRB.Data.spells.momentOfClarity) == true and ((snapshotData.snapshots[spells.clearcasting.id].buff.applications ~= nil and snapshotData.snapshots[spells.clearcasting.id].buff.applications > 0) or snapshotData.snapshots[spells.clearcasting.id].buff:GetRemainingTime(nil, true) > 0) then
 			snapshotValue = snapshotValue * TRB.Data.spells.momentOfClarity.modifier
 		end
 
-		if bonuses.bloodtalons == true and talents:IsTalentActive(TRB.Data.spells.bloodtalons) == true and ((snapshotData.snapshots[spells.bloodtalons.id].buff.stacks ~= nil and snapshotData.snapshots[spells.bloodtalons.id].buff.stacks > 0) or snapshotData.snapshots[spells.bloodtalons.id].buff:GetRemainingTime(nil, true) > 0) then
+		if bonuses.bloodtalons == true and talents:IsTalentActive(TRB.Data.spells.bloodtalons) == true and ((snapshotData.snapshots[spells.bloodtalons.id].buff.applications ~= nil and snapshotData.snapshots[spells.bloodtalons.id].buff.applications > 0) or snapshotData.snapshots[spells.bloodtalons.id].buff:GetRemainingTime(nil, true) > 0) then
 			snapshotValue = snapshotValue * TRB.Data.spells.bloodtalons.modifier
 		end
 
@@ -2378,7 +2376,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local brutalSlashCooldownTotal = TRB.Functions.BarText:TimerPrecision(_brutalSlashCooldownTotal)
 		
 		--$bloodtalonsStacks
-		local bloodtalonsStacks = snapshotData.snapshots[spells.bloodtalons.id].buff.stacks or 0
+		local bloodtalonsStacks = snapshotData.snapshots[spells.bloodtalons.id].buff.applications or 0
 
 		--$bloodtalonsTime
 		local _bloodtalonsTime = snapshotData.snapshots[spells.bloodtalons.id].buff:GetRemainingTime(currentTime)
@@ -2397,7 +2395,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local suddenAmbushTime = TRB.Functions.BarText:TimerPrecision(_suddenAmbushTime)
 		
 		--$clearcastingStacks
-		local clearcastingStacks = snapshotData.snapshots[spells.clearcasting.id].buff.stacks
+		local clearcastingStacks = snapshotData.snapshots[spells.clearcasting.id].buff.applications
 
 		--$clearcastingTime
 		local _clearcastingTime = snapshotData.snapshots[spells.clearcasting.id].buff:GetRemainingTime(currentTime)
@@ -2761,7 +2759,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local incarnationTime = TRB.Functions.BarText:TimerPrecision(_incarnationTime)
 
 		--$reforestationStacks
-		local reforestationStacks = snapshots[spells.reforestation.id].buff.stacks
+		local reforestationStacks = snapshots[spells.reforestation.id].buff.applications
 
 		----------
 		--$sunfireCount and $sunfireTime
@@ -3657,7 +3655,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 								if spell.id == spells.moonfire.id and not talents:IsTalentActive(spells.lunarInspiration) then
 									showThreshold = false
 								end
-							elseif spell.isClearcasting and snapshotData.snapshots[spells.clearcasting.id].buff.stacks ~= nil and snapshotData.snapshots[spells.clearcasting.id].buff.stacks > 0 then
+							elseif spell.isClearcasting and snapshotData.snapshots[spells.clearcasting.id].buff.applications ~= nil and snapshotData.snapshots[spells.clearcasting.id].buff.applications > 0 then
 								if spell.id == spells.brutalSlash.id then
 									if not talents:IsTalentActive(spells.brutalSlash) then
 										showThreshold = false
@@ -4308,6 +4306,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					elseif entry.spellId == spells.clearcasting.id then
 						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 					elseif entry.spellId == spells.incarnationTreeOfLife.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.reforestation.id then
 						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 					end
 				end
@@ -5140,7 +5140,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					end
 				end
 			elseif var == "$bloodtalonsStacks" then
-				if snapshots[spells.bloodtalons.id].buff.stacks > 0 then
+				if snapshots[spells.bloodtalons.id].buff.applications > 0 then
 					valid = true
 				end
 			elseif var == "$bloodtalonsTime" then
@@ -5152,7 +5152,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$clearcastingStacks" then
-				if snapshots[spells.clearcasting.id].buff.stacks > 0 then
+				if snapshots[spells.clearcasting.id].buff.applications > 0 then
 					valid = true
 				end
 			elseif var == "$clearcastingTime" then
@@ -5347,7 +5347,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$reforestationStacks" then
-				if snapshots[spells.reforestation.id].buff.stacks > 0 then
+				if snapshots[spells.reforestation.id].buff.applications > 0 then
 					valid = true
 				end
 			end

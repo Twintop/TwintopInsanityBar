@@ -1479,7 +1479,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local frenzyTime = TRB.Functions.BarText:TimerPrecision(_frenzyTime)
 
 		--$frenzyStacks
-		local frenzyStacks = snapshots[spells.frenzy.id].buff.stacks or 0
+		local frenzyStacks = snapshots[spells.frenzy.id].buff.applications or 0
 
 
 		--$ssCount and $ssTime

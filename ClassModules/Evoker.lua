@@ -807,7 +807,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
 		local ebTime = TRB.Functions.BarText:TimerPrecision(_ebTime)
 		--$ecTicks
-		local _ebStacks = snapshots[spells.essenceBurst.id].buff.stacks
+		local _ebStacks = snapshots[spells.essenceBurst.id].buff.applications
 		local ebStacks = string.format("%.0f", _ebStacks)
 
 		--$essenceRegenTime
@@ -975,7 +975,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
 		local ebTime = TRB.Functions.BarText:TimerPrecision(_ebTime)
 		--$ecTicks
-		local _ebStacks = snapshots[spells.essenceBurst.id].buff.stacks
+		local _ebStacks = snapshots[spells.essenceBurst.id].buff.applications
 		local ebStacks = string.format("%.0f", _ebStacks)
 
 		--$essenceRegenTime
@@ -1135,7 +1135,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
 		local ebTime = TRB.Functions.BarText:TimerPrecision(_ebTime)
 		--$ecTicks
-		local _ebStacks = snapshots[spells.essenceBurst.id].buff.stacks
+		local _ebStacks = snapshots[spells.essenceBurst.id].buff.applications
 		local ebStacks = string.format("%.0f", _ebStacks)
 
 		--$essenceRegenTime
@@ -1355,7 +1355,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 					barContainerFrame:SetAlpha(1.0)
 
 					if snapshots[spells.essenceBurst.id].buff.isActive then
-						if snapshots[spells.essenceBurst.id].buff.stacks == 1 then
+						if snapshots[spells.essenceBurst.id].buff.applications == 1 then
 							if specSettings.colors.bar.essenceBurst.enabled then
 								barBorderColor = specSettings.colors.bar.essenceBurst.color
 							end
@@ -1366,7 +1366,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							end
 						end
 
-						if snapshots[spells.essenceBurst.id].buff.stacks == 2 then
+						if snapshots[spells.essenceBurst.id].buff.applications == 2 then
 							if specSettings.colors.bar.essenceBurst2.enabled then
 								barBorderColor = specSettings.colors.bar.essenceBurst2.color
 							end
@@ -1434,7 +1434,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 					local emeraldCommunion = snapshotData.snapshots[spells.emeraldCommunion.id]
 
 					if snapshots[spells.essenceBurst.id].buff.isActive then
-						if snapshots[spells.essenceBurst.id].buff.stacks == 1 then
+						if snapshots[spells.essenceBurst.id].buff.applications == 1 then
 							if specSettings.colors.bar.essenceBurst.enabled then
 								barBorderColor = specSettings.colors.bar.essenceBurst.color
 							end
@@ -1445,7 +1445,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							end
 						end
 
-						if snapshots[spells.essenceBurst.id].buff.stacks == 2 then
+						if snapshots[spells.essenceBurst.id].buff.applications == 2 then
 							if specSettings.colors.bar.essenceBurst2.enabled then
 								barBorderColor = specSettings.colors.bar.essenceBurst2.color
 							end
@@ -1670,7 +1670,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 					barContainerFrame:SetAlpha(1.0)
 
 					if snapshots[spells.essenceBurst.id].buff.isActive then
-						if snapshots[spells.essenceBurst.id].buff.stacks == 1 then
+						if snapshots[spells.essenceBurst.id].buff.applications == 1 then
 							if specSettings.colors.bar.essenceBurst.enabled then
 								barBorderColor = specSettings.colors.bar.essenceBurst.color
 							end
@@ -1681,7 +1681,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							end
 						end
 
-						if snapshots[spells.essenceBurst.id].buff.stacks == 2 then
+						if snapshots[spells.essenceBurst.id].buff.applications == 2 then
 							if specSettings.colors.bar.essenceBurst2.enabled then
 								barBorderColor = specSettings.colors.bar.essenceBurst2.color
 							end

@@ -1114,13 +1114,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		--$ifMaelstrom
 		local icefuryMaelstrom = snapshots[spells.icefury.id].attributes.maelstrom or 0
 		--$ifStacks
-		local icefuryStacks = snapshots[spells.icefury.id].buff.stacks or 0
+		local icefuryStacks = snapshots[spells.icefury.id].buff.applications or 0
 		--$ifStacks
 		local _icefuryTime = snapshots[spells.icefury.id].buff:GetRemainingTime(currentTime)
 		local icefuryTime = TRB.Functions.BarText:TimerPrecision(_icefuryTime)
 
 		--$skStacks
-		local stormkeeperStacks = snapshots[spells.stormkeeper.id].buff.stacks or 0
+		local stormkeeperStacks = snapshots[spells.stormkeeper.id].buff.applications or 0
 		--$skStacks
 		local _stormkeeperTime = snapshots[spells.stormkeeper.id].buff:GetRemainingTime(currentTime)
 		local stormkeeperTime = TRB.Functions.BarText:TimerPrecision(_stormkeeperTime)
@@ -2303,7 +2303,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						end
 					elseif entry.spellId == spells.icefury.id then
 						snapshots[spells.icefury.id].buff:Initialize(entry.type)
-						snapshots[spells.icefury.id].attributes.resource = snapshots[spells.icefury.id].buff.stacks * spells.frostShock.resource
+						snapshots[spells.icefury.id].attributes.resource = snapshots[spells.icefury.id].buff.applications * spells.frostShock.resource
 					elseif entry.spellId == spells.stormkeeper.id then
 						snapshots[spells.stormkeeper.id].buff:Initialize(entry.type)
 					elseif entry.spellId == spells.surgeOfPower.id then

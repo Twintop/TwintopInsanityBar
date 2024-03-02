@@ -275,4 +275,4 @@ function SlashCmdList.TWINTOP(msg)
 	end
 end
 
---Twintop_Data = TRB.Data
+Twintop_Data = TRB.Data

@@ -21,6 +21,11 @@ function TRB.Functions.Character:UpdateSnapshot()
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
 
+	if target == nil and targetData.currentTargetGuid ~= nil then
+		targetData:InitializeTarget(targetData.currentTargetGuid, UnitIsFriend("target", "player"))
+		target = targetData.targets[targetData.currentTargetGuid]
+	end
+	
 	if target ~= nil then
 		target:UpdateAllSpellTracking(currentTime)
 	end

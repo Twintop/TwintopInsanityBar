@@ -73,7 +73,6 @@ end
 ---@field public duration number
 ---@field public remaining number
 ---@field public endTimeLeeway number
----@field public stacks integer
 ---@field public applications integer
 ---@field public customPropertiesDefinitions TRB.Classes.BuffCustomProperty[]
 ---@field public customProperties table
@@ -141,7 +140,6 @@ function TRB.Classes.SnapshotBuff:Reset()
     self.duration = 0
     self.remaining = 0
     self.endTimeLeeway = 0
-    self.stacks = 0
     self.applications = 0
     self.ticks = 0
     self.resource = 0
@@ -245,7 +243,6 @@ end
 local function ParseBuffData(buff, aura)
     if aura ~= nil then
         buff.auraInstanceId = aura.auraInstanceID
-        buff.stacks = aura.charges
         buff.applications = aura.applications
         buff.duration = aura.duration
         buff.endTime = aura.expirationTime
