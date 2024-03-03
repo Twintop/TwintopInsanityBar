@@ -72,6 +72,17 @@ L["ExportMessageGlobalOptionsOnly"] = L["GlobalOptions"] .. " Only"
 --- ToggleCheckboxOnOff
 L["Enabled"] = "Enabled"
 L["Disabled"] = "Disabled"
+L["Abilities"] = "Abilities"
+L["Items"] = "Items"
+
+--- Abilities and items -- TODO: Pull this from spelldata
+L["Innervate"] = "Innervate"
+L["Shadowfiend"] = "Shadowfiend"
+L["SymbolOfHope"] = "Symbol of Hope"
+L["ConjuredChillglobe"] = "Conjured Chillglobe"
+L["AeratedManaPotion"] = "Aerated Mana Potion"
+L["PotionOfFrozenFocus"] = "Potion of Frozen Focus"
+L["PotionOfChilledClarity"] = "Potion of Chilled Clarity"
 
 --- GenerateBarDimensionsOptions
 L["BarPositionSize"] = "Bar Position and Size"
@@ -117,8 +128,83 @@ L["TextureLock"] = "Use the same texture for all bars, borders, and backgrounds 
 L["TextureLockTooltip"] = "This will lock the texture for each type of texture to be the same for all parts of the bar. E.g.: All bar textures will be the same, all border textures will be the same, and all background textures will be the same."
 
 --- GenerateBarDisplayOptions
-L["BarDisplay"] = "Bar Display"
+L["BarDisplayHeader"] = "Bar Display"
 L["FlashAlpha"] = "%s Flash Alpha"
 L["FlashPeriod"] = "%s Flash Period (sec)"
-L["AlwaysShowBar"] = "Always show bar"
-L["AlwaysShowBarTooltip"] = "This will make the Resource Bar always visible on your UI, even when out of combat."
+L["ShowBarAlways"] = "Always show bar"
+L["ShowBarNotZero"] = "Show bar when %s > 0"
+L["ShowBarNotZeroNotFull"] = "Show bar when %s is not full."
+L["ShowBarNotZeroBalance"] = "Show bar when AP > 0 (or < 50 w/NB)"
+L["ShowBarCombat"] = "Only show bar in combat"
+L["ShowBarNever"] = "Never show bar (run in background)"
+L["FlashBar"] = "Flash bar when %s is usable"
+L["FlashBarTooltip"] = "This will flash the bar when %s can be cast."
+
+--- GenerateThresholdLineIconsOptions
+L["ThresholdIconRelativePosition"] = "Relative Position of Threshold Line Icons"
+L["ThresholdIconShow"] = "Show ability icons for threshold lines?"
+L["ThresholdIconShowTooltip"] = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
+L["ThresholdIconDesaturate"] = "Desaturate icons when not usable"
+L["ThresholdIconDesaturateTooltip"] = "When checked, icons will be desaturated when an ability is not usable (on cooldown, below minimum resource, lacking other requirements, etc.)."
+L["ThresholdIconWidth"] = "Threshold Icon Width"
+L["ThresholdIconHeight"] = "Threshold Icon Height"
+L["ThresholdIconHorizontal"] = "Threshold Icon Horizontal Position (Relative)"
+L["ThresholdIconVertical"] = "Threshold Icon Vertical Position (Relative)"
+L["ThresholdIconBorderWidth"] = "Threshold Icon Border Width"
+
+--- GeneratePotionOnCooldownConfigurationOptions
+L["PotionCooldownConfigurationHeader"] = "Potion on Cooldown Configuration"
+L["PotionThresholdShow"] = "Show potion threshold lines when potion is on cooldown"
+L["PotionThresholdShowTooltip"] = "Shows the potion threshold lines while potion use is still on cooldown. Configure below how far in advance to have the lines be visible, between 0 - 300 seconds (300 being effectively 'always visible')."
+L["PotionThresholdShowGCDs"] = "CDs left on Potion cooldown"
+L["PotionThresholdShowGCDsSlider"] = "Potion Cooldown GCDs - 0.75sec Floor"
+L["PotionThresholdShowTime"] = "Time left on Potion cooldown"
+L["PotionThresholdShowTimeSlider"] = "Potion Cooldown Time Remaining"
+
+--- Thresholds
+
+L["ThresholdLinesHeader"] = "Threshold Lines"
+L["ThresholdLinesOverlap"] = "Threshold lines overlap bar border?"
+L["ThresholdLinesOverlapTooltip"] = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
+L["ThresholdShowWhileOnCooldown"] = "Show while on cooldown?"
+
+--- GenerateThresholdLinesForHealers
+L["ThresholdHealerOver"] = "Mana gain from potions and items (when usable)"
+L["ThresholdHealerOver2"] = "Mana gain from potions, items, and abilities (when usable)"
+L["ThresholdHealerUnusable"] = "Mana potion or item on cooldown"
+L["ThresholdHealerPassive"] = "Passive mana gain per source"
+L["ThresholdHealerPotionTooltipBase"] = "This will show the vertical line on the bar denoting how much Mana you will gain if you use |5"
+L["AeratedManaPotionRank3"] = "27,600 mana"
+L["AeratedManaPotionRank2"] = "24,000 mana"
+L["AeratedManaPotionRank1"] = "20,869 mana"
+L["PotionOfFrozenFocusRank3"] = "48,300 mana + regen"
+L["PotionOfFrozenFocusRank2"] = "42,000 mana + regen"
+L["PotionOfFrozenFocusRank1"] = "36,531 mana + regen"
+L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"] = "Show the %s threshold line when the ability is on cooldown."
+L["ThresholdHealerShowWhileOnCooldownTooltipWithItem"] = "Show the %s threshold line when the item is on cooldown."
+L["ThresholdHealerToggleAbility"] = "This will show the vertical line on the bar denoting how much Mana you will gain if you use %s."
+L["ThresholdHealerSymbolOfHopeManaPercent"] = "Min. mana% remaining before showing Symbol of Hope"
+L["ThresholdHealerToggleConjuredChillglobe"] = "This will show the vertical line on the bar denoting how much Mana you will gain if you use the Conjured Chillglobe trinket. Only shown below 65% mana."
+
+--- GenerateBarColorOptions
+L["BarColorsChangingHeader"] = "Bar Colors + Changing"
+
+--- GenerateBarBorderColorOptions
+L["BarBorderColorsChangingHeader"] = "Bar Border Colors + Changing"
+L["BorderColorBase"] = "Border is normal/base border"
+L["BorderColorOvercap"] = "Border when your current hardcast will overcap %s"
+L["BorderColorOvercapToggle"] = "Change border color when overcapping"
+L["BorderColorOvercapToggleTooltip"] = "This will change the bar's border color when your current hardcast spell will result in overcapping %s (as configured)."
+L["BorderColorInnervate"] = "Border when you have Innervate"
+L["BorderColorInnervateToggleTooltip"] = "This will change the bar border color when you have Innervate."
+L["BorderColorPotionOfChilledClarity"] = "Border when you have Potion of Chilled Clarity's effect"
+L["BorderColorPotionOfChilledClarityToggleTooltip"] = "This will change the bar border color when you have Potion of Chilled Clarity's effect."
+
+--- GenerateOvercapOptions
+L["OvercappingConfigurationHeader"] = "Overcapping Configuration"
+L["OvercapRelativeOffset"] = "Relative %s Offset from Maximum"
+L["OvercapRelativeOffsetAmount"] = "Relative %s Offset Amount"
+L["OvercapFixedValue"] = "Fixed %s Value"
+L["OvercapAbove"] = "Overcap Above %s"
+
+--- GenerateDefaultFontOptions
