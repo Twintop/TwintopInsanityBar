@@ -5,16 +5,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 	local oUi = TRB.Data.constants.optionsUi
 
 	local barContainerFrame = TRB.Frames.barContainerFrame
-	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
 	local passiveFrame = TRB.Frames.passiveFrame
-	local barBorderFrame = TRB.Frames.barBorderFrame
-
-	local resourceFrame = TRB.Frames.resourceFrame
-	local passiveFrame = TRB.Frames.passiveFrame
-	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
-	local timerFrame = TRB.Frames.timerFrame
-	local combatFrame = TRB.Frames.combatFrame
 
 	TRB.Options.DemonHunter = {}
 	TRB.Options.DemonHunter.Havoc = {}
@@ -326,10 +318,324 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		return settings
 	end
 
+	local function VengeanceLoadDefaultBarTextSimpleSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
+		local textSettings = {
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="{$ucTime}[$ucTime]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
+			},
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
+				text="{$metamorphosisTime}[$metamorphosisTime]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
+			},
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="{$passive}[$passive + ]{$casting}[$casting + ]$fury",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=18,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
+			}
+		}
+
+		return textSettings
+	end
+	TRB.Options.DemonHunter.VengeanceLoadDefaultBarTextSimpleSettings = VengeanceLoadDefaultBarTextSimpleSettings
+
+	local function VengeanceLoadDefaultBarTextAdvancedSettings()
+		---@type TRB.Classes.DisplayTextEntry[]
+		local textSettings = {
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Left",
+				guid=TRB.Functions.String:Guid(),
+				text="{$ttd}[TTD: $ttd]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "LEFT",
+				fontJustifyHorizontalName = "Left",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 2,
+					yPos = 0,
+					relativeTo = "LEFT",
+					relativeToName = "Left",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
+			},
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Middle",
+				guid=TRB.Functions.String:Guid(),
+				text="{$ucTime}[#unboundChaos $ucTime #unboundChaos||n]{$metamorphosisTime}[#metamorphosis $metamorphosisTime #metamorphosis]",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "CENTER",
+				fontJustifyHorizontalName = "Center",
+				fontSize=13,
+				color = "FFFFFFFF",
+				position = {
+					xPos = 0,
+					yPos = 0,
+					relativeTo = "CENTER",
+					relativeToName = "Center",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
+			},
+			{
+				useDefaultFontColor = false,
+				useDefaultFontFace = false,
+				useDefaultFontSize = false,
+				enabled = true,
+				name="Right",
+				guid=TRB.Functions.String:Guid(),
+				text="{$tacticalRetreatFury}[#tacticalRetreat$tacticalRetreatFury+]{$bhFury}[#bh$bhFury+]{$casting}[#casting$casting+]$fury",
+				fontFace="Fonts\\FRIZQT__.TTF",
+				fontFaceName="Friz Quadrata TT",
+				fontJustifyHorizontal = "RIGHT",
+				fontJustifyHorizontalName = "Right",
+				fontSize=22,
+				color = "FFFFFFFF",
+				position = {
+					xPos = -2,
+					yPos = 0,
+					relativeTo = "RIGHT",
+					relativeToName = "Right",
+					relativeToFrame = "Resource",
+					relativeToFrameName = "Main Resource Bar"
+				}
+			}
+		}
+
+		return textSettings
+	end
+
+	local function VengeanceLoadDefaultSettings(includeBarText)
+		local settings = {
+			hastePrecision=2,
+			resourcePrecision=0,
+			thresholds = {
+				width = 2,
+				overlapBorder=true,
+				outOfRange=true,
+				icons = {
+					showCooldown=true,
+					border=2,
+					relativeTo = "BOTTOM",
+					relativeToName = "Below",
+					enabled=true,
+					desaturated=true,
+					xPos=0,
+					yPos=-12,
+					width=24,
+					height=24
+				},
+				soulCleave = {
+					enabled = true, -- 1
+				},
+				chaosNova = {
+					enabled = true, -- 2
+				},
+				-- Talents
+				felDevastation = {
+					enabled = true, -- 4
+				},
+				spiritBomb = {
+					enabled = true, -- 5
+				},
+			},
+			displayBar = {
+				alwaysShow=false,
+				notZeroShow=true,
+				neverShow=false
+			},
+			endOfMetamorphosis = {
+				enabled=true,
+				mode="gcd",
+				gcdsMax=2,
+				timeMax=3.0
+			},
+			overcap={
+				mode="relative",
+				relative=0,
+				fixed=100
+			},
+			bar = {
+				width=555,
+				height=34,
+				xPos=0,
+				yPos=-200,
+				border=4,
+				dragAndDrop=false,
+				pinToPersonalResourceDisplay=false,
+				showPassive=true,
+				showCasting=true
+			},
+			comboPoints = {
+				width=25,
+				height=13,
+				xPos=0,
+				yPos=4,
+				border=1,
+				spacing=14,
+				relativeTo="TOP",
+				relativeToName="Above - Middle",
+				fullWidth=true,
+			},
+			colors = {
+				text = {
+					current="FFC942FD",
+					casting="FFFFFFFF",
+					spending="FF555555",
+					passive="FF660066",
+					overcap="FFFF0000",
+					overThreshold="FF00FF00",
+					overThresholdEnabled=false,
+					overcapEnabled=true,
+				},
+				bar = {
+					border="FFA330C9",
+					borderOvercap="FFFF0000",
+					background="66000000",
+					base="FFC942FD",
+					casting="FFFFFFFF",
+					spending="FF555555",
+					passive="FF660066",
+					metamorphosis="FF67F100",
+					metamorphosisEnding="FFFF0000",
+					overcapEnabled=true,
+				},
+				comboPoints = {
+					border="FFFFD300",
+					background="66000000",
+					base="FFFFFF00",
+					penultimate="FFFF9900",
+					final="FFFF0000",
+					sameColor=false
+				},
+				threshold = {
+					under="FFFFFFFF",
+					over="FF00FF00",
+					unusable="FFFF0000",
+					special="FFFF00FF",
+					outOfRange="FF440000"
+				}
+			},
+			displayText={
+				default = {
+					fontFace="Fonts\\FRIZQT__.TTF",
+					fontFaceName="Friz Quadrata TT",
+					fontJustifyHorizontal = "LEFT",
+					fontJustifyHorizontalName = "Left",
+					fontSize=18,
+					color = "FFFFFFFF",
+				},
+				barText = {}
+			},
+			audio = {
+				overcap={
+					name = "Overcap",
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+					soundName="TRB: Air Horn"
+				}
+			},
+			textures = {
+				background="Interface\\Tooltips\\UI-Tooltip-Background",
+				backgroundName="Blizzard Tooltip",
+				border="Interface\\Buttons\\WHITE8X8",
+				borderName="1 Pixel",
+				resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
+				resourceBarName="Blizzard",
+				passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
+				passiveBarName="Blizzard",
+				castingBar="Interface\\TargetingFrame\\UI-StatusBar",
+				castingBarName="Blizzard",
+				textureLock=true,
+				comboPointsBackground="Interface\\Tooltips\\UI-Tooltip-Background",
+				comboPointsBackgroundName="Blizzard Tooltip",
+				comboPointsBorder="Interface\\Buttons\\WHITE8X8",
+				comboPointsBorderName="1 Pixel",
+				comboPointsBar="Interface\\TargetingFrame\\UI-StatusBar",
+				comboPointsBarName="Blizzard",
+			}
+		}
+
+		if includeBarText then
+			settings.displayText.barText = VengeanceLoadDefaultBarTextSimpleSettings()
+		end
+
+		return settings
+	end
+
 	local function LoadDefaultSettings(includeBarText)
 		local settings = TRB.Options.LoadDefaultSettings()
 
 		settings.demonhunter.havoc = HavocLoadDefaultSettings(includeBarText)
+		settings.demonhunter.vengeance = VengeanceLoadDefaultSettings(includeBarText)
 		return settings
 	end
 	TRB.Options.DemonHunter.LoadDefaultSettings = LoadDefaultSettings

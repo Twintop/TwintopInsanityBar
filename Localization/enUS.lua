@@ -60,13 +60,9 @@ L["ExportMessageAudioTracking"] = "Audio & Tracking"
 L["ExportMessageBarText"] = "Bar Text"
 L["ExportMessageAllClassesSpecs"] = "All Classes/Specs"
 L["ExportMessagePostfixSpecializations"] = "specializations"
-L["ExportMessagePostfixAll_Function"] = function() return "(" .. L["ExportMessageAll"] .. ")" end
-L["ExportMessagePostfixBarDisplay_Function"] = function() return "(" .. L["ExportMessageBarDisplay"] .. ")" end
-L["ExportMessagePostfixFontText_Function"] = function() return "(" .. L["ExportMessageFontText"] .. ")" end
-L["ExportMessagePostfixAudioTracking_Function"] = function() return "(" .. L["ExportMessageAudioTracking"] .. ")" end
-L["ExportMessagePostfixBarText_Function"] = function() return "(" .. L["ExportMessageBarText"] .. ")" end
 L["ExportMessageGlobalOptions"] = L["GlobalOptions"]
 L["ExportMessageGlobalOptionsOnly"] = L["GlobalOptions"] .. " Only"
+
 
 -- OptionsUi.lua
 --- ToggleCheckboxOnOff
@@ -174,12 +170,12 @@ L["ThresholdHealerOver2"] = "Mana gain from potions, items, and abilities (when 
 L["ThresholdHealerUnusable"] = "Mana potion or item on cooldown"
 L["ThresholdHealerPassive"] = "Passive mana gain per source"
 L["ThresholdHealerPotionTooltipBase"] = "This will show the vertical line on the bar denoting how much Mana you will gain if you use |5"
-L["AeratedManaPotionRank3"] = "27,600 mana"
-L["AeratedManaPotionRank2"] = "24,000 mana"
-L["AeratedManaPotionRank1"] = "20,869 mana"
-L["PotionOfFrozenFocusRank3"] = "48,300 mana + regen"
-L["PotionOfFrozenFocusRank2"] = "42,000 mana + regen"
-L["PotionOfFrozenFocusRank1"] = "36,531 mana + regen"
+L["AeratedManaPotionRank3"] = "27,600 mana" -- TODO: Look in to extracting this from tooltip data?
+L["AeratedManaPotionRank2"] = "24,000 mana" -- TODO: Look in to extracting this from tooltip data?
+L["AeratedManaPotionRank1"] = "20,869 mana" -- TODO: Look in to extracting this from tooltip data?
+L["PotionOfFrozenFocusRank3"] = "48,300 mana + regen" -- TODO: Look in to extracting this from tooltip data?
+L["PotionOfFrozenFocusRank2"] = "42,000 mana + regen" -- TODO: Look in to extracting this from tooltip data?
+L["PotionOfFrozenFocusRank1"] = "36,531 mana + regen" -- TODO: Look in to extracting this from tooltip data?
 L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"] = "Show the %s threshold line when the ability is on cooldown."
 L["ThresholdHealerShowWhileOnCooldownTooltipWithItem"] = "Show the %s threshold line when the item is on cooldown."
 L["ThresholdHealerToggleAbility"] = "This will show the vertical line on the bar denoting how much Mana you will gain if you use %s."
@@ -208,3 +204,52 @@ L["OvercapFixedValue"] = "Fixed %s Value"
 L["OvercapAbove"] = "Overcap Above %s"
 
 --- GenerateDefaultFontOptions
+L["DefaultBarTextFontSettingsHeader"] = "Default Bar Text Font Settings"
+L["DefaultFontFace"] = "Default Font Face"
+L["Fonts"] = "Fonts"
+L["DefaultFontColor"] = "Default Font Color"
+L["DefaultFontSize"] = "Default Font Size"
+
+--- GenerateBarTextEditor
+L["AddNewBarTextArea"] = "Add New Bar Text Area"
+L["Name"] = "Name"
+L["BarTextEntryEnabledTooltip"] = "Is this Bar Text enabled and will be shown?"
+L["HorizontalOffset"] = "Horizontal Offset"
+L["VerticalOffset"] = "Vertical Offset"
+L["BoundToBar"] = "Bound to Bar"
+L["MainResourceBar"] = "Main Resource Bar"
+L["Screen"] = "Screen"
+L["ComboPoint1"] = "Combo Point 1"
+L["ComboPoint2"] = "Combo Point 2"
+L["ComboPoint3"] = "Combo Point 3"
+L["ComboPoint4"] = "Combo Point 4"
+L["ComboPoint5"] = "Combo Point 5"
+L["ComboPoint6"] = "Combo Point 6"
+L["ComboPoint7"] = "Combo Point 7"
+L["Maelstrom1"] = "Maelstrom 1"
+L["Maelstrom2"] = "Maelstrom 2"
+L["Maelstrom3"] = "Maelstrom 3"
+L["Maelstrom4"] = "Maelstrom 4"
+L["Maelstrom5"] = "Maelstrom 5"
+L["Maelstrom6"] = "Maelstrom 6"
+L["Maelstrom7"] = "Maelstrom 7"
+L["Maelstrom8"] = "Maelstrom 8"
+L["Maelstrom9"] = "Maelstrom 9"
+L["Maelstrom10"] = "Maelstrom 10"
+L["Chi1"] = "Chi 1"
+L["Chi2"] = "Chi 2"
+L["Chi3"] = "Chi 3"
+L["Chi4"] = "Chi 4"
+L["Chi5"] = "Chi 5"
+L["Chi6"] = "Chi 6"
+L["SoulFragments1"] = "Soul Fragments 1"
+L["SoulFragments2"] = "Soul Fragments 2"
+L["SoulFragments3"] = "Soul Fragments 3"
+L["SoulFragments4"] = "Soul Fragments 4"
+L["SoulFragments5"] = "Soul Fragments 5"
+L["Essence1"] = "Essence 1"
+L["Essence2"] = "Essence 2"
+L["Essence3"] = "Essence 3"
+L["Essence4"] = "Essence 4"
+L["Essence5"] = "Essence 5"
+L["Essence6"] = "Essence 6"

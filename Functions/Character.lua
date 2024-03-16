@@ -62,7 +62,7 @@ function TRB.Functions.Character:UpdateSnapshot()
 	snapshotData.attributes.strength, _, _, _ = UnitStat("player", 1)
 	snapshotData.attributes.agility, _, _, _ = UnitStat("player", 2)
 	snapshotData.attributes.stamina, _, _, _ = UnitStat("player", 3)
-	snapshotData.attributes.intellect, _, _, _ = UnitStat("player", 4)	
+	snapshotData.attributes.intellect, _, _, _ = UnitStat("player", 4)
 end
 
 function TRB.Functions.Character:LoadFromSpecializationCache(cache)
@@ -93,6 +93,7 @@ end
 ---| '"warrior"' # Warrior
 ---@param specName string
 ---| '"havoc"' # Havoc (Demon Hunter)
+---| '"vengeance"' # Vengeance (Demon Hunter)
 ---| '"balance"' # Balance (Druid)
 ---| '"feral"' # Feral (Druid)
 ---| '"restoration"' # Restoration (Druid, Shaman)
@@ -169,6 +170,7 @@ function TRB.Functions.Character:IsComboPointUser()
 		(classIndexId == 7 and specId == 2) or -- Enhancement Shaman
 		(classIndexId == 10 and specId == 3) or -- Windwalker Monk
 		(classIndexId == 11 and specId == 2) or -- Feral Druid
+		(classIndexId == 12 and specId == 2) or -- Vengeance Demon Hunter
 		(classIndexId == 13) -- Evoker
 		then
 		return true

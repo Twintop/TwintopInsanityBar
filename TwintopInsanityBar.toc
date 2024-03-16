@@ -40,6 +40,7 @@ Localization\ptPT.lua
 Localization\ruRU.lua
 Localization\zhCN.lua
 Localization\zhTW.lua
+Localization\LocalizationPost.lua
 
 Classes\CombatLog.lua
 Classes\Snapshot.lua

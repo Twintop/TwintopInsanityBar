@@ -4522,14 +4522,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		if specId == 1 then
 			TRB.Data.character.specName = "balance"
----@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.LunarPower)
 			GetCurrentMoonSpell()
 		elseif specId == 2 then
 			TRB.Data.character.specName = "feral"
----@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Energy)
----@diagnostic disable-next-line: missing-parameter
 			local maxComboPoints = UnitPowerMax("player", Enum.PowerType.ComboPoints)
 			local settings = TRB.Data.settings.druid.feral
 
@@ -4545,7 +4542,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 		elseif specId == 4 then
 			TRB.Data.character.specName = "restoration"
----@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
 			TRB.Functions.Spell:FillSpellDataManaCost(TRB.Data.spells)
 
@@ -4619,14 +4615,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		if TRB.Data.specSupported then
 			TRB.Functions.Class:CheckCharacter()
-			
 			targetsTimerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) targetsTimerFrame:onUpdate(sinceLastUpdate) end)
 			timerFrame:SetScript("OnUpdate", function(self, sinceLastUpdate) timerFrame:onUpdate(sinceLastUpdate) end)
 			barContainerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
 			barContainerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 			combatFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 			combatFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-
 			TRB.Details.addonData.registered = true
 		else
 			TRB.Data.specSupported = false

@@ -2149,12 +2149,12 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 	controls.colors.text = controls.colors.text or {}
 	controls.dropDown.fonts = {}
 
-	controls.textDisplayDefaultSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Default Bar Text Font Settings", oUi.xCoord, yCoord)
+	controls.textDisplayDefaultSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DefaultBarTextFontSettingsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
 	-- Create the dropdown, and configure its appearance
 	controls.dropDown.fontDefault = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_fontDefault", parent)
-	controls.dropDown.fontDefault.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Default Font Face", oUi.xCoord, yCoord)
+	controls.dropDown.fontDefault.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DefaultFontFace"], oUi.xCoord, yCoord)
 	controls.dropDown.fontDefault.label.font:SetFontObject(GameFontNormal)
 	controls.dropDown.fontDefault:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.fontDefault, oUi.dropdownWidth)
@@ -2172,7 +2172,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 			for i=0, menus-1 do
 				info.hasArrow = true
 				info.notCheckable = true
-				info.text = "Fonts " .. i+1
+				info.text = L["Fonts"] .. " " .. i+1
 				info.menuList = i
 				LibDD:UIDropDownMenu_AddButton(info)
 			end
@@ -2204,7 +2204,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 	end
 
 	yCoord = yCoord - 30
-	controls.colors.text.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Default Font Color", spec.displayText.default.color,
+	controls.colors.text.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DefaultFontColor"], spec.displayText.default.color,
 																		250, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.color
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2213,7 +2213,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 	end)
 
 	yCoord = yCoord - 60
-	title = "Default Font Size"
+	title = L["DefaultFontSize"]
 	controls.fontSizeDefault = TRB.Functions.OptionsUi:BuildSlider(parent, title, 6, 72, spec.displayText.default.fontSize, 1, 0,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.fontSizeDefault:SetScript("OnValueChanged", function(self, value)
@@ -2306,7 +2306,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	local btoHeight = 400
 	local barTextTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, 4, 15, nil, btc, false, false)
 	
-	local addButton = TRB.Functions.OptionsUi:BuildButton(parent, "Add New Bar Text Area", 450, yCoord, 175, 25)
+	local addButton = TRB.Functions.OptionsUi:BuildButton(parent, L["AddNewBarTextArea"], 450, yCoord, 175, 25)
 
 	local barTextOptionsFrame = CreateFrame("Frame", "TwintopResourceBar_"..classId.."_"..specId.."_BarTextOptionsFrame", parent, "BackdropTemplate")
 	barTextOptionsFrame:SetPoint("TOPLEFT", btc, "BOTTOMLEFT", 0, 0)
@@ -2320,17 +2320,17 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	local barTextName = TRB.Functions.OptionsUi:BuildTextBox(barTextOptionsFrame, "", 200, 250, 20, oUi.xCoord, yCoord)
 ---@diagnostic disable-next-line: inject-field
-	barTextName.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, "Name", oUi.xCoord, yCoord+25)
+	barTextName.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["Name"], oUi.xCoord, yCoord+25)
 	barTextName.label.font:SetFontObject(GameFontNormal)
 	
 	local barTextEntryEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_TextEnabled", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	barTextEntryEnabled:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
-	getglobal(barTextEntryEnabled:GetName() .. 'Text'):SetText("Enabled")
+	getglobal(barTextEntryEnabled:GetName() .. 'Text'):SetText(L["Enabled"])
 ---@diagnostic disable-next-line: inject-field
-	barTextEntryEnabled.tooltip = "Is this Bar Text enabled and will be shown?"
+	barTextEntryEnabled.tooltip = L["BarTextEntryEnabledTooltip"]
 
 	yCoord = yCoord - 40
-	title = "Horizontal Offset"
+	title = L["HorizontalOffset"]
 	local barTextHorizontal = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, math.ceil(-sanityCheckValues.barMaxWidth), math.floor(sanityCheckValues.barMaxWidth), 0, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	barTextHorizontal:SetScript("OnValueChanged", function(self, value)
@@ -2339,7 +2339,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
 	end)
 
-	title = "Vertical Offset"
+	title = L["VerticalOffset"]
 	local barTextVertical = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, math.ceil(-sanityCheckValues.barMaxHeight), math.floor(sanityCheckValues.barMaxHeight), 0, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	barTextVertical:SetScript("OnValueChanged", function(self, value)
@@ -2351,7 +2351,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	yCoord = yCoord - 40
 	-- Create the dropdown, and configure its appearance
 	local barTextRelativeToFrame = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_barTextRelativeToFrame", barTextOptionsFrame)
-	barTextRelativeToFrame.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, "Bound to Bar", oUi.xCoord, yCoord)
+	barTextRelativeToFrame.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["BoundToBar"], oUi.xCoord, yCoord)
 	barTextRelativeToFrame.label.font:SetFontObject(GameFontNormal)
 	barTextRelativeToFrame:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 	LibDD:UIDropDownMenu_SetWidth(barTextRelativeToFrame, oUi.dropdownWidth)
@@ -2363,76 +2363,76 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		local entries = 25
 		local info = LibDD:UIDropDownMenu_CreateInfo()
 		local relativeTo = {}
-		relativeTo["Main Resource Bar"] = "Resource"
-		relativeTo["Screen"] = "UIParent"
+		relativeTo[L["MainResourceBar"]] = "Resource"
+		relativeTo[L["Screen"]] = "UIParent"
 		local relativeToList = {
-			"Main Resource Bar",
-			"Screen"
+			L["MainResourceBar"],
+			L["Screen"]
 		}
 
 		if (classId == 4 and specId == 1) then -- Assassination Rogue
-			relativeTo["Combo Point 1"] = "ComboPoint_1"
-			relativeTo["Combo Point 2"] = "ComboPoint_2"
-			relativeTo["Combo Point 3"] = "ComboPoint_3"
-			relativeTo["Combo Point 4"] = "ComboPoint_4"
-			relativeTo["Combo Point 5"] = "ComboPoint_5"
-			relativeTo["Combo Point 6"] = "ComboPoint_6"
+			relativeTo[L["ComboPoint1"]] = "ComboPoint_1"
+			relativeTo[L["ComboPoint2"]] = "ComboPoint_2"
+			relativeTo[L["ComboPoint3"]] = "ComboPoint_3"
+			relativeTo[L["ComboPoint4"]] = "ComboPoint_4"
+			relativeTo[L["ComboPoint5"]] = "ComboPoint_5"
+			relativeTo[L["ComboPoint6"]] = "ComboPoint_6"
 			relativeToList = {
-				"Main Resource Bar",
-				"Combo Point 1",
-				"Combo Point 2",
-				"Combo Point 3",
-				"Combo Point 4",
-				"Combo Point 5",
-				"Combo Point 6",
-				"Screen",
+				L["MainResourceBar"],
+				L["ComboPoint1"],
+				L["ComboPoint2"],
+				L["ComboPoint3"],
+				L["ComboPoint4"],
+				L["ComboPoint5"],
+				L["ComboPoint6"],
+				L["Screen"],
 			}
 		elseif (classId == 4 and specId == 2) then -- Outlaw Rogue
-			relativeTo["Combo Point 1"] = "ComboPoint_1"
-			relativeTo["Combo Point 2"] = "ComboPoint_2"
-			relativeTo["Combo Point 3"] = "ComboPoint_3"
-			relativeTo["Combo Point 4"] = "ComboPoint_4"
-			relativeTo["Combo Point 5"] = "ComboPoint_5"
-			relativeTo["Combo Point 6"] = "ComboPoint_6"
-			relativeTo["Combo Point 7"] = "ComboPoint_7"
+			relativeTo[L["ComboPoint1"]] = "ComboPoint_1"
+			relativeTo[L["ComboPoint2"]] = "ComboPoint_2"
+			relativeTo[L["ComboPoint3"]] = "ComboPoint_3"
+			relativeTo[L["ComboPoint4"]] = "ComboPoint_4"
+			relativeTo[L["ComboPoint5"]] = "ComboPoint_5"
+			relativeTo[L["ComboPoint6"]] = "ComboPoint_6"
+			relativeTo[L["ComboPoint7"]] = "ComboPoint_7"
 			relativeToList = {
-				"Main Resource Bar",
-				"Combo Point 1",
-				"Combo Point 2",
-				"Combo Point 3",
-				"Combo Point 4",
-				"Combo Point 5",
-				"Combo Point 6",
-				"Combo Point 7",
-				"Screen",
+				L["MainResourceBar"],
+				L["ComboPoint1"],
+				L["ComboPoint2"],
+				L["ComboPoint3"],
+				L["ComboPoint4"],
+				L["ComboPoint5"],
+				L["ComboPoint6"],
+				L["ComboPoint7"],
+				L["Screen"],
 			}
 		elseif (classId == 4 and specId == 3) then -- Subtlety Rogue
-			relativeTo["Combo Point 1"] = "ComboPoint_1"
-			relativeTo["Combo Point 2"] = "ComboPoint_2"
-			relativeTo["Combo Point 3"] = "ComboPoint_3"
-			relativeTo["Combo Point 4"] = "ComboPoint_4"
-			relativeTo["Combo Point 5"] = "ComboPoint_5"
-			relativeTo["Combo Point 6"] = "ComboPoint_6"
-			relativeTo["Combo Point 7"] = "ComboPoint_7"
+			relativeTo[L["ComboPoint1"]] = "ComboPoint_1"
+			relativeTo[L["ComboPoint2"]] = "ComboPoint_2"
+			relativeTo[L["ComboPoint3"]] = "ComboPoint_3"
+			relativeTo[L["ComboPoint4"]] = "ComboPoint_4"
+			relativeTo[L["ComboPoint5"]] = "ComboPoint_5"
+			relativeTo[L["ComboPoint6"]] = "ComboPoint_6"
+			relativeTo[L["ComboPoint7"]] = "ComboPoint_7"
 			relativeToList = {
-				"Main Resource Bar",
-				"Combo Point 1",
-				"Combo Point 2",
-				"Combo Point 3",
-				"Combo Point 4",
-				"Combo Point 5",
-				"Combo Point 6",
-				"Combo Point 7",
-				"Screen",
+				L["MainResourceBar"],
+				L["ComboPoint1"],
+				L["ComboPoint2"],
+				L["ComboPoint3"],
+				L["ComboPoint4"],
+				L["ComboPoint5"],
+				L["ComboPoint6"],
+				L["ComboPoint7"],
+				L["Screen"],
 			}
 		elseif (classId == 5 and specId == 1) then -- Discipline Priest
 			relativeTo["Power Word: Radiance (1st Charge)"] = "PowerWord_Radiance_1"
 			relativeTo["Power Word: Radiance (2nd Charge)"] = "PowerWord_Radiance_2"
 			relativeToList = {
-				"Main Resource Bar",
+				L["MainResourceBar"],
 				"Power Word: Radiance (1st Charge)",
 				"Power Word: Radiance (2nd Charge)",
-				"Screen",
+				L["Screen"],
 			}
 		elseif (classId == 5 and specId == 2) then -- Holy Priest
 			relativeTo["Holy Word: Serenity (1st Charge)"] = "HolyWord_Serenity_1"
@@ -2441,87 +2441,102 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			relativeTo["Holy Word: Sanctify (2nd Charge)"] = "HolyWord_Sanctify_2"
 			relativeTo["Holy Word: Chastise"] = "HolyWord_Chastise_1"
 			relativeToList = {
-				"Main Resource Bar",
+				L["MainResourceBar"],
 				"Holy Word: Serenity (1st Charge)",
 				"Holy Word: Serenity (2nd Charge)",
 				"Holy Word: Sanctify (1st Charge)",
 				"Holy Word: Sanctify (2nd Charge)",
 				"Holy Word: Chastise",
-				"Screen",
+				L["Screen"],
 			}
 		elseif (classId == 7 and specId == 2) then -- Enhancement Shaman
-			relativeTo["Maelstrom 1"] = "ComboPoint_1"
-			relativeTo["Maelstrom 2"] = "ComboPoint_2"
-			relativeTo["Maelstrom 3"] = "ComboPoint_3"
-			relativeTo["Maelstrom 4"] = "ComboPoint_4"
-			relativeTo["Maelstrom 5"] = "ComboPoint_5"
-			relativeTo["Maelstrom 6"] = "ComboPoint_6"
-			relativeTo["Maelstrom 7"] = "ComboPoint_7"
-			relativeTo["Maelstrom 8"] = "ComboPoint_8"
-			relativeTo["Maelstrom 9"] = "ComboPoint_9"
-			relativeTo["Maelstrom 10"] = "ComboPoint_10"
+			relativeTo[L["Maelstrom1"]] = "ComboPoint_1"
+			relativeTo[L["Maelstrom2"]] = "ComboPoint_2"
+			relativeTo[L["Maelstrom3"]] = "ComboPoint_3"
+			relativeTo[L["Maelstrom4"]] = "ComboPoint_4"
+			relativeTo[L["Maelstrom5"]] = "ComboPoint_5"
+			relativeTo[L["Maelstrom6"]] = "ComboPoint_6"
+			relativeTo[L["Maelstrom7"]] = "ComboPoint_7"
+			relativeTo[L["Maelstrom8"]] = "ComboPoint_8"
+			relativeTo[L["Maelstrom9"]] = "ComboPoint_9"
+			relativeTo[L["Maelstrom10"]] = "ComboPoint_10"
 			relativeToList = {
-				"Main Resource Bar",
-				"Maelstrom 1",
-				"Maelstrom 2",
-				"Maelstrom 3",
-				"Maelstrom 4",
-				"Maelstrom 5",
-				"Maelstrom 6",
-				"Maelstrom 7",
-				"Maelstrom 8",
-				"Maelstrom 9",
-				"Maelstrom 10",
-				"Screen",
+				L["MainResourceBar"],
+				L["Maelstrom1"],
+				L["Maelstrom2"],
+				L["Maelstrom3"],
+				L["Maelstrom4"],
+				L["Maelstrom5"],
+				L["Maelstrom6"],
+				L["Maelstrom7"],
+				L["Maelstrom8"],
+				L["Maelstrom9"],
+				L["Maelstrom10"],
+				L["Screen"],
 			}
 		elseif (classId == 10 and specId == 3) then -- Windwalker Monk
-			relativeTo["Chi 1"] = "ComboPoint_1"
-			relativeTo["Chi 2"] = "ComboPoint_2"
-			relativeTo["Chi 3"] = "ComboPoint_3"
-			relativeTo["Chi 4"] = "ComboPoint_4"
-			relativeTo["Chi 5"] = "ComboPoint_5"
-			relativeTo["Chi 6"] = "ComboPoint_6"
+			relativeTo[L["Chi1"]] = "ComboPoint_1"
+			relativeTo[L["Chi2"]] = "ComboPoint_2"
+			relativeTo[L["Chi3"]] = "ComboPoint_3"
+			relativeTo[L["Chi4"]] = "ComboPoint_4"
+			relativeTo[L["Chi5"]] = "ComboPoint_5"
+			relativeTo[L["Chi6"]] = "ComboPoint_6"
 			relativeToList = {
-				"Main Resource Bar",
-				"Chi 1",
-				"Chi 2",
-				"Chi 3",
-				"Chi 4",
-				"Chi 5",
-				"Chi 6",
-				"Screen",
+				L["MainResourceBar"],
+				L["Chi1"],
+				L["Chi2"],
+				L["Chi3"],
+				L["Chi4"],
+				L["Chi5"],
+				L["Chi6"],
+				L["Screen"],
 			}
 		elseif (classId == 11 and specId == 2) then -- Feral Druid
-			relativeTo["Combo Point 1"] = "ComboPoint_1"
-			relativeTo["Combo Point 2"] = "ComboPoint_2"
-			relativeTo["Combo Point 3"] = "ComboPoint_3"
-			relativeTo["Combo Point 4"] = "ComboPoint_4"
-			relativeTo["Combo Point 5"] = "ComboPoint_5"
+			relativeTo[L["ComboPoint1"]] = "ComboPoint_1"
+			relativeTo[L["ComboPoint2"]] = "ComboPoint_2"
+			relativeTo[L["ComboPoint3"]] = "ComboPoint_3"
+			relativeTo[L["ComboPoint4"]] = "ComboPoint_4"
+			relativeTo[L["ComboPoint5"]] = "ComboPoint_5"
 			relativeToList = {
-				"Main Resource Bar",
-				"Combo Point 1",
-				"Combo Point 2",
-				"Combo Point 3",
-				"Combo Point 4",
-				"Combo Point 5",
-				"Screen",
+				L["MainResourceBar"],
+				L["ComboPoint1"],
+				L["ComboPoint2"],
+				L["ComboPoint3"],
+				L["ComboPoint4"],
+				L["ComboPoint5"],
+				L["Screen"],
+			}
+		elseif (classId == 12 and specId == 2) then -- Vengeance Demon Hunter
+			relativeTo[L["SoulFragments1"]] = "ComboPoint_1"
+			relativeTo[L["SoulFragments2"]] = "ComboPoint_2"
+			relativeTo[L["SoulFragments3"]] = "ComboPoint_3"
+			relativeTo[L["SoulFragments4"]] = "ComboPoint_4"
+			relativeTo[L["SoulFragments5"]] = "ComboPoint_5"
+			relativeToList = {
+				L["MainResourceBar"],
+				L["SoulFragments1"],
+				L["SoulFragments2"],
+				L["SoulFragments3"],
+				L["SoulFragments4"],
+				L["SoulFragments5"],
+				L["Screen"],
 			}
 		elseif (classId == 13) then -- Evoker
-			relativeTo["Essence 1"] = "ComboPoint_1"
-			relativeTo["Essence 2"] = "ComboPoint_2"
-			relativeTo["Essence 3"] = "ComboPoint_3"
-			relativeTo["Essence 4"] = "ComboPoint_4"
-			relativeTo["Essence 5"] = "ComboPoint_5"
-			relativeTo["Essence 6"] = "ComboPoint_6"
+			relativeTo[L["Essence1"]] = "ComboPoint_1"
+			relativeTo[L["Essence2"]] = "ComboPoint_2"
+			relativeTo[L["Essence3"]] = "ComboPoint_3"
+			relativeTo[L["Essence4"]] = "ComboPoint_4"
+			relativeTo[L["Essence5"]] = "ComboPoint_5"
+			relativeTo[L["Essence6"]] = "ComboPoint_6"
 			relativeToList = {
-				"Main Resource Bar",
-				"Essence 1",
-				"Essence 2",
-				"Essence 3",
-				"Essence 4",
-				"Essence 5",
-				"Essence 6",
-				"Screen",
+				L["MainResourceBar"],
+				L["Essence1"],
+				L["Essence2"],
+				L["Essence3"],
+				L["Essence4"],
+				L["Essence5"],
+				L["Essence6"],
+				L["Screen"],
 			}
 		end
 
