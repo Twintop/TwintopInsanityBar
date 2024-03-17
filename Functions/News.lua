@@ -27,11 +27,16 @@ local content = [====[
 ### Havoc
 
 - (FIX) Correct Fel Barrage threshold line toggle.
+- (FIX) Include End of Metamorphosis configuration when exporting settings.
 
 ### Vengeance
 
 - [NEW - #344](#344) Add support for Vengeance Demon Hunter, tracking Fury and Soul Fragments.
 
+## Druid
+### Restoration
+
+- (FIX) Include Restoration Druid as a valid target spec for importing settings.
 
 ---
 

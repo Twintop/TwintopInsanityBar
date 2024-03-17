@@ -22,7 +22,7 @@
 A multi-class resource bar, based on my (Twintop's) previous Shadow Priest Insanity Bar WeakAura set from Legion.
 
 Currently supported specs:
-- Demon Hunter - Havoc
+- Demon Hunter - , Vengeance
 - Druid - Balance, Feral, Restoration
 - Evoker - Devastation, Preservation, Augmentation
 - Hunter - Beast Mastery, Marksmanship, Survival

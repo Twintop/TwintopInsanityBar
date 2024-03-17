@@ -569,9 +569,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					overcapEnabled=true,
 				},
 				comboPoints = {
-					border="FFC942FD",
+					border="FF660088",
 					background="66000000",
-					base="FF660088",
+					base="FFC942FD",
 					penultimate="FFFF9900",
 					final="FFFF0000",
 					sameColor=false
@@ -1498,7 +1498,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
-		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, COMBO_POINTS_POWER, spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, POWER_TYPE_FURY, spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPoints.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
