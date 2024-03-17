@@ -1539,7 +1539,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f = controls.checkBoxes.expelHarmThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Expel Harm")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Expel Harm. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Expel Harm."
 		f:SetChecked(spec.thresholds.expelHarm.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.expelHarm.enabled = self:GetChecked()
@@ -1575,7 +1575,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f = controls.checkBoxes.detoxThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Detox")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Detox. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Detox."
 		f:SetChecked(spec.thresholds.detox.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.detox.enabled = self:GetChecked()
@@ -1586,7 +1586,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f = controls.checkBoxes.paralysisThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Paralysis")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Paralysis. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Paralysis."
 		f:SetChecked(spec.thresholds.paralysis.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.paralysis.enabled = self:GetChecked()

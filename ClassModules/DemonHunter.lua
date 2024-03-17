@@ -158,7 +158,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				thresholdId = 1,
 				settingKey = "annihilation",
 				hasCooldown = false,
-				--isSnowflake = true,
 				demonForm = true,
 				isTalent = false,
 				baseline = true
@@ -174,7 +173,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				settingKey = "deathSweep",
 				hasCooldown = true,
 				demonForm = true,
-				--isSnowflake = true,
 				isTalent = false,
 				baseline = true
 			},
@@ -444,7 +442,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				thresholdId = 1,
 				settingKey = "soulCleave",
 				isTalent = false,
-				baseline = true
+				baseline = true,
+				isSnowflake = true
 			},
 
 			-- Demon Hunter Talent Abilities
@@ -481,8 +480,15 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				thresholdId = 4,
 				settingKey = "spiritBomb",
 				comboPoints = true,
-				isTalent = true
+				isTalent = true,
+				isSnowflake = true
 			},
+			soulFurnace = {
+				id = 391172,
+				name = "",
+				icon = "",
+				isTalent = true
+			}
 		}
 
 		specCache.vengeance.snapshotData.audio = {
@@ -496,6 +502,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		specCache.vengeance.snapshotData.snapshots[specCache.vengeance.spells.metamorphosis.id] = TRB.Classes.Snapshot:New(specCache.vengeance.spells.metamorphosis)
 		---@type TRB.Classes.Snapshot
 		specCache.vengeance.snapshotData.snapshots[specCache.vengeance.spells.immolationAura.id] = TRB.Classes.Snapshot:New(specCache.vengeance.spells.immolationAura)
+		---@type TRB.Classes.Snapshot
+		specCache.vengeance.snapshotData.snapshots[specCache.vengeance.spells.soulFurnace.id] = TRB.Classes.Snapshot:New(specCache.vengeance.spells.soulFurnace)
 	end
 
 	local function Setup_Havoc()
@@ -535,7 +543,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "#glaiveTempest", icon = spells.glaiveTempest.icon, description = spells.glaiveTempest.name, printInSettings = true },
 			{ variable = "#immolationAura", icon = spells.immolationAura.icon, description = spells.immolationAura.name, printInSettings = true },
 			{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
-			{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 			{ variable = "#momentum", icon = spells.momentum.icon, description = spells.momentum.name, printInSettings = true },
 			{ variable = "#tacticalRetreat", icon = spells.tacticalRetreat.icon, description = spells.tacticalRetreat.name, printInSettings = true },
 			{ variable = "#unboundChaos", icon = spells.unboundChaos.icon, description = spells.unboundChaos.name, printInSettings = true },
@@ -626,30 +633,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 
-			--[[
-			{ variable = "#annihilation", icon = spells.annihilation.icon, description = spells.annihilation.name, printInSettings = true },
-			{ variable = "#bladeDance", icon = spells.bladeDance.icon, description = spells.bladeDance.name, printInSettings = true },
-			{ variable = "#blindFury", icon = spells.blindFury.icon, description = spells.blindFury.name, printInSettings = true },
-			{ variable = "#bh", icon = spells.burningHatred.icon, description = spells.burningHatred.name, printInSettings = false },
-			{ variable = "#burningHatred", icon = spells.burningHatred.icon, description = spells.burningHatred.name, printInSettings = true },
-			{ variable = "#chaosNova", icon = spells.chaosNova.icon, description = spells.chaosNova.name, printInSettings = true },
-			{ variable = "#chaosStrike", icon = spells.chaosStrike.icon, description = spells.chaosStrike.name, printInSettings = true },
-			{ variable = "#deathSweep", icon = spells.deathSweep.icon, description = spells.deathSweep.name, printInSettings = true },
-			{ variable = "#demonicAppetite", icon = spells.demonicAppetite.icon, description = spells.demonicAppetite.name, printInSettings = true },
-			{ variable = "#demonsBite", icon = spells.demonsBite.icon, description = spells.demonsBite.name, printInSettings = true },
-			{ variable = "#eyeBeam", icon = spells.eyeBeam.icon, description = spells.eyeBeam.name, printInSettings = true },
-			{ variable = "#felBarrage", icon = spells.felBarrage.icon, description = spells.felBarrage.name, printInSettings = true },
-			{ variable = "#felBlade", icon = spells.felBlade.icon, description = spells.felBlade.name, printInSettings = true },
-			{ variable = "#felEruption", icon = spells.felEruption.icon, description = spells.felEruption.name, printInSettings = true },
-			{ variable = "#firstBlood", icon = spells.firstBlood.icon, description = spells.firstBlood.name, printInSettings = true },
-			{ variable = "#glaiveTempest", icon = spells.glaiveTempest.icon, description = spells.glaiveTempest.name, printInSettings = true },
 			{ variable = "#immolationAura", icon = spells.immolationAura.icon, description = spells.immolationAura.name, printInSettings = true },
+			{ variable = "#ia", icon = spells.immolationAura.icon, description = spells.immolationAura.name, printInSettings = false },
 			{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
-			{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
-			{ variable = "#momentum", icon = spells.momentum.icon, description = spells.momentum.name, printInSettings = true },
-			{ variable = "#tacticalRetreat", icon = spells.tacticalRetreat.icon, description = spells.tacticalRetreat.name, printInSettings = true },
-			{ variable = "#unboundChaos", icon = spells.unboundChaos.icon, description = spells.unboundChaos.name, printInSettings = true },
-			]]
+			{ variable = "#soulFragments", icon = spells.soulFragments.icon, description = spells.soulFragments.name, printInSettings = true },
 		}
 		specCache.vengeance.barTextVariables.values = {
 			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
@@ -888,7 +875,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookup["#firstBlood"] = spells.firstBlood.icon
 		lookup["#glaiveTempest"] = spells.glaiveTempest.icon
 		lookup["#immolationAura"] = spells.immolationAura.icon
-		lookup["#meta"] = spells.metamorphosis.icon
 		lookup["#metamorphosis"] = spells.metamorphosis.icon
 		lookup["#momentum"] = spells.momentum.icon
 		lookup["#tacticalRetreat"] = spells.tacticalRetreat.icon
@@ -1031,28 +1017,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		}
 
 		local lookup = TRB.Data.lookup or {}
-		--[[lookup["#annihilation"] = spells.annihilation.icon
-		lookup["#bladeDance"] = spells.bladeDance.icon
-		lookup["#blindFury"] = spells.blindFury.icon
-		lookup["#bh"] = spells.burningHatred.icon
-		lookup["#burningHatred"] = spells.burningHatred.icon
-		lookup["#chaosNova"] = spells.chaosNova.icon
-		lookup["#chaosStrike"] = spells.chaosStrike.icon
-		lookup["#deathSweep"] = spells.deathSweep.icon
-		lookup["#demonicAppetite"] = spells.demonicAppetite.icon
-		lookup["#demonsBite"] = spells.demonsBite.icon
-		lookup["#eyeBeam"] = spells.eyeBeam.icon
-		lookup["#felBarrage"] = spells.felBarrage.icon
-		lookup["#felBlade"] = spells.felBlade.icon
-		lookup["#felEruption"] = spells.felEruption.icon
-		lookup["#firstBlood"] = spells.firstBlood.icon
-		lookup["#glaiveTempest"] = spells.glaiveTempest.icon
+		lookup["#ia"] = spells.immolationAura.icon
 		lookup["#immolationAura"] = spells.immolationAura.icon
-		lookup["#meta"] = spells.metamorphosis.icon
 		lookup["#metamorphosis"] = spells.metamorphosis.icon
-		lookup["#momentum"] = spells.momentum.icon
-		lookup["#tacticalRetreat"] = spells.tacticalRetreat.icon
-		lookup["#unboundChaos"] = spells.unboundChaos.icon]]
+		lookup["#soulFragments"] = spells.soulFragments.icon
 		lookup["$metaTime"] = metamorphosisTime
 		lookup["$metamorphosisTime"] = metamorphosisTime
 		lookup["$iaFury"] = iaFury
@@ -1488,23 +1456,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 							elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-								--[[if spell.id == TRB.Data.spells.throwGlaive.id then
-									if talents:IsTalentActive(TRB.Data.spells.furiousThrows) then
-										resourceAmount = TRB.Data.spells.furiousThrows.resource
-										if snapshotData.snapshots[spells.throwGlaive.id].cooldown.charges == 0 then
-											thresholdColor = specSettings.colors.threshold.unusable
-											frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-										elseif currentResource >= -resourceAmount then
-											thresholdColor = specSettings.colors.threshold.over
-										else
-											thresholdColor = specSettings.colors.threshold.under
-											frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-										end
-									else
-										showThreshold = false
-									end
-								elseif spell.id == TRB.Data.spells.chaosStrike.id or spell.id == TRB.Data.spells.annihilation.id then
-									if snapshotData.snapshots[spells.chaosTheory.id].buff.isActive then
+								if spell.id == TRB.Data.spells.soulCleave.id or spell.id == TRB.Data.spells.spiritBomb.id then
+									if snapshotData.snapshots[spells.soulFurnace.id].buff.isActive then
 										thresholdColor = specSettings.colors.threshold.special
 										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 									elseif currentResource >= -resourceAmount then
@@ -1513,7 +1466,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 										thresholdColor = specSettings.colors.threshold.under
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
-								end]]
+								end
 							elseif spell.hasCooldown then
 								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
@@ -1707,6 +1660,16 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "vengeance" then --Vengeance
 					if entry.spellId == spells.immolationAura.id then
 						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.soulFurnace.id then
+						snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.felDevastation.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[entry.spellId].cooldown:Initialize()
+						end
+					elseif entry.spellId == spells.chaosNova.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshotData.snapshots[entry.spellId].cooldown:Initialize()
+						end
 					end
 				end
 
@@ -2136,7 +2099,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				return true
 			end
 		elseif var == "$resourcePlusPassive" or var == "$furyPlusPassive" then
-			if normalizedResource > 0 or TRB.Functions.Class:IsValidVariableForSpec("$passive") or TRB.Functions.Class:IsValidVariableForSpec("$bhFury") then
+			if normalizedResource > 0 or TRB.Functions.Class:IsValidVariableForSpec("$passive") or TRB.Functions.Class:IsValidVariableForSpec("$bhFury") or TRB.Functions.Class:IsValidVariableForSpec("$iaFury") then
 				valid = true
 			end
 		elseif var == "$casting" then
@@ -2144,7 +2107,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				valid = true
 			end
 		elseif var == "$passive" then
-			if TRB.Functions.Class:IsValidVariableForSpec("$bhFury") or TRB.Functions.Class:IsValidVariableForSpec("$tacticalRetreatFury") then
+			if TRB.Functions.Class:IsValidVariableForSpec("$bhFury") or TRB.Functions.Class:IsValidVariableForSpec("$tacticalRetreatFury") or TRB.Functions.Class:IsValidVariableForSpec("$iaFury") then
 				valid = true
 			end
 		end
@@ -2159,6 +2122,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 		if specId == 1 then
+		elseif specId == 2 then
 		end
 		return nil
 	end

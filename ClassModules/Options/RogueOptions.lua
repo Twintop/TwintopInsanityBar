@@ -1568,7 +1568,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.echoingReprimandThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Echoing Reprimand")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand."
 		f:SetChecked(spec.thresholds.echoingReprimand.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.echoingReprimand.enabled = self:GetChecked()
@@ -1590,7 +1590,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.garroteThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Garrote")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Garrote. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Garrote."
 		f:SetChecked(spec.thresholds.garrote.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.garrote.enabled = self:GetChecked()
@@ -1601,7 +1601,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.gougeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Gouge")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Gouge. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Gouge."
 		f:SetChecked(spec.thresholds.gouge.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.gouge.enabled = self:GetChecked()
@@ -1612,7 +1612,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.kingsbaneThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Kingsbane")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Kingsbane. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Kingsbane."
 		f:SetChecked(spec.thresholds.kingsbane.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.kingsbane.enabled = self:GetChecked()
@@ -1645,7 +1645,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.sepsisThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Sepsis")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis."
 		f:SetChecked(spec.thresholds.sepsis.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sepsis.enabled = self:GetChecked()
@@ -1667,7 +1667,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.shivThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Shiv")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If on cooldown, will be colored as 'unusable'. If Tiny Toxic Blade is active, no threshold will be shown."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If Tiny Toxic Blade is active, no threshold will be shown."
 		f:SetChecked(spec.thresholds.shiv.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shiv.enabled = self:GetChecked()
@@ -1740,7 +1740,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.crimsonVialThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Crimson Vial")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Vial. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Vial."
 		f:SetChecked(spec.thresholds.crimsonVial.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.crimsonVial.enabled = self:GetChecked()
@@ -1751,7 +1751,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.distractThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Distract")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Distract. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Distract."
 		f:SetChecked(spec.thresholds.distract.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.distract.enabled = self:GetChecked()
@@ -1762,7 +1762,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.feintThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Feint")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feint. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feint."
 		f:SetChecked(spec.thresholds.feint.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.feint.enabled = self:GetChecked()
@@ -1798,7 +1798,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.dismantleThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Dismantle")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dismantle. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dismantle."
 		f:SetChecked(spec.thresholds.dismantle.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.dismantle.enabled = self:GetChecked()
@@ -2687,7 +2687,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.echoingReprimandThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Echoing Reprimand")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand."
 		f:SetChecked(spec.thresholds.echoingReprimand.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.echoingReprimand.enabled = self:GetChecked()
@@ -2698,7 +2698,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.ghostlyStrikeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Ghostly Strike")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ghostly Strike. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ghostly Strike."
 		f:SetChecked(spec.thresholds.ghostlyStrike.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.ghostlyStrike.enabled = self:GetChecked()
@@ -2709,7 +2709,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.gougeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Gouge")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Gouge. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Gouge."
 		f:SetChecked(spec.thresholds.gouge.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.gouge.enabled = self:GetChecked()
@@ -2731,7 +2731,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.sepsisThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Sepsis")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis."
 		f:SetChecked(spec.thresholds.sepsis.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sepsis.enabled = self:GetChecked()
@@ -2742,7 +2742,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.shivThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Shiv")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If on cooldown, will be colored as 'unusable'. If talented in to Tiny Toxic Blade, no threshold will be shown."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If talented into Tiny Toxic Blade, no threshold will be shown."
 		f:SetChecked(spec.thresholds.shiv.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shiv.enabled = self:GetChecked()
@@ -2837,7 +2837,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.crimsonVialThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Crimson Vial")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Vial. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Vial."
 		f:SetChecked(spec.thresholds.crimsonVial.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.crimsonVial.enabled = self:GetChecked()
@@ -2848,7 +2848,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.distractThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Distract")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Distract. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Distract."
 		f:SetChecked(spec.thresholds.distract.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.distract.enabled = self:GetChecked()
@@ -2859,7 +2859,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.feintThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Feint")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feint. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feint."
 		f:SetChecked(spec.thresholds.feint.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.feint.enabled = self:GetChecked()
@@ -2870,7 +2870,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.rollTheBonesThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Roll the Bones")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Roll the Bones. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Roll the Bones."
 		f:SetChecked(spec.thresholds.rollTheBones.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.rollTheBones.enabled = self:GetChecked()
@@ -2905,7 +2905,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.dismantleThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Dismantle")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dismantle. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dismantle."
 		f:SetChecked(spec.thresholds.dismantle.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.dismantle.enabled = self:GetChecked()
@@ -3771,7 +3771,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.echoingReprimandThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Echoing Reprimand")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand."
 		f:SetChecked(spec.thresholds.echoingReprimand.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.echoingReprimand.enabled = self:GetChecked()
@@ -3782,7 +3782,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.goremawsBiteThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Goremaw's Bite")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Goremaw's Bite. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Goremaw's Bite."
 		f:SetChecked(spec.thresholds.goremawsBite.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.goremawsBite.enabled = self:GetChecked()
@@ -3793,7 +3793,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.gougeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Gouge")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Gouge. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Gouge."
 		f:SetChecked(spec.thresholds.gouge.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.gouge.enabled = self:GetChecked()
@@ -3804,7 +3804,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.sepsisThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Sepsis")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis."
 		f:SetChecked(spec.thresholds.sepsis.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sepsis.enabled = self:GetChecked()
@@ -3837,7 +3837,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.shurikenTornadoThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Shuriken Tornado")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shuriken Tornado. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shuriken Tornado."
 		f:SetChecked(spec.thresholds.shurikenTornado.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shurikenTornado.enabled = self:GetChecked()
@@ -3859,7 +3859,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.shivThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Shiv")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If on cooldown, will be colored as 'unusable'. If Tiny Toxic Blade is active, no threshold will be shown."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If Tiny Toxic Blade is active, no threshold will be shown."
 		f:SetChecked(spec.thresholds.shiv.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shiv.enabled = self:GetChecked()
@@ -3943,7 +3943,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.crimsonVialThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Crimson Vial")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Vial. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Vial."
 		f:SetChecked(spec.thresholds.crimsonVial.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.crimsonVial.enabled = self:GetChecked()
@@ -3954,7 +3954,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.distractThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Distract")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Distract. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Distract."
 		f:SetChecked(spec.thresholds.distract.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.distract.enabled = self:GetChecked()
@@ -3965,7 +3965,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.feintThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Feint")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feint. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feint."
 		f:SetChecked(spec.thresholds.feint.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.feint.enabled = self:GetChecked()
@@ -4001,7 +4001,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.dismantleThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Dismantle")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dismantle. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dismantle."
 		f:SetChecked(spec.thresholds.dismantle.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.dismantle.enabled = self:GetChecked()
@@ -4012,7 +4012,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.shadowyDuelThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Shadowy Duel")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shadowy Duel. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shadowy Duel."
 		f:SetChecked(spec.thresholds.shadowyDuel.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shadowyDuel.enabled = self:GetChecked()

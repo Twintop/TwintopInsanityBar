@@ -1360,7 +1360,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.aMurderOfCrowsThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("A Murder of Crows")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use A Murder of Crows. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use A Murder of Crows."
 		f:SetChecked(spec.thresholds.aMurderOfCrows.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.aMurderOfCrows.enabled = self:GetChecked()
@@ -1371,7 +1371,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.barrageThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Barrage")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Barrage. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Barrage."
 		f:SetChecked(spec.thresholds.barrage.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.barrage.enabled = self:GetChecked()
@@ -1393,7 +1393,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.explosiveShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Explosive Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Explosive Shot. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Explosive Shot."
 		f:SetChecked(spec.thresholds.explosiveShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.explosiveShot.enabled = self:GetChecked()
@@ -1498,7 +1498,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.direBeastBasiliskThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Dire Beast: Basilisk")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Dire Beast: Basilisk. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Dire Beast: Basilisk."
 		f:SetChecked(spec.thresholds.direBeastBasilisk.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.direBeastBasilisk.enabled = self:GetChecked()
@@ -1509,7 +1509,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.direBeastHawkThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Dire Beast: Hawk")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Dire Beast: Hawk. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Dire Beast: Hawk."
 		f:SetChecked(spec.thresholds.direBeastHawk.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.direBeastHawk.enabled = self:GetChecked()
@@ -2290,7 +2290,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.barrageThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Barrage")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Barrage. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Barrage."
 		f:SetChecked(spec.thresholds.barrage.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.barrage.enabled = self:GetChecked()
@@ -2301,7 +2301,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.burstingShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Bursting Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Bursting Shot. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Bursting Shot."
 		f:SetChecked(spec.thresholds.burstingShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.burstingShot.enabled = self:GetChecked()
@@ -2312,7 +2312,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.explosiveShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Explosive Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Explosive Shot. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Explosive Shot."
 		f:SetChecked(spec.thresholds.explosiveShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.explosiveShot.enabled = self:GetChecked()
@@ -2356,7 +2356,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.serpentStingThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Serpent Sting")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Serpent Sting. Only visible if talented in to Serpent Sting."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Serpent Sting. Only visible if talented into Serpent Sting."
 		f:SetChecked(spec.thresholds.serpentSting.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.serpentSting.enabled = self:GetChecked()
@@ -2417,7 +2417,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.sniperShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Sniper Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Sniper Shot. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Sniper Shot."
 		f:SetChecked(spec.thresholds.sniperShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sniperShot.enabled = self:GetChecked()
@@ -3507,7 +3507,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.barrageThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Barrage")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Barrage. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Barrage."
 		f:SetChecked(spec.thresholds.butchery.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.barrage.enabled = self:GetChecked()
@@ -3518,7 +3518,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.butcheryThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Butchery")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Butchery. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Butchery."
 		f:SetChecked(spec.thresholds.butchery.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.butchery.enabled = self:GetChecked()
@@ -3529,7 +3529,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.carveThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Carve")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Carve. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Carve."
 		f:SetChecked(spec.thresholds.carve.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.carve.enabled = self:GetChecked()
@@ -3540,7 +3540,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.explosiveShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Explosive Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Explosive Shot. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Explosive Shot."
 		f:SetChecked(spec.thresholds.explosiveShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.explosiveShot.enabled = self:GetChecked()

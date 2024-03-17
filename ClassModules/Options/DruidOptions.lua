@@ -2453,7 +2453,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f = controls.checkBoxes.brutalSlashThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Brutal Slash")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Brutal Slash. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Brutal Slash."
 		f:SetChecked(spec.thresholds.brutalSlash.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.brutalSlash.enabled = self:GetChecked()
@@ -2464,7 +2464,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f = controls.checkBoxes.feralFrenzyThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Feral Frenzy")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feral Frenzy. If on cooldown, will be colored as 'unusable'."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feral Frenzy."
 		f:SetChecked(spec.thresholds.feralFrenzy.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.feralFrenzy.enabled = self:GetChecked()
@@ -2475,7 +2475,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f = controls.checkBoxes.moonfireThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Moonfire (if Lunar Inspiration talented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Moonfire. Only visible if talented in to Lunar Inspiration."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Moonfire. Only visible if talented into Lunar Inspiration."
 		f:SetChecked(spec.thresholds.moonfire.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.moonfire.enabled = self:GetChecked()
@@ -2508,7 +2508,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f = controls.checkBoxes.swipeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Swipe (if Brutal Slash untalented)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Swipe. Only visible if not talented in to Brutal Slash."
+		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Swipe. Only visible if not talented into Brutal Slash."
 		f:SetChecked(spec.thresholds.swipe.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.swipe.enabled = self:GetChecked()

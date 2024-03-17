@@ -283,7 +283,7 @@ end
 ---Attempts to get the current health percent for this creature. May fail if this creature does not have a current UnitToken.
 ---@return number? # Returns the health percentage if the creature has a valid UnitToken; nil otherwise
 function TRB.Classes.Target:GetHealthPercent()
-    -- TODO: Look in to hooking in to nameplates to get the info we need for this
+    -- TODO: Look into hooking into nameplates to get the info we need for this
     local unitToken = UnitTokenFromGUID(self.guid)
 	if unitToken ~= nil then
 		local health = UnitHealth(unitToken)
@@ -363,7 +363,7 @@ end
 ---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
 function TRB.Classes.TargetSpell:Update(currentTime)
     currentTime = currentTime or GetTime()
-    -- TODO: Look in to hooking in to nameplates to get the info we need for this
+    -- TODO: Look into hooking into nameplates to get the info we need for this
     local unitToken = UnitTokenFromGUID(self.guid)
 
     if unitToken ~= nil then
