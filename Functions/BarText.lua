@@ -450,6 +450,11 @@ local function AddToBarTextCache(input)
 		function(a, b)
 			return string.len(a.variable) > string.len(b.variable)
 		end)
+	local barTextIconsVars = barTextVariables.icons
+	table.sort(barTextIconsVars,
+		function(a, b)
+			return string.len(a.variable) > string.len(b.variable)
+		end)
 	
 	--Only loop through this while we're not at the end of the string AND we haven't done 1000 checks. This is a sanity checker to prevent an infinite run for some reason!
 	while p <= string.len(input) and infinity < 1000 do
@@ -503,7 +508,7 @@ local function AddToBarTextCache(input)
 				end
 			else
 				for x = 1, iconEntries do
-					z, z1 = string.find(input, barTextVariables.icons[x].variable, a-1)
+					z, z1 = string.find(input, barTextIconsVars[x].variable, a-1)
 					if z ~= nil and z == a then
 						match = true
 						if p ~= a then
@@ -511,7 +516,7 @@ local function AddToBarTextCache(input)
 						end
 
 						returnText = returnText .. "%s"
-						table.insert(returnVariables, barTextVariables.icons[x].variable)
+						table.insert(returnVariables, barTextIconsVars[x].variable)
 
 						p = z1 + 1
 						break

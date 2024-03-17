@@ -542,7 +542,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			{ variable = "#firstBlood", icon = spells.firstBlood.icon, description = spells.firstBlood.name, printInSettings = true },
 			{ variable = "#glaiveTempest", icon = spells.glaiveTempest.icon, description = spells.glaiveTempest.name, printInSettings = true },
 			{ variable = "#immolationAura", icon = spells.immolationAura.icon, description = spells.immolationAura.name, printInSettings = true },
-			{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
+			{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },			
+			{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 			{ variable = "#momentum", icon = spells.momentum.icon, description = spells.momentum.name, printInSettings = true },
 			{ variable = "#tacticalRetreat", icon = spells.tacticalRetreat.icon, description = spells.tacticalRetreat.name, printInSettings = true },
 			{ variable = "#unboundChaos", icon = spells.unboundChaos.icon, description = spells.unboundChaos.name, printInSettings = true },
@@ -635,7 +636,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 			{ variable = "#immolationAura", icon = spells.immolationAura.icon, description = spells.immolationAura.name, printInSettings = true },
 			{ variable = "#ia", icon = spells.immolationAura.icon, description = spells.immolationAura.name, printInSettings = false },
-			{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },
+			{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },			
+			{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
 			{ variable = "#soulFragments", icon = spells.soulFragments.icon, description = spells.soulFragments.name, printInSettings = true },
 		}
 		specCache.vengeance.barTextVariables.values = {
@@ -876,6 +878,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookup["#glaiveTempest"] = spells.glaiveTempest.icon
 		lookup["#immolationAura"] = spells.immolationAura.icon
 		lookup["#metamorphosis"] = spells.metamorphosis.icon
+		lookup["#meta"] = spells.metamorphosis.icon
 		lookup["#momentum"] = spells.momentum.icon
 		lookup["#tacticalRetreat"] = spells.tacticalRetreat.icon
 		lookup["#unboundChaos"] = spells.unboundChaos.icon
@@ -1020,6 +1023,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookup["#ia"] = spells.immolationAura.icon
 		lookup["#immolationAura"] = spells.immolationAura.icon
 		lookup["#metamorphosis"] = spells.metamorphosis.icon
+		lookup["#meta"] = spells.metamorphosis.icon
 		lookup["#soulFragments"] = spells.soulFragments.icon
 		lookup["$metaTime"] = metamorphosisTime
 		lookup["$metamorphosisTime"] = metamorphosisTime

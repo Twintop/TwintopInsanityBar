@@ -22,6 +22,7 @@ local content = [====[
 <br/>&emsp;&ensp;- Timers for Metamorphosis and Immolation Aura time remaining.
 <br/>&emsp;&ensp;- Bar Text variables and icons for customization.
 <br/>&emsp;&ensp;- Importing and Exporting support.
+- (FIX) Improve bar text parsing for icon names.
 
 ## Demon Hunter
 ### Havoc
