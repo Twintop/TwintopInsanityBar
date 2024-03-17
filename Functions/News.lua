@@ -10,7 +10,32 @@ local content = [====[
 
 ---
 
-# 10.2.5.4-release (2023-03-03)
+# 10.2.6.0-release (2024-03-19)
+## General
+
+- [#8 - NEW](#8) Add more localization strings for shared options UI components.
+- [#344 - NEW](#344) Add support for Vengeance Demon Hunter, tracking Fury and Soul Fragments.
+<br/>&emsp;&ensp;- Soul Fragment colors for the border and fill, including different colors of the penultimate and final combo point.
+<br/>&emsp;&ensp;- Configurable threshold lines for Chaos Nova, Fel Devastation, Soul Cleave, and Spirit Bomb. Additionally, Soul Furnace buff tracking will highlight Soul Cleave and Spirit Bomb in a different color when they will deal extra damage.
+<br/>&emsp;&ensp;- Bar color change when Metamorphosis is active and when it is close to ending.
+<br/>&emsp;&ensp;- Passive Fury generation from Immolation Aura.
+<br/>&emsp;&ensp;- Timers for Metamorphosis and Immolation Aura time remaining.
+<br/>&emsp;&ensp;- Bar Text variables and icons for customization.
+<br/>&emsp;&ensp;- Importing and Exporting support.
+
+## Demon Hunter
+### Havoc
+
+- (FIX) Correct Fel Barrage threshold line toggle.
+
+### Vengeance
+
+- [NEW - #344](#344) Add support for Vengeance Demon Hunter, tracking Fury and Soul Fragments.
+
+
+---
+
+# 10.2.5.4-release (2024-03-03)
 ## General
 
 - [#339 - FIX](#339) Fix various buff stack counts from not being properly tracked. See specifics for each specialization below.

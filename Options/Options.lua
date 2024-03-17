@@ -943,9 +943,9 @@ local function ConstructImportExportPanel()
 	end)
 
 	buttonOffset = buttonOffset + buttonSpacing + 230
-	controls.exportButton_All_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["GlobalOptionsOnly"], buttonOffset, yCoord, 200, 20)
+	controls.exportButton_All_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageGlobalOptionsOnly"], buttonOffset, yCoord, 200, 20)
 	controls.exportButton_All_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["GlobalOptionsOnly"] .. ".", nil, -1, false, false, false, false, true)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ExportMessageGlobalOptionsOnly"] .. ".", nil, -1, false, false, false, false, true)
 	end)
 
 	yCoord = yCoord - 35
