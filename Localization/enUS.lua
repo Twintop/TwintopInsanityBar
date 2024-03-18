@@ -4,10 +4,17 @@ local L = TRB.Localization
 -- General strings
 L["TwintopsResourceBar"] = "Twintop's Resource Bar"
 L["OK"] = "OK"
+L["Cancel"] = "Cancel"
+L["Close"] = "Close"
+L["Yes"] = "Yes"
+L["No"] = "No"
 L["Author"] = "Author"
 L["Version"] = "Version"
 L["Released"] = "Released"
 L["SupportedSpecs"] = "Supported Specs (Dragonflight)"
+L["Experimental"] = "Experimental"
+L["Minimal"] = "Minimal"
+L["ExperimentalMinimal"] = "Experimental/Minimal"
 
 -- Options.lua
 --- Global Options
@@ -71,7 +78,7 @@ L["Disabled"] = "Disabled"
 L["Abilities"] = "Abilities"
 L["Items"] = "Items"
 
---- Abilities and items -- TODO: Pull this from spelldata
+--- Abilities and items
 L["Innervate"] = "Innervate"
 L["Shadowfiend"] = "Shadowfiend"
 L["SymbolOfHope"] = "Symbol of Hope"
@@ -170,12 +177,12 @@ L["ThresholdHealerOver2"] = "Mana gain from potions, items, and abilities (when 
 L["ThresholdHealerUnusable"] = "Mana potion or item on cooldown"
 L["ThresholdHealerPassive"] = "Passive mana gain per source"
 L["ThresholdHealerPotionTooltipBase"] = "This will show the vertical line on the bar denoting how much Mana you will gain if you use |5"
-L["AeratedManaPotionRank3"] = "27,600 mana" -- TODO: Look into extracting this from tooltip data?
-L["AeratedManaPotionRank2"] = "24,000 mana" -- TODO: Look into extracting this from tooltip data?
-L["AeratedManaPotionRank1"] = "20,869 mana" -- TODO: Look into extracting this from tooltip data?
-L["PotionOfFrozenFocusRank3"] = "48,300 mana + regen" -- TODO: Look into extracting this from tooltip data?
-L["PotionOfFrozenFocusRank2"] = "42,000 mana + regen" -- TODO: Look into extracting this from tooltip data?
-L["PotionOfFrozenFocusRank1"] = "36,531 mana + regen" -- TODO: Look into extracting this from tooltip data?
+L["AeratedManaPotionRank3"] = "27,600 mana"
+L["AeratedManaPotionRank2"] = "24,000 mana"
+L["AeratedManaPotionRank1"] = "20,869 mana"
+L["PotionOfFrozenFocusRank3"] = "48,300 mana + regen"
+L["PotionOfFrozenFocusRank2"] = "42,000 mana + regen"
+L["PotionOfFrozenFocusRank1"] = "36,531 mana + regen"
 L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"] = "Show the %s threshold line when the ability is on cooldown."
 L["ThresholdHealerShowWhileOnCooldownTooltipWithItem"] = "Show the %s threshold line when the item is on cooldown."
 L["ThresholdHealerToggleAbility"] = "This will show the vertical line on the bar denoting how much Mana you will gain if you use %s."
@@ -253,3 +260,87 @@ L["Essence3"] = "Essence 3"
 L["Essence4"] = "Essence 4"
 L["Essence5"] = "Essence 5"
 L["Essence6"] = "Essence 6"
+L["PowerWordRadianceCharge1"] = "Power Word: Radiance (1st Charge)"
+L["PowerWordRadianceCharge2"] = "Power Word: Radiance (2nd Charge)"
+L["HolyWordSerenityCharge1"] = "Holy Word: Serenity (1st Charge)"
+L["HolyWordSerenityCharge2"] = "Holy Word: Serenity (2nd Charge)"
+L["HolyWordSanctifyCharge1"] = "Holy Word: Sanctify (1st Charge)"
+L["HolyWordSanctifyCharge2"] = "Holy Word: Sanctify (2nd Charge)"
+L["HolyWordChastiseCharge1"] = "Holy Word: Chastise"
+L["RelativePositionBarTextHeader"] = "Relative Position of Bar Text to selected Bar"
+L["FontFaceHeader"] = "Font Face"
+L["Fonts"] = "Fonts"
+L["UseDefaultFontFace"] = "Use default Font Face"
+L["UseDefaultFontFaceTooltip"] = "This will make this bar text area use the default font face instead of the font face chosen above."
+L["FontHorizontalAlignmentHeader"] = "Font Horizontal Alignment (Justify)"
+L["FontSize"] = "Font Size"
+L["UseDefaultFontSize"] = "Use default Font Size"
+L["UseDefaultFontSizeTooltip"] = "This will make this bar text area use the default font size instead of the font size chosen above."
+L["FontColor"] = "Font Color"
+L["UseDefaultFontColor"] = "Use default Font Color"
+L["UseDefaultFontColorTooltip"] = "This will make this bar text area use the default font color instead of the font size chosen above."
+L["BarText"] = "Bar Text"
+L["NewBarTextEntry"] = "New Bar Text Entry"
+L["BarTextDeleteConfirmation"] = "Are you sure you want to delete '%s'?"
+
+--- Options dropdowns
+L["StrataBackground"] = "Background"
+L["StrataLow"] = "Low"
+L["StrataMedium"] = "Medium"
+L["StrataHigh"] = "High"
+L["StrataDialog"] = "Dialog"
+L["StrataFullscreen"] = "Fullscreen"
+L["StrataFullscreenDialog"] = "FullscreenDialog"
+L["StrataTooltip"] = "Tooltip"
+L["AudioChannelMaster"] = "Master"
+L["AudioChannelSFX"] = "SFX"
+L["AudioChannelMusic"] = "Music"
+L["AudioChannelAmbience"] = "Ambience"
+L["AudioChannelDialog"] = "Dialog"
+
+--- Positional dropdowns
+L["PositionAbove"] = "Above"
+L["PositionAboveLeft"] = "Above - Left"
+L["PositionAboveMiddle"] = "Above - Center"
+L["PositionAboveRight"] = "Above - Right"
+L["PositionMiddle"] = "Middle"
+L["PositionBelow"] = "Below"
+L["PositionBelowLeft"] = "Below - Left"
+L["PositionBelowMiddle"] = "Below - Center"
+L["PositionBelowRight"] = "Below - Right"
+L["PositionTopLeft"] = "Top Left"
+L["PositionTop"] = "Top"
+L["PositionTopRight"] = "Top Right"
+L["PositionLeft"] = "Left"
+L["PositionCenter"] = "Center"
+L["PositionRight"] = "Right"
+L["PositionBottomLeft"] = "Bottom Left"
+L["PositionBottom"] = "Bottom "
+L["PositionBottomRight"] = "Bottom Right"
+
+-- Warnings
+L["SpellIdMissing"] = "TRB: |cFFFF5555Table missing for spellId |r%s on this target. Please consider reporting this on GitHub!"
+L["RepositionThresholdInvalid"] = "|cFFFFFF00TRB Warning: |r RepositionThreshold() called without a valid thresholdLine!"
+L["LSMInvalidFont"] = "TRB: |cFFFF5555Invalid font (%s bar text '%s'): '|r%s|cFFFF5555'. Resetting to a default font.|r"
+L["LSMInvalidBarBackgroundTexture"] = "TRB: |cFFFF5555Invalid texture (%s bar background): '|r$s|cFFFF5555'. Resetting to a default texture.|r"
+L["LSMInvalidBarBorderTexture"] = "TRB: |cFFFF5555Invalid texture (%s bar border): '|r$s|cFFFF5555'. Resetting to a default texture.|r"
+L["LSMInvalidBarResourceTexture"] = "TRB: |cFFFF5555Invalid texture (%s resource bar): '|r$s|cFFFF5555'. Resetting to a default texture.|r"
+L["LSMInvalidBarPassiveTexture"] = "TRB: |cFFFF5555Invalid texture (%s passive bar): '|r$s|cFFFF5555'. Resetting to a default texture.|r"
+L["LSMInvalidBarCastingTexture"] = "TRB: |cFFFF5555Invalid texture (%s casting bar): '|r$s|cFFFF5555'. Resetting to a default texture.|r"
+L["LSMInvalidComboPointBackgroundTexture"] = "TRB: |cFFFF5555Invalid texture (%s combo points background): '|r$s|cFFFF5555'. Resetting to a default texture.|r"
+L["LSMInvalidComboPointBorderTexture"] = "TRB: |cFFFF5555Invalid texture (%s combo points border): '|r$s|cFFFF5555'. Resetting to a default texture.|r"
+L["LSMInvalidComboPointResourceTexture"] = "TRB: |cFFFF5555Invalid texture (%s combo points bar): '|r$s|cFFFF5555'. Resetting to a default texture.|r"
+L["LSMInvalidSoundNameBoth"] = "TRB: |cFFFF5555Invalid sound (%s '%s'): '|r%s|cFFFF5555'. Resetting to a default sound.|r"
+L["LSMInvalidSoundNameOnlySoundName"] = "TRB: |cFFFF5555Invalid sound (%s): '|r%s|cFFFF5555'. Resetting to a default sound.|r"
+L["LSMInvalidSoundNameOnlyName"] = "TRB: |cFFFF5555Invalid sound (%s '%s'). Resetting to a default sound.|r"
+L["LSMInvalidSound"] = "TRB: |cFFFF5555Invalid sound (%s). Resetting to a default sound.|r"
+
+
+-- LibSharedMedia entries
+L["LSMSoundWilhelmScream"] = "TRB: Wilhelm Scream"
+L["LSMSoundBoxingArenaGong"] = "TRB: Boxing Arena Gong"
+L["LSMSoundAirHorn"] = "TRB: Air Horn"
+
+-- Bar text
+L["BarTextNewline"] = "Insert a Newline. Alternative to pressing Enter."
+L["BarTextInvalidIfElseLogic"] = "{INVALID IF/ELSE LOGIC}"

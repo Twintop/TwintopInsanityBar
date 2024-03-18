@@ -2,8 +2,6 @@
 local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Bar = {}
-local _, _, classIndexId = UnitClass("player")
-
 
 function TRB.Functions.Bar:GetSanityCheckValues(settings)
 	local sc = {}

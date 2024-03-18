@@ -1,5 +1,6 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
+local L = TRB.Localization
 TRB.Classes = TRB.Classes or {}
 
 ---@class TRB.Classes.TargetData
@@ -248,7 +249,7 @@ end
 ---@return boolean # Should this trigger a full bar update?
 function TRB.Classes.Target:HandleCombatLogDebuff(spellId, type)
     if self.spells[spellId] == nil then
-        print("TRB: |cFFFF5555Table missing for spellId |r"..spellId.." on this target. Please consider reporting this on GitHub!")
+        print(string.format(L["SpellIdMissing"], spellId))
         self.spells[spellId] = TRB.Classes.TargetSpell:New({ id = spellId })
     end
 
@@ -261,7 +262,7 @@ end
 ---@return boolean # Should this trigger a full bar update?
 function TRB.Classes.Target:HandleCombatLogBuff(spellId, type)
     if self.spells[spellId] == nil then
-        print("TRB: |cFFFF5555Table missing for spellId |r"..spellId.." on this target. Please consider reporting this on GitHub!")
+        print(string.format(L["SpellIdMissing"], spellId))
         self.spells[spellId] = TRB.Classes.TargetSpell:New({ id = spellId, isBuff = true })
     end
     return self.spells[spellId]:HandleCombatLogBuffOrDebuff(type)

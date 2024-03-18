@@ -28,7 +28,7 @@ end
 
 function TRB.Functions.Threshold:RepositionThreshold(settings, thresholdLine, parentFrame, thresholdWidth, resourceThreshold, resourceMax)
 	if thresholdLine == nil then
-		print("|cFFFFFF00TRB Warning: |r RepositionThreshold() called without a valid thresholdLine!")
+		print(L["RepositionThresholdInvalid"])
 		return
 	end
 

@@ -15,12 +15,10 @@ TRB.Classes.CombatLogEntry = {}
 ---@return TRB.Classes.CombatLogEntry
 function TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
     ---@type TRB.Classes.CombatLogEntry
----@diagnostic disable-next-line: missing-fields
+    ---@diagnostic disable-next-line: missing-fields
     local entry = {}
 
----@diagnostic disable-next-line: assign-type-mismatch
-    --local _, type, _, sourceGuid, sourceName, _, _, destinationGuid, _, _, _, spellId, _ = CombatLogGetCurrentEventInfo()
-    --return type, sourceGuid, sourceName, destinationGuid, spellId
+    ---@diagnostic disable-next-line: assign-type-mismatch
     _, entry.type, _, entry.sourceGuid, entry.sourceName, _, _, entry.destinationGuid, _, _, _, entry.spellId, _ = CombatLogGetCurrentEventInfo()
     return entry
 end

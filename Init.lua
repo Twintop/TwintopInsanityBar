@@ -1,4 +1,5 @@
 local addonName, TRB = ...
+local L = TRB.Localization
 local _, _, classIndexId = UnitClass("player")
 
 -- Addon details data
@@ -8,7 +9,15 @@ TRB.Details.addonAuthor = C_AddOns.GetAddOnMetadata(addonName, "Author")
 TRB.Details.addonAuthorServer = C_AddOns.GetAddOnMetadata(addonName, "X-AuthorServer")
 TRB.Details.addonTitle = C_AddOns.GetAddOnMetadata(addonName, "Title")
 TRB.Details.addonReleaseDate = C_AddOns.GetAddOnMetadata(addonName, "X-ReleaseDate")
-TRB.Details.supportedSpecs = "|cFFA330C9Demon Hunter|r - Havoc, Vengeance\n|cFFFF7C0ADruid|r - Balance, Feral, Restoration\n|cFF33937FEvoker|r - Devastation, Preservation, Augmentation\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFF00FF98Monk|r - Mistweaver, Windwalker\n|cFFFFFFFFPriest|r - Discipline, Holy, Shadow\n|cFFFFF468Rogue|r - Assassination, Outlaw, Subtlety\n|cFF0070DDShaman|r - Elemental, Enhancement (Experimental/Minimal), Restoration\n|cFFC69B6DWarrior|r - Arms, Fury"
+TRB.Details.supportedSpecs = "|cFFA330C9" .. L["DemonHunter"] .. "|r - " .. L["DemonHunterHavoc"] .. ", " .. L["DemonHunterVengeance"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFFF7C0A" .. L["Druid"] .. "|r - " .. L["DruidBalance"] .. ", " .. L["DruidFeral"] .. ", " .. L["DruidRestoration"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF33937F" .. L["Evoker"] .. "|r - " .. L["EvokerDevastation"] .. ", " .. L["EvokerPreservation"] .. ", " .. L["EvokerAugmentation"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFAAD372" .. L["Hunter"] .. "|r - " .. L["HunterBeastMastery"] .. ", " .. L["HunterMarksmanship"] .. ", Survival\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF00FF98" .. L["Monk"] .. "|r - " .. L["MonkMistweaver"] .. ", " .. L["MonkWindwalker"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFFFFFFF" .. L["Priest"] .. "|r - " .. L["PriestDiscipline"] .. ", " .. L["PriestHoly"] .. ", " .. L["PriestShadow"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFFFF468" .. L["Rogue"] .. "|r - " .. L["RogueAssassination"] .. ", " .. L["RogueOutlaw"] .. ", " .. L["RogueSubtlety"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF0070DD" .. L["Shaman"] .. "|r - " .. L["ShamanElemental"] .. ", " .. L["ShamanEnhancement"] .. " (" .. L["ExperimentalMinimal"] .. "), " .. L["ShamanRestoration"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFC69B6D" .. L["Warrior"] .. "|r - " .. L["WarriorArms"] .. ", " .. L["WarriorFury"]
 
 local addonData = {
 	loaded = false,
@@ -16,11 +25,11 @@ local addonData = {
 	libs = {}
 }
 addonData.libs.SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
-addonData.libs.SharedMedia:Register("sound", "TRB: Wilhelm Scream", "Interface\\Addons\\TwintopInsanityBar\\Sounds\\wilhelm.ogg")
-addonData.libs.SharedMedia:Register("sound", "TRB: Boxing Arena Gong", "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg")
-addonData.libs.SharedMedia:Register("sound", "TRB: Air Horn", "Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg")
+addonData.libs.SharedMedia:Register("sound", L["LSMSoundWilhelmScream"], "Interface\\Addons\\TwintopInsanityBar\\Sounds\\wilhelm.ogg")
+addonData.libs.SharedMedia:Register("sound", L["LSMSoundBoxingArenaGong"], "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg")
+addonData.libs.SharedMedia:Register("sound", L["LSMSoundAirHorn"], "Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg")
 
-if not addonData.libs.SharedMedia:IsValid("border", "1 Pixel") then
+if not addonData.libs.SharedMedia:IsValid("border", "1 Pixel") then -- No localization on this as it is usually provided by WeakAuras
 	addonData.libs.SharedMedia:Register("border", "1 Pixel", "Interface\\Buttons\\WHITE8X8")
 end
 
@@ -116,7 +125,7 @@ TRB.Data.barTextVariables = {
 	icons = {},
 	values = {},
 	pipe = {
-		{ variable = "||n", description = "Insert a Newline. Alternative to pressing Enter.", printInSettings = true },
+		{ variable = "||n", description = L["BarTextNewline"], printInSettings = true },
 		{ variable = "||c", description = "", printInSettings = false },
 		{ variable = "||r", description = "", printInSettings = false },
 	},

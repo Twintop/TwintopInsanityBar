@@ -1,4 +1,5 @@
 local _, TRB = ...
+local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.BarText = {}
 
@@ -384,7 +385,7 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 							if resultCode then
 								local pcallSuccess, result = pcall(resultFunc)
 								if not pcallSuccess then-- Something went wrong, show the error text instead
-									returnText = returnText .. "{INVALID IF/ELSE LOGIC}"
+									returnText = returnText .. L["BarTextInvalidIfElseLogic"]
 								elseif result == true or result then
 									-- Recursive call for "IF", once we find the matched ]
 									local trueText = string.sub(input, nextOpenResult.position - positionOffset + 1, nextCloseResult.position - positionOffset - 1)
@@ -395,7 +396,7 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 									returnText = returnText .. RemoveInvalidVariablesFromBarText_Inner(falseText, elseOpenResult.index, elseCloseResult.index - 1, elseOpenResult.position, elseCloseResult.position - 1)
 								end
 							else -- Something went wrong, show the error text instead
-								returnText = returnText .. "{INVALID IF/ELSE LOGIC}"
+								returnText = returnText .. L["BarTextInvalidIfElseLogic"]
 							end
 
 							if elseCloseResult ~= nil and hasElse == true then

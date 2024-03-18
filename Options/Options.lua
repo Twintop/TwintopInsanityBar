@@ -681,23 +681,23 @@ local function ConstructAddonOptionsPanel()
 		---@diagnostic disable-next-line: undefined-field
 		local info = LibDD:UIDropDownMenu_CreateInfo()
 		local strata = {}
-		strata["Background"] = "BACKGROUND"
-		strata["Low"] = "LOW"
-		strata["Medium"] = "MEDIUM"
-		strata["High"] = "HIGH"
-		strata["Dialog"] = "DIALOG"
-		strata["Fullscreen"] = "FULLSCREEN"
-		strata["Fullscreen Dialog"] = "FULLSCREEN_DIALOG"
-		strata["Tooltip"] = "TOOLTIP"
+		strata[L["StrataBackground"]] = "BACKGROUND"
+		strata[L["StrataLow"]] = "LOW"
+		strata[L["StrataMedium"]] = "MEDIUM"
+		strata[L["StrataHigh"]] = "HIGH"
+		strata[L["StrataDialog"]] = "DIALOG"
+		strata[L["StrataFullscreen"]] = "FULLSCREEN"
+		strata[L["StrataFullscreenDialog"]] = "FULLSCREEN_DIALOG"
+		strata[L["StrataTooltip"]] = "TOOLTIP"
 		local strataList = {
-			"Background",
-			"Low",
-			"Medium",
-			"High",
-			"Dialog",
-			"Fullscreen",
-			"Fullscreen Dialog",
-			"Tooltip"
+			L["StrataBackground"],
+			L["StrataLow"],
+			L["StrataMedium"],
+			L["StrataHigh"],
+			L["StrataDialog"],
+			L["StrataFullscreen"],
+			L["StrataFullscreenDialog"],
+			L["StrataTooltip"]
 		}
 
 		for k, v in pairs(strataList) do
@@ -759,11 +759,11 @@ local function ConstructAddonOptionsPanel()
 		---@diagnostic disable-next-line: undefined-field
 		local info = LibDD:UIDropDownMenu_CreateInfo()
 		local channel = {}
-		channel["Master"] = "Master"
-		channel["SFX"] = "SFX"
-		channel["Music"] = "Music"
-		channel["Ambience"] = "Ambience"
-		channel["Dialog"] = "Dialog"
+		channel[L["AudioChannelMaster"]] = L["AudioChannelMaster"]
+		channel[L["AudioChannelSFX"]] = L["AudioChannelSFX"]
+		channel[L["AudioChannelMusic"]] = L["AudioChannelMusic"]
+		channel[L["AudioChannelAmbience"]] = L["AudioChannelAmbience"]
+		channel[L["AudioChannelDialog"]] = L["AudioChannelDialog"]
 
 		for k, v in pairs(channel) do
 			info.text = v
@@ -870,8 +870,8 @@ local function ConstructImportExportPanel()
 
 	StaticPopupDialogs["TwintopResourceBar_Import"] = {
 		text = L["ImportMessage"],
-		button1 = "Import",
-		button2 = "Cancel",
+		button1 = L["Import"],
+		button2 = L["Cancel"],
 		hasEditBox = true,
 		hasWideEditBox = true,
 		editBoxWidth = 500,
@@ -909,7 +909,7 @@ local function ConstructImportExportPanel()
 
 	StaticPopupDialogs["TwintopResourceBar_Export"] = {
 		text = "",
-		button1 = "Close",
+		button1 = L["Close"],
 		hasEditBox = true,
 		hasWideEditBox = true,
 		editBoxWidth = 400,

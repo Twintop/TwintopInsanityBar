@@ -961,19 +961,19 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		local info = LibDD:UIDropDownMenu_CreateInfo()
 		-- TODO: Make these dropdown values localizable
 		local relativeTo = {}
-		relativeTo["Above - Left"] = "TOPLEFT"
-		relativeTo["Above - Middle"] = "TOP"
-		relativeTo["Above - Right"] = "TOPRIGHT"
-		relativeTo["Below - Left"] = "BOTTOMLEFT"
-		relativeTo["Below - Middle"] = "BOTTOM"
-		relativeTo["Below - Right"] = "BOTTOMRIGHT"
+		relativeTo[L["PositionAboveLeft"]] = "TOPLEFT"
+		relativeTo[L["PositionAboveMiddle"]] = "TOP"
+		relativeTo[L["PositionAboveRight"]] = "TOPRIGHT"
+		relativeTo[L["PositionBelowLeft"]] = "BOTTOMLEFT"
+		relativeTo[L["PositionBelowMiddle"]] = "BOTTOM"
+		relativeTo[L["PositionBelowRight"]] = "BOTTOMRIGHT"
 		local relativeToList = {
-			"Above - Left",
-			"Above - Middle",
-			"Above - Right",
-			"Below - Left",
-			"Below - Middle",
-			"Below - Right"
+			L["PositionAboveLeft"],
+			L["PositionAboveMiddle"],
+			L["PositionAboveRight"],
+			L["PositionBelowLeft"],
+			L["PositionBelowMiddle"],
+			L["PositionBelowRight"]
 		}
 
 		for k, v in pairs(relativeToList) do
@@ -1529,13 +1529,13 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		local entries = 25
 		local info = LibDD:UIDropDownMenu_CreateInfo()
 		local relativeTo = {}
-		relativeTo["Above"] = "TOP"
-		relativeTo["Middle"] = "CENTER"
-		relativeTo["Below"] = "BOTTOM"
+		relativeTo[L["PositionAbove"]] = "TOP"
+		relativeTo[L["PositionMiddle"]] = "CENTER"
+		relativeTo[L["PositionBelow"]] = "BOTTOM"
 		local relativeToList = {
-			"Above",
-			"Middle",
-			"Below"
+			L["PositionAbove"],
+			L["PositionMiddle"],
+			L["PositionBelow"]
 		}
 
 		for k, v in pairs(relativeToList) do
@@ -2426,27 +2426,27 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				L["Screen"],
 			}
 		elseif (classId == 5 and specId == 1) then -- Discipline Priest
-			relativeTo["Power Word: Radiance (1st Charge)"] = "PowerWord_Radiance_1"
-			relativeTo["Power Word: Radiance (2nd Charge)"] = "PowerWord_Radiance_2"
+			relativeTo[L["PowerWordRadianceCharge1"]] = "PowerWord_Radiance_1"
+			relativeTo[L["PowerWordRadianceCharge2"]] = "PowerWord_Radiance_2"
 			relativeToList = {
 				L["MainResourceBar"],
-				"Power Word: Radiance (1st Charge)",
-				"Power Word: Radiance (2nd Charge)",
+				L["PowerWordRadianceCharge1"],
+				L["PowerWordRadianceCharge2"],
 				L["Screen"],
 			}
 		elseif (classId == 5 and specId == 2) then -- Holy Priest
-			relativeTo["Holy Word: Serenity (1st Charge)"] = "HolyWord_Serenity_1"
-			relativeTo["Holy Word: Serenity (2nd Charge)"] = "HolyWord_Serenity_2"
-			relativeTo["Holy Word: Sanctify (1st Charge)"] = "HolyWord_Sanctify_1"
-			relativeTo["Holy Word: Sanctify (2nd Charge)"] = "HolyWord_Sanctify_2"
-			relativeTo["Holy Word: Chastise"] = "HolyWord_Chastise_1"
+			relativeTo[L["HolyWordSerenityCharge1"]] = "HolyWord_Serenity_1"
+			relativeTo[L["HolyWordSerenityCharge2"]] = "HolyWord_Serenity_2"
+			relativeTo[L["HolyWordSanctifyCharge1"]] = "HolyWord_Sanctify_1"
+			relativeTo[L["HolyWordSanctifyCharge2"]] = "HolyWord_Sanctify_2"
+			relativeTo[L["HolyWordChastiseCharge1"]] = "HolyWord_Chastise_1"
 			relativeToList = {
 				L["MainResourceBar"],
-				"Holy Word: Serenity (1st Charge)",
-				"Holy Word: Serenity (2nd Charge)",
-				"Holy Word: Sanctify (1st Charge)",
-				"Holy Word: Sanctify (2nd Charge)",
-				"Holy Word: Chastise",
+				L["HolyWordSerenityCharge1"],
+				L["HolyWordSerenityCharge2"],
+				L["HolyWordSanctifyCharge1"],
+				L["HolyWordSanctifyCharge2"],
+				L["HolyWordChastiseCharge1"],
 				L["Screen"],
 			}
 		elseif (classId == 7 and specId == 2) then -- Enhancement Shaman
@@ -2543,7 +2543,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		for k, v in pairs(relativeToList) do
 			info.text = v
 			info.value = relativeTo[v]
-			info.checked = false --relativeTo[v] == spec.comboPoints.relativeTo
+			info.checked = false
 			info.func = self.SetValue
 			info.arg1 = relativeTo[v]
 			info.arg2 = v
@@ -2554,7 +2554,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	-- Create the dropdown, and configure its appearance
 	local barTextRelativeTo = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_barTextRelativeTo", barTextOptionsFrame)
-	barTextRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, "Relative Position of Bar Text to selected Bar", oUi.xCoord2, yCoord)
+	barTextRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["RelativePositionBarTextHeader"], oUi.xCoord2, yCoord)
 	barTextRelativeTo.label.font:SetFontObject(GameFontNormal)
 	barTextRelativeTo:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	LibDD:UIDropDownMenu_SetWidth(barTextRelativeTo, oUi.dropdownWidth)
@@ -2566,31 +2566,31 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		local entries = 25
 		local info = LibDD:UIDropDownMenu_CreateInfo()
 		local relativeTo = {}
-		relativeTo["Top Left"] = "TOPLEFT"
-		relativeTo["Top"] = "TOP"
-		relativeTo["Top Right"] = "TOPRIGHT"
-		relativeTo["Left"] = "LEFT"
-		relativeTo["Center"] = "CENTER"
-		relativeTo["Right"] = "RIGHT"
-		relativeTo["Bottom Left"] = "BOTTOMLEFT"
-		relativeTo["Bottom"] = "BOTTOM"
-		relativeTo["Bottom Right"] = "BOTTOMRIGHT"
+		relativeTo[L["PositionTopLeft"]] = "TOPLEFT"
+		relativeTo[L["PositionTop"]] = "TOP"
+		relativeTo[L["PositionTopRight"]] = "TOPRIGHT"
+		relativeTo[L["PositionLeft"]] = "LEFT"
+		relativeTo[L["PositionCenter"]] = "CENTER"
+		relativeTo[L["PositionRight"]] = "RIGHT"
+		relativeTo[L["PositionBottomLeft"]] = "BOTTOMLEFT"
+		relativeTo[L["PositionBottom"]] = "BOTTOM"
+		relativeTo[L["PositionBottomRight"]] = "BOTTOMRIGHT"
 		local relativeToList = {
-			"Top Left",
-			"Top",
-			"Top Right",
-			"Left",
-			"Center",
-			"Right",
-			"Bottom Left",
-			"Bottom",
-			"Bottom Right"
+			L["PositionTopLeft"],
+			L["PositionTop"],
+			L["PositionTopRight"],
+			L["PositionLeft"],
+			L["PositionCenter"],
+			L["PositionRight"],
+			L["PositionBottomLeft"],
+			L["PositionBottom"],
+			L["PositionBottomRight"]
 		}
 
 		for k, v in pairs(relativeToList) do
 			info.text = v
 			info.value = relativeTo[v]
-			info.checked = false --relativeTo[v] == spec.comboPoints.relativeTo
+			info.checked = false
 			info.func = self.SetValue
 			info.arg1 = relativeTo[v]
 			info.arg2 = v
@@ -2612,7 +2612,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	-- Create the dropdown, and configure its appearance
 	local font = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_font", barTextOptionsFrame)
-	font.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, "Font Face", oUi.xCoord, yCoord)
+	font.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["FontFaceHeader"], oUi.xCoord, yCoord)
 	font.label.font:SetFontObject(GameFontNormal)
 	font:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 	LibDD:UIDropDownMenu_SetWidth(font, oUi.dropdownWidth)
@@ -2630,7 +2630,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			for i=0, menus-1 do
 				info.hasArrow = true
 				info.notCheckable = true
-				info.text = "Fonts " .. i+1
+				info.text = L["Fonts"] .. " " .. i+1
 				info.menuList = i
 				LibDD:UIDropDownMenu_AddButton(info)
 			end
@@ -2641,7 +2641,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				if k > start and k <= start + entries then
 					info.text = v
 					info.value = fonts[v]
-					info.checked = false -- fonts[v] == spec.displayText.default.fontFace
+					info.checked = false
 					info.func = self.SetValue
 					info.arg1 = fonts[v]
 					info.arg2 = v
@@ -2663,9 +2663,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	local useDefaultFontFace = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontFace", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontFace:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-60)
-	getglobal(useDefaultFontFace:GetName() .. 'Text'):SetText("Use default Font Face")
+	getglobal(useDefaultFontFace:GetName() .. 'Text'):SetText(L["UseDefaultFontFace"])
 	---@diagnostic disable-next-line: inject-field
-	useDefaultFontFace.tooltip = "This will make this bar text area use the default font face instead of the font face chosen above."
+	useDefaultFontFace.tooltip = L["UseDefaultFontFaceTooltip"]
 	useDefaultFontFace:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontFace = self:GetChecked()
 		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
@@ -2673,7 +2673,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	-- Create the dropdown, and configure its appearance
 	local barTextJustifyHorizontal = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_barTextJustifyHorizontal", barTextOptionsFrame)
-	barTextJustifyHorizontal.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, "Font Horizontal Alignment (Justify)", oUi.xCoord2, yCoord)
+	barTextJustifyHorizontal.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["FontHorizontalAlignmentHeader"], oUi.xCoord2, yCoord)
 	barTextJustifyHorizontal.label.font:SetFontObject(GameFontNormal)
 	barTextJustifyHorizontal:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	LibDD:UIDropDownMenu_SetWidth(barTextJustifyHorizontal, oUi.dropdownWidth)
@@ -2685,19 +2685,19 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		local entries = 25
 		local info = LibDD:UIDropDownMenu_CreateInfo()
 		local relativeTo = {}
-		relativeTo["Left"] = "LEFT"
-		relativeTo["Center"] = "CENTER"
-		relativeTo["Right"] = "RIGHT"
+		relativeTo[L["PositionLeft"]] = "LEFT"
+		relativeTo[L["PositionCenter"]] = "CENTER"
+		relativeTo[L["PositionRight"]] = "RIGHT"
 		local relativeToList = {
-			"Left",
-			"Center",
-			"Right",
+			L["PositionLeft"],
+			L["PositionCenter"],
+			L["PositionRight"],
 		}
 
 		for k, v in pairs(relativeToList) do
 			info.text = v
 			info.value = relativeTo[v]
-			info.checked = false --relativeTo[v] == spec.comboPoints.relativeTo
+			info.checked = false
 			info.func = self.SetValue
 			info.arg1 = relativeTo[v]
 			info.arg2 = v
@@ -2714,7 +2714,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	end
 	
 	yCoord = yCoord - 100
-	title = "Font Size"
+	title = L["FontSize"]
 	local fontSize = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, 6, 72, 18, 1, 0,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	fontSize:SetScript("OnValueChanged", function(self, value)
@@ -2725,9 +2725,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	local useDefaultFontSize = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontSize", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontSize:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-40)
-	getglobal(useDefaultFontSize:GetName() .. 'Text'):SetText("Use default Font Size")
+	getglobal(useDefaultFontSize:GetName() .. 'Text'):SetText(L["UseDefaultFontSize"])
 	---@diagnostic disable-next-line: inject-field
-	useDefaultFontSize.tooltip = "This will make this bar text area use the default font size instead of the font size chosen above."
+	useDefaultFontSize.tooltip = L["UseDefaultFontSizeTooltip"]
 	useDefaultFontSize:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontSize = self:GetChecked()
 		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
@@ -2735,7 +2735,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	controls.colors = controls.colors or {}
 	controls.colors.barText = controls.colors.barText or {}
-	controls.colors.barText.color = TRB.Functions.OptionsUi:BuildColorPicker(barTextOptionsFrame, "Font Color", "FFFFFFFF",
+	controls.colors.barText.color = TRB.Functions.OptionsUi:BuildColorPicker(barTextOptionsFrame, L["FontColor"], "FFFFFFFF",
 																			250, 25, oUi.xCoord2, yCoord)
 	local barTextColor = controls.colors.barText.color
 	barTextColor:SetScript("OnMouseDown", function(self, button, ...)
@@ -2744,9 +2744,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	local useDefaultFontColor = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontColor", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontColor:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-	getglobal(useDefaultFontColor:GetName() .. 'Text'):SetText("Use default Font Color")
+	getglobal(useDefaultFontColor:GetName() .. 'Text'):SetText(L["UseDefaultFontColor"])
 	---@diagnostic disable-next-line: inject-field
-	useDefaultFontColor.tooltip = "This will make this bar text area use the default font color instead of the font color chosen above."
+	useDefaultFontColor.tooltip = L["UseDefaultFontColorTooltip"]
 	useDefaultFontColor:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontColor = self:GetChecked()
 		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
@@ -2754,7 +2754,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 
 	yCoord = yCoord - 70
-	controls.labels.barText = TRB.Functions.OptionsUi:BuildLabel(barTextOptionsFrame, "Bar Text", oUi.xCoord, yCoord, 90, 20)
+	controls.labels.barText = TRB.Functions.OptionsUi:BuildLabel(barTextOptionsFrame, L["BarText"], oUi.xCoord, yCoord, 90, 20)
 
 	yCoord = yCoord - 20
 	local barText = TRB.Functions.OptionsUi:CreateBarTextInputPanel(barTextOptionsFrame, namePrefix .. "_Text", "",
@@ -2801,22 +2801,22 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			useDefaultFontColor = false,
-			name = "New Bar Text Entry",
+			name = L["NewBarTextEntry"],
 			text = "",
 			guid = TRB.Functions.String:Guid(),
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = "Left",
+			fontJustifyHorizontalName = L["PositionLeft"],
 			fontSize=18,
 			color="FFFFFFFF",
 			position = {
 				xPos = 0,
 				yPos = 0,
 				relativeTo = "LEFT",
-				relativeToName = "Left",
+				relativeToName = L["PositionLeft"],
 				relativeToFrame = "Resource",
-				relativeToFrameName = "Main Resource Bar"
+				relativeToFrameName = L["MainResourceBar"]
 			}
 		}
 	end
@@ -2921,8 +2921,8 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
 		text = "",
-		button1 = "Yes",
-		button2 = "No",
+		button1 = L["Yes"],
+		button2 = L["No"],
 		OnShow = function(self, data)
 			self.text:SetFormattedText(data.message)
 			self.data = data
@@ -2946,7 +2946,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 					if column == 5 then
 						StaticPopup_Show("TwintopResourceBar_ConfirmDeleteBarText", nil, nil, {
-							message = "Are you sure you want to delete '"..data[realrow].cols[2].value.."'?",
+							message = string.format(L["BarTextDeleteConfirmation"], data[realrow].cols[2].value),
 							displayText = spec.displayText,
 							row = realrow,
 							btt = scrollingTable,
