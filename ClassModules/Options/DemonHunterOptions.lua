@@ -1433,7 +1433,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 12, 2, yCoord, POWER_TYPE_FURY, "Soul Fragments")
 
 		yCoord = yCoord - 60
-		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 2, yCoord, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 2, yCoord, true, "Soul Fragments")
 
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 2, yCoord, "Fury", "notEmpty", false)

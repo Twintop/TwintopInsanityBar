@@ -10,6 +10,14 @@ local content = [====[
 
 ---
 
+# 10.2.6.1-release (2024-03-19)
+## Demon Hunter
+### Vengeance
+
+- [#344 - FIX](#344) Ensure all Soul Fragment configuration options are shown.
+
+---
+
 # 10.2.6.0-release (2024-03-19)
 ## General
 
