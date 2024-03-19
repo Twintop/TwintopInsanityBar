@@ -11,6 +11,10 @@ local content = [====[
 ---
 
 # 10.2.6.2-release (2024-03-20)
+## General
+- [#8 - UPDATE](#8) Simplify some localization strings formats.
+- [#8 - UPDATE](#8) Add initial German (deDE) localization from *zazel*.
+
 ## Druid
 ### Balance
 

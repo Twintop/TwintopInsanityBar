@@ -18,14 +18,14 @@ L["ExperimentalMinimal"] = "Experimental/Minimal"
 
 -- Options.lua
 --- Global Options
-L["BarTextInstructions"] = string.format("For more detailed information about Bar Text customization, see the TRB Wiki on GitHub.\n\n")
-L["BarTextInstructions"] = string.format("%sFor conditional display (only if $VARIABLE is active/non-zero):\n    {$VARIABLE}[$VARIABLE is TRUE output]\n\n", L["BarTextInstructions"])
-L["BarTextInstructions"] = string.format("%sBoolean AND (&), OR (|), NOT (!), and parenthises in logic for conditional display is supported:\n    {$A&$B}[Both are TRUE output]\n    {$A|$B}[One or both is TRUE output]\n    {!$A}[$A is FALSE output]\n    {!$A&($B|$C)}[$A is FALSE and $B or $C is TRUE output]\n\n", L["BarTextInstructions"])
-L["BarTextInstructions"] = string.format("%sExpressions are also supported (+, -, *, /) and comparison symbols (>, >=, <, <=, =, !=):\n    {$VARIABLE*2>=$OTHERVAR}[$VARIABLE is at least twice as large as $OTHERVAR output]\n\n", L["BarTextInstructions"])
-L["BarTextInstructions"] = string.format("%sIF/ELSE is supported:\n    {$VARIABLE}[$VARIABLE is TRUE output][$VARIABLE is FALSE output]\n    {$VARIABLE>2}[$VARIABLE is more than 2 output][$VARIABLE is less than 2 output]\n\n", L["BarTextInstructions"])
-L["BarTextInstructions"] = string.format("%sIF/ELSE includes NOT support:\n    {!$VARIABLE}[$VARIABLE is FALSE output][$VARIABLE is TRUE output]\n\n", L["BarTextInstructions"])
-L["BarTextInstructions"] = string.format("%sLogic can be nexted inside IF/ELSE blocks:\n    {$A}[$A is TRUE output][$A is FALSE and {$B}[$B is TRUE][$B is FALSE] output]\n\n", L["BarTextInstructions"])
-L["BarTextInstructions"] = string.format("%sTo display icons use:\n    #ICONVARIABLENAME", L["BarTextInstructions"])
+L["BarTextInstructions1"] = "For more detailed information about Bar Text customization, see the TRB Wiki on GitHub.\n\n"
+L["BarTextInstructions2"] = "For conditional display (only if $VARIABLE is active/non-zero):\n    {$VARIABLE}[$VARIABLE is TRUE output]\n\n"
+L["BarTextInstructions3"] = "Boolean AND (&), OR (|), NOT (!), and parenthises in logic for conditional display is supported:\n    {$A&$B}[Both are TRUE output]\n    {$A|$B}[One or both is TRUE output]\n    {!$A}[$A is FALSE output]\n    {!$A&($B|$C)}[$A is FALSE and $B or $C is TRUE output]\n\n"
+L["BarTextInstructions4"] = "Expressions are also supported (+, -, *, /) and comparison symbols (>, >=, <, <=, =, !=):\n    {$VARIABLE*2>=$OTHERVAR}[$VARIABLE is at least twice as large as $OTHERVAR output]\n\n"
+L["BarTextInstructions5"] = "IF/ELSE is supported:\n    {$VARIABLE}[$VARIABLE is TRUE output][$VARIABLE is FALSE output]\n    {$VARIABLE>2}[$VARIABLE is more than 2 output][$VARIABLE is less than 2 output]\n\n"
+L["BarTextInstructions6"] = "IF/ELSE includes NOT support:\n    {!$VARIABLE}[$VARIABLE is FALSE output][$VARIABLE is TRUE output]\n\n"
+L["BarTextInstructions7"] = "Logic can be nexted inside IF/ELSE blocks:\n    {$A}[$A is TRUE output][$A is FALSE and {$B}[$B is TRUE][$B is FALSE] output]\n\n"
+L["BarTextInstructions8"] = "To display icons use:\n    #ICONVARIABLENAME"
 L["GlobalOptions"] = "Global Options"
 L["TTD"] = "Time To Die"
 L["SamplingRate"] = "Sampling Rate (seconds)"
@@ -44,8 +44,8 @@ L["AudioChannel"] = "Audio Channel"
 L["AudioChannelDescription"] = "Audio Channel to use"
 L["ExperimentalFeatures"] = "Experimental Features"
 L["Support"] = "Support"
-L["ExperimentalEnhancementShaman"] = string.format("%s %s support", L["ShamanEnhancement"], L["Shaman"])
-L["ExperimentalEnhancementShamanTooltip"] = string.format("This will enable experimental %s %s support within the bar. If you change this setting and are currently logged in on a %s, you'll need to reload your UI before %s %s configuration options become available.", L["ShamanEnhancement"], L["Shaman"], L["Shaman"], L["ShamanEnhancement"], L["Shaman"])
+L["ExperimentalEnhancementShaman"] = "Enhancement Shaman support"
+L["ExperimentalEnhancementShamanTooltip"] = "This will enable experimental Enhancement Shaman support within the bar. If you change this setting and are currently logged in on a Shaman, you'll need to reload your UI before Enhancement Shaman configuration options become available."
 L["ShowNewsPopup"] = "Show News Popup"
 
 --- Import/Export
@@ -59,7 +59,7 @@ L["ImportReloadMessage"] = "Import successful. Please click OK to reload UI."
 L["ImportExisting"] = "Import existing Settings Configuration string"
 L["ExportSettingsConfiguration"] = "Export Settings Configuration"
 L["ExportMessagePrefix"] = "Copy the string below to share your Twintop's Resource Bar configuration for"
-L["ExportMessagePrefixAll"] = L["ExportMessagePrefix"] .. " all"
+L["ExportMessagePrefixAll"] = "Copy the string below to share your Twintop's Resource Bar configuration for all"
 L["ExportMessageAll"] = "All"
 L["ExportMessageBarDisplay"] = "Bar Display"
 L["ExportMessageFontText"] = "Font & Text"
@@ -67,8 +67,8 @@ L["ExportMessageAudioTracking"] = "Audio & Tracking"
 L["ExportMessageBarText"] = "Bar Text"
 L["ExportMessageAllClassesSpecs"] = "All Classes/Specs"
 L["ExportMessagePostfixSpecializations"] = "specializations"
-L["ExportMessageGlobalOptions"] = L["GlobalOptions"]
-L["ExportMessageGlobalOptionsOnly"] = L["GlobalOptions"] .. " Only"
+L["ExportMessageGlobalOptions"] = "Global Options"
+L["ExportMessageGlobalOptionsOnly"] = "Global Only"
 
 
 -- OptionsUi.lua
@@ -278,7 +278,7 @@ L["UseDefaultFontSize"] = "Use default Font Size"
 L["UseDefaultFontSizeTooltip"] = "This will make this bar text area use the default font size instead of the font size chosen above."
 L["FontColor"] = "Font Color"
 L["UseDefaultFontColor"] = "Use default Font Color"
-L["UseDefaultFontColorTooltip"] = "This will make this bar text area use the default font color instead of the font size chosen above."
+L["UseDefaultFontColorTooltip"] = "This will make this bar text area use the default font color instead of the font color chosen above."
 L["BarText"] = "Bar Text"
 L["NewBarTextEntry"] = "New Bar Text Entry"
 L["BarTextDeleteConfirmation"] = "Are you sure you want to delete '%s'?"
