@@ -10,6 +10,14 @@ local content = [====[
 
 ---
 
+# 10.2.6.2-release (2024-03-20)
+## Druid
+### Balance
+
+- [#345 - UPDATE](#345) Update Vault of the Incarnates (T29 4P) Astral Power reduction to -15 (was -5).
+
+---
+
 # 10.2.6.1-release (2024-03-19)
 ## Demon Hunter
 ### Vengeance
