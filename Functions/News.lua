@@ -14,6 +14,7 @@ local content = [====[
 ## General
 - [#8 - UPDATE](#8) Simplify some localization strings formats.
 - [#8 - UPDATE](#8) Add initial German (deDE) localization from *zazel*.
+- [#345 - UPDATE](#345) Update mana regen values for existing Conjured Chillglobes from Dragonflight season 1.
 
 ## Druid
 ### Balance

@@ -433,19 +433,19 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					manaThresholdPercent = 0.65,
 					lfr = {
 						bonusId = 7982,
-						mana = 10877
+						mana = 3263
 					},
 					normal = {
 						bonusId = 7979,
-						mana = 11735
+						mana = 3520
 					},
 					heroic = {
 						bonusId = 7980,
-						mana = 14430
+						mana = 4329
 					},
 					mythic = {
 						bonusId = 7981,
-						mana = 17625
+						mana = 5287
 					}
 				},
 				alchemyStone = false
