@@ -747,7 +747,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			end
 		end
 
-		if specId == 2 then
+		if specId == 1 then
+			TRB.Frames.resource2ContainerFrame:Hide()
+		elseif specId == 2 then
 			TRB.Frames.resource2ContainerFrame:Show()
 		end
 
