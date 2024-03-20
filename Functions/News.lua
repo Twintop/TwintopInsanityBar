@@ -18,7 +18,7 @@ local content = [====[
 
 ## Demon Hunter
 
-- [#344 - FIX] Prevent Soul Fragments from showing while your specialization is Havoc.
+- [#344 - FIX](#344) Prevent Soul Fragments from showing while your specialization is Havoc.
 
 ---
 
