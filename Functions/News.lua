@@ -14,7 +14,7 @@ local content = [====[
 ## General
 
 - [#8 - UPDATE](#8) Add more German (deDE) localizations from **unfug**.
-- [#8 - UPDATE](#8) Add more French (feFR) localizations from **Koroshy**.
+- [#8 - UPDATE](#8) Add more French (frFR) localizations from **Koroshy**.
 
 ## Demon Hunter
 

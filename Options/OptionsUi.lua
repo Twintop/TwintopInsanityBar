@@ -2507,18 +2507,18 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				L["Screen"],
 			}
 		elseif (classId == 12 and specId == 2) then -- Vengeance Demon Hunter
-			relativeTo[L["SoulFragments1"]] = "ComboPoint_1"
-			relativeTo[L["SoulFragments2"]] = "ComboPoint_2"
-			relativeTo[L["SoulFragments3"]] = "ComboPoint_3"
-			relativeTo[L["SoulFragments4"]] = "ComboPoint_4"
-			relativeTo[L["SoulFragments5"]] = "ComboPoint_5"
+			relativeTo[L["SoulFragment1"]] = "ComboPoint_1"
+			relativeTo[L["SoulFragment2"]] = "ComboPoint_2"
+			relativeTo[L["SoulFragment3"]] = "ComboPoint_3"
+			relativeTo[L["SoulFragment4"]] = "ComboPoint_4"
+			relativeTo[L["SoulFragment5"]] = "ComboPoint_5"
 			relativeToList = {
 				L["MainResourceBar"],
-				L["SoulFragments1"],
-				L["SoulFragments2"],
-				L["SoulFragments3"],
-				L["SoulFragments4"],
-				L["SoulFragments5"],
+				L["SoulFragment1"],
+				L["SoulFragment2"],
+				L["SoulFragment3"],
+				L["SoulFragment4"],
+				L["SoulFragment5"],
 				L["Screen"],
 			}
 		elseif (classId == 13) then -- Evoker
