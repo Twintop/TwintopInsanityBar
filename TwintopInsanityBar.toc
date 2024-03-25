@@ -1,5 +1,6 @@
 ## Interface: 100206
 ## Title: Twintop's Resource Bar
+## Title-frFR: Barre de Ressources Twintop
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 10.2.6.3

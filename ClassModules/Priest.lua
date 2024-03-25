@@ -4260,7 +4260,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							resourceFrame.thresholds[9]:Hide()
 						end
 					else
-						resourceFrame.thresholds[8]:Hide()
+						resourceFrame.thresholds[9]:Hide()
 					end
 
 					local passiveValue = 0

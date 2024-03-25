@@ -1946,7 +1946,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 			end)
 
 			local title = L["ThresholdHealerSymbolOfHopeManaPercent"]
-			controls.symbolOfHopePercent = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 100, 25, 5, 5,
+			controls.symbolOfHopePercent = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 100, spec.thresholds.symbolOfHope.minimumManaPercent, 5, 5,
 											oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord-20)
 			controls.symbolOfHopePercent:SetScript("OnValueChanged", function(self, value)
 				value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)

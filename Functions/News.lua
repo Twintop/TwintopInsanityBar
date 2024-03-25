@@ -10,6 +10,21 @@ local content = [====[
 
 ---
 
+# 10.2.6.4-release (2024-03-26)
+## General
+
+- [#8 - UPDATE](#8) Add more German (deDE) localizations from **unfug**.
+- [#8 - UPDATE](#8) Add more British English (enGB) localisations from **Twintop**.
+- [#8 - UPDATE](#8) Add more French (frFR) localizations from **Koroshy**.
+
+## Priest
+### Holy
+
+- (FIX) Fix Shadowfiend and Symbol of Hope threshold lines for confusing themselves with one another.
+- (FIX) Fix Symbol of Hope shown mana % slider not remembering a previously configured value.
+
+---
+
 # 10.2.6.3-release (2024-03-21)
 ## General
 
