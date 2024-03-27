@@ -748,13 +748,13 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 1, yCoord, false)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 1, yCoord, "Fury", "notEmpty", false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], "notEmpty", false)
 
 		yCoord = yCoord - 70
-		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 1, yCoord, "Fury")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"])
 
 		yCoord = yCoord - 30
-		controls.colors.metamorphosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Fury while Metamorphosis is active", spec.colors.bar.metamorphosis, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.metamorphosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerMetamorphosis"], spec.colors.bar.metamorphosis, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.metamorphosis
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "metamorphosis")
@@ -764,14 +764,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.endOfMetamorphosis = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_EndOfMetamorphosisCheckbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfMetamorphosis
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Metamorphosis")
-		f.tooltip = "Changes the bar color when Metamorphosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocCheckboxEndOfMetamorphosis"])
+		f.tooltip = L["DemonHunterHavocCheckboxEndOfMetamorphosisTooltip"]
 		f:SetChecked(spec.endOfMetamorphosis.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.endOfMetamorphosis.enabled = self:GetChecked()
 		end)
 
-		controls.colors.metamorphosisEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Fury when Metamorphosis is ending", spec.colors.bar.metamorphosisEnding, 250, 25, oUi.xCoord2, yCoord)
+		controls.colors.metamorphosisEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerMetamorphosisEnding"], spec.colors.bar.metamorphosisEnding, 250, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.metamorphosisEnding
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "metamorphosisEnding")
@@ -781,14 +781,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
-		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
+		f.tooltip = L["ShowCastingBarCheckboxTooltip"]
 		f:SetChecked(spec.bar.showCasting)
 		f:SetScript("OnClick", function(self, ...)
 			spec.bar.showCasting = self:GetChecked()
 		end)
 
-		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Fury gain from Eye Beam with Blind Fury", spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerCasting"], spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 1)
@@ -798,60 +798,60 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
-		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
+		f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
 		f:SetChecked(spec.bar.showPassive)
 		f:SetScript("OnClick", function(self, ...)
 			spec.bar.showPassive = self:GetChecked()
 		end)
 
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Fury gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 12, 1, yCoord, "Fury", true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], true, false)
 
 		yCoord = yCoord - 40
-		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", oUi.xCoord, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
 		
 		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Under minimum required Fury threshold line", spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceFury"]), spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Over minimum required Fury threshold line", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
+		controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceFury"]), spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-60)
+		controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
-		controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Chaos Theory effect up", spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-90)
+		controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocThresholdSpecial"], spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.threshold.special
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "special")
 		end)
 
-		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Out of range of current target to use ability", spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-120)
+		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-120)
 		f = controls.colors.threshold.outOfRange
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
@@ -860,8 +860,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOutOfRange
 		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-150)
-		getglobal(f:GetName() .. 'Text'):SetText("Change threshold line color when out of range?")
-		f.tooltip = "When checked, while in combat threshold lines will change color when you are unable to use the ability due to being out of range of your current target."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
+		f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
 		f:SetChecked(spec.thresholds.outOfRange)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.outOfRange = self:GetChecked()
@@ -870,8 +870,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
 		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-170)
-		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
-		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
+		f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
@@ -881,8 +881,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.bladeDanceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_bladeDance", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.bladeDanceThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Blade Dance / Death Sweep")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Blade Dance. Shows for Death Sweep while in Demon Form."
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxBladeDashDeathSweep"])
+		f.tooltip = L["DemonHunterHavocThresholdCheckboxBladeDashDeathSweepTooltip"]
 		f:SetChecked(spec.thresholds.bladeDance.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.bladeDance.enabled = self:GetChecked()
@@ -893,8 +893,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.chaosNovaThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_chaosNova", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.chaosNovaThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Chaos Nova (no Unleashed Power)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Chaos Nova. Only shown if Unleashed Power is not talented."
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxChaosNova"])
+		f.tooltip = L["DemonHunterHavocThresholdCheckboxChaosNovaTooltip"]
 		f:SetChecked(spec.thresholds.chaosNova.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.chaosNova.enabled = self:GetChecked()
@@ -904,8 +904,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.chaosStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_chaosStrike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.chaosStrikeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Chaos Strike / Annihilation")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Chaos Strike. Shows for Annihilation while in Demon Form."
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilation"])
+		f.tooltip = L["DemonHunterHavocThresholdCheckboxChaosStrikeAnnihilationTooltip"]
 		f:SetChecked(spec.thresholds.chaosStrike.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.chaosStrike.enabled = self:GetChecked()
@@ -916,8 +916,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.eyeBeamThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_eyeBeam", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.eyeBeamThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Eye Beam")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Eye Beam."
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxEyeBeam"])
+		f.tooltip = L["DemonHunterHavocThresholdCheckboxEyeBeamTooltip"]
 		f:SetChecked(spec.thresholds.eyeBeam.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.eyeBeam.enabled = self:GetChecked()
@@ -927,8 +927,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.felBarrageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_felBarrage", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.felBarrageThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Fel Barrage")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Fel Barrage. Only visible if talented into Fel Barrage."
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxFelBarrage"])
+		f.tooltip = L["DemonHunterHavocThresholdCheckboxFelBarrageTooltip"]
 		f:SetChecked(spec.thresholds.felBarrage.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.felBarrage.enabled = self:GetChecked()
@@ -938,8 +938,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.felEruptionVictoryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_felEruption", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.felEruptionVictoryThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Fel Eruption")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Fel Eruption. Only visible if talented into Fel Eruption."
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxFelEruption"])
+		f.tooltip = L["DemonHunterHavocThresholdCheckboxFelEruptionTooltip"]
 		f:SetChecked(spec.thresholds.felEruption.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.felEruption.enabled = self:GetChecked()
@@ -949,8 +949,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.glaiveTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_glaiveTempest", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.glaiveTempestThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Glaive Tempest")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Glaive Tempest. Only visible if talented into Glaive Tempest."
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxGlaiveTempest"])
+		f.tooltip = L["DemonHunterHavocThresholdCheckboxGlaiveTempestTooltip"]
 		f:SetChecked(spec.thresholds.glaiveTempest.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.glaiveTempest.enabled = self:GetChecked()
@@ -960,8 +960,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.throwGlaiveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_Threshold_Option_throwGlaive", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.throwGlaiveThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Throw Glaive (Furious Throws)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Throw Glaive. Only visible if talented into Furious Throws."
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocThresholdCheckboxThrowGlaive"])
+		f.tooltip = L["DemonHunterHavocThresholdCheckboxThrowGlaiveTooltip"]
 		f:SetChecked(spec.thresholds.throwGlaive.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.throwGlaive.enabled = self:GetChecked()
@@ -972,15 +972,15 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 12, 1, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Metamorphosis Configuration", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterHavocEndOfMetamorphosisConfigurationHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfMetamorphosisModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_EOT_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfMetamorphosisModeGCDs
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Metamorphosis ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocCheckboxMetamorphosisGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many GCDs remain until Metamorphosis ends."
+		f.tooltip = L["DemonHunterHavocCheckboxMetamorphosisGcdsTooltip"]
 		if spec.endOfMetamorphosis.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -990,7 +990,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			spec.endOfMetamorphosis.mode = "gcd"
 		end)
 
-		title = "Metamorphosis GCDs - 0.75sec Floor"
+		title = L["DemonHunterHavocMetamorphosisGcds"]
 		controls.endOfMetamorphosisGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 20, spec.endOfMetamorphosis.gcdsMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfMetamorphosisGCDs:SetScript("OnValueChanged", function(self, value)
@@ -1003,9 +1003,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.endOfMetamorphosisModeTime = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_EOT_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfMetamorphosisModeTime
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time until Metamorphosis ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterHavocCheckboxMetamorphosisTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many seconds remain until Metamorphosis ends."
+		f.tooltip = L["DemonHunterHavocCheckboxMetamorphosisTimeTooltip"]
 		if spec.endOfMetamorphosis.mode == "time" then
 			f:SetChecked(true)
 		end
@@ -1015,7 +1015,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			spec.endOfMetamorphosis.mode = "time"
 		end)
 
-		title = "Metamorphosis Time Remaining (sec)"
+		title = L["DemonHunterHavocMetamorphosisTime"]
 		controls.endOfMetamorphosisTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.endOfMetamorphosis.timeMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfMetamorphosisTime:SetScript("OnValueChanged", function(self, value)
@@ -1026,7 +1026,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 1, yCoord, "Fury", 120)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], 120)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.havoc = controls
 	end
@@ -1053,29 +1053,29 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 12, 1, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Fury Text Colors", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterHavocTextColorsHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Fury", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerCurrent"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Passive Fury", spec.colors.text.passive, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerPassive"], spec.colors.text.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Have enough Fury to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerThresholdOver"], spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Overcapping Fury", spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterHavocColorPickerOvercap"], spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.overcap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcap")
@@ -1086,8 +1086,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
-		f.tooltip = "This will change the Fury text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+		f.tooltip = L["DemonHunterHavocCheckboxThresholdOverTooltip"]
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overThresholdEnabled = self:GetChecked()
@@ -1096,18 +1096,18 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
-		f.tooltip = "This will change the Fury text color when your next builder ability will result in overcapping maximum Fury."
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+		f.tooltip = L["DemonHunterHavocCheckboxThresholdOvercapTooltip"]
 		f:SetChecked(spec.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overcapEnabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 30
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
-		title = "Haste / Crit / Mastery / Vers Decimal Precision"
+		title = L["SecondaryDecimalPrecision"]
 		controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
@@ -1139,14 +1139,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavoc"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 12, 1, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Fury")
-		f.tooltip = "Play an audio cue when your hardcast spell will overcap Fury."
+		getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapAudioCheckbox"], L["ResourceFury"]))
+		f.tooltip = string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFury"])
 ---@diagnostic disable-next-line: undefined-field
 		f:SetChecked(spec.audio.overcap.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1219,7 +1219,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local controls = interfaceSettingsFrame.controls.havoc
 		local yCoord = 5
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 		controls.buttons.exportButton_DemonHunter_Havoc_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_DemonHunter_Havoc_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavoc"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 12, 1, false, false, false, true, false)
@@ -1243,23 +1243,23 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.dropDown = {}
 
 		interfaceSettingsFrame.havocDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Havoc", UIParent)
-		interfaceSettingsFrame.havocDisplayPanel.name = " " .. L["DemonHunterHavoc"].. " " .. L["DemonHunter"]
+		interfaceSettingsFrame.havocDisplayPanel.name = L["DemonHunterHavoc"].. " " .. L["DemonHunter"]
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.havocDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.havocDisplayPanel, " " .. L["DemonHunterHavoc"].. " " .. L["DemonHunter"])
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.havocDisplayPanel, L["DemonHunterHavoc"].. " " .. L["DemonHunter"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.havocDisplayPanel)
 		
 		parent = interfaceSettingsFrame.havocDisplayPanel
 
 		controls.buttons = controls.buttons or {}
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, " " .. L["DemonHunterHavoc"].. " " .. L["DemonHunter"], oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterHavoc"].. " " .. L["DemonHunter"], oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.havocDemonHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_havocDemonHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.havocDemonHunterEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
-		f.tooltip = "Is Twintop's Resource Bar enabled for the Havoc Demon Hunter specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DemonHunterHavoc"], L["DemonHunter"])
 		f:SetChecked(TRB.Data.settings.core.enabled.demonhunter.havoc)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.demonhunter.havoc = self:GetChecked()
@@ -1275,7 +1275,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_DemonHunter_Havoc_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
+		controls.buttons.exportButton_DemonHunter_Havoc_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_DemonHunter_Havoc_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavoc"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 12, 1, true, true, true, true, false)
 		end)
@@ -1285,12 +1285,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Havoc_Tab2", "Bar Display", 1, parent, 85)
+		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Havoc_Tab2", L["TabBarDisplay"], 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Havoc_Tab3", "Font & Text", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Havoc_Tab4", "Audio & Tracking", 3, parent, 120, tabs[2])
-		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Havoc_Tab5", "Bar Text", 4, parent, 60, tabs[3])
-		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Havoc_Tab1", "Reset Defaults", 5, parent, 100, tabs[4])
+		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Havoc_Tab3", L["TabFontText"], 2, parent, 85, tabs[1])
+		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Havoc_Tab4", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Havoc_Tab5", L["TabBarText"], 4, parent, 60, tabs[3])
+		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Havoc_Tab1", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 		yCoord = yCoord - 15
 
@@ -1425,19 +1425,19 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 12, 2, yCoord)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 12, 2, yCoord, POWER_TYPE_FURY, "Soul Fragments")
+		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], L["ResourceSoulFragments"])
 
 		yCoord = yCoord - 60
-		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 2, yCoord, true, "Soul Fragments")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 12, 2, yCoord, true, L["ResourceSoulFragments"])
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 2, yCoord, "Fury", "notEmpty", false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], "notEmpty", false)
 
 		yCoord = yCoord - 70
-		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 2, yCoord, "Fury")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"])
 
 		yCoord = yCoord - 30
-		controls.colors.metamorphosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Fury while Metamorphosis is active", spec.colors.bar.metamorphosis, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.metamorphosis = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerMetamorphosis"], spec.colors.bar.metamorphosis, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.metamorphosis
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "metamorphosis")
@@ -1447,14 +1447,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.endOfMetamorphosis = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_EndOfMetamorphosisCheckbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfMetamorphosis
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Metamorphosis")
-		f.tooltip = "Changes the bar color when Metamorphosis is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterVengeanceCheckboxEndOfMetamorphosis"])
+		f.tooltip = L["DemonHunterVengeanceCheckboxEndOfMetamorphosisTooltip"]
 		f:SetChecked(spec.endOfMetamorphosis.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.endOfMetamorphosis.enabled = self:GetChecked()
 		end)
 
-		controls.colors.metamorphosisEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Fury when Metamorphosis is ending", spec.colors.bar.metamorphosisEnding, 250, 25, oUi.xCoord2, yCoord)
+		controls.colors.metamorphosisEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerMetamorphosisEnding"], spec.colors.bar.metamorphosisEnding, 250, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.metamorphosisEnding
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "metamorphosisEnding")
@@ -1464,55 +1464,55 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
-		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
+		f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
 		f:SetChecked(spec.bar.showPassive)
 		f:SetScript("OnClick", function(self, ...)
 			spec.bar.showPassive = self:GetChecked()
 		end)
 
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Fury gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 12, 2, yCoord, "Fury", true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], true, false)
 
 		yCoord = yCoord - 40
-		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Soul Fragment Colors", oUi.xCoord, yCoord)
+		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterVengeanceHeaderSoulFragmentColors"], oUi.xCoord, yCoord)
 		
 		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
-		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, POWER_TYPE_FURY, spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceFury"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPoints.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 		end)
 
-		controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Soul Fragment's border", spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Penultimate Soul Fragment", spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentPenultimate"], spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPoints.penultimate
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 		end)
 
-		controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Final Soul Fragment", spec.colors.comboPoints.final, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerSoulFragmentFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.final
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
@@ -1522,50 +1522,50 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sameColorComboPoint
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Use highest Soul Fragment color for all?")
-		f.tooltip = "When checked, the highest Soul Fragment's color will be used for all Soul Fragments. E.g., if you have maximum 5 Soul Fragments and currently have 4, the Penultimate color will be used for all Soul Fragments instead of just the second to last."
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAll"])
+		f.tooltip = L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAllTooltip"]
 		f:SetChecked(spec.comboPoints.sameColor)
 		f:SetScript("OnClick", function(self, ...)
 			spec.comboPoints.sameColor = self:GetChecked()
 		end)
 
-		controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled Soul Fragment background", spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerUnfilledSoulFragmentBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
 		end)
 
 		yCoord = yCoord - 40
-		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", oUi.xCoord, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
 		
 		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Under minimum required Fury threshold line", spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceFury"]), spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Over minimum required Fury threshold line", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
+		controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceFury"]), spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-60)
+		controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
-		controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Soul Fragments effect up", spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-90)
+		controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceThresholdSpecial"], spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.threshold.special
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "special")
 		end)
 
-		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Out of range of current target to use ability", spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-120)
+		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-120)
 		f = controls.colors.threshold.outOfRange
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
@@ -1574,8 +1574,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOutOfRange
 		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-150)
-		getglobal(f:GetName() .. 'Text'):SetText("Change threshold line color when out of range?")
-		f.tooltip = "When checked, while in combat threshold lines will change color when you are unable to use the ability due to being out of range of your current target."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
+		f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
 		f:SetChecked(spec.thresholds.outOfRange)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.outOfRange = self:GetChecked()
@@ -1584,8 +1584,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
 		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-170)
-		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
-		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
+		f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
@@ -1595,8 +1595,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.chaosNovaThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_Threshold_Option_chaosNova", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.chaosNovaThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Chaos Nova")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Chaos Nova."
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterVengeanceThresholdCheckboxChaosNova"])
+		f.tooltip = L["DemonHunterVengeanceThresholdCheckboxChaosNovaTooltip"]
 		f:SetChecked(spec.thresholds.chaosNova.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.chaosNova.enabled = self:GetChecked()
@@ -1606,8 +1606,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.felDevastationThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_Threshold_Option_felDevastation", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.felDevastationThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Fel Devastation")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Fel Devastation. Only visible if talented."
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterVengeanceThresholdCheckboxFelDevastation"])
+		f.tooltip = L["DemonHunterVengeanceThresholdCheckboxFelDevastationTooltip"]
 		f:SetChecked(spec.thresholds.felDevastation.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.felDevastation.enabled = self:GetChecked()
@@ -1617,8 +1617,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.soulCleaveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_Threshold_Option_soulCleave", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.soulCleaveThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Soul Cleave")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Soul Cleave."
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterVengeanceThresholdCheckboxSoulCleave"])
+		f.tooltip = L["DemonHunterVengeanceThresholdCheckboxSoulCleaveTooltip"]
 		f:SetChecked(spec.thresholds.soulCleave.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.soulCleave.enabled = self:GetChecked()
@@ -1628,8 +1628,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.spiritBombThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_Threshold_Option_spiritBomb", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.spiritBombThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Spirit Bomb")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Fury is required to use Spirit Bomb."
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterVengeanceThresholdCheckboxSpiritBomb"])
+		f.tooltip = L["DemonHunterVengeanceThresholdCheckboxSpiritBombTooltip"]
 		f:SetChecked(spec.thresholds.spiritBomb.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.spiritBomb.enabled = self:GetChecked()
@@ -1641,15 +1641,15 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 12, 2, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Metamorphosis Configuration", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterVengeanceEndOfMetamorphosisConfigurationHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfMetamorphosisModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_EOT_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfMetamorphosisModeGCDs
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Metamorphosis ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterVengeanceCheckboxMetamorphosisGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many GCDs remain until Metamorphosis ends."
+		f.tooltip = L["DemonHunterVengeanceCheckboxMetamorphosisGcdsTooltip"]
 		if spec.endOfMetamorphosis.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -1659,7 +1659,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			spec.endOfMetamorphosis.mode = "gcd"
 		end)
 
-		title = "Metamorphosis GCDs - 0.75sec Floor"
+		title = L["DemonHunterVengeanceMetamorphosisGcds"]
 		controls.endOfMetamorphosisGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 20, spec.endOfMetamorphosis.gcdsMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfMetamorphosisGCDs:SetScript("OnValueChanged", function(self, value)
@@ -1672,9 +1672,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.endOfMetamorphosisModeTime = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_EOT_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfMetamorphosisModeTime
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time until Metamorphosis ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["DemonHunterVengeanceCheckboxMetamorphosisTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many seconds remain until Metamorphosis ends."
+		f.tooltip = L["DemonHunterVengeanceCheckboxMetamorphosisTimeTooltip"]
 		if spec.endOfMetamorphosis.mode == "time" then
 			f:SetChecked(true)
 		end
@@ -1684,7 +1684,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			spec.endOfMetamorphosis.mode = "time"
 		end)
 
-		title = "Metamorphosis Time Remaining (sec)"
+		title = L["DemonHunterVengeanceMetamorphosisTime"]
 		controls.endOfMetamorphosisTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.endOfMetamorphosis.timeMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfMetamorphosisTime:SetScript("OnValueChanged", function(self, value)
@@ -1695,7 +1695,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 2, yCoord, "Fury", 120)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], 120)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance = controls
 	end
@@ -1722,29 +1722,29 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 12, 2, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Fury Text Colors", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterVengeanceTextColorsHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Fury", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerCurrent"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Passive Fury", spec.colors.text.passive, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerPassive"], spec.colors.text.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Have enough Fury to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerThresholdOver"], spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Overcapping Fury", spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DemonHunterVengeanceColorPickerOvercap"], spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.overcap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcap")
@@ -1755,8 +1755,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
-		f.tooltip = "This will change the Fury text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+		f.tooltip = L["DemonHunterVengeanceCheckboxThresholdOverTooltip"]
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overThresholdEnabled = self:GetChecked()
@@ -1765,18 +1765,18 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
-		f.tooltip = "This will change the Fury text color when your next builder ability will result in overcapping maximum Fury."
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+		f.tooltip = L["DemonHunterVengeanceCheckboxThresholdOvercapTooltip"]
 		f:SetChecked(spec.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overcapEnabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 30
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
-		title = "Haste / Crit / Mastery / Vers Decimal Precision"
+		title = L["SecondaryDecimalPrecision"]
 		controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
@@ -1808,14 +1808,14 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeance"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 12, 2, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Fury")
-		f.tooltip = "Play an audio cue when your hardcast spell will overcap Fury."
+		getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapAudioCheckbox"], L["ResourceFury"]))
+		f.tooltip = string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceFury"])
 ---@diagnostic disable-next-line: undefined-field
 		f:SetChecked(spec.audio.overcap.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1888,7 +1888,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local controls = interfaceSettingsFrame.controls.vengeance
 		local yCoord = 5
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 		controls.buttons.exportButton_DemonHunter_Vengeance_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_DemonHunter_Vengeance_BarText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeance"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 12, 2, false, false, false, true, false)
@@ -1912,23 +1912,23 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.dropDown = {}
 
 		interfaceSettingsFrame.vengeanceDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Vengeance", UIParent)
-		interfaceSettingsFrame.vengeanceDisplayPanel.name = " " .. L["DemonHunterVengeance"].. " " .. L["DemonHunter"]
+		interfaceSettingsFrame.vengeanceDisplayPanel.name = L["DemonHunterVengeance"].. " " .. L["DemonHunter"]
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.vengeanceDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.vengeanceDisplayPanel, " " .. L["DemonHunterVengeance"].. " " .. L["DemonHunter"])
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.vengeanceDisplayPanel, L["DemonHunterVengeance"].. " " .. L["DemonHunter"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.vengeanceDisplayPanel)
 		
 		parent = interfaceSettingsFrame.vengeanceDisplayPanel
 
 		controls.buttons = controls.buttons or {}
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, " " .. L["DemonHunterVengeance"].. " " .. L["DemonHunter"], oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DemonHunterVengeance"].. " " .. L["DemonHunter"], oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.vengeanceDemonHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_vengeanceDemonHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.vengeanceDemonHunterEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
-		f.tooltip = "Is Twintop's Resource Bar enabled for the Vengeance Demon Hunter specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DemonHunterVengeance"], L["DemonHunter"])
 		f:SetChecked(TRB.Data.settings.core.enabled.demonhunter.vengeance)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.demonhunter.vengeance = self:GetChecked()
@@ -1944,7 +1944,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_DemonHunter_Vengeance_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
+		controls.buttons.exportButton_DemonHunter_Vengeance_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_DemonHunter_Vengeance_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeance"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 12, 2, true, true, true, true, false)
 		end)
@@ -1954,12 +1954,12 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Vengeance_Tab2", "Bar Display", 1, parent, 85)
+		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Vengeance_Tab2", L["TabBarDisplay"], 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Vengeance_Tab3", "Font & Text", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Vengeance_Tab4", "Audio & Tracking", 3, parent, 120, tabs[2])
-		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Vengeance_Tab5", "Bar Text", 4, parent, 60, tabs[3])
-		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Vengeance_Tab1", "Reset Defaults", 5, parent, 100, tabs[4])
+		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Vengeance_Tab3", L["TabFontText"], 2, parent, 85, tabs[1])
+		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Vengeance_Tab4", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Vengeance_Tab5", L["TabBarText"], 4, parent, 60, tabs[3])
+		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_DemonHunter_Vengeance_Tab1", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 		yCoord = yCoord - 15
 

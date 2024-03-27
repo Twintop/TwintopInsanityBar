@@ -1278,7 +1278,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 1, yCoord, "Mana")
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
@@ -1404,10 +1404,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end)
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
-		title = "Haste / Crit / Mastery / Vers Decimal Precision"
+		title = L["SecondaryDecimalPrecision"]
 		controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
@@ -1439,7 +1439,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 13, 1, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
 
 		yCoord = yCoord - 30
@@ -1584,10 +1584,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local controls = interfaceSettingsFrame.controls.devastation
 		local yCoord = 5
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 		controls.buttons.exportButton_Evoker_Devastation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Devastation_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastation"] .. " Evoker (Bar Text).", 13, 1, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 13, 1, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -1609,21 +1609,21 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.devastationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Devastation", UIParent)
-		interfaceSettingsFrame.devastationDisplayPanel.name = " " .. L["EvokerDevastation"] .. " Evoker"
+		interfaceSettingsFrame.devastationDisplayPanel.name = L["EvokerDevastation"] .. " Evoker"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.devastationDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.devastationDisplayPanel, " " .. L["EvokerDevastation"] .. " Evoker")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.devastationDisplayPanel, L["EvokerDevastation"] .. "L["Evoker"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.devastationDisplayPanel)
 
 		parent = interfaceSettingsFrame.devastationDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, " " .. L["EvokerDevastation"] .. " Evoker", oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EvokerDevastation"] .. " Evoker", oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.devastationEvokerEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_devastationEvokerEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.devastationEvokerEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)		
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
-		f.tooltip = "Is Twintop's Resource Bar enabled for the Devastation Evoker specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["EvokerDevastation"], L["Evoker"])
 		f:SetChecked(TRB.Data.settings.core.enabled.evoker.devastation)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.evoker.devastation = self:GetChecked()
@@ -1639,7 +1639,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Evoker_Devastation_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Evoker_Devastation_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Evoker_Devastation_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 13, 1, true, true, true, true, false)
 		end)
@@ -1649,12 +1649,12 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Devastation_Tab2", "Bar Display", 1, parent, 85)
+		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Devastation_Tab2", L["TabBarDisplay"], 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Devastation_Tab3", "Font & Text", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Devastation_Tab4", "Audio & Tracking", 3, parent, 120, tabs[2])
-		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Devastation_Tab5", "Bar Text", 4, parent, 60, tabs[3])
-		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Devastation_Tab1", "Reset Defaults", 5, parent, 100, tabs[4])
+		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Devastation_Tab3", L["TabFontText"], 2, parent, 85, tabs[1])
+		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Devastation_Tab4", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Devastation_Tab5", L["TabBarText"], 4, parent, 60, tabs[3])
+		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Devastation_Tab1", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 		yCoord = yCoord - 15
 
@@ -1827,8 +1827,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_2_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
-		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
+		f.tooltip = L["ShowCastingBarCheckboxTooltip"]
 		f:SetChecked(spec.bar.showCasting)
 		f:SetScript("OnClick", function(self, ...)
 			spec.bar.showCasting = self:GetChecked()
@@ -1844,8 +1844,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_2_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
-		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
+		f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
 		f:SetChecked(spec.bar.showPassive)
 		f:SetScript("OnClick", function(self, ...)
 			spec.bar.showPassive = self:GetChecked()
@@ -1858,7 +1858,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
@@ -2029,10 +2029,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		]]
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
-		title = "Haste / Crit / Mastery / Vers Decimal Precision"
+		title = L["SecondaryDecimalPrecision"]
 		controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
@@ -2065,7 +2065,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 13, 2, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervate = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_Innervate_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -2311,10 +2311,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local controls = interfaceSettingsFrame.controls.preservation
 		local yCoord = 5
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 		controls.buttons.exportButton_Evoker_Preservation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Preservation_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservation"] .. " Evoker (Bar Text).", 13, 2, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 13, 2, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -2337,21 +2337,21 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.preservationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Preservation", UIParent)
-		interfaceSettingsFrame.preservationDisplayPanel.name = " " .. L["EvokerPreservation"] .. " Evoker"
+		interfaceSettingsFrame.preservationDisplayPanel.name = L["EvokerPreservation"] .. " Evoker"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.preservationDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.preservationDisplayPanel, " " .. L["EvokerPreservation"] .. " Evoker")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.preservationDisplayPanel, L["EvokerPreservation"] .. "L["Evoker"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.preservationDisplayPanel)
 
 		parent = interfaceSettingsFrame.preservationDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, " " .. L["EvokerPreservation"] .. " Evoker", oUi.xCoord, yCoord-5)	
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EvokerPreservation"] .. " Evoker", oUi.xCoord, yCoord-5)	
 		
 		controls.checkBoxes.preservationEvokerEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_preservationEvokerEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.preservationEvokerEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
-		f.tooltip = "Is Twintop's Resource Bar enabled for the Preservation Evoker specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["EvokerPreservation"], L["Evoker"])
 		f:SetChecked(TRB.Data.settings.core.enabled.evoker.preservation)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.evoker.preservation = self:GetChecked()
@@ -2367,7 +2367,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Evoker_Preservation_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Evoker_Preservation_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Evoker_Preservation_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 13, 2, true, true, true, true, false)
 		end)
@@ -2377,12 +2377,12 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Preservation_Tab1", "Bar Display", 1, parent, 85)
+		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Preservation_Tab1", L["TabBarDisplay"], 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Preservation_Tab2", "Font & Text", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Preservation_Tab3", "Audio & Tracking", 3, parent, 120, tabs[2])
-		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Preservation_Tab4", "Bar Text", 4, parent, 60, tabs[3])
-		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Preservation_Tab5", "Reset Defaults", 5, parent, 100, tabs[4])
+		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Preservation_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
+		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Preservation_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Preservation_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
+		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Preservation_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 		yCoord = yCoord - 15
 
@@ -2533,7 +2533,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 3, yCoord, "Mana")
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
@@ -2659,10 +2659,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		end)
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
-		title = "Haste / Crit / Mastery / Vers Decimal Precision"
+		title = L["SecondaryDecimalPrecision"]
 		controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
@@ -2694,7 +2694,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 13, 3, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
 
 		yCoord = yCoord - 30
@@ -2839,10 +2839,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local controls = interfaceSettingsFrame.controls.augmentation
 		local yCoord = 5
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 		controls.buttons.exportButton_Evoker_Augmentation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Augmentation_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentation"] .. " Evoker (Bar Text).", 13, 3, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 13, 3, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -2864,21 +2864,21 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.augmentationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Augmentation", UIParent)
-		interfaceSettingsFrame.augmentationDisplayPanel.name = " " .. L["EvokerAugmentation"] .. " Evoker"
+		interfaceSettingsFrame.augmentationDisplayPanel.name = L["EvokerAugmentation"] .. " Evoker"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.augmentationDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.augmentationDisplayPanel, " " .. L["EvokerAugmentation"] .. " Evoker")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.augmentationDisplayPanel, L["EvokerAugmentation"] .. "L["Evoker"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.augmentationDisplayPanel)
 
 		parent = interfaceSettingsFrame.augmentationDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, " " .. L["EvokerAugmentation"] .. " Evoker", oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EvokerAugmentation"] .. " Evoker", oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.augmentationEvokerEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_augmentationEvokerEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.augmentationEvokerEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)		
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
-		f.tooltip = "Is Twintop's Resource Bar enabled for the Augmentation Evoker specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["EvokerAugmentation"], L["Evoker"])
 		f:SetChecked(TRB.Data.settings.core.enabled.evoker.augmentation)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.evoker.augmentation = self:GetChecked()
@@ -2894,7 +2894,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Evoker_Augmentation_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Evoker_Augmentation_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Evoker_Augmentation_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 13, 3, true, true, true, true, false)
 		end)
@@ -2904,12 +2904,12 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Augmentation_Tab2", "Bar Display", 1, parent, 85)
+		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Augmentation_Tab2", L["TabBarDisplay"], 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Augmentation_Tab3", "Font & Text", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Augmentation_Tab4", "Audio & Tracking", 3, parent, 120, tabs[2])
-		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Augmentation_Tab5", "Bar Text", 4, parent, 60, tabs[3])
-		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Augmentation_Tab1", "Reset Defaults", 5, parent, 100, tabs[4])
+		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Augmentation_Tab3", L["TabFontText"], 2, parent, 85, tabs[1])
+		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Augmentation_Tab4", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Augmentation_Tab5", L["TabBarText"], 4, parent, 60, tabs[3])
+		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Evoker_Augmentation_Tab1", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 		yCoord = yCoord - 15
 

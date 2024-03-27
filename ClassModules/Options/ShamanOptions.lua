@@ -1108,8 +1108,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_1_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
-		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
+		f.tooltip = L["ShowCastingBarCheckboxTooltip"]
 		f:SetChecked(spec.bar.showCasting)
 		f:SetScript("OnClick", function(self, ...)
 			spec.bar.showCasting = self:GetChecked()
@@ -1125,8 +1125,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_1_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
-		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
+		f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
 		f:SetChecked(spec.bar.showPassive)
 		f:SetScript("OnClick", function(self, ...)
 			spec.bar.showPassive = self:GetChecked()
@@ -1139,7 +1139,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
@@ -1166,7 +1166,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 40
-		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", oUi.xCoord, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
 
 		controls.colors.threshold = {}
 
@@ -1189,7 +1189,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "echoesOfGreatSundering")
 		end)
 
-		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Out of range of current target to use ability", spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
+		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.threshold.outOfRange
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
@@ -1198,8 +1198,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOutOfRange
 		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
-		getglobal(f:GetName() .. 'Text'):SetText("Change threshold line color when out of range?")
-		f.tooltip = "When checked, while in combat threshold lines will change color when you are unable to use the ability due to being out of range of your current target."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
+		f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
 		f:SetChecked(spec.thresholds.outOfRange)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.outOfRange = self:GetChecked()
@@ -1208,8 +1208,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
 		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)
-		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
-		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
+		f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
@@ -1369,7 +1369,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TRB_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
 		f.tooltip = "This will change the Maelstrom text color when you are able to cast Earth Shock or Earthquake."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1379,7 +1379,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TRB_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
 		f.tooltip = "This will change the Maelstrom text color when your current hardcast spell will result in overcapping maximum Maelstrom."
 		f:SetChecked(spec.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1444,7 +1444,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElemental"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 7, 1, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.esReady = CreateFrame("CheckButton", "TwintopResourceBar_CB3_3", parent, "ChatConfigCheckButtonTemplate")
@@ -1512,8 +1512,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Maelstrom")
-		f.tooltip = "Play an audio cue when your hardcast spell will overcap Maelstrom."
+		getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapAudioCheckbox"], L["ResourceMaelstrom"]))
+		f.tooltip = string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceMaelstrom"])
 		f:SetChecked(spec.audio.overcap.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.overcap.enabled = self:GetChecked()
@@ -1574,10 +1574,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
-		title = "Haste / Crit / Mastery / Vers Decimal Precision"
+		title = L["SecondaryDecimalPrecision"]
 		controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
@@ -1601,10 +1601,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local controls = interfaceSettingsFrame.controls.elemental
 		local yCoord = 5
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 		controls.buttons.exportButton_Shaman_Elemental_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Elemental_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElemental"] .. " Shaman (Bar Text).", 7, 1, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElemental"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 7, 1, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -1621,7 +1621,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		interfaceSettingsFrame.elementalDisplayPanel.name = "Elemental Shaman"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.elementalDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.elementalDisplayPanel, "Elemental Shaman")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.elementalDisplayPanel, "ElementalL["Shaman"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.elementalDisplayPanel)
 
 		parent = interfaceSettingsFrame.elementalDisplayPanel
@@ -1633,8 +1633,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.elementalShamanEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_elementalShamanEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.elementalShamanEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
-		f.tooltip = "Is Twintop's Resource Bar enabled for the Elemental Shaman specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["ShamanElemental"], L["Shaman"])
 		f:SetChecked(TRB.Data.settings.core.enabled.shaman.elemental)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.shaman.elemental = self:GetChecked()
@@ -1650,7 +1650,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Shaman_Elemental_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Shaman_Elemental_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Shaman_Elemental_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElemental"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 7, 1, true, true, true, true, false)
 		end)
@@ -1660,12 +1660,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab1", "Bar Display", 1, parent, 85)
+		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab1", L["TabBarDisplay"], 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab2", "Font & Text", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab3", "Audio & Tracking", 3, parent, 120, tabs[2])
-		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab4", "Bar Text", 4, parent, 60, tabs[3])
-		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab5", "Reset Defaults", 5, parent, 100, tabs[4])
+		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
+		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
+		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Elemental_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 		yCoord = yCoord - 15
 
@@ -1841,7 +1841,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 2, yCoord, "Mana", false, false)
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
@@ -1982,10 +1982,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
-		title = "Haste / Crit / Mastery / Vers Decimal Precision"
+		title = L["SecondaryDecimalPrecision"]
 		controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
@@ -2052,7 +2052,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancement"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 7, 2, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.enhancement = controls
 	end
@@ -2067,10 +2067,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local controls = interfaceSettingsFrame.controls.enhancement
 		local yCoord = 5
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 		controls.buttons.exportButton_Shaman_Enhancement_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Enhancement_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancement"] .. " Shaman (Bar Text).", 7, 2, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancement"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 7, 2, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -2095,7 +2095,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		interfaceSettingsFrame.enhancementDisplayPanel.name = "Enhancement Shaman"
 	---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.enhancementDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.enhancementDisplayPanel, "Enhancement Shaman")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.enhancementDisplayPanel, "EnhancementL["Shaman"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.enhancementDisplayPanel)
 
 		parent = interfaceSettingsFrame.enhancementDisplayPanel
@@ -2105,8 +2105,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.enhancementShamanEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_enhancementShamanEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.enhancementShamanEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)		
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
-		f.tooltip = "Is Twintop's Resource Bar enabled for the Enhancement Shaman specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["ShamanEnhancement"], L["Shaman"])
 		f:SetChecked(TRB.Data.settings.core.enabled.shaman.enhancement)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.shaman.enhancement = self:GetChecked()
@@ -2122,7 +2122,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Shaman_Enhancement_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Shaman_Enhancement_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Shaman_Enhancement_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancement"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 7, 2, true, true, true, true, false)
 		end)
@@ -2132,12 +2132,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Enhancement_Tab2", "Bar Display", 1, parent, 85)
+		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Enhancement_Tab2", L["TabBarDisplay"], 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Enhancement_Tab3", "Font & Text", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Enhancement_Tab4", "Audio & Tracking", 3, parent, 120, tabs[2])
-		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Enhancement_Tab5", "Bar Text", 4, parent, 60, tabs[3])
-		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Enhancement_Tab1", "Reset Defaults", 5, parent, 100, tabs[4])
+		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Enhancement_Tab3", L["TabFontText"], 2, parent, 85, tabs[1])
+		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Enhancement_Tab4", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Enhancement_Tab5", L["TabBarText"], 4, parent, 60, tabs[3])
+		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Enhancement_Tab1", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 		yCoord = yCoord - 15
 
@@ -2326,8 +2326,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_3_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show casting bar")
-		f.tooltip = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
+		f.tooltip = L["ShowCastingBarCheckboxTooltip"]
 		f:SetChecked(spec.bar.showCasting)
 		f:SetScript("OnClick", function(self, ...)
 			spec.bar.showCasting = self:GetChecked()
@@ -2343,8 +2343,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_3_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
-		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
+		f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
 		f:SetChecked(spec.bar.showPassive)
 		f:SetScript("OnClick", function(self, ...)
 			spec.bar.showPassive = self:GetChecked()
@@ -2357,7 +2357,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 3)
@@ -2512,10 +2512,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
-		title = "Haste / Crit / Mastery / Vers Decimal Precision"
+		title = L["SecondaryDecimalPrecision"]
 		controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
@@ -2548,7 +2548,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestoration"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 7, 3, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervate = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_Innervate_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -2664,10 +2664,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local controls = interfaceSettingsFrame.controls.restoration
 		local yCoord = 5
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)		
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)		
 		controls.buttons.exportButton_Shaman_Restoration_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Restoration_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestoration"] .. " Shaman (Bar Text).", 7, 3, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestoration"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 7, 3, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -2692,7 +2692,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		interfaceSettingsFrame.restorationDisplayPanel.name = "Restoration Shaman"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.restorationDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.restorationDisplayPanel, "Restoration Shaman")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.restorationDisplayPanel, "RestorationL["Shaman"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.restorationDisplayPanel)
 
 		parent = interfaceSettingsFrame.restorationDisplayPanel
@@ -2702,8 +2702,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.restorationShamanEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_restorationShamanEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.restorationShamanEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
-		f.tooltip = "Is Twintop's Resource Bar enabled for the Restoration Shaman specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["ShamanRestoration"], L["Shaman"])
 		f:SetChecked(TRB.Data.settings.core.enabled.shaman.restoration)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.shaman.restoration = self:GetChecked()
@@ -2719,7 +2719,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Shaman_Restoration_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Shaman_Restoration_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Shaman_Restoration_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestoration"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 7, 3, true, true, true, true, false)
 		end)
@@ -2729,12 +2729,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab1", "Bar Display", 1, parent, 85)
+		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab1", L["TabBarDisplay"], 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab2", "Font & Text", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab3", "Audio & Tracking", 3, parent, 120, tabs[2])
-		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab4", "Bar Text", 4, parent, 60, tabs[3])
-		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab5", "Reset Defaults", 5, parent, 100, tabs[4])
+		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
+		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
+		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Shaman_Restoration_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 		yCoord = yCoord - 15
 

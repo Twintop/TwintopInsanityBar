@@ -794,8 +794,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_1_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
-		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
+		f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
 		f:SetChecked(spec.bar.showPassive)
 		f:SetScript("OnClick", function(self, ...)
 			spec.bar.showPassive = self:GetChecked()
@@ -808,7 +808,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 1)
@@ -819,30 +819,30 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 
 		yCoord = yCoord - 40
-		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", oUi.xCoord, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
 
 		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Under minimum required Rage threshold line", spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceRage"]), spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Over minimum required Rage threshold line", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
+		controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceRage"]), spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-60)
+		controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
-		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Out of range of current target to use ability", spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
+		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.threshold.outOfRange
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
@@ -851,8 +851,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOutOfRange
 		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
-		getglobal(f:GetName() .. 'Text'):SetText("Change threshold line color when out of range?")
-		f.tooltip = "When checked, while in combat threshold lines will change color when you are unable to use the ability due to being out of range of your current target."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
+		f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
 		f:SetChecked(spec.thresholds.outOfRange)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.outOfRange = self:GetChecked()
@@ -861,8 +861,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
 		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)
-		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
-		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
+		f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
@@ -1075,7 +1075,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
 		f.tooltip = "This will change the Rage text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1085,7 +1085,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
 		f.tooltip = "This will change the Rage text color when your current hardcast spell will result in overcapping maximum Rage."
 		f:SetChecked(spec.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1129,10 +1129,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
-		title = "Haste / Crit / Mastery / Vers Decimal Precision"
+		title = L["SecondaryDecimalPrecision"]
 		controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
@@ -1174,14 +1174,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArms"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 1, 1, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Rage")
-		f.tooltip = "Play an audio cue when your hardcast spell will overcap Rage."
+		getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapAudioCheckbox"], L["ResourceRage"]))
+		f.tooltip = string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceRage"])
 		f:SetChecked(spec.audio.overcap.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.overcap.enabled = self:GetChecked()
@@ -1317,10 +1317,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local controls = interfaceSettingsFrame.controls.arms
 		local yCoord = 5
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 		controls.buttons.exportButton_Warrior_Arms_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Arms_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArms"] .. " Warrior (Bar Text).", 1, 1, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArms"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 1, 1, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -1344,7 +1344,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		interfaceSettingsFrame.armsDisplayPanel.name = "Arms Warrior"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.armsDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.armsDisplayPanel, "Arms Warrior")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.armsDisplayPanel, "ArmsL["Warrior"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.armsDisplayPanel)
 
 		parent = interfaceSettingsFrame.armsDisplayPanel
@@ -1356,8 +1356,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.armsWarriorEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_armsWarriorEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.armsWarriorEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
-		f.tooltip = "Is Twintop's Resource Bar enabled for the Arms Warrior specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["WarriorArms"], L["Warrior"])
 		f:SetChecked(TRB.Data.settings.core.enabled.warrior.arms)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.warrior.arms = self:GetChecked()
@@ -1373,7 +1373,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Warrior_Arms_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Warrior_Arms_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Warrior_Arms_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorArms"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 1, 1, true, true, true, true, false)
 		end)
@@ -1383,12 +1383,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Arms_Tab2", "Bar Display", 1, parent, 85)
+		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Arms_Tab2", L["TabBarDisplay"], 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Arms_Tab3", "Font & Text", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Arms_Tab4", "Audio & Tracking", 3, parent, 120, tabs[2])
-		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Arms_Tab5", "Bar Text", 4, parent, 60, tabs[3])
-		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Arms_Tab1", "Reset Defaults", 5, parent, 100, tabs[4])
+		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Arms_Tab3", L["TabFontText"], 2, parent, 85, tabs[1])
+		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Arms_Tab4", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Arms_Tab5", L["TabBarText"], 4, parent, 60, tabs[3])
+		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Arms_Tab1", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 		yCoord = yCoord - 15
 
@@ -1563,8 +1563,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_2_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Show passive bar")
-		f.tooltip = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
+		f.tooltip = L["ShowPassiveBarCheckboxTooltip"]
 		f:SetChecked(spec.bar.showPassive)
 		f:SetScript("OnClick", function(self, ...)
 			spec.bar.showPassive = self:GetChecked()
@@ -1577,7 +1577,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled bar background", spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "background", "backdrop", barContainerFrame, 2)
@@ -1587,30 +1587,30 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 2, yCoord, "Rage", true, false)
 
 		yCoord = yCoord - 40
-		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Ability Threshold Lines", oUi.xCoord, yCoord)
+		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
 
 		controls.colors.threshold = {}
 
 		yCoord = yCoord - 25
-		controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Under minimum required Rage threshold line", spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceRage"]), spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.threshold.under
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "under")
 		end)
 
-		controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Over minimum required Rage threshold line", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
+		controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceRage"]), spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.threshold.over
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Ability is unusable threshold line", spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-60)
+		controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdUnsuable"], spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.unusable
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
-		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Out of range of current target to use ability", spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
+		controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.threshold.outOfRange
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
@@ -1619,8 +1619,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOutOfRange
 		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
-		getglobal(f:GetName() .. 'Text'):SetText("Change threshold line color when out of range?")
-		f.tooltip = "When checked, while in combat threshold lines will change color when you are unable to use the ability due to being out of range of your current target."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
+		f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
 		f:SetChecked(spec.thresholds.outOfRange)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.outOfRange = self:GetChecked()
@@ -1629,8 +1629,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thresholdOverlapBorder
 		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)
-		getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
-		f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
+		f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
 		f:SetChecked(spec.thresholds.overlapBorder)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.overlapBorder = self:GetChecked()
@@ -1800,7 +1800,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
 		f.tooltip = "This will change the Rage text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1810,7 +1810,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled?")
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
 		f.tooltip = "This will change the Rage text color when your current hardcast spell will result in overcapping maximum Rage."
 		f:SetChecked(spec.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1819,10 +1819,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 
 		yCoord = yCoord - 130
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Decimal Precision", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DecimalPrecisionHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 50
-		title = "Haste / Crit / Mastery / Vers Decimal Precision"
+		title = L["SecondaryDecimalPrecision"]
 		controls.hastePrecision = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.hastePrecision, 1, 0,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.hastePrecision:SetScript("OnValueChanged", function(self, value)
@@ -1864,14 +1864,14 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFury"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 1, 2, false, false, true, false, false)
 		end)
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you will overcap Rage")
-		f.tooltip = "Play an audio cue when your hardcast spell will overcap Rage."
+		getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapAudioCheckbox"], L["ResourceRage"]))
+		f.tooltip = string.format(L["OvercapAudioCheckboxTooltip"], L["ResourceRage"])
 		f:SetChecked(spec.audio.overcap.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.overcap.enabled = self:GetChecked()
@@ -2008,10 +2008,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local controls = interfaceSettingsFrame.controls.fury
 		local yCoord = 5
 
-		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
+		TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 		controls.buttons.exportButton_Warrior_Fury_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Fury_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFury"] .. " Warrior (Bar Text).", 1, 2, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFury"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 1, 2, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -2035,7 +2035,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		interfaceSettingsFrame.furyDisplayPanel.name = "Fury Warrior"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.furyDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.furyDisplayPanel, "Fury Warrior")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.furyDisplayPanel, "FuryL["Warrior"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.furyDisplayPanel)
 
 		parent = interfaceSettingsFrame.furyDisplayPanel
@@ -2047,8 +2047,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.furyWarriorEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_furyWarriorEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.furyWarriorEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
-		getglobal(f:GetName() .. 'Text'):SetText("Enabled")
-		f.tooltip = "Is Twintop's Resource Bar enabled for the Fury Warrior specialization? If unchecked, the bar will not function (including the population of global variables!)."
+		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["WarriorFury"], L["Warrior"])
 		f:SetChecked(TRB.Data.settings.core.enabled.warrior.fury)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.warrior.fury = self:GetChecked()
@@ -2064,7 +2064,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
-		controls.buttons.exportButton_Warrior_Fury_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
+		controls.buttons.exportButton_Warrior_Fury_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Warrior_Fury_All:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarriorFury"] .. " " .. L["Warrior"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 1, 2, true, true, true, true, false)
 		end)
@@ -2074,12 +2074,12 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local tabs = {}
 		local tabsheets = {}
 
-		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Fury_Tab2", "Bar Display", 1, parent, 85)
+		tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Fury_Tab2", L["TabBarDisplay"], 1, parent, 85)
 		tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Fury_Tab3", "Font & Text", 2, parent, 85, tabs[1])
-		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Fury_Tab4", "Audio & Tracking", 3, parent, 120, tabs[2])
-		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Fury_Tab5", "Bar Text", 4, parent, 60, tabs[3])
-		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Fury_Tab1", "Reset Defaults", 5, parent, 100, tabs[4])
+		tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Fury_Tab3", L["TabFontText"], 2, parent, 85, tabs[1])
+		tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Fury_Tab4", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+		tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Fury_Tab5", L["TabBarText"], 4, parent, 60, tabs[3])
+		tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warrior_Fury_Tab1", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 		yCoord = yCoord - 15
 
