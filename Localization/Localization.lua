@@ -74,4 +74,16 @@ L["EvokerDevastation"] = select(2, GetSpecializationInfoByID(1467))
 L["EvokerPreservation"] = select(2, GetSpecializationInfoByID(1468))
 L["EvokerAugmentation"] = select(2, GetSpecializationInfoByID(1473))
 
+L["ResourceFury"] = POWER_TYPE_FURY
+L["ResourceEnergy"] = POWER_TYPE_ENERGY
+L["ResourceComboPoints"] = COMBO_POINTS_POWER
+L["ResourceRage"] = POWER_TYPE_RED_POWER
+L["ResourceMana"] = POWER_TYPE_MANA
+L["ResourceInsanity"] = POWER_TYPE_INSANITY
+L["ResourceMaelstrom"] = POWER_TYPE_MAELSTROM
+L["ResourceAstralPower"] = POWER_TYPE_LUNAR_POWER
+L["ResourceChi"] = CHI_POWER
+L["ResourceFocus"] = POWER_TYPE_FOCUS
+L["ResourceEssence"] = POWER_TYPE_ESSENCE
+
 TRB.Localization = L
