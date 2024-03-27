@@ -675,7 +675,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_Warrior_Arms_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["WarriorArms"], L["Warrior"]),
+			text = string.format(L["ResetBarDialog"], L["WarriorArmsFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -688,7 +688,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Warrior_Arms_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["WarriorArms"], L["Warrior"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["WarriorArmsFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -701,7 +701,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Warrior_Arms_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["WarriorArms"], L["Warrior"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["WarriorArmsFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -714,7 +714,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			preferredIndex = 3
 		}
 		--[[StaticPopupDialogs["TwintopResourceBar_Warrior_Arms_ResetBarTextNarrowAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["WarriorArms"], L["Warrior"]),
+			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["WarriorArmsFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1357,7 +1357,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f = controls.checkBoxes.armsWarriorEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["WarriorArms"], L["Warrior"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["WarriorArmsFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.warrior.arms)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.warrior.arms = self:GetChecked()
@@ -1437,7 +1437,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_Warrior_Fury_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["WarriorFury"], L["Warrior"]),
+			text = string.format(L["ResetBarDialog"], L["WarriorFuryFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1450,7 +1450,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Warrior_Fury_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["WarriorFury"], L["Warrior"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["WarriorFuryFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1463,7 +1463,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Warrior_Fury_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["WarriorFury"], L["Warrior"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["WarriorFuryFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1476,7 +1476,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			preferredIndex = 3
 		}
 		--[[StaticPopupDialogs["TwintopResourceBar_Warrior_Fury_ResetBarTextNarrowAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["WarriorFury"], L["Warrior"]),
+			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["WarriorFuryFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2048,7 +2048,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f = controls.checkBoxes.furyWarriorEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["WarriorFury"], L["Warrior"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["WarriorFuryFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.warrior.fury)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.warrior.fury = self:GetChecked()

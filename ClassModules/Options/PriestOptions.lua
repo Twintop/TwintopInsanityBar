@@ -1426,7 +1426,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local spec = TRB.Data.settings.priest.discipline
 
 		StaticPopupDialogs["TwintopResourceBar_Priest_Discipline_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["PriestDiscipline"], L["Priest"]),
+			text = string.format(L["ResetBarDialog"], L["PriestDisciplineFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1439,7 +1439,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Priest_Discipline_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["PriestDiscipline"], L["Priest"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["PriestDisciplineFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1452,7 +1452,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Priest_Discipline_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["PriestDiscipline"], L["Priest"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["PriestDisciplineFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2242,7 +2242,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.disciplinePriestEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["PriestDiscipline"], L["Priest"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["PriestDisciplineFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.priest.discipline)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.priest.discipline = self:GetChecked()
@@ -2324,7 +2324,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local spec = TRB.Data.settings.priest.holy
 
 		StaticPopupDialogs["TwintopResourceBar_Priest_Holy_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["PriestHoly"], L["Priest"]),
+			text = string.format(L["ResetBarDialog"], L["PriestHolyFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2337,7 +2337,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Priest_Holy_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["PriestHoly"], L["Priest"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["PriestHolyFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2350,7 +2350,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Priest_Holy_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["PriestHoly"], L["Priest"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["PriestHolyFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -3403,7 +3403,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.holyPriestEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["PriestHoly"], L["Priest"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["PriestHolyFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.priest.holy)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.priest.holy = self:GetChecked()
@@ -3484,7 +3484,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["PriestShadow"], L["Priest"]),
+			text = string.format(L["ResetBarDialog"], L["PriestShadowFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -3497,7 +3497,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["PriestShadow"], L["Priest"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["PriestShadowFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -3510,7 +3510,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["PriestShadow"], L["Priest"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["PriestShadowFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -3523,7 +3523,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_ResetBarTextNarrowAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["PriestShadow"], L["Priest"]),
+			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["PriestShadowFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -4731,7 +4731,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.shadowPriestEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["PriestShadow"], L["Priest"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["PriestShadowFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.priest.shadow)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.priest.shadow = self:GetChecked()

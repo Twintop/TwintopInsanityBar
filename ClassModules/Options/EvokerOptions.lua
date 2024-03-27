@@ -1179,7 +1179,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Devastation_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["EvokerDevastation"], L["Evoker"]),
+			text = string.format(L["ResetBarDialog"], L["EvokerDevastationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1192,7 +1192,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Devastation_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["EvokerDevastation"], L["Evoker"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["EvokerDevastationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1623,7 +1623,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		f = controls.checkBoxes.devastationEvokerEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)		
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["EvokerDevastation"], L["Evoker"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["EvokerDevastationFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.evoker.devastation)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.evoker.devastation = self:GetChecked()
@@ -1703,7 +1703,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Preservation_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["EvokerPreservation"], L["Evoker"]),
+			text = string.format(L["ResetBarDialog"], L["EvokerPreservationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1716,7 +1716,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Preservation_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["EvokerPreservation"], L["Evoker"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["EvokerPreservationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1729,7 +1729,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Preservation_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["EvokerPreservation"], L["Evoker"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["EvokerPreservationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1743,7 +1743,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		}
 		--[[
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Preservation_ResetBarTextNarrowAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["EvokerPreservation"], L["Evoker"]),
+			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["EvokerPreservationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2351,7 +2351,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		f = controls.checkBoxes.preservationEvokerEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["EvokerPreservation"], L["Evoker"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["EvokerPreservationFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.evoker.preservation)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.evoker.preservation = self:GetChecked()
@@ -2434,7 +2434,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Augmentation_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["EvokerAugmentation"], L["Evoker"]),
+			text = string.format(L["ResetBarDialog"], L["EvokerAugmentationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2447,7 +2447,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Augmentation_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["EvokerAugmentation"], L["Evoker"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["EvokerAugmentationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2460,7 +2460,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Augmentation_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["EvokerAugmentation"], L["Evoker"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["EvokerAugmentationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2878,7 +2878,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		f = controls.checkBoxes.augmentationEvokerEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)		
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["EvokerAugmentation"], L["Evoker"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["EvokerAugmentationFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.evoker.augmentation)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.evoker.augmentation = self:GetChecked()

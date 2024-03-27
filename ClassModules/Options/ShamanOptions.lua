@@ -978,7 +978,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["ShamanElemental"], L["Shaman"]),
+			text = string.format(L["ResetBarDialog"], L["ShamanElementalFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -991,7 +991,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["ShamanElemental"], L["Shaman"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["ShamanElementalFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1004,7 +1004,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Shaman_Elemental_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["ShamanElemental"], L["Shaman"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["ShamanElementalFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1634,7 +1634,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f = controls.checkBoxes.elementalShamanEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["ShamanElemental"], L["Shaman"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["ShamanElementalFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.shaman.elemental)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.shaman.elemental = self:GetChecked()
@@ -1715,7 +1715,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_Shaman_Enhancement_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["ShamanEnhancement"], L["Shaman"]),
+			text = string.format(L["ResetBarDialog"], L["ShamanEnhancementFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1728,7 +1728,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Shaman_Enhancement_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["ShamanEnhancement"], L["Shaman"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["ShamanEnhancementFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1741,7 +1741,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Shaman_Enhancement_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["ShamanEnhancement"], L["Shaman"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["ShamanEnhancementFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2106,7 +2106,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f = controls.checkBoxes.enhancementShamanEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)		
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["ShamanEnhancement"], L["Shaman"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["ShamanEnhancementFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.shaman.enhancement)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.shaman.enhancement = self:GetChecked()
@@ -2181,7 +2181,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_Shaman_Restoration_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["ShamanRestoration"], L["Shaman"]),
+			text = string.format(L["ResetBarDialog"], L["ShamanRestorationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2194,7 +2194,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Shaman_Restoration_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["ShamanRestoration"], L["Shaman"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["ShamanRestorationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2207,7 +2207,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Shaman_Restoration_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["ShamanRestoration"], L["Shaman"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["ShamanRestorationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2221,7 +2221,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		}
 		--[[
 		StaticPopupDialogs["TwintopResourceBar_Shaman_Restoration_ResetBarTextNarrowAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["ShamanRestoration"], L["Shaman"]),
+			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["ShamanRestorationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2703,7 +2703,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		f = controls.checkBoxes.restorationShamanEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["ShamanRestoration"], L["Shaman"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["ShamanRestorationFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.shaman.restoration)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.shaman.restoration = self:GetChecked()

@@ -658,7 +658,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_DemonHunter_Havoc_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["DemonHunterHavoc"], L["DemonHunter"]),
+			text = string.format(L["ResetBarDialog"], L["DemonHunterHavocFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -671,7 +671,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_DemonHunter_Havoc_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["DemonHunterHavoc"], L["DemonHunter"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["DemonHunterHavocFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -684,7 +684,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_DemonHunter_Havoc_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["DemonHunterHavoc"], L["DemonHunter"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["DemonHunterHavocFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1259,7 +1259,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		f = controls.checkBoxes.havocDemonHunterEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DemonHunterHavoc"], L["DemonHunter"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DemonHunterHavocFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.demonhunter.havoc)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.demonhunter.havoc = self:GetChecked()
@@ -1338,7 +1338,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_DemonHunter_Vengeance_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["DemonHunterVengeance"], L["DemonHunter"]),
+			text = string.format(L["ResetBarDialog"], L["DemonHunterVengeanceFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1351,7 +1351,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_DemonHunter_Vengeance_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["DemonHunterVengeance"], L["DemonHunter"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["DemonHunterVengeanceFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1364,7 +1364,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_DemonHunter_Vengeance_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["DemonHunterVengeance"], L["DemonHunter"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["DemonHunterVengeanceFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1928,7 +1928,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		f = controls.checkBoxes.vengeanceDemonHunterEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DemonHunterVengeance"], L["DemonHunter"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DemonHunterVengeanceFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.demonhunter.vengeance)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.demonhunter.vengeance = self:GetChecked()

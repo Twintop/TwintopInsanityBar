@@ -1241,7 +1241,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_Rogue_Assassination_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["RogueAssassination"], L["Rogue"]),
+			text = string.format(L["ResetBarDialog"], L["RogueAssassinationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1254,7 +1254,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Rogue_Assassination_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["RogueAssassination"], L["Rogue"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["RogueAssassinationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1267,7 +1267,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Rogue_Assassination_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["RogueAssassination"], L["Rogue"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["RogueAssassinationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2260,7 +2260,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.assassinationRogueEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)		
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["RogueAssassination"], L["Rogue"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["RogueAssassinationFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.rogue.assassination)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.rogue.assassination = self:GetChecked()
@@ -2340,7 +2340,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_Rogue_Outlaw_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["RogueOutlaw"], L["Rogue"]),
+			text = string.format(L["ResetBarDialog"], L["RogueOutlawFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2353,7 +2353,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Rogue_Outlaw_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["RogueOutlaw"], L["Rogue"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["RogueOutlawFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2366,7 +2366,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Rogue_Outlaw_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["RogueOutlaw"], L["Rogue"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["RogueOutlawFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -3362,7 +3362,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.outlawRogueEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)		
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["RogueOutlaw"], L["Rogue"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["RogueOutlawFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.rogue.outlaw)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.rogue.outlaw = self:GetChecked()
@@ -3441,7 +3441,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_Rogue_Subtlety_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["RogueSubtlety"], L["Rogue"]),
+			text = string.format(L["ResetBarDialog"], L["RogueSubtletyFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -3454,7 +3454,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Rogue_Subtlety_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["RogueSubtlety"], L["Rogue"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["RogueSubtletyFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -3467,7 +3467,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Rogue_Subtlety_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["RogueSubtlety"], L["Rogue"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["RogueSubtletyFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -4469,7 +4469,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.subtletyRogueEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)		
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["RogueSubtlety"], L["Rogue"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["RogueSubtletyFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.rogue.subtlety)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.rogue.subtlety = self:GetChecked()

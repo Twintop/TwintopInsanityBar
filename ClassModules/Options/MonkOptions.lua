@@ -689,7 +689,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_Monk_Mistweaver_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["MonkMistweaver"], L["Monk"]),
+			text = string.format(L["ResetBarDialog"], L["MonkMistweaverFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -702,7 +702,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Monk_Mistweaver_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["MonkMistweaver"], L["Monk"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["MonkMistweaverFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -715,7 +715,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Monk_Mistweaver_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["MonkMistweaver"], L["Monk"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["MonkMistweaverFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -729,7 +729,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		}
 		--[[
 		StaticPopupDialogs["TwintopResourceBar_Monk_Mistweaver_ResetBarTextNarrowAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["MonkMistweaver"], L["Monk"]),
+			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["MonkMistweaverFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1167,7 +1167,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f = controls.checkBoxes.mistweaverMonkEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["MonkMistweaver"], L["Monk"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["MonkMistweaverFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.monk.mistweaver)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.monk.mistweaver = self:GetChecked()
@@ -1247,7 +1247,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_Monk_Windwalker_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["MonkWindwalker"], L["Monk"]),
+			text = string.format(L["ResetBarDialog"], L["MonkWindwalkerFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1260,7 +1260,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Monk_Windwalker_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["MonkWindwalker"], L["Monk"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["MonkWindwalkerFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1273,7 +1273,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Monk_Windwalker_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["MonkWindwalker"], L["Monk"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["MonkWindwalkerFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2059,7 +2059,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f = controls.checkBoxes.windwalkerMonkEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)		
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["MonkWindwalker"], L["Monk"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["MonkWindwalkerFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.monk.windwalker)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.monk.windwalker = self:GetChecked()

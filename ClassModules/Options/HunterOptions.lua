@@ -1084,7 +1084,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["HunterBeastMastery"], L["Hunter"]),
+			text = string.format(L["ResetBarDialog"], L["HunterBeastMasteryFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1097,7 +1097,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["HunterBeastMastery"], L["Hunter"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["HunterBeastMasteryFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1110,7 +1110,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["HunterBeastMastery"], L["Hunter"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["HunterBeastMasteryFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1123,7 +1123,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		--[[StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_ResetBarTextNarrowAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["HunterBeastMastery"], L["Hunter"]),
+			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["HunterBeastMasteryFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1910,7 +1910,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.beastMasteryHunterEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["HunterBeastMastery"], L["Hunter"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["HunterBeastMasteryFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.hunter.beastMastery)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.hunter.beastMastery = self:GetChecked()
@@ -1989,7 +1989,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["HunterMarksmanship"], L["Hunter"]),
+			text = string.format(L["ResetBarDialog"], L["HunterMarksmanshipFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2002,7 +2002,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["HunterMarksmanship"], L["Hunter"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["HunterMarksmanshipFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2015,7 +2015,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["HunterMarksmanship"], L["Hunter"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["HunterMarksmanshipFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2028,7 +2028,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		--[[StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_ResetBarTextNarrowAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["HunterMarksmanship"], L["Hunter"]),
+			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["HunterMarksmanshipFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -3178,7 +3178,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.marksmanshipHunterEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["HunterMarksmanship"], L["Hunter"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["HunterMarksmanshipFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.hunter.marksmanship)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.hunter.marksmanship = self:GetChecked()
@@ -3261,7 +3261,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local title = ""
 
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["HunterSurvival"], L["Hunter"]),
+			text = string.format(L["ResetBarDialog"], L["HunterSurvivalFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -3274,7 +3274,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["HunterSurvival"], L["Hunter"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["HunterSurvivalFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -3287,7 +3287,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["HunterSurvival"], L["Hunter"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["HunterSurvivalFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -4067,7 +4067,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.survivalHunterEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["HunterSurvival"], L["Hunter"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["HunterSurvivalFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.hunter.survival)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.hunter.survival = self:GetChecked()

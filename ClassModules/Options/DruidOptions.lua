@@ -1176,7 +1176,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local title = ""
 
 		StaticPopupDialogs["TwintopResourceBar_Druid_Balance_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["DruidBalance"], L["Druid"]),
+			text = string.format(L["ResetBarDialog"], L["DruidBalanceFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1189,7 +1189,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Druid_Balance_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["DruidBalance"], L["Druid"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["DruidBalanceFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1202,7 +1202,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Druid_Balance_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["DruidBalance"], L["Druid"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["DruidBalanceFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -1215,7 +1215,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			preferredIndex = 3
 		}
 		--[[StaticPopupDialogs["TwintopResourceBar_Druid_Balance_ResetBarTextNarrowAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["DruidBalance"], L["Druid"]),
+			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["DruidBalanceFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2055,7 +2055,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f = controls.checkBoxes.balanceDruidEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)		
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DruidBalance"], L["Druid"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DruidBalanceFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.druid.balance)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.druid.balance = self:GetChecked()
@@ -2138,7 +2138,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local title = ""
 
 		StaticPopupDialogs["TwintopResourceBar_Druid_Feral_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["DruidFeral"], L["Druid"]),
+			text = string.format(L["ResetBarDialog"], L["DruidFeralFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2151,7 +2151,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Druid_Feral_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["DruidFeral"], L["Druid"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["DruidFeralFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2164,7 +2164,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Druid_Feral_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["DruidFeral"], L["Druid"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["DruidFeralFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -2997,7 +2997,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f = controls.checkBoxes.feralDruidEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)		
 		getglobal(f:GetName() .. 'Text'):SetText(L["Enabled"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DruidFeral"], L["Druid"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DruidFeralFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.druid.feral)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.druid.feral = self:GetChecked()
@@ -3079,7 +3079,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local title = ""
 
 		StaticPopupDialogs["TwintopResourceBar_Druid_Restoration_Reset"] = {
-			text = string.format(L["ResetBarDialog"], L["DruidRestoration"], L["Druid"]),
+			text = string.format(L["ResetBarDialog"], L["DruidRestorationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -3092,7 +3092,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Druid_Restoration_ResetBarTextSimple"] = {
-			text = string.format(L["ResetBarTextSimpleDialog"], L["DruidRestoration"], L["Druid"]),
+			text = string.format(L["ResetBarTextSimpleDialog"], L["DruidRestorationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -3105,7 +3105,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Druid_Restoration_ResetBarTextAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["DruidRestoration"], L["Druid"]),
+			text = string.format(L["ResetBarTextAdvancedFullDialog"], L["DruidRestorationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -3119,7 +3119,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		}
 		--[[
 		StaticPopupDialogs["TwintopResourceBar_Druid_Restoration_ResetBarTextNarrowAdvanced"] = {
-			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["DruidRestoration"], L["Druid"]),
+			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["DruidRestorationFull"]),
 			button1 = L["Yes"],
 			button2 = L["No"],
 			OnAccept = function()
@@ -3614,7 +3614,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f = controls.checkBoxes.restorationDruidEnabled
 		f:SetPoint("TOPLEFT", 320, yCoord-10)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DruidRestoration"], L["Druid"])
+		f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["DruidRestorationFull"])
 		f:SetChecked(TRB.Data.settings.core.enabled.druid.restoration)
 		f:SetScript("OnClick", function(self, ...)
 			TRB.Data.settings.core.enabled.druid.restoration = self:GetChecked()
