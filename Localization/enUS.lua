@@ -347,8 +347,15 @@ L["BarTextInvalidIfElseLogic"] = "{INVALID IF/ELSE LOGIC}"
 
 L["Overcap"] = "Overcap"
 L["ResetBarDialog"] = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the %s %s settings will be changed. This will cause your UI to be reloaded!"
+L["ResetBarTextSimple"] = "Reset Bar Text (Simple)"
 L["ResetBarTextSimpleDialog"] = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the %s %s settings will be changed. This will cause your UI to be reloaded!"
+L["ResetBarTextAdvancedFull"] = "Reset Bar Text (Full Advanced)"
 L["ResetBarTextAdvancedDialog"] = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the %s %s settings will be changed. This will cause your UI to be reloaded!"
+L["ResetBarTextAdvancedNarrow"] = "Reset Bar Text (Narrow Advanced)"
 L["ResetBarTextAdvancedNarrowDialog"] = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the %s %s settings will be changed. This will cause your UI to be reloaded!"
+
+L["ResetResourceBarToDefaultsHeader"] = "Reset Resource Bar to Defaults"
+L["ResetToDefaultsHeader"] = "Reset to Defaults"
+L["ResetResourceBarTextHeader"] = "Reset Resource Bar Text"
 
 -- DemonHunterOptions
