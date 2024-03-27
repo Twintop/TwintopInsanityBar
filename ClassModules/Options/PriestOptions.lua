@@ -2,16 +2,13 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 5 then --Only do this if we're on a Priest!
+	local L = TRB.Localization
 	local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 	local oUi = TRB.Data.constants.optionsUi
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
-	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
 	local passiveFrame = TRB.Frames.passiveFrame
-	local barBorderFrame = TRB.Frames.barBorderFrame
-
-	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
 
 	TRB.Options.Priest = {}
 	TRB.Options.Priest.Discipline = {}
@@ -27,13 +24,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				useDefaultFontFace = false,
 				guid=TRB.Functions.String:Guid(),
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				text = "{$pwRadianceTime&$hwSerenityCharges=0}[$pwRadianceTime]",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 14,
 				name = "HW Serenity 1",
 				position = {
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeTo = "CENTER",
 					xPos = 0,
 					relativeToFrameName = "Power Word: Radiance (1st Charge)",
@@ -50,13 +47,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				useDefaultFontFace = false,
 				guid=TRB.Functions.String:Guid(),
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				text = "{$pwRadianceTime&$hwSerenityCharges=1}[$pwRadianceTime]",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 14,
 				name = "HW Serenity 2",
 				position = {
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeTo = "CENTER",
 					xPos = 0,
 					relativeToFrameName = "Power Word: Radiance (2nd Charge)",
@@ -82,22 +79,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="$atonementCount",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -105,22 +102,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$raptureTime}[$raptureTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -128,22 +125,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -165,22 +162,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="#atonement $atonementCount ($atonementMinTime)||n{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -188,22 +185,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$raptureTime}[#rapture$raptureTime#rapture]||n{$scTime}[#sc$scTime#sc]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -211,22 +208,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=16,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -250,7 +247,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					showCooldown=true,
 					border=2,
 					relativeTo = "BOTTOM",
-					relativeToName = "Below",
+					relativeToName = L["PositionBelow"],
 					enabled=true,
 					desaturated=true,
 					xPos=0,
@@ -319,7 +316,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				border=1,
 				spacing=14,
 				relativeTo="TOP",
-				relativeToName="Above - Middle",
+				relativeToName = L["PositionAboveMiddle"],
 				fullWidth=true,
 			},
 			endOfRapture = {
@@ -390,7 +387,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					fontFace="Fonts\\FRIZQT__.TTF",
 					fontFaceName="Friz Quadrata TT",
 					fontJustifyHorizontal = "LEFT",
-					fontJustifyHorizontalName = "Left",
+					fontJustifyHorizontalName = L["PositionLeft"],
 					fontSize=18,
 					color = "FFFFFFFF",
 				},
@@ -413,7 +410,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					name = "Innervate (2 stacks)",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				}
 			},
 			textures={
@@ -453,13 +450,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				useDefaultFontFace = false,
 				guid=TRB.Functions.String:Guid(),
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				text = "{$hwSerenityTime&$hwSerenityCharges=0}[$hwSerenityTime]",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 14,
 				name = "HW Serenity 1",
 				position = {
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeTo = "CENTER",
 					xPos = 0,
 					relativeToFrameName = "Holy Word: Serenity (1st Charge)",
@@ -476,13 +473,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				useDefaultFontFace = false,
 				guid=TRB.Functions.String:Guid(),
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				text = "{$hwSerenityTime&$hwSerenityCharges=1}[$hwSerenityTime]",
 				fontSize = 14,
 				color = "FFFFFFFF",
 				name = "HW Serenity 2",
 				position = {
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeTo = "CENTER",
 					xPos = 0,
 					relativeToFrameName = "Holy Word: Serenity (2nd Charge)",
@@ -499,13 +496,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				useDefaultFontFace = false,
 				guid=TRB.Functions.String:Guid(),
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				text = "{$hwSanctifyTime&$hwSanctifyCharges=0}[$hwSanctifyTime]",
 				fontSize = 14,
 				color = "FFFFFFFF",
 				name = "HW Sanctify 1",
 				position = {
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeTo = "CENTER",
 					xPos = 0,
 					relativeToFrameName = "Holy Word: Sanctify (1st Charge)",
@@ -522,13 +519,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				useDefaultFontFace = false,
 				guid=TRB.Functions.String:Guid(),
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				text = "{$hwSanctifyTime&$hwSanctifyCharges=1}[$hwSanctifyTime]",
 				fontSize = 14,
 				color = "FFFFFFFF",
 				name = "HW Sanctify 2",
 				position = {
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeTo = "CENTER",
 					xPos = 0,
 					relativeToFrameName = "Holy Word: Sanctify (2nd Charge)",
@@ -545,13 +542,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				useDefaultFontFace = false,
 				guid=TRB.Functions.String:Guid(),
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				text = "{$hwChastiseTime}[$hwChastiseTime]",
 				fontSize = 14,
 				color = "FFFFFFFF",
 				name = "HW Chastise",
 				position = {
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeTo = "CENTER",
 					xPos = 0,
 					relativeToFrameName = "Holy Word: Chastise",
@@ -576,22 +573,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -599,22 +596,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$apotheosisTime}[$apotheosisTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -622,22 +619,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -659,22 +656,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$hwSanctifyTime}[#hwSanctify $hwSanctifyTime][          ]    {$potionCooldown}[#potionOfFrozenFocus $potionCooldown]||n{$hwSerenityTime}[#hwSerenity $hwSerenityTime] ",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -682,22 +679,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$apotheosisTime}[#apotheosis $apotheosisTime #apotheosis]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -705,22 +702,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=16,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -744,7 +741,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					showCooldown=true,
 					border=2,
 					relativeTo = "BOTTOM",
-					relativeToName = "Below",
+					relativeToName = L["PositionBelow"],
 					enabled=true,
 					desaturated=true,
 					xPos=0,
@@ -817,7 +814,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				border=1,
 				spacing=14,
 				relativeTo="TOP",
-				relativeToName="Above - Middle",
+				relativeToName = L["PositionAboveMiddle"],
 				fullWidth=true,
 			},
 			endOfApotheosis = {
@@ -901,7 +898,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					fontFace="Fonts\\FRIZQT__.TTF",
 					fontFaceName="Friz Quadrata TT",
 					fontJustifyHorizontal = "LEFT",
-					fontJustifyHorizontalName = "Left",
+					fontJustifyHorizontalName = L["PositionLeft"],
 					fontSize=18,
 					color = "FFFFFFFF",
 				},
@@ -924,19 +921,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					name = "Surge of Light (2 stacks)",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				},
 				resonantWords={
 					name = "Resonant Words",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				},
 				lightweaver={
 					name = "Lightweaver",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				}
 			},
 			textures={
@@ -975,22 +972,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="$haste%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -998,22 +995,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$vfTime}[$vfTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -1021,22 +1018,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[$casting + ]{$passive}[$passive + ]$insanity%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -1053,22 +1050,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="#swp $swpCount   #dp $dpCount   $haste% ($gcd)||n#vt $vtCount   {$cttvEquipped}[#loi $ecttvCount][       ]   {$ttd}[TTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize = 13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -1077,21 +1074,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontSize = false,
 				enabled = true,
 				guid=TRB.Functions.String:Guid(),
-				name="Middle",
+				name = L["PositionMiddle"],
 				text="{$mdTime}[#mDev $mdTime #mDev{$vfTime||$mfiTime}[||n]]{$mfiTime}[#mfi $mfiTime #mfi{$vfTime}[||n]]{$vfTime}[$vfTime]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize = 13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -1100,21 +1097,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontSize = false,
 				enabled = true,
 				guid=TRB.Functions.String:Guid(),
-				name="Right",
+				name = L["PositionRight"],
 				text="{$casting}[#casting$casting+]{$asCount}[#as$asInsanity+]{$mbInsanity}[#mindbender$mbInsanity+]{$loiInsanity}[#loi$loiInsanity+]$insanity",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize = 22,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -1130,26 +1127,26 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="#swp $swpCount   $haste% ($gcd)||n#vt $vtCount   {$ttd}[TTD: $ttd]",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize = 13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				useDefaultFontColor = false,
 				useDefaultFontFace = false,
@@ -1159,16 +1156,16 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize = 13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -1176,22 +1173,22 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$passive}[$passive+]$insanity",
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				fontFaceName = "Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize = 22,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -1214,7 +1211,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				icons = {
 					border=2,
 					relativeTo = "TOP",
-					relativeToName = "Above",
+					relativeToName = L["PositionAbove"],
 					enabled=true,
 					desaturated=true,
 					xPos=0,
@@ -1335,7 +1332,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					fontFace="Fonts\\FRIZQT__.TTF",
 					fontFaceName="Friz Quadrata TT",
 					fontJustifyHorizontal = "LEFT",
-					fontJustifyHorizontalName = "Left",
+					fontJustifyHorizontalName = L["PositionLeft"],
 					fontSize=18,
 					color = "FFFFFFFF",
 				},
@@ -1343,10 +1340,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			},
 			audio={
 				overcap={
-					name = "Overcap",
+					name = L["Overcap"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				},
 				mdProc={
 					name = "Mind Devourer Proc",
@@ -1425,26 +1422,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.discipline
 		local yCoord = 5
-		local f = nil
 
 		local spec = TRB.Data.settings.priest.discipline
 
-		local title = ""
-		StaticPopupDialogs["TwintopResourceBar_ConfirmReload"] = {
-			text = "Click to finish applying",
-			button1 = "Yes",
-			OnAccept = function()
-				C_UI.Reload()
-			end,
-			timeout = 0,
-			whileDead = true,
-			hideOnEscape = false,
-			preferredIndex = 3
-		}
 		StaticPopupDialogs["TwintopResourceBar_Priest_Discipline_Reset"] = {
-			text = "Do you want to reset Twintop's Resource Bar back to its default configuration? Only the Discipline Priest settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarDialog"], L["PriestDiscipline"], L["Priest"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				TRB.Data.settings.priest.discipline = DisciplineLoadDefaultSettings(true)
 				C_UI.Reload()
@@ -1455,9 +1439,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Priest_Discipline_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Discipline Priest settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextSimpleDialog"], L["PriestDiscipline"], L["Priest"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = DisciplineLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
@@ -1468,9 +1452,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Priest_Discipline_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Discipline Priest settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedDialog"], L["PriestDiscipline"], L["Priest"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = DisciplineLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
@@ -2336,26 +2320,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.holy
 		local yCoord = 5
-		local f = nil
 
 		local spec = TRB.Data.settings.priest.holy
 
-		local title = ""
-		StaticPopupDialogs["TwintopResourceBar_ConfirmReload"] = {
-			text = "Click to finish applying",
-			button1 = "Yes",
-			OnAccept = function()
-				C_UI.Reload()
-			end,
-			timeout = 0,
-			whileDead = true,
-			hideOnEscape = false,
-			preferredIndex = 3
-		}
 		StaticPopupDialogs["TwintopResourceBar_Priest_Holy_Reset"] = {
-			text = "Do you want to reset Twintop's Resource Bar back to its default configuration? Only the Holy Priest settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarDialog"], L["PriestHoly"], L["Priest"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				TRB.Data.settings.priest.holy = HolyLoadDefaultSettings(true)
 				C_UI.Reload()
@@ -2366,9 +2337,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Priest_Holy_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Holy Priest settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextSimpleDialog"], L["PriestHoly"], L["Priest"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = HolyLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
@@ -2379,9 +2350,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Priest_Holy_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Holy Priest settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedDialog"], L["PriestHoly"], L["Priest"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = HolyLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
@@ -3513,9 +3484,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local yCoord = 5
 
 		StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_Reset"] = {
-			text = "Do you want to reset Twintop's Resource Bar back to its default configuration? Only the Shadow Priest settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarDialog"], L["PriestShadow"], L["Priest"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				TRB.Data.settings.priest.shadow = ShadowLoadDefaultSettings(true)
 				C_UI.Reload()
@@ -3526,9 +3497,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Shadow Priest settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextSimpleDialog"], L["PriestShadow"], L["Priest"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = ShadowLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
@@ -3539,9 +3510,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Shadow Priest settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedDialog"], L["PriestShadow"], L["Priest"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = ShadowLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
@@ -3552,9 +3523,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Priest_Shadow_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the Shadow Priest settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["PriestShadow"], L["Priest"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = ShadowLoadDefaultBarTextNarrowAdvancedSettings()
 				C_UI.Reload()

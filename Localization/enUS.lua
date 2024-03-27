@@ -344,3 +344,11 @@ L["LSMSoundAirHorn"] = "TRB: Air Horn"
 -- Bar text
 L["BarTextNewline"] = "Insert a Newline. Alternative to pressing Enter."
 L["BarTextInvalidIfElseLogic"] = "{INVALID IF/ELSE LOGIC}"
+
+L["Overcap"] = "Overcap"
+L["ResetBarDialog"] = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the %s %s settings will be changed. This will cause your UI to be reloaded!"
+L["ResetBarTextSimpleDialog"] = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the %s %s settings will be changed. This will cause your UI to be reloaded!"
+L["ResetBarTextAdvancedDialog"] = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the %s %s settings will be changed. This will cause your UI to be reloaded!"
+L["ResetBarTextAdvancedNarrowDialog"] = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the %s %s settings will be changed. This will cause your UI to be reloaded!"
+
+-- DemonHunterOptions

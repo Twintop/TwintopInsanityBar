@@ -1,20 +1,13 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 3 then --Only do this if we're on a Hunter!
+	local L = TRB.Localization
 	local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 	local oUi = TRB.Data.constants.optionsUi
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
-	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
 	local passiveFrame = TRB.Frames.passiveFrame
-	local barBorderFrame = TRB.Frames.barBorderFrame
-
-	local resourceFrame = TRB.Frames.resourceFrame
-	local passiveFrame = TRB.Frames.passiveFrame
-	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
-	local timerFrame = TRB.Frames.timerFrame
-	local combatFrame = TRB.Frames.combatFrame
 
 	TRB.Options.Hunter = {}
 	TRB.Options.Hunter.BeastMastery = {}
@@ -32,22 +25,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -55,22 +48,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$frenzyStacks}[$frenzyTime ($frenzyStacks)]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -78,22 +71,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[$casting + ]{$passive}[$passive + ]$focus",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -110,22 +103,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="$haste% ($gcd)||n{$ttd}[TTD: $ttd] ",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -133,22 +126,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$frenzyStacks}[#frenzy$frenzyTime - $frenzyStacks#frenzy]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -156,22 +149,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$barbedShotFocus}[#barbedShot$barbedShotFocus+]{$regen}[$regen+]$focus",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=22,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -190,7 +183,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					showCooldown=true,
 					border=2,
 					relativeTo = "TOP",
-					relativeToName = "Above",
+					relativeToName = L["PositionAbove"],
 					enabled=true,
 					desaturated=true,
 					xPos=0,
@@ -322,7 +315,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					fontFace="Fonts\\FRIZQT__.TTF",
 					fontFaceName="Friz Quadrata TT",
 					fontJustifyHorizontal = "LEFT",
-					fontJustifyHorizontalName = "Left",
+					fontJustifyHorizontalName = L["PositionLeft"],
 					fontSize=18,
 					color = "FFFFFFFF",
 				},
@@ -330,16 +323,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			},
 			audio = {
 				overcap={
-					name = "Overcap",
+					name = L["Overcap"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				},
 				killShot={
 					name = "Kill Shot Ready",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				}
 			},
 			textures = {
@@ -372,22 +365,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$trueshotTime}[$trueshotTime sec]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -395,22 +388,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -418,22 +411,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[$casting + ]{$passive}[$passive + ]$focus",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -450,22 +443,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$serpentSting}[#serpentSting $ssCount   ]$haste% ($gcd)||n{$serpentSting}[          ]{$ttd}[TTD: $ttd][ ] ",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -473,22 +466,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$trueshotTime}[#trueshot $trueshotTime #trueshot]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -496,22 +489,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$passive}[$passive+]$focus",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=22,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -530,7 +523,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					showCooldown=true,
 					border=2,
 					relativeTo = "TOP",
-					relativeToName = "Above",
+					relativeToName = L["PositionAbove"],
 					enabled=true,
 					desaturated=true,
 					xPos=0,
@@ -668,7 +661,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					fontFace="Fonts\\FRIZQT__.TTF",
 					fontFaceName="Friz Quadrata TT",
 					fontJustifyHorizontal = "LEFT",
-					fontJustifyHorizontalName = "Left",
+					fontJustifyHorizontalName = L["PositionLeft"],
 					fontSize=18,
 					color = "FFFFFFFF",
 				},
@@ -679,7 +672,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					name = "Aimed Shot Capping",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn",
+					soundName = L["LSMSoundAirHorn"],
 					mode="gcd",
 					gcds=1,
 					time=1.5
@@ -688,25 +681,25 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					name = "Lock and Load Proc",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				},
 				overcap={
-					name = "Overcap",
+					name = L["Overcap"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				},
 				secretsOfTheUnblinkingVigil={
 					name = "Secrets of the Unblinking Vigil Proc",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				},
 				killShot={
 					name = "Kill Shot Ready",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				}
 			},
 			textures = {
@@ -739,22 +732,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$coordinatedAssaultTime}[$coordinatedAssaultTime sec]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -762,22 +755,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -785,22 +778,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[$casting + ]{$passive}[$passive + ]$focus",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -817,22 +810,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="#serpentSting $ssCount   $haste% ($gcd)||n {$ttd}[TTD: $ttd][ ] ",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -840,22 +833,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$coordinatedAssaultTime}[#coordinatedAssault $coordinatedAssaultTime #coordinatedAssault]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -863,22 +856,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$toeFocus}[#termsOfEngagement$toeFocus+]{$regen}[$regen+]$focus",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=22,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -897,7 +890,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					showCooldown=true,
 					border=2,
 					relativeTo = "TOP",
-					relativeToName = "Above",
+					relativeToName = L["PositionAbove"],
 					enabled=true,
 					desaturated=true,
 					xPos=0,
@@ -1022,7 +1015,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					fontFace="Fonts\\FRIZQT__.TTF",
 					fontFaceName="Friz Quadrata TT",
 					fontJustifyHorizontal = "LEFT",
-					fontJustifyHorizontalName = "Left",
+					fontJustifyHorizontalName = L["PositionLeft"],
 					fontSize=18,
 					color = "FFFFFFFF",
 				},
@@ -1030,16 +1023,16 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			},
 			audio = {
 				overcap={
-					name = "Overcap",
+					name = L["Overcap"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				},
 				killShot={
 					name = "Kill Shot Ready",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				}
 			},
 			textures = {
@@ -1089,14 +1082,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery
 		local yCoord = 5
-		local f = nil
-
-		local title = ""
 
 		StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_Reset"] = {
-			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Beast Mastery Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarDialog"], L["HunterBeastMastery"], L["Hunter"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				TRB.Data.settings.hunter.beastMastery = BeastMasteryLoadDefaultSettings(true)
 				C_UI.Reload()
@@ -1107,9 +1097,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Beast Mastery Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextSimpleDialog"], L["HunterBeastMastery"], L["Hunter"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = BeastMasteryLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
@@ -1120,9 +1110,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Beast Mastery Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedDialog"], L["HunterBeastMastery"], L["Hunter"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = BeastMasteryLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
@@ -1133,9 +1123,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		--[[StaticPopupDialogs["TwintopResourceBar_Hunter_BeastMastery_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the Beast Mastery Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["HunterBeastMastery"], L["Hunter"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = BeastMasteryLoadDefaultBarTextNarrowAdvancedSettings()
 				C_UI.Reload()
@@ -1997,14 +1987,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship
 		local yCoord = 5
-		local f = nil
-
-		local title = ""
 
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_Reset"] = {
-			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Marksmanship Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarDialog"], L["HunterMarksmanship"], L["Hunter"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				TRB.Data.settings.hunter.marksmanship = MarksmanshipLoadDefaultSettings(true)
 				C_UI.Reload()
@@ -2015,9 +2002,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Marksmanship Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextSimpleDialog"], L["HunterMarksmanship"], L["Hunter"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = MarksmanshipLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
@@ -2028,9 +2015,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Marksmanship Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedDialog"], L["HunterMarksmanship"], L["Hunter"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = MarksmanshipLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
@@ -2041,9 +2028,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		--[[StaticPopupDialogs["TwintopResourceBar_Hunter_Marksmanship_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the Marksmanship Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["HunterMarksmanship"], L["Hunter"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = MarksmanshipLoadDefaultBarTextNarrowAdvancedSettings()
 				C_UI.Reload()
@@ -3274,9 +3261,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local title = ""
 
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_Reset"] = {
-			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Survival Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarDialog"], L["HunterSurvival"], L["Hunter"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				TRB.Data.settings.hunter.survival = SurvivalLoadDefaultSettings(true)
 				C_UI.Reload()
@@ -3287,9 +3274,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Survival Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextSimpleDialog"], L["HunterSurvival"], L["Hunter"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = SurvivalLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
@@ -3300,9 +3287,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Survival Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedDialog"], L["HunterSurvival"], L["Hunter"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = SurvivalLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()

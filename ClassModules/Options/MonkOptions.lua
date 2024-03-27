@@ -1,20 +1,13 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 10 then --Only do this if we're on a Monk!
+	local L = TRB.Localization
 	local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 	local oUi = TRB.Data.constants.optionsUi
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
-	local resourceFrame = TRB.Frames.resourceFrame
 	local castingFrame = TRB.Frames.castingFrame
 	local passiveFrame = TRB.Frames.passiveFrame
-	local barBorderFrame = TRB.Frames.barBorderFrame
-
-	local resourceFrame = TRB.Frames.resourceFrame
-	local passiveFrame = TRB.Frames.passiveFrame
-	local targetsTimerFrame = TRB.Frames.targetsTimerFrame
-	local timerFrame = TRB.Frames.timerFrame
-	local combatFrame = TRB.Frames.combatFrame
 
 	TRB.Options.Monk = {}
 	TRB.Options.Monk.Brewmaster = {}
@@ -34,22 +27,22 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=16,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -57,22 +50,22 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=16,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -80,22 +73,22 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=16,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -112,22 +105,22 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -135,22 +128,22 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -158,22 +151,22 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=16,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -192,7 +185,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					showCooldown=true,
 					border=2,
 					relativeTo = "TOP",
-					relativeToName = "Above",
+					relativeToName = L["PositionAbove"],
 					enabled=true,
 					desaturated=true,
 					xPos=0,
@@ -293,7 +286,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					fontFace="Fonts\\FRIZQT__.TTF",
 					fontFaceName="Friz Quadrata TT",
 					fontJustifyHorizontal = "LEFT",
-					fontJustifyHorizontalName = "Left",
+					fontJustifyHorizontalName = L["PositionLeft"],
 					fontSize=18,
 					color = "FFFFFFFF",
 				},
@@ -337,22 +330,22 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$serenityTime}[$serenityTime sec]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -360,22 +353,22 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$danceOfChiJiTime}[$danceOfChiJiTime] {$motcCount}[#sck $motcCount | $motcMinTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -383,22 +376,22 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$passive}[$passive + ]$energy",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -415,22 +408,22 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$serenityTime}[#serenity $serenityTime #serenity]{$ttd}[||nTTD: $ttd]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -438,22 +431,22 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$danceOfChiJiTime}[$danceOfChiJiTime]{$motcCount}[||n#sck$motcCount - $motcMinTime#sck]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -461,22 +454,22 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$regen}[$regen+]$energy",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=22,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -495,7 +488,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					showCooldown=true,
 					border=2,
 					relativeTo = "BOTTOM",
-					relativeToName = "Below",
+					relativeToName = L["PositionBelow"],
 					enabled=true,
 					desaturated=true,
 					xPos=0,
@@ -566,7 +559,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				border=1,
 				spacing=14,
 				relativeTo="TOP",
-				relativeToName="Above - Middle",
+				relativeToName = L["PositionAboveMiddle"],
 				fullWidth=true,
 			},
 			colors = {
@@ -619,7 +612,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					fontFace="Fonts\\FRIZQT__.TTF",
 					fontFaceName="Friz Quadrata TT",
 					fontJustifyHorizontal = "LEFT",
-					fontJustifyHorizontalName = "Left",
+					fontJustifyHorizontalName = L["PositionLeft"],
 					fontSize=18,
 					color = "FFFFFFFF",
 				},
@@ -627,16 +620,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			},
 			audio = {
 				overcap={
-					name = "Overcap",
+					name = L["Overcap"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				},
 				danceOfChiJi={
 					name = "Dance of Chi-Ji",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				},
 			},
 			textures = {
@@ -694,14 +687,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.mistweaver
 		local yCoord = 5
-		local f = nil
-
-		local title = ""
 
 		StaticPopupDialogs["TwintopResourceBar_Monk_Mistweaver_Reset"] = {
-			text = "Do you want to reset Twintop's Resource Bar back to its default configuration? Only the Mistweaver Monk settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarDialog"], L["MonkMistweaver"], L["Monk"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				TRB.Data.settings.monk.mistweaver = MistweaverLoadDefaultSettings(true)
 				C_UI.Reload()
@@ -712,9 +702,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Monk_Mistweaver_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Mistweaver Monk settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextSimpleDialog"], L["MonkMistweaver"], L["Monk"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = MistweaverLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
@@ -725,9 +715,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Monk_Mistweaver_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Mistweaver Monk settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedDialog"], L["MonkMistweaver"], L["Monk"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = MistweaverLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
@@ -739,9 +729,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		}
 		--[[
 		StaticPopupDialogs["TwintopResourceBar_Monk_Mistweaver_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the Mistweaver Monk settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["MonkMistweaver"], L["Monk"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = MistweaverLoadDefaultBarTextNarrowAdvancedSettings()
 				C_UI.Reload()
@@ -1255,14 +1245,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker
 		local yCoord = 5
-		local f = nil
-
-		local title = ""
 
 		StaticPopupDialogs["TwintopResourceBar_Monk_Windwalker_Reset"] = {
-			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Windwalker Monk settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarDialog"], L["MonkWindwalker"], L["Monk"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				TRB.Data.settings.monk.windwalker = WindwalkerLoadDefaultSettings(true)
 				C_UI.Reload()
@@ -1273,9 +1260,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Monk_Windwalker_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Windwalker Monk settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextSimpleDialog"], L["MonkWindwalker"], L["Monk"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = WindwalkerLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
@@ -1286,9 +1273,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Monk_Windwalker_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Windwalker Monk settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedDialog"], L["MonkWindwalker"], L["Monk"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = WindwalkerLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()

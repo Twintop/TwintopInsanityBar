@@ -1,6 +1,7 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 12 then --Only do this if we're on a DemonHunter!
+	local L = TRB.Localization
 	local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 	local oUi = TRB.Data.constants.optionsUi
 
@@ -20,22 +21,22 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$ucTime}[$ucTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -43,22 +44,22 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$metamorphosisTime}[$metamorphosisTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -66,22 +67,22 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$passive}[$passive + ]{$casting}[$casting + ]$fury",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -98,22 +99,22 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$ttd}[TTD: $ttd]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -121,22 +122,22 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$metamorphosisTime}[#metamorphosis $metamorphosisTime #metamorphosis]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -144,22 +145,22 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$tacticalRetreatFury}[#tacticalRetreat$tacticalRetreatFury+]{$bhFury}[#bh$bhFury+]{$casting}[#casting$casting+]$fury",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=22,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -179,7 +180,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					showCooldown=true,
 					border=2,
 					relativeTo = "TOP",
-					relativeToName = "Above",
+					relativeToName = L["PositionAbove"],
 					enabled=true,
 					desaturated=true,
 					xPos=0,
@@ -282,7 +283,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					fontFace="Fonts\\FRIZQT__.TTF",
 					fontFaceName="Friz Quadrata TT",
 					fontJustifyHorizontal = "LEFT",
-					fontJustifyHorizontalName = "Left",
+					fontJustifyHorizontalName = L["PositionLeft"],
 					fontSize=18,
 					color = "FFFFFFFF",
 				},
@@ -290,10 +291,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			},
 			audio = {
 				overcap={
-					name = "Overcap",
+					name = L["Overcap"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				}
 			},
 			textures = {
@@ -326,22 +327,22 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -349,22 +350,22 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$metamorphosisTime}[$metamorphosisTime]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -372,22 +373,22 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$passive}[$passive + ]{$casting}[$casting + ]$fury",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -404,22 +405,22 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$ttd}[TTD: $ttd]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -427,22 +428,22 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$metamorphosisTime}[#metamorphosis $metamorphosisTime #metamorphosis]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -450,22 +451,22 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$iaFury}[#ia$iaFury+]{$casting}[#casting$casting+]$fury",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=22,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -485,7 +486,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					showCooldown=true,
 					border=2,
 					relativeTo = "BOTTOM",
-					relativeToName = "Below",
+					relativeToName = L["PositionBelow"],
 					enabled=true,
 					desaturated=true,
 					xPos=0,
@@ -542,7 +543,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				border=1,
 				spacing=14,
 				relativeTo="TOP",
-				relativeToName="Above - Middle",
+				relativeToName = L["PositionAboveMiddle"],
 				fullWidth=true,
 			},
 			colors = {
@@ -589,7 +590,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 					fontFace="Fonts\\FRIZQT__.TTF",
 					fontFaceName="Friz Quadrata TT",
 					fontJustifyHorizontal = "LEFT",
-					fontJustifyHorizontalName = "Left",
+					fontJustifyHorizontalName = L["PositionLeft"],
 					fontSize=18,
 					color = "FFFFFFFF",
 				},
@@ -597,10 +598,10 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			},
 			audio = {
 				overcap={
-					name = "Overcap",
+					name = L["Overcap"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				}
 			},
 			textures = {
@@ -655,14 +656,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.havoc
 		local yCoord = 5
-		local f = nil
-
-		local title = ""
 
 		StaticPopupDialogs["TwintopResourceBar_DemonHunter_Havoc_Reset"] = {
-			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Havoc Demon Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarDialog"], L["DemonHunterHavoc"], L["DemonHunter"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				TRB.Data.settings.demonhunter.havoc = HavocLoadDefaultSettings(true)
 				C_UI.Reload()
@@ -673,9 +671,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_DemonHunter_Havoc_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Havoc Demon Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextSimpleDialog"], L["DemonHunterHavoc"], L["DemonHunter"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = HavocLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
@@ -686,9 +684,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_DemonHunter_Havoc_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Havoc Demon Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedDialog"], L["DemonHunterHavoc"], L["DemonHunter"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = HavocLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()
@@ -1338,14 +1336,11 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.vengeance
 		local yCoord = 5
-		local f = nil
-
-		local title = ""
 
 		StaticPopupDialogs["TwintopResourceBar_DemonHunter_Vengeance_Reset"] = {
-			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Vengeance Demon Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarDialog"], L["DemonHunterVengeance"], L["DemonHunter"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				TRB.Data.settings.demonhunter.vengeance = VengeanceLoadDefaultSettings(true)
 				C_UI.Reload()
@@ -1356,9 +1351,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_DemonHunter_Vengeance_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Vengeance Demon Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextSimpleDialog"], L["DemonHunterVengeance"], L["DemonHunter"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = VengeanceLoadDefaultBarTextSimpleSettings()
 				C_UI.Reload()
@@ -1369,9 +1364,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_DemonHunter_Vengeance_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Vengeance Demon Hunter settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedDialog"], L["DemonHunterVengeance"], L["DemonHunter"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = VengeanceLoadDefaultBarTextAdvancedSettings()
 				C_UI.Reload()

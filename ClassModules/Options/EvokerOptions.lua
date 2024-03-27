@@ -1,6 +1,7 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 13 then --Only do this if we're on a Evoker!
+	local L = TRB.Localization
 	local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 	local oUi = TRB.Data.constants.optionsUi
 	
@@ -32,13 +33,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				useDefaultFontFace = false,
 				guid=TRB.Functions.String:Guid(),
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				text = "{$essence=0}[$essenceRegenTime]",
 				fontSize = 14,
 				color = "FFFFFFFF",
 				name = "Essence 1",
 				position = {
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeTo = "CENTER",
 					xPos = 0,
 					relativeToFrameName = "Essence 1",
@@ -55,13 +56,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				useDefaultFontFace = false,
 				guid=TRB.Functions.String:Guid(),
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				text = "{$essence=1}[$essenceRegenTime]",
 				fontSize = 14,
 				color = "FFFFFFFF",
 				name = "Essence 2",
 				position = {
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeTo = "CENTER",
 					xPos = 0,
 					relativeToFrameName = "Essence 2",
@@ -78,13 +79,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				useDefaultFontFace = false,
 				guid=TRB.Functions.String:Guid(),
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				text = "{$essence=2}[$essenceRegenTime]",
 				fontSize = 14,
 				color = "FFFFFFFF",
 				name = "Essence 3",
 				position = {
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeTo = "CENTER",
 					xPos = 0,
 					relativeToFrameName = "Essence 3",
@@ -101,13 +102,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				useDefaultFontFace = false,
 				guid=TRB.Functions.String:Guid(),
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				text = "{$essence=3}[$essenceRegenTime]",
 				fontSize = 14,
 				color = "FFFFFFFF",
 				name = "Essence 4",
 				position = {
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeTo = "CENTER",
 					xPos = 0,
 					relativeToFrameName = "Essence 4",
@@ -124,13 +125,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				useDefaultFontFace = false,
 				guid=TRB.Functions.String:Guid(),
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				text = "{$essence=4}[$essenceRegenTime]",
 				fontSize = 14,
 				color = "FFFFFFFF",
 				name = "Essence 5",
 				position = {
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeTo = "CENTER",
 					xPos = 0,
 					relativeToFrameName = "Essence 5",
@@ -147,13 +148,13 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				fontFace = "Fonts\\FRIZQT__.TTF",
 				useDefaultFontFace = false,
 				guid=TRB.Functions.String:Guid(),
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				text = "{$essence=5}[$essenceRegenTime]",
 				fontSize = 14,
 				color = "FFFFFFFF",
 				name = "Essence 6",
 				position = {
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeTo = "CENTER",
 					xPos = 0,
 					relativeToFrameName = "Essence 6",
@@ -179,22 +180,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -202,22 +203,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -225,22 +226,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$passive}[$passive + ]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -262,22 +263,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$ttd}[||nTTD: $ttd]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -285,22 +286,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -308,22 +309,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="$mana",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=22,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -347,7 +348,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					showCooldown=true,
 					border=2,
 					relativeTo = "BOTTOM",
-					relativeToName = "Below",
+					relativeToName = L["PositionBelow"],
 					enabled=true,
 					desaturated=true,
 					xPos=0,
@@ -386,7 +387,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				border=2,
 				spacing=14,
 				relativeTo="TOP",
-				relativeToName="Above - Middle",
+				relativeToName = L["PositionAboveMiddle"],
 				fullWidth=true,
 			},
 			colors = {
@@ -433,7 +434,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					fontFace="Fonts\\FRIZQT__.TTF",
 					fontFaceName="Friz Quadrata TT",
 					fontJustifyHorizontal = "LEFT",
-					fontJustifyHorizontalName = "Left",
+					fontJustifyHorizontalName = L["PositionLeft"],
 					fontSize=18,
 					color = "FFFFFFFF",
 				},
@@ -441,10 +442,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			},
 			audio = {
 				overcap={
-					name = "Overcap",
+					name = L["Overcap"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				},
 				essenceBurst={
 					name = "Essence Burst (1 stack)",
@@ -456,7 +457,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					name = "Essence Burst (2 stacks)",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				},
 			},
 			textures = {
@@ -496,22 +497,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=16,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -519,22 +520,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=16,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -542,22 +543,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=16,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -579,22 +580,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -602,22 +603,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -625,22 +626,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$casting}[#casting$casting+]{$passive}[$passive+]$mana/$manaMax $manaPercent%",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=16,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -664,7 +665,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					showCooldown=true,
 					border=2,
 					relativeTo = "BOTTOM",
-					relativeToName = "Below",
+					relativeToName = L["PositionBelow"],
 					enabled=true,
 					desaturated=true,
 					xPos=0,
@@ -725,7 +726,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				border=1,
 				spacing=14,
 				relativeTo="TOP",
-				relativeToName="Above - Middle",
+				relativeToName = L["PositionAboveMiddle"],
 				fullWidth=true,
 			},
 			passiveGeneration = {
@@ -784,7 +785,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					fontFace="Fonts\\FRIZQT__.TTF",
 					fontFaceName="Friz Quadrata TT",
 					fontJustifyHorizontal = "LEFT",
-					fontJustifyHorizontalName = "Left",
+					fontJustifyHorizontalName = L["PositionLeft"],
 					fontSize=18,
 					color = "FFFFFFFF",
 				},
@@ -807,7 +808,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					name = "Essence Burst (2 stacks)",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				},
 			},
 			textures={
@@ -848,22 +849,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -871,22 +872,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -894,22 +895,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="$mana",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=18,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -931,22 +932,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Left",
+				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
 				text="{$ttd}[||nTTD: $ttd]",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
+				fontJustifyHorizontalName = L["PositionLeft"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 2,
 					yPos = 0,
 					relativeTo = "LEFT",
-					relativeToName = "Left",
+					relativeToName = L["PositionLeft"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -954,22 +955,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Middle",
+				name = L["PositionMiddle"],
 				guid=TRB.Functions.String:Guid(),
 				text="",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
+				fontJustifyHorizontalName = L["PositionCenter"],
 				fontSize=13,
 				color = "FFFFFFFF",
 				position = {
 					xPos = 0,
 					yPos = 0,
 					relativeTo = "CENTER",
-					relativeToName = "Center",
+					relativeToName = L["PositionCenter"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			},
 			{
@@ -977,22 +978,22 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				useDefaultFontFace = false,
 				useDefaultFontSize = false,
 				enabled = true,
-				name="Right",
+				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
 				text="$mana",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
+				fontJustifyHorizontalName = L["PositionRight"],
 				fontSize=22,
 				color = "FFFFFFFF",
 				position = {
 					xPos = -2,
 					yPos = 0,
 					relativeTo = "RIGHT",
-					relativeToName = "Right",
+					relativeToName = L["PositionRight"],
 					relativeToFrame = "Resource",
-					relativeToFrameName = "Main Resource Bar"
+					relativeToFrameName = L["MainResourceBar"]
 				}
 			}
 		}
@@ -1016,7 +1017,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					showCooldown=true,
 					border=2,
 					relativeTo = "BOTTOM",
-					relativeToName = "Below",
+					relativeToName = L["PositionBelow"],
 					enabled=true,
 					desaturated=true,
 					xPos=0,
@@ -1049,7 +1050,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 				border=2,
 				spacing=14,
 				relativeTo="TOP",
-				relativeToName="Above - Middle",
+				relativeToName = L["PositionAboveMiddle"],
 				fullWidth=true,
 			},
 			colors = {
@@ -1096,7 +1097,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					fontFace="Fonts\\FRIZQT__.TTF",
 					fontFaceName="Friz Quadrata TT",
 					fontJustifyHorizontal = "LEFT",
-					fontJustifyHorizontalName = "Left",
+					fontJustifyHorizontalName = L["PositionLeft"],
 					fontSize=18,
 					color = "FFFFFFFF",
 				},
@@ -1104,10 +1105,10 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			},
 			audio = {
 				overcap={
-					name = "Overcap",
+					name = L["Overcap"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				},
 				essenceBurst={
 					name = "Essence Burst (1 stack)",
@@ -1119,7 +1120,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 					name = "Essence Burst (2 stacks)",
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
+					soundName = L["LSMSoundAirHorn"]
 				},
 			},
 			textures = {
@@ -1176,14 +1177,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.devastation
 		local yCoord = 5
-		local f = nil
-
-		local title = ""
 
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Devastation_Reset"] = {
-			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Devastation Evoker settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarDialog"], L["EvokerDevastation"], L["Evoker"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				TRB.Data.settings.evoker.devastation = DevastationLoadDefaultSettings(true)
 				C_UI.Reload()
@@ -1194,9 +1192,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Devastation_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Devastation Evoker settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextSimpleDialog"], L["EvokerDevastation"], L["Evoker"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = DevastationLoadDefaultBarTextSimpleSettings()
 				ReloadUI()
@@ -1207,9 +1205,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Devastation_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Devastation Evoker settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedDialog"], L["EvokerDevastation"]), L["Evoker"],
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = DevastationLoadDefaultBarTextAdvancedSettings()
 				ReloadUI()
@@ -1703,14 +1701,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.preservation
 		local yCoord = 5
-		local f = nil
-
-		local title = ""
 
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Preservation_Reset"] = {
-			text = "Do you want to reset Twintop's Resource Bar back to its default configuration? Only the Preservation Evoker settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarDialog"], L["EvokerPreservation"], L["Evoker"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				TRB.Data.settings.evoker.preservation = PreservationLoadDefaultSettings(true)
 				C_UI.Reload()
@@ -1721,9 +1716,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Preservation_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Preservation Evoker settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextSimpleDialog"], L["EvokerPreservation"], L["Evoker"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = PreservationLoadDefaultBarTextSimpleSettings()
 				ReloadUI()
@@ -1734,9 +1729,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Preservation_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Preservation Evoker settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedDialog"], L["EvokerPreservation"], L["Evoker"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = PreservationLoadDefaultBarTextAdvancedSettings()
 				ReloadUI()
@@ -1748,9 +1743,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		}
 		--[[
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Preservation_ResetBarTextNarrowAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the Preservation Evoker settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["EvokerPreservation"], L["Evoker"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = PreservationLoadDefaultBarTextNarrowAdvancedSettings()
 				ReloadUI()
@@ -2437,14 +2432,11 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.augmentation
 		local yCoord = 5
-		local f = nil
-
-		local title = ""
 
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Augmentation_Reset"] = {
-			text = "Do you want to reset the Twintop's Resource Bar back to its default configuration? Only the Augmentation Evoker settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarDialog"], L["EvokerAugmentation"], L["Evoker"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				TRB.Data.settings.evoker.augmentation = AugmentationLoadDefaultSettings(true)
 				C_UI.Reload()
@@ -2455,9 +2447,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Augmentation_ResetBarTextSimple"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (simple) configuration? Only the Augmentation Evoker settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextSimpleDialog"], L["EvokerAugmentation"], L["Evoker"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = AugmentationLoadDefaultBarTextSimpleSettings()
 				ReloadUI()
@@ -2468,9 +2460,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			preferredIndex = 3
 		}
 		StaticPopupDialogs["TwintopResourceBar_Evoker_Augmentation_ResetBarTextAdvanced"] = {
-			text = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the Augmentation Evoker settings will be changed. This will cause your UI to be reloaded!",
-			button1 = "Yes",
-			button2 = "No",
+			text = string.format(L["ResetBarTextAdvancedDialog"], L["EvokerAugmentation"], L["Evoker"]),
+			button1 = L["Yes"],
+			button2 = L["No"],
 			OnAccept = function()
 				spec.displayText.barText = AugmentationLoadDefaultBarTextAdvancedSettings()
 				ReloadUI()

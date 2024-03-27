@@ -60,7 +60,7 @@ TRB.Data.constants = {
 		},
 		sounds = {
 			sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-			soundName="TRB: Air Horn"
+			soundName = L["LSMSoundAirHorn"]
 		}
 	},
 	frameCategories = {
