@@ -737,9 +737,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		local title = ""
 
-		controls.buttons.exportButton_DemonHunter_Havoc_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_DemonHunter_Havoc_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_DemonHunter_Havoc_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Havoc Demon Hunter (Bar Display).", 12, 1, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavoc"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 12, 1, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 12, 1, yCoord)
@@ -1045,9 +1045,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		local title = ""
 
-		controls.buttons.exportButton_DemonHunter_Havoc_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_DemonHunter_Havoc_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_DemonHunter_Havoc_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Havoc Demon Hunter (Font & Text).", 12, 1, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavoc"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 12, 1, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 12, 1, yCoord)
@@ -1134,9 +1134,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		local title = ""
 
-		controls.buttons.exportButton_DemonHunter_Havoc_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_DemonHunter_Havoc_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_DemonHunter_Havoc_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Havoc Demon Hunter (Audio & Tracking).", 12, 1, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavoc"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 12, 1, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
@@ -1220,9 +1220,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local yCoord = 5
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		controls.buttons.exportButton_DemonHunter_Havoc_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_DemonHunter_Havoc_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_DemonHunter_Havoc_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Havoc Demon Hunter (Bar Text).", 12, 1, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavoc"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 12, 1, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -1243,17 +1243,17 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.dropDown = {}
 
 		interfaceSettingsFrame.havocDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Havoc", UIParent)
-		interfaceSettingsFrame.havocDisplayPanel.name = "Havoc Demon Hunter"
+		interfaceSettingsFrame.havocDisplayPanel.name = " " .. L["DemonHunterHavoc"].. " " .. L["DemonHunter"]
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.havocDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.havocDisplayPanel, "Havoc Demon Hunter")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.havocDisplayPanel, " " .. L["DemonHunterHavoc"].. " " .. L["DemonHunter"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.havocDisplayPanel)
 		
 		parent = interfaceSettingsFrame.havocDisplayPanel
 
 		controls.buttons = controls.buttons or {}
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Havoc Demon Hunter", oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, " " .. L["DemonHunterHavoc"].. " " .. L["DemonHunter"], oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.havocDemonHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Havoc_havocDemonHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.havocDemonHunterEnabled
@@ -1269,7 +1269,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.havocDemonHunterEnabled, TRB.Data.settings.core.enabled.demonhunter.havoc, true)
 
-		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Import")
@@ -1277,7 +1277,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.buttons.exportButton_DemonHunter_Havoc_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_DemonHunter_Havoc_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Havoc Demon Hunter (All).", 12, 1, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterHavoc"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 12, 1, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52
@@ -1417,9 +1417,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		local title = ""
 
-		controls.buttons.exportButton_DemonHunter_Vengeance_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_DemonHunter_Vengeance_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_DemonHunter_Vengeance_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Vengeance Demon Hunter (Bar Display).", 12, 2, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeance"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 12, 2, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 12, 2, yCoord)
@@ -1714,9 +1714,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		local title = ""
 
-		controls.buttons.exportButton_DemonHunter_Vengeance_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_DemonHunter_Vengeance_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_DemonHunter_Vengeance_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Vengeance Demon Hunter (Font & Text).", 12, 2, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeance"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 12, 2, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 12, 2, yCoord)
@@ -1803,9 +1803,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		local title = ""
 
-		controls.buttons.exportButton_DemonHunter_Vengeance_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_DemonHunter_Vengeance_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_DemonHunter_Vengeance_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Vengeance Demon Hunter (Audio & Tracking).", 12, 2, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeance"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 12, 2, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
@@ -1889,9 +1889,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		local yCoord = 5
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		controls.buttons.exportButton_DemonHunter_Vengeance_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_DemonHunter_Vengeance_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_DemonHunter_Vengeance_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Vengeance Demon Hunter (Bar Text).", 12, 2, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeance"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 12, 2, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -1912,17 +1912,17 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		controls.dropDown = {}
 
 		interfaceSettingsFrame.vengeanceDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_DemonHunter_Vengeance", UIParent)
-		interfaceSettingsFrame.vengeanceDisplayPanel.name = "Vengeance Demon Hunter"
+		interfaceSettingsFrame.vengeanceDisplayPanel.name = " " .. L["DemonHunterVengeance"].. " " .. L["DemonHunter"]
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.vengeanceDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.vengeanceDisplayPanel, "Vengeance Demon Hunter")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.vengeanceDisplayPanel, " " .. L["DemonHunterVengeance"].. " " .. L["DemonHunter"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.vengeanceDisplayPanel)
 		
 		parent = interfaceSettingsFrame.vengeanceDisplayPanel
 
 		controls.buttons = controls.buttons or {}
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Vengeance Demon Hunter", oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, " " .. L["DemonHunterVengeance"].. " " .. L["DemonHunter"], oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.vengeanceDemonHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_DemonHunter_Vengeance_vengeanceDemonHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.vengeanceDemonHunterEnabled
@@ -1938,7 +1938,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.vengeanceDemonHunterEnabled, TRB.Data.settings.core.enabled.demonhunter.vengeance, true)
 
-		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Import")
@@ -1946,7 +1946,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		controls.buttons.exportButton_DemonHunter_Vengeance_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_DemonHunter_Vengeance_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Vengeance Demon Hunter (All).", 12, 2, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["DemonHunterVengeance"] .. " " .. L["DemonHunter"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 12, 2, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52

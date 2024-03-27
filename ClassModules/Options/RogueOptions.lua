@@ -1320,9 +1320,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local title = ""
 
-		controls.buttons.exportButton_Rogue_Assassination_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Assassination_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Assassination_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Assassination Rogue (Bar Display).", 4, 1, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassination"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 4, 1, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 4, 1, yCoord)
@@ -1817,9 +1817,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local title = ""
 
-		controls.buttons.exportButton_Rogue_Assassination_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Assassination_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Assassination_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Assassination Rogue (Font & Text).", 4, 1, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassination"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 4, 1, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 4, 1, yCoord)
@@ -1943,9 +1943,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local title = ""
 
-		controls.buttons.exportButton_Rogue_Assassination_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Assassination_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Assassination_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Assassination Rogue (Audio & Tracking).", 4, 1, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassination"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 4, 1, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
@@ -2222,9 +2222,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local yCoord = 5
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		controls.buttons.exportButton_Rogue_Assassination_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Assassination_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Assassination_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Assassination Rogue (Bar Text).", 4, 1, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassination"] .. " Rogue (Bar Text).", 4, 1, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -2270,7 +2270,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.assassinationRogueEnabled, TRB.Data.settings.core.enabled.rogue.assassination, true)
 
-		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
 			StaticPopup_Show("TwintopResourceBar_Import")
@@ -2278,7 +2278,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.buttons.exportButton_Rogue_Assassination_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Rogue_Assassination_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Assassination Rogue (All).", 4, 1, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueAssassination"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 4, 1, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52
@@ -2419,9 +2419,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local title = ""
 
-		controls.buttons.exportButton_Rogue_Outlaw_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Outlaw_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Outlaw_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Outlaw Rogue (Bar Display).", 4, 2, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlaw"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 4, 2, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 4, 2, yCoord)
@@ -2920,9 +2920,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local title = ""
 
-		controls.buttons.exportButton_Rogue_Outlaw_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Outlaw_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Outlaw_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Outlaw Rogue (Font & Text).", 4, 2, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlaw"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 4, 2, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 4, 2, yCoord)
@@ -3046,9 +3046,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local title = ""
 
-		controls.buttons.exportButton_Rogue_Outlaw_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Outlaw_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Outlaw_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Outlaw Rogue (Audio & Tracking).", 4, 2, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlaw"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 4, 2, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
@@ -3324,9 +3324,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local yCoord = 5
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		controls.buttons.exportButton_Rogue_Outlaw_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Outlaw_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Outlaw_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Outlaw Rogue (Bar Text).", 4, 2, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlaw"] .. " Rogue (Bar Text).", 4, 2, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -3372,7 +3372,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.outlawRogueEnabled, TRB.Data.settings.core.enabled.rogue.outlaw, true)
 
-		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
 			StaticPopup_Show("TwintopResourceBar_Import")
@@ -3380,7 +3380,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.buttons.exportButton_Rogue_Outlaw_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Rogue_Outlaw_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Outlaw Rogue (All).", 4, 2, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueOutlaw"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 4, 2, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52
@@ -3520,9 +3520,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local title = ""
 
-		controls.buttons.exportButton_Rogue_Subtlety_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Subtlety_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Subtlety_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Subtlety Rogue (Bar Display).", 4, 1, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtlety"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 4, 1, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 4, 3, yCoord)
@@ -4025,9 +4025,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local title = ""
 
-		controls.buttons.exportButton_Rogue_Subtlety_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Subtlety_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Subtlety_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Subtlety Rogue (Font & Text).", 4, 3, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtlety"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 4, 3, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 4, 3, yCoord)
@@ -4151,9 +4151,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		local title = ""
 
-		controls.buttons.exportButton_Rogue_Subtlety_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Subtlety_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Subtlety_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Subtlety Rogue (Audio & Tracking).", 4, 3, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtlety"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 4, 3, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
@@ -4431,9 +4431,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local yCoord = 5
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		controls.buttons.exportButton_Rogue_Subtlety_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Rogue_Subtlety_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Rogue_Subtlety_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Subtlety Rogue (Bar Text).", 4, 3, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtlety"] .. " Rogue (Bar Text).", 4, 3, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -4479,7 +4479,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.subtletyRogueEnabled, TRB.Data.settings.core.enabled.rogue.subtlety, true)
 
-		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
 			StaticPopup_Show("TwintopResourceBar_Import")
@@ -4487,7 +4487,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		controls.buttons.exportButton_Rogue_Subtlety_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Rogue_Subtlety_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Subtlety Rogue (All).", 4, 3, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["RogueSubtlety"] .. " " .. L["Rogue"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 4, 3, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52

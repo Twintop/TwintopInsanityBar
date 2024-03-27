@@ -1057,9 +1057,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Elemental_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Elemental_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Elemental_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Bar Display).", 7, 1, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElemental"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 7, 1, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 7, 1, yCoord)
@@ -1321,9 +1321,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Elemental_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Elemental_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Elemental_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Font & Text).", 7, 1, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElemental"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 7, 1, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 7, 1, yCoord)
@@ -1439,9 +1439,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Elemental_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Elemental_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Elemental_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Audio & Tracking).", 7, 1, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElemental"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 7, 1, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
@@ -1602,9 +1602,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local yCoord = 5
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		controls.buttons.exportButton_Shaman_Elemental_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Elemental_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Elemental_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (Bar Text).", 7, 1, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElemental"] .. " Shaman (Bar Text).", 7, 1, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -1644,7 +1644,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.elementalShamanEnabled, TRB.Data.settings.core.enabled.shaman.elemental, true)
 
-		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Import")
@@ -1652,7 +1652,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		controls.buttons.exportButton_Shaman_Elemental_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Shaman_Elemental_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Elemental Shaman (All).", 7, 1, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElemental"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 7, 1, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52
@@ -1794,9 +1794,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Enhancement_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Enhancement_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Enhancement_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Enhancement Shaman (Bar Display).", 7, 2, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancement"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 7, 2, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 7, 2, yCoord)
@@ -1964,9 +1964,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Enhancement_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Enhancement_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Enhancement_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Enhancement Shaman (Font & Text).", 7, 2, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancement"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 7, 2, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 7, 2, yCoord)
@@ -2047,9 +2047,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Enhancement_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Enhancement_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Enhancement_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Enhancement Shaman (Audio & Tracking).", 7, 2, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancement"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 7, 2, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
@@ -2068,9 +2068,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local yCoord = 5
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		controls.buttons.exportButton_Shaman_Enhancement_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Enhancement_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Enhancement_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Enhancement Shaman (Bar Text).", 7, 2, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancement"] .. " Shaman (Bar Text).", 7, 2, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -2116,7 +2116,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.enhancementShamanEnabled, TRB.Data.settings.core.enabled.shaman.enhancement, true)
 
-		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
 			StaticPopup_Show("TwintopResourceBar_Import")
@@ -2124,7 +2124,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		controls.buttons.exportButton_Shaman_Enhancement_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Shaman_Enhancement_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Enhancement Shaman (All).", 7, 2, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanEnhancement"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 7, 2, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52
@@ -2282,9 +2282,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Restoration_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Restoration_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Restoration_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Shaman (Bar Display).", 7, 3, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestoration"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 7, 3, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 7, 3, yCoord)
@@ -2446,9 +2446,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Restoration_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Restoration_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Restoration_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Shaman (Font & Text).", 7, 3, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestoration"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 7, 3, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 7, 3, yCoord)
@@ -2543,9 +2543,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		local title = ""
 
-		controls.buttons.exportButton_Shaman_Restoration_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Restoration_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Restoration_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Shaman (Audio & Tracking).", 7, 3, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestoration"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 7, 3, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
@@ -2665,9 +2665,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local yCoord = 5
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)		
-		controls.buttons.exportButton_Shaman_Restoration_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Shaman_Restoration_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Restoration_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Shaman (Bar Text).", 7, 3, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestoration"] .. " Shaman (Bar Text).", 7, 3, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -2713,7 +2713,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.restorationShamanEnabled, TRB.Data.settings.core.enabled.shaman.restoration, true)
 
-		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Import")
@@ -2721,7 +2721,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		controls.buttons.exportButton_Shaman_Restoration_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Shaman_Restoration_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Restoration Shaman (All).", 7, 3, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestoration"] .. " " .. L["Shaman"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 7, 3, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52

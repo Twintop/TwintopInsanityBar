@@ -1258,9 +1258,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		local title = ""
 
-		controls.buttons.exportButton_Evoker_Devastation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Evoker_Devastation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Devastation_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Devastation Evoker (Bar Display).", 13, 1, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 13, 1, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 13, 1, yCoord)
@@ -1386,9 +1386,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		local title = ""
 
-		controls.buttons.exportButton_Evoker_Devastation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Evoker_Devastation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Devastation_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Devastation Evoker (Font & Text).", 13, 1, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 13, 1, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 13, 1, yCoord)
@@ -1434,9 +1434,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		local title = ""
 
-		controls.buttons.exportButton_Evoker_Devastation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Evoker_Devastation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Devastation_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Devastation Evoker (Audio & Tracking).", 13, 1, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 13, 1, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
@@ -1585,9 +1585,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local yCoord = 5
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		controls.buttons.exportButton_Evoker_Devastation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Evoker_Devastation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Devastation_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Devastation Evoker (Bar Text).", 13, 1, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastation"] .. " Evoker (Bar Text).", 13, 1, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -1609,15 +1609,15 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.devastationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Devastation", UIParent)
-		interfaceSettingsFrame.devastationDisplayPanel.name = "Devastation Evoker"
+		interfaceSettingsFrame.devastationDisplayPanel.name = " " .. L["EvokerDevastation"] .. " Evoker"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.devastationDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.devastationDisplayPanel, "Devastation Evoker")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.devastationDisplayPanel, " " .. L["EvokerDevastation"] .. " Evoker")
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.devastationDisplayPanel)
 
 		parent = interfaceSettingsFrame.devastationDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Devastation Evoker", oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, " " .. L["EvokerDevastation"] .. " Evoker", oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.devastationEvokerEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_devastationEvokerEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.devastationEvokerEnabled
@@ -1633,7 +1633,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.devastationEvokerEnabled, TRB.Data.settings.core.enabled.evoker.devastation, true)
 
-		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
 			StaticPopup_Show("TwintopResourceBar_Import")
@@ -1641,7 +1641,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		controls.buttons.exportButton_Evoker_Devastation_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Evoker_Devastation_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Devastation Evoker (All).", 13, 1, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerDevastation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 13, 1, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52
@@ -1804,9 +1804,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		local title = ""
 
-		controls.buttons.exportButton_Evoker_Preservation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Evoker_Preservation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Preservation_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Preservation Evoker (Bar Display).", 13, 2, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 13, 2, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 13, 2, yCoord)
@@ -1961,9 +1961,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		local title = ""
 
-		controls.buttons.exportButton_Evoker_Preservation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Evoker_Preservation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Preservation_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Preservation Evoker (Font & Text).", 13, 2, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 13, 2, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 13, 2, yCoord)
@@ -2060,9 +2060,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		local title = ""
 
-		controls.buttons.exportButton_Evoker_Preservation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Evoker_Preservation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Preservation_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Preservation Evoker (Audio & Tracking).", 13, 2, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 13, 2, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
@@ -2312,9 +2312,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local yCoord = 5
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		controls.buttons.exportButton_Evoker_Preservation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Evoker_Preservation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Preservation_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Preservation Evoker (Bar Text).", 13, 2, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservation"] .. " Evoker (Bar Text).", 13, 2, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -2337,15 +2337,15 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.preservationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Preservation", UIParent)
-		interfaceSettingsFrame.preservationDisplayPanel.name = "Preservation Evoker"
+		interfaceSettingsFrame.preservationDisplayPanel.name = " " .. L["EvokerPreservation"] .. " Evoker"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.preservationDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.preservationDisplayPanel, "Preservation Evoker")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.preservationDisplayPanel, " " .. L["EvokerPreservation"] .. " Evoker")
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.preservationDisplayPanel)
 
 		parent = interfaceSettingsFrame.preservationDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Preservation Evoker", oUi.xCoord, yCoord-5)	
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, " " .. L["EvokerPreservation"] .. " Evoker", oUi.xCoord, yCoord-5)	
 		
 		controls.checkBoxes.preservationEvokerEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Preservation_preservationEvokerEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.preservationEvokerEnabled
@@ -2361,7 +2361,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.preservationEvokerEnabled, TRB.Data.settings.core.enabled.evoker.preservation, true)
 
-		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Import")
@@ -2369,7 +2369,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		controls.buttons.exportButton_Evoker_Preservation_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Evoker_Preservation_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Preservation Evoker (All).", 13, 2, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerPreservation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 13, 2, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52
@@ -2513,9 +2513,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		local title = ""
 
-		controls.buttons.exportButton_Evoker_Augmentation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Display", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Evoker_Augmentation_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Augmentation_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Augmentation Evoker (Bar Display).", 13, 3, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 13, 3, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 13, 3, yCoord)
@@ -2641,9 +2641,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		local title = ""
 
-		controls.buttons.exportButton_Evoker_Augmentation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Font & Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Evoker_Augmentation_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Augmentation_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Augmentation Evoker (Font & Text).", 13, 3, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 13, 3, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 13, 3, yCoord)
@@ -2689,9 +2689,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		local title = ""
 
-		controls.buttons.exportButton_Evoker_Augmentation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, "Export Audio & Tracking", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Evoker_Augmentation_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Augmentation_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Augmentation Evoker (Audio & Tracking).", 13, 3, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 13, 3, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Audio Options", oUi.xCoord, yCoord)
@@ -2840,9 +2840,9 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		local yCoord = 5
 
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display Text Customization", oUi.xCoord, yCoord)
-		controls.buttons.exportButton_Evoker_Augmentation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, "Export Bar Text", 400, yCoord-5, 225, 20)
+		controls.buttons.exportButton_Evoker_Augmentation_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Evoker_Augmentation_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Augmentation Evoker (Bar Text).", 13, 3, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentation"] .. " Evoker (Bar Text).", 13, 3, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -2864,15 +2864,15 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.augmentationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Evoker_Augmentation", UIParent)
-		interfaceSettingsFrame.augmentationDisplayPanel.name = "Augmentation Evoker"
+		interfaceSettingsFrame.augmentationDisplayPanel.name = " " .. L["EvokerAugmentation"] .. " Evoker"
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.augmentationDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.augmentationDisplayPanel, "Augmentation Evoker")
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.augmentationDisplayPanel, " " .. L["EvokerAugmentation"] .. " Evoker")
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.augmentationDisplayPanel)
 
 		parent = interfaceSettingsFrame.augmentationDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Augmentation Evoker", oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, " " .. L["EvokerAugmentation"] .. " Evoker", oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.augmentationEvokerEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_augmentationEvokerEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.augmentationEvokerEnabled
@@ -2888,7 +2888,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		TRB.Functions.OptionsUi:ToggleCheckboxOnOff(controls.checkBoxes.augmentationEvokerEnabled, TRB.Data.settings.core.enabled.evoker.augmentation, true)
 
-		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, "Import", 415, yCoord-10, 90, 20)
+		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
 		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
 			StaticPopup_Show("TwintopResourceBar_Import")
@@ -2896,7 +2896,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 
 		controls.buttons.exportButton_Evoker_Augmentation_All = TRB.Functions.OptionsUi:BuildButton(parent, "Export Specialization", 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Evoker_Augmentation_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup("Copy the string below to share your Twintop's Resource Bar configuration for Augmentation Evoker (All).", 13, 3, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["EvokerAugmentation"] .. " " .. L["Evoker"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 13, 3, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52

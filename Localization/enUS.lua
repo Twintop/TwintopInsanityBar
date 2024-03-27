@@ -358,4 +358,9 @@ L["ResetResourceBarToDefaultsHeader"] = "Reset Resource Bar to Defaults"
 L["ResetToDefaultsHeader"] = "Reset to Defaults"
 L["ResetResourceBarTextHeader"] = "Reset Resource Bar Text"
 
+L["ExportMessageExportBarDisplay"] = "Export Bar Display"
+L["ExportMessageExportFontText"] = "Export Font & Text"
+L["ExportMessageExportAudioTracking"] = "Export Audio & Tracking"
+L["ExportMessageExportBarText"] = "Export Bar Text"
+
 -- DemonHunterOptions
