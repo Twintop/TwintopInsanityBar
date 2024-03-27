@@ -358,16 +358,13 @@ L["ResetBarTextAdvancedFull"] = "Reset Bar Text (Full Advanced)"
 L["ResetBarTextAdvancedDialog"] = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (advanced) configuration? Only the %s %s settings will be changed. This will cause your UI to be reloaded!"
 L["ResetBarTextAdvancedNarrow"] = "Reset Bar Text (Narrow Advanced)"
 L["ResetBarTextAdvancedNarrowDialog"] = "Do you want to reset Twintop's Resource Bar's text (including font size, font style, and text information) back to its default (narrow advanced) configuration? Only the %s %s settings will be changed. This will cause your UI to be reloaded!"
-
 L["ResetResourceBarToDefaultsHeader"] = "Reset Resource Bar to Defaults"
 L["ResetToDefaultsHeader"] = "Reset to Defaults"
 L["ResetResourceBarTextHeader"] = "Reset Resource Bar Text"
-
 L["ExportMessageExportBarDisplay"] = "Export Bar Display"
 L["ExportMessageExportFontText"] = "Export Font & Text"
 L["ExportMessageExportAudioTracking"] = "Export Audio & Tracking"
 L["ExportMessageExportBarText"] = "Export Bar Text"
-
 L["ResourceFury"] = "Fury"
 L["ResourceSoulFragment"] = "Soul Fragment"
 L["ResourceSoulFragments"] = "Soul Fragments"
@@ -382,13 +379,11 @@ L["ResourceAstralPower"] = "Astral Power"
 L["ResourceChi"] = "Chi"
 L["ResourceFocus"] = "Focus"
 L["Essence"] = "Essence"
-
 L["ShowCastingBarCheckbox"] = "Show casting bar"
 L["ShowCastingBarCheckboxTooltip"] = "This will show the casting bar when hardcasting a spell. Uncheck to hide this bar."
 L["ShowPassiveBarCheckbox"] = "Show passive bar"
 L["ShowPassiveBarCheckboxTooltip"] = "This will show the passive bar. Uncheck to hide this bar. This setting supercedes any other passive tracking options!"
 L["ColorPickerUnfilledBarBackground"] = "Unfilled bar background"
-
 L["AbilityThresholdLinesHeader"] = "Ability Threshold Lines"
 L["ThresholdUnderMinimum"] = "Under minimum required %s threshold line"
 L["ThresholdOverMinimum"] = "Over minimum required %s threshold line"
@@ -398,9 +393,7 @@ L["ThresholdOutOfRangeCheckbox"] = "Change threshold line color when out of rang
 L["ThresholdOutOfRangeCheckboxTooltip"] = "When checked, while in combat threshold lines will change color when you are unable to use the ability due to being out of range of your current target."
 L["ThresholdOverlapBorderCheckbox"] = "Threshold lines overlap bar border?"
 L["ThresholdOverlapBorderCheckboxTooltip"] = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
-
 L["AudioOptionsHeader"] = "Audio Options"
-
 L["BarDisplayTextCustomizationHeader"] = "Bar Display Text Customization"
 L["IsBarEnabledForSpecTooltip"] = "Is Twintop's Resource Bar enabled for the %s %s"
 L["ExportSpecialization"] = "Export Specialization"
@@ -434,7 +427,6 @@ L["DemonHunterHavocThresholdCheckboxGlaiveTempest"] = "Glaive Tempest"
 L["DemonHunterHavocThresholdCheckboxGlaiveTempestTooltip"] = "This will show the vertical line on the bar denoting how much Fury is required to use Glaive Tempest. Only visible if talented into Glaive Tempest."
 L["DemonHunterHavocThresholdCheckboxThrowGlaive"] = "Throw Glaive (Furious Throws)"
 L["DemonHunterHavocThresholdCheckboxThrowGlaiveTooltip"] = "This will show the vertical line on the bar denoting how much Fury is required to use Throw Glaive. Only visible if talented into Furious Throws."
-
 L["DemonHunterHavocEndOfMetamorphosisConfigurationHeader"] = "End of Metamorphosis Configuration"
 L["DemonHunterHavocCheckboxMetamorphosisGcds"] = "GCDs until Metamorphosis ends"
 L["DemonHunterHavocCheckboxMetamorphosisGcdsTooltip"] = "Change the bar color based on how many GCDs remain until Metamorphosis ends."
@@ -449,7 +441,6 @@ L["DemonHunterHavocColorPickerThresholdOver"] = "Have enough Fury to use any ena
 L["DemonHunterHavocColorPickerOvercap"] = "Overcapping Fury"
 L["DemonHunterHavocCheckboxThresholdOverTooltip"] = "This will change the Fury text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
 L["DemonHunterHavocCheckboxThresholdOvercapTooltip"] = "This will change the Fury text color when your next builder ability will result in overcapping maximum Fury."
-
 L["DemonHunterVengeanceColorPickerMetamorphosis"] = "Fury while Metamorphosis is active"
 L["DemonHunterVengeanceColorPickerMetamorphosisEnding"] = "Fury when Metamorphosis is ending"
 L["DemonHunterVengeanceCheckboxEndOfMetamorphosis"] = "Change bar color at the end of Metamorphosis"
@@ -462,20 +453,15 @@ L["DemonHunterVengeanceColorPickerSoulFragmentFinal"] = "Final Soul Fragment"
 L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAll"] = "Use highest Soul Fragment color for all?"
 L["DemonHunterVengeanceCheckboxUseHighestSoulFragmentColorForAllTooltip"] = "When checked, the highest Soul Fragment's color will be used for all Soul Fragments. E.g., if you have maximum 5 Soul Fragments and currently have 4, the Penultimate color will be used for all Soul Fragments instead of just the second to last."
 L["DemonHunterVengeanceColorPickerUnfilledSoulFragmentBackground"] = "Unfilled Soul Fragment background"
-
 L["DemonHunterVengeanceThresholdSpecial"] = "Soul Fragments effect up"
 L["DemonHunterVengeanceThresholdCheckboxChaosNova"] = "Chaos Nova"
 L["DemonHunterVengeanceThresholdCheckboxChaosNovaTooltip"] = "This will show the vertical line on the bar denoting how much Fury is required to use Chaos Nova."
-
 L["DemonHunterVengeanceThresholdCheckboxFelDevastation"] = "Fel Devastation"
 L["DemonHunterVengeanceThresholdCheckboxFelDevastationTooltip"] = "This will show the vertical line on the bar denoting how much Fury is required to use Fel Devastation. Only visible if talented into Fel Devastation."
-
 L["DemonHunterVengeanceThresholdCheckboxSoulCleave"] = "Soul Cleave"
 L["DemonHunterVengeanceThresholdCheckboxSoulCleaveTooltip"] = "This will show the vertical line on the bar denoting how much Fury is required to use Soul Cleave."
-
 L["DemonHunterVengeanceThresholdCheckboxSpiritBomb"] = "Spirit Bomb"
 L["DemonHunterVengeanceThresholdCheckboxSpiritBombTooltip"] = "This will show the vertical line on the bar denoting how much Fury is required to use Spirit Bomb."
-
 L["DemonHunterVengeanceEndOfMetamorphosisConfigurationHeader"] = "End of Metamorphosis Configuration"
 L["DemonHunterVengeanceCheckboxMetamorphosisGcds"] = "GCDs until Metamorphosis ends"
 L["DemonHunterVengeanceCheckboxMetamorphosisGcdsTooltip"] = "Change the bar color based on how many GCDs remain until Metamorphosis ends."

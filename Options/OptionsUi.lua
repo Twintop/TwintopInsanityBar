@@ -821,7 +821,7 @@ end
 
 function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, secondaryResourceString)
 	if primaryResourceString == nil then
-		primaryResourceString = POWER_TYPE_ENERGY
+		primaryResourceString = L["ResourceEnergy"]
 	end
 	
 	if secondaryResourceString == nil then
