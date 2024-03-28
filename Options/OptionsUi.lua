@@ -825,7 +825,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	end
 	
 	if secondaryResourceString == nil then
-		secondaryResourceString = COMBO_POINTS_POWER
+		secondaryResourceString = L["ResourceComboPoints"]
 	end
 
 	local _, className, _ = GetClassInfo(classId)
@@ -1075,7 +1075,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	end
 	
 	if secondaryResourceString == nil then
-		secondaryResourceString = COMBO_POINTS_POWER
+		secondaryResourceString = L["ResourceComboPoints"]
 	end
 
 	local _, className, _ = GetClassInfo(classId)

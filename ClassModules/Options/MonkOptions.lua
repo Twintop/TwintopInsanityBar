@@ -294,10 +294,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			},
 			audio={
 				innervate={
-					name = "Innervate",
+					name = L["Innervate"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-					soundName="TRB: Boxing Arena Gong"
+					soundName = L["LSMSoundBoxingArenaGong"]
 				}
 			},
 			textures={
@@ -801,10 +801,10 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 2, yCoord, false)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 2, yCoord, "Mana", "notFull", false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], "notFull", false)
 
 		yCoord = yCoord - 70
-		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 2, yCoord, "Mana")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"])
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.vivaciousVivification = CreateFrame("CheckButton", "TwintopResourceBar_Monk_2_Checkbox_vivaciousVivification", parent, "ChatConfigCheckButtonTemplate")
@@ -834,7 +834,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.bar.showCasting = self:GetChecked()
 		end)
 
-		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana cost of current hardcast spell", spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCasting"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
@@ -851,7 +851,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.bar.showPassive = self:GetChecked()
 		end)
 
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc)", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
@@ -865,7 +865,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 2, yCoord, "Mana", false, true)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], false, true)
 		
 		yCoord = yCoord - 30
 		controls.checkBoxes.manaTeaBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Monk_2_Border_Option_manaTeaBorderChange", parent, "ChatConfigCheckButtonTemplate")
@@ -915,23 +915,23 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 10, 2, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mana Text Colors", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealermanaTextColorsHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Mana", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCurrentMana"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana spent from hardcasting spells", spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCastingMana"], spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "casting")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Passive Mana", spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassiveMana"], spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
@@ -939,14 +939,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 	
 		--[[
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "DoT Count and Time Remaining Tracking", oUi.xCoord, yCoord)
+		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DotCountTimeTrackingHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 25
 
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_dotColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter and DoT timer color based on DoT status?")
+		getglobal(f:GetName() .. 'Text'):SetText(L["DotChangeColorCheckbox"])
 		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers will change based on whether or not the DoT is on the current target."
 		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -955,19 +955,19 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.colors.dots = {}
 
-		controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
+		controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerActive"], spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
 		f = controls.colors.dots.up
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "up")
 		end)
 
-		controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
+		controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerPandemic"], spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
 		f = controls.colors.dots.pandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
 		end)
 
-		controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
+		controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerInactive"], spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
 		f = controls.colors.dots.down
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "down")
@@ -1017,8 +1017,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.checkBoxes.innervate = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Innervate_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.innervate
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio when you gain Innervate")
-		f.tooltip = "This sound will play when you gain Innervate from a helpful Druid."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HealerAudioCheckboxInnervate"])
+		f.tooltip = L["HealerAudioCheckboxInnervateTooltip"]
 		f:SetChecked(spec.audio.innervate.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.innervate.enabled = self:GetChecked()
@@ -1046,7 +1046,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
-					info.text = "Sounds " .. i+1
+					info.text = string.format(L["DrowndownLabelSoundsX"], i+1)
 					info.menuList = i
 					LibDD:UIDropDownMenu_AddButton(info)
 				end
@@ -1078,14 +1078,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end
 		
 		yCoord = yCoord - 60
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive External Mana Generation Tracking", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerPassiveExternalManaGenerationTrackingHeader"], oUi.xCoord, yCoord)
 		
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervateRegen = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_InnervatePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.innervateRegen
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Track passive mana regen while Innervate is active")
-		f.tooltip = "Show the passive regeneration of mana over the remaining duration of Innervate."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HealerCheckboxTrackInnervate"])
+		f.tooltip = L["HealerCheckboxTrackInnervateTooltip"]
 		f:SetChecked(spec.passiveGeneration.innervate)
 		f:SetScript("OnClick", function(self, ...)
 			spec.passiveGeneration.innervate = self:GetChecked()
@@ -1095,8 +1095,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.checkBoxes.manaTideTotemRegen = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_ManaTideTotemPassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.manaTideTotemRegen
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Track bonus passive mana regen while Mana Tide Totem is active")
-		f.tooltip = "Show the bonus passive regeneration of mana over the remaining duration of Mana Tide Totem."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HealerCheckboxTrackManaTideTotem"])
+		f.tooltip = L["HealerCheckboxTrackManaTideTotemTooltip"]
 		f:SetChecked(spec.passiveGeneration.manaTideTotem)
 		f:SetScript("OnClick", function(self, ...)
 			spec.passiveGeneration.manaTideTotem = self:GetChecked()
@@ -1106,8 +1106,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.checkBoxes.symbolOfHopeRegen = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_SymbolOfHopePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.symbolOfHopeRegen
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Track mana regen from a Priest's Symbol of Hope")
-		f.tooltip = "Show the regeneration of mana from a Priest's Symbol of Hope channel."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HealerCheckboxTrackSymbolOfHope"])
+		f.tooltip = L["HealerCheckboxTrackSymbolOfHopeTooltip"]
 		f:SetChecked(spec.passiveGeneration.symbolOfHope)
 		f:SetScript("OnClick", function(self, ...)
 			spec.passiveGeneration.symbolOfHope = self:GetChecked()
@@ -1334,16 +1334,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 3, yCoord)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 10, 3, yCoord, "Energy", "Chi")
+		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], "Chi")
 
 		yCoord = yCoord - 60
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 3, yCoord, true, "Chi")
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 3, yCoord, "Energy", "notFull", false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], "notFull", false)
 
 		yCoord = yCoord - 70
-		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 3, yCoord, "Energy")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])
 
 		yCoord = yCoord - 30
 		controls.colors.serenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy while Serenity is active", spec.colors.bar.serenity, 300, 25, oUi.xCoord2, yCoord)
@@ -1411,7 +1411,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 3, yCoord, "Energy", true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], true, false)
 
 		yCoord = yCoord - 30
 		controls.colors.borderChiJi = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Resource Bar's border with Dance of Chi-Ji proc", spec.colors.bar.borderChiJi, 300, 25, oUi.xCoord2, yCoord)
@@ -1520,7 +1520,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)
 		end)
 		
-		controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, "Builders", 5, yCoord, 110, 20)
+		controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryBuildersLabel"], 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 		controls.checkBoxes.expelHarmThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_expelHarm", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.expelHarmThresholdShow
@@ -1659,7 +1659,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 3, yCoord, "Energy", 150)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], 150)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.windwalker = controls
 	end
@@ -1686,29 +1686,29 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 10, 3, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Energy Text Colors", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["EnergyTextColorsHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Energy", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergy"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
 		end)
 		
-		controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Passive Energy", spec.colors.text.passive, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerPassiveEnergy"], spec.colors.text.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Have enough Energy to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerHaveEnoughEnergyToUseAbilityThreshold"], spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Energy is above overcap threshold", spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerCurrentEnergyAboveOvercap"], spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.overcap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcap")
@@ -1720,7 +1720,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f = controls.checkBoxes.overThresholdEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-		f.tooltip = "This will change the Energy text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
+		f.tooltip = L["CheckboxThresholdOverTooltip"]
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overThresholdEnabled = self:GetChecked()
@@ -1730,7 +1730,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f = controls.checkBoxes.overcapTextEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-		f.tooltip = "This will change the Energy text color when your current energy is above the overcapping maximum Energy value."
+		f.tooltip = L["CheckboxThresholdOvercapTooltip"]
 		f:SetChecked(spec.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overcapEnabled = self:GetChecked()
@@ -1754,19 +1754,19 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.colors.dots = {}
 
-		controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is active on current target", spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
+		controls.colors.dots.up = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerActive"], spec.colors.text.dots.up, 550, 25, oUi.xCoord, yCoord-30)
 		f = controls.colors.dots.up
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "up")
 		end)
 
-		controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is active on current target but within Pandemic refresh range", spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
+		controls.colors.dots.pandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerPandemic"], spec.colors.text.dots.pandemic, 550, 25, oUi.xCoord, yCoord-60)
 		f = controls.colors.dots.pandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "pandemic")
 		end)
 
-		controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, "DoT is not active on current target", spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
+		controls.colors.dots.down = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DotColorPickerInactive"], spec.colors.text.dots.down, 550, 25, oUi.xCoord, yCoord-90)
 		f = controls.colors.dots.down
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text.dots, controls.colors.dots, "down")
@@ -1843,7 +1843,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
-					info.text = "Sounds " .. i+1
+					info.text = string.format(L["DrowndownLabelSoundsX"], i+1)
 					info.menuList = i
 					LibDD:UIDropDownMenu_AddButton(info)
 				end
@@ -1910,7 +1910,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
-					info.text = "Sounds " .. i+1
+					info.text = string.format(L["DrowndownLabelSoundsX"], i+1)
 					info.menuList = i
 					LibDD:UIDropDownMenu_AddButton(info)
 				end
@@ -1943,14 +1943,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive Energy Regeneration", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.trackEnergyRegen = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_trackEnergyRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.trackEnergyRegen
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Track energy regen")
-		f.tooltip = "Include energy regen in the passive bar and passive variables. Unchecking this will cause the following Passive Energy Generation options to have no effect."
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegen"])
+		f.tooltip = L["CheckboxTrackEnergyRegenTooltip"]
 		f:SetChecked(spec.generation.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.generation.enabled = self:GetChecked()
@@ -1960,7 +1960,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.checkBoxes.energyGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_PFG_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.energyGenerationModeGCDs
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Energy generation over GCDs")
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Energy generation over the next X GCDs, based on player's current GCD length."
 		if spec.generation.mode == "gcd" then
@@ -1985,7 +1985,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.checkBoxes.energyGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_PFG_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.energyGenerationModeTime
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Energy generation over time")
+		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		f.tooltip = "Shows the amount of Energy generation over the next X seconds."
 		if spec.generation.mode == "time" then
