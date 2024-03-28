@@ -1442,7 +1442,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.checkBoxes.sfThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starfallEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sfThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxStarfallTooltip"])
+		getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxStarfall"])
 		f.tooltip = L["DruidBalanceThresholdCheckboxStarfallTooltip"]
 		f:SetChecked(spec.thresholds.starfall.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1487,7 +1487,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		controls.checkBoxes.ssThreshold3Show = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_Threshold_starsurge3Enabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ssThreshold3Show
 		f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxStarsurge3xTooltip"])
+		getglobal(f:GetName() .. 'Text'):SetText(L["DruidBalanceThresholdCheckboxStarsurge3x"])
 		f.tooltip = L["DruidBalanceThresholdCheckboxStarsurge3xTooltip"]
 		f:SetChecked(spec.thresholds.starsurge3.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -3660,7 +3660,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		RestorationConstructAudioAndTrackingPanel(tabsheets[3].scrollFrame.scrollChild)
 		RestorationConstructBarTextDisplayPanel(tabsheets[4].scrollFrame.scrollChild, cache)
 		RestorationConstructResetDefaultsPanel(tabsheets[5].scrollFrame.scrollChild)
-	end	
+	end
 
 	local function ConstructOptionsPanel(specCache)
 		TRB.Options:ConstructOptionsPanel()
