@@ -373,7 +373,7 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 	end
 	
 	if character.items.conjuredChillglobe.isEquipped and (currentMana / character.maxResource) < character.items.conjuredChillglobe.manaThresholdPercent then
-		local conjuredChillglobeTotal = calculateManaGainFunction(character.items.conjuredChillglobe[character.items.conjuredChillglobe.equippedVersion].mana, true)
+		local conjuredChillglobeTotal = calculateManaGainFunction(character.items.conjuredChillglobe.mana, true)
 		if specSettings.thresholds.conjuredChillglobe.enabled and (castingBarValue + conjuredChillglobeTotal) < character.maxResource and (not conjuredChillglobe.onCooldown or specSettings.thresholds.conjuredChillglobe.cooldown) then
 			if conjuredChillglobe.onCooldown then
 				potionThresholdColor = specSettings.colors.threshold.unusable

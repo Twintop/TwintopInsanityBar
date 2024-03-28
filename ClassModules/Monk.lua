@@ -90,24 +90,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				conjuredChillglobe = {
 					id = 194300,
 					isEquipped = false,
-					equippedVersion = "lfr",
 					manaThresholdPercent = 0.65,
-					lfr = {
-						bonusId = 7982,
-						mana = 3263
-					},
-					normal = {
-						bonusId = 7979,
-						mana = 3520
-					},
-					heroic = {
-						bonusId = 7980,
-						mana = 4329
-					},
-					mythic = {
-						bonusId = 7981,
-						mana = 5287
-					}
+					mana = 0
 				},
 				alchemyStone = false
 			}
@@ -2338,7 +2322,7 @@ elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not s
 
 			local alchemyStone = false
 			local conjuredChillglobe = false
-			local conjuredChillglobeVersion = ""
+			local conjuredChillglobeMana = ""
 						
 			if trinket1ItemLink ~= nil then
 				for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.itemIds) do
@@ -2350,7 +2334,7 @@ elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not s
 				end
 
 				if alchemyStone == false then
-					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
+					conjuredChillglobe, conjuredChillglobeMana = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
 				end
 			end
 
@@ -2365,12 +2349,12 @@ elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not s
 			end
 
 			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
-				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
+				conjuredChillglobe, conjuredChillglobeMana = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
 			end
 
 			TRB.Data.character.items.alchemyStone = alchemyStone
 			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
-			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
+			TRB.Data.character.items.conjuredChillglobe.mana = conjuredChillglobeMana
 		elseif specId == 3 then
 ---@diagnostic disable-next-line: missing-parameter, missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)

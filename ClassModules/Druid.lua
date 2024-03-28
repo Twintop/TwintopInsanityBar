@@ -823,24 +823,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				conjuredChillglobe = {
 					id = 194300,
 					isEquipped = false,
-					equippedVersion = "lfr",
 					manaThresholdPercent = 0.65,
-					lfr = {
-						bonusId = 7982,
-						mana = 3263
-					},
-					normal = {
-						bonusId = 7979,
-						mana = 3520
-					},
-					heroic = {
-						bonusId = 7980,
-						mana = 4329
-					},
-					mythic = {
-						bonusId = 7981,
-						mana = 5287
-					}
+					mana = 0
 				},
 				alchemyStone = false
 			}
@@ -4550,7 +4534,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 			local alchemyStone = false
 			local conjuredChillglobe = false
-			local conjuredChillglobeVersion = ""
+			local conjuredChillglobeMana = ""
 						
 			if trinket1ItemLink ~= nil then
 				for x = 1, TRB.Functions.Table:Length(TRB.Data.spells.alchemistStone.itemIds) do
@@ -4562,7 +4546,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 
 				if alchemyStone == false then
-					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
+					conjuredChillglobe, conjuredChillglobeMana = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
 				end
 			end
 
@@ -4577,12 +4561,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			end
 
 			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
-				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
+				conjuredChillglobe, conjuredChillglobeMana = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
 			end
 
 			TRB.Data.character.items.alchemyStone = alchemyStone
 			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
-			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
+			TRB.Data.character.items.conjuredChillglobe.mana = conjuredChillglobeMana
 		end
 	end
 
