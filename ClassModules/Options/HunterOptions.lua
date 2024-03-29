@@ -329,7 +329,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					soundName = L["LSMSoundAirHorn"]
 				},
 				killShot={
-					name = "Kill Shot Ready",
+					name = L["HunterAudioKillShotReady"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
@@ -669,7 +669,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			},
 			audio = {
 				aimedShot={
-					name = "Aimed Shot Capping",
+					name = L["HunterMarksmanshipAudioAimedShotCapping"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"],
@@ -678,7 +678,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					time=1.5
 				},
 				lockAndLoad={
-					name = "Lock and Load Proc",
+					name = L["HunterMarksmanshipAudioLockAndLoadProc"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
@@ -690,13 +690,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					soundName = L["LSMSoundAirHorn"]
 				},
 				secretsOfTheUnblinkingVigil={
-					name = "Secrets of the Unblinking Vigil Proc",
+					name = L["HunterMarksmanshipAudioUnblinkingVigilProc"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
 				},
 				killShot={
-					name = "Kill Shot Ready",
+					name = L["HunterAudioKillShotReady"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
@@ -1029,7 +1029,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					soundName = L["LSMSoundAirHorn"]
 				},
 				killShot={
-					name = "Kill Shot Ready",
+					name = L["HunterAudioKillShotReady"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
@@ -1194,27 +1194,27 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 1, yCoord, false)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 1, yCoord, "Focus", "notFull", true, "Beastial Wrath", "Beastial Wrath")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], "notFull", true, L["HunterBeastMasteryBeastialWrath"], L["HunterBeastMasteryBeastialWrath"])
 
 		yCoord = yCoord - 70
-		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 1, yCoord, "Focus")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"])
 
 		yCoord = yCoord - 30
-		controls.colors.frenzyUse = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus when Barbed Shot should be used", spec.colors.bar.frenzyUse, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.frenzyUse = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterBeastMasteryColorPickerBarbedShotUse"], spec.colors.bar.frenzyUse, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.frenzyUse
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "frenzyUse")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.frenzyHold = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus when Barbed Shot charges should be held", spec.colors.bar.frenzyHold, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.frenzyHold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterBeastMasteryColorPickerBarbedShotHold"], spec.colors.bar.frenzyHold, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.frenzyHold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "frenzyHold")
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_1_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
@@ -1224,7 +1224,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.bar.showPassive = self:GetChecked()
 		end)
 
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterBeastMasteryColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
@@ -1238,37 +1238,37 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 1, yCoord, "Focus", true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], true, false)
 		
 		yCoord = yCoord - 30		
 		controls.checkBoxes.beastialWrathBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Border_Option_beastialWrathChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.beastialWrathBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change when Beastial Wrath is usable")
-		f.tooltip = "This will change the bar's border color when Beastial Wrath is usable. This takes precedence over Beast Cleave's color."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryCheckboxBeastialWrath"])
+		f.tooltip = L["HunterBeastMasteryCheckboxBeastialWrathTooltip"]
 		f:SetChecked(spec.colors.bar.beastialWrathEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.beastialWrathEnabled = self:GetChecked()
 		end)
 
-		controls.colors.borderBeastialWrath = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border color when you can use Beastial Wrath", spec.colors.bar.borderBeastialWrath, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderBeastialWrath = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterBeastMasteryColorPickerBeastialWrath"], spec.colors.bar.borderBeastialWrath, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderBeastialWrath
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderBeastialWrath")
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.beastCleaveBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_1_Border_Option_beastCleaveChange", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.beastCleaveBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Border_Option_beastCleaveChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.beastCleaveBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change when Beast Cleave is active")
-		f.tooltip = "This will change the bar border color when the Beast Cleave effect is active, either via Beast Cleave it self or Call of the Wild being active with Bloody Frenzy."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryCheckboxBeastCleave"])
+		f.tooltip = L["HunterBeastMasteryCheckboxBeastCleaveTooltip"]
 		f:SetChecked(spec.colors.bar.beastCleave.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.beastCleave.enabled = self:GetChecked()
 		end)
 
-		controls.colors.beastCleave = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when a the Beast Cleave effect is active", spec.colors.bar.beastCleave.color, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.beastCleave = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterBeastMasteryColorPickerBeastCleave"], spec.colors.bar.beastCleave.color, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.beastCleave
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "beastCleave")
@@ -1332,14 +1332,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)
 		end)
 				
-		controls.labels.damageDealing = TRB.Functions.OptionsUi:BuildLabel(parent, "Damage Dealing", 5, yCoord, 110, 20)
+		controls.labels.damageDealing = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryDamageDealing"], 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
 		controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.arcaneShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Arcane Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Arcane Shot."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxArcaneShot"])
+		f.tooltip = L["HunterBeastMasteryThresholdCheckboxArcaneShotTooltip"]
 		f:SetChecked(spec.thresholds.arcaneShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.arcaneShot.enabled = self:GetChecked()
@@ -1349,8 +1349,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.aMurderOfCrowsThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_aMurderOfCrows", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.aMurderOfCrowsThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("A Murder of Crows")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use A Murder of Crows."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxMurderOfCrows"])
+		f.tooltip = L["HunterBeastMasteryThresholdCheckboxMurderOfCrowsTooltip"]
 		f:SetChecked(spec.thresholds.aMurderOfCrows.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.aMurderOfCrows.enabled = self:GetChecked()
@@ -1360,8 +1360,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.barrageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_barrage", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.barrageThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Barrage")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Barrage."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxBarrage"])
+		f.tooltip = L["HunterBeastMasteryThresholdCheckboxBarrageTooltip"]
 		f:SetChecked(spec.thresholds.barrage.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.barrage.enabled = self:GetChecked()
@@ -1371,8 +1371,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.cobraShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_cobraShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.cobraShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Cobra Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Cobra Shot."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxCobraShot"])
+		f.tooltip = L["HunterBeastMasteryThresholdCheckboxCobraShotTooltip"]
 		f:SetChecked(spec.thresholds.cobraShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.cobraShot.enabled = self:GetChecked()
@@ -1382,8 +1382,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.explosiveShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_explosiveShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.explosiveShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Explosive Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Explosive Shot."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxExplosiveShot"])
+		f.tooltip = L["HunterBeastMasteryThresholdCheckboxExplosiveShotTooltip"]
 		f:SetChecked(spec.thresholds.explosiveShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.explosiveShot.enabled = self:GetChecked()
@@ -1393,8 +1393,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.killCommandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_killCommand", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killCommandThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Kill Command")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Kill Command."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxKillCommand"])
+		f.tooltip = L["HunterBeastMasteryThresholdCheckboxKillCommandTooltip"]
 		f:SetChecked(spec.thresholds.killCommand.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.killCommand.enabled = self:GetChecked()
@@ -1404,8 +1404,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.killShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_killShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Kill Shot (if usable)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Kill Shot. Only visible when the current target is in Kill Shot health range or Flayer's Mark (Venthyr) buff is active. If on cooldown or has 0 charges available, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxKillShot"])
+		f.tooltip = L["HunterBeastMasteryThresholdCheckboxKillShotTooltip"]
 		f:SetChecked(spec.thresholds.killShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.killShot.enabled = self:GetChecked()
@@ -1415,8 +1415,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.multiShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_multiShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.multiShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Multi-Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Multi-Shot."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxMultiShot"])
+		f.tooltip = L["HunterBeastMasteryThresholdCheckboxMultiShotTooltip"]
 		f:SetChecked(spec.thresholds.multiShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.multiShot.enabled = self:GetChecked()
@@ -1426,8 +1426,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.serpentStingThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_serpentSting", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.serpentStingThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Serpent Sting")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Serpent Sting."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxSerpentSting"])
+		f.tooltip = L["HunterBeastMasteryThresholdCheckboxSerpentStingTooltip"]
 		f:SetChecked(spec.thresholds.serpentSting.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.serpentSting.enabled = self:GetChecked()
@@ -1437,22 +1437,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.wailingArrowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_wailingArrow", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.wailingArrowThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Wailing Arrow")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Wailing Arrow. Only visible when Rae'shalare, Death's Whisper is equipped. If on cooldown will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxWailingArrow"])
+		f.tooltip = L["HunterBeastMasteryThresholdCheckboxWailingArrowTooltip"]
 		f:SetChecked(spec.thresholds.wailingArrow.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.wailingArrow.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.labels.petAndUtility = TRB.Functions.OptionsUi:BuildLabel(parent, "Pet and Utility", 5, yCoord, 110, 20)
+		controls.labels.petAndUtility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPetAndUtility"], 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
 		controls.checkBoxes.revivePetThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_revivePet", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.revivePetThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Revive Pet")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Revive Pet."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxRevivePet"])
+		f.tooltip = L["HunterThresholdCheckboxRevivePetTooltip"]
 		f:SetChecked(spec.thresholds.revivePet.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.revivePet.enabled = self:GetChecked()
@@ -1462,8 +1462,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.scareBeastThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_scareBeast", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.scareBeastThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Scare Beast")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Scare Beast."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxScareBeast"])
+		f.tooltip = L["HunterThresholdCheckboxScareBeastTooltip"]
 		f:SetChecked(spec.thresholds.scareBeast.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.scareBeast.enabled = self:GetChecked()
@@ -1473,22 +1473,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.wingClipThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_wingClip", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.wingClipThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Wing Clip")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Wing Clip."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxWingClip"])
+		f.tooltip = L["HunterThresholdCheckboxWingClipTooltip"]
 		f:SetChecked(spec.thresholds.wingClip.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.wingClip.enabled = self:GetChecked()
 		end)
 		
 		yCoord = yCoord - 25
-		controls.labels.pvpthreshold = TRB.Functions.OptionsUi:BuildLabel(parent, "PvP Abilities", 5, yCoord, 110, 20)
+		controls.labels.pvpthreshold = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPvpAbilities"], 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
 		controls.checkBoxes.direBeastBasiliskThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_direBeastBasilisk", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.direBeastBasiliskThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Dire Beast: Basilisk")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Dire Beast: Basilisk."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxDireBeastBasilisk"])
+		f.tooltip = L["HunterBeastMasteryThresholdCheckboxDireBeastBasiliskTooltip"]
 		f:SetChecked(spec.thresholds.direBeastBasilisk.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.direBeastBasilisk.enabled = self:GetChecked()
@@ -1498,21 +1498,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.direBeastHawkThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_direBeastHawk", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.direBeastHawkThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Dire Beast: Hawk")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Dire Beast: Hawk."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxDireBeastHawk"])
+		f.tooltip = L["HunterBeastMasteryThresholdCheckboxDireBeastHawkTooltip"]
 		f:SetChecked(spec.thresholds.direBeastHawk.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.direBeastHawk.enabled = self:GetChecked()
 		end)
-
-
 
 		yCoord = yCoord - 40
 
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 1, yCoord)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 1, yCoord, "Focus", 120)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], 120)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.beastMastery = controls
 	end
@@ -1539,29 +1537,29 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 3, 1, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Focus Text Colors", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterTextColorsHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Focus", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCurrent"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
 		end)
 		
-		controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Passive Focus", spec.colors.text.passive, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerPassive"], spec.colors.text.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Have enough Focus to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerHaveEnoughFocusToUseAbilityThreshold"], spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Focus is above overcap threshold", spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextOvercap"], spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.overcap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcap")
@@ -1573,7 +1571,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.overThresholdEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-		f.tooltip = "This will change the Focus text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
+		f.tooltip = L["HunterCheckboxThresholdOverTooltip"]
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overThresholdEnabled = self:GetChecked()
@@ -1583,7 +1581,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.overcapTextEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-		f.tooltip = "This will change the Focus text color when your current focus is above the overcapping maximum Focus value."
+		f.tooltip = L["HunterCheckboxThresholdOvercapTooltip"]
 		f:SetChecked(spec.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overcapEnabled = self:GetChecked()
@@ -1598,7 +1596,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["DotChangeColorCheckbox"])
-		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers ($ssCount) will change based on whether or not the DoT is on the current target."
+		f.tooltip = L["HunterDotChangeColorCheckboxTooltip"]
 		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.dots.enabled = self:GetChecked()
@@ -1667,8 +1665,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killShotAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Kill Shot is usable")
-		f.tooltip = "Play an audio cue when Kill Shot is usable and off of cooldown. If you also have Flayer's Mark proc audio enabled, that sound takes priority when a proc occurs."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterAudioCheckboxKillShot"])
+		f.tooltip = L["HunterAudioCheckboxKillShotTooltip"]
 		f:SetChecked(spec.audio.killShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.killShot.enabled = self:GetChecked()
@@ -1723,7 +1721,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.audio.killShot.soundName = newName
 			LibDD:UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
 			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
@@ -1788,19 +1785,18 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.audio.overcap.soundName = newName
 			LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, newName)
 			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.overcap.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
 
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive Focus Regeneration", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterPassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.trackFocusRegen
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Track focus regen")
-		f.tooltip = "Include focus regen in the passive bar and passive variables. Unchecking this will cause the following Passive Focus Generation options to have no effect."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegen"])
+		f.tooltip = L["HunterCheckboxTrackFocusRegenTooltip"]
 		f:SetChecked(spec.generation.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.generation.enabled = self:GetChecked()
@@ -1810,9 +1806,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_PFG_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeGCDs
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Focus generation over GCDs")
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegenGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Focus generation over the next X GCDs, based on player's current GCD length."
 		if spec.generation.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -1822,7 +1817,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.generation.mode = "gcd"
 		end)
 
-		title = "Focus GCDs - 0.75sec Floor"
+		title = L["HunterTrackFocusRegenFocusGcds"] 
 		controls.focusGenerationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
@@ -1835,9 +1830,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.focusGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_PFG_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeTime
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Focus generation over time")
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegenTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Focus generation over the next X seconds."
 		if spec.generation.mode == "time" then
 			f:SetChecked(true)
 		end
@@ -1847,7 +1841,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.generation.mode = "time"
 		end)
 
-		title = "Focus Over Time (sec)"
+		title = L["HunterTrackFocusRegenFocusTime"]
 		controls.focusGenerationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
@@ -1896,15 +1890,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.beastMasteryDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_BeastMastery", UIParent)
-		interfaceSettingsFrame.beastMasteryDisplayPanel.name = L["HunterBeastMastery"].. " " .. L["Hunter"]
+		interfaceSettingsFrame.beastMasteryDisplayPanel.name = L["HunterBeastMasteryFull"]
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.beastMasteryDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.beastMasteryDisplayPanel, L["HunterBeastMastery"].. " " .. L["Hunter"])
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.beastMasteryDisplayPanel, L["HunterBeastMasteryFull"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.beastMasteryDisplayPanel)
 
 		parent = interfaceSettingsFrame.beastMasteryDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterBeastMastery"].. " " .. L["Hunter"], oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterBeastMasteryFull"], oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.beastMasteryHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_beastMasteryHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.beastMasteryHunterEnabled
@@ -2099,13 +2093,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 2, yCoord, false)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 2, yCoord, "Focus", "notFull", false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], "notFull", false)
 
 		yCoord = yCoord - 70
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 2, yCoord, "Fury")
 
 		yCoord = yCoord - 30
-		controls.colors.trueshot = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus while Trueshot is active", spec.colors.bar.trueshot, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.trueshot = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterMarksmanshipColorPickerTrueshot"], spec.colors.bar.trueshot, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.trueshot
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "trueshot")
@@ -2115,21 +2109,21 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.endOfTrueshot = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfTrueshot
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Trueshot")
-		f.tooltip = "Changes the bar color when Trueshot is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxEndOfTrueshot"])
+		f.tooltip = L["HunterMarksmanshipCheckboxEndOfTrueshotTooltip"]
 		f:SetChecked(spec.endOfTrueshot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.endOfTrueshot.enabled = self:GetChecked()
 		end)
 
-		controls.colors.trueshotEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus when Trueshot is ending", spec.colors.bar.trueshotEnding, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.trueshotEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterMarksmanshipColorPickerTrueshotEnd"], spec.colors.bar.trueshotEnding, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.trueshotEnding
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "trueshotEnding")
 		end)
 		
 		yCoord = yCoord - 30
-		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_2_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
@@ -2139,21 +2133,21 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.bar.showCasting = self:GetChecked()
 		end)
 
-		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCastingBuilder"], spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 2)
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCastingSpender"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending")
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_2_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
@@ -2163,7 +2157,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.bar.showPassive = self:GetChecked()
 		end)
 
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerBarPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
@@ -2177,20 +2171,20 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 2, yCoord, "Focus", true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], true, false)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.steadyFocus = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.steadyFocus
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Steady Focus color change enabled")
-		f.tooltip = "Changes the bar border color when your Steady Focus buff is not up or is expiring in the next X GCDs or fixed length of time. Select which to use from the options below."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxSteadyFocus"])
+		f.tooltip = L["HunterMarksmanshipCheckboxSteadyFocusTooltip"]
 		f:SetChecked(spec.steadyFocus.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.steadyFocus.enabled = self:GetChecked()
 		end)
 		
-		controls.colors.borderSteadyFocus = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when Steady Focus is expiring or not up (as configured)", spec.colors.bar.borderSteadyFocus, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderSteadyFocus = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterMarksmanshipColorPickerSteadyFocus"], spec.colors.bar.borderSteadyFocus, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderSteadyFocus
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderSteadyFocus")
@@ -2247,14 +2241,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)
 		end)
 				
-		controls.labels.damageDealing = TRB.Functions.OptionsUi:BuildLabel(parent, "Damage Dealing", 5, yCoord, 110, 20)
+		controls.labels.damageDealing = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryDamageDealing"], 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
 		controls.checkBoxes.aimedShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_aimedShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.aimedShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Aimed Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Aimed Shot. If there are 0 charges available, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxAimedShot"])
+		f.tooltip = L["HunterMarksmanshipThresholdCheckboxAimedShotTooltip"]
 		f:SetChecked(spec.thresholds.aimedShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.aimedShot.enabled = self:GetChecked()
@@ -2264,8 +2258,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.arcaneShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Arcane Shot/Chimera Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Arcane Shot or Chimera Shot."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxArcaneShotChimeraShot"])
+		f.tooltip = L["HunterMarksmanshipThresholdCheckboxArcaneShotChimeraShotTooltip"]
 		f:SetChecked(spec.thresholds.arcaneShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.arcaneShot.enabled = self:GetChecked()
@@ -2276,8 +2270,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.barrageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_barrage", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.barrageThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Barrage")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Barrage."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxBarrage"])
+		f.tooltip = L["HunterMarksmanshipThresholdCheckboxBarrageTooltip"]
 		f:SetChecked(spec.thresholds.barrage.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.barrage.enabled = self:GetChecked()
@@ -2287,8 +2281,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.burstingShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_burstingShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.burstingShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Bursting Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Bursting Shot."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxBurstingShot"])
+		f.tooltip = L["HunterMarksmanshipThresholdCheckboxBurstingShotTooltip"]
 		f:SetChecked(spec.thresholds.burstingShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.burstingShot.enabled = self:GetChecked()
@@ -2298,8 +2292,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.explosiveShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_explosiveShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.explosiveShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Explosive Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Explosive Shot."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxExplosiveShot"])
+		f.tooltip = L["HunterMarksmanshipThresholdCheckboxExplosiveShotTooltip"]
 		f:SetChecked(spec.thresholds.explosiveShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.explosiveShot.enabled = self:GetChecked()
@@ -2309,8 +2303,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.killCommandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_killCommand", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killCommandThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Kill Command")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Kill Command."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxKillCommand"])
+		f.tooltip = L["HunterMarksmanshipThresholdCheckboxKillCommandTooltip"]
 		f:SetChecked(spec.thresholds.killCommand.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.killCommand.enabled = self:GetChecked()
@@ -2320,8 +2314,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.killShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_killShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Kill Shot (if usable)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Kill Shot. Only visible when the current target is in Kill Shot health range or Flayer's Mark (Venthyr) buff is active. If on cooldown or has 0 charges available, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxKillShot"])
+		f.tooltip = L["HunterMarksmanshipThresholdCheckboxKillShotTooltip"]
 		f:SetChecked(spec.thresholds.killShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.killShot.enabled = self:GetChecked()
@@ -2331,8 +2325,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.multiShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_multiShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.multiShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Multi-Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Multi-Shot."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxMultiShot"])
+		f.tooltip = L["HunterMarksmanshipThresholdCheckboxMultiShotTooltip"]
 		f:SetChecked(spec.thresholds.multiShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.multiShot.enabled = self:GetChecked()
@@ -2342,8 +2336,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.serpentStingThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_serpentSting", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.serpentStingThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Serpent Sting")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Serpent Sting. Only visible if talented into Serpent Sting."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxSerpentSting"])
+		f.tooltip = L["HunterMarksmanshipThresholdCheckboxSerpentStingTooltip"]
 		f:SetChecked(spec.thresholds.serpentSting.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.serpentSting.enabled = self:GetChecked()
@@ -2353,22 +2347,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.wailingArrowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_wailingArrow", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.wailingArrowThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Wailing Arrow")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Wailing Arrow. If on cooldown will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxWailingArrow"])
+		f.tooltip = L["HunterMarksmanshipThresholdCheckboxWailingArrowTooltip"]
 		f:SetChecked(spec.thresholds.wailingArrow.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.wailingArrow.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.labels.petAndUtility = TRB.Functions.OptionsUi:BuildLabel(parent, "Pet and Utility", 5, yCoord, 110, 20)
+		controls.labels.petAndUtility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPetAndUtility"], 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
 		controls.checkBoxes.revivePetThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_revivePet", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.revivePetThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Revive Pet")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Revive Pet."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxRevivePet"])
+		f.tooltip = L["HunterThresholdCheckboxRevivePetTooltip"]
 		f:SetChecked(spec.thresholds.revivePet.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.revivePet.enabled = self:GetChecked()
@@ -2378,8 +2372,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.scareBeastThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_scareBeast", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.scareBeastThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Scare Beast")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Scare Beast."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxScareBeast"])
+		f.tooltip = L["HunterThresholdCheckboxScareBeastTooltip"]
 		f:SetChecked(spec.thresholds.scareBeast.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.scareBeast.enabled = self:GetChecked()
@@ -2389,22 +2383,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.wingClipThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_wingClip", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.wingClipThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Wing Clip")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Wing Clip."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxWingClip"])
+		f.tooltip = L["HunterThresholdCheckboxWingClipTooltip"]
 		f:SetChecked(spec.thresholds.wingClip.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.wingClip.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.labels.pvpThreshold = TRB.Functions.OptionsUi:BuildLabel(parent, "PvP Abilities", 5, yCoord, 110, 20)
+		controls.labels.pvpThreshold = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPvpAbilities"], 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
 		controls.checkBoxes.sniperShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_sniperShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sniperShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sniper Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Sniper Shot."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxSniperShot"])
+		f.tooltip = L["HunterMarksmanshipThresholdCheckboxSniperShotTooltip"]
 		f:SetChecked(spec.thresholds.sniperShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sniperShot.enabled = self:GetChecked()
@@ -2414,15 +2408,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 2, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Trueshot Configuration", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterMarksmanshipHeaderEndOfTrueshotConfiguration"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfTrueshotModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfTrueshotModeGCDs
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Trueshot ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxTrueshotGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many GCDs remain until Trueshot ends."
 		if spec.endOfTrueshot.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -2432,7 +2425,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.endOfTrueshot.mode = "gcd"
 		end)
 
-		title = "Trueshot GCDs - 0.75sec Floor"
+		title = L["HunterMarksmanshipTrueshotGcds"]
 		controls.endOfTrueshotGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 20, spec.endOfTrueshot.gcdsMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfTrueshotGCDs:SetScript("OnValueChanged", function(self, value)
@@ -2445,9 +2438,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.endOfTrueshotModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_EOT_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfTrueshotModeTime
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time until Trueshot ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxTrueshotTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many seconds remain until Trueshot ends."
 		if spec.endOfTrueshot.mode == "time" then
 			f:SetChecked(true)
 		end
@@ -2457,7 +2449,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.endOfTrueshot.mode = "time"
 		end)
 
-		title = "Trueshot Time Remaining (sec)"
+		title = L["HunterMarksmanshipTrueshotTime"]
 		controls.endOfTrueshotTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.endOfTrueshot.timeMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfTrueshotTime:SetScript("OnValueChanged", function(self, value)
@@ -2468,15 +2460,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Steady Focus Expiration Configuration", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterMarksmanshipHeaderSteadyFocusExpiration"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.steadyFocusModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.steadyFocusModeGCDs
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs left on Steady Focus buff")
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxSteadyFocusGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar border color based on how many GCDs remain until Steady Focus will end."
 		if spec.steadyFocus.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -2486,7 +2477,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.steadyFocus.mode = "gcd"
 		end)
 
-		title = "Steady Focus GCDs - 0.75sec Floor"
+		title = L["HunterMarksmanshipSteadyFocusGcds"]
 		controls.steadyFocusGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 30, spec.steadyFocus.gcdsMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.steadyFocusGCDs:SetScript("OnValueChanged", function(self, value)
@@ -2498,9 +2489,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.steadyFocusModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_steadyFocus_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.steadyFocusModeTime
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time left on Steady Focus buff")
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxSteadyFocusTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar border color based on how many seconds remain until Steady Focus will end."
 		if spec.steadyFocus.mode == "time" then
 			f:SetChecked(true)
 		end
@@ -2510,7 +2500,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.steadyFocus.mode = "time"
 		end)
 
-		title = "Steady Focus Time Remaining (sec)"
+		title = L["HunterMarksmanshipSteadyFocusTime"]
 		controls.steadyFocusTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.steadyFocus.timeMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.steadyFocusTime:SetScript("OnValueChanged", function(self, value)
@@ -2521,7 +2511,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 2, yCoord, "Focus", 120)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], 120)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.marksmanship = controls
 	end
@@ -2548,42 +2538,42 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 3, 2, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Focus Text Colors", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterTextColorsHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Focus", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCurrent"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus gain from hardcasting builder abilities", spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextCastingBuilder"], spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "casting")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Passive Focus", spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerPassive"], spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
-		controls.colors.text.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.text.spending, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextCastingSpender"], spec.colors.text.spending, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "spending")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Have enough Focus to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerHaveEnoughFocusToUseAbilityThreshold"], spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Focus is above overcap threshold", spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextOvercap"], spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.overcap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcap")
@@ -2595,7 +2585,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.overThresholdEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-		f.tooltip = "This will change the Focus text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
+		f.tooltip = L["HunterCheckboxThresholdOverTooltip"]
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overThresholdEnabled = self:GetChecked()
@@ -2605,7 +2595,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.overcapTextEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-		f.tooltip = "This will change the Focus text color when your current hardcast spell will result in overcapping maximum Focus."
+		f.tooltip = L["HunterCheckboxThresholdOvercapTooltip"]
 		f:SetChecked(spec.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overcapEnabled = self:GetChecked()
@@ -2620,7 +2610,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["DotChangeColorCheckbox"])
-		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers ($ssCount) will change based on whether or not the DoT is on the current target."
+		f.tooltip = L["HunterDotChangeColorCheckboxTooltip"]
 		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.dots.enabled = self:GetChecked()
@@ -2689,8 +2679,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.aimedShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_aimedShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.aimedShotAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Aimed Shot will cap charges")
-		f.tooltip = "Play an audio cue when Aimed Shot will cap charges. The timeframe is the current cast time of Aimed shot plus either GCDs or Time as configured below."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxAimedShot"])
+		f.tooltip = L["HunterMarksmanshipCheckboxAimedShotTooltip"]
 		f:SetChecked(spec.audio.aimedShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.aimedShot.enabled = self:GetChecked()
@@ -2754,7 +2744,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.aimedShotModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_AS_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.aimedShotModeGCDs
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Number of GCDs before capping")
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxAimedShotGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		if spec.audio.aimedShot.mode == "gcd" then
 			f:SetChecked(true)
@@ -2765,7 +2755,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.audio.aimedShot.mode = "gcd"
 		end)
 
-		title = "GCDs - 0.75sec Floor"
+		title = L["HunterMarksmanshipAimedShotGcds"]
 		controls.aimedShotGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 6, spec.audio.aimedShot.gcds, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.aimedShotGCDs:SetScript("OnValueChanged", function(self, value)
@@ -2778,7 +2768,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.aimedShotModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_AS_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.aimedShotModeTime
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Number of seconds before capping")
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxAimedShotTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 		if spec.audio.aimedShot.mode == "time" then
 			f:SetChecked(true)
@@ -2789,7 +2779,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.audio.aimedShot.mode = "time"
 		end)
 
-		title = "Time (sec)"
+		title = L["HunterMarksmanshipAimedShotTime"]
 		controls.aimedShotTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 12, spec.audio.aimedShot.time, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.aimedShotTime:SetScript("OnValueChanged", function(self, value)
@@ -2805,8 +2795,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.lockAndLoadAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_lockAndLoad_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.lockAndLoadAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Lock and Load proc (if talented)")
-		f.tooltip = "Play an audio cue when a Lock and Load proc occurs."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxLockAndLoad"])
+		f.tooltip = L["HunterMarksmanshipCheckboxLockAndLoadTooltip"]
 		f:SetChecked(spec.audio.lockAndLoad.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.lockAndLoad.enabled = self:GetChecked()
@@ -2870,8 +2860,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killShotAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Kill Shot is usable")
-		f.tooltip = "Play an audio cue when Kill Shot is usable and off of cooldown. If you also have Flayer's Mark proc audio enabled, that sound takes priority when a proc occurs."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterAudioCheckboxKillShot"])
+		f.tooltip = L["HunterAudioCheckboxKillShotTooltip"]
 		f:SetChecked(spec.audio.killShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.killShot.enabled = self:GetChecked()
@@ -2999,8 +2989,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.secretsOfTheUnblinkingVigilAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_secretsOfTheUnblinkingVigil_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.secretsOfTheUnblinkingVigilAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Secrets of the Unblinking Vigil proc")
-		f.tooltip = "Play an audio cue when you get a Secrets of the Unblinking Vigil proc that allows your next Aimed Shot to cost 0 Focus."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipCheckboxUnblinkingVigil"])
+		f.tooltip = L["HunterMarksmanshipCheckboxUnblinkingVigilTooltip"]
 		f:SetChecked(spec.audio.secretsOfTheUnblinkingVigil.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.secretsOfTheUnblinkingVigil.enabled = self:GetChecked()
@@ -3061,14 +3051,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive Focus Regeneration", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterPassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.trackFocusRegen
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Track focus regen")
-		f.tooltip = "Include focus regen in the passive bar and passive variables. Unchecking this will cause the following Passive Focus Generation options to have no effect."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegen"])
+		f.tooltip = L["HunterCheckboxTrackFocusRegenTooltip"]
 		f:SetChecked(spec.generation.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.generation.enabled = self:GetChecked()
@@ -3079,9 +3069,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_PFG_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeGCDs
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Focus generation over GCDs")
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegenGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Focus generation over the next X GCDs, based on player's current GCD."
 		if spec.generation.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -3091,7 +3080,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.generation.mode = "gcd"
 		end)
 
-		title = "Focus GCDs - 0.75sec Floor"
+		title = L["HunterTrackFocusRegenFocusGcds"]
 		controls.focusGenerationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
@@ -3104,9 +3093,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.focusGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_PFG_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeTime
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Focus generation over time")
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegenTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Focus generation over the next X seconds."
 		if spec.generation.mode == "time" then
 			f:SetChecked(true)
 		end
@@ -3116,7 +3104,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.generation.mode = "time"
 		end)
 
-		title = "Focus Over Time (sec)"
+		title = L["HunterTrackFocusRegenFocusTime"]
 		controls.focusGenerationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
@@ -3164,15 +3152,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.marksmanshipDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_Marksmanship", UIParent)
-		interfaceSettingsFrame.marksmanshipDisplayPanel.name = L["HunterMarksmanship"].. " " .. L["Hunter"]
+		interfaceSettingsFrame.marksmanshipDisplayPanel.name = L["HunterMarksmanshipFull"]
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.marksmanshipDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.marksmanshipDisplayPanel, L["HunterMarksmanship"].. " " .. L["Hunter"])
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.marksmanshipDisplayPanel, L["HunterMarksmanshipFull"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.marksmanshipDisplayPanel)
 
 		parent = interfaceSettingsFrame.marksmanshipDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterMarksmanship"].. " " .. L["Hunter"], oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterMarksmanshipFull"], oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.marksmanshipHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_marksmanshipHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.marksmanshipHunterEnabled
@@ -3256,9 +3244,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.survival
 		local yCoord = 5
-		local f = nil
-
-		local title = ""
 
 		StaticPopupDialogs["TwintopResourceBar_Hunter_Survival_Reset"] = {
 			text = string.format(L["ResetBarDialog"], L["HunterSurvivalFull"]),
@@ -3351,13 +3336,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 3, 3, yCoord, false)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 3, yCoord, "Focus", "notFull", false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], "notFull", false)
 
 		yCoord = yCoord - 70
-		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 3, yCoord, "Fury")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"])
 
 		yCoord = yCoord - 30
-		controls.colors.coordinatedAssault = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus while Coordinated Assault is active", spec.colors.bar.coordinatedAssault, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.coordinatedAssault = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalColorPickerCoordinatedAssult"], spec.colors.bar.coordinatedAssault, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.coordinatedAssault
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "coordinatedAssault")
@@ -3367,21 +3352,21 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.endOfCoordinatedAssault = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfCoordinatedAssault
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change color at the end of Coordinated Assault")
-		f.tooltip = "Changes the bar color when Coordinated Assault is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalCheckboxEndOfCoordinatedAssult"])
+		f.tooltip = L["HunterSurvivalCheckboxEndOfCoordinatedAssultTooltip"]
 		f:SetChecked(spec.endOfCoordinatedAssault.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.endOfCoordinatedAssault.enabled = self:GetChecked()
 		end)
 
-		controls.colors.coordinatedAssaultEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus when Coordinated Assault is ending", spec.colors.bar.coordinatedAssaultEnding, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.coordinatedAssaultEnding = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterSurvivalColorPickerEndOfCoordinatedAssult"], spec.colors.bar.coordinatedAssaultEnding, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.coordinatedAssaultEnding
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "coordinatedAssaultEnding")
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_3_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
@@ -3391,14 +3376,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.bar.showCasting = self:GetChecked()
 		end)
 
-		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCastingSpender"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending")
 		end)
 		
 		yCoord = yCoord - 30
-		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_3_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
@@ -3408,7 +3393,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.bar.showPassive = self:GetChecked()
 		end)
 
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus gain from Passive Sources", spec.colors.bar.passive, 525, 25, oUi.xCoord2, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerBarPassive"], spec.colors.bar.passive, 525, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
@@ -3422,7 +3407,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 3, yCoord, "Focus", true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], true, false)
 
 		yCoord = yCoord - 40
 		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
@@ -3476,14 +3461,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 				
-		controls.labels.damageDealing = TRB.Functions.OptionsUi:BuildLabel(parent, "Damage Dealing", 5, yCoord, 110, 20)
+		controls.labels.damageDealing = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryDamageDealing"], 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
 		controls.checkBoxes.arcaneShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_arcaneShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.arcaneShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Arcane Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Arcane Shot."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdCheckboxArcaneShot"])
+		f.tooltip = L["HunterSurvivalThresholdCheckboxArcaneShotTooltip"]
 		f:SetChecked(spec.thresholds.arcaneShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.arcaneShot.enabled = self:GetChecked()
@@ -3493,8 +3478,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.barrageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_barrage", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.barrageThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Barrage")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Barrage."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdCheckboxBarrage"])
+		f.tooltip = L["HunterSurvivalThresholdCheckboxBarrageTooltip"]
 		f:SetChecked(spec.thresholds.butchery.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.barrage.enabled = self:GetChecked()
@@ -3504,8 +3489,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.butcheryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_butchery", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.butcheryThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Butchery")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Butchery."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdCheckboxButchery"])
+		f.tooltip = L["HunterSurvivalThresholdCheckboxButcheryTooltip"]
 		f:SetChecked(spec.thresholds.butchery.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.butchery.enabled = self:GetChecked()
@@ -3515,8 +3500,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.carveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_carve", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.carveThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Carve")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Carve."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdCheckboxCarve"])
+		f.tooltip = L["HunterSurvivalThresholdCheckboxCarveTooltip"]
 		f:SetChecked(spec.thresholds.carve.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.carve.enabled = self:GetChecked()
@@ -3526,8 +3511,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.explosiveShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_explosiveShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.explosiveShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Explosive Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Explosive Shot."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdCheckboxExplosiveShot"])
+		f.tooltip = L["HunterSurvivalThresholdCheckboxExplosiveShotTooltip"]
 		f:SetChecked(spec.thresholds.explosiveShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.explosiveShot.enabled = self:GetChecked()
@@ -3537,8 +3522,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.killShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_killShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Kill Shot (if usable)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Kill Shot. Only visible when the current target is in Kill Shot health range or Flayer's Mark (Venthyr) buff is active. If on cooldown or has 0 charges available, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdCheckboxKillShot"])
+		f.tooltip = L["HunterSurvivalThresholdCheckboxKillShotTooltip"]
 		f:SetChecked(spec.thresholds.killShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.killShot.enabled = self:GetChecked()
@@ -3548,8 +3533,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.raptorStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_raptorStrike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.raptorStrikeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Raptor Strike / Mongoose Bite")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Raptor Strike or Mongoose Bite."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdCheckboxRaptorStrikeMongooseBite"])
+		f.tooltip = L["HunterSurvivalThresholdCheckboxRaptorStrikeMongooseBiteTooltip"]
 		f:SetChecked(spec.thresholds.raptorStrike.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.raptorStrike.enabled = self:GetChecked()
@@ -3560,22 +3545,22 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.serpentStingThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_serpentSting", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.serpentStingThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Serpent Sting")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Serpent Sting."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdSerpentStingCheckbox"])
+		f.tooltip = L["HunterSurvivalThresholdSerpentStingCheckboxTooltip"]
 		f:SetChecked(spec.thresholds.serpentSting.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.serpentSting.enabled = self:GetChecked()
 		end)
 				
 		yCoord = yCoord - 25
-		controls.labels.damageDealing = TRB.Functions.OptionsUi:BuildLabel(parent, "Pet and Utility", 5, yCoord, 110, 20)
+		controls.labels.damageDealing = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryPetAndUtility"], 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
 		controls.checkBoxes.revivePetThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_revivePet", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.revivePetThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Revive Pet")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Revive Pet."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxRevivePet"])
+		f.tooltip = L["HunterThresholdCheckboxRevivePetTooltip"]
 		f:SetChecked(spec.thresholds.revivePet.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.revivePet.enabled = self:GetChecked()
@@ -3585,8 +3570,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.scareBeastThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_scareBeast", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.scareBeastThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Scare Beast")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Scare Beast."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxScareBeast"])
+		f.tooltip = L["HunterThresholdCheckboxScareBeastTooltip"]
 		f:SetChecked(spec.thresholds.scareBeast.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.scareBeast.enabled = self:GetChecked()
@@ -3596,8 +3581,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.wingClipThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_wingClip", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.wingClipThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Wing Clip")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Focus is required to use Wing Clip."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterThresholdCheckboxWingClip"])
+		f.tooltip = L["HunterThresholdCheckboxWingClipTooltip"]
 		f:SetChecked(spec.thresholds.wingClip.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.wingClip.enabled = self:GetChecked()
@@ -3608,15 +3593,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 3, 3, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Coordinated Assault Configuration", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterSurvivalHeaderEndOfCoordinatedAssaultConfiguration"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfCoordinatedAssaultModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfCoordinatedAssaultModeGCDs
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Coordinated Assault ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalCheckboxCoordinatedAssaultGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many GCDs remain until Coordinated Assault ends."
 		if spec.endOfCoordinatedAssault.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -3626,7 +3610,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.endOfCoordinatedAssault.mode = "gcd"
 		end)
 
-		title = "Coordinated Assault GCDs - 0.75sec Floor"
+		title = L["HunterSurvivalCoordinatedAssaultGcds"]
 		controls.endOfCoordinatedAssaultGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 20, spec.endOfCoordinatedAssault.gcdsMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfCoordinatedAssaultGCDs:SetScript("OnValueChanged", function(self, value)
@@ -3638,9 +3622,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.endOfCoordinatedAssaultModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_EOCA_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfCoordinatedAssaultModeTime
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time until Coordinated Assault ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalCheckboxCoordinatedAssaultTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many seconds remain until Coordinated Assault ends."
 		if spec.endOfCoordinatedAssault.mode == "time" then
 			f:SetChecked(true)
 		end
@@ -3650,7 +3633,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.endOfCoordinatedAssault.mode = "time"
 		end)
 
-		title = "Coordinated Assault Time Remaining (sec)"
+		title = L["HunterSurvivalCoordinatedAssaultTime"]
 		controls.endOfCoordinatedAssaultTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.endOfCoordinatedAssault.timeMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfCoordinatedAssaultTime:SetScript("OnValueChanged", function(self, value)
@@ -3661,7 +3644,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 3, yCoord, "Focus", 120)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], 120)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.survival = controls
 	end
@@ -3688,36 +3671,36 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 3, 3, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Focus Text Colors", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterTextColorsHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Focus", spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerCurrent"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.current
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
 		end)
 
-		controls.colors.text.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Focus loss from hardcasting spender abilities", spec.colors.text.spending, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextCastingSpender"], spec.colors.text.spending, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.spending
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "spending")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Passive Focus", spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerPassive"], spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Have enough Focus to use any enabled threshold ability", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerHaveEnoughFocusToUseAbilityThreshold"], spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Focus is above overcap threshold", spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.overcap = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HunterColorPickerTextOvercap"], spec.colors.text.overcap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.overcap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcap")
@@ -3729,7 +3712,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.overThresholdEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-		f.tooltip = "This will change the Focus text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
+		f.tooltip = L["HunterCheckboxThresholdOverTooltip"]
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overThresholdEnabled = self:GetChecked()
@@ -3739,7 +3722,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.overcapTextEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-		f.tooltip = "This will change the Focus text color when your current focus or a hardcast spell will result in overcapping maximum Focus."
+		f.tooltip = L["HunterCheckboxThresholdOvercapTooltip"]
 		f:SetChecked(spec.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overcapEnabled = self:GetChecked()
@@ -3754,7 +3737,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["DotChangeColorCheckbox"])
-		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers ($ssCount) will change based on whether or not the DoT is on the current target."
+		f.tooltip = L["HunterDotChangeColorCheckboxTooltip"]
 		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.dots.enabled = self:GetChecked()
@@ -3823,8 +3806,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.killShotAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_killShot_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killShotAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Kill Shot is usable")
-		f.tooltip = "Play an audio cue when Kill Shot is usable and off of cooldown. If you also have Flayer's Mark proc audio enabled, that sound takes priority when a proc occurs."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterAudioCheckboxKillShot"])
+		f.tooltip = L["HunterAudioCheckboxKillShotTooltip"]
 		f:SetChecked(spec.audio.killShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.killShot.enabled = self:GetChecked()
@@ -3879,11 +3862,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.audio.killShot.soundName = newName
 			LibDD:UIDropDownMenu_SetText(controls.dropDown.killShotAudio, newName)
 			CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
 			PlaySoundFile(spec.audio.killShot.sound, TRB.Data.settings.core.audio.channel.channel)
 		end
-
-
 
 		yCoord = yCoord - 60
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
@@ -3950,14 +3930,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		end
 
 		yCoord = yCoord - 60
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Passive Focus Regeneration", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterPassiveEntryRegenerationHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.trackFocusRegen = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_trackFocusRegen_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.trackFocusRegen
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Track focus regen")
-		f.tooltip = "Include focus regen in the passive bar and passive variables. Unchecking this will cause the following Passive Focus Generation options to have no effect."
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegen"])
+		f.tooltip = L["HunterCheckboxTrackFocusRegenTooltip"]
 		f:SetChecked(spec.generation.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.generation.enabled = self:GetChecked()
@@ -3968,9 +3948,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.focusGenerationModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_PFG_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeGCDs
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Focus generation from GCDs")
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegenGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Focus generation over the next X GCDs, based on player's current GCD."
 		if spec.generation.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -3980,7 +3959,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.generation.mode = "gcd"
 		end)
 
-		title = "Focus GCDs - 0.75sec Floor"
+		title = L["HunterTrackFocusRegenFocusGcds"]
 		controls.focusGenerationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.focusGenerationGCDs:SetScript("OnValueChanged", function(self, value)
@@ -3993,9 +3972,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.checkBoxes.focusGenerationModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_PFG_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.focusGenerationModeTime
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Focus generation over time")
+		getglobal(f:GetName() .. 'Text'):SetText(L["HunterCheckboxTrackFocusRegenTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Focus generation over the next X seconds."
 		if spec.generation.mode == "time" then
 			f:SetChecked(true)
 		end
@@ -4005,7 +3983,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			spec.generation.mode = "time"
 		end)
 
-		title = "Focus Over Time (sec)"
+		title = L["HunterTrackFocusRegenFocusTime"]
 		controls.focusGenerationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.focusGenerationTime:SetScript("OnValueChanged", function(self, value)
@@ -4053,15 +4031,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.survivalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Hunter_Survival", UIParent)
-		interfaceSettingsFrame.survivalDisplayPanel.name = L["HunterSurvival"].. " " .. L["Hunter"]
+		interfaceSettingsFrame.survivalDisplayPanel.name = L["HunterSurvivalFull"]
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.survivalDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.survivalDisplayPanel, L["HunterSurvival"].. " " .. L["Hunter"])
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.survivalDisplayPanel, L["HunterSurvivalFull"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.survivalDisplayPanel)
 
 		parent = interfaceSettingsFrame.survivalDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterSurvival"].. " " .. L["Hunter"], oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HunterSurvivalFull"], oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.survivalHunterEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_survivalHunterEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.survivalHunterEnabled

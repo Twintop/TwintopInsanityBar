@@ -4,7 +4,7 @@ local locale = GetLocale()
 
 if locale == "enGB" then
     local L = TRB.Localization
-    
+
     L["OK"] = "OK"
     L["Author"] = "Author"
     L["Version"] = "Version"
@@ -72,7 +72,26 @@ if locale == "enGB" then
     L["DruidRestorationCheckboxIncarnationEnd"] = "Change bar colour at the end of Incarnation"
     L["DruidRestorationCheckboxIncarnationEndTooltip"] = "Changes the bar colour when Incarnation is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
     L["DruidRestorationDotChangeColorCheckboxTooltip"] = "When checked, the colour of total DoTs up counters and DoT timers ($moonfireCount, $sunfireCount) will change based on whether or not the DoT is on the current target."
-    L["EvokerEssenceColorsHeader"] = "Essence Colors"
+    L["EvokerEssenceColorsHeader"] = "Essence Colours"
     L["EvokerEssenceCheckboxUseHighestForAll"] = "Use highest Essence colour for all?"
     L["EvokerEssenceCheckboxUseHighestForAllTooltip"] = "When checked, the highest Essence's colour will be used for all Essence. E.g., if you have maximum 5 Essence and currently have 4, the Penultimate colour will be used for all Essence instead of just the second to last."
+    L["HunterTextColorsHeader"] = "Focus Text Colours"
+    L["HunterCheckboxThresholdOverTooltip"] = "This will change the Focus text colour when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
+    L["HunterCheckboxThresholdOvercapTooltip"] = "This will change the Focus text colour when your current focus or a hardcast spell will result in overcapping maximum Focus."
+    L["HunterDotChangeColorCheckboxTooltip"] = "When checked, the colour of total DoTs up counters and DoT timers ($ssCount) will change based on whether or not the DoT is on the current target."
+    L["HunterBeastMasteryColorPickerBeastialWrath"] = "Border colour when you can use Beastial Wrath"
+    L["HunterBeastMasteryCheckboxBeastialWrathTooltip"] = "This will change the bar's border colour when Beastial Wrath is usable. This takes precedence over Beast Cleave's colour."
+    L["HunterBeastMasteryCheckboxBeastCleaveTooltip"] = "This will change the bar border colour when the Beast Cleave effect is active, either via Beast Cleave it self or Call of the Wild being active with Bloody Frenzy."
+    L["HunterBeastMasteryThresholdCheckboxKillShotTooltip"] = "This will show the vertical line on the bar denoting how much Focus is required to use Kill Shot. Only visible when the current target is in Kill Shot health range. If on cooldown or has 0 charges available, will be coloured as 'unusable'."
+    L["HunterBeastMasteryThresholdCheckboxWailingArrowTooltip"] = "This will show the vertical line on the bar denoting how much Focus is required to use Wailing Arrow. If on cooldown will be coloured as 'unusable'."
+    L["HunterMarksmanshipCheckboxEndOfTrueshot"] = "Change bar colour at the end of Trueshot"
+    L["HunterMarksmanshipCheckboxEndOfTrueshotTooltip"] = "Changes the bar colour when Trueshot is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    L["HunterMarksmanshipCheckboxSteadyFocus"] = "Steady Focus colour change enabled"
+    L["HunterMarksmanshipCheckboxSteadyFocusTooltip"] = "Changes the bar border colour when your Steady Focus buff is not up or is expiring in the next X GCDs or fixed length of time. Select which to use from the options below."
+    L["HunterMarksmanshipThresholdCheckboxAimedShotTooltip"] = "This will show the vertical line on the bar denoting how much Focus is required to use Aimed Shot. If there are 0 charges available, will be coloured as 'unusable'."
+    L["HunterMarksmanshipThresholdCheckboxKillShotTooltip"] = "This will show the vertical line on the bar denoting how much Focus is required to use Kill Shot. Only visible when the current target is in Kill Shot health range. If on cooldown or has 0 charges available, will be coloured as 'unusable'."
+    L["HunterMarksmanshipThresholdCheckboxWailingArrowTooltip"] = "This will show the vertical line on the bar denoting how much Focus is required to use Wailing Arrow. If on cooldown will be coloured as 'unusable'."
+    L["HunterSurvivalCheckboxEndOfCoordinatedAssult"] = "Change colour at the end of Coordinated Assault"
+    L["HunterSurvivalCheckboxEndOfCoordinatedAssultTooltip"] = "Changes the bar colour when Coordinated Assault is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+    L["HunterSurvivalThresholdCheckboxKillShotTooltip"] = "This will show the vertical line on the bar denoting how much Focus is required to use Kill Shot. Only visible when the current target is in Kill Shot health range. If on cooldown or has 0 charges available, will be coloured as 'unusable'."
 end

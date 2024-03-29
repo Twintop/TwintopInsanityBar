@@ -18,7 +18,7 @@ local content = [====[
 
 ### Localization
 
-- [#8 - UPDATE](#8) Add localization strings for Demon Hunters, Druids, Evokers, shared healer fields, shared Combo Point fields, and various class resources.
+- [#8 - UPDATE](#8) Add localization strings for Demon Hunters, Druids, Evokers, Hunters, shared healer fields, shared Combo Point fields, and various class resources.
 - [#8 - UPDATE](#8) Add more German (deDE) localizations from **unfug**.
 - [#8 - UPDATE](#8) Add more British English (enGB) localisations from **Twintop**.
 - [#8 - UPDATE](#8) Add more French (frFR) localizations from **Koroshy**.
