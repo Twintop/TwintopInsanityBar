@@ -72,4 +72,7 @@ if locale == "enGB" then
     L["DruidRestorationCheckboxIncarnationEnd"] = "Change bar colour at the end of Incarnation"
     L["DruidRestorationCheckboxIncarnationEndTooltip"] = "Changes the bar colour when Incarnation is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
     L["DruidRestorationDotChangeColorCheckboxTooltip"] = "When checked, the colour of total DoTs up counters and DoT timers ($moonfireCount, $sunfireCount) will change based on whether or not the DoT is on the current target."
+    L["EvokerEssenceColorsHeader"] = "Essence Colors"
+    L["EvokerEssenceCheckboxUseHighestForAll"] = "Use highest Essence colour for all?"
+    L["EvokerEssenceCheckboxUseHighestForAllTooltip"] = "When checked, the highest Essence's colour will be used for all Essence. E.g., if you have maximum 5 Essence and currently have 4, the Penultimate colour will be used for all Essence instead of just the second to last."
 end
