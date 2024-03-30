@@ -62,7 +62,7 @@ function TRB.Functions.Item:GetItemLevelOfItem(itemLink)
 	if itemLink == nil then
 		return nil
 	end
-	return select(1, GetDetailedItemLevelInfo(select(2,GetItemInfo(itemLink))))
+	return select(1, C_Item.GetDetailedItemLevelInfo(select(2,C_Item.GetItemInfo(itemLink))))
 end
 
 function TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinketItemLink)
