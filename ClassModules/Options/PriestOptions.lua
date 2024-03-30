@@ -1310,6 +1310,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						color = "FFFF4040",
 						enabled = true
 					},
+					mindDevourer = {
+						color = "FF00C3FF",
+						enabled = true,
+					},
 					inVoidform="FF431863",
 					inVoidform1GCD="FFFF0000",
 					casting="FFFFFFFF",
@@ -3763,6 +3767,23 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.colors.deathsTormentMax
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "deathsTormentMax")
+		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.mindDevourer = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Border_Option_mindDevourerProc", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.mindDevourer
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Mind Devourer Proc")
+		f.tooltip = "This will change the bar border color when you will get a Mind Devourer Proc"
+		f:SetChecked(spec.colors.bar.mindDevourer.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.mindDevourer.enabled = self:GetChecked()
+		end)
+
+		controls.colors.mindDevourer = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when getting a Mind Devourer Proc", spec.colors.bar.mindDevourer.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.mindDevourer
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "mindDevourer")
 		end)
 
 		yCoord = yCoord - 40

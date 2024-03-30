@@ -4572,6 +4572,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						barBorderColor = specSettings.colors.bar.deathsTormentMax.color
 					end
 					
+					if specSettings.colors.bar.mindDevourer.enabled and TRB.Functions.Class:IsValidVariableForSpec("$mdTime") then
+						barBorderColor = specSettings.colors.bar.mindDevourer.color
+					end
+
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
 					if CastingSpell() and specSettings.bar.showCasting  then
