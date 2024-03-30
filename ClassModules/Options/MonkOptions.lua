@@ -626,7 +626,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 					soundName = L["LSMSoundAirHorn"]
 				},
 				danceOfChiJi={
-					name = "Dance of Chi-Ji",
+					name = L["MonkWindwalkerAudioDanceOfChiJi"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
@@ -792,7 +792,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.buttons.exportButton_Monk_Mistweaver_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Mistweaver_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaver"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 10, 2, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaverFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 10, 2, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 2, yCoord)
@@ -807,24 +807,24 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"])
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.vivaciousVivification = CreateFrame("CheckButton", "TwintopResourceBar_Monk_2_Checkbox_vivaciousVivification", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.vivaciousVivification = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Checkbox_vivaciousVivification", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.vivaciousVivification
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Instant Vivify color change enabled")
-		f.tooltip = "This will change the bar color when Vivify is able to be cast instantly due to a the effect of Vivacious Vivification being active."
+		getglobal(f:GetName() .. 'Text'):SetText(L["MonkMistweaverCheckboxVivify"])
+		f.tooltip = L["MonkMistweaverCheckboxVivifyTooltip"]
 		f:SetChecked(spec.colors.bar.vivaciousVivification.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.vivaciousVivification.enabled = self:GetChecked()
 		end)
 
-		controls.colors.vivaciousVivification = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Vivify is instant cast (via Vivacious Vivification talent)", spec.colors.bar.vivaciousVivification.color, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.vivaciousVivification = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkMistweaverColorPickerVivify"], spec.colors.bar.vivaciousVivification.color, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.vivaciousVivification
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "vivaciousVivification")
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_2_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
@@ -841,7 +841,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_2_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
@@ -868,17 +868,17 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], false, true)
 		
 		yCoord = yCoord - 30
-		controls.checkBoxes.manaTeaBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Monk_2_Border_Option_manaTeaBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.manaTeaBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_Border_Option_manaTeaBorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.manaTeaBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mana Tea active")
-		f.tooltip = "This will change the bar border color when the cost of spells is reduced due to Mana Tea being active."
+		getglobal(f:GetName() .. 'Text'):SetText(L["MonkMistweaverCheckboxManaTea"])
+		f.tooltip = L["MonkMistweaverCheckboxManaTeaTooltip"]
 		f:SetChecked(spec.colors.bar.manaTea.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.manaTea.enabled = self:GetChecked()
 		end)
 
-		controls.colors.manaTea = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when a Mana Tea is active", spec.colors.bar.manaTea.color, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.manaTea = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkMistweaverColorPickerManaTea"], spec.colors.bar.manaTea.color, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.manaTea
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "manaTea")
@@ -909,7 +909,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.buttons.exportButton_Monk_Mistweaver_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Mistweaver_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaver"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 10, 2, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaverFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 10, 2, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 10, 2, yCoord)
@@ -1008,7 +1008,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.buttons.exportButton_Monk_Mistweaver_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Mistweaver_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaver"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 10, 2, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaverFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 10, 2, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
@@ -1130,7 +1130,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 		controls.buttons.exportButton_Monk_Mistweaver_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Mistweaver_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaver"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 10, 2, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaverFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 10, 2, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -1153,7 +1153,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.mistweaverDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Mistweaver", UIParent)
-		interfaceSettingsFrame.mistweaverDisplayPanel.name = L["MonkMistweaver"] .. " " .. L["Monk"]
+		interfaceSettingsFrame.mistweaverDisplayPanel.name = L["MonkMistweaverFull"]
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.mistweaverDisplayPanel.parent = parent.name
 		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.mistweaverDisplayPanel, L["MonkMistweaver"] .. "L["Monk"])
@@ -1161,7 +1161,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		parent = interfaceSettingsFrame.mistweaverDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MonkMistweaver"] .. " " .. L["Monk"], oUi.xCoord, yCoord-5)	
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MonkMistweaverFull"], oUi.xCoord, yCoord-5)	
 		
 		controls.checkBoxes.mistweaverMonkEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Mistweaver_mistweaverMonkEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mistweaverMonkEnabled
@@ -1185,7 +1185,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.buttons.exportButton_Monk_Mistweaver_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Monk_Mistweaver_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaver"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 10, 2, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkMistweaverFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 10, 2, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52
@@ -1328,16 +1328,16 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.buttons.exportButton_Monk_Windwalker_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Windwalker_BarDisplay:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalker"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 10, 3, true, false, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalkerFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 10, 3, true, false, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 10, 3, yCoord)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], "Chi")
+		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], L["ResourceChi"])
 
 		yCoord = yCoord - 60
-		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 3, yCoord, true, "Chi")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 10, 3, yCoord, true, L["ResourceChi"])
 
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], "notFull", false)
@@ -1346,31 +1346,31 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])
 
 		yCoord = yCoord - 30
-		controls.colors.serenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy while Serenity is active", spec.colors.bar.serenity, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.serenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerSerenity"], spec.colors.bar.serenity, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.serenity
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "serenity")
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.endOfSerenity = CreateFrame("CheckButton", "TwintopResourceBar_Monk_3_Checkbox_EOS", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.endOfSerenity = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Checkbox_EOS", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfSerenity
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Serenity")
-		f.tooltip = "Changes the bar color when Serenity is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerCheckboxSerenityEnd"])
+		f.tooltip = L["MonkWindwalkerCheckboxSerenityEndTooltip"]
 		f:SetChecked(spec.endOfSerenity.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.endOfSerenity.enabled = self:GetChecked()
 		end)
 
-		controls.colors.serenityEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy while you have less than 1 GCD left in Serenity", spec.colors.bar.serenityEnd, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.serenityEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerSerenityEnd"], spec.colors.bar.serenityEnd, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.serenityEnd
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "serenityEnd")
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_3_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
@@ -1380,14 +1380,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.bar.showCasting = self:GetChecked()
 		end)
 
-		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy spent from hardcasting spells", spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerCasting"], spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 3)
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_3_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
@@ -1397,7 +1397,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.bar.showPassive = self:GetChecked()
 		end)
 
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
@@ -1414,44 +1414,44 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], true, false)
 
 		yCoord = yCoord - 30
-		controls.colors.borderChiJi = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Resource Bar's border with Dance of Chi-Ji proc", spec.colors.bar.borderChiJi, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderChiJi = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MonkWindwalkerColorPickerDanceOfChiJi"], spec.colors.bar.borderChiJi, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderChiJi
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderChiJi")
 		end)
 
 		yCoord = yCoord - 40
-		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Chi Colors", oUi.xCoord, yCoord)
+		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ChiColorsHeader"], oUi.xCoord, yCoord)
 		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
-		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Chi", spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceChi"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPoints.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 		end)
 
-		controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Chi's border", spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 		end)
 
 		yCoord = yCoord - 30		
-		controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Penultimate Chi", spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerPenultimate"], spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPoints.penultimate
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 		end)
 
-		controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled Chi background", spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
 		end)
 
 		yCoord = yCoord - 30		
-		controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Final Chi", spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ChiColorPickerFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPoints.final
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
@@ -1461,8 +1461,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sameColorComboPoint
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Use highest Chi color for all?")
-		f.tooltip = "When checked, the highest Chi's color will be used for all Chi. E.g., if you have maximum 5 Chi and currently have 4, the Penultimate color will be used for all Chi instead of just the second to last."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ChiCheckboxUseHighestForAll"])
+		f.tooltip = L["ChiCheckboxUseHighestForAllTooltip"]
 		f:SetChecked(spec.comboPoints.sameColor)
 		f:SetScript("OnClick", function(self, ...)
 			spec.comboPoints.sameColor = self:GetChecked()
@@ -1525,8 +1525,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.checkBoxes.expelHarmThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_expelHarm", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.expelHarmThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Expel Harm")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Expel Harm."
+		getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxExpelHarm"])
+		f.tooltip = L["MonkWindwalkerThresholdCheckboxExpelHarmTooltip"]
 		f:SetChecked(spec.thresholds.expelHarm.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.expelHarm.enabled = self:GetChecked()
@@ -1536,22 +1536,22 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.checkBoxes.tigerPalmThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_tigerPalm", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.tigerPalmThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Tiger Palm")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Tiger Palm."
+		getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxTigerPalm"])
+		f.tooltip = L["MonkWindwalkerThresholdCheckboxTigerPalmTooltip"]
 		f:SetChecked(spec.thresholds.tigerPalm.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.tigerPalm.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
-		controls.labels.utility = TRB.Functions.OptionsUi:BuildLabel(parent, "General / Utility", 5, yCoord, 110, 20)
+		controls.labels.utility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryGeneralUtility"], 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
 		controls.checkBoxes.cracklingJadeLightningThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_cracklingJadeLightning", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.cracklingJadeLightningThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Crackling Jade Lightning")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crackling Jade Lightning."
+		getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxCracklingJadeLightning"])
+		f.tooltip = L["MonkWindwalkerThresholdCheckboxCracklingJadeLightningTooltip"]
 		f:SetChecked(spec.thresholds.cracklingJadeLightning.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.cracklingJadeLightning.enabled = self:GetChecked()
@@ -1561,19 +1561,30 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.checkBoxes.detoxThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_detox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.detoxThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Detox")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Detox."
+		getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxDetox"])
+		f.tooltip = L["MonkWindwalkerThresholdCheckboxDetoxTooltip"]
 		f:SetChecked(spec.thresholds.detox.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.detox.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
+		controls.checkBoxes.disableThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_disable", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.disableThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxDisable"])
+		f.tooltip = L["MonkWindwalkerThresholdCheckboxDisableTooltip"]
+		f:SetChecked(spec.thresholds.disable.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.disable.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
 		controls.checkBoxes.paralysisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_paralysis", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.paralysisThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Paralysis")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Paralysis."
+		getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxParalysis"])
+		f.tooltip = L["MonkWindwalkerThresholdCheckboxParalysisTooltip"]
 		f:SetChecked(spec.thresholds.paralysis.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.paralysis.enabled = self:GetChecked()
@@ -1583,22 +1594,11 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.checkBoxes.vivifyThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_vivify", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.vivifyThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Vivify")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Vivify."
+		getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerThresholdCheckboxVivify"])
+		f.tooltip = L["MonkWindwalkerThresholdCheckboxVivifyTooltip"]
 		f:SetChecked(spec.thresholds.vivify.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.vivify.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.disableThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_Threshold_Option_disable", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.disableThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Disable")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Disable."
-		f:SetChecked(spec.thresholds.disable.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.disable.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 30
@@ -1606,15 +1606,14 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 10, 3, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Serenity Configuration", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MonkWindwalkerHeaderEndOfSerenityConfiguration"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfSerenityModeGCDs = CreateFrame("CheckButton", "TRB_EOFV_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfSerenityModeGCDs
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Serenity ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerCheckboxSerenityGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many GCDs remain until Serenity ends."
 		if spec.endOfSerenity.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -1624,7 +1623,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.endOfSerenity.mode = "gcd"
 		end)
 
-		title = "Serenity GCDs - 0.75sec Floor"
+		title = L["MonkWindwalkerSerenityGcds"]
 		controls.endOfSerenityGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfSerenity.gcdsMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfSerenityGCDs:SetScript("OnValueChanged", function(self, value)
@@ -1636,9 +1635,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.checkBoxes.endOfSerenityModeTime = CreateFrame("CheckButton", "TRB_EOFV_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfSerenityModeTime
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time until Serenity ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerCheckboxSerenityTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many seconds remain until Serenity will end."
 		if spec.endOfSerenity.mode == "time" then
 			f:SetChecked(true)
 		end
@@ -1648,7 +1646,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.endOfSerenity.mode = "time"
 		end)
 
-		title = "Serenity Time Remaining"
+		title = L["MonkWindwalkerSerenityTime"]
 		controls.endOfSerenityTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfSerenity.timeMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfSerenityTime:SetScript("OnValueChanged", function(self, value)
@@ -1680,7 +1678,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.buttons.exportButton_Monk_Windwalker_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Windwalker_FontAndText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalker"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 10, 3, false, true, false, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalkerFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 10, 3, false, true, false, false, false)
 		end)
 
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 10, 3, yCoord)
@@ -1738,15 +1736,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		
 
 		yCoord = yCoord - 30
-		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Mark of the Crane Count and Time Remaining Tracking", oUi.xCoord, yCoord)
+		controls.dotColorSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MonkWindwalkerMarkOfTheCraneTrackingHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 25
 
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_dotColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change total Mark of the Crane counter and Mark of the Crane timer color based on time remaining?")
-		f.tooltip = "When checked, the color of total Mark of the Crane debuffs up counters and timers will change based on whether or not Mark of the Crane is on the current target."
+		getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerCheckboxMarkOfTheCraneTracking"])
+		f.tooltip = L["MonkWindwalkerCheckboxMarkOfTheCraneTrackingTooltip"]
 		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.dots.enabled = self:GetChecked()
@@ -1805,7 +1803,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.buttons.exportButton_Monk_Windwalker_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Windwalker_AudioAndTracking:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalker"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 10, 3, false, false, true, false, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalkerFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 10, 3, false, false, true, false, false)
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
@@ -1881,8 +1879,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.checkBoxes.danceOfChiJiAudio = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_danceOfChiJi_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.danceOfChiJiAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you get a Dance of Chi-Ji proc")
-		f.tooltip = "Play an audio cue when you get a Dance of Chi-Ji proc that allows you to use Spinning Crane Kick for no Chi."
+		getglobal(f:GetName() .. 'Text'):SetText(L["MonkWindwalkerCheckboxDanceOfChiJi"])
+		f.tooltip = L["MonkWindwalkerCheckboxDanceOfChiJiTooltip"]
 		f:SetChecked(spec.audio.danceOfChiJi.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.danceOfChiJi.enabled = self:GetChecked()
@@ -1962,7 +1960,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Energy generation over the next X GCDs, based on player's current GCD length."
 		if spec.generation.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -1972,7 +1969,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.generation.mode = "gcd"
 		end)
 
-		title = "Energy GCDs - 0.75sec Floor"
+		title = L["TrackEnergyRegenEnergyGcds"]
 		controls.energyGenerationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.energyGenerationGCDs:SetScript("OnValueChanged", function(self, value)
@@ -1987,7 +1984,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Energy generation over the next X seconds."
 		if spec.generation.mode == "time" then
 			f:SetChecked(true)
 		end
@@ -1997,7 +1993,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			spec.generation.mode = "time"
 		end)
 
-		title = "Energy Over Time (sec)"
+		title = L["TrackEnergyRegenEnergyTime"]
 		controls.energyGenerationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.energyGenerationTime:SetScript("OnValueChanged", function(self, value)
@@ -2023,7 +2019,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 		controls.buttons.exportButton_Monk_Windwalker_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Monk_Windwalker_BarText:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalker"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 10, 3, false, false, false, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalkerFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 10, 3, false, false, false, true, false)
 		end)
 
 		yCoord = yCoord - 30
@@ -2045,15 +2041,15 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.windwalkerDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Monk_Windwalker", UIParent)
-		interfaceSettingsFrame.windwalkerDisplayPanel.name = L["MonkWindwalker"] .. " " .. L["Monk"]
+		interfaceSettingsFrame.windwalkerDisplayPanel.name = L["MonkWindwalkerFull"]
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.windwalkerDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.windwalkerDisplayPanel, L["MonkWindwalker"] .. "L["Monk"])
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.windwalkerDisplayPanel, L["MonkWindwalkerFull"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.windwalkerDisplayPanel)
 
 		parent = interfaceSettingsFrame.windwalkerDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MonkWindwalker"] .. " " .. L["Monk"], oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["MonkWindwalkerFull"], oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.windwalkerMonkEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Monk_Windwalker_windwalkerMonkEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.windwalkerMonkEnabled
@@ -2071,13 +2067,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		controls.buttons.importButton = TRB.Functions.OptionsUi:BuildButton(parent, L["Import"], 415, yCoord-10, 90, 20)
 		controls.buttons.importButton:SetFrameLevel(10000)
-		controls.buttons.importButton:SetScript("OnClick", function(self, ...)		
+		controls.buttons.importButton:SetScript("OnClick", function(self, ...)
 			StaticPopup_Show("TwintopResourceBar_Import")
 		end)
 
 		controls.buttons.exportButton_Monk_Windwalker_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 		controls.buttons.exportButton_Monk_Windwalker_All:SetScript("OnClick", function(self, ...)
-			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalker"] .. " " .. L["Monk"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 10, 3, true, true, true, true, false)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["MonkWindwalkerFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 10, 3, true, true, true, true, false)
 		end)
 
 		yCoord = yCoord - 52

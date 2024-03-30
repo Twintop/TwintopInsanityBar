@@ -2173,7 +2173,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.generation.mode = "gcd"
 		end)
 
-		title = "Energy GCDs - 0.75sec Floor"
+		title = L["TrackEnergyRegenEnergyGcds"]
 		controls.energyGenerationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.energyGenerationGCDs:SetScript("OnValueChanged", function(self, value)
@@ -2198,7 +2198,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.generation.mode = "time"
 		end)
 
-		title = "Energy Over Time (sec)"
+		title = L["TrackEnergyRegenEnergyTime"]
 		controls.energyGenerationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.energyGenerationTime:SetScript("OnValueChanged", function(self, value)
@@ -3275,7 +3275,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.generation.mode = "gcd"
 		end)
 
-		title = "Energy GCDs - 0.75sec Floor"
+		title = L["TrackEnergyRegenEnergyGcds"]
 		controls.energyGenerationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.energyGenerationGCDs:SetScript("OnValueChanged", function(self, value)
@@ -3300,7 +3300,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.generation.mode = "time"
 		end)
 
-		title = "Energy Over Time (sec)"
+		title = L["TrackEnergyRegenEnergyTime"]
 		controls.energyGenerationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.energyGenerationTime:SetScript("OnValueChanged", function(self, value)
@@ -4382,7 +4382,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.generation.mode = "gcd"
 		end)
 
-		title = "Energy GCDs - 0.75sec Floor"
+		title = L["TrackEnergyRegenEnergyGcds"]
 		controls.energyGenerationGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.generation.gcds, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.energyGenerationGCDs:SetScript("OnValueChanged", function(self, value)
@@ -4407,7 +4407,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.generation.mode = "time"
 		end)
 
-		title = "Energy Over Time (sec)"
+		title = L["TrackEnergyRegenEnergyTime"]
 		controls.energyGenerationTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 10, spec.generation.time, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.energyGenerationTime:SetScript("OnValueChanged", function(self, value)
