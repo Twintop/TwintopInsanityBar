@@ -1656,7 +1656,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["DotChangeColorCheckbox"])
-		f.tooltip = L["DruidBalanceDotChangeColorCheckboxTooltip"]
+		f.tooltip = string.format(L["DotChangeColorCheckboxTooltip"], "$sunfireCount/$sunfireTime, $moonfireCount/$moonfireTime, $stellarFlareCount/$stellarFlareTime")
 		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.dots.enabled = self:GetChecked()
@@ -3353,7 +3353,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 11, 4, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealermanaTextColorsHeader"], oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerManaTextColorsHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCurrentMana"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
@@ -3384,7 +3384,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["DotChangeColorCheckbox"])
-		f.tooltip = L["DruidRestorationDotChangeColorCheckboxTooltip"]
+		f.tooltip = string.format(L["DotChangeColorCheckboxTooltip"], "$moonfireCount/$moonfireTime, $sunfireCount/$sunfireTime)")
 		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.dots.enabled = self:GetChecked()

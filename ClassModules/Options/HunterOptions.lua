@@ -1596,7 +1596,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["DotChangeColorCheckbox"])
-		f.tooltip = L["HunterDotChangeColorCheckboxTooltip"]
+		f.tooltip = string.format(L["DotChangeColorCheckboxTooltip"], "$ssCount/$ssTime")
 		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.dots.enabled = self:GetChecked()
@@ -2610,7 +2610,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["DotChangeColorCheckbox"])
-		f.tooltip = L["HunterDotChangeColorCheckboxTooltip"]
+		f.tooltip = string.format(L["DotChangeColorCheckboxTooltip"], "$ssCount/$ssTime")
 		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.dots.enabled = self:GetChecked()
@@ -3737,7 +3737,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["DotChangeColorCheckbox"])
-		f.tooltip = L["HunterDotChangeColorCheckboxTooltip"]
+		f.tooltip = string.format(L["DotChangeColorCheckboxTooltip"], "$ssCount/$ssTime")
 		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.dots.enabled = self:GetChecked()

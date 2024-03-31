@@ -1101,7 +1101,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["DotChangeColorCheckbox"])
-		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers ($deepWoundsCount, $rendCount) will change based on whether or not the DoT is on the current target."
+		f.tooltip = string.format(L["DotChangeColorCheckboxTooltip"], "$deepWoundsCount/$deepWoundsTime, $rendCount/$rendTime")
 		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.dots.enabled = self:GetChecked()
