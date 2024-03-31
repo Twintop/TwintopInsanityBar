@@ -14,14 +14,19 @@ local content = [====[
 ## General
 ### Healers
 
-- [#346 - UPDATE](#346) Add support for Dragonflight Season 4 versions of Conjured Chillglobe.
+- [#346 - UPDATE (Twintop)](#346) Add support for Dragonflight Season 4 versions of Conjured Chillglobe.
 
 ### Localization
 
-- [#8 - UPDATE](#8) Add localization strings for Demon Hunters, Druids, Evokers, Hunters, Monks, shared healer fields, shared Combo Point fields, and various class resources.
-- [#8 - UPDATE](#8) Add more German (deDE) localizations from **unfug**.
-- [#8 - UPDATE](#8) Add more British English (enGB) localisations from **Twintop**.
-- [#8 - UPDATE](#8) Add more French (frFR) localizations from **Koroshy**.
+- [#8 - UPDATE (Twintop)](#8) Add localization strings for Demon Hunters, Druids, Evokers, Hunters, Monks, shared healer fields, shared Combo Point fields, and various class resources.
+- [#8 - UPDATE (unfug)](#8) Add more German (deDE) localizations from.
+- [#8 - UPDATE (Twintop)](#8) Add more British English (enGB) localisations.
+- [#8 - UPDATE (Koroshy)](#8) Add more French (frFR) localizations.
+
+## Priest
+### Shadow
+
+- [#347 - NEW (Koroshy)](#347) Add bar border color change when there is a Mind Devourer proc.
 
 ---
 
