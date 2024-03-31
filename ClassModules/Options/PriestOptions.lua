@@ -1554,7 +1554,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_1_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
@@ -1571,7 +1571,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_1_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
@@ -2502,7 +2502,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_2_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
@@ -2519,7 +2519,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_2_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
@@ -3616,7 +3616,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inVoidform1GCD")
 		end)
 
-		controls.checkBoxes.endOfVoidform = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Bar_Option_vfDaColorChange", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.endOfVoidform = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Bar_Option_vfDaColorChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfVoidform
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("VF/DA color change when ending enabled")
@@ -3640,7 +3640,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "instantMindBlast")
 		end)
 
-		controls.checkBoxes.instantMindBlast = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Checkbox_InstantMindBlast", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.instantMindBlast = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Checkbox_InstantMindBlast", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.instantMindBlast
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Instant Mind Blast color change enabled")
@@ -3657,7 +3657,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 3)
 		end)
 
-		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
@@ -3681,7 +3681,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 3)
 		end)
 
-		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
@@ -3702,7 +3702,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 3, yCoord, L["ResourceInsanity"], true, false)
 		
 		yCoord = yCoord - 30
-		controls.checkBoxes.mindFlayInsanityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Border_Option_mindFlayInsanityBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.mindFlayInsanityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_mindFlayInsanityBorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mindFlayInsanityBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Mind Flay: Insanity / Mind Spike: Insanity")
@@ -3719,7 +3719,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 		
 		yCoord = yCoord - 30
-		controls.checkBoxes.deathspeakerBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Border_Option_deathspeakerBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.deathspeakerBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_deathspeakerBorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.deathspeakerBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Deathspeaker proc")
@@ -3734,9 +3734,26 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "deathspeaker")
 		end)
+
+		yCoord = yCoord - 30
+		controls.checkBoxes.mindDevourer = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_mindDevourerProc", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.mindDevourer
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText("Mind Devourer Proc")
+		f.tooltip = "This will change the bar border color when you will get a Mind Devourer Proc"
+		f:SetChecked(spec.colors.bar.mindDevourer.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.mindDevourer.enabled = self:GetChecked()
+		end)
+
+		controls.colors.mindDevourer = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when a Mind Devourer proc is active", spec.colors.bar.mindDevourer.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.mindDevourer
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "mindDevourer")
+		end)
 		
 		yCoord = yCoord - 30
-		controls.checkBoxes.deathsTormentBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Border_Option_deathsTormentBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.deathsTormentBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_deathsTormentBorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.deathsTormentBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Death's Torment at or above X stacks")
@@ -3753,7 +3770,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 		
 		yCoord = yCoord - 30
-		controls.checkBoxes.deathsTormentMaxBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Border_Option_deathsTormentMaxBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.deathsTormentMaxBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_deathsTormentMaxBorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.deathsTormentMaxBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Death's Torment max stacks")
@@ -3767,23 +3784,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.colors.deathsTormentMax
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "deathsTormentMax")
-		end)
-
-		yCoord = yCoord - 30
-		controls.checkBoxes.mindDevourer = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Border_Option_mindDevourerProc", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.mindDevourer
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mind Devourer Proc")
-		f.tooltip = "This will change the bar border color when you will get a Mind Devourer Proc"
-		f:SetChecked(spec.colors.bar.mindDevourer.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.colors.bar.mindDevourer.enabled = self:GetChecked()
-		end)
-
-		controls.colors.mindDevourer = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when getting a Mind Devourer Proc", spec.colors.bar.mindDevourer.color, 300, 25, oUi.xCoord2, yCoord)
-		f = controls.colors.mindDevourer
-		f:SetScript("OnMouseDown", function(self, button, ...)
-			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "mindDevourer")
 		end)
 
 		yCoord = yCoord - 40
@@ -4368,7 +4368,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.deathspeakerProc = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_Deathspeaker_Sound", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.deathspeakerProc = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Deathspeaker_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.deathspeakerProc
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Deathspeaker proc occurs")
@@ -4383,7 +4383,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.deathspeakerProcAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_3_Deathspeaker_ProcAudio", parent)
+		controls.dropDown.deathspeakerProcAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Shadow_Deathspeaker_ProcAudio", parent)
 		controls.dropDown.deathspeakerProcAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
 		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.deathspeakerProcAudio, oUi.sliderWidth)
 		LibDD:UIDropDownMenu_SetText(controls.dropDown.deathspeakerProcAudio, spec.audio.deathspeaker.soundName)
@@ -4434,7 +4434,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.deathsTormentProc = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_deathsTorment_Sound", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.deathsTormentProc = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_deathsTorment_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.deathsTormentProc
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Death's Torment is at or above X stacks")
@@ -4449,7 +4449,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.deathsTormentProcAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_3_deathsTorment_ProcAudio", parent)
+		controls.dropDown.deathsTormentProcAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Shadow_deathsTorment_ProcAudio", parent)
 		controls.dropDown.deathsTormentProcAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
 		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.deathsTormentProcAudio, oUi.sliderWidth)
 		LibDD:UIDropDownMenu_SetText(controls.dropDown.deathsTormentProcAudio, spec.audio.deathsTorment.soundName)
@@ -4500,7 +4500,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.deathsTormentMaxProc = CreateFrame("CheckButton", "TwintopResourceBar_Priest_3_deathsTormentMax_Sound", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.deathsTormentMaxProc = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_deathsTormentMax_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.deathsTormentMaxProc
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Death's Torment is at maximum stacks.")
@@ -4515,7 +4515,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.deathsTormentMaxProcAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_3_deathsTormentMax_ProcAudio", parent)
+		controls.dropDown.deathsTormentMaxProcAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Shadow_deathsTormentMax_ProcAudio", parent)
 		controls.dropDown.deathsTormentMaxProcAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
 		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.deathsTormentMaxProcAudio, oUi.sliderWidth)
 		LibDD:UIDropDownMenu_SetText(controls.dropDown.deathsTormentMaxProcAudio, spec.audio.deathsTormentMax.soundName)
