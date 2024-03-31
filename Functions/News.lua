@@ -6,7 +6,7 @@ local LMD = LibStub("LibMarkdown-1.0")
 local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
-*Localization of the addon has begun! If you're interested in helping, please [visit the GitHub issue](#8) and let Twintop know. Thank you!*
+*Localization of the addon has begun! If you're interested in helping, please [join the Discord server](https://discord.gg/eThqxM78xm) or [visit the GitHub issue](#8) and let Twintop know. Thank you!*
 
 ---
 
