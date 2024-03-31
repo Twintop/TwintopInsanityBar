@@ -33,7 +33,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					relativeToName = L["PositionCenter"],
 					relativeTo = "CENTER",
 					xPos = 0,
-					relativeToFrameName = "Power Word: Radiance (1st Charge)",
+					relativeToFrameName = L["PowerWordRadianceCharge1"],
 					yPos = 0,
 					relativeToFrame = "PowerWord_Radiance_1",
 				},
@@ -56,7 +56,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					relativeToName = L["PositionCenter"],
 					relativeTo = "CENTER",
 					xPos = 0,
-					relativeToFrameName = "Power Word: Radiance (2nd Charge)",
+					relativeToFrameName =  L["PowerWordRadianceCharge2"],
 					yPos = 0,
 					relativeToFrame = "PowerWord_Radiance_2",
 				},
@@ -401,13 +401,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					soundName = L["LSMSoundBoxingArenaGong"]
 				},
 				surgeOfLight={
-					name = "Innervate (1 stack)",
+					name = L["PriestAudioSurgeOfLight1"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName = L["LSMSoundBoxingArenaGong"]
 				},
 				surgeOfLight2={
-					name = "Innervate (2 stacks)",
+					name = L["PriestAudioSurgeOfLight2"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
@@ -912,25 +912,25 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					soundName = L["LSMSoundBoxingArenaGong"]
 				},
 				surgeOfLight={
-					name = "Surge of Light (1 stack)",
+					name = L["PriestAudioSurgeOfLight1"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName = L["LSMSoundBoxingArenaGong"]
 				},
 				surgeOfLight2={
-					name = "Surge of Light (2 stacks)",
+					name = L["PriestAudioSurgeOfLight2"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
 				},
 				resonantWords={
-					name = "Resonant Words",
+					name = L["PriestHolyAudioResonantWords"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
 				},
 				lightweaver={
-					name = "Lightweaver",
+					name = L["PriestHolyAudioLightweaver"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
@@ -1350,31 +1350,31 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					soundName = L["LSMSoundAirHorn"]
 				},
 				mdProc={
-					name = "Mind Devourer Proc",
+					name = L["PriestShadowAudioMindDevourer"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName = L["LSMSoundBoxingArenaGong"]
 				},
 				dpReady={
-					name = "Devouring Plague Ready",
+					name = L["PriestShadowAudioDevouringPlague"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName = L["LSMSoundBoxingArenaGong"]
 				},
 				deathspeaker={
-					name = "Deathspeaker Proc",
+					name = L["PriestShadowAudioDeathspeaker"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName = L["LSMSoundBoxingArenaGong"]
 				},
 				deathsTorment={
-					name = "Death's Torment",
+					name = L["PriestShadowAudioDeathsTorment"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName = L["LSMSoundBoxingArenaGong"]
 				},
 				deathsTormentMax={
-					name = "Death's Torment (Max Stacks)",
+					name = L["PriestShadowAudioDeathsTormentMax"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName = L["LSMSoundBoxingArenaGong"]
@@ -1517,7 +1517,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 5, 1, yCoord)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"], "Power Words")
+		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"], L["PriestDisciplinePowerWords"])
 
 		yCoord = yCoord - 60
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 1, yCoord, false)
@@ -1530,7 +1530,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 
 		yCoord = yCoord - 30
-		controls.colors.inRapture = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana while Rapture is active", spec.colors.bar.rapture, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.inRapture = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPickerRapture"], spec.colors.bar.rapture, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inRapture
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "rapture")
@@ -1540,14 +1540,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.endOfRapture = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Rapture", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfRapture
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Rapture")
-		f.tooltip = "Changes the bar color when Rapture is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		getglobal(f:GetName() .. 'Text'):SetText(L["PriestDisciplineCheckboxRaptureEnd"])
+		f.tooltip = L["PriestDisciplineCheckboxRaptureEndTooltip"]
 		f:SetChecked(spec.endOfRapture.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.endOfRapture.enabled = self:GetChecked()
 		end)
 
-		controls.colors.inRaptureEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana when Rapture is close to ending (as configured)", spec.colors.bar.raptureEnd, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.inRaptureEnd = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPickerRaptureEnd"], spec.colors.bar.raptureEnd, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inRaptureEnd
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "raptureEnd")
@@ -1581,7 +1581,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.bar.showPassive = self:GetChecked()
 		end)
 
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana from Passive Sources (Potions, Mana Tide Totem bonus regen, etc.)", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
@@ -1601,27 +1601,27 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.shadowCovenantBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_shadowCovenantEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.shadowCovenantBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Shadow Covenant")
-		f.tooltip = "This will change the bar border color when you have Shadow Covenant."
+		getglobal(f:GetName() .. 'Text'):SetText(L["PriestDisciplineCheckboxShadowCovenant"])
+		f.tooltip = L["PriestDisciplineCheckboxShadowCovenantTooltip"]
 		f:SetChecked(spec.colors.bar.shadowCovenantBorderChange)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.shadowCovenantBorderChange = self:GetChecked()
 			TRB.Functions.BarText:CreateBarTextFrames(spec)
 		end)
 		
-		controls.colors.shadowCovenant = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Shadow Covenant", spec.colors.bar.shadowCovenant, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.shadowCovenant = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPickerShadowCovenant"], spec.colors.bar.shadowCovenant, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.shadowCovenant
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "shadowCovenant")
 		end)
 
-		controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-30)
+		controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight1"], spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.surgeOfLight1
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight1")
 		end)
 						
-		controls.colors.surgeOfLight2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 2 stacks of Surge of Light", spec.colors.bar.surgeOfLight2, 300, 25, oUi.xCoord2, yCoord-60)
+		controls.colors.surgeOfLight2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight2"], spec.colors.bar.surgeOfLight2, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.surgeOfLight2
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight2")
@@ -1631,8 +1631,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.surgeOfLight1BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Threshold_Option_surgeOfLight1BorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.surgeOfLight1BorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Surge of Light (1 stack)")
-		f.tooltip = "This will change the bar border color when you have 1 stack of Surge of Light."
+		getglobal(f:GetName() .. 'Text'):SetText(L["PriestCheckboxSurgeOfLight1"])
+		f.tooltip = L["PriestCheckboxSurgeOfLight1Tooltip"]
 		f:SetChecked(spec.colors.bar.surgeOfLightBorderChange1)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.surgeOfLightBorderChange1 = self:GetChecked()
@@ -1642,8 +1642,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.surgeOfLight2BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Threshold_Option_surgeOfLight2BorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.surgeOfLight2BorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Surge of Light (2 stacks)")
-		f.tooltip = "This will change the bar border color when you have 2 stacks of Surge of Light."
+		getglobal(f:GetName() .. 'Text'):SetText(L["PriestCheckboxSurgeOfLight2"])
+		f.tooltip = L["PriestCheckboxSurgeOfLight2Tooltip"]
 		f:SetChecked(spec.colors.bar.surgeOfLightBorderChange2)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.surgeOfLightBorderChange2 = self:GetChecked()
@@ -1651,36 +1651,36 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		
 
 		yCoord = yCoord - 40
-		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Power Word Colors", oUi.xCoord, yCoord)
+		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestDisciplinePowerWordColorsHeader"], oUi.xCoord, yCoord)
 		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.holyWordSerenityComboPointEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_powerWordRadianceComboPointEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.holyWordSerenityComboPointEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Enable Power Word: Radiance")
-		f.tooltip = "Show the Power Word bar(s) for Power Word: Radiance"
+		getglobal(f:GetName() .. 'Text'):SetText(L["PriestDisciplineCheckboxEnablePowerWordRadiance"])
+		f.tooltip = L["PriestDisciplineCheckboxEnablePowerWordRadianceTooltip"]
 		f:SetChecked(spec.colors.comboPoints.powerWordRadianceEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.comboPoints.powerWordRadianceEnabled = self:GetChecked()
 			TRB.Functions.BarText:CreateBarTextFrames(spec)
 		end)
 
-		controls.colors.comboPoints.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Power Word: Radiance", spec.colors.comboPoints.powerWordRadiance, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.holyWordSerenity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPowerWordRadiance"], spec.colors.comboPoints.powerWordRadiance, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.holyWordSerenity
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "powerWordRadiance")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Power Word's border", spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPowerWordBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled Power Word background", spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestDisciplineColorPowerWordUnfilled"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
@@ -1695,15 +1695,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 5, 1, yCoord)
 		
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Rapture Configuration", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestDisciplineHeaderEndOfRaptureConfiguration"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfRaptureModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Rapture_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfRaptureModeGCDs
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Rapture ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["PriestDisciplineCheckboxRaptureGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many GCDs remain until Rapture ends."
 		if spec.endOfRapture.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -1713,7 +1712,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.endOfRapture.mode = "gcd"
 		end)
 
-		title = "Rapture GCDs - 0.75sec Floor"
+		title = L["PriestDisciplineRaptureGcds"]
 		controls.endOfRaptureGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfRapture.gcdsMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfRaptureGCDs:SetScript("OnValueChanged", function(self, value)
@@ -1726,9 +1725,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.endOfRaptureModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Rapture_Time", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfRaptureModeTime
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time until Rapture ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["PriestDisciplineCheckboxRaptureTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many seconds remain until Rapture will end."
 		if spec.endOfRapture.mode == "time" then
 			f:SetChecked(true)
 		end
@@ -1738,7 +1736,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			spec.endOfRapture.mode = "time"
 		end)
 
-		title = "Rapture Time Remaining"
+		title = L["PriestDisciplineRaptureTime"]
 		controls.endOfRaptureTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfRapture.timeMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfRaptureTime:SetScript("OnValueChanged", function(self, value)
@@ -1805,7 +1803,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["DotChangeColorCheckbox"])
-		f.tooltip = "When checked, the color of total DoTs up counters and DoT timers ($swpCount) will change based on whether or not the DoT is on the current target."
+		f.tooltip = L["PriestDisciplineDotChangeColorCheckboxTooltip"]
 		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.dots.enabled = self:GetChecked()
@@ -1939,8 +1937,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.surgeOfLight = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_SurgeOfLightCB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.surgeOfLight
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Surge of Light proc occurs")
-		f.tooltip = "Play an audio cue when a Surge of Light proc occurs. This will only play for the first proc."
+		getglobal(f:GetName() .. 'Text'):SetText(L["PriestAudioCheckboxSurgeOfLight1"])
+		f.tooltip = L["PriestAudioCheckboxSurgeOfLight1Tooltip"]
 		f:SetChecked(spec.audio.surgeOfLight.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.surgeOfLight.enabled = self:GetChecked()
@@ -2004,8 +2002,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.surgeOfLight2 = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_SurgeOfLight2CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.surgeOfLight2
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you have two (max) Surge of Light procs")
-		f.tooltip = "Play audio cue when you get a second (and maximum) Surge of Light proc. If both are checked, only this sound will play."
+		getglobal(f:GetName() .. 'Text'):SetText(L["PriestAudioCheckboxSurgeOfLight2"])
+		f.tooltip = L["PriestAudioCheckboxSurgeOfLight2Tooltip"]
 		f:SetChecked(spec.audio.surgeOfLight2.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.surgeOfLight2.enabled = self:GetChecked()
@@ -2094,21 +2092,21 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f = controls.checkBoxes.symbolOfHopeRegen
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["HealerCheckboxTrackSymbolOfHope"])
-		f.tooltip = "Show the regeneration of mana from another Priest's Symbol of Hope channel."
+		f.tooltip = L["HealerCheckboxTrackSymbolOfHopeTooltip"]
 		f:SetChecked(spec.passiveGeneration.symbolOfHope)
 		f:SetScript("OnClick", function(self, ...)
 			spec.passiveGeneration.symbolOfHope = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 30
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Shadowfiend/Mindbender Tracking", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestHeaderShadowfiendMindbenderTracking"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.shadowfiend = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_Shadowfiend_Enabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.shadowfiend
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Track Shadowfiend Mana Gain")
-		f.tooltip = "Show the gain of Mana over the next serveral swings, GCDs, or fixed length of time. Select which to track from the options below."
+		getglobal(f:GetName() .. 'Text'):SetText(L["PriestDisciplineCheckboxTrackShadowfiendManaGain"])
+		f.tooltip = L["PriestDisciplineCheckboxTrackShadowfiendManaGainTooltip"]
 		f:SetChecked(spec.shadowfiend.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.shadowfiend.enabled = self:GetChecked()
@@ -2120,7 +2118,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Mana from GCDs remaining")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Mana incoming over the up to next X GCDs, based on player's current GCD."
 		if spec.shadowfiend.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -2146,7 +2143,6 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText("Mana from Swings remaining")
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Mana incoming over the up to next X melee swings from Shadowfiend. This is only different from the GCD option if you are above 200% haste (GCD cap)."
 		if spec.shadowfiend.mode == "swing" then
 			f:SetChecked(true)
 		end
@@ -2545,13 +2541,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 5, 2, yCoord, L["ResourceMana"], false, true)
 
-		controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 1 stack of Surge of Light", spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-30)
+		controls.colors.surgeOfLight1 = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight1"], spec.colors.bar.surgeOfLight1, 300, 25, oUi.xCoord2, yCoord-30)
 		f = controls.colors.surgeOfLight1
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight1")
 		end)
 						
-		controls.colors.surgeOfLight2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have 2 stacks of Surge of Light", spec.colors.bar.surgeOfLight2, 300, 25, oUi.xCoord2, yCoord-60)
+		controls.colors.surgeOfLight2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestColorPickerSurgeOfLight2"], spec.colors.bar.surgeOfLight2, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.surgeOfLight2
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "surgeOfLight2")
@@ -2573,8 +2569,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.surgeOfLight1BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_surgeOfLight1BorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.surgeOfLight1BorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Surge of Light (1 stack)")
-		f.tooltip = "This will change the bar border color when you have 1 stack of Surge of Light."
+		getglobal(f:GetName() .. 'Text'):SetText(L["PriestCheckboxSurgeOfLight1"])
+		f.tooltip = L["PriestCheckboxSurgeOfLight1Tooltip"]
 		f:SetChecked(spec.colors.bar.surgeOfLightBorderChange1)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.surgeOfLightBorderChange1 = self:GetChecked()
@@ -2584,8 +2580,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		controls.checkBoxes.surgeOfLight2BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Threshold_Option_surgeOfLight2BorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.surgeOfLight2BorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Surge of Light (2 stacks)")
-		f.tooltip = "This will change the bar border color when you have 2 stacks of Surge of Light."
+		getglobal(f:GetName() .. 'Text'):SetText(L["PriestCheckboxSurgeOfLight2"])
+		f.tooltip = L["PriestCheckboxSurgeOfLight2Tooltip"]
 		f:SetChecked(spec.colors.bar.surgeOfLightBorderChange2)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.surgeOfLightBorderChange2 = self:GetChecked()
@@ -3262,7 +3258,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Shadowfiend/Mindbender Tracking", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestHeaderShadowfiendTracking"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.shadowfiend = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_Shadowfiend_Enabled", parent, "ChatConfigCheckButtonTemplate")
@@ -4593,7 +4589,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		yCoord = yCoord - 30
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Shadowfiend/Mindbender Tracking", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestHeaderShadowfiendMindbenderTracking"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.mindbender = CreateFrame("CheckButton", "TwintopResourceBar_CB3_7", parent, "ChatConfigCheckButtonTemplate")

@@ -1,5 +1,4 @@
 local _, TRB = ...
-
 local L = TRB.Localization
 
 TRB.Options = {}

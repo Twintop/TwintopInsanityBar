@@ -1,5 +1,6 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
+local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Threshold = {}
 

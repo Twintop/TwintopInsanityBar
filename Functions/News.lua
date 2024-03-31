@@ -18,6 +18,7 @@ local content = [====[
 
 ### Localization
 
+- [#8 - FIX (Twintop)](#8) Fix Lua errors when a LibSharedMedia resource is invalid.
 - [#8 - UPDATE (Twintop)](#8) Add localization strings for Demon Hunters, Druids, Evokers, Hunters, Monks, shared healer fields, shared Combo Point fields, and various class resources.
 - [#8 - UPDATE (unfug)](#8) Add more German (deDE) localizations.
 - [#8 - UPDATE (Twintop)](#8) Add more British English (enGB) localisations.

@@ -1,5 +1,6 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
+local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.LibSharedMedia = {}
 
@@ -94,7 +95,7 @@ function TRB.Functions.LibSharedMedia:ValidateLsmValues(specName, settings)
 				settings.textures.comboPointsBar = TRB.Data.constants.defaultSettings.textures.resourceBar
 				settings.textures.comboPointsBarName = TRB.Data.constants.defaultSettings.textures.resourceBarName
 			end
-		end		
+		end
 	end
 
 	if settings.audio ~= nil then
