@@ -2044,7 +2044,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		parent = interfaceSettingsFrame.balanceDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Balance Druid", oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DruidBalanceFull"], oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.balanceDruidEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Druid_Balance_balanceDruidEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.balanceDruidEnabled

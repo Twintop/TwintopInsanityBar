@@ -142,7 +142,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				icon = "",
 				duration = 8,
 			},
-
+			
 			-- Potions
 			aeratedManaPotionRank1 = {
 				id = 370607,

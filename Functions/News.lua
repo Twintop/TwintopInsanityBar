@@ -6,7 +6,19 @@ local LMD = LibStub("LibMarkdown-1.0")
 local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
-*Localization of the addon has begun! If you're interested in helping, please [join the Discord server](https://discord.gg/eThqxM78xm) or [visit the GitHub issue](#8) and let Twintop know. Thank you!*
+*Localization of the addon is underway! If you're interested in helping translate, please [join the Discord server](https://discord.gg/eThqxM78xm) or [visit the GitHub issue](#8) and let Twintop know. Thank you!*
+
+---
+
+# 10.2.6.5-release (2024-04-01)
+## General
+### Localization
+
+- [#8 - UPDATE (Twintop)](#8) Add localization strings for Rogues, Shamans, and Warriors.
+- [#8 - UPDATE (unfug)](#8) Add more German (deDE) localizations.
+- [#8 - UPDATE (Twintop)](#8) Add more British English (enGB) localisations.
+- [#8 - UPDATE (Koroshy)](#8) Add more French (frFR) localizations.
+
 
 ---
 

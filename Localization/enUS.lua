@@ -1029,3 +1029,96 @@ L["PriestShadowCheckboxShadowfiendTime"] = "Insanity from Time remaining"
 L["PriestShadowShadowfiendTime"] = "Shadowfiend/Mindbender Remaining (sec)"
 L["PriestShadowHeaderDeathsTorment"] = "Death's Torment (T31 4P)"
 L["PriestShadowDeathsTormentStacksBeforeChange"] = "Stacks before border change and audio cue"
+
+-- ShamanOptions
+L["ResourceMaelstromWeapon"] = "Maelstrom Weapon"
+L["ShamanManaColorPickerAscendance"] = "Mana while in Ascendance"
+L["ShamanManaColorPickerAscendanceEnd"] = "Mana when Ascendance is ending (as configured)"
+L["ShamanManaCheckboxAscendanceEnd"] = "Ascendance color change when ending enabled"
+L["ShamanManaCheckboxAscendanceEndTooltip"] = "Changes the bar color when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["ShamanHeaderEndOfAscendanceConfiguration"] = "End of Ascendance Configuration"
+L["ShamanCheckboxAscendanceGcds"] = "GCDs until Ascendance ends"
+L["ShamanAscendanceGcds"] = "Ascendance GCDs - 0.75sec Floor"
+L["ShamanCheckboxAscendanceTime"] = "Time until Ascendance ends"
+L["ShamanAscendanceTime"] = "Ascendance Time Remaining (sec)"
+
+L["ShamanElementalAudioEarthShockReady"] = "Earth Shock Ready"
+L["ShamanElementalEarthShockElementalBlast"] = "Earth Shock/Elemental Blast"
+L["ShamanElementalEarthShockElementalBlastAbbreviation"] = "ES/EB"
+L["ShamanElementalColorPickerEarthShock"] = "Maelstrom when you can cast Earth Shock/Elemental Blast"
+L["ShamanElementalColorPickerAscendance"] = "Maelstrom while in Ascendance"
+L["ShamanElementalColorPickerAscendanceEnd"] = "Maelstrom when Ascendance is ending (as configured)"
+L["ShamanElementalCheckboxAscendanceEnd"] = "Ascendance color change when ending enabled"
+L["ShamanElementalCheckboxAscendanceEndTooltip"] = "Changes the bar color when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+L["ShamanElementalColorPickerCasting"] = "Maelstrom from hardcasting spells"
+L["ShamanElementalColorPickerPassive"] = "Maelstrom from passive sources"
+L["ShamanElementalColorPickerPrimalFracture"] = "Border when you can have the Primal Fracture (T30 4P) buff"
+L["ShamanElementalCheckboxPrimalFracture"] = "Primal Fracture (T30 4P) buff"
+L["ShamanElementalCheckboxPrimalFractureTooltip"] = "This will change the bar border color when you have the Primal Fracture (T30 4P) buff."
+L["ShamanElementalThresholdColorPickerEchoesOfGreatSundering"] = "Echoes of Great Sundering proc is up"
+L["ShamanElementalThresholdEarthShock"] = "Earth Shock/Elemental Blast"
+L["ShamanElementalThresholdEarthShockTooltip"] = "This will show the vertical line on the bar denoting how much Maelstrom is required to cast Earth Shock/Elemental Blast."
+L["ShamanElementalThresholdEarthquake"] = "Earthquake"
+L["ShamanElementalThresholdEarthquakeTooltip"] = "This will show the vertical line on the bar denoting how much Maelstrom is required to cast Earthquake."
+L["ShamanElementalTextColorsHeader"] = "Maelstrom Text Colors"
+L["ShamanElementalColorPickerTextCurrent"] = "Current Maelstrom"
+L["ShamanElementalColorPickerTextCasting"] = "Maelstrom from hardcasting spells"
+L["ShamanElementalColorPickerTextPassive"] = "Passive Maelstrom"
+L["ShamanElementalColorPickerThresholdOver"] = "Have enough Maelstrom to cast Earth Shock or Earthquake"
+L["ShamanElementalColorPickerOvercap"] = "Cast will overcap Maelstrom"
+L["ShamanElementalCheckboxThresholdOverTooltip"] = "This will change the Maelstrom text color when you are able to cast Earth Shock or Earthquake"
+L["ShamanElementalCheckboxThresholdOvercapTooltip"] = "This will change the Maelstrom text color when your current hardcast spell will result in overcapping Maelstrom (as configured)."
+L["ShamanElementalAudioCheckboxEarthShock"] = "Play audio cue when Earth Shock is usable"
+L["ShamanElementalAudioCheckboxEarthShockTooltip"] = "Play an audio cue when Earth Shock can be cast."
+
+L["MaelstromWeaponColorsHeader"] = "Maelstrom Weapon Colors"
+L["MaelstromWeaponColorPickerBorder"] = "Maelstrom Weapon's border"
+L["MaelstromWeaponColorPickerPenultimate"] = "Penultimate Maelstrom Weapon"
+L["MaelstromWeaponColorPickerFinal"] = "Final Maelstrom Weapon"
+L["MaelstromWeaponCheckboxUseHighestForAll"] = "Use highest Maelstrom Weapon color for all?"
+L["MaelstromWeaponCheckboxUseHighestForAllTooltip"] = "When checked, the highest Maelstrom Weapon's color will be used for all Maelstrom Weapon. E.g., if you have maximum 10 Maelstrom Weapon and currently have 9, the Penultimate color will be used for all Maelstrom Weapon instead of just the second to last."
+L["MaelstromWeaponColorPickerBackground"] = "Unfilled Maelstrom Weapon background"
+L["MaelstromWeaponCheckboxAlwaysDefaultBackground"] = "Always use default unfilled background"
+
+-- WarriorOptions
+L["WarriorAudioSuddenDeathProc"] = "Sudden Death Proc"
+L["WarriorArmsColorPickerPassive"] = "Rage gain from Passive Sources"
+L["WarriorArmsThresholdCleave"] = "Cleave"
+L["WarriorArmsThresholdCleaveTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Cleave."
+
+L["WarriorArmsThresholdExecute"] = "Execute"
+L["WarriorArmsThresholdExecuteTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Execute. Only visible when the current target is in Execute health range or available from a Sudden Death proc. Will move along the bar between the current minimum and maximum Rage cost amounts."
+
+L["WarriorArmsThresholdExecuteMinimum"] = "Execute (minimum)"
+L["WarriorArmsThresholdExecuteMinimumTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Execute at its minimum Rage cost. Only visible when the current target is in Execute health range or available from a Sudden Death proc."
+
+L["WarriorArmsThresholdExecuteMaximum"] = "Execute (maximum)"
+L["WarriorArmsThresholdExecuteMaximumTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Execute at its maximum Rage cost. Only visible when the current target is in Execute health range or available from a Sudden Death proc."
+
+L["WarriorArmsThresholdHamstring"] = "Hamstring"
+L["WarriorArmsThresholdHamstringTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Hamstring."
+
+L["WarriorArmsThresholdIgnorePain"] = "Ignore Pain"
+L["WarriorArmsThresholdIgnorePainTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Ignore Pain."
+
+L["WarriorArmsThresholdImpendingVictory"] = "Impending Victory"
+L["WarriorArmsThresholdImpendingVictoryTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Impending Victory."
+
+L["WarriorArmsThresholdMortalStrike"] = "Mortal Strike"
+L["WarriorArmsThresholdMortalStrikeTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Mortal Strike."
+
+L["WarriorArmsThresholdRend"] = "Rend"
+L["WarriorArmsThresholdRendTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Rend."
+
+L["WarriorArmsThresholdShieldBlock"] = "Shield Block"
+L["WarriorArmsThresholdShieldBlockTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Shield Block. This does not check to see if you have a shield equipped!"
+
+L["WarriorArmsThresholdSlam"] = "Slam"
+L["WarriorArmsThresholdSlamTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Slam."
+
+L["WarriorArmsThresholdThunderClap"] = "Thunder Clap"
+L["WarriorArmsThresholdThunderClapTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Thunder Clap."
+
+L["WarriorArmsThresholdWhirlwind"] = "Whirlwind"
+L["WarriorArmsThresholdWhirlwindTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Whirlwind."
+

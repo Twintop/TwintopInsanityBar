@@ -28,7 +28,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				text = "{$pwRadianceTime&$hwSerenityCharges=0}[$pwRadianceTime]",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 14,
-				name = "HW Serenity 1",
+				name = "PW Radiance 1",
 				position = {
 					relativeToName = L["PositionCenter"],
 					relativeTo = "CENTER",
@@ -51,7 +51,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				text = "{$pwRadianceTime&$hwSerenityCharges=1}[$pwRadianceTime]",
 				fontFaceName = "Friz Quadrata TT",
 				fontSize = 14,
-				name = "HW Serenity 2",
+				name = "PW Radiance 2",
 				position = {
 					relativeToName = L["PositionCenter"],
 					relativeTo = "CENTER",
@@ -1520,7 +1520,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"], L["PriestDisciplinePowerWords"])
 
 		yCoord = yCoord - 60
-		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 1, yCoord, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 5, 1, yCoord, true)
 
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 5, 1, yCoord, L["ResourceMana"], "notFull", false)
@@ -4290,7 +4290,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapAudioCheckbox"], L["ResourceInsanity"]))
@@ -4305,7 +4305,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_overcapAudio", parent)
+		controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Shadow_overcapAudio", parent)
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
 		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.sliderWidth)
 		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)

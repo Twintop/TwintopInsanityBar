@@ -93,7 +93,7 @@ local unitDeathHealthPercentageList = {
     ["36597"] = 0.1, -- The Lich King
 
     ---- Cataclysm ----
-    --- Grim Batol ---
+    --- Grim Batol ---  
     ["40320"] = 0.2, -- Valiona
     --- Firelands ---
     ["52409"] = Firelands_Ragnaros,

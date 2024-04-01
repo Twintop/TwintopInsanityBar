@@ -285,7 +285,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			},
 			audio = {
 				esReady={
-					name = "Earth Shock Ready",
+					name = L["ShamanElementalAudioEarthShockReady"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName = L["LSMSoundBoxingArenaGong"]
@@ -1068,44 +1068,44 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 1, yCoord, false)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 1, yCoord, "Maelstrom", "notEmpty", true, "Earth Shock/Elemental Blast", "ES/EB")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], "notEmpty", true, L["ShamanElementalEarthShockElementalBlast"], L["ShamanElementalEarthShockElementalBlastAbbreviation"])
 
 		yCoord = yCoord - 70
-		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 1, yCoord, "Maelstrom")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"])
 
 		yCoord = yCoord - 30
-		controls.colors.earthShock = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maelstrom when you can cast Earth Shock/Elemental Blast", spec.colors.bar.earthShock, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.earthShock = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerEarthShock"], spec.colors.bar.earthShock, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.earthShock
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "earthShock")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maelstrom while in Ascendance", spec.colors.bar.inAscendance, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerAscendance"], spec.colors.bar.inAscendance, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inAscendance		
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance")
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.endOfAscendance = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_1_Checkbox_EOA", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.endOfAscendance = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Checkbox_EOA", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfAscendance
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Ascendance")
-		f.tooltip = "Changes the bar color when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalCheckboxAscendanceEnd"])
+		f.tooltip = L["ShamanElementalCheckboxAscendanceEndTooltip"]
 		f:SetChecked(spec.endOfAscendance.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.endOfAscendance.enabled = self:GetChecked()
 		end)
 
-		controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maestrom while you have less than 1 GCD left in Ascendance (if enabled)", spec.colors.bar.inAscendance1GCD, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inAscendance1GCD
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_1_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
@@ -1115,14 +1115,14 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.bar.showCasting = self:GetChecked()
 		end)
 
-		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maelstrom from hardcasting spells", spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerCasting"], spec.colors.bar.casting, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.casting
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "casting", "bar", castingFrame, 1)
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_1_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
@@ -1132,7 +1132,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.bar.showPassive = self:GetChecked()
 		end)
 
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maelstrom from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
@@ -1146,20 +1146,20 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 1, yCoord, "Maelstrom", true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], true, false)
 		
 		yCoord = yCoord - 30
-		controls.checkBoxes.primalFractureBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_1_Border_Option_primalFractureBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.primalFractureBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Border_Option_primalFractureBorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.primalFractureBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Primal Fracture (T30 4P) buff")
-		f.tooltip = "This will change the bar border color when you have the Primal Fracture (T30 4P) buff."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalCheckboxPrimalFracture"])
+		f.tooltip = L["ShamanElementalCheckboxPrimalFractureTooltip"]
 		f:SetChecked(spec.colors.bar.primalFracture.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.primalFracture.enabled = self:GetChecked()
 		end)
 
-		controls.colors.primalFracture = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you can have the Primal Fracture (T30 4P) buff", spec.colors.bar.primalFracture.color, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.primalFracture = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerPrimalFracture"], spec.colors.bar.primalFracture.color, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.primalFracture
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "primalFracture")
@@ -1183,7 +1183,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
 		end)
 
-		controls.colors.threshold.echoesOfGreatSundering = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Echoes of Great Sundering proc is up", spec.colors.threshold.echoesOfGreatSundering, 300, 25, oUi.xCoord2, yCoord-60)
+		controls.colors.threshold.echoesOfGreatSundering = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalThresholdColorPickerEchoesOfGreatSundering"], spec.colors.threshold.echoesOfGreatSundering, 300, 25, oUi.xCoord2, yCoord-60)
 		f = controls.colors.threshold.echoesOfGreatSundering
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "echoesOfGreatSundering")
@@ -1219,8 +1219,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.earthShockThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Threshold_Option_earthShock", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.earthShockThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Earth Shock/Elemental Blast")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Maelstrom is required to cast Earth Shock/Elemental Blast."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalThresholdEarthShock"])
+		f.tooltip = L["ShamanElementalThresholdEarthShockTooltip"]
 		f:SetChecked(spec.thresholds.earthShock.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.earthShock.enabled = self:GetChecked()
@@ -1231,8 +1231,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.earthquakeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_Threshold_Option_earthquake", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.earthquakeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Earthquake")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Maelstrom is required to cast Earthquake."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalThresholdEarthquake"])
+		f.tooltip = L["ShamanElementalThresholdEarthquakeTooltip"]
 		f:SetChecked(spec.thresholds.earthquake.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.earthquake.enabled = self:GetChecked()
@@ -1247,15 +1247,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 7, 1, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Ascendance Configuration", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanHeaderEndOfAscendanceConfiguration"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
-		controls.checkBoxes.endOfAscendanceModeGCDs = CreateFrame("CheckButton", "TRB_EOFA_M_GCD", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.endOfAscendanceModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_EOFA_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfAscendanceModeGCDs
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Ascendance ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many GCDs remain until Ascendance ends."
+		
 		if spec.endOfAscendance.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -1265,7 +1265,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.endOfAscendance.mode = "gcd"
 		end)
 
-		title = "Ascendance GCDs - 0.75sec Floor"
+		title = L["ShamanAscendanceGcds"]
 		controls.endOfAscendanceGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfAscendance.gcdsMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfAscendanceGCDs:SetScript("OnValueChanged", function(self, value)
@@ -1275,12 +1275,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.endOfAscendanceModeTime = CreateFrame("CheckButton", "TRB_EOFA_M_TIME", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.endOfAscendanceModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_EOFA_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfAscendanceModeTime
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time until Ascendance ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many seconds remain until Ascendance will end."
+		
 		if spec.endOfAscendance.mode == "time" then
 			f:SetChecked(true)
 		end
@@ -1290,7 +1290,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.endOfAscendance.mode = "time"
 		end)
 
-		title = "Ascendance Time Remaining"
+		title = L["ShamanAscendanceTime"]
 		controls.endOfAscendanceTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfAscendance.timeMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfAscendanceTime:SetScript("OnValueChanged", function(self, value)
@@ -1301,7 +1301,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 7, 1, yCoord, "Maelstrom", 150)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 7, 1, yCoord, L["ResourceMaelstrom"], 150)
 
 		TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
 		TRB.Frames.interfaceSettingsFrameContainer.controls.elemental = controls
@@ -1319,8 +1319,6 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local yCoord = 5
 		local f = nil
 
-		local title = ""
-
 		controls.buttons.exportButton_Shaman_Elemental_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Shaman_Elemental_FontAndText:SetScript("OnClick", function(self, ...)
 			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanElementalFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 7, 1, false, true, false, false, false)
@@ -1329,36 +1327,36 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 7, 1, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Maelstrom Text Colors", oUi.xCoord, yCoord)
+		controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanElementalTextColorsHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
-		controls.colors.text.currentMaelstrom = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Current Maelstrom", spec.colors.text.currentMaelstrom, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.currentMaelstrom = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerTextCurrent"], spec.colors.text.currentMaelstrom, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.currentMaelstrom
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "currentMaelstrom")
 		end)
 
-		controls.colors.text.castingMaelstrom = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maelstrom from hardcasting spells", spec.colors.text.castingMaelstrom, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.castingMaelstrom = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerTextCasting"], spec.colors.text.castingMaelstrom, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.castingMaelstrom
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "castingMaelstrom")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.passiveMaelstrom = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Passive Maelstrom", spec.colors.text.passiveMaelstrom, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.passiveMaelstrom = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerTextPassive"], spec.colors.text.passiveMaelstrom, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.passiveMaelstrom
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passiveMaelstrom")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Have enough Maelstrom to cast Earth Shock or Earthquake", spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.text.overThreshold = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerThresholdOver"], spec.colors.text.overThreshold, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.text.overThreshold
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overThreshold")
 		end)
 
-		controls.colors.text.overcapMaelstrom = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Cast will overcap Maelstrom", spec.colors.text.overcapMaelstrom, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.text.overcapMaelstrom = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanElementalColorPickerOvercap"], spec.colors.text.overcapMaelstrom, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.text.overcapMaelstrom
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "overcapMaelstrom")
@@ -1366,21 +1364,21 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		yCoord = yCoord - 30
 
-		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TRB_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.overThresholdEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_OverThresholdTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overThresholdEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-		f.tooltip = "This will change the Maelstrom text color when you are able to cast Earth Shock or Earthquake."
+		f.tooltip = L["ShamanElementalCheckboxThresholdOverTooltip"]
 		f:SetChecked(spec.colors.text.overThresholdEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overThresholdEnabled = self:GetChecked()
 		end)
 
-		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TRB_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.overcapTextEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_OvercapTextEnable", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapTextEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-		f.tooltip = "This will change the Maelstrom text color when your current hardcast spell will result in overcapping maximum Maelstrom."
+		f.tooltip = L["ShamanElementalCheckboxThresholdOvercapTooltip"]
 		f:SetChecked(spec.colors.text.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.overcapEnabled = self:GetChecked()
@@ -1447,18 +1445,18 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.esReady = CreateFrame("CheckButton", "TwintopResourceBar_CB3_3", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.esReady = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_CB3_3", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.esReady
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when Earth Shock is usable")
-		f.tooltip = "Play an audio cue when Earth Shock can be cast."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShamanElementalAudioCheckboxEarthShock"])
+		f.tooltip = L["ShamanElementalAudioCheckboxEarthShockTooltip"]
 		f:SetChecked(spec.audio.esReady.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.esReady.enabled = self:GetChecked()
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.esReadyAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_esReadyAudio", parent)
+		controls.dropDown.esReadyAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Shaman_Elemental_esReadyAudio", parent)
 		controls.dropDown.esReadyAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
 		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.esReadyAudio, oUi.dropdownWidth)
 		LibDD:UIDropDownMenu_SetText(controls.dropDown.esReadyAudio, spec.audio.esReady.soundName)
@@ -1509,7 +1507,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapAudioCheckbox"], L["ResourceMaelstrom"]))
@@ -1524,7 +1522,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		-- Create the dropdown, and configure its appearance
-		controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_overcapAudio", parent)
+		controls.dropDown.overcapAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Shaman_Elemental_overcapAudio", parent)
 		controls.dropDown.overcapAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
 		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.overcapAudio, oUi.dropdownWidth)
 		LibDD:UIDropDownMenu_SetText(controls.dropDown.overcapAudio, spec.audio.overcap.soundName)
@@ -1618,7 +1616,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local yCoord = 0
 		local f = nil
 		interfaceSettingsFrame.elementalDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Elemental", UIParent)
-		interfaceSettingsFrame.elementalDisplayPanel.name = "Elemental Shaman"
+		interfaceSettingsFrame.elementalDisplayPanel.name = L["ShamanElementalFull"]
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.elementalDisplayPanel.parent = parent.name
 		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.elementalDisplayPanel, "ElementalL["Shaman"])
@@ -1628,7 +1626,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		controls.buttons = controls.buttons or {}
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Elemental Shaman", oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanElementalFull"], oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.elementalShamanEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Elemental_elementalShamanEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.elementalShamanEnabled
@@ -1802,10 +1800,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 7, 2, yCoord)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], "Maelstrom Weapon")
+		yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], L["ResourceMaelstromWeapon"])
 
 		yCoord = yCoord - 60
-		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 2, yCoord, true, "Maelstrom Weapon")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 7, 2, yCoord, true, L["ResourceMaelstromWeapon"])
 
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"], "notFull", false)
@@ -1814,24 +1812,24 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 2, yCoord, L["ResourceMana"])
 
 		yCoord = yCoord - 30
-		controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana while in Ascendance", spec.colors.bar.inAscendance, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendance"], spec.colors.bar.inAscendance, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inAscendance
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance")
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.endOfAscendance = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_2_Checkbox_EOA", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.endOfAscendance = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_Checkbox_EOA", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfAscendance
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Ascendance")
-		f.tooltip = "Changes the bar color when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShamanManaCheckboxAscendanceEnd"])
+		f.tooltip = L["ShamanManaCheckboxAscendanceEndTooltip"]
 		f:SetChecked(spec.endOfAscendance.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.endOfAscendance.enabled = self:GetChecked()
 		end)
 
-		controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana while you have less than 1 GCD left in Ascendance (if enabled)", spec.colors.bar.inAscendance1GCD, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inAscendance1GCD
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
@@ -1848,37 +1846,37 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 40
-		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Maelstrom Weapon Colors", oUi.xCoord, yCoord)
+		controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanEnhancementMaelstromWeaponColorsHeader"], oUi.xCoord, yCoord)
 		controls.colors.comboPoints = {}
 
 		yCoord = yCoord - 30
-		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maelstrom Weapon", spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceMaelstromWeapon"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPoints.base
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 		end)
 
-		controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Maelstrom Weapon's border", spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerBorder"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.border
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 		end)
 
 		yCoord = yCoord - 30		
-		controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Penultimate Maelstrom Weapon", spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.comboPoints.penultimate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerPenultimate"], spec.colors.comboPoints.penultimate, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPoints.penultimate
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 		end)
 
-		controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Unfilled Maelstrom Weapon background", spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.background
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
 		end)
 
 		yCoord = yCoord - 30		
-		controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Final Maelstrom Weapon", spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
+		controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["MaelstromWeaponColorPickerFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
 		f = controls.colors.comboPoints.final
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
@@ -1888,22 +1886,22 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sameColorComboPoint
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Use highest Maelstrom Weapon color for all?")
-		f.tooltip = "When checked, the highest Maelstrom Weapon's color will be used for all Maelstrom Weapon. E.g., if you have maximum 10 Maelstrom Weapon stacks and currently have 9, the Penultimate color will be used for all Maelstrom Weapon instead of just the second to last."
+		getglobal(f:GetName() .. 'Text'):SetText(L["MaelstromWeaponCheckboxUseHighestForAll"])
+		f.tooltip = L["MaelstromWeaponCheckboxUseHighestForAllTooltip"]
 		f:SetChecked(spec.comboPoints.sameColor)
 		f:SetScript("OnClick", function(self, ...)
 			spec.comboPoints.sameColor = self:GetChecked()
 		end)
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Ascendance Configuration", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanHeaderEndOfAscendanceConfiguration"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
-		controls.checkBoxes.endOfAscendanceModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_2EOFA_M_GCD", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.endOfAscendanceModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_EOFA_M_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfAscendanceModeGCDs
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Ascendance ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many GCDs remain until Ascendance ends."
+		
 		if spec.endOfAscendance.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -1913,7 +1911,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.endOfAscendance.mode = "gcd"
 		end)
 
-		title = "Ascendance GCDs - 0.75sec Floor"
+		title = L["ShamanAscendanceGcds"]
 		controls.endOfAscendanceGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfAscendance.gcdsMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfAscendanceGCDs:SetScript("OnValueChanged", function(self, value)
@@ -1922,12 +1920,12 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 60
-		controls.checkBoxes.endOfAscendanceModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_2_EOFA_M_TIME", parent, "UIRadioButtonTemplate")
+		controls.checkBoxes.endOfAscendanceModeTime = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_EOFA_M_TIME", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfAscendanceModeTime
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time until Ascendance ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many seconds remain until Ascendance will end."
+		
 		if spec.endOfAscendance.mode == "time" then
 			f:SetChecked(true)
 		end
@@ -1937,7 +1935,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.endOfAscendance.mode = "time"
 		end)
 
-		title = "Ascendance Time Remaining"
+		title = L["ShamanAscendanceTime"]
 		controls.endOfAscendanceTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfAscendance.timeMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfAscendanceTime:SetScript("OnValueChanged", function(self, value)
@@ -2092,7 +2090,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.enhancementDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Enhancement", UIParent)
-		interfaceSettingsFrame.enhancementDisplayPanel.name = "Enhancement Shaman"
+		interfaceSettingsFrame.enhancementDisplayPanel.name = L["ShamanEnhancementFull"]
 	---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.enhancementDisplayPanel.parent = parent.name
 		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.enhancementDisplayPanel, "EnhancementL["Shaman"])
@@ -2100,7 +2098,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		parent = interfaceSettingsFrame.enhancementDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Enhancement Shaman", oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanEnhancementFull"], oUi.xCoord, yCoord-5)
 
 		controls.checkBoxes.enhancementShamanEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Enhancement_enhancementShamanEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.enhancementShamanEnabled
@@ -2299,7 +2297,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 7, 3, yCoord, L["ResourceMana"])
 
 		yCoord = yCoord - 30
-		controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana while in Ascendance", spec.colors.bar.inAscendance, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.inAscendance = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendance"], spec.colors.bar.inAscendance, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inAscendance		
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance")
@@ -2309,21 +2307,21 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.endOfAscendance = CreateFrame("CheckButton", "TwintopsResourceBar_Shaman_Restoration_EndOfAscendance_Enabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.endOfAscendance
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change bar color at the end of Ascendance")
-		f.tooltip = "Changes the bar color when Ascendance is ending in the next X GCDs or fixed length of time. Select which to use from the options below."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShamanManaCheckboxAscendanceEnd"])
+		f.tooltip = L["ShamanManaCheckboxAscendanceEndTooltip"]
 		f:SetChecked(spec.endOfAscendance.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.endOfAscendance.enabled = self:GetChecked()
 		end)
 		
-		controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana while you have less than 1 GCD left in Ascendance (if enabled)", spec.colors.bar.inAscendance1GCD, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.inAscendance1GCD = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ShamanManaColorPickerAscendanceEnd"], spec.colors.bar.inAscendance1GCD, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.inAscendance1GCD
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "inAscendance1GCD")
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_3_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showCastingBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
@@ -2340,7 +2338,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_3_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
@@ -2375,15 +2373,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 7, 3, yCoord)
 
 		yCoord = yCoord - 40
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "End of Ascendance Configuration", oUi.xCoord, yCoord)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanHeaderEndOfAscendanceConfiguration"], oUi.xCoord, yCoord)
 
 		yCoord = yCoord - 40
 		controls.checkBoxes.endOfAscendanceModeGCDs = CreateFrame("CheckButton", "TwintopsResourceBar_Shaman_Restoration_EndOfAscendance_Mode_GCD", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfAscendanceModeGCDs
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("GCDs until Ascendance ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many GCDs remain until Ascendance ends."
+		
 		if spec.endOfAscendance.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -2393,7 +2391,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.endOfAscendance.mode = "gcd"
 		end)
 
-		title = "Ascendance GCDs - 0.75sec Floor"
+		title = L["ShamanAscendanceGcds"]
 		controls.endOfAscendanceGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0.5, 10, spec.endOfAscendance.gcdsMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfAscendanceGCDs:SetScript("OnValueChanged", function(self, value)
@@ -2406,9 +2404,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.checkBoxes.endOfAscendanceModeTime = CreateFrame("CheckButton", "TwintopsResourceBar_Shaman_Restoration_EndOfAscendance_Mode_Time", parent, "UIRadioButtonTemplate")
 		f = controls.checkBoxes.endOfAscendanceModeTime
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Time until Ascendance ends")
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShamanCheckboxAscendanceTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Change the bar color based on how many seconds remain until Ascendance will end."
+		
 		if spec.endOfAscendance.mode == "time" then
 			f:SetChecked(true)
 		end
@@ -2418,7 +2416,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			spec.endOfAscendance.mode = "time"
 		end)
 
-		title = "Ascendance Time Remaining"
+		title = L["ShamanAscendanceTime"]
 		controls.endOfAscendanceTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 15, spec.endOfAscendance.timeMax, 0.25, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.endOfAscendanceTime:SetScript("OnValueChanged", function(self, value)
@@ -2689,15 +2687,15 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.restorationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Shaman_Restoration", UIParent)
-		interfaceSettingsFrame.restorationDisplayPanel.name = "Restoration Shaman"
+		interfaceSettingsFrame.restorationDisplayPanel.name = L["ShamanRestorationFull"]
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.restorationDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.restorationDisplayPanel, "RestorationL["Shaman"])
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.restorationDisplayPanel, L["ShamanRestorationFull"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.restorationDisplayPanel)
 
 		parent = interfaceSettingsFrame.restorationDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Restoration Shaman", oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanRestorationFull"], oUi.xCoord, yCoord-5)
 		
 		controls.checkBoxes.restorationShamanEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_restorationShamanEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.restorationShamanEnabled

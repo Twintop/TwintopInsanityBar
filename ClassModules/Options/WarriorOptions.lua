@@ -309,7 +309,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					soundName = L["LSMSoundAirHorn"]
 				},
 				suddenDeath={
-					name = "Sudden Death Proc",
+					name = L["WarriorAudioSuddenDeathProc"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
@@ -620,7 +620,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					soundName = L["LSMSoundAirHorn"]
 				},
 				suddenDeath={
-					name = "Sudden Death Proc",
+					name = L["WarriorAudioSuddenDeathProc"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
@@ -785,10 +785,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 1, yCoord, false)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 1, yCoord, "Rage", "notEmpty", false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], "notEmpty", false)
 
 		yCoord = yCoord - 70
-		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 1, yCoord, "Rage")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"])
 
 		yCoord = yCoord - 30
 		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_1_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
@@ -801,7 +801,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			spec.bar.showPassive = self:GetChecked()
 		end)
 
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Rage gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarriorArmsColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
@@ -815,7 +815,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 1, yCoord, "Rage", true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], true, false)
 
 
 		yCoord = yCoord - 40
@@ -872,8 +872,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.cleaveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_cleave", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.cleaveThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Cleave")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Cleave."
+		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdCleave"])
+		f.tooltip = L["WarriorArmsThresholdCleaveTooltip"]
 		f:SetChecked(spec.thresholds.cleave.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.cleave.enabled = self:GetChecked()
@@ -883,8 +883,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.executeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_execute", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.executeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Execute")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute. Only visible when the current target is in Execute health range or available from a Sudden Death proc. Will move along the bar between the current minimum and maximum Rage cost amounts."
+		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdExecuteTooltip"])
+		f.tooltip = L["WarriorArmsThresholdExecuteTooltip"]
 		f:SetChecked(spec.thresholds.execute.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.execute.enabled = self:GetChecked()
@@ -894,8 +894,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.executeMinimumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_executeMinimum", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.executeMinimumThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Execute (minimum)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute at its minimum Rage cost. Only visible when the current target is in Execute health range or available from a Sudden Death proc."
+		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdExecuteMinimum"])
+		f.tooltip = L["WarriorArmsThresholdExecuteMinimumTooltip"]
 		f:SetChecked(spec.thresholds.executeMinimum.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.executeMinimum.enabled = self:GetChecked()
@@ -905,8 +905,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.executeMaximumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_executeMaximum", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.executeMaximumThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Execute (maximum)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Execute at its maximum Rage cost. Only visible when the current target is in Execute health range or available from a Sudden Death proc."
+		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdExecuteMaximum"])
+		f.tooltip = L["WarriorArmsThresholdExecuteMaximumTooltip"]
 		f:SetChecked(spec.thresholds.executeMaximum.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.executeMaximum.enabled = self:GetChecked()
@@ -916,8 +916,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.hamstringThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_hamstring", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.hamstringThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Hamstring")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Hamstring."
+		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdHamstring"])
+		f.tooltip = L["WarriorArmsThresholdHamstringTooltip"]
 		f:SetChecked(spec.thresholds.hamstring.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.hamstring.enabled = self:GetChecked()
@@ -927,8 +927,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.ignorePainThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_ignorePain", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ignorePainThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Ignore Pain")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Ignore Pain."
+		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdIgnorePain"])
+		f.tooltip = L["WarriorArmsThresholdIgnorePainTooltip"]
 		f:SetChecked(spec.thresholds.ignorePain.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.ignorePain.enabled = self:GetChecked()
@@ -938,8 +938,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.impendingVictoryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_impendingVictory", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.impendingVictoryThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Impending Victory")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Impending Victory."
+		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdImpendingVictory"])
+		f.tooltip = L["WarriorArmsThresholdImpendingVictoryTooltip"]
 		f:SetChecked(spec.thresholds.impendingVictory.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.impendingVictory.enabled = self:GetChecked()
@@ -949,8 +949,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.mortalStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_mortalStrike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mortalStrikeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mortal Strike")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Mortal Strike."
+		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdMortalStrike"])
+		f.tooltip = L["WarriorArmsThresholdMortalStrikeTooltip"]
 		f:SetChecked(spec.thresholds.mortalStrike.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.mortalStrike.enabled = self:GetChecked()
@@ -960,8 +960,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.rendThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_rend", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.rendThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Rend")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Rend."
+		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdRendTooltip"])
+		f.tooltip = L["WarriorArmsThresholdRendTooltip"]
 		f:SetChecked(spec.thresholds.rend.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.rend.enabled = self:GetChecked()
@@ -971,8 +971,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.shieldBlockThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_shieldBlock", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.shieldBlockThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Shield Block")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Shield Block. This does not check to see if you have a shield equipped!"
+		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdShieldBlock"])
+		f.tooltip = L["WarriorArmsThresholdShieldBlockTooltip"]
 		f:SetChecked(spec.thresholds.shieldBlock.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shieldBlock.enabled = self:GetChecked()
@@ -982,8 +982,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.slamThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_slam", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.slamThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Slam")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Slam."
+		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdSlam"])
+		f.tooltip = L["WarriorArmsThresholdSlamTooltip"]
 		f:SetChecked(spec.thresholds.slam.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.slam.enabled = self:GetChecked()
@@ -993,8 +993,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.thunderClapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_thunderClap", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.thunderClapThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Thunder Clap")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Thunder Clap."
+		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdThunderClap"])
+		f.tooltip = L["WarriorArmsThresholdThunderClapTooltip"]
 		f:SetChecked(spec.thresholds.thunderClap.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.thunderClap.enabled = self:GetChecked()
@@ -1004,8 +1004,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.whirlwindThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_whirlwind", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.whirlwindThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Whirlwind")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Rage is required to use Whirlwind."
+		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdWhirlwind"])
+		f.tooltip = L["WarriorArmsThresholdWhirlwindTooltip"]
 		f:SetChecked(spec.thresholds.whirlwind.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.whirlwind.enabled = self:GetChecked()
@@ -1015,7 +1015,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 1, 1, yCoord)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 1, yCoord, "Rage", 130)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], 130)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.arms = controls
 	end
@@ -1547,10 +1547,10 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 1, 2, yCoord, false)
 
 		yCoord = yCoord - 30
-		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 2, yCoord, "Rage", "notEmpty", false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], "notEmpty", false)
 
 		yCoord = yCoord - 70
-		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 2, yCoord, "Rage")
+		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"])
 
 		yCoord = yCoord - 30
 		controls.colors.enrage = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Fury while Enrage is active", spec.colors.bar.enrage, 250, 25, oUi.xCoord2, yCoord)
@@ -1584,7 +1584,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		end)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 2, yCoord, "Rage", true, false)
+		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], true, false)
 
 		yCoord = yCoord - 40
 		controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
@@ -1740,7 +1740,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 1, 2, yCoord)
 
 		yCoord = yCoord - 40
-		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 2, yCoord, "Rage", 130)
+		yCoord = TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], 130)
 
 		TRB.Frames.interfaceSettingsFrameContainer.controls.fury = controls
 	end
