@@ -1901,7 +1901,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
-					info.text = string.format(L["DrowndownLabelSoundsX"], i+1)
+					info.text = string.format(L["DropdownLabelSoundsX"], i+1)
 					info.menuList = i
 					LibDD:UIDropDownMenu_AddButton(info)
 				end
@@ -1966,7 +1966,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
-					info.text = string.format(L["DrowndownLabelSoundsX"], i+1)
+					info.text = string.format(L["DropdownLabelSoundsX"], i+1)
 					info.menuList = i
 					LibDD:UIDropDownMenu_AddButton(info)
 				end
@@ -2031,7 +2031,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
-					info.text = string.format(L["DrowndownLabelSoundsX"], i+1)
+					info.text = string.format(L["DropdownLabelSoundsX"], i+1)
 					info.menuList = i
 					LibDD:UIDropDownMenu_AddButton(info)
 				end
@@ -2929,7 +2929,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
-					info.text = string.format(L["DrowndownLabelSoundsX"], i+1)
+					info.text = string.format(L["DropdownLabelSoundsX"], i+1)
 					info.menuList = i
 					LibDD:UIDropDownMenu_AddButton(info)
 				end
@@ -2994,7 +2994,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
-					info.text = string.format(L["DrowndownLabelSoundsX"], i+1)
+					info.text = string.format(L["DropdownLabelSoundsX"], i+1)
 					info.menuList = i
 					LibDD:UIDropDownMenu_AddButton(info)
 				end
@@ -3059,7 +3059,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
-					info.text = string.format(L["DrowndownLabelSoundsX"], i+1)
+					info.text = string.format(L["DropdownLabelSoundsX"], i+1)
 					info.menuList = i
 					LibDD:UIDropDownMenu_AddButton(info)
 				end
@@ -3123,7 +3123,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
-					info.text = string.format(L["DrowndownLabelSoundsX"], i+1)
+					info.text = string.format(L["DropdownLabelSoundsX"], i+1)
 					info.menuList = i
 					LibDD:UIDropDownMenu_AddButton(info)
 				end
@@ -3187,7 +3187,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
-					info.text = string.format(L["DrowndownLabelSoundsX"], i+1)
+					info.text = string.format(L["DropdownLabelSoundsX"], i+1)
 					info.menuList = i
 					LibDD:UIDropDownMenu_AddButton(info)
 				end
@@ -4192,7 +4192,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
-					info.text = string.format(L["DrowndownLabelSoundsX"], i+1)
+					info.text = string.format(L["DropdownLabelSoundsX"], i+1)
 					info.menuList = i
 					LibDD:UIDropDownMenu_AddButton(info)
 				end
@@ -4257,7 +4257,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
-					info.text = string.format(L["DrowndownLabelSoundsX"], i+1)
+					info.text = string.format(L["DropdownLabelSoundsX"], i+1)
 					info.menuList = i
 					LibDD:UIDropDownMenu_AddButton(info)
 				end
@@ -4322,7 +4322,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
-					info.text = string.format(L["DrowndownLabelSoundsX"], i+1)
+					info.text = string.format(L["DropdownLabelSoundsX"], i+1)
 					info.menuList = i
 					LibDD:UIDropDownMenu_AddButton(info)
 				end
@@ -4388,7 +4388,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
-					info.text = string.format(L["DrowndownLabelSoundsX"], i+1)
+					info.text = string.format(L["DropdownLabelSoundsX"], i+1)
 					info.menuList = i
 					LibDD:UIDropDownMenu_AddButton(info)
 				end
@@ -4454,7 +4454,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
-					info.text = string.format(L["DrowndownLabelSoundsX"], i+1)
+					info.text = string.format(L["DropdownLabelSoundsX"], i+1)
 					info.menuList = i
 					LibDD:UIDropDownMenu_AddButton(info)
 				end
@@ -4520,7 +4520,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				for i=0, menus-1 do
 					info.hasArrow = true
 					info.notCheckable = true
-					info.text = string.format(L["DrowndownLabelSoundsX"], i+1)
+					info.text = string.format(L["DropdownLabelSoundsX"], i+1)
 					info.menuList = i
 					LibDD:UIDropDownMenu_AddButton(info)
 				end
