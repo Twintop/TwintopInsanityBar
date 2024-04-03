@@ -374,13 +374,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					soundName = L["LSMSoundAirHorn"]
 				},
 				blindside={
-					name = "Blindside Proc",
+					name = L["RogueAssassinationAudioBlindsideProc"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
 				},
 				sepsis={
-					name = "Sepsis Proc",
+					name = L["RogueAudioSepsisProc"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
@@ -770,13 +770,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					soundName = L["LSMSoundAirHorn"]
 				},
 				opportunity={
-					name = "Opportunity Proc",
+					name = L["RogueOutlawAudioBlindsideProc"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
 				},
 				sepsis={
-					name = "Sepsis Proc",
+					name = L["RogueAudioSepsisProc"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
@@ -1173,14 +1173,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
 				},
-				opportunity={
-					name = "Opportunity Proc",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName = L["LSMSoundAirHorn"]
-				},
 				sepsis={
-					name = "Sepsis Proc",
+					name = L["RogueAudioSepsisProc"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]
@@ -1340,21 +1334,21 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 1, yCoord, L["ResourceEnergy"])
 
 		yCoord = yCoord - 30
-		controls.colors.sliceAndDicePandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy when Slice and Dice is within Pandemic refresh range (current CPs)", spec.colors.bar.sliceAndDicePandemic, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.sliceAndDicePandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerSliceAndDicePandemic"], spec.colors.bar.sliceAndDicePandemic, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.sliceAndDicePandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "sliceAndDicePandemic")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.noSliceAndDice = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy when Slice and Dice is not up", spec.colors.bar.noSliceAndDice, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.noSliceAndDice = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerSliceAndDiceDown"], spec.colors.bar.noSliceAndDice, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.noSliceAndDice
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "noSliceAndDice")
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_1_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
@@ -1364,7 +1358,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.bar.showPassive = self:GetChecked()
 		end)
 
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
@@ -1412,7 +1406,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 		end)
 
-		controls.colors.comboPoints.echoingReprimand = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Combo Point when Echoing Reprimand buff is up", spec.colors.comboPoints.echoingReprimand, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.echoingReprimand = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerEchoingReprimand"], spec.colors.comboPoints.echoingReprimand, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.echoingReprimand
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "echoingReprimand")
@@ -1425,7 +1419,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 		end)
 
-		controls.colors.comboPoints.serratedBoneSpike = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Combo Point that will generate on next Serrated Bone Spike use", spec.colors.comboPoints.serratedBoneSpike, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.serratedBoneSpike = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueAssassinationColorPickerSerratedBoneSpike"], spec.colors.comboPoints.serratedBoneSpike, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.serratedBoneSpike
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "serratedBoneSpike")
@@ -1453,7 +1447,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.consistentUnfilledColorComboPoint
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ComboPointsCheckboxAlwaysDefaultBackground"])
-		f.tooltip = "When checked, unfilled combo points will always use the 'Unfilled Combo Point background' color above for their background. Borders will still change color depending on Echoing Reprimand and Serrated Bone Spike settings."
+		f.tooltip = L["RogueCheckboxAlwaysDefaultBackground"]
 		f:SetChecked(spec.comboPoints.consistentUnfilledColor)
 		f:SetScript("OnClick", function(self, ...)
 			spec.comboPoints.consistentUnfilledColor = self:GetChecked()
@@ -1463,8 +1457,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.serratedBoneSpikeComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_comboPointsSerratedBoneSpikeColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.serratedBoneSpikeComboPoint
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change color for Serrated Bone Spike generation?")
-		f.tooltip = "When checked, any unfilled combo points that will generate on your next use of Serrated Bone Spike will be a different background and border color (as specified above)."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueColorPickerSeratedBoneSpike"])
+		f.tooltip = L["RogueColorPickerSeratedBoneSpikeTooltip"]
 		f:SetChecked(spec.comboPoints.spec.serratedBoneSpikeColor)
 		f:SetScript("OnClick", function(self, ...)
 			spec.comboPoints.spec.serratedBoneSpikeColor = self:GetChecked()
@@ -1495,7 +1489,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
-		controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Improved Garrote effect up", spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-90)
+		controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueAssassinationColorPickerThresholdSpecial"], spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.threshold.special
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "special")
@@ -1534,8 +1528,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.ambushThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_ambush", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ambushThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Ambush (stealth)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ambush. Only visible when in Stealth or usable via Blindside, Sepsis, or Subterfuge."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdAmbush"])
+		f.tooltip = L["RogueAssassinationThresholdAmbushTooltip"]
 		f:SetChecked(spec.thresholds.ambush.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.ambush.enabled = self:GetChecked()
@@ -1545,8 +1539,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.cheapShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_cheapShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.cheapShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Cheap Shot (stealth)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Cheap Shot. Only visible when in Stealth or usable via Sepsis or Subterfuge."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdCheapShot"])
+		f.tooltip = L["RogueAssassinationThresholdCheapShotTooltip"]
 		f:SetChecked(spec.thresholds.cheapShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.cheapShot.enabled = self:GetChecked()
@@ -1556,8 +1550,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.echoingReprimandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_echoingReprimand", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.echoingReprimandThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Echoing Reprimand")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdEchoingReprimand"])
+		f.tooltip = L["RogueAssassinationThresholdEchoingReprimandTooltip"]
 		f:SetChecked(spec.thresholds.echoingReprimand.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.echoingReprimand.enabled = self:GetChecked()
@@ -1567,8 +1561,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.fanOfKnivesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_fanOfKnives", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.fanOfKnivesThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Fan of Knives")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Fan of Knives."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdFanOfKnives"])
+		f.tooltip = L["RogueAssassinationThresholdFanOfKnivesTooltip"]
 		f:SetChecked(spec.thresholds.fanOfKnives.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.fanOfKnives.enabled = self:GetChecked()
@@ -1578,8 +1572,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.garroteThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_garrote", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.garroteThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Garrote")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Garrote."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdGarrote"])
+		f.tooltip = L["RogueAssassinationThresholdGarroteTooltip"]
 		f:SetChecked(spec.thresholds.garrote.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.garrote.enabled = self:GetChecked()
@@ -1589,8 +1583,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.gougeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_gouge", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.gougeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Gouge")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Gouge."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdGouge"])
+		f.tooltip = L["RogueAssassinationThresholdGougeTooltip"]
 		f:SetChecked(spec.thresholds.gouge.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.gouge.enabled = self:GetChecked()
@@ -1600,8 +1594,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.kingsbaneThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_kingsbane", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.kingsbaneThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Kingsbane")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Kingsbane."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdKingsbane"])
+		f.tooltip = L["RogueAssassinationThresholdKingsbaneTooltip"]
 		f:SetChecked(spec.thresholds.kingsbane.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.kingsbane.enabled = self:GetChecked()
@@ -1611,8 +1605,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.mutilateThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_mutilate", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.mutilateThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Mutilate")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Mutilate."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdMutilate"])
+		f.tooltip = L["RogueAssassinationThresholdMutilateTooltip"]
 		f:SetChecked(spec.thresholds.mutilate.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.mutilate.enabled = self:GetChecked()
@@ -1622,8 +1616,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.poisonedKnifeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_poisonedKnife", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.poisonedKnifeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Poisoned Knife")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Poisoned Knife."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdPoisonedKnife"])
+		f.tooltip = L["RogueAssassinationThresholdPoisonedKnifeTooltip"]
 		f:SetChecked(spec.thresholds.poisonedKnife.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.poisonedKnife.enabled = self:GetChecked()
@@ -1633,8 +1627,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sepsisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sepsis", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sepsisThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sepsis")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdSepsis"])
+		f.tooltip = L["RogueAssassinationThresholdSepsisTooltip"]
 		f:SetChecked(spec.thresholds.sepsis.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sepsis.enabled = self:GetChecked()
@@ -1644,8 +1638,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.serratedBoneSpikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_serratedBoneSpike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.serratedBoneSpikeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Serrated Bone Spike")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Serrated Bone Spike. If no available charges, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdSerratedBoneSpike"])
+		f.tooltip = L["RogueAssassinationThresholdSerratedBoneSpikeTooltip"]
 		f:SetChecked(spec.thresholds.serratedBoneSpike.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.serratedBoneSpike.enabled = self:GetChecked()
@@ -1655,8 +1649,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.shivThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_shiv", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.shivThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Shiv")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If Tiny Toxic Blade is active, no threshold will be shown."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdShiv"])
+		f.tooltip = L["RogueAssassinationThresholdShivTooltip"]
 		f:SetChecked(spec.thresholds.shiv.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shiv.enabled = self:GetChecked()
@@ -1670,8 +1664,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.crimsonTempestThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_crimsonTempest", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.crimsonTempestThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Crimson Tempest ")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Tempest. If you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdCrimsonTempest"])
+		f.tooltip = L["RogueAssassinationThresholdCrimsonTempestTooltip"]
 		f:SetChecked(spec.thresholds.crimsonTempest.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.crimsonTempest.enabled = self:GetChecked()
@@ -1681,8 +1675,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.envenomThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_envenom", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.envenomThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Envenom")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Envenom. If you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdEnvenom"])
+		f.tooltip = L["RogueAssassinationThresholdEnvenomTooltip"]
 		f:SetChecked(spec.thresholds.envenom.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.envenom.enabled = self:GetChecked()
@@ -1692,8 +1686,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.kidneyShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_kidneyShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.kidneyShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Kidney Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Kidney Shot. Only visible when in Stealth or usable via Sepsis or Subterfuge. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdKidneyShot"])
+		f.tooltip = L["RogueAssassinationThresholdKidneyShotTooltip"]
 		f:SetChecked(spec.thresholds.kidneyShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.kidneyShot.enabled = self:GetChecked()
@@ -1703,8 +1697,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sliceAndDiceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sliceAndDice", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sliceAndDiceThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Slice and Dice")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Slice and Dice. If you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdSliceAndDice"])
+		f.tooltip = L["RogueAssassinationThresholdSliceAndDiceTooltip"]
 		f:SetChecked(spec.thresholds.sliceAndDice.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sliceAndDice.enabled = self:GetChecked()
@@ -1714,22 +1708,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.ruptureThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_rupture", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ruptureThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Rupture")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Rupture. If you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdRupture"])
+		f.tooltip = L["RogueAssassinationThresholdRuptureTooltip"]
 		f:SetChecked(spec.thresholds.rupture.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.rupture.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25		
-		controls.labels.utility = TRB.Functions.OptionsUi:BuildLabel(parent, "General / Utility", 5, yCoord, 110, 20)
+		controls.labels.utility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryGeneralUtility"], 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
 		controls.checkBoxes.crimsonVialThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_crimsonVial", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.crimsonVialThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Crimson Vial")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Vial."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdCrimsonVial"])
+		f.tooltip = L["RogueAssassinationThresholdCrimsonVialTooltip"]
 		f:SetChecked(spec.thresholds.crimsonVial.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.crimsonVial.enabled = self:GetChecked()
@@ -1739,8 +1733,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.distractThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_distract", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.distractThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Distract")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Distract."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdDistract"])
+		f.tooltip = L["RogueAssassinationThresholdDistractTooltip"]
 		f:SetChecked(spec.thresholds.distract.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.distract.enabled = self:GetChecked()
@@ -1750,8 +1744,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.feintThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_feint", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.feintThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Feint")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feint."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdFeint"])
+		f.tooltip = L["RogueAssassinationThresholdFeintTooltip"]
 		f:SetChecked(spec.thresholds.feint.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.feint.enabled = self:GetChecked()
@@ -1761,8 +1755,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_sap", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sapThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sap (stealth)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sap. Only visible when in Stealth or usable via Sepsis or Subterfuge."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdSap"])
+		f.tooltip = L["RogueAssassinationThresholdSapTooltip"]
 		f:SetChecked(spec.thresholds.sap.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sap.enabled = self:GetChecked()
@@ -1775,8 +1769,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.deathFromAboveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_deathFromAbove", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.deathFromAboveThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Death From Above")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Death From Above. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdDeathFromAbove"])
+		f.tooltip = L["RogueAssassinationThresholdDeathFromAboveTooltip"]
 		f:SetChecked(spec.thresholds.deathFromAbove.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.deathFromAbove.enabled = self:GetChecked()
@@ -1786,8 +1780,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.dismantleThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_Threshold_Option_dismantle", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dismantleThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Dismantle")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dismantle."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdDismantle"])
+		f.tooltip = L["RogueAssassinationThresholdDismantleTooltip"]
 		f:SetChecked(spec.thresholds.dismantle.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.dismantle.enabled = self:GetChecked()
@@ -1884,8 +1878,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_dotColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter, DoT timer, and Slice and Dice color based on time remaining?")
-		f.tooltip = "When checked, the color of total DoTs up counters, DoT timers, and Slice and Dice's timer will change based on whether or not the DoT is on the current target."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueDotChangeColorCheckbox"])
+		f.tooltip = L["RogueDotChangeColorCheckboxTooltip"]
 		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.dots.enabled = self:GetChecked()
@@ -1954,8 +1948,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.blindsideAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_blindside_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.blindsideAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Blindside proc occurs")
-		f.tooltip = "Play an audio cue when a Blindside proc occurs, allowing Ambush to be used outside of stealth."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationAudioCheckboxBlindsideProc"])
+		f.tooltip = L["RogueAssassinationAudioCheckboxBlindsideProcTooltip"]
 		f:SetChecked(spec.audio.blindside.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.blindside.enabled = self:GetChecked()
@@ -2084,8 +2078,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sepsisAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_sepsis_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sepsisAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you gain Sepsis buff")
-		f.tooltip = "Play an audio cue when you gain Sepsis buff that allows you to use a stealth ability outside of steath."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAudioCheckboxSepsisProc"])
+		f.tooltip = L["RogueAudioCheckboxSepsisProcTooltip"]
 		f:SetChecked(spec.audio.sepsis.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.sepsis.enabled = self:GetChecked()
@@ -2163,7 +2157,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Energy generation over the next X GCDs, based on player's current GCD length."
+		f.tooltip = L["RogueCheckboxEnergyRegenGcdsTooltip"]
 		if spec.generation.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -2188,7 +2182,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Energy generation over the next X seconds."
+		f.tooltip = L["RogueCheckboxEnergyRegenTimeTooltip"]
 		if spec.generation.mode == "time" then
 			f:SetChecked(true)
 		end
@@ -2246,15 +2240,15 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.assassinationDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Rogue_Assassination", UIParent)
-		interfaceSettingsFrame.assassinationDisplayPanel.name = "Assassination Rogue"
+		interfaceSettingsFrame.assassinationDisplayPanel.name = L["RogueAssassinationFull"]
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.assassinationDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.assassinationDisplayPanel, "AssassinationL["Rogue"])
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.assassinationDisplayPanel, L["RogueAssassinationFull"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.assassinationDisplayPanel)
 
 		parent = interfaceSettingsFrame.assassinationDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Assassination Rogue", oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["RogueAssassinationFull"], oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.assassinationRogueEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Assassination_assassinationRogueEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.assassinationRogueEnabled
@@ -2439,21 +2433,21 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"])
 
 		yCoord = yCoord - 30
-		controls.colors.sliceAndDicePandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy when Slice and Dice is within Pandemic refresh range (current CPs)", spec.colors.bar.sliceAndDicePandemic, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.sliceAndDicePandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerSliceAndDicePandemic"], spec.colors.bar.sliceAndDicePandemic, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.sliceAndDicePandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "sliceAndDicePandemic")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.noSliceAndDice = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy when Slice and Dice is not up", spec.colors.bar.noSliceAndDice, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.noSliceAndDice = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerSliceAndDiceDown"], spec.colors.bar.noSliceAndDice, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.noSliceAndDice
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "noSliceAndDice")
 		end)
 
 		yCoord = yCoord - 30
-		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_2_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+		controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.showPassiveBar
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
@@ -2463,7 +2457,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.bar.showPassive = self:GetChecked()
 		end)
 
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
@@ -2480,14 +2474,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 2, yCoord, L["ResourceEnergy"], true, false)
 
 		yCoord = yCoord - 30
-		controls.colors.borderRtbGood = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border color when you should not use Roll the Bones (keep current rolls)", spec.colors.bar.borderRtbGood, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderRtbGood = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueOutlawColorPickerRollTheBonesHold"], spec.colors.bar.borderRtbGood, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderRtbGood
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderRtbGood")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.borderRtbBad = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border color when you should use Roll the Bones (not up or should reroll)", spec.colors.bar.borderRtbBad, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderRtbBad = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueOutlawColorPickerRollTheBonesUse"], spec.colors.bar.borderRtbBad, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderRtbBad
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderRtbBad")
@@ -2526,7 +2520,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 		end)
 
-		controls.colors.comboPoints.echoingReprimand = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Combo Point when Echoing Reprimand buff is up", spec.colors.comboPoints.echoingReprimand, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.echoingReprimand = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerEchoingReprimand"], spec.colors.comboPoints.echoingReprimand, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.echoingReprimand
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "echoingReprimand")
@@ -2560,13 +2554,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.consistentUnfilledColorComboPoint
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ComboPointsCheckboxAlwaysDefaultBackground"])
-		f.tooltip = "When checked, unfilled combo points will always use the 'Unfilled Combo Point background' color above for their background. Borders will still change color depending on Echoing Reprimand settings."
+		f.tooltip = L["RogueOutlawCheckboxAlwaysDefaultBackgroundTooltip"]
 		f:SetChecked(spec.comboPoints.consistentUnfilledColor)
 		f:SetScript("OnClick", function(self, ...)
 			spec.comboPoints.consistentUnfilledColor = self:GetChecked()
 		end)
-
-
 
 
 		yCoord = yCoord - 40
@@ -2594,13 +2586,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
-		controls.colors.threshold.restlessBlades = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Ability usable after next finisher (via Restless Blades+True Bearing)", spec.colors.threshold.restlessBlades, 300, 25, oUi.xCoord2, yCoord-90)
+		controls.colors.threshold.restlessBlades = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueAssassinationColorPickerThresholdRestlessBlades"], spec.colors.threshold.restlessBlades, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.threshold.restlessBlades
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "restlessBlades")
 		end)
 
-		controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Skull and Crossbones, Ruthless Precision, or Opportunity effect up", spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-120)
+		controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueAssassinationColorPickerThresholdSpecial"], spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-120)
 		f = controls.colors.threshold.special
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "special")
@@ -2639,8 +2631,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.ambushThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_ambush", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ambushThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Ambush (if stealthed)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ambush. Only visible when in Stealth."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdAmbush"])
+		f.tooltip = L["RogueOutlawThresholdAmbushTooltip"]
 		f:SetChecked(spec.thresholds.ambush.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.ambush.enabled = self:GetChecked()
@@ -2650,8 +2642,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.cheapShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_cheapShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.cheapShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Cheap Shot (if stealthed)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Cheap Shot. Only visible when in Stealth or usable via the Subterfuge talent."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdCheapShot"])
+		f.tooltip = L["RogueOutlawThresholdCheapShotTooltip"]
 		f:SetChecked(spec.thresholds.cheapShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.cheapShot.enabled = self:GetChecked()
@@ -2661,8 +2653,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.dreadbladesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_dreadblades", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dreadbladesThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Dreadblades")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dreadblades. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdDreadblades"])
+		f.tooltip = L["RogueOutlawThresholdDreadbladesTooltip"]
 		f:SetChecked(spec.thresholds.dreadblades.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.dreadblades.enabled = self:GetChecked()
@@ -2672,8 +2664,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.echoingReprimandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_echoingRep", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.echoingReprimandThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Echoing Reprimand")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdEchoingReprimand"])
+		f.tooltip = L["RogueOutlawThresholdEchoingReprimandTooltip"]
 		f:SetChecked(spec.thresholds.echoingReprimand.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.echoingReprimand.enabled = self:GetChecked()
@@ -2683,8 +2675,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.ghostlyStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_ghostlyStrike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ghostlyStrikeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Ghostly Strike")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Ghostly Strike."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdGhostlyStrike"])
+		f.tooltip = L["RogueOutlawThresholdGhostlyStrikeTooltip"]
 		f:SetChecked(spec.thresholds.ghostlyStrike.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.ghostlyStrike.enabled = self:GetChecked()
@@ -2694,8 +2686,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.gougeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_gouge", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.gougeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Gouge")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Gouge."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdGouge"])
+		f.tooltip = L["RogueOutlawThresholdGougeTooltip"]
 		f:SetChecked(spec.thresholds.gouge.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.gouge.enabled = self:GetChecked()
@@ -2705,8 +2697,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.pistolShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_pistolShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.pistolShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Pistol Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Pistol Shot."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdPistolShot"])
+		f.tooltip = L["RogueOutlawThresholdPistolShotTooltip"]
 		f:SetChecked(spec.thresholds.pistolShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.pistolShot.enabled = self:GetChecked()
@@ -2716,8 +2708,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sepsisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_sepsis", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sepsisThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sepsis")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdSepsis"])
+		f.tooltip = L["RogueOutlawThresholdSepsisTooltip"]
 		f:SetChecked(spec.thresholds.sepsis.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sepsis.enabled = self:GetChecked()
@@ -2727,8 +2719,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.shivThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_shiv", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.shivThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Shiv")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If talented into Tiny Toxic Blade, no threshold will be shown."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdShiv"])
+		f.tooltip = L["RogueOutlawThresholdShivTooltip"]
 		f:SetChecked(spec.thresholds.shiv.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shiv.enabled = self:GetChecked()
@@ -2738,8 +2730,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sinisterStrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_sinisterStrike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sinisterStrikeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sinister Strike")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sinister Strike."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdSinisterStrike"])
+		f.tooltip = L["RogueOutlawThresholdSinisterStrikeTooltip"]
 		f:SetChecked(spec.thresholds.sinisterStrike.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sinisterStrike.enabled = self:GetChecked()
@@ -2753,8 +2745,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.betweenTheEyesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_betweenTheEyes", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.betweenTheEyesThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Between the Eyes")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Between the Eyes. If you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdBetweenTheEyes"])
+		f.tooltip = L["RogueOutlawThresholdBetweenTheEyesTooltip"]
 		f:SetChecked(spec.thresholds.betweenTheEyes.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.betweenTheEyes.enabled = self:GetChecked()
@@ -2764,8 +2756,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.dispatchThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_dispatch", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dispatchThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Dispatch")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dispatch. If you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdDispatch"])
+		f.tooltip = L["RogueOutlawThresholdDispatchTooltip"]
 		f:SetChecked(spec.thresholds.dispatch.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.dispatch.enabled = self:GetChecked()
@@ -2775,8 +2767,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.kidneyShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_kidneyShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.kidneyShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Kidney Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Kidney Shot. Only visible when in Stealth or usable via the Subterfuge talent. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdKidneyShot"])
+		f.tooltip = L["RogueOutlawThresholdKidneyShotTooltip"]
 		f:SetChecked(spec.thresholds.kidneyShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.kidneyShot.enabled = self:GetChecked()
@@ -2786,8 +2778,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.killingSpreeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_killingSpree", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.killingSpreeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Killing Spree")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Killing Spree. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdKillingSpree"])
+		f.tooltip = L["RogueOutlawThresholdKillingSpreeTooltip"]
 		f:SetChecked(spec.thresholds.killingSpree.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.killingSpree.enabled = self:GetChecked()
@@ -2797,22 +2789,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sliceAndDiceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_sliceAndDice", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sliceAndDiceThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Slice and Dice")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Slice and Dice. If you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdSliceAndDice"])
+		f.tooltip = L["RogueOutlawThresholdSliceAndDiceTooltip"]
 		f:SetChecked(spec.thresholds.sliceAndDice.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sliceAndDice.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25		
-		controls.labels.utility = TRB.Functions.OptionsUi:BuildLabel(parent, "General / Utility", 5, yCoord, 110, 20)
+		controls.labels.utility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryGeneralUtility"], 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
 		controls.checkBoxes.bladeFlurryThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_bladeFlurry", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.bladeFlurryThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Blade Flurry")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Blade Flurry. Only visible when in Stealth."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdBladeFlurry"])
+		f.tooltip = L["RogueOutlawThresholdBladeFlurryTooltip"]
 		f:SetChecked(spec.thresholds.bladeFlurry.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.bladeFlurry.enabled = self:GetChecked()
@@ -2822,8 +2814,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.crimsonVialThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_crimsonVial", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.crimsonVialThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Crimson Vial")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Vial."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdCrimsonVial"])
+		f.tooltip = L["RogueOutlawThresholdCrimsonVialTooltip"]
 		f:SetChecked(spec.thresholds.crimsonVial.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.crimsonVial.enabled = self:GetChecked()
@@ -2833,8 +2825,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.distractThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_distract", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.distractThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Distract")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Distract."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdDistract"])
+		f.tooltip = L["RogueOutlawThresholdDistractTooltip"]
 		f:SetChecked(spec.thresholds.distract.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.distract.enabled = self:GetChecked()
@@ -2844,8 +2836,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.feintThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_feint", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.feintThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Feint")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feint."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdFeint"])
+		f.tooltip = L["RogueOutlawThresholdFeintTooltip"]
 		f:SetChecked(spec.thresholds.feint.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.feint.enabled = self:GetChecked()
@@ -2855,8 +2847,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.rollTheBonesThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_rollTheBones", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.rollTheBonesThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Roll the Bones")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Roll the Bones."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdRollTheBones"])
+		f.tooltip = L["RogueOutlawThresholdRollTheBonesTooltip"]
 		f:SetChecked(spec.thresholds.rollTheBones.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.rollTheBones.enabled = self:GetChecked()
@@ -2866,8 +2858,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_sap", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sapThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sap (if stealthed)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sap. Only visible when in Stealth or usable via the Subterfuge talent."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdSap"])
+		f.tooltip = L["RogueOutlawThresholdSapTooltip"]
 		f:SetChecked(spec.thresholds.sap.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sap.enabled = self:GetChecked()
@@ -2879,8 +2871,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.deathFromAboveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_deathFromAbove", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.deathFromAboveThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Death From Above")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Death From Above. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdDeathFromAbove"])
+		f.tooltip = L["RogueOutlawThresholdDeathFromAboveTooltip"]
 		f:SetChecked(spec.thresholds.deathFromAbove.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.deathFromAbove.enabled = self:GetChecked()
@@ -2890,8 +2882,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.dismantleThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_Threshold_Option_dismantle", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dismantleThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Dismantle")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dismantle."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAssassinationThresholdDismantle"])
+		f.tooltip = L["RogueAssassinationThresholdDismantleTooltip"]
 		f:SetChecked(spec.thresholds.dismantle.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.dismantle.enabled = self:GetChecked()
@@ -2987,8 +2979,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_dotColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter, DoT timer, and Slice and Dice color based on time remaining?")
-		f.tooltip = "When checked, the color of total DoTs up counters, DoT timers, and Slice and Dice's timer will change based on whether or not the DoT is on the current target."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueDotChangeColorCheckbox"])
+		f.tooltip = L["RogueDotChangeColorCheckboxTooltip"]
 		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.dots.enabled = self:GetChecked()
@@ -3057,8 +3049,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.opportunityAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_opportunity_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.opportunityAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when an Opportunity proc occurs")
-		f.tooltip = "Play an audio cue when an Opportunity proc occurs."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdOpportunity"])
+		f.tooltip = L["RogueOutlawThresholdOpportunityTooltip"]
 		f:SetChecked(spec.audio.opportunity.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.opportunity.enabled = self:GetChecked()
@@ -3186,8 +3178,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sepsisAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_sepsis_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sepsisAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you gain Sepsis buff")
-		f.tooltip = "Play an audio cue when you gain Sepsis buff that allows you to use a stealth ability outside of steath."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAudioCheckboxSepsisProc"])
+		f.tooltip = L["RogueAudioCheckboxSepsisProcTooltip"]
 		f:SetChecked(spec.audio.sepsis.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.sepsis.enabled = self:GetChecked()
@@ -3265,7 +3257,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Energy generation over the next X GCDs, based on player's current GCD length."
+		f.tooltip = L["RogueCheckboxEnergyRegenGcdsTooltip"]
 		if spec.generation.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -3290,7 +3282,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Energy generation over the next X seconds."
+		f.tooltip = L["RogueCheckboxEnergyRegenTimeTooltip"]
 		if spec.generation.mode == "time" then
 			f:SetChecked(true)
 		end
@@ -3348,7 +3340,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.outlawDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Rogue_Outlaw", UIParent)
-		interfaceSettingsFrame.outlawDisplayPanel.name = "Outlaw Rogue"
+		interfaceSettingsFrame.outlawDisplayPanel.name = L["RogueOutlawFull"]
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.outlawDisplayPanel.parent = parent.name
 		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.outlawDisplayPanel, "OutlawL["Rogue"])
@@ -3356,7 +3348,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		parent = interfaceSettingsFrame.outlawDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Outlaw Rogue", oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["RogueOutlawFull"], oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.outlawRogueEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_outlawRogueEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.outlawRogueEnabled
@@ -3540,14 +3532,14 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"])
 
 		yCoord = yCoord - 30
-		controls.colors.sliceAndDicePandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy when Slice and Dice is within Pandemic refresh range (current CPs)", spec.colors.bar.sliceAndDicePandemic, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.sliceAndDicePandemic = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerSliceAndDicePandemic"], spec.colors.bar.sliceAndDicePandemic, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.sliceAndDicePandemic
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "sliceAndDicePandemic")
 		end)
 
 		yCoord = yCoord - 30
-		controls.colors.noSliceAndDice = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy when Slice and Dice is not up", spec.colors.bar.noSliceAndDice, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.noSliceAndDice = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerSliceAndDiceDown"], spec.colors.bar.noSliceAndDice, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.noSliceAndDice
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "noSliceAndDice")
@@ -3564,7 +3556,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			spec.bar.showPassive = self:GetChecked()
 		end)
 
-		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Energy gain from Passive Sources", spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.passive
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 1)
@@ -3581,7 +3573,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 4, 3, yCoord, L["ResourceEnergy"], true, false)
 
 		yCoord = yCoord - 30
-		controls.colors.borderShadowcraft = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border color when Shadowcraft will grant full Combo Points after using a finisher", spec.colors.bar.borderStealth, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderShadowcraft = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueSubtletyColorPickerShadowcraft"], spec.colors.bar.borderStealth, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderShadowcraft
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderShadowcraft")
@@ -3619,7 +3611,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "penultimate")
 		end)
 
-		controls.colors.comboPoints.echoingReprimand = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Combo Point when Echoing Reprimand buff is up", spec.colors.comboPoints.echoingReprimand, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.echoingReprimand = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueColorPickerEchoingReprimand"], spec.colors.comboPoints.echoingReprimand, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.echoingReprimand
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "echoingReprimand")
@@ -3632,7 +3624,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 		end)
 
-		controls.colors.comboPoints.shadowTechniques = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Combo Point that will generate from Shadow Techniques", spec.colors.comboPoints.shadowTechniques, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.comboPoints.shadowTechniques = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueSubtletyColorPickerShadowTechniques"], spec.colors.comboPoints.shadowTechniques, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.comboPoints.shadowTechniques
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "shadowTechniques")
@@ -3660,7 +3652,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f = controls.checkBoxes.consistentUnfilledColorComboPoint
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["ComboPointsCheckboxAlwaysDefaultBackground"])
-		f.tooltip = "When checked, unfilled combo points will always use the 'Unfilled Combo Point background' color above for their background. Borders will still change color depending on Echoing Reprimand settings."
+		f.tooltip = L["RogueSubtletyCheckboxAlwaysDefaultBackgroundTooltip"]
 		f:SetChecked(spec.comboPoints.consistentUnfilledColor)
 		f:SetScript("OnClick", function(self, ...)
 			spec.comboPoints.consistentUnfilledColor = self:GetChecked()
@@ -3691,7 +3683,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 		end)
 
-		controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Finality or Silent Storm buff up for ability", spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-90)
+		controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["RogueSubtletyColorPickerThresholdSpecial"], spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-90)
 		f = controls.colors.threshold.special
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "special")
@@ -3730,8 +3722,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.backstabThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_backstab", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.backstabThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Backstab / Gloomblade")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Backstab or Gloomblade."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdBackstab"])
+		f.tooltip = L["RogueSubtletyThresholdBackstabTooltip"]
 		f:SetChecked(spec.thresholds.backstab.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.backstab.enabled = self:GetChecked()
@@ -3742,8 +3734,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.cheapShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_cheapShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.cheapShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Cheap Shot (stealth)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Cheap Shot. Only visible when in Stealth or usable via Shadow Dance, Sepsis, or Subterfuge."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdCheapShot"])
+		f.tooltip = L["RogueSubtletyThresholdCheapShotTooltip"]
 		f:SetChecked(spec.thresholds.cheapShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.cheapShot.enabled = self:GetChecked()
@@ -3753,8 +3745,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.echoingReprimandThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_echoingReprimand", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.echoingReprimandThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Echoing Reprimand")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Echoing Reprimand."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdEchoingReprimand"])
+		f.tooltip = L["RogueSubtletyThresholdEchoingReprimandTooltip"]
 		f:SetChecked(spec.thresholds.echoingReprimand.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.echoingReprimand.enabled = self:GetChecked()
@@ -3764,8 +3756,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.goremawsBiteThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_goremawsbite", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.goremawsBiteThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Goremaw's Bite")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Goremaw's Bite."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdGoremawsBite"])
+		f.tooltip = L["RogueSubtletyThresholdGoremawsBiteTooltip"]
 		f:SetChecked(spec.thresholds.goremawsBite.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.goremawsBite.enabled = self:GetChecked()
@@ -3775,8 +3767,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.gougeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_gouge", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.gougeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Gouge")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Gouge."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdGouge"])
+		f.tooltip = L["RogueSubtletyThresholdGougeTooltip"]
 		f:SetChecked(spec.thresholds.gouge.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.gouge.enabled = self:GetChecked()
@@ -3786,8 +3778,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sepsisThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_sepsis", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sepsisThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sepsis")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sepsis."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdSepsis"])
+		f.tooltip = L["RogueSubtletyThresholdSepsisTooltip"]
 		f:SetChecked(spec.thresholds.sepsis.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sepsis.enabled = self:GetChecked()
@@ -3797,19 +3789,30 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.shadowstrikeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_shadowstrike", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.shadowstrikeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Shadowstrike (stealth)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shadowstrike. Only visible when in Stealth or usable via Shadow Dance, Sepsis, or Subterfuge."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdShadowStrike"])
+		f.tooltip = L["RogueSubtletyThresholdShadowStrikeTooltip"]
 		f:SetChecked(spec.thresholds.shadowstrike.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shadowstrike.enabled = self:GetChecked()
 		end)
 
 		yCoord = yCoord - 25
+		controls.checkBoxes.shivThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_shiv", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.shivThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdShiv"])
+		f.tooltip = L["RogueSubtletyThresholdShivTooltip"]
+		f:SetChecked(spec.thresholds.shiv.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.shiv.enabled = self:GetChecked()
+		end)
+
+		yCoord = yCoord - 25
 		controls.checkBoxes.shurikenStormThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_shurikenStorm", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.shurikenStormThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Shuriken Storm")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shuriken Storm."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdShurikenStorm"])
+		f.tooltip = L["RogueSubtletyThresholdShurikenStormTooltip"]
 		f:SetChecked(spec.thresholds.shurikenStorm.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shurikenStorm.enabled = self:GetChecked()
@@ -3819,8 +3822,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.shurikenTornadoThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_shurikenTornado", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.shurikenTornadoThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Shuriken Tornado")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shuriken Tornado."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdShurikenTornado"])
+		f.tooltip = L["RogueSubtletyThresholdShurikenTornadoTooltip"]
 		f:SetChecked(spec.thresholds.shurikenTornado.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shurikenTornado.enabled = self:GetChecked()
@@ -3830,22 +3833,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.shurikenTossThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_shurikenToss", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.shurikenTossThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Shuriken Toss")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shuriken Toss."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdShurikenToss"])
+		f.tooltip = L["RogueSubtletyThresholdShurikenTossTooltip"]
 		f:SetChecked(spec.thresholds.shurikenToss.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shurikenToss.enabled = self:GetChecked()
-		end)
-
-		yCoord = yCoord - 25
-		controls.checkBoxes.shivThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_shiv", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.shivThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Shiv")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Shiv. If Tiny Toxic Blade is active, no threshold will be shown."
-		f:SetChecked(spec.thresholds.shiv.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.shiv.enabled = self:GetChecked()
 		end)
 
 
@@ -3878,8 +3870,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.kidneyShotThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_kidneyShot", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.kidneyShotThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Kidney Shot")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Kidney Shot. Only visible when in Stealth or usable via Sepsis or Subterfuge. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdKidneyShot"])
+		f.tooltip = L["RogueSubtletyThresholdKidneyShotTooltip"]
 		f:SetChecked(spec.thresholds.kidneyShot.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.kidneyShot.enabled = self:GetChecked()
@@ -3889,8 +3881,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sliceAndDiceThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_sliceAndDice", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sliceAndDiceThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Slice and Dice")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Slice and Dice. If you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdSliceAndDice"])
+		f.tooltip = L["RogueSubtletyThresholdSliceAndDiceTooltip"]
 		f:SetChecked(spec.thresholds.sliceAndDice.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sliceAndDice.enabled = self:GetChecked()
@@ -3900,8 +3892,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.ruptureThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_rupture", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.ruptureThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Rupture")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Rupture. If you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdRupture"])
+		f.tooltip = L["RogueSubtletyThresholdRuptureTooltip"]
 		f:SetChecked(spec.thresholds.rupture.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.rupture.enabled = self:GetChecked()
@@ -3911,22 +3903,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.secretTechniqueThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_secretTechnique", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.secretTechniqueThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Secret Technique")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Secret Technique. If you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdSecretTechnique"])
+		f.tooltip = L["RogueSubtletyThresholdSecretTechniqueTooltip"]
 		f:SetChecked(spec.thresholds.secretTechnique.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.secretTechnique.enabled = self:GetChecked()
 		end)
 
-		yCoord = yCoord - 25		
-		controls.labels.utility = TRB.Functions.OptionsUi:BuildLabel(parent, "General / Utility", 5, yCoord, 110, 20)
+		yCoord = yCoord - 25
+		controls.labels.utility = TRB.Functions.OptionsUi:BuildLabel(parent, L["ThresholdCategoryGeneralUtility"], 5, yCoord, 110, 20)
 		yCoord = yCoord - 20
 
 		controls.checkBoxes.crimsonVialThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_crimsonVial", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.crimsonVialThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Crimson Vial")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Crimson Vial."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdCrimsonVial"])
+		f.tooltip = L["RogueSubtletyThresholdCrimsonVialTooltip"]
 		f:SetChecked(spec.thresholds.crimsonVial.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.crimsonVial.enabled = self:GetChecked()
@@ -3936,8 +3928,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.distractThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_distract", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.distractThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Distract")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Distract."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdDistract"])
+		f.tooltip = L["RogueSubtletyThresholdDistractTooltip"]
 		f:SetChecked(spec.thresholds.distract.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.distract.enabled = self:GetChecked()
@@ -3947,8 +3939,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.feintThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_feint", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.feintThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Feint")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Feint."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdFeint"])
+		f.tooltip = L["RogueSubtletyThresholdFeintTooltip"]
 		f:SetChecked(spec.thresholds.feint.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.feint.enabled = self:GetChecked()
@@ -3958,8 +3950,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sapThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_sap", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sapThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Sap (stealth)")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Sap. Only visible when in Stealth or usable via Sepsis or Subterfuge."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdSap"])
+		f.tooltip = L["RogueSubtletyThresholdSapTooltip"]
 		f:SetChecked(spec.thresholds.sap.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.sap.enabled = self:GetChecked()
@@ -3972,8 +3964,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.deathFromAboveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_deathFromAbove", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.deathFromAboveThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Death From Above")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Death From Above. If on cooldown or if you do not have any combo points, will be colored as 'unusable'."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdDeathFromAbove"])
+		f.tooltip = L["RogueSubtletyThresholdDeathFromAboveTooltip"]
 		f:SetChecked(spec.thresholds.deathFromAbove.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.deathFromAbove.enabled = self:GetChecked()
@@ -3983,8 +3975,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.dismantleThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_Threshold_Option_dismantle", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dismantleThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Dismantle")
-		f.tooltip = "This will show the vertical line on the bar denoting how much Energy is required to use Dismantle."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueSubtletyThresholdDismantle"])
+		f.tooltip = L["RogueSubtletyThresholdDismantleTooltip"]
 		f:SetChecked(spec.thresholds.dismantle.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.dismantle.enabled = self:GetChecked()
@@ -4092,8 +4084,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.dotColor = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_dotColor", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.dotColor
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change total DoT counter, DoT timer, and Slice and Dice color based on time remaining?")
-		f.tooltip = "When checked, the color of total DoTs up counters, DoT timers, and Slice and Dice's timer will change based on whether or not the DoT is on the current target."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueDotChangeColorCheckbox"])
+		f.tooltip = L["RogueDotChangeColorCheckboxTooltip"]
 		f:SetChecked(spec.colors.text.dots.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.text.dots.enabled = self:GetChecked()
@@ -4157,72 +4149,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		end)
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-
-		--[[
-		yCoord = yCoord - 30
-		controls.checkBoxes.blindsideAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_blindside_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.blindsideAudio
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when a Blindside proc occurs")
-		f.tooltip = "Play an audio cue when a Blindside proc occurs, allowing Ambush to be used outside of stealth."
-		f:SetChecked(spec.audio.blindside.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.audio.blindside.enabled = self:GetChecked()
-
-			if spec.audio.blindside.enabled then
-				PlaySoundFile(spec.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
-			end
-		end)
-
-		-- Create the dropdown, and configure its appearance
-		controls.dropDown.blindsideAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Rogue_Subtlety_blindside_Audio", parent)
-		controls.dropDown.blindsideAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.blindsideAudio, oUi.dropdownWidth)
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.blindsideAudio, spec.audio.blindside.soundName)
-		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.blindsideAudio, "LEFT")
-
-		-- Create and bind the initialization function to the dropdown menu
-		LibDD:UIDropDownMenu_Initialize(controls.dropDown.blindsideAudio, function(self, level, menuList)
-			local entries = 25
-			local info = LibDD:UIDropDownMenu_CreateInfo()
-			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-			if (level or 1) == 1 or menuList == nil then
-				local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-				for i=0, menus-1 do
-					info.hasArrow = true
-					info.notCheckable = true
-					info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-					info.menuList = i
-					LibDD:UIDropDownMenu_AddButton(info)
-				end
-			else
-				local start = entries * menuList
-
-				for k, v in pairs(soundsList) do
-					if k > start and k <= start + entries then
-						info.text = v
-						info.value = sounds[v]
-						info.checked = sounds[v] == spec.audio.blindside.sound
-						info.func = self.SetValue
-						info.arg1 = sounds[v]
-						info.arg2 = v
-						LibDD:UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end)
-
-		-- Implement the function to change the audio
-		function controls.dropDown.blindsideAudio:SetValue(newValue, newName)
-			spec.audio.blindside.sound = newValue
-			spec.audio.blindside.soundName = newName
-			LibDD:UIDropDownMenu_SetText(controls.dropDown.blindsideAudio, newName)
-			CloseDropDownMenus()
-			---@diagnostic disable-next-line: redundant-parameter
-			PlaySoundFile(spec.audio.blindside.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-		]]
 
 		yCoord = yCoord - 60
 		controls.checkBoxes.overcapAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_CB3_OC_Sound", parent, "ChatConfigCheckButtonTemplate")
@@ -4293,8 +4219,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.sepsisAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_sepsis_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.sepsisAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Play audio cue when you gain Sepsis buff")
-		f.tooltip = "Play an audio cue when you gain Sepsis buff that allows you to use a stealth ability outside of steath."
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueAudioCheckboxSepsisProc"])
+		f.tooltip = L["RogueAudioCheckboxSepsisProcTooltip"]
 		f:SetChecked(spec.audio.sepsis.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.sepsis.enabled = self:GetChecked()
@@ -4372,7 +4298,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenGcds"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Energy generation over the next X GCDs, based on player's current GCD length."
+		f.tooltip = L["RogueCheckboxEnergyRegenGcdsTooltip"]
 		if spec.generation.mode == "gcd" then
 			f:SetChecked(true)
 		end
@@ -4397,7 +4323,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 		getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxTrackEnergyRegenTime"])
 		getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-		f.tooltip = "Shows the amount of Energy generation over the next X seconds."
+		f.tooltip = L["RogueCheckboxEnergyRegenTimeTooltip"]
 		if spec.generation.mode == "time" then
 			f:SetChecked(true)
 		end
@@ -4455,15 +4381,15 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.buttons = controls.buttons or {}
 
 		interfaceSettingsFrame.subtletyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Rogue_Subtlety", UIParent)
-		interfaceSettingsFrame.subtletyDisplayPanel.name = "Subtlety Rogue"
+		interfaceSettingsFrame.subtletyDisplayPanel.name = L["RogueSubtletyFull"]
 ---@diagnostic disable-next-line: undefined-field
 		interfaceSettingsFrame.subtletyDisplayPanel.parent = parent.name
-		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.subtletyDisplayPanel, "SubtletyL["Rogue"])
+		--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.subtletyDisplayPanel, L["RogueSubtletyFull"])
 		InterfaceOptions_AddCategory(interfaceSettingsFrame.subtletyDisplayPanel)
 
 		parent = interfaceSettingsFrame.subtletyDisplayPanel
 
-		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Subtlety Rogue", oUi.xCoord, yCoord-5)
+		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["RogueSubtletyFull"], oUi.xCoord, yCoord-5)
 	
 		controls.checkBoxes.subtletyRogueEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Subtlety_subtletyRogueEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.subtletyRogueEnabled
