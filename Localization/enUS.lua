@@ -1082,43 +1082,60 @@ L["MaelstromWeaponCheckboxAlwaysDefaultBackground"] = "Always use default unfill
 
 -- WarriorOptions
 L["WarriorAudioSuddenDeathProc"] = "Sudden Death Proc"
-L["WarriorArmsColorPickerPassive"] = "Rage gain from Passive Sources"
+L["WarriorColorPickerPassive"] = "Rage gain from Passive Sources"
+L["WarriorTextColorsHeader"] = "Rage Text Colors"
+L["WarriorColorPickerTextCurrent"] = "Current Rage"
+L["WarriorColorPickerTextCasting"] = "Rage from hardcasting spells"
+L["WarriorColorPickerTextPassive"] = "Passive Rage"
+L["WarriorColorPickerThresholdOver"] = "Have enough Rage to cast Earth Shock or Earthquake"
+L["WarriorColorPickerOvercap"] = "Overcapping Rage"
+L["WarriorCheckboxThresholdOverTooltip"] = "This will change the Rage text color when you are able to use an ability whose threshold you have enabled under 'Bar Display'."
+L["WarriorCheckboxThresholdOvercapTooltip"] = "This will change the Rage text color when your current hardcast spell will result in overcapping maximum Rage."
+L["WarriorRageDecimalPrecision"] = "Rage Decimal Precision"
+L["WarriorAudioCheckboxSuddenDeath"] = "Play audio cue when you get a Sudden Death proc (if talented)"
+L["WarriorAudioCheckboxSuddenDeathTooltip"] = "Play an audio cue when you get a Sudden Death proc that allows you to use Execute for 0 Rage and above normal execute range enemy health."
 L["WarriorArmsThresholdCleave"] = "Cleave"
 L["WarriorArmsThresholdCleaveTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Cleave."
-
 L["WarriorArmsThresholdExecute"] = "Execute"
-L["WarriorArmsThresholdExecuteTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Execute. Only visible when the current target is in Execute health range or available from a Sudden Death proc. Will move along the bar between the current minimum and maximum Rage cost amounts."
-
+L["WarriorArmsThresholdExecuteTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Execute. Will move along the bar between the current minimum and maximum Rage cost amounts. Only visible when the current target is in Execute health range or available from a Sudden Death proc."
 L["WarriorArmsThresholdExecuteMinimum"] = "Execute (minimum)"
 L["WarriorArmsThresholdExecuteMinimumTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Execute at its minimum Rage cost. Only visible when the current target is in Execute health range or available from a Sudden Death proc."
-
 L["WarriorArmsThresholdExecuteMaximum"] = "Execute (maximum)"
 L["WarriorArmsThresholdExecuteMaximumTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Execute at its maximum Rage cost. Only visible when the current target is in Execute health range or available from a Sudden Death proc."
-
 L["WarriorArmsThresholdHamstring"] = "Hamstring"
 L["WarriorArmsThresholdHamstringTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Hamstring."
-
 L["WarriorArmsThresholdIgnorePain"] = "Ignore Pain"
 L["WarriorArmsThresholdIgnorePainTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Ignore Pain."
-
 L["WarriorArmsThresholdImpendingVictory"] = "Impending Victory"
 L["WarriorArmsThresholdImpendingVictoryTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Impending Victory."
-
 L["WarriorArmsThresholdMortalStrike"] = "Mortal Strike"
 L["WarriorArmsThresholdMortalStrikeTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Mortal Strike."
-
 L["WarriorArmsThresholdRend"] = "Rend"
 L["WarriorArmsThresholdRendTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Rend."
-
 L["WarriorArmsThresholdShieldBlock"] = "Shield Block"
 L["WarriorArmsThresholdShieldBlockTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Shield Block. This does not check to see if you have a shield equipped!"
-
 L["WarriorArmsThresholdSlam"] = "Slam"
 L["WarriorArmsThresholdSlamTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Slam."
-
 L["WarriorArmsThresholdThunderClap"] = "Thunder Clap"
 L["WarriorArmsThresholdThunderClapTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Thunder Clap."
-
 L["WarriorArmsThresholdWhirlwind"] = "Whirlwind"
 L["WarriorArmsThresholdWhirlwindTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Whirlwind."
-
+L["WarriorFuryColorPickerEnrage"] = "Fury while Enrage is active"
+L["WarriorFuryThresholdExecute"] = "Execute (without Improved Execute)"
+L["WarriorFuryThresholdExecuteTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Execute. Will move along the bar between the current minimum and maximum Rage cost amounts. Only visible when not talented in to Improved Execute and when the current target is in Execute health range or available from a Sudden Death proc."
+L["WarriorFuryThresholdExecuteMinimum"] = "Execute (minimum)"
+L["WarriorFuryThresholdExecuteMinimumTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Execute at its minimum Rage cost. Only visible when not talented in to Improved Execute and when the current target is in Execute health range or available from a Sudden Death proc."
+L["WarriorFuryThresholdExecuteMaximum"] = "Execute (maximum)"
+L["WarriorFuryThresholdExecuteMaximumTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Execute at its maximum Rage cost. Only visible when not talented in to Improved Execute and when the current target is in Execute health range or available from a Sudden Death proc."
+L["WarriorFuryThresholdHamstring"] = "Hamstring"
+L["WarriorFuryThresholdHamstringTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Hamstring."
+L["WarriorFuryThresholdImpendingVictory"] = "Impending Victory"
+L["WarriorFuryThresholdImpendingVictoryTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Impending Victory."
+L["WarriorFuryThresholdRampage"] = "Rampage"
+L["WarriorFuryThresholdRampageTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Rampage."
+L["WarriorFuryThresholdShieldBlock"] = "Shield Block"
+L["WarriorFuryThresholdShieldBlockTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Shield Block. This does not check to see if you have a shield equipped!"
+L["WarriorFuryThresholdSlam"] = "Slam"
+L["WarriorFuryThresholdSlamTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Slam."
+L["WarriorFuryThresholdThunderClap"] = "Thunder Clap"
+L["WarriorFuryThresholdThunderClapTooltip"] = "This will show the vertical line on the bar denoting how much Rage is required to use Thunder Clap."
