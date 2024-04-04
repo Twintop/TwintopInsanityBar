@@ -325,7 +325,6 @@ end
 
 function TRB.Functions.Bar:UpdateSmoothBar(settings)
 	if TRB.Data.settings.core.bar.smooth then
-		print("smooth")
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.resourceFrame)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.castingFrame)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.passiveFrame)
@@ -342,7 +341,6 @@ function TRB.Functions.Bar:UpdateSmoothBar(settings)
 			end
 		end
 	else
-		print("flat")
 		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.resourceFrame)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.castingFrame)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.passiveFrame)
@@ -528,6 +526,4 @@ function TRB.Functions.Bar:Construct(settings)
 
 		TRB.Functions.BarText:CreateBarTextFrames(settings)
 	end
-
-
 end
