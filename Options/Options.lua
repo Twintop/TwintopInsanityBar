@@ -508,6 +508,24 @@ local function ConstructAddonOptionsPanel()
 
 	yCoord = 5
 
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["Bar Settings"], oUi.xCoord, yCoord)
+
+	yCoord = yCoord - 30
+	controls.checkBoxes.experimentalShamanEnhancement = CreateFrame("CheckButton", "TwintopResourceBar_CB_Smooth_Bar", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.experimentalShamanEnhancement
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	---@diagnostic disable-next-line: undefined-field
+	getglobal(f:GetName() .. 'Text'):SetText(L["GlobalOptionsCheckboxSmoothBar"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = L["GlobalOptionsCheckboxSmoothBarTooltip"]
+	f:SetChecked(TRB.Data.settings.core.bar.smooth)
+	f:SetScript("OnClick", function(self, ...)
+		TRB.Data.settings.core.bar.smooth = self:GetChecked()
+		TRB.Functions.Bar:UpdateSmoothBar()
+	end)
+
+	yCoord = yCoord - 30
+	
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["TTD"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 50
@@ -811,9 +829,7 @@ local function ConstructImportExportPanel()
 	local parent = interfaceSettingsFrame.panel
 	local controls = interfaceSettingsFrame.controls.importExport or {}
 	local yCoord = -5
-	local f = nil
 
-	local title = ""
 	local specName = ""
 	local buttonOffset = 0
 	local buttonSpacing = 5

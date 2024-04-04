@@ -3,6 +3,19 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Bar = {}
 
+function GetComboPointNodeWidth(settings)
+	if settings.comboPoints ~= nil and TRB.Data.character.maxResource2 ~= nil and TRB.Data.character.maxResource2 > 0 then
+		if settings.comboPoints.fullWidth then
+			local nodes = TRB.Data.character.maxResource2
+			local nodeSpacing = settings.comboPoints.spacing + settings.comboPoints.border * 2
+			return ((settings.bar.width - ((nodes - 1) * (nodeSpacing - settings.comboPoints.border * 2))) / nodes)
+		else
+			return settings.comboPoints.width
+		end
+	end
+	return 0
+end
+
 function TRB.Functions.Bar:GetSanityCheckValues(settings)
 	local sc = {}
 	if settings ~= nil then
@@ -129,10 +142,11 @@ function TRB.Functions.Bar:GetPosition(settings)
 	TRB.Functions.Bar:SetPositionXY(xOfs, yOfs)
 end
 
-function TRB.Functions.Bar:SetValue(settings, bar, value, maxResource)
+function TRB.Functions.Bar:SetValue(settings, bar, value, maxResource, debug)
 	value = value or 0
 	if settings ~= nil and settings.bar ~= nil and bar ~= nil then
 		local min, max = bar:GetMinMaxValues()
+
 		local factor = max / maxResource
 
 		if maxResource == 0 then
@@ -156,9 +170,20 @@ function TRB.Functions.Bar:SetMinMax(settings)
 		TRB.Frames.resourceFrame:SetMinMaxValues(0, settings.bar.width)
 		TRB.Frames.castingFrame:SetMinMaxValues(0, settings.bar.width)
 		TRB.Frames.passiveFrame:SetMinMaxValues(0, settings.bar.width)
+		if TRB.Frames.resource2Frames ~= nil then
+			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
+			local nodes = TRB.Data.character.maxResource2
+			local nodeWidth = GetComboPointNodeWidth(settings)
+
+			if nodes == nil or nodes == 0 then
+				nodes = length
+			end
+			for x = 1, length do
+				TRB.Frames.resource2Frames[x].resourceFrame:SetMinMaxValues(0, nodeWidth)
+			end
+		end
 	end
 end
-
 
 function TRB.Functions.Bar:SetPositionOnPersonalResourceDisplay(settings, containerFrame)
 	if settings.bar.pinToPersonalResourceDisplay then
@@ -227,7 +252,7 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 		end
 
 		if settings.comboPoints.fullWidth then
-			nodeWidth = ((settings.bar.width - ((nodes - 1) * (nodeSpacing - settings.comboPoints.border * 2))) / nodes)
+			nodeWidth = GetComboPointNodeWidth(settings)
 
 			xPos = 0
 			totalWidth = settings.bar.width
@@ -323,12 +348,12 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 	TRB.Functions.Threshold:RedrawThresholdLines(settings)
 end
 
-function TRB.Functions.Bar:UpdateSmoothBar(settings)
+function TRB.Functions.Bar:UpdateSmoothBar()
 	if TRB.Data.settings.core.bar.smooth then
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.resourceFrame)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.castingFrame)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.passiveFrame)
-		if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil and TRB.Functions.Character:IsComboPointUser() then
+		if TRB.Frames.resource2Frames ~= nil and TRB.Functions.Character:IsComboPointUser() then
 			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 			local nodes = TRB.Data.character.maxResource2
 
@@ -344,7 +369,7 @@ function TRB.Functions.Bar:UpdateSmoothBar(settings)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.resourceFrame)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.castingFrame)
 		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.passiveFrame)
-		if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil and TRB.Functions.Character:IsComboPointUser() then
+		if TRB.Frames.resource2Frames ~= nil and TRB.Functions.Character:IsComboPointUser() then
 			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
 			local nodes = TRB.Data.character.maxResource2
 
@@ -522,7 +547,7 @@ function TRB.Functions.Bar:Construct(settings)
 
 		TRB.Functions.Bar:SetMinMax(settings)
 
-		TRB.Functions.Bar:UpdateSmoothBar(settings)
+		TRB.Functions.Bar:UpdateSmoothBar()
 
 		TRB.Functions.BarText:CreateBarTextFrames(settings)
 	end
