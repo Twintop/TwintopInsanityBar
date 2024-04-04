@@ -10,7 +10,7 @@ local content = [====[
 
 ---
 
-# 10.2.6.5-release (2024-04-05)
+# 10.2.6.6-release (2024-04-05)
 ## General
 
 - [#348 - NEW (Twintop, Koroshy)](#348) Add an option to have resource bar values update with a smooth animation, enabled by default.

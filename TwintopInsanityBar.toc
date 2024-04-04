@@ -3,7 +3,7 @@
 ## Title-frFR: Barre de Ressources Twintop
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 10.2.6.5
+## Version: 10.2.6.6
 ## X-ReleaseType: release
 ## X-ReleaseDate: 2024-04-05
 ## SavedVariables: TwintopInsanityBarSettings
