@@ -10,12 +10,14 @@ local content = [====[
 
 ---
 
-# 10.2.6.5-release (2024-04-01)
+# 10.2.6.5-release (2024-04-05)
 ## General
+
+- [#348 - NEW (Twintop, Koroshy)](#348) Add an option to have resource bar values update with a smooth animation, enabled by default.
+
 ### Localization
 
 - [#8 - UPDATE (Twintop)](#8) Add localization strings for Rogues, Shamans, and Warriors.
-- [#8 - UPDATE (unfug)](#8) Add more German (deDE) localizations.
 - [#8 - UPDATE (Twintop)](#8) Add more British English (enGB) localisations.
 - [#8 - UPDATE (Koroshy)](#8) Add more French (frFR) localizations.
 
