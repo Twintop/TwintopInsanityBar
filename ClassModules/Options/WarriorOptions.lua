@@ -398,7 +398,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				enabled = true,
 				name = L["PositionRight"],
 				guid=TRB.Functions.String:Guid(),
-				text="{$passive}[$passive+]{$casting}[$casting + ]{$passive}[$passive + ]$rage",
+				text="{$casting}[$casting + ]{$passive}[$passive + ]$rage",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "RIGHT",
@@ -883,7 +883,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.executeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_execute", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.executeThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdExecuteTooltip"])
+		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdExecute"])
 		f.tooltip = L["WarriorArmsThresholdExecuteTooltip"]
 		f:SetChecked(spec.thresholds.execute.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -960,7 +960,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.rendThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Arms_Threshold_Option_rend", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.rendThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdRendTooltip"])
+		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorArmsThresholdRend"])
 		f.tooltip = L["WarriorArmsThresholdRendTooltip"]
 		f:SetChecked(spec.thresholds.rend.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1662,7 +1662,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.executeMaximumThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_executeMaximum", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.executeMaximumThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdExecuteMaximumTooltip"])
+		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdExecuteMaximum"])
 		f.tooltip = L["WarriorFuryThresholdExecuteMaximumTooltip"]
 		f:SetChecked(spec.thresholds.executeMaximum.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1695,7 +1695,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		controls.checkBoxes.rampageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warrior_Fury_Threshold_Option_rampage", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.rampageThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdRampageTooltip"])
+		getglobal(f:GetName() .. 'Text'):SetText(L["WarriorFuryThresholdRampage"])
 		f.tooltip = L["WarriorFuryThresholdRampageTooltip"]
 		f:SetChecked(spec.thresholds.rampage.enabled)
 		f:SetScript("OnClick", function(self, ...)
@@ -1856,8 +1856,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local controls = interfaceSettingsFrame.controls.fury
 		local yCoord = 5
 		local f = nil
-
-		local title = ""
 
 		controls.buttons.exportButton_Warrior_Fury_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 		controls.buttons.exportButton_Warrior_Fury_AudioAndTracking:SetScript("OnClick", function(self, ...)
