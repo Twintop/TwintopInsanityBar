@@ -89,7 +89,8 @@ local function LoadDefaultSettings()
 				dragAndDrop=false,
 				pinToPersonalResourceDisplay=false,
 				showPassive=true,
-				showCasting=true
+				showCasting=true,
+				smooth=false
 			},
 			comboPoints = {
 				width=25,

@@ -35,6 +35,8 @@ end
 
 addonData.libs.ScrollingTable = LibStub:GetLibrary("ScrollingTable")
 
+addonData.libs.LibSmoothStatusBar = LibStub:GetLibrary("LibSmoothStatusBar-1.0")
+
 TRB.Details.addonData = addonData
 
 -- Some class functions get referenced by other methods. These live in a consistent location but are actually created in the class modules.

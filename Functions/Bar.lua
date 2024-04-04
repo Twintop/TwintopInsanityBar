@@ -323,6 +323,44 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 	TRB.Functions.Threshold:RedrawThresholdLines(settings)
 end
 
+function TRB.Functions.Bar:UpdateSmoothBar(settings)
+	if TRB.Data.settings.core.bar.smooth then
+		print("smooth")
+		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.resourceFrame)
+		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.castingFrame)
+		TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.passiveFrame)
+		if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil and TRB.Functions.Character:IsComboPointUser() then
+			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
+			local nodes = TRB.Data.character.maxResource2
+
+			if nodes == nil or nodes == 0 then
+				nodes = length
+			end
+
+			for x = 1, length do
+				TRB.Details.addonData.libs.LibSmoothStatusBar:SmoothBar(TRB.Frames.resource2Frames[x].resourceFrame)
+			end
+		end
+	else
+		print("flat")
+		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.resourceFrame)
+		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.castingFrame)
+		TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.passiveFrame)
+		if TRB.Frames.resource2Frames ~= nil and settings.comboPoints ~= nil and TRB.Functions.Character:IsComboPointUser() then
+			local length = TRB.Functions.Table:Length(TRB.Frames.resource2Frames)
+			local nodes = TRB.Data.character.maxResource2
+
+			if nodes == nil or nodes == 0 then
+				nodes = length
+			end
+
+			for x = 1, length do
+				TRB.Details.addonData.libs.LibSmoothStatusBar:ResetBar(TRB.Frames.resource2Frames[x].resourceFrame)
+			end
+		end
+	end
+end
+
 function TRB.Functions.Bar:Construct(settings)
 	if settings ~= nil and settings.bar ~= nil then
 		local barContainerFrame = TRB.Frames.barContainerFrame
@@ -486,6 +524,10 @@ function TRB.Functions.Bar:Construct(settings)
 
 		TRB.Functions.Bar:SetMinMax(settings)
 
+		TRB.Functions.Bar:UpdateSmoothBar(settings)
+
 		TRB.Functions.BarText:CreateBarTextFrames(settings)
 	end
+
+
 end
