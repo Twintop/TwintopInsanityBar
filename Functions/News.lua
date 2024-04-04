@@ -1064,8 +1064,8 @@ function TRB.Functions.News:BuildNewsPopup()
 	newsPanelParent:ClearAllPoints()
 	newsPanelParent:SetPoint("TOPLEFT", 5, -30)
 
-	TRB.Functions.OptionsUi:BuildSectionHeader(newsFrame, "Twintop's Resource Bar Updates", oUi.xCoord, 0)
-    local closeButton = TRB.Functions.OptionsUi:BuildButton(newsFrame, "Close", 510, -10, 100, 25)
+	TRB.Functions.OptionsUi:BuildSectionHeader(newsFrame, L["NewsHeaderTwintopsResourceBarUpdates"], oUi.xCoord, 0)
+    local closeButton = TRB.Functions.OptionsUi:BuildButton(newsFrame, L["Close"], 510, -10, 100, 25)
 	closeButton:ClearAllPoints()
 	closeButton:SetPoint("BOTTOMRIGHT", -5, 5)
     closeButton:SetScript("OnClick", function(self, ...)
@@ -1075,9 +1075,9 @@ function TRB.Functions.News:BuildNewsPopup()
     ---@type CheckButton
     local f = CreateFrame("CheckButton", "TwintopResourceBar_News_ShowAgain", newsFrame, "ChatConfigCheckButtonTemplate")
     f:SetPoint("BOTTOMLEFT", 5, 5)
-    getglobal(f:GetName() .. 'Text'):SetText("Show on new version release")
+    getglobal(f:GetName() .. 'Text'):SetText(L["NewsCheckboxShowOnNewVersion"])
 ---@diagnostic disable-next-line: inject-field
-    f.tooltip = "Show this update popup whenever a new version of Twintop's Resource Bar is released."
+    f.tooltip = L["NewsCheckboxShowOnNewVersionTooltip"]
     f:SetChecked(TRB.Data.settings.core.news.enabled)
     f:SetScript("OnClick", function(self, ...)
         TRB.Data.settings.core.news.enabled = self:GetChecked()
@@ -1115,7 +1115,7 @@ function TRB.Functions.News:BuildNewsPopup()
             elseif link:match("^#%d+$") then
                 local issueId = string.sub(link, 2)
                 local url = "https://github.com/Twintop/TwintopInsanityBar/issues/" .. issueId
-                local titleText = "view issue " .. link .. " on GitHub"
+                local titleText = string.format(L["NewsHyperlinkViewIssueOnGitHub"], link)
                 StaticPopup_Show("LIBMARKDOWNDEMOFRAME_URL", nil, nil, { title = titleText, url = url })
             end 
         end)
@@ -1129,7 +1129,7 @@ function TRB.Functions.News:BuildNewsPopup()
     StaticPopupDialogs["LIBMARKDOWNDEMOFRAME_URL"] = {
         OnShow = function(self, data)
 			self:SetWidth(450)
-            self.text:SetFormattedText("Here's a link to " .. data.title)
+            self.text:SetFormattedText(string.format(L["NewsHyperlinkGeneric"], data.title))
             self.editBox:SetText(data.url)
             self.editBox:SetAutoFocus(true)
             self.editBox:HighlightText()
@@ -1144,7 +1144,7 @@ function TRB.Functions.News:BuildNewsPopup()
 			self:GetParent():Hide()
         end,
         text = "",
-        button1 = "OK",
+        button1 = L["OK"],
         hasEditBox = true,
         hasWideEditBox = true,
         editBoxWidth = 400,
