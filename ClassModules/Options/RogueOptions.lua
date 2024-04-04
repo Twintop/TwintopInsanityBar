@@ -770,7 +770,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					soundName = L["LSMSoundAirHorn"]
 				},
 				opportunity={
-					name = L["RogueOutlawAudioBlindsideProc"],
+					name = L["RogueOutlawAudioOpportunityProc"],
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
 					soundName = L["LSMSoundAirHorn"]

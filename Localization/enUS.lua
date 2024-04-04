@@ -1155,11 +1155,9 @@ L["RogueAudioCheckboxSepsisProc"] = "Play audio cue when you gain Sepsis buff"
 L["RogueAudioCheckboxSepsisProcTooltip"] = "Play an audio cue when you gain Sepsis buff that allows you to use a stealth ability outside of steath."
 L["RogueCheckboxEnergyRegenGcdsTooltip"] = "Shows the amount of Energy generation over the next X GCDs, based on player's current GCD length."
 L["RogueCheckboxEnergyRegenTimeTooltip"] = "Shows the amount of Energy generation over the next X seconds."
-
 L["RogueAssassinationCheckboxAlwaysDefaultBackground"] = "When checked, unfilled combo points will always use the 'Unfilled Combo Point background' color above for their background. Borders will still change color depending on Echoing Reprimand and Serrated Bone Spike settings."
 L["RogueAssassinationColorPickerSerratedBoneSpike"] = "Combo Point that will generate on next Serrated Bone Spike use"
 L["RogueAssassinationColorPickerThresholdSpecial"] = "Improved Garrote effect up"
-
 L["RogueAssassinationThresholdAmbush"] = "Ambush (stealth)"
 L["RogueAssassinationThresholdAmbushTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Ambush. Only visible when in Stealth or usable via Blindside, Sepsis, or Subterfuge."
 L["RogueAssassinationThresholdCheapShot"] = "Cheap Shot (stealth)"
@@ -1208,7 +1206,6 @@ L["RogueAssassinationThresholdDismantle"] = "Dismantle"
 L["RogueAssassinationThresholdDismantleTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Dismantle."
 L["RogueAssassinationAudioCheckboxBlindsideProc"] = "Play audio cue when a Blindside proc occurs"
 L["RogueAssassinationAudioCheckboxBlindsideProcTooltip"] = "Play an audio cue when a Blindside proc occurs, allowing Ambush to be used outside of stealth."
-
 L["RogueOutlawColorPickerRollTheBonesHold"] = "Border color when you should not use Roll the Bones (keep current rolls)"
 L["RogueOutlawColorPickerRollTheBonesUse"] = "Border color when you should use Roll the Bones (not up or should reroll)"
 L["RogueOutlawCheckboxAlwaysDefaultBackgroundTooltip"] = "When checked, unfilled combo points will always use the 'Unfilled Combo Point background' color above for their background. Borders will still change color depending on Echoing Reprimand settings."
@@ -1264,7 +1261,6 @@ L["RogueOutlawThresholdOpportunity"] = "Play audio cue when an Opportunity proc 
 L["RogueOutlawThresholdOpportunityTooltip"] = "Play an audio cue when an Opportunity proc occurs."
 L["RogueOutlawAudioCheckboxBlindsideProc"] = "Play audio cue when a Blindside proc occurs"
 L["RogueOutlawAudioCheckboxBlindsideProcTooltip"] = "Play an audio cue when a Blindside proc occurs, allowing Ambush to be used outside of stealth."
-
 L["RogueSubtletyColorPickerShadowcraft"] = "Border color when Shadowcraft will grant full Combo Points after using a finisher"
 L["RogueSubtletyColorPickerShadowTechniques"] = "Combo Point that will generate from Shadow Techniques"
 L["RogueSubtletyCheckboxAlwaysDefaultBackgroundTooltip"] = "When checked, unfilled combo points will always use the 'Unfilled Combo Point background' color above for their background. Borders will still change color depending on Echoing Reprimand settings."
