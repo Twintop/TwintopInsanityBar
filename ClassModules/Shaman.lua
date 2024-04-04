@@ -1,6 +1,7 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 7 then --Only do this if we're on a Shaman!
+	local L = TRB.Localization
 	TRB.Functions.Class = TRB.Functions.Class or {}
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
@@ -654,9 +655,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.elemental.barTextVariables.icons = {
-			{ variable = "#casting", icon = "", description = "The icon of the Maelstrom generating spell you are currently hardcasting", printInSettings = true },
-			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+			{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
 			{ variable = "#ascendance", icon = spells.ascendance.icon, description = spells.ascendance.name, printInSettings = true },
 			{ variable = "#chainLightning", icon = spells.chainLightning.icon, description = spells.chainLightning.name, printInSettings = true },
@@ -673,36 +674,36 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "#stormkeeper", icon = spells.stormkeeper.icon, description = spells.stormkeeper.name, printInSettings = true },
 		}
 		specCache.elemental.barTextVariables.values = {
-			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
-			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
-			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
-			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
-			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
-			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
-			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
-			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
-			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
-			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+			{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
+			{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
+			{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
+			{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
+			{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
+			{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
+			{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
+			{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
+			{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
 
-			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
-			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
-			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
-			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
-			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
-			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
-			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
-			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
+			{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
+			{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
+			{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
+			{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
+			{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
+			{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
+			{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 			
-			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+			{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
 			{ variable = "$maelstrom", description = "Current Maelstrom", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Maelstrom", printInSettings = false, color = false },
@@ -733,8 +734,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 			{ variable = "$pfTime", description = "Time remaining on Primal Fracture (T30 4P) buff", printInSettings = true, color = false },
 
-			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+			{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 		}
 		
 		specCache.elemental.spells = spells
@@ -746,44 +747,44 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.enhancement.barTextVariables.icons = {
-			{ variable = "#casting", icon = "", description = "The icon of the Mana generating spell you are currently hardcasting", printInSettings = true },
-			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+			{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 			
 			{ variable = "#ascendance", icon = spells.ascendance.icon, description = spells.ascendance.name, printInSettings = true },
 			{ variable = "#flameShock", icon = spells.flameShock.icon, description = spells.flameShock.name, printInSettings = true },
 		}
 		specCache.enhancement.barTextVariables.values = {
-			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
-			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
-			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
-			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
-			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
-			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
-			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
-			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
-			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
-			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+			{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
+			{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
+			{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
+			{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
+			{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
+			{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
+			{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
+			{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
+			{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
 
-			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
-			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
-			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
-			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
-			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
-			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
-			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
-			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
+			{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
+			{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
+			{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
+			{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
+			{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
+			{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
+			{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 			
-			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+			{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
 			{ variable = "$mana", description = "Current Mana", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },
@@ -800,8 +801,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "$fsCount", description = "Number of Flame Shocks active on targets", printInSettings = true, color = false },
 			{ variable = "$fsTime", description = "Time remaining on Flame Shock on your current target", printInSettings = true, color = false },
 			
-			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+			{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 		}
 
 		specCache.enhancement.spells = spells
@@ -813,9 +814,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.restoration.barTextVariables.icons = {
-			{ variable = "#casting", icon = "", description = "The icon of the mana spending spell you are currently casting", printInSettings = true },
-			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+			{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 			
 			{ variable = "#ascendance", icon = spells.ascendance.icon, description = spells.ascendance.name, printInSettings = true },
 			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
@@ -836,36 +837,36 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "#flameShock", icon = spells.flameShock.icon, description = spells.flameShock.name, printInSettings = true },
 		}
 		specCache.restoration.barTextVariables.values = {
-			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
-			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
-			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
-			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
-			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
-			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
-			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
-			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
-			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
-			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+			{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
+			{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
+			{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
+			{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
+			{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
+			{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
+			{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
+			{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
+			{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
 
-			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
-			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
-			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
-			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
-			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
-			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
-			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
-			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
+			{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
+			{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
+			{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
+			{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
+			{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
+			{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
+			{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 			
-			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+			{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
 			{ variable = "$mana", description = "Current Mana", printInSettings = true, color = false },
 			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },
@@ -911,8 +912,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			
 			{ variable = "$ascendanceTime", description = "Duration remaining of Ascendance", printInSettings = true, color = false },
 
-			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+			{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 		}
 
 		specCache.restoration.spells = spells
