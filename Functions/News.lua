@@ -17,7 +17,8 @@ local content = [====[
 
 ### Localization
 
-- [#8 - UPDATE (Twintop)](#8) Add localization strings for Rogues, Shamans, and Warriors.
+- [#8 - UPDATE (Twintop)](#8) Add localization strings for Rogues, Shamans, Warriors, bar text variables, bar text icons, and the News popup.
+- [#8 - COMPLETE (Twintop)](#8) All existing text strings in the Bar should now be localizable!
 - [#8 - UPDATE (Twintop)](#8) Add more British English (enGB) localisations.
 - [#8 - UPDATE (Koroshy)](#8) Add more French (frFR) localizations.
 
