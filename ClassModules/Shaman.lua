@@ -705,34 +705,34 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			
 			{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-			{ variable = "$maelstrom", description = "Current Maelstrom", printInSettings = true, color = false },
-			{ variable = "$resource", description = "Current Maelstrom", printInSettings = false, color = false },
-			{ variable = "$maelstromMax", description = "Maximum Maelstrom", printInSettings = true, color = false },
-			{ variable = "$resourceMax", description = "Maximum Maelstrom", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Maelstrom from Hardcasting Spells", printInSettings = true, color = false },
-			{ variable = "$passive", description = "Maelstrom from Passive Sources", printInSettings = true, color = false },
-			{ variable = "$maelstromPlusCasting", description = "Current + Casting Maelstrom Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusCasting", description = "Current + Casting Maelstrom Total", printInSettings = false, color = false },
-			{ variable = "$maelstromPlusPassive", description = "Current + Passive Maelstrom Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusPassive", description = "Current + Passive Maelstrom Total", printInSettings = false, color = false },
-			{ variable = "$maelstromTotal", description = "Current + Passive + Casting Maelstrom Total", printInSettings = true, color = false },   
-			{ variable = "$resourceTotal", description = "Current + Passive + Casting Maelstrom Total", printInSettings = false, color = false },   
+			{ variable = "$maelstrom", description = L["ShamanElementalBarTextVariable_maelstrom"], printInSettings = true, color = false },
+			{ variable = "$resource", description = "", printInSettings = false, color = false },
+			{ variable = "$maelstromMax", description = L["ShamanElementalBarTextVariable_maelstromMax"], printInSettings = true, color = false },
+			{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+			{ variable = "$casting", description = L["ShamanElementalBarTextVariable_casting"], printInSettings = true, color = false },
+			{ variable = "$passive", description = L["ShamanElementalBarTextVariable_passive"], printInSettings = true, color = false },
+			{ variable = "$maelstromPlusCasting", description = L["ShamanElementalBarTextVariable_maelstromPlusCasting"], printInSettings = true, color = false },
+			{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
+			{ variable = "$maelstromPlusPassive", description = L["ShamanElementalBarTextVariable_maelstromPlusPassive"], printInSettings = true, color = false },
+			{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
+			{ variable = "$maelstromTotal", description = L["ShamanElementalBarTextVariable_maelstromTotal"], printInSettings = true, color = false },   
+			{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },   
 
-			{ variable = "$fsCount", description = "Number of Flame Shocks active on targets", printInSettings = true, color = false },
-			{ variable = "$fsTime", description = "Time remaining on Flame Shock on your current target", printInSettings = true, color = false },
+			{ variable = "$fsCount", description = L["ShamanElementalBarTextVariable_fsCount"], printInSettings = true, color = false },
+			{ variable = "$fsTime", description = L["ShamanElementalBarTextVariable_fsTime"], printInSettings = true, color = false },
 
-			{ variable = "$ifStacks", description = "Number of Icefury Frost Shock stacks remaining", printInSettings = true, color = false },
-			{ variable = "$ifMaelstrom", description = "Total Maelstrom from available Icefury Frost Shock stacks", printInSettings = true, color = false },
-			{ variable = "$ifTime", description = "Time remaining on Icefury buff", printInSettings = true, color = false },
+			{ variable = "$ifStacks", description = L["ShamanElementalBarTextVariable_ifStacks"], printInSettings = true, color = false },
+			{ variable = "$ifMaelstrom", description = L["ShamanElementalBarTextVariable_ifMaelstrom"], printInSettings = true, color = false },
+			{ variable = "$ifTime", description = L["ShamanElementalBarTextVariable_ifTime"], printInSettings = true, color = false },
 
-			{ variable = "$skStacks", description = "Number of Stormkeeper stacks remaining", printInSettings = true, color = false },
-			{ variable = "$skTime", description = "Time remaining on Stormkeeper buff", printInSettings = true, color = false },
+			{ variable = "$skStacks", description = L["ShamanElementalBarTextVariable_skStacks"], printInSettings = true, color = false },
+			{ variable = "$skTime", description = L["ShamanElementalBarTextVariable_skTime"], printInSettings = true, color = false },
 
-			{ variable = "$ascendanceTime", description = "Duration remaining of Ascendance", printInSettings = true, color = false },
+			{ variable = "$ascendanceTime", description = L["ShamanElementalBarTextVariable_ascendanceTime"], printInSettings = true, color = false },
 
-			{ variable = "$eogsTime", description = "Time remaining on Echoes of Great Sundering buff", printInSettings = true, color = false },
+			{ variable = "$eogsTime", description = L["ShamanElementalBarTextVariable_eogsTime"], printInSettings = true, color = false },
 
-			{ variable = "$pfTime", description = "Time remaining on Primal Fracture (T30 4P) buff", printInSettings = true, color = false },
+			{ variable = "$pfTime", description = L["ShamanElementalBarTextVariable_pfTime"], printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
@@ -786,20 +786,20 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			
 			{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-			{ variable = "$mana", description = "Current Mana", printInSettings = true, color = false },
-			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },
-			{ variable = "$manaMax", description = "Maximum Mana", printInSettings = true, color = false },
-			{ variable = "$resourceMax", description = "Maximum Mana", printInSettings = false, color = false },
+			{ variable = "$mana", description = L["ShamanEnhancementBarTextVariable_mana"], printInSettings = true, color = false },
+			{ variable = "$resource", description = "", printInSettings = false, color = false },
+			{ variable = "$manaMax", description = L["ShamanEnhancementBarTextVariable_manaMax"], printInSettings = true, color = false },
+			{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 			
-			{ variable = "$maelstromWeapon", description = "Current Maelstrom Weapon", printInSettings = true, color = false },
-			{ variable = "$comboPoints", description = "Current Maelstrom Weapon", printInSettings = false, color = false },
-			{ variable = "$maelstromWeaponMax", description = "Maximum Maelstrom Weapon", printInSettings = true, color = false },
-			{ variable = "$comboPointsMax", description = "Maximum Maelstrom Weapon", printInSettings = false, color = false },
+			{ variable = "$maelstromWeapon", description = L["ShamanEnhancementBarTextVariable_maelstromWeapon"], printInSettings = true, color = false },
+			{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
+			{ variable = "$maelstromWeaponMax", description = L["ShamanEnhancementBarTextVariable_maelstromWeaponMax"], printInSettings = true, color = false },
+			{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
 
-			{ variable = "$ascendanceTime", description = "Duration remaining of Ascendance", printInSettings = true, color = false },
+			{ variable = "$ascendanceTime", description = L["ShamanEnhancementBarTextVariable_ascendanceTime"], printInSettings = true, color = false },
 
-			{ variable = "$fsCount", description = "Number of Flame Shocks active on targets", printInSettings = true, color = false },
-			{ variable = "$fsTime", description = "Time remaining on Flame Shock on your current target", printInSettings = true, color = false },
+			{ variable = "$fsCount", description = L["ShamanEnhancementBarTextVariable_fsCount"], printInSettings = true, color = false },
+			{ variable = "$fsTime", description = L["ShamanEnhancementBarTextVariable_fsTime"], printInSettings = true, color = false },
 			
 			{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
@@ -868,49 +868,49 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			
 			{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-			{ variable = "$mana", description = "Current Mana", printInSettings = true, color = false },
-			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },
-			{ variable = "$manaPercent", description = "Current Mana Percentage", printInSettings = true, color = false },
-			{ variable = "$resourcePercent", description = "Current Mana Percentage", printInSettings = false, color = false },
-			{ variable = "$manaMax", description = "Maximum Mana", printInSettings = true, color = false },
-			{ variable = "$resourceMax", description = "Maximum Mana", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Mana from Hardcasting Spells", printInSettings = true, color = false },
-			{ variable = "$passive", description = "Mana from Passive Sources", printInSettings = true, color = false },
-			{ variable = "$manaPlusCasting", description = "Current + Casting Mana Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusCasting", description = "Current + Casting Mana Total", printInSettings = false, color = false },
-			{ variable = "$manaPlusPassive", description = "Current + Passive Mana Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusPassive", description = "Current + Passive Mana Total", printInSettings = false, color = false },
-			{ variable = "$manaTotal", description = "Current + Passive + Casting Mana Total", printInSettings = true, color = false },
-			{ variable = "$resourceTotal", description = "Current + Passive + Casting Mana Total", printInSettings = false, color = false },
+			{ variable = "$mana", description = L["ShamanRestorationBarTextVariable_mana"], printInSettings = true, color = false },
+			{ variable = "$resource", description = "", printInSettings = false, color = false },
+			{ variable = "$manaPercent", description = L["ShamanRestorationBarTextVariable_manaPercent"], printInSettings = true, color = false },
+			{ variable = "$resource", description = "", printInSettings = false, color = false },
+			{ variable = "$manaMax", description = L["ShamanRestorationBarTextVariable_manaMax"], printInSettings = true, color = false },
+			{ variable = "$resourceMAx", description = "", printInSettings = false, color = false },
+			{ variable = "$casting", description = L["ShamanRestorationBarTextVariable_casting"], printInSettings = true, color = false },
+			{ variable = "$passive", description = L["ShamanRestorationBarTextVariable_passive"], printInSettings = true, color = false },
+			{ variable = "$manaPlusCasting", description = L["ShamanRestorationBarTextVariable_manaPlusCasting"], printInSettings = true, color = false },
+			{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
+			{ variable = "$manaPlusPassive", description = L["ShamanRestorationBarTextVariable_manaPlusPassive"], printInSettings = true, color = false },
+			{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
+			{ variable = "$manaTotal", description = L["ShamanRestorationBarTextVariable_manaTotal"], printInSettings = true, color = false },
+			{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
 
-			{ variable = "$sohMana", description = "Mana from Symbol of Hope", printInSettings = true, color = false },
-			{ variable = "$sohTime", description = "Time left on Symbol of Hope", printInSettings = true, color = false },
-			{ variable = "$sohTicks", description = "Number of ticks left from Symbol of Hope", printInSettings = true, color = false },
+			{ variable = "$sohMana", description = L["ShamanRestorationBarTextVariable_sohMana"], printInSettings = true, color = false },
+			{ variable = "$sohTime", description = L["ShamanRestorationBarTextVariable_sohTime"], printInSettings = true, color = false },
+			{ variable = "$sohTicks", description = L["ShamanRestorationBarTextVariable_sohTicks"], printInSettings = true, color = false },
 
-			{ variable = "$innervateMana", description = "Passive mana regen while Innervate is active", printInSettings = true, color = false },
-			{ variable = "$innervateTime", description = "Time left on Innervate", printInSettings = true, color = false },
+			{ variable = "$innervateMana", description = L["ShamanRestorationBarTextVariable_innervateMana"], printInSettings = true, color = false },
+			{ variable = "$innervateTime", description = L["ShamanRestorationBarTextVariable_innervateTime"], printInSettings = true, color = false },
 									
-			{ variable = "$mrMana", description = "Mana from Molten Radiance", printInSettings = true, color = false },
-			{ variable = "$mrTime", description = "Time left on Molten Radiance", printInSettings = true, color = false },
+			{ variable = "$mrMana", description = L["ShamanRestorationBarTextVariable_mrMana"], printInSettings = true, color = false },
+			{ variable = "$mrTime", description = L["ShamanRestorationBarTextVariable_mrTime"], printInSettings = true, color = false },
 
-			{ variable = "$mttMana", description = "Bonus passive mana regen while Mana Tide Totem is active", printInSettings = true, color = false },
-			{ variable = "$mttTime", description = "Time left on Mana Tide Totem", printInSettings = true, color = false },
+			{ variable = "$mttMana", description = L["ShamanRestorationBarTextVariable_mttMana"], printInSettings = true, color = false },
+			{ variable = "$mttTime", description = L["ShamanRestorationBarTextVariable_mttTime"], printInSettings = true, color = false },
 			
-			{ variable = "$channeledMana", description = "Mana while channeling of Potion of Frozen Focus", printInSettings = true, color = false },
+			{ variable = "$channeledMana", description = L["ShamanRestorationBarTextVariable_channeledMana"], printInSettings = true, color = false },
 
-			{ variable = "$potionOfChilledClarityMana", description = "Passive mana regen while Potion of Chilled Clarity's effect is active", printInSettings = true, color = false },
-			{ variable = "$potionOfChilledClarityTime", description = "Time left on Potion of Chilled Clarity's effect", printInSettings = true, color = false },
+			{ variable = "$potionOfChilledClarityMana", description = L["ShamanRestorationBarTextVariable_potionOfChilledClarityMana"], printInSettings = true, color = false },
+			{ variable = "$potionOfChilledClarityTime", description = L["ShamanRestorationBarTextVariable_potionOfChilledClarityTime"], printInSettings = true, color = false },
 
-			{ variable = "$potionOfFrozenFocusTicks", description = "Number of ticks left channeling Potion of Frozen Focus", printInSettings = true, color = false },
-			{ variable = "$potionOfFrozenFocusTime", description = "Amount of time, in seconds, remaining of your channel of Potion of Frozen Focus", printInSettings = true, color = false },
+			{ variable = "$potionOfFrozenFocusTicks", description = L["ShamanRestorationBarTextVariable_potionOfFrozenFocusTicks"], printInSettings = true, color = false },
+			{ variable = "$potionOfFrozenFocusTime", description = L["ShamanRestorationBarTextVariable_potionOfFrozenFocusTime"], printInSettings = true, color = false },
 			
-			{ variable = "$potionCooldown", description = "How long, in seconds, is left on your potion's cooldown in MM:SS format", printInSettings = true, color = false },
-			{ variable = "$potionCooldownSeconds", description = "How long, in seconds, is left on your potion's cooldown in seconds", printInSettings = true, color = false },
+			{ variable = "$potionCooldown", description = L["ShamanRestorationBarTextVariable_potionCooldown"], printInSettings = true, color = false },
+			{ variable = "$potionCooldownSeconds", description = L["ShamanRestorationBarTextVariable_potionCooldownSeconds"], printInSettings = true, color = false },
 
-			{ variable = "$fsCount", description = "Number of Flame Shocks active on targets", printInSettings = true, color = false },
-			{ variable = "$fsTime", description = "Time remaining on Flame Shock on your current target", printInSettings = true, color = false },
+			{ variable = "$fsCount", description = L["ShamanRestorationBarTextVariable_fsCount"], printInSettings = true, color = false },
+			{ variable = "$fsTime", description = L["ShamanRestorationBarTextVariable_fsTime"], printInSettings = true, color = false },
 			
-			{ variable = "$ascendanceTime", description = "Duration remaining of Ascendance", printInSettings = true, color = false },
+			{ variable = "$ascendanceTime", description = L["ShamanRestorationBarTextVariable_ascendanceTime"], printInSettings = true, color = false },
 
 			{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 			{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
