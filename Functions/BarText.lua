@@ -876,25 +876,27 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 		local entries = TRB.Functions.Table:Length(displayText.barText)
 		if entries > 0 then
 			for i = 1, entries do
-				local e = displayText.barText[i]
-				local color = e.color
-				
-				if e.useDefaultFontColor then
-					color = displayText.default.color
+				if displayText.barText[i].enabled then
+					local e = displayText.barText[i]
+					local color = e.color
+					
+					if e.useDefaultFontColor then
+						color = displayText.default.color
+					end
+
+					local barText = {
+						text = e.text,
+						color = string.format("|c%s", color)
+					}
+
+					local returnText = GetReturnText(barText)
+
+					--local pcallResult = pcall(TryUpdateText, textFrames[i], returnText)
+					pcall(TryUpdateText, textFrames[i], returnText)
+					
+					textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+					textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
 				end
-
-				local barText = {
-					text = e.text,
-					color = string.format("|c%s", color)
-				}
-
-				local returnText = GetReturnText(barText)
-
-				--local pcallResult = pcall(TryUpdateText, textFrames[i], returnText)
-				pcall(TryUpdateText, textFrames[i], returnText)
-				
-				textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
-				textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
 			end
 		end
 	end

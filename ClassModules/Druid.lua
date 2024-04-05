@@ -1113,7 +1113,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "#newMoon", icon = spells.newMoon.icon, description = spells.newMoon.name, printInSettings = true },
 			{ variable = "#halfMoon", icon = spells.halfMoon.icon, description = spells.halfMoon.name, printInSettings = true },
 			{ variable = "#fullMoon", icon = spells.fullMoon.icon, description = spells.fullMoon.name, printInSettings = true },
-			{ variable = "#moon", icon = string.format(L["DruidBalanceIconDescription_moon"], spells.newMoon.icon, spells.halfMoon.icon, spells.fullMoon.icon), description = L["DruidBalanceIconDescription_moon"], printInSettings = true },
+			{ variable = "#moon", icon = string.format(L["DruidBalanceIcon_moon"], spells.newMoon.icon, spells.halfMoon.icon, spells.fullMoon.icon), description = L["DruidBalanceIconDescription_moon"], printInSettings = true },
 		}
 		specCache.balance.barTextVariables.values = {
 			{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -1648,6 +1648,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			TRB.Frames.resource2ContainerFrame:Hide()
 		end
 
+		TRB.Functions.Class:CheckCharacter()
 		TRB.Functions.Bar:Construct(settings)
 
 		if specId == 1 or specId == 2 or specId == 4 then
@@ -1854,12 +1855,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 
-		--$mdTime
+		--$statweaverTime
 		local _starweaverTime = 0
+		local _starweaver = false
+		local _starweaversWarp = false
+		local _starweaversWeft = false
+
 		if snapshotData.snapshots[spells.starweaversWarp.id].buff.isActive then
 			_starweaverTime = snapshotData.snapshots[spells.starweaversWarp.id].buff:GetRemainingTime(currentTime)
+			_starweaver = true
+			_starweaversWarp = true
 		elseif snapshotData.snapshots[spells.starweaversWarp.id].buff.isActive then
 			_starweaverTime = snapshotData.snapshots[spells.starweaversWeft.id].buff:GetRemainingTime(currentTime)
+			_starweaver = true
+			_starweaversWeft = true
 		end
 		local starweaverTime = TRB.Functions.BarText:TimerPrecision(_starweaverTime)
 
@@ -2000,6 +2009,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$eclipseSolar"] = ""
 		lookup["$celestialAlignment"] = ""
 		lookup["$starweaverTime"] = starweaverTime
+		lookup["$starweaver"] = ""
 		lookup["$starweaversWarp"] = ""
 		lookup["$starweaversWeft"] = ""
 		lookup["$moonAstralPower"] = moonAstralPower
@@ -2018,6 +2028,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$astralPowerMax"] = TRB.Data.character.maxResource
 		lookup["$astralPower"] = currentAstralPower
 		lookup["$resourcePlusCasting"] = astralPowerPlusCasting
+		lookup["$energyPlusCasting"] = astralPowerPlusCasting
 		lookup["$resourcePlusPassive"] = astralPowerPlusPassive
 		lookup["$resourceTotal"] = astralPowerTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
@@ -2044,7 +2055,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookupLogic["$pulsarStarsurgeCount"] = pulsarStarsurgeCount
 		lookupLogic["$pulsarStarfallCount"] = pulsarStarfallCount
 		lookupLogic["$eclipseTime"] = _eclispeTime
+		lookupLogic["$starweaver"] = _starweaver
 		lookupLogic["$starweaverTime"] = _starweaverTime
+		lookupLogic["$starweaversWarp"] = _starweaversWarp
+		lookupLogic["$starweaversWeft"] = _starweaversWeft
 		lookupLogic["$moonAstralPower"] = moonAstralPower
 		lookupLogic["$moonCharges"] = moonCharges
 		lookupLogic["$moonCooldown"] = _moonCooldown
@@ -2451,6 +2465,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		}
 
 		local lookup = TRB.Data.lookup or {}
+		lookup["#apexPredatorsCraving"] = spells.apexPredatorsCraving.icon
 		lookup["#berserk"] = spells.berserk.icon
 		lookup["#bloodtalons"] = spells.bloodtalons.icon
 		lookup["#brutalSlash"] = spells.brutalSlash.icon
@@ -2526,7 +2541,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$energyMax"] = TRB.Data.character.maxResource
 		lookup["$energy"] = currentEnergy
 		lookup["$resourcePlusCasting"] = energyPlusCasting
+		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$resourcePlusPassive"] = energyPlusPassive
+		lookup["$energyPlusPassive"] = energyPlusPassive
 		lookup["$resourceTotal"] = energyTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentEnergy
@@ -5102,19 +5119,19 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 			elseif var == "$brutalSlashCharges" then
 				if talents:IsTalentActive(spells.brutalSlash) then
-					if snapshotData.attributes.brutalSlash.charges > 0 then
+					if snapshotData.snapshots[spells.brutalSlash.id].cooldown.charges > 0 then
 						valid = true
 					end
 				end
 			elseif var == "$brutalSlashCooldown" then
 				if talents:IsTalentActive(spells.brutalSlash) then
-					if snapshotData.attributes.brutalSlash.cooldown > 0 then
+					if snapshotData.snapshots[spells.brutalSlash.id].cooldown.onCooldown then
 						valid = true
 					end
 				end
 			elseif var == "$brutalSlashCooldownTotal" then
 				if talents:IsTalentActive(spells.brutalSlash) then
-					if snapshotData.attributes.brutalSlash.charges < snapshotData.attributes.brutalSlash.maxCharges then
+					if snapshotData.snapshots[spells.brutalSlash.id].cooldown.charges < snapshotData.snapshots[spells.brutalSlash.id].cooldown.maxCharges then
 						valid = true
 					end
 				end
@@ -5191,6 +5208,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			if var == "$resource" or var == "$mana" then
 				valid = true
 			elseif var == "$resourceMax" or var == "$manaMax" then
+				valid = true
+			elseif var == "$resourcePercent" or var == "$manaPercent" then
 				valid = true
 			elseif var == "$resourceTotal" or var == "$manaTotal" then
 				valid = true
@@ -5322,7 +5341,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					valid = true
 				end
 			elseif var == "$incarnationTime" then
-				if snapshots[spells.incarnationChosenOfElune.id].buff.isActive  then
+				if snapshots[spells.incarnationTreeOfLife.id].buff.isActive  then
 					valid = true
 				end
 			elseif var == "$reforestationStacks" then

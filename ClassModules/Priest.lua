@@ -1635,11 +1635,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			{ variable = "$holyWordSanctifyCharges", description = "", printInSettings = false, color = false },
 			
 			{ variable = "$hwSerenityTime", description = L["PriestHolyBarTextVariable_hwSerenityTime"], printInSettings = true, color = false },
-			{ variable = "$serentityTime", description = "", printInSettings = false, color = false },
-			{ variable = "$holyWordSerentityTime", description = "", printInSettings = false, color = false },
+			{ variable = "$serenityTime", description = "", printInSettings = false, color = false },
+			{ variable = "$holyWordSerenityTime", description = "", printInSettings = false, color = false },
 			
 			{ variable = "$hwSerenityCharges", description = L["PriestHolyBarTextVariable_hwSerenityCharges"], printInSettings = true, color = false },
-			{ variable = "$serentityCharges", description = "", printInSettings = false, color = false },
+			{ variable = "$serenityCharges", description = "", printInSettings = false, color = false },
 			{ variable = "$holyWordSerenityCharges", description = "", printInSettings = false, color = false },
 			
 			{ variable = "$sacredReverenceStacks", description = L["PriestHolyBarTextVariable_sacredReverenceStacks"], printInSettings = true, color = false },
@@ -1990,19 +1990,19 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Frames.passiveFrame.thresholds[x]:Hide()
 			end
 			
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.aeratedManaPotionRank1.settingKey, TRB.Data.settings.priest.discipline)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.aeratedManaPotionRank2.settingKey, TRB.Data.settings.priest.discipline)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], spells.aeratedManaPotionRank3.settingKey, TRB.Data.settings.priest.discipline)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], spells.potionOfFrozenFocusRank1.settingKey, TRB.Data.settings.priest.discipline)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.priest.discipline)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.priest.discipline)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], spells.conjuredChillglobe.settingKey, TRB.Data.settings.priest.discipline)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.aeratedManaPotionRank1.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.aeratedManaPotionRank2.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], spells.aeratedManaPotionRank3.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], spells.potionOfFrozenFocusRank1.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], spells.potionOfFrozenFocusRank2.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], spells.potionOfFrozenFocusRank3.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], spells.conjuredChillglobe.settingKey, settings)
 			TRB.Frames.resource2ContainerFrame:Show()
 
 			if talents:IsTalentActive(spells.mindbender) then
-				TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[8], spells.mindbender.settingKey, TRB.Data.settings.priest.discipline)
+				TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[8], spells.mindbender.settingKey, settings)
 			else
-				TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[8], spells.shadowfiend.settingKey, TRB.Data.settings.priest.discipline)
+				TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[8], spells.shadowfiend.settingKey, settings)
 			end
 		elseif specId == 2 then
 			for x = 1, 9 do
@@ -2025,15 +2025,15 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Frames.passiveFrame.thresholds[x]:Hide()
 			end
 			
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.aeratedManaPotionRank1.settingKey, TRB.Data.settings.priest.holy)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.aeratedManaPotionRank2.settingKey, TRB.Data.settings.priest.holy)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], spells.aeratedManaPotionRank3.settingKey, TRB.Data.settings.priest.holy)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], spells.potionOfFrozenFocusRank1.settingKey, TRB.Data.settings.priest.holy)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.priest.holy)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.priest.holy)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], spells.conjuredChillglobe.settingKey, TRB.Data.settings.priest.holy)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[8], spells.shadowfiend.settingKey, TRB.Data.settings.priest.holy)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[9], spells.symbolOfHope.settingKey, TRB.Data.settings.priest.holy)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.aeratedManaPotionRank1.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.aeratedManaPotionRank2.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], spells.aeratedManaPotionRank3.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], spells.potionOfFrozenFocusRank1.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], spells.potionOfFrozenFocusRank2.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], spells.potionOfFrozenFocusRank3.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], spells.conjuredChillglobe.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[8], spells.shadowfiend.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[9], spells.symbolOfHope.settingKey, settings)
 			TRB.Frames.resource2ContainerFrame:Show()
 		elseif specId == 3 then
 			for x = 1, 3 do
@@ -2056,19 +2056,14 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 				TRB.Frames.passiveFrame.thresholds[x]:Hide()
 			end
 
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.devouringPlague.settingKey, TRB.Data.settings.priest.shadow)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.devouringPlague2.settingKey, TRB.Data.settings.priest.shadow)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], spells.devouringPlague3.settingKey, TRB.Data.settings.priest.shadow)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.devouringPlague.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.devouringPlague2.settingKey, settings)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], spells.devouringPlague3.settingKey, settings)
 			TRB.Frames.resource2ContainerFrame:Hide()
 		end
 
+		TRB.Functions.Class:CheckCharacter()
 		TRB.Functions.Bar:Construct(settings)
-
-		if specId == 1 or
-			specId == 2 or
-			specId == 3 then
-			TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
-		end
 	end
 
 	local function CalculateHolyWordCooldown(base, spellId)
@@ -3123,6 +3118,9 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$ecttvCount"] = ecttvCount
 		lookup["$asCount"] = asCount
 		lookup["$asInsanity"] = asInsanity
+		lookup["$overcap"] = ""
+		lookup["$insanityOvercap"] = ""
+		lookup["$resourceOvercap"] = ""
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
@@ -5226,7 +5224,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			lookup["#shadowWordPain"] = spells.shadowWordPain.icon
 			lookup["#sacredReverence"] = spells.sacredReverence.icon
 			lookup["#sf"] = spells.shadowfiend.icon
-			lookup["#sf"] = spells.shadowfiend.icon
+			lookup["#shadowfiend"] = spells.shadowfiend.icon
 			TRB.Data.lookup = lookup
 			TRB.Data.lookupLogic = {}
 
@@ -5272,6 +5270,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			lookup["#voidform"] = spells.voidform.icon
 			lookup["#vb"] = spells.voidBolt.icon
 			lookup["#voidBolt"] = spells.voidBolt.icon
+			lookup["#voit"] = spells.voidTorrent.icon
+			lookup["#voidTorrent"] = spells.voidTorrent.icon
 			lookup["#vt"] = spells.vampiricTouch.icon
 			lookup["#vampiricTouch"] = spells.vampiricTouch.icon
 			lookup["#swp"] = spells.shadowWordPain.icon
@@ -5296,6 +5296,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			lookup["#idolOfCthun"] = spells.idolOfCthun.icon
 			lookup["#loi"] = spells.idolOfCthun.icon
 			lookup["#swd"] = spells.deathspeaker.icon
+			lookup["#halo"] = spells.halo.icon
 			lookup["#shadowWordDeath"] = spells.deathspeaker.icon
 			lookup["#deathspeaker"] = spells.deathspeaker.icon
 			lookup["#deathsTorment"] = spells.deathsTorment.icon
@@ -6130,7 +6131,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		-- Spec Agnostic
 		if var == "$swpCount" then
-			if snapshotData.targetData.count[spells.shadowWordPain.id] > 0 or snapshotData.targetData.count[spells.purgeTheWicked.id] > 0 then
+			if snapshotData.targetData.count[spells.shadowWordPain.id] > 0 or (specId == 1 and snapshotData.targetData.count[spells.purgeTheWicked.id] > 0) then
 				valid = true
 			end
 		elseif var == "$swpTime" then

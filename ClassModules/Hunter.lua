@@ -1048,7 +1048,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			{ variable = "#barbedShot", icon = spells.barbedShot.icon, description = spells.barbedShot.name, printInSettings = true },
 			{ variable = "#barrage", icon = spells.barrage.icon, description = spells.barrage.name, printInSettings = true },
 			{ variable = "#beastCleave", icon = spells.beastCleave.icon, description = spells.beastCleave.name, printInSettings = true },
-			{ variable = "#beastailWrath", icon = spells.beastialWrath.icon, description = spells.beastialWrath.name, printInSettings = true },
+			{ variable = "#beastialWrath", icon = spells.beastialWrath.icon, description = spells.beastialWrath.name, printInSettings = true },
 			{ variable = "#cobraShot", icon = spells.cobraShot.icon, description = spells.cobraShot.name, printInSettings = true },
 			{ variable = "#frenzy", icon = spells.frenzy.icon, description = spells.frenzy.name, printInSettings = true },
 			{ variable = "#killCommand", icon = spells.killCommand.icon, description = spells.killCommand.name, printInSettings = true },
@@ -1370,6 +1370,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			end
 		end
 
+		TRB.Functions.Class:CheckCharacter()
 		TRB.Functions.Bar:Construct(settings)
 		TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 	end
@@ -1539,6 +1540,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#revivePet"] = spells.revivePet.icon
 		lookup["#scareBeast"] = spells.scareBeast.icon
 		lookup["#serpentSting"] = spells.serpentSting.icon
+		lookup["#wailingArrow"] = spells.wailingArrow.icon
 		lookup["$frenzyTime"] = frenzyTime
 		lookup["$frenzyStacks"] = frenzyStacks
 		lookup["$focusPlusCasting"] = focusPlusCasting
@@ -1546,7 +1548,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$focusMax"] = TRB.Data.character.maxResource
 		lookup["$focus"] = currentFocus
 		lookup["$resourcePlusCasting"] = focusPlusCasting
+		lookup["$focusPlusCasting"] = focusPlusCasting
 		lookup["$resourcePlusPassive"] = focusPlusPassive
+		lookup["$focusPlusPassive"] = focusPlusPassive
 		lookup["$resourceTotal"] = focusTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentFocus
@@ -1562,7 +1566,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$barbedShotTicks"] = barbedShotTicks
 		lookup["$barbedShotTime"] = barbedShotTime
 		lookup["$beastCleaveTime"] = beastCleaveTime
-		lookup["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
+		lookup["$serpentSting"] = ""
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
 		lookup["$regen"] = regenFocus
@@ -1574,6 +1578,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
 		lookupLogic["$frenzyTime"] = _frenzyTime
 		lookupLogic["$frenzyStacks"] = frenzyStacks
 		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
@@ -1581,7 +1586,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookupLogic["$focusMax"] = TRB.Data.character.maxResource
 		lookupLogic["$focus"] = snapshotData.attributes.resource
 		lookupLogic["$resourcePlusCasting"] = _focusPlusCasting
+		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _focusPlusPassive
+		lookupLogic["$focusPlusPassive"] = _focusPlusPassive
 		lookupLogic["$resourceTotal"] = _focusTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
@@ -1751,18 +1758,21 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#steadyShot"] = spells.steadyShot.icon
 		lookup["#trickShots"] = spells.trickShots.icon
 		lookup["#trueshot"] = spells.trueshot.icon
+		lookup["#wailingArrow"] = spells.wailingArrow.icon
 		lookup["$steadyFocusTime"] = steadyFocusTime
 		lookup["$trueshotTime"] = trueshotTime
 		lookup["$lockAndLoadTime"] = lockAndLoadTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
-		lookup["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
+		lookup["$serpentSting"] = ""
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
 		lookup["$focusTotal"] = focusTotal
 		lookup["$focusMax"] = TRB.Data.character.maxResource
 		lookup["$focus"] = currentFocus
 		lookup["$resourcePlusCasting"] = focusPlusCasting
+		lookup["$focusPlusCasting"] = focusPlusCasting
 		lookup["$resourcePlusPassive"] = focusPlusPassive
+		lookup["$focusPlusPassive"] = focusPlusPassive
 		lookup["$resourceTotal"] = focusTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentFocus
@@ -1788,7 +1798,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookupLogic["$focusMax"] = TRB.Data.character.maxResource
 		lookupLogic["$focus"] = snapshotData.attributes.resource
 		lookupLogic["$resourcePlusCasting"] = _focusPlusCasting
+		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _focusPlusPassive
+		lookupLogic["$focusPlusPassive"] = _focusPlusPassive
 		lookupLogic["$resourceTotal"] = _focusTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
@@ -1955,7 +1967,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#wildfireBomb"] = spells.wildfireBomb.icon
 		lookup["$coordinatedAssaultTime"] = coordinatedAssaultTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
-		lookup["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
+		lookup["$serpentSting"] = ""
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
 		lookup["$wildfireBombCharges"] = wildfireBombCharges
@@ -1963,7 +1975,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$focusMax"] = TRB.Data.character.maxResource
 		lookup["$focus"] = currentFocus
 		lookup["$resourcePlusCasting"] = focusPlusCasting
+		lookup["$focusPlusCasting"] = focusPlusCasting
 		lookup["$resourcePlusPassive"] = focusPlusPassive
+		lookup["$focusPlusPassive"] = focusPlusPassive
 		lookup["$resourceTotal"] = focusTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentFocus
@@ -1991,7 +2005,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookupLogic["$focusMax"] = TRB.Data.character.maxResource
 		lookupLogic["$focus"] = snapshotData.attributes.resource
 		lookupLogic["$resourcePlusCasting"] = _focusPlusCasting
+		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _focusPlusPassive
+		lookupLogic["$focusPlusPassive"] = _focusPlusPassive
 		lookupLogic["$resourceTotal"] = _focusTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource

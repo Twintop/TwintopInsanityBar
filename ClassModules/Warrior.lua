@@ -784,6 +784,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		end
 
+		TRB.Functions.Class:CheckCharacter()
 		TRB.Functions.Bar:Construct(settings)
 
 		if specId == 1 or specId == 2 then

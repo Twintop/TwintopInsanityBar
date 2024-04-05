@@ -417,11 +417,11 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.devastation.barTextVariables.icons = {
-			{ variable = "#eb", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = true },
-			{ variable = "#essenceBurst", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = false },
 			{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 			{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 			{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
+			{ variable = "#eb", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = true },
+			{ variable = "#essenceBurst", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = false },
 		}
 		specCache.devastation.barTextVariables.values = {
 			{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -761,12 +761,10 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			end
 		end
 
-		
-		if specId == 1 or specId == 2 or specId == 3 then
-			TRB.Frames.resource2ContainerFrame:Show()
-			TRB.Functions.Bar:Construct(settings)
-			TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
-		end
+		TRB.Functions.Class:CheckCharacter()
+		TRB.Frames.resource2ContainerFrame:Show()
+		TRB.Functions.Bar:Construct(settings)
+		TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 	end
 
 	local function RefreshLookupData_Devastation()

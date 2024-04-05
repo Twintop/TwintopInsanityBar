@@ -750,11 +750,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			TRB.Frames.resource2ContainerFrame:Show()
 		end
 
+		TRB.Functions.Class:CheckCharacter()
 		TRB.Functions.Bar:Construct(settings)
-
-		if specId == 1 or specId == 2 then
-			TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
-		end
+		TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 	end
 
 	local function RefreshLookupData_Havoc()
@@ -897,7 +895,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookup["$furyMax"] = TRB.Data.character.maxResource
 		lookup["$fury"] = currentFury
 		lookup["$resourcePlusCasting"] = furyPlusCasting
+		lookup["$furyPlusCasting"] = furyPlusCasting
 		lookup["$resourcePlusPassive"] = furyPlusPassive
+		lookup["$furyPlusPassive"] = furyPlusPassive
 		lookup["$resourceTotal"] = furyTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentFury
@@ -925,7 +925,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookupLogic["$furyMax"] = TRB.Data.character.maxResource
 		lookupLogic["$fury"] = normalizedResource
 		lookupLogic["$resourcePlusCasting"] = _furyPlusCasting
+		lookupLogic["$furyPlusCasting"] = _furyPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _furyPlusPassive
+		lookupLogic["$furyPlusPassive"] = _furyPlusPassive
 		lookupLogic["$resourceTotal"] = _furyTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = normalizedResource
@@ -1034,7 +1036,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookup["$furyMax"] = TRB.Data.character.maxResource
 		lookup["$fury"] = currentFury
 		lookup["$resourcePlusCasting"] = furyPlusCasting
+		lookup["$furyPlusCasting"] = furyPlusCasting
 		lookup["$resourcePlusPassive"] = furyPlusPassive
+		lookup["$furyPlusPassive"] = furyPlusPassive
 		lookup["$resourceTotal"] = furyTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentFury
@@ -1060,7 +1064,9 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		lookupLogic["$furyMax"] = TRB.Data.character.maxResource
 		lookupLogic["$fury"] = normalizedResource
 		lookupLogic["$resourcePlusCasting"] = _furyPlusCasting
+		lookupLogic["$furyPlusCasting"] = _furyPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _furyPlusPassive
+		lookupLogic["$furyPlusPassive"] = _furyPlusPassive
 		lookupLogic["$resourceTotal"] = _furyTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = normalizedResource

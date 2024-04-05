@@ -1011,6 +1011,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			TRB.Frames.resource2ContainerFrame:Hide()
 		end
 
+		TRB.Functions.Class:CheckCharacter()
 		TRB.Functions.Bar:Construct(settings)
 
 		if specId == 1 or

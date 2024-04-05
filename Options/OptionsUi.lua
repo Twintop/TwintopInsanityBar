@@ -662,6 +662,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		if GetSpecialization() == specId then
 			TRB.Functions.Bar:SetWidth(spec)
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(spec)
 		end
 	end)
 
@@ -754,6 +755,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			TRB.Functions.Bar:SetMinMax(spec)
 			TRB.Functions.Bar:SetHeight(spec)
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(spec)
 		end
 
 		local minsliderWidth = math.max((spec.bar.border)*2+1, 120)
@@ -860,6 +862,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 
 		if GetSpecialization() == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(spec)
 		end
 	end)
 
@@ -883,6 +886,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 
 		if GetSpecialization() == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(spec)
 		end
 	end)
 
@@ -921,6 +925,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 
 		if GetSpecialization() == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(spec)
 		end
 
 		local minsliderWidth = math.max(spec.comboPoints.border*2, 1)
@@ -942,6 +947,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 
 		if GetSpecialization() == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(spec)
 		end
 	end)
 
@@ -1010,6 +1016,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		
 		if GetSpecialization() == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(spec)
 		end
 	end)
 

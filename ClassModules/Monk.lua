@@ -857,6 +857,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			TRB.Frames.resource2ContainerFrame:Show()
 		end
 
+		TRB.Functions.Class:CheckCharacter()
 		TRB.Functions.Bar:Construct(settings)
 
 		if specId == 2  or specId == 3 then
@@ -1381,7 +1382,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["$energyTotal"] = energyTotal
 		lookup["$energyMax"] = TRB.Data.character.maxResource
 		lookup["$energy"] = currentEnergy
+		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$resourcePlusCasting"] = energyPlusCasting
+		lookup["$energyPlusPassive"] = energyPlusPassive
 		lookup["$resourcePlusPassive"] = energyPlusPassive
 		lookup["$resourceTotal"] = energyTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
@@ -1400,6 +1403,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		lookup["$regen"] = regenEnergy
 		lookup["$regenEnergy"] = regenEnergy
+		lookup["$energyRegen"] = regenEnergy
 		lookup["$resourceRegen"] = regenEnergy
 		lookup["$overcap"] = overcap
 		lookup["$resourceOvercap"] = overcap
@@ -1418,7 +1422,9 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookupLogic["$energyTotal"] = _energyTotal
 		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
 		lookupLogic["$energy"] = snapshotData.attributes.resource
+		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
 		lookupLogic["$resourcePlusCasting"] = _energyPlusCasting
+		lookupLogic["$energyPlusPassive"] = _energyPlusPassive
 		lookupLogic["$resourcePlusPassive"] = _energyPlusPassive
 		lookupLogic["$resourceTotal"] = _energyTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -1437,6 +1443,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		lookupLogic["$regen"] = _regenEnergy
 		lookupLogic["$regenEnergy"] = _regenEnergy
+		lookupLogic["$energyRegen"] = _regenEnergy
 		lookupLogic["$resourceRegen"] = _regenEnergy
 		lookupLogic["$overcap"] = overcap
 		lookupLogic["$resourceOvercap"] = overcap
@@ -2506,6 +2513,8 @@ elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not s
 				valid = true
 			elseif var == "$resourceMax" or var == "$manaMax" then
 				valid = true
+			elseif var == "$resourcePercent" or var == "$manaPercent" then
+				valid = true
 			elseif var == "$resourceTotal" or var == "$manaTotal" then
 				valid = true
 			elseif var == "$resourcePlusCasting" or var == "$manaPlusCasting" then
@@ -2688,7 +2697,7 @@ elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not s
 				if snapshotData.attributes.resource > 0 then
 					valid = true
 				end
-			elseif var == "$regen" or var == "$regenEnergy" or var == "$resourceRegen" then
+			elseif var == "$regen" or var == "$regenEnergy" or var == "$resourceRegen" or var == "$energyRegen" then
 				if settings.generation.enabled and
 					snapshotData.attributes.resource < TRB.Data.character.maxResource and
 					((settings.generation.mode == "time" and settings.generation.time > 0) or

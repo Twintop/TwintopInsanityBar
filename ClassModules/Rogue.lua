@@ -2477,13 +2477,10 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 			end
 		end
 
+		TRB.Functions.Class:CheckCharacter()
 		TRB.Frames.resource2ContainerFrame:Show()
-
 		TRB.Functions.Bar:Construct(settings)
-		
-		if specId == 1 or specId == 2 or specId == 3 then
-			TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
-		end
+		TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 	end
 
 	local function RefreshLookupData_Assassination()
