@@ -15,6 +15,10 @@ local content = [====[
 
 - [#348 - NEW (Twintop, Koroshy)](#348) Add an option to have resource bar values update with a smooth animation, enabled by default.
 
+### Healers
+
+- [#346 - FIX (Twintop)](#346) Fix Lua errors when logging in for the first time with Conjured Chillglobe equipped.
+
 ### Localization
 
 - [#8 - UPDATE (Twintop)](#8) Add localization strings for Rogues, Shamans, Warriors, bar text variables, bar text icons, and the News popup.
