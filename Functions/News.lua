@@ -10,9 +10,10 @@ local content = [====[
 
 ---
 
-# 10.2.6.6-release (2024-04-05)
+# 10.2.6.6-release (2024-04-07)
 ## General
 
+- [#8 - FIX (Twintop)](#8) Fix various bar text variable and bar text icon inaccuracies throughout the addon.
 - [#348 - NEW (Twintop, Koroshy)](#348) Add an option to have resource bar values update with a smooth animation, enabled by default.
 
 ### Healers
@@ -21,8 +22,8 @@ local content = [====[
 
 ### Localization
 
-- [#8 - UPDATE (Twintop)](#8) Add localization strings for Rogues, Shamans, Warriors, bar text variables, bar text icons, and the News popup.
 - [#8 - COMPLETE (Twintop)](#8) All existing text strings in the Bar should now be localizable!
+- [#8 - UPDATE (Twintop)](#8) Add localization strings for Rogues, Shamans, Warriors, bar text variables, bar text icons, and the News popup.
 - [#8 - UPDATE (Twintop)](#8) Add more British English (enGB) localisations.
 - [#8 - UPDATE (Koroshy)](#8) Add more French (frFR) localizations.
 
