@@ -45,13 +45,13 @@ local function LoadDefaultSettings()
 			},
 			audio = {
 				channel={
-					name="Master",
+					name=L["AudioChannelMaster"],
 					channel="Master"
 				}
 			},
 			strata={
 				level="BACKGROUND",
-				name="Background"
+				name=L["StrataBackground"] 
 			},
 			timers = {
 				precisionLow = 1,
