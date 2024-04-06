@@ -621,7 +621,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			{ variable = "$rageMax", description = L["WarriorArmsBarTextVariable_rageMax"], printInSettings = true, color = false },
 			{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 			{ variable = "$casting", description = "", printInSettings = false, color = false },
-			{ variable = "$casting", description = "", printInSettings = false, color = false },
 			{ variable = "$passive", description = L["WarriorArmsBarTextVariable_passive"], printInSettings = true, color = false },
 			{ variable = "$ragePlusCasting", description = "", printInSettings = false, color = false },
 			{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
@@ -930,18 +929,19 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#shieldBlock"] = spells.shieldBlock.icon
 		lookup["#slam"] = spells.slam.icon
 		lookup["#whirlwind"] = spells.whirlwind.icon
-		lookup["$rend"] = talents:IsTalentActive(spells.rend)
+		lookup["$rend"] = ""
 		lookup["$rendCount"] = rendCount
 		lookup["$rendTime"] = rendTime
 		lookup["$deepWoundsCount"] = deepWoundsCount
 		lookup["$deepWoundsTime"] = deepWoundsTime
 		lookup["$suddenDeathTime"] = suddenDeathTime
-		lookup["$ragePlusCasting"] = ragePlusCasting
 		lookup["$rageTotal"] = rageTotal
 		lookup["$rageMax"] = TRB.Data.character.maxResource
 		lookup["$rage"] = currentRage
 		lookup["$resourcePlusCasting"] = ragePlusCasting
+		lookup["$ragePlusCasting"] = ragePlusCasting
 		lookup["$resourcePlusPassive"] = ragePlusPassive
+		lookup["$ragePlusPassive"] = ragePlusPassive
 		lookup["$resourceTotal"] = rageTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentRage
@@ -959,12 +959,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookupLogic["$deepWoundsCount"] = _deepWoundsCount
 		lookupLogic["$deepWoundsTime"] = _deepWoundsTime
 		lookupLogic["$suddenDeathTime"] = _suddenDeathTime
-		lookupLogic["$ragePlusCasting"] = _ragePlusCasting
 		lookupLogic["$rageTotal"] = _rageTotal
 		lookupLogic["$rageMax"] = TRB.Data.character.maxResource
 		lookupLogic["$rage"] = normalizedRage
 		lookupLogic["$resourcePlusCasting"] = _ragePlusCasting
+		lookupLogic["$ragePlusCasting"] = _ragePlusCasting
 		lookupLogic["$resourcePlusPassive"] = _ragePlusPassive
+		lookupLogic["$ragePlusPassive"] = _ragePlusPassive
 		lookupLogic["$resourceTotal"] = _rageTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = normalizedRage
@@ -1082,12 +1083,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["$enrageTime"] = enrageTime
 		lookup["$whirlwindTime"] = whirlwindTime
 		lookup["$whirlwindStacks"] = whirlwindStacks
-		lookup["$ragePlusCasting"] = ragePlusCasting
 		lookup["$rageTotal"] = rageTotal
 		lookup["$rageMax"] = TRB.Data.character.maxResource
 		lookup["$rage"] = currentRage
 		lookup["$resourcePlusCasting"] = ragePlusCasting
+		lookup["$ragePlusCasting"] = ragePlusCasting
 		lookup["$resourcePlusPassive"] = ragePlusPassive
+		lookup["$ragePlusPassive"] = ragePlusPassive
 		lookup["$resourceTotal"] = rageTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentRage
@@ -1106,12 +1108,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookupLogic["$suddenDeathTime"] = _suddenDeathTime
 		lookupLogic["$whirlwindTime"] = _whirlwindTime
 		lookupLogic["$whirlwindStacks"] = whirlwindStacks
-		lookupLogic["$ragePlusCasting"] = _ragePlusCasting
 		lookupLogic["$rageTotal"] = _rageTotal
 		lookupLogic["$rageMax"] = TRB.Data.character.maxResource
 		lookupLogic["$rage"] = normalizedRage
 		lookupLogic["$resourcePlusCasting"] = _ragePlusCasting
+		lookupLogic["$ragePlusCasting"] = _ragePlusCasting
 		lookupLogic["$resourcePlusPassive"] = _ragePlusPassive
+		lookupLogic["$ragePlusPassive"] = _ragePlusPassive
 		lookupLogic["$resourceTotal"] = _rageTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = normalizedRage
@@ -2106,7 +2109,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				if snapshots[spells.ravager.id].buff.isActive then
 					valid = true
 				end
-			elseif var == "$ravagerResource" then
+			elseif var == "$ravagerResource" or var == "$ravagerRage" then
 				if snapshots[spells.ravager.id].buff.isActive then
 					valid = true
 				end

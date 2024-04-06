@@ -1130,13 +1130,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
 		lookup["#si"] = spells.soulfangInfusion.icon
 		lookup["#soulfangInfusion"] = spells.soulfangInfusion.icon
-		lookup["$manaPlusCasting"] = manaPlusCasting
-		lookup["$manaPlusPassive"] = manaPlusPassive
 		lookup["$manaTotal"] = manaTotal
 		lookup["$manaMax"] = manaMax
 		lookup["$mana"] = currentMana
 		lookup["$resourcePlusCasting"] = manaPlusCasting
+		lookup["$manaPlusCasting"] = manaPlusCasting
 		lookup["$resourcePlusPassive"] = manaPlusPassive
+		lookup["$manaPlusPassive"] = manaPlusPassive
 		lookup["$resourceTotal"] = manaTotal
 		lookup["$resourceMax"] = manaMax
 		lookup["$manaPercent"] = manaPercent
@@ -1168,13 +1168,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
-		lookupLogic["$manaPlusCasting"] = _manaPlusCasting
-		lookupLogic["$manaPlusPassive"] = _manaPlusPassive
 		lookupLogic["$manaTotal"] = _manaTotal
 		lookupLogic["$manaMax"] = maxResource
 		lookupLogic["$mana"] = normalizedMana
 		lookupLogic["$resourcePlusCasting"] = _manaPlusCasting
+		lookupLogic["$manaPlusCasting"] = _manaPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _manaPlusPassive
+		lookupLogic["$manaPlusPassive"] = _manaPlusPassive
 		lookupLogic["$resourceTotal"] = _manaTotal
 		lookupLogic["$resourceMax"] = maxResource
 		lookupLogic["$manaPercent"] = _manaPercent
@@ -1378,7 +1378,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		lookup["#touchOfDeath"] = spells.touchOfDeath.icon
 		lookup["#vivify"] = spells.vivify.icon
 
-		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$energyTotal"] = energyTotal
 		lookup["$energyMax"] = TRB.Data.character.maxResource
 		lookup["$energy"] = currentEnergy
@@ -1418,7 +1417,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
-		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
 		lookupLogic["$energyTotal"] = _energyTotal
 		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
 		lookupLogic["$energy"] = snapshotData.attributes.resource

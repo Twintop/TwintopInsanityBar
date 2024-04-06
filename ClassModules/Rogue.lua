@@ -2824,12 +2824,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["#woundPoison"] = spells.woundPoison.icon
 		lookup["#wp"] = spells.woundPoison.icon
 
-		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$energyTotal"] = energyTotal
 		lookup["$energyMax"] = TRB.Data.character.maxResource
 		lookup["$energy"] = currentEnergy
 		lookup["$resourcePlusCasting"] = energyPlusCasting
+		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$resourcePlusPassive"] = energyPlusPassive
+		lookup["$energyPlusPassive"] = energyPlusPassive
 		lookup["$resourceTotal"] = energyTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentEnergy
@@ -2884,19 +2885,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		lookup["$regen"] = regenEnergy
 		lookup["$regenEnergy"] = regenEnergy
+		lookup["$regenResource"] = regenEnergy
 		lookup["$resourceRegen"] = regenEnergy
+		lookup["$energyRegen"] = regenEnergy
 		lookup["$overcap"] = overcap
 		lookup["$resourceOvercap"] = overcap
 		lookup["$energyOvercap"] = overcap
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
-		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
 		lookupLogic["$energyTotal"] = _energyTotal
 		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
 		lookupLogic["$energy"] = snapshotData.attributes.resource
 		lookupLogic["$resourcePlusCasting"] = _energyPlusCasting
+		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _energyPlusPassive
+		lookupLogic["$energyPlusPassive"] = _energyPlusPassive
 		lookupLogic["$resourceTotal"] = _energyTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
@@ -2951,7 +2955,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		lookupLogic["$regen"] = _regenEnergy
 		lookupLogic["$regenEnergy"] = _regenEnergy
+		lookupLogic["$regenResource"] = _regenEnergy
 		lookupLogic["$resourceRegen"] = _regenEnergy
+		lookupLogic["$energyRegen"] = _regenEnergy
 		lookupLogic["$overcap"] = overcap
 		lookupLogic["$resourceOvercap"] = overcap
 		lookupLogic["$energyOvercap"] = overcap
@@ -3133,6 +3139,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local _rtbBuffTime = snapshots[spells.rollTheBones.id].buff.remaining
 		local rtbBuffTime = TRB.Functions.BarText:TimerPrecision(_rtbBuffTime)
 
+		--$rtbGoodBuff
+		local _rtbGoodBuff = snapshots[spells.rollTheBones.id].attributes.goodBuffs
+
 		--$broadsideTime
 		local _broadsideTime = snapshots[spells.broadside.id].buff:GetRemainingTime(currentTime)
 		local broadsideTime = TRB.Functions.BarText:TimerPrecision(_broadsideTime)
@@ -3208,12 +3217,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["#woundPoison"] = spells.woundPoison.icon
 		lookup["#wp"] = spells.woundPoison.icon
 
-		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$energyTotal"] = energyTotal
 		lookup["$energyMax"] = TRB.Data.character.maxResource
 		lookup["$energy"] = currentEnergy
 		lookup["$resourcePlusCasting"] = energyPlusCasting
+		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$resourcePlusPassive"] = energyPlusPassive
+		lookup["$energyPlusPassive"] = energyPlusPassive
 		lookup["$resourceTotal"] = energyTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentEnergy
@@ -3239,6 +3249,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["$opportunityTime"] = opportunityTime
 		lookup["$rtbCount"] = rollTheBonesCount
 		lookup["$rollTheBonesCount"] = rollTheBonesCount
+		lookup["$rtbGoodBuff"] = ""
+		lookup["$rollTheBonesGoodBuff"] = ""
 		lookup["$rtbAllCount"] = rollTheBonesAllCount
 		lookup["$rollTheBonesAllCount"] = rollTheBonesAllCount
 		lookup["$rtbTemporaryCount"] = rollTheBonesTemporaryCount
@@ -3260,7 +3272,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		lookup["$regen"] = regenEnergy
 		lookup["$regenEnergy"] = regenEnergy
+		lookup["$regenResource"] = regenEnergy
 		lookup["$resourceRegen"] = regenEnergy
+		lookup["$energyRegen"] = regenEnergy
 		lookup["$overcap"] = overcap
 		lookup["$resourceOvercap"] = overcap
 		lookup["$energyOvercap"] = overcap
@@ -3268,12 +3282,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
-		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
 		lookupLogic["$energyTotal"] = _energyTotal
 		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
 		lookupLogic["$energy"] = snapshotData.attributes.resource
 		lookupLogic["$resourcePlusCasting"] = _energyPlusCasting
+		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _energyPlusPassive
+		lookupLogic["$energyPlusPassive"] = _energyPlusPassive
 		lookupLogic["$resourceTotal"] = _energyTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
@@ -3299,6 +3314,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookupLogic["$opportunityTime"] = _opportunityTime
 		lookupLogic["$rtbCount"] = rollTheBonesCount
 		lookupLogic["$rollTheBonesCount"] = rollTheBonesCount
+		lookupLogic["$rtbGoodBuff"] = _rtbGoodBuff
+		lookupLogic["$rollTheBonesGoodBuff"] = _rtbGoodBuff
 		lookupLogic["$rtbAllCount"] = rollTheBonesAllCount
 		lookupLogic["$rollTheBonesAllCount"] = rollTheBonesAllCount
 		lookupLogic["$rtbTemporaryCount"] = rollTheBonesTemporaryCount
@@ -3320,7 +3337,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		lookupLogic["$regen"] = _regenEnergy
 		lookupLogic["$regenEnergy"] = _regenEnergy
+		lookupLogic["$regenResource"] = _regenEnergy
 		lookupLogic["$resourceRegen"] = _regenEnergy
+		lookupLogic["$energyRegen"] = _regenEnergy
 		lookupLogic["$overcap"] = overcap
 		lookupLogic["$resourceOvercap"] = overcap
 		lookupLogic["$energyOvercap"] = overcap
@@ -3559,12 +3578,13 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		lookup["#woundPoison"] = spells.woundPoison.icon
 		lookup["#wp"] = spells.woundPoison.icon
 
-		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$energyTotal"] = energyTotal
 		lookup["$energyMax"] = TRB.Data.character.maxResource
 		lookup["$energy"] = currentEnergy
 		lookup["$resourcePlusCasting"] = energyPlusCasting
+		lookup["$energyPlusCasting"] = energyPlusCasting
 		lookup["$resourcePlusPassive"] = energyPlusPassive
+		lookup["$energyPlusPassive"] = energyPlusPassive
 		lookup["$resourceTotal"] = energyTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentEnergy
@@ -3603,19 +3623,22 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		lookup["$regen"] = regenEnergy
 		lookup["$regenEnergy"] = regenEnergy
+		lookup["$regenResource"] = regenEnergy
 		lookup["$resourceRegen"] = regenEnergy
+		lookup["$energyRegen"] = regenEnergy
 		lookup["$overcap"] = overcap
 		lookup["$resourceOvercap"] = overcap
 		lookup["$energyOvercap"] = overcap
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
-		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
 		lookupLogic["$energyTotal"] = _energyTotal
 		lookupLogic["$energyMax"] = TRB.Data.character.maxResource
 		lookupLogic["$energy"] = snapshotData.attributes.resource
 		lookupLogic["$resourcePlusCasting"] = _energyPlusCasting
+		lookupLogic["$energyPlusCasting"] = _energyPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _energyPlusPassive
+		lookupLogic["$energyPlusPassive"] = _energyPlusPassive
 		lookupLogic["$resourceTotal"] = _energyTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
@@ -3654,7 +3677,9 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		lookupLogic["$regen"] = _regenEnergy
 		lookupLogic["$regenEnergy"] = _regenEnergy
+		lookupLogic["$regenResource"] = _regenEnergy
 		lookupLogic["$resourceRegen"] = _regenEnergy
+		lookupLogic["$energyRegen"] = _regenEnergy
 		lookupLogic["$overcap"] = overcap
 		lookupLogic["$resourceOvercap"] = overcap
 		lookupLogic["$energyOvercap"] = overcap
@@ -5431,7 +5456,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 					UnitCanAttack("player", "target") and
 					target ~= nil and
 					target.spells[spells.amplifyingPoison.id] ~= nil and
-					target.spells[spells.shadowWordPain.id].remainingTime > 0 then
+					target.spells[spells.amplifyingPoison.id].remainingTime > 0 then
 					valid = true
 				end
 			-- Other abilities
@@ -5560,7 +5585,7 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 				(settings.generation.mode == "gcd" and settings.generation.gcds > 0)) then
 				valid = true
 			end
-		elseif var == "$regen" or var == "$regenEnergy" or var == "$resourceRegen" then
+		elseif var == "$regen" or var == "$regenEnergy" or var == "$resourceRegen" or var == "$energyRegen" or var == "$regenResource" then
 			if settings.generation.enabled and
 				snapshotData.attributes.resource < TRB.Data.character.maxResource and
 				((settings.generation.mode == "time" and settings.generation.time > 0) or

@@ -1009,13 +1009,13 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		lookup["#potionOfFrozenFocus"] = spells.potionOfFrozenFocusRank1.icon
 		lookup["#pocc"] = spells.potionOfChilledClarity.icon
 		lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
-		lookup["$manaPlusCasting"] = manaPlusCasting
-		lookup["$manaPlusPassive"] = manaPlusPassive
 		lookup["$manaTotal"] = manaTotal
 		lookup["$manaMax"] = manaMax
 		lookup["$mana"] = currentMana
 		lookup["$resourcePlusCasting"] = manaPlusCasting
+		lookup["$manaPlusCasting"] = manaPlusCasting
 		lookup["$resourcePlusPassive"] = manaPlusPassive
+		lookup["$manaPlusPassive"] = manaPlusPassive
 		lookup["$resourceTotal"] = manaTotal
 		lookup["$resourceMax"] = manaMax
 		lookup["$manaPercent"] = manaPercent
@@ -1052,13 +1052,13 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
-		lookupLogic["$manaPlusCasting"] = _manaPlusCasting
-		lookupLogic["$manaPlusPassive"] = _manaPlusPassive
 		lookupLogic["$manaTotal"] = _manaTotal
 		lookupLogic["$manaMax"] = maxResource
 		lookupLogic["$mana"] = normalizedMana
 		lookupLogic["$resourcePlusCasting"] = _manaPlusCasting
+		lookupLogic["$manaPlusCasting"] = _manaPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _manaPlusPassive
+		lookupLogic["$manaPlusPassive"] = _manaPlusPassive
 		lookupLogic["$resourceTotal"] = _manaTotal
 		lookupLogic["$resourceMax"] = maxResource
 		lookupLogic["$manaPercent"] = _manaPercent

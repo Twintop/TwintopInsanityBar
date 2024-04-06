@@ -873,7 +873,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			{ variable = "$manaPercent", description = L["ShamanRestorationBarTextVariable_manaPercent"], printInSettings = true, color = false },
 			{ variable = "$resource", description = "", printInSettings = false, color = false },
 			{ variable = "$manaMax", description = L["ShamanRestorationBarTextVariable_manaMax"], printInSettings = true, color = false },
-			{ variable = "$resourceMAx", description = "", printInSettings = false, color = false },
+			{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 			{ variable = "$casting", description = L["ShamanRestorationBarTextVariable_casting"], printInSettings = true, color = false },
 			{ variable = "$passive", description = L["ShamanRestorationBarTextVariable_passive"], printInSettings = true, color = false },
 			{ variable = "$manaPlusCasting", description = L["ShamanRestorationBarTextVariable_manaPlusCasting"], printInSettings = true, color = false },
@@ -1098,7 +1098,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		----------
 		--Icefury
 		--$ifMaelstrom
-		local icefuryMaelstrom = snapshots[spells.icefury.id].attributes.maelstrom or 0
+		local icefuryMaelstrom = snapshots[spells.icefury.id].attributes.resource or 0
 		--$ifStacks
 		local icefuryStacks = snapshots[spells.icefury.id].buff.applications or 0
 		--$ifStacks
@@ -1487,7 +1487,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		lookup["$resourcePlusCasting"] = manaPlusCasting
 		lookup["$resourcePlusPassive"] = manaPlusPassive
 		lookup["$resourceTotal"] = manaTotal
-		lookup["$resourceMax"] = manaMax
+		lookup["$resourceMax"] = maxResource
 		lookup["$manaPercent"] = manaPercent
 		lookup["$resourcePercent"] = manaPercent
 		lookup["$resource"] = currentMana
@@ -2779,7 +2779,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end
 			elseif var == "$passive" then
 			elseif var == "$ifMaelstrom" then
-				if snapshots[spells.icefury.id].attributes.maelstrom > 0 then
+				if snapshots[spells.icefury.id].attributes.resource > 0 then
 					valid = true
 				end
 			elseif var == "$ifStacks" then
@@ -2820,10 +2820,10 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					valid = true
 				end
 			elseif var == "$resource" or var == "$mana" then
-				if snapshotData.attributes.resource > 0 then
-					valid = true
-				end
+				valid = true
 			elseif var == "$resourceMax" or var == "$manaMax" then
+				valid = true
+			elseif var == "$resourcePercent" or var == "$manaPercent" then
 				valid = true
 			elseif var == "$resourceTotal" or var == "$manaTotal" then
 				if snapshotData.attributes.resource > 0 or

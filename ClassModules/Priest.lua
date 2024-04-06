@@ -2354,13 +2354,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			lookup["#shadowfiend"] = spells.shadowfiend.icon
 		end
 
-		lookup["$manaPlusCasting"] = manaPlusCasting
-		lookup["$manaPlusPassive"] = manaPlusPassive
 		lookup["$manaTotal"] = manaTotal
 		lookup["$manaMax"] = manaMax
 		lookup["$mana"] = currentMana
 		lookup["$resourcePlusCasting"] = manaPlusCasting
+		lookup["$manaPlusCasting"] = manaPlusCasting
 		lookup["$resourcePlusPassive"] = manaPlusPassive
+		lookup["$manaPlusPassive"] = manaPlusPassive
 		lookup["$resourceTotal"] = manaTotal
 		lookup["$resourceMax"] = manaMax
 		lookup["$manaPercent"] = manaPercent
@@ -2408,13 +2408,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
-		lookupLogic["$manaPlusCasting"] = _manaPlusCasting
-		lookupLogic["$manaPlusPassive"] = _manaPlusPassive
 		lookupLogic["$manaTotal"] = _manaTotal
 		lookupLogic["$manaMax"] = maxResource
 		lookupLogic["$mana"] = normalizedMana
 		lookupLogic["$resourcePlusCasting"] = _manaPlusCasting
+		lookupLogic["$manaPlusCasting"] = _manaPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _manaPlusPassive
+		lookupLogic["$manaPlusPassive"] = _manaPlusPassive
 		lookupLogic["$resourceTotal"] = _manaTotal
 		lookupLogic["$resourceMax"] = maxResource
 		lookupLogic["$manaPercent"] = _manaPercent
@@ -2690,13 +2690,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 
 		local lookup = TRB.Data.lookup
-		lookup["$manaPlusCasting"] = manaPlusCasting
-		lookup["$manaPlusPassive"] = manaPlusPassive
 		lookup["$manaTotal"] = manaTotal
 		lookup["$manaMax"] = manaMax
 		lookup["$mana"] = currentMana
 		lookup["$resourcePlusCasting"] = manaPlusCasting
+		lookup["$manaPlusCasting"] = manaPlusCasting
 		lookup["$resourcePlusPassive"] = manaPlusPassive
+		lookup["$manaPlusPassive"] = manaPlusPassive
 		lookup["$resourceTotal"] = manaTotal
 		lookup["$resourceMax"] = manaMax
 		lookup["$manaPercent"] = manaPercent
@@ -2751,13 +2751,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
-		lookupLogic["$manaPlusCasting"] = _manaPlusCasting
-		lookupLogic["$manaPlusPassive"] = _manaPlusPassive
 		lookupLogic["$manaTotal"] = _manaTotal
 		lookupLogic["$manaMax"] = maxResource
 		lookupLogic["$mana"] = normalizedMana
 		lookupLogic["$resourcePlusCasting"] = _manaPlusCasting
+		lookupLogic["$manaPlusCasting"] = _manaPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _manaPlusPassive
+		lookupLogic["$manaPlusPassive"] = _manaPlusPassive
 		lookupLogic["$resourceTotal"] = _manaTotal
 		lookupLogic["$resourceMax"] = maxResource
 		lookupLogic["$manaPercent"] = _manaPercent
@@ -3093,13 +3093,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookup["$siTime"] = siTime
 		lookup["$mindBlastCharges"] = mindBlastCharges
 		lookup["$mindBlastMaxCharges"] = mindBlastMaxCharges
-		lookup["$insanityPlusCasting"] = insanityPlusCasting
-		lookup["$insanityPlusPassive"] = insanityPlusPassive
 		lookup["$insanityTotal"] = insanityTotal
 		lookup["$insanityMax"] = TRB.Data.character.maxResource
 		lookup["$insanity"] = currentInsanity
 		lookup["$resourcePlusCasting"] = insanityPlusCasting
+		lookup["$insanityPlusCasting"] = insanityPlusCasting
 		lookup["$resourcePlusPassive"] = insanityPlusPassive
+		lookup["$insanityPlusPassive"] = insanityPlusPassive
 		lookup["$resourceTotal"] = insanityTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentInsanity
@@ -3146,13 +3146,13 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		lookupLogic["$siTime"] = _siTime
 		lookupLogic["$mindBlastCharges"] = mindBlastCharges
 		lookupLogic["$mindBlastMaxCharges"] = mindBlastMaxCharges
-		lookupLogic["$insanityPlusCasting"] = _insanityPlusCasting
-		lookupLogic["$insanityPlusPassive"] = _insanityPlusPassive
 		lookupLogic["$insanityTotal"] = _insanityTotal
 		lookupLogic["$insanityMax"] = TRB.Data.character.maxResource
 		lookupLogic["$insanity"] = _currentInsanity
 		lookupLogic["$resourcePlusCasting"] = _insanityPlusCasting
+		lookupLogic["$insanityPlusCasting"] = _insanityPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _insanityPlusPassive
+		lookupLogic["$insanityPlusPassive"] = _insanityPlusPassive
 		lookupLogic["$resourceTotal"] = _insanityTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = _currentInsanity
