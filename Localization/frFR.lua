@@ -13,7 +13,7 @@ if locale == "frFR" then
     L["No"] = "Non"
     L["Author"] = "Auteur"
     L["Version"] = "Version"
-    L["Released"] = "Publiée"
+    L["Released"] = "Publiée le"
     L["SupportedSpecs"] = "Spécialisations prises en charge (Dragonflight)"
     L["Experimental"] = "Expérimental"
     L["Minimal"] = "Minimal"

@@ -1,5 +1,6 @@
 ---@diagnostic disable: undefined-field, undefined-global, redundant-parameter
 local _, TRB = ...
+local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.News = {}
 local LMD = LibStub("LibMarkdown-1.0")
