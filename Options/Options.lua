@@ -2158,6 +2158,74 @@ function TRB.Options:ConstructOptionsPanel()
 	yCoord = yCoord - 40
 	interfaceSettingsFrame.controls.labels.infoSupport = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, L["SupportedSpecs"] .. ":", TRB.Details.supportedSpecs, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 300)
 
+	local flagPathTemplate = "|TInterface\\AddOns\\TwintopInsanityBar\\Images\\Flags\\%s.tga:0|t %s"
+	local localeText1 = string.format(flagPathTemplate, "deDE", "deDE")
+	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "enGB", "enGB")
+	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "enUS", "enUS")
+	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "esES", "esES")
+	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "esMX", "esMX")
+	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "frFR", "frFR")
+	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "itIT", "itIT")
+	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "koKR", "koKR")
+	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "ptBR", "ptBR")
+	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "ptPT", "ptPT")
+	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "ruRU", "ruRU")
+	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "zhCN", "zhCN")
+	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "zhTW", "zhTW")
+
+	local percentFormat = "%3.2f%%"
+	local localeText2 = string.format(percentFormat, 12.32)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 9.82)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.69)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
+
+	local localeText3 = "unfung"
+	localeText3 = localeText3 .. "\n" .. "Twintop"
+	localeText3 = localeText3 .. "\n" .. "Twintop"
+	localeText3 = localeText3 .. "\n" .. "Traductor necesario!"
+	localeText3 = localeText3 .. "\n" .. "Traductor necesario!"
+	localeText3 = localeText3 .. "\n" .. "Koroshy"
+	localeText3 = localeText3 .. "\n" .. "Serve un traduttore!"
+	localeText3 = localeText3 .. "\n" .. "번역기가 필요합니다!"
+	localeText3 = localeText3 .. "\n" .. "Precisa-se de tradutor!"
+	localeText3 = localeText3 .. "\n" .. "Precisa-se de tradutor!"
+	localeText3 = localeText3 .. "\n" .. "Требуется переводчик!"
+	localeText3 = localeText3 .. "\n" .. " "
+	localeText3 = localeText3 .. "\n" .. " "
+
+	local localeText4 = " "
+	localeText4 = localeText4 .. "\n" .. " "
+	localeText4 = localeText4 .. "\n" .. " "
+	localeText4 = localeText4 .. "\n" .. " "
+	localeText4 = localeText4 .. "\n" .. " "
+	localeText4 = localeText4 .. "\n" .. " "
+	localeText4 = localeText4 .. "\n" .. " "
+	localeText4 = localeText4 .. "\n" .. " "
+	localeText4 = localeText4 .. "\n" .. " "
+	localeText4 = localeText4 .. "\n" .. " "
+	localeText4 = localeText4 .. "\n" .. " "
+	localeText4 = localeText4 .. "\n" .. "需要翻译！"
+	localeText4 = localeText4 .. "\n" .. "需要翻譯！"
+
+
+	yCoord = yCoord - 140
+	interfaceSettingsFrame.controls.labels.localization1 = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "Localization" .. ":", localeText1, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 100, 15, 300)
+	interfaceSettingsFrame.controls.labels.localization2 = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "", localeText2, oUi.xCoord+(oUi.xPadding*2)+50, yCoord, 0, 100, 15, 300, "RIGHT")
+	interfaceSettingsFrame.controls.labels.localization3 = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "", localeText3, oUi.xCoord+(oUi.xPadding*2)+200, yCoord, 0, 375, 15, 300)
+	interfaceSettingsFrame.controls.labels.localization4 = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "", localeText4, oUi.xCoord+(oUi.xPadding*2)+200, yCoord, 0, 375, 15, 300, nil, [[Fonts\ARHei.TTF]])
+
+	yCoord = yCoord - 140
+
+
 
 	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.panel.yCoord = yCoord

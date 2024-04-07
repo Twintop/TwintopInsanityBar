@@ -321,9 +321,10 @@ function TRB.Functions.OptionsUi:BuildSectionHeader(parent, title, posX, posY)
 	return f
 end
 
-function TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, width, height, height2)
-	height = height or 20
+function TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, width, height, height2, justifyH, fontFile)
+	height = height or 30
 	height2 = height2 or (height * 3)
+	justifyH = justifyH or "LEFT"
 	local f = CreateFrame("Frame", nil, parent)
 	f:ClearAllPoints()
 	f:SetPoint("TOPLEFT", parent)
@@ -332,9 +333,9 @@ function TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, var, desc, po
 	f:SetHeight(height)
 	---@diagnostic disable-next-line: inject-field
 	f.font = f:CreateFontString(nil)
-	f.font:SetFontObject(GameFontNormalSmall)
+	f.font:SetFontObject(GameFontNormal)
 	f.font:SetPoint("LEFT", f, "LEFT")
-	f.font:SetSize(0, 14)
+	f.font:SetSize(0, 20)
 	f.font:SetJustifyH("RIGHT")
 	f.font:SetJustifyV("TOP")
 	f.font:SetSize(offset, height)
@@ -345,15 +346,20 @@ function TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, var, desc, po
 	local fd = f.description
 	fd:ClearAllPoints()
 	fd:SetPoint("TOPLEFT", parent)
-	fd:SetPoint("TOPLEFT", posX+5, posY-height)
+	fd:SetPoint("TOPLEFT", posX+10, posY-height)
 	fd:SetWidth(width-5)
 	fd:SetHeight(height2)
 	---@diagnostic disable-next-line: inject-field
 	fd.font = fd:CreateFontString(nil)
-	fd.font:SetFontObject(GameFontHighlightSmall)
+	fd.font:SetFontObject(GameFontHighlight)
+	
+	if fontFile ~= nil then
+		fd.font:SetFont(fontFile, 12)
+	end
+
 	fd.font:SetPoint("LEFT", fd, "LEFT")
-	fd.font:SetSize(0, 14)
-	fd.font:SetJustifyH("LEFT")
+	fd.font:SetSize(0, 16)
+	fd.font:SetJustifyH(justifyH)
 	fd.font:SetJustifyV("TOP")
 	fd.font:SetSize(width, height2)
 	fd.font:SetText(desc)

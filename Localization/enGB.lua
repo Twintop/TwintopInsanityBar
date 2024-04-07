@@ -185,4 +185,5 @@ if locale == "enGB" then
     L["RogueSubtletyThresholdRuptureTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Rupture. If you do not have any combo points, will be coloured as 'unusable'."
     L["RogueSubtletyThresholdSecretTechniqueTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Secret Technique. If you do not have any combo points, will be coloured as 'unusable'."
     L["RogueSubtletyThresholdDeathFromAboveTooltip"] = "This will show the vertical line on the bar denoting how much Energy is required to use Death From Above. If on cooldown or if you do not have any combo points, will be coloured as 'unusable'."
+    L["Localization"] = "Localisation"
 end
