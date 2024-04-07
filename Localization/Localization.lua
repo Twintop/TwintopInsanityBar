@@ -114,6 +114,9 @@ L["EvokerDevastationFull"] = string.format("%s %s", L["EvokerDevastation"], L["E
 L["EvokerPreservationFull"] = string.format("%s %s", L["EvokerPreservation"], L["Evoker"])
 L["EvokerAugmentationFull"] = string.format("%s %s", L["EvokerAugmentation"], L["Evoker"])
 
+-- Use existing localization strings provided by Blizzard for some things.
+-- Source: https://www.townlong-yak.com/framexml/live/GlobalStrings.lua
+
 L["ResourceFury"] = POWER_TYPE_FURY
 L["ResourceEnergy"] = POWER_TYPE_ENERGY
 L["ResourceComboPoints"] = COMBO_POINTS_POWER
@@ -125,5 +128,6 @@ L["ResourceAstralPower"] = POWER_TYPE_LUNAR_POWER
 L["ResourceChi"] = CHI_POWER
 L["ResourceFocus"] = POWER_TYPE_FOCUS
 L["ResourceEssence"] = POWER_TYPE_ESSENCE
+L["ResourceHolyPower"] = HOLY_POWER
 
 TRB.Localization = L

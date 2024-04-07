@@ -87,6 +87,7 @@ end
 ---| '"evoker"' # Evoker
 ---| '"hunter"' # Hunter
 ---| '"monk"' # Monk
+---| '"paladin' # Paladin
 ---| '"priest"' # Priest
 ---| '"rogue"' # Rogue
 ---| '"shaman"' # Shaman
@@ -104,7 +105,7 @@ end
 ---| '"marksmanship"' # Marksmanship (Hunter)
 ---| '"survival"' # Survival (Hunter)
 ---| '"discipline"' # Discipline (Priest)
----| '"holy"' # Holy (Priest)
+---| '"holy"' # Holy (Paladin, Priest)
 ---| '"shadow"' # Shadow (Priest)
 ---| '"assassination"' # Assassination (Rogue)
 ---| '"outlaw"' # Outlaw (Rogue)
@@ -165,7 +166,8 @@ function TRB.Functions.Character:IsComboPointUser()
 	local _, _, classIndexId = UnitClass("player")
 	local specId = GetSpecialization()
 
-	if 	(classIndexId == 4) or -- Rogue
+	if 	(classIndexId == 2) or -- Paladin
+		(classIndexId == 4) or -- Rogue
 		(classIndexId == 5 and (specId == 1 or specId == 2)) or -- Discipline or Holy Priest
 		(classIndexId == 7 and specId == 2) or -- Enhancement Shaman
 		(classIndexId == 10 and specId == 3) or -- Windwalker Monk

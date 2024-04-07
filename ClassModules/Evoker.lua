@@ -1729,6 +1729,8 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				settings = TRB.Data.settings.evoker.devastation
 			elseif specId == 2 then
 				settings = TRB.Data.settings.evoker.preservation
+			elseif specId == 3 then
+				settings = TRB.Data.settings.evoker.augmentation
 			end
 
 			if entry.destinationGuid == TRB.Data.character.guid then

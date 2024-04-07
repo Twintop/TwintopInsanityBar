@@ -11,6 +11,33 @@ local content = [====[
 
 ---
 
+# 10.2.6.7-release (2024-04-??)
+## General
+
+- [#349 - NEW](#344) Add support for Holy Paladin, tracking Mana and Holy Power.
+<br/>&emsp;&ensp;- Holy Power colors for the border and fill, including different colors of the penultimate and final combo point.<br/>&emsp;&ensp;- Threshold lines denoting how much mana will be restored from using an Aerated Mana Potion, Potion of Frozen Focus, or Conjured Chillglobe.
+<br/>&emsp;&ensp;- Bar color change when ???????????????. is active and when it is close to ending.
+<br/>&emsp;&ensp;- Passive Mana generation from ???????????????.
+<br/>&emsp;&ensp;- Timers for ???????????????. time remaining.
+<br/>&emsp;&ensp;- Bar Text variables and icons for customization.
+<br/>&emsp;&ensp;- Importing and Exporting support.
+<br/>&emsp;&ensp;- Mana regeneration support for:
+<br/>&emsp;&ensp;&emsp;&ensp;- Symbol of Hope (Holy Priest)
+<br/>&emsp;&ensp;&emsp;&ensp;- Innervate (Druid)
+<br/>&emsp;&ensp;&emsp;&ensp;- Mana Tide Totem (Restoration Shaman)
+<br/>&emsp;&ensp;&emsp;&ensp;- Potion of Frozen Focus
+<br/>&emsp;&ensp;&emsp;&ensp;- Potion of Chilled Clarity
+<br/>&emsp;&ensp;&emsp;&ensp;- Molten Radiance
+<br/>&emsp;&ensp;&emsp;&ensp;- Emerald Communion
+- (FIX) Improve bar text parsing for icon names.
+
+## Paladin
+### Holy
+
+- [NEW - #349](#349) Add support for Holy Paladin, tracking Mana and Holy Power.
+
+---
+
 # 10.2.6.6-release (2024-04-07)
 ## General
 

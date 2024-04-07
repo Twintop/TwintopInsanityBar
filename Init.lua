@@ -14,6 +14,7 @@ TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFFF7C0A" .. L["Dr
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF33937F" .. L["Evoker"] .. "|r - " .. L["EvokerDevastation"] .. ", " .. L["EvokerPreservation"] .. ", " .. L["EvokerAugmentation"] .. "\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFAAD372" .. L["Hunter"] .. "|r - " .. L["HunterBeastMastery"] .. ", " .. L["HunterMarksmanship"] .. ", Survival\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF00FF98" .. L["Monk"] .. "|r - " .. L["MonkMistweaver"] .. ", " .. L["MonkWindwalker"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFF48CBA" .. L["Paladin"] .. "|r - " .. L["PaladinHoly"] .. "\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFFFFFFF" .. L["Priest"] .. "|r - " .. L["PriestDiscipline"] .. ", " .. L["PriestHoly"] .. ", " .. L["PriestShadow"] .. "\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFFFF468" .. L["Rogue"] .. "|r - " .. L["RogueAssassination"] .. ", " .. L["RogueOutlaw"] .. ", " .. L["RogueSubtlety"] .. "\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF0070DD" .. L["Shaman"] .. "|r - " .. L["ShamanElemental"] .. ", " .. L["ShamanEnhancement"] .. " (" .. L["ExperimentalMinimal"] .. "), " .. L["ShamanRestoration"] .. "\n"
@@ -194,7 +195,7 @@ TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 
 -- For the following specs, we need to have a secondary bar/bars created
 -- We're going to make these as StatusBars so we can use them for Death Knight runes and Warlock soulshards in the future
-if classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then
+if classIndexId == 2 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then
 	TRB.Frames.resource2Frames = {}
 	TRB.Frames.resource2ContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame2", TRB.Frames.barContainerFrame, "BackdropTemplate")
 	

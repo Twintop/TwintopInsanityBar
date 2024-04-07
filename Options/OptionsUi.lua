@@ -2383,7 +2383,23 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			L["Screen"]
 		}
 
-		if (classId == 4 and specId == 1) then -- Assassination Rogue
+		
+		if (classId == 2) then -- Paladin
+			relativeTo[L["HolyPower1"]] = "ComboPoint_1"
+			relativeTo[L["HolyPower2"]] = "ComboPoint_2"
+			relativeTo[L["HolyPower3"]] = "ComboPoint_3"
+			relativeTo[L["HolyPower4"]] = "ComboPoint_4"
+			relativeTo[L["HolyPower5"]] = "ComboPoint_5"
+			relativeToList = {
+				L["MainResourceBar"],
+				L["HolyPower1"],
+				L["HolyPower2"],
+				L["HolyPower3"],
+				L["HolyPower4"],
+				L["HolyPower5"],
+				L["Screen"],
+			}
+		elseif (classId == 4 and specId == 1) then -- Assassination Rogue
 			relativeTo[L["ComboPoint1"]] = "ComboPoint_1"
 			relativeTo[L["ComboPoint2"]] = "ComboPoint_2"
 			relativeTo[L["ComboPoint3"]] = "ComboPoint_3"

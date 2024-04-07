@@ -28,6 +28,7 @@ Currently supported specs:
 - Hunter - Beast Mastery, Marksmanship, Survival
 - Monk - Mistweaver, Windwalker
 - Priest - Discipline, Holy, Shadow
+- Paladin - Holy
 - Rogue - Assassination, Outlaw, Subtlety
 - Shaman - Elemental, Enhancement (Experimental/Minimal), Restoration
 - Warrior - Arms, Fury
