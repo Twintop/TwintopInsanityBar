@@ -2158,7 +2158,7 @@ function TRB.Options:ConstructOptionsPanel()
 	yCoord = yCoord - 40
 	interfaceSettingsFrame.controls.labels.infoSupport = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, L["SupportedSpecs"] .. ":", TRB.Details.supportedSpecs, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 575, 15, 300)
 
-	local flagPathTemplate = "|TInterface\\AddOns\\TwintopInsanityBar\\Images\\Flags\\%s.tga:0|t %s"
+	local flagPathTemplate = "|TInterface\\AddOns\\TwintopInsanityBar\\Images\\Flags\\%s.tga:0|t   %s"
 	local localeText1 = string.format(flagPathTemplate, "deDE", "deDE")
 	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "enGB", "enGB")
 	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "enUS", "enUS")
