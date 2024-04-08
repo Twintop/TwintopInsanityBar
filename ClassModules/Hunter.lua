@@ -2304,7 +2304,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						local spell = spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -2338,7 +2338,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								elseif spell.id == spells.killCommand.id then
 									if snapshots[spells.direPack.id].buff.isActive then
 										resourceAmount = resourceAmount * spells.direPack.resourceMod
-										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 									end
 
 									if snapshots[spell.id].cooldown:IsUnusable() then
@@ -2547,7 +2547,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						local spell = spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -2747,7 +2747,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						local spell = spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over

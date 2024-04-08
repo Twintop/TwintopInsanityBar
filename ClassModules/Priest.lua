@@ -3811,7 +3811,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							end
 
 							if not haveTotem and shadowfiendMana > 0 and (castingBarValue + shadowfiendMana) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[8], resourceFrame, specSettings.thresholds.width, (castingBarValue + shadowfiendMana), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[8], resourceFrame, (castingBarValue + shadowfiendMana), TRB.Data.character.maxResource)
 					---@diagnostic disable-next-line: undefined-field
 								resourceFrame.thresholds[8].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(shadowfiendThresholdColor, true))
 					---@diagnostic disable-next-line: undefined-field
@@ -3839,7 +3839,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							passiveValue = passiveValue + channeledManaPotion.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[1]:Show()
@@ -3854,7 +3854,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							passiveValue = passiveValue + math.max(innervate.mana, potionOfChilledClarity.mana)
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[2]:Show()
@@ -3869,7 +3869,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							passiveValue = passiveValue + symbolOfHope.buff.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[3]:Show()
@@ -3884,7 +3884,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							passiveValue = passiveValue + manaTideTotem.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[4]:Show()
@@ -3899,7 +3899,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							passiveValue = passiveValue + moltenRadiance.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[5]:Show()
@@ -3914,7 +3914,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							passiveValue = passiveValue + shadowfiend.attributes.resourceFinal
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[6], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[6], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[6].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[6]:Show()
@@ -4174,7 +4174,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							end
 
 							if not haveTotem and shadowfiendMana > 0 and (castingBarValue + shadowfiendMana) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[8], resourceFrame, specSettings.thresholds.width, (castingBarValue + shadowfiendMana), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[8], resourceFrame, (castingBarValue + shadowfiendMana), TRB.Data.character.maxResource)
 					---@diagnostic disable-next-line: undefined-field
 								resourceFrame.thresholds[8].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(shadowfiendThresholdColor, true))
 					---@diagnostic disable-next-line: undefined-field
@@ -4208,7 +4208,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							end
 
 							if symbolOfHopeMana > 0 and (castingBarValue + symbolOfHopeMana) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[9], resourceFrame, specSettings.thresholds.width, (castingBarValue + symbolOfHopeMana), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[9], resourceFrame, (castingBarValue + symbolOfHopeMana), TRB.Data.character.maxResource)
 					---@diagnostic disable-next-line: undefined-field
 								resourceFrame.thresholds[9].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(symbolOfHopeThresholdColor, true))
 					---@diagnostic disable-next-line: undefined-field
@@ -4236,7 +4236,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							passiveValue = passiveValue + channeledManaPotion.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[1]:Show()
@@ -4251,7 +4251,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							passiveValue = passiveValue + math.max(innervate.mana, potionOfChilledClarity.mana)
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[2]:Show()
@@ -4266,7 +4266,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							passiveValue = passiveValue + symbolOfHope.buff.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[3]:Show()
@@ -4281,7 +4281,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							passiveValue = passiveValue + manaTideTotem.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[4]:Show()
@@ -4296,7 +4296,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							passiveValue = passiveValue + moltenRadiance.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[5]:Show()
@@ -4311,7 +4311,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							passiveValue = passiveValue + shadowfiend.attributes.resourceFinal
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[6], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[6], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 
 								TRB.Frames.passiveFrame.thresholds[6].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[6]:Show()
@@ -4589,7 +4589,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 						snapshots[spells.idolOfCthun.id].attributes.resourceFinal > 0) then
 						passiveValue = ((CalculateResourceGain(spells.auspiciousSpirits.resource) * (snapshotData.targetData.custom.auspiciousSpiritsGenerate or 0)) + snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal + snapshots[spells.idolOfCthun.id].attributes.resourceFinal)
 						if (snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal) > 0 and (castingBarValue + (snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)) < TRB.Data.character.maxResource then
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (castingBarValue + (snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)), TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, (castingBarValue + (snapshots[spells.shadowfiend.id].attributes.resourceFinal + snapshots[spells.devouredDespair.id].attributes.resourceFinal)), TRB.Data.character.maxResource)
 							TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 							TRB.Frames.passiveFrame.thresholds[1]:Show()
 						else
@@ -4607,7 +4607,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 							pairOffset = (spell.thresholdId - 1) * 3
 							local resourceAmount = spell.resource
 							local currentResource = currentResource
-							--TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+							--TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -4623,7 +4623,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										resourceAmount = resourceAmount - spells.distortedReality.resourceMod
 									end
 
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 									
 									if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
@@ -4649,7 +4649,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										previousResourceAmount = previousResourceAmount - (spells.distortedReality.resourceMod)
 									end
 
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 									
 									if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false
@@ -4680,7 +4680,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 										previousResourceAmount = previousResourceAmount - (spells.distortedReality.resourceMod*2)
 									end
 
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 									
 									if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 										showThreshold = false

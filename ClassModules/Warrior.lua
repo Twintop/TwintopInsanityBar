@@ -1285,7 +1285,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 							if not (spell.id == spells.execute.id or spell.id == spells.whirlwind.id or spell.id == spells.thunderClap) then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 							end
 
 							local showThreshold = true
@@ -1308,9 +1308,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									end
 
 									if snapshots[spells.suddenDeath.id].buff.isActive then
-										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -spells.execute.resourceMax, TRB.Data.character.maxResource)
+										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -spells.execute.resourceMax, TRB.Data.character.maxResource)
 									else
-										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, math.min(math.max(-resourceAmount, normalizedResource), -spells.execute.resourceMax), TRB.Data.character.maxResource)
+										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, math.min(math.max(-resourceAmount, normalizedResource), -spells.execute.resourceMax), TRB.Data.character.maxResource)
 									end
 
 									if UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
@@ -1342,7 +1342,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 									
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 								elseif spell.id == spells.cleave.id then
 									if snapshots[spells.battlelord.id].buff.isActive then
 										resourceAmount = resourceAmount - spells.battlelord.resourceMod
@@ -1358,7 +1358,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 									
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 								elseif spell.id == spells.whirlwind.id then
 									if talents:IsTalentActive(spells.stormOfSwords) then
 										resourceAmount = resourceAmount + spells.stormOfSwords.resourceMod
@@ -1371,7 +1371,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 								elseif spell.id == spells.thunderClap.id then
 									if talents:IsTalentActive(spells.bloodAndThunder) then
 										resourceAmount = resourceAmount + spells.bloodAndThunder.resourceMod
@@ -1387,7 +1387,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 									
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 								end
 							elseif spell.hasCooldown then
 								if snapshots[spell.id].cooldown:IsUnusable() then
@@ -1504,7 +1504,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							local resourceAmount = CalculateAbilityResourceValue(spell.resource)
 							local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 							
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -1527,7 +1527,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 											showThreshold = false
 										else
 											if spell.settingKey == "execute" then
-												TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, math.min(math.max(-resourceAmount, normalizedResource), -spells.execute.resourceMax), TRB.Data.character.maxResource)
+												TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, math.min(math.max(-resourceAmount, normalizedResource), -spells.execute.resourceMax), TRB.Data.character.maxResource)
 											end
 
 											if snapshots[spell.id].cooldown:IsUnusable() then
@@ -1564,7 +1564,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 									
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 								end
 							elseif spell.hasCooldown then
 								if snapshots[spell.id].cooldown:IsUnusable() then

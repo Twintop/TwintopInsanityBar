@@ -1471,7 +1471,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							passiveValue = passiveValue + channeledManaPotion.mana
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 		---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[1]:Show()
@@ -1486,7 +1486,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							passiveValue = passiveValue + math.max(innervate.mana, potionOfChilledClarity.mana)
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 		---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[2]:Show()
@@ -1501,7 +1501,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							passiveValue = passiveValue + symbolOfHope.buff.mana
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 		---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[3]:Show()
@@ -1516,7 +1516,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							passiveValue = passiveValue + manaTideTotem.mana
 		
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 		---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[4]:Show()
@@ -1531,7 +1531,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							passiveValue = passiveValue + moltenRadiance.mana
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[5]:Show()
@@ -1546,7 +1546,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							passiveValue = passiveValue + emeraldCommunion.buff.resource
 
 							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[6], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[6], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 								TRB.Frames.passiveFrame.thresholds[6].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
 								TRB.Frames.passiveFrame.thresholds[6]:Show()
