@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 10.2.6.7-release (2024-04-??)
+## General
+### Localization
+
+- [#351 - NEW (Twintop)](#351) Add default Google Translate localizations for all supported languages. Human-sourced translations will take precidence over these entries where available.
+
+---
+
 # 10.2.6.6-release (2024-04-07)
 ## General
 
