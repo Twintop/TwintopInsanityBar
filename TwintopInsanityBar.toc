@@ -28,19 +28,28 @@ Libs\LibScrollingTable\lib-st.xml
 
 Localization\Localization.lua
 Localization\enUS.lua
+Localization\de-GT.lua
 Localization\deDE.lua
 Localization\enCN.lua
 Localization\enGB.lua
 Localization\enTW.lua
+Localization\es-GT.lua
 Localization\esES.lua
 Localization\esMX.lua
+Localization\fr-GT.lua
 Localization\frFR.lua
+Localization\it-GT.lua
 Localization\itIT.lua
+Localization\ko-GT.lua
 Localization\koKR.lua
+Localization\pt-GT.lua
 Localization\ptBR.lua
 Localization\ptPT.lua
+Localization\ru-GT.lua
 Localization\ruRU.lua
+Localization\zhCN-GT.lua
 Localization\zhCN.lua
+Localization\zhTW-GT.lua
 Localization\zhTW.lua
 Localization\LocalizationPost.lua
 
