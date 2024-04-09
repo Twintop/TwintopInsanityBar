@@ -1,6 +1,16 @@
 ## Interface: 100206
 ## Title: Twintop's Resource Bar
+## Title-deDE: Twintops Ressourcenleiste
+## Title-esES: Barra de Recursos de Twintop
+## Title-esMX: Barra de Recursos de Twintop
 ## Title-frFR: Barre de Ressources Twintop
+## Title-itIT: Barra delle Risorse di Twintop
+## Title-koKR: Twintop의 리소스 바
+## Title-ptBR: Barra de Recursos do Twintop
+## Title-ptPT: Barra de Recursos do Twintop
+## Title-ruRU: Панель ресурсов Twintop
+## Title-zhCN: Twintop 的资源栏
+## Title-zhTW: Twintop 的資源欄
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 10.2.6.7
@@ -28,19 +38,28 @@ Libs\LibScrollingTable\lib-st.xml
 
 Localization\Localization.lua
 Localization\enUS.lua
+Localization\de-GT.lua
 Localization\deDE.lua
 Localization\enCN.lua
 Localization\enGB.lua
 Localization\enTW.lua
+Localization\es-GT.lua
 Localization\esES.lua
 Localization\esMX.lua
+Localization\fr-GT.lua
 Localization\frFR.lua
+Localization\it-GT.lua
 Localization\itIT.lua
+Localization\ko-GT.lua
 Localization\koKR.lua
+Localization\pt-GT.lua
 Localization\ptBR.lua
 Localization\ptPT.lua
+Localization\ru-GT.lua
 Localization\ruRU.lua
+Localization\zhCN-GT.lua
 Localization\zhCN.lua
+Localization\zhTW-GT.lua
 Localization\zhTW.lua
 Localization\LocalizationPost.lua
 

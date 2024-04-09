@@ -3049,8 +3049,8 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		controls.checkBoxes.opportunityAudio = CreateFrame("CheckButton", "TwintopResourceBar_Rogue_Outlaw_opportunity_Sound_Checkbox", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.opportunityAudio
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawThresholdOpportunity"])
-		f.tooltip = L["RogueOutlawThresholdOpportunityTooltip"]
+		getglobal(f:GetName() .. 'Text'):SetText(L["RogueOutlawAudioCheckboxOpportunityProc"])
+		f.tooltip = L["RogueOutlawAudioCheckboxOpportunityProcTooltip"]
 		f:SetChecked(spec.audio.opportunity.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.audio.opportunity.enabled = self:GetChecked()
