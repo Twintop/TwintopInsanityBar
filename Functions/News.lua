@@ -11,8 +11,11 @@ local content = [====[
 
 ---
 
-# 10.2.6.7-release (2024-04-??)
+# 10.2.6.7-release (2024-04-10)
 ## General
+
+- (FIX) Prevent Combo Points, Maelstrom Weapon, Soul Fragments, Holy Words, Power Words, and Essence from not being properly filled in.
+
 ### Localization
 
 - [#351 - NEW (Twintop)](#351) Add default Google Translate localizations for all supported languages. Human-sourced translations will take precidence over these entries where available.

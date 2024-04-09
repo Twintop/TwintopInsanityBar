@@ -3,12 +3,13 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Bar = {}
 
-function GetComboPointNodeWidth(settings)
+local function GetComboPointNodeWidth(settings)
 	if settings.comboPoints ~= nil and TRB.Data.character.maxResource2 ~= nil and TRB.Data.character.maxResource2 > 0 then
 		if settings.comboPoints.fullWidth then
 			local nodes = TRB.Data.character.maxResource2
 			local nodeSpacing = settings.comboPoints.spacing + settings.comboPoints.border * 2
-			return ((settings.bar.width - ((nodes - 1) * (nodeSpacing - settings.comboPoints.border * 2))) / nodes)
+			local width = ((settings.bar.width - ((nodes - 1) * (nodeSpacing - settings.comboPoints.border * 2))) / nodes)
+			return width
 		else
 			return settings.comboPoints.width
 		end
@@ -346,6 +347,7 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 	end
 
 	TRB.Functions.Threshold:RedrawThresholdLines(settings)
+	TRB.Functions.Bar:SetMinMax(settings)
 end
 
 function TRB.Functions.Bar:UpdateSmoothBar()
