@@ -31,6 +31,10 @@ local content = [====[
 <br/>&emsp;&ensp;&emsp;&ensp;- Emerald Communion
 - (FIX) Improve bar text parsing for icon names.
 
+## Localization
+
+- [#351 - NEW (Twintop)](#351) Add default Google Translate localizations for all supported languages. Human-sourced translations will take precidence over these entries where available.
+
 ## Paladin
 ### Holy
 
