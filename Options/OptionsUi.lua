@@ -1662,7 +1662,6 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		
 		if GetSpecialization() == specId then
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)
-			--TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
 		end
 	end)
 

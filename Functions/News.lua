@@ -11,7 +11,7 @@ local content = [====[
 
 ---
 
-# 10.2.6.7-release (2024-04-??)
+# 10.2.6.7-release (2024-04-10)
 ## General
 
 - [#349 - NEW](#344) Add support for Holy Paladin, tracking Mana and Holy Power.
@@ -29,7 +29,7 @@ local content = [====[
 <br/>&emsp;&ensp;&emsp;&ensp;- Potion of Chilled Clarity
 <br/>&emsp;&ensp;&emsp;&ensp;- Molten Radiance
 <br/>&emsp;&ensp;&emsp;&ensp;- Emerald Communion
-- (FIX) Improve bar text parsing for icon names.
+- (FIX) Prevent Combo Points, Maelstrom Weapon, Soul Fragments, Holy Words, Power Words, and Essence from not being properly filled in.
 
 ## Localization
 
