@@ -1920,11 +1920,11 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		local targetData = snapshotData.targetData
 
 		if specId == 1 then -- Discipline
-			targetData:UpdateDebuffs(currentTime)
+			targetData:UpdateTrackedSpells(currentTime)
 		elseif specId == 2 then -- Holy
-			targetData:UpdateDebuffs(currentTime)
+			targetData:UpdateTrackedSpells(currentTime)
 		elseif specId == 3 then -- Shadow
-			targetData:UpdateDebuffs(currentTime)
+			targetData:UpdateTrackedSpells(currentTime)
 
 			targetData.count[spells.auspiciousSpirits.id] = targetData.count[spells.auspiciousSpirits.id] or 0
 
@@ -5712,12 +5712,12 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		if (selfInitializeAllowed == nil or selfInitializeAllowed == false) and guid == TRB.Data.character.guid then
 			return false
 		end
-		
-		local currentTime = GetTime()
-		local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
-		local targets = targetData.targets
 
 		if guid ~= nil and guid ~= "" then
+			local currentTime = GetTime()
+			local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
+			local targets = targetData.targets
+			
 			if not targetData:CheckTargetExists(guid) then
 				targetData:InitializeTarget(guid, isFriend)
 			end

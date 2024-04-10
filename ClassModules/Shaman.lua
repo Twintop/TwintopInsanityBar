@@ -922,7 +922,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
 		local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
-		targetData:UpdateDebuffs(currentTime)
+		targetData:UpdateTrackedSpells(currentTime)
 	end
 
 	local function TargetsCleanup(clearAll)

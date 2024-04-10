@@ -2430,11 +2430,11 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 		local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
 		
 		if specId == 1 then -- Assassination
-			targetData:UpdateDebuffs(currentTime)
+			targetData:UpdateTrackedSpells(currentTime)
 		elseif specId == 2 then -- Outlaw
-			targetData:UpdateDebuffs(currentTime)
+			targetData:UpdateTrackedSpells(currentTime)
 		elseif specId == 3 then -- Outlaw
-			targetData:UpdateDebuffs(currentTime)
+			targetData:UpdateTrackedSpells(currentTime)
 		end
 	end
 

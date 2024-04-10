@@ -790,7 +790,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		
 		if specId == 2 then -- Mistweaver
 		elseif specId == 3 then -- Windwalker
-			targetData:UpdateDebuffs(currentTime)
+			targetData:UpdateTrackedSpells(currentTime)
 		end
 	end
 

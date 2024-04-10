@@ -48,7 +48,7 @@ function TRB.Classes.TargetData:AddSpellTracking(spell, isDot, hasCounter, hasSn
         autoUpdate = true
     end
 
-    local id = spell.debuffId or spell.spellId or spell.id or nil
+    local id = spell.debuffId or spell.buffId or spell.spellId or spell.id or nil
 
     if id ~= nil and self.trackedSpells[id] == nil then
         self.trackedSpells[id] = TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot, autoUpdate)
@@ -71,7 +71,7 @@ end
 
 ---Updates the status of debuffs on the target
 ---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
-function TRB.Classes.TargetData:UpdateDebuffs(currentTime)
+function TRB.Classes.TargetData:UpdateTrackedSpells(currentTime)
     currentTime = currentTime or GetTime()
     local counts = {}
     for guid, _ in pairs(self.targets) do
@@ -370,13 +370,28 @@ function TRB.Classes.TargetSpell:Update(currentTime)
     if unitToken ~= nil then
         if self.autoUpdate then
             if self.isDot then
-                if self.spell.isBuff then
+                if self.spell.isBuff and self.spell.isDebuff then -- Buff on friendly, debuff on unfriendly
+                    if target.isFriend then
+                        local buff = TRB.Functions.Aura:FindBuffById(self.id, unitToken, "player")
+                        if buff ~= nil then
+                            self.active = true
+                            self.remainingTime = buff.expirationTime - currentTime
+                            self.endTime = buff.expirationTime
+                        end
+                    else
+                        local debuff = TRB.Functions.Aura:FindDebuffById(self.id, unitToken, "player")
+                        if debuff ~= nil then
+                            self.active = true
+                            self.remainingTime = debuff.expirationTime - currentTime
+                            self.endTime = debuff.expirationTime
+                        end
+                    end
+                elseif self.spell.isBuff then
                     local buff = TRB.Functions.Aura:FindBuffById(self.id, unitToken, "player")
                     if buff ~= nil then
                         self.active = true
                         self.remainingTime = buff.expirationTime - currentTime
-                        self.endTime = buff
-                        .expirationTime
+                        self.endTime = buff.expirationTime
                     end
                 else
                     local debuff = TRB.Functions.Aura:FindDebuffById(self.id, unitToken, "player")

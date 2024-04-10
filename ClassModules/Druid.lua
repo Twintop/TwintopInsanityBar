@@ -1557,7 +1557,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		---@type TRB.Classes.TargetData
 		local targetData = snapshotData.targetData
-		targetData:UpdateDebuffs(currentTime)
+		targetData:UpdateTrackedSpells(currentTime)
 	end
 
 	local function TargetsCleanup(clearAll)
