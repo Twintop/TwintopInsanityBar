@@ -108,6 +108,10 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 				name = "",
 				icon = "",
 				isTalent = true,
+				isDot = true,
+				isBuff = true,
+				isDebuff = true,
+				duration = 30,
 				debuffId = 287280,
 				buffId = 287280
 			},
