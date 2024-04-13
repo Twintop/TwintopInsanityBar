@@ -1127,7 +1127,7 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 					elseif entry.spellId == spells.potionOfChilledClarity.id then
 						local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 						potionOfChilledClarity.buff:Initialize(entry.type)
-					elseif entry.spellId == spells.glimmerOfLight.buffId then
+					elseif entry.spellId == spells.glimmerOfLight.buffId and bit.band(entry.destinationFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY) > 0 then
 						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid, true, true) then
 							triggerUpdate = targetData:HandleCombatLogBuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
