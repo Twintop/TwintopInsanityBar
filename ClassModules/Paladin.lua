@@ -1113,7 +1113,7 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 						blessingOfWinter.buff:Initialize(entry.type)
 					end
 				end
-			end	
+			end
 
 			if entry.sourceGuid == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "holy" then
