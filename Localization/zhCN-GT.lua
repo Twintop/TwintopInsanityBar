@@ -1882,4 +1882,5 @@ if locale == "zhCN" then
     L["ShamanRestorationBarTextVariable_bowTicks"] = "冬日祝福剩余刻度数"
     L["HealerCheckboxTrackBlessingOfWinter"] = "追踪圣骑士冬季祝福的法力回复"
     L["HealerCheckboxTrackBlessingOfWinterTooltip"] = "显示施放于你身上的神圣圣骑士的冬季祝福增益所恢复的法力值。"
+    L["Daybreak"] = "拂晓"
 end

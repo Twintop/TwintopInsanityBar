@@ -1957,3 +1957,4 @@ L["ShamanRestorationBarTextVariable_bowTime"] = "Time left on Blessing of Winter
 L["ShamanRestorationBarTextVariable_bowTicks"] = "Number of ticks left on Blessing of Winter"
 L["HealerCheckboxTrackBlessingOfWinter"] = "Track mana regen from a Holy Paladin's Blessing of Winter"
 L["HealerCheckboxTrackBlessingOfWinterTooltip"] = "Show the regeneration of mana from a Holy Paladin's Blessing of Winter buff cast on you."
+L["Daybreak"] = "Daybreak"

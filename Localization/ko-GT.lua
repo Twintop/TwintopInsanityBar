@@ -1882,4 +1882,5 @@ if locale == "koKR" then
     L["ShamanRestorationBarTextVariable_bowTicks"] = "겨울의 축복에 남은 틱 수"
     L["HealerCheckboxTrackBlessingOfWinter"] = "성기사의 겨울 축복에서 마나 재생을 추적합니다."
     L["HealerCheckboxTrackBlessingOfWinterTooltip"] = "당신에게 시전된 신성 성기사의 겨울 축복 버프를 통해 마나 재생을 보여줍니다."
+    L["Daybreak"] = "새벽"
 end

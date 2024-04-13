@@ -120,6 +120,16 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 				tickRate = 2,
 				manaPercent = 0.01
 			},
+			daybreak = {
+				id = 414170,
+				name = "",
+				icon = "",
+				texture = "",
+				thresholdId = 8,
+				settingKey = "daybreak",
+				isTalent = true,
+				manaPercent = 0.008
+			},
 
 			-- External mana
 			symbolOfHope = {
@@ -284,6 +294,9 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 			minRemainingTime = 0,
 			maxRemainingTime = 0
 		})
+
+		---@type TRB.Classes.Snapshot
+		specCache.holy.snapshotData.snapshots[specCache.holy.spells.daybreak.id] = TRB.Classes.Snapshot:New(specCache.holy.spells.daybreak)
 
 
 		specCache.holy.barTextVariables = {
@@ -466,7 +479,7 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 		end
 
 		if specId == 1 then
-			for x = 1, 7 do
+			for x = 1, 8 do
 				if TRB.Frames.resourceFrame.thresholds[x] == nil then
 					TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
@@ -493,6 +506,7 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], TRB.Data.spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.paladin.holy)
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], TRB.Data.spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.paladin.holy)
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], TRB.Data.spells.conjuredChillglobe.settingKey, TRB.Data.settings.paladin.holy)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[8], TRB.Data.spells.daybreak.settingKey, TRB.Data.settings.paladin.holy)
 		end
 
 		TRB.Functions.Class:CheckCharacter()
@@ -960,6 +974,39 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 
 					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentResource, castingBarValue, specSettings, snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown, snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown, TRB.Data.character, resourceFrame, CalculateManaGain)
 
+					if talents:IsTalentActive(spells.daybreak) then
+						local daybreak = snapshots[spells.daybreak.id]
+						local daybreakThresholdColor = specSettings.colors.threshold.over
+						if specSettings.thresholds.daybreak.enabled and (not daybreak.cooldown:IsUnusable() or specSettings.thresholds.daybreak.cooldown) then
+							local daybreakMana = snapshotData.targetData.count[spells.glimmerOfLight.buffId] * daybreak.spell.manaPercent * TRB.Data.character.maxResource
+
+							if daybreak.cooldown:IsUnusable() then
+								daybreakThresholdColor = specSettings.colors.threshold.unusable
+							end
+
+							if daybreakMana > 0 and (castingBarValue + daybreakMana) < TRB.Data.character.maxResource then
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[8], resourceFrame, (castingBarValue + daybreakMana), TRB.Data.character.maxResource)
+					---@diagnostic disable-next-line: undefined-field
+								resourceFrame.thresholds[8].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(daybreakThresholdColor, true))
+					---@diagnostic disable-next-line: undefined-field
+								resourceFrame.thresholds[8].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(daybreakThresholdColor, true))
+								resourceFrame.thresholds[8]:Show()
+
+								if specSettings.thresholds.icons.showCooldown and daybreak.cooldown.remaining > 0 then
+									resourceFrame.thresholds[8].icon.cooldown:SetCooldown(daybreak.cooldown.startTime, daybreak.cooldown.duration)
+								else
+									resourceFrame.thresholds[8].icon.cooldown:SetCooldown(0, 0)
+								end
+							else
+								resourceFrame.thresholds[8]:Hide()
+							end
+						else
+							resourceFrame.thresholds[8]:Hide()
+						end
+					else
+						resourceFrame.thresholds[8]:Hide()
+					end
+
 					local passiveValue, _ = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
 							
 					passiveBarValue = castingBarValue + passiveValue
@@ -1083,6 +1130,10 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 					elseif entry.spellId == spells.glimmerOfLight.debuffId then
 						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid, true, false) then
 							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+						end
+					elseif entry.spellId == spells.daybreak.id then
+						if entry.type == "SPELL_AURA_REMOVED" then -- Use this instead of SPELL_CAST_SUCCESS because of delays in triggering the cooldown
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
 					end
 				end

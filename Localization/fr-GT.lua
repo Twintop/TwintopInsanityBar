@@ -1882,4 +1882,5 @@ if locale == "frFR" then
     L["ShamanRestorationBarTextVariable_bowTicks"] = "Nombre de coches restantes sur Bénédiction de l'Hiver"
     L["HealerCheckboxTrackBlessingOfWinter"] = "Suivre la régénération de mana de la Bénédiction de l'hiver d'un Paladin sacré"
     L["HealerCheckboxTrackBlessingOfWinterTooltip"] = "Montrez la régénération du mana provenant d'un buff Bénédiction de l'hiver du Paladin sacré lancé sur vous."
+    L["Daybreak"] = "Aube"
 end

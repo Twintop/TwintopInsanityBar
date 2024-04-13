@@ -1882,4 +1882,5 @@ if locale == "ptBR" or locale == "ptPT" then
     L["ShamanRestorationBarTextVariable_bowTicks"] = "Número de ticks restantes na Bênção do Inverno"
     L["HealerCheckboxTrackBlessingOfWinter"] = "Rastreie a regeneração de mana da Bênção do Inverno do Paladino Sagrado"
     L["HealerCheckboxTrackBlessingOfWinterTooltip"] = "Mostre a regeneração de mana de um buff da Bênção do Inverno do Paladino Sagrado lançado em você."
+    L["Daybreak"] = "Aurora"
 end

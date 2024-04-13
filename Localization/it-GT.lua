@@ -1882,4 +1882,5 @@ if locale == "itIT" then
     L["ShamanRestorationBarTextVariable_bowTicks"] = "Numero di segni di spunta rimasti su Blessing of Winter"
     L["HealerCheckboxTrackBlessingOfWinter"] = "Tieni traccia della rigenerazione del mana dalla Benedizione dell'Inverno del Sacro Paladino"
     L["HealerCheckboxTrackBlessingOfWinterTooltip"] = "Mostra la rigenerazione del mana derivante dal buff Benedizione dell'Inverno del Santo Paladino lanciato su di te."
+    L["Daybreak"] = "L'alba"
 end

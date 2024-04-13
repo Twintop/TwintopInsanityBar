@@ -209,6 +209,10 @@ if classIndexId == 2 then --Only do this if we're on a Paladin!
 					enabled = true, -- 7
 					cooldown = true
 				},
+				daybreak = {
+					enabled = true, -- 8
+					cooldown = true
+				},
 				potionCooldown = {
 					enabled=true,
 					mode="time",

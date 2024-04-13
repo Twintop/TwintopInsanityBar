@@ -1882,4 +1882,5 @@ if locale == "ruRU" then
     L["ShamanRestorationBarTextVariable_bowTicks"] = "Количество тиков, оставшихся на «Благословении зимы»"
     L["HealerCheckboxTrackBlessingOfWinter"] = "Отслеживание регенерации маны от «Благословения зимы» святого паладина."
     L["HealerCheckboxTrackBlessingOfWinterTooltip"] = "Покажите регенерацию маны от наложенного на вас положительного эффекта «Святое благословение зимы паладина»."
+    L["Daybreak"] = "Рассвет"
 end

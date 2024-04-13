@@ -1882,4 +1882,5 @@ if locale == "deDE" then
     L["ShamanRestorationBarTextVariable_bowTicks"] = "Anzahl der verbleibenden Ticks auf „Segen des Winters“."
     L["HealerCheckboxTrackBlessingOfWinter"] = "Verfolgen Sie die Manaregeneration durch den Segen des Winters eines Heiligen Paladins"
     L["HealerCheckboxTrackBlessingOfWinterTooltip"] = "Zeigen Sie die Mana-Regeneration durch die auf Sie gewirkte Stärkung „Segen des Winters“ des Heiligen Paladins."
+    L["Daybreak"] = "Tagesanbruch"
 end
