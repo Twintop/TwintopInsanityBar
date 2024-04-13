@@ -11,7 +11,7 @@ local content = [====[
 
 ---
 
-# 10.2.6.7-release (2024-04-10)
+# 10.2.6.7-release (2024-04-14)
 ## General
 
 - [#349 - NEW](#344) Add support for Holy Paladin, tracking Mana and Holy Power.
