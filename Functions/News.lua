@@ -31,6 +31,15 @@ local content = [====[
 <br/>&emsp;&ensp;&emsp;&ensp;- Emerald Communion
 - (FIX) Prevent Combo Points, Maelstrom Weapon, Soul Fragments, Holy Words, Power Words, and Essence from not being properly filled in.
 
+## Healers
+
+- [#353 - NEW](#353) Add passive mana generation tracking from Blessing of Winter.
+<br/>&emsp;&ensp;- New bar text icons and variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#bow` or `#blessingOfWinter` -- Blessing of Winter buff icon
+<br/>&emsp;&ensp;&emsp;&ensp;- `$bowMana` -- how much mana will be returned over the remaining duration of Blessing of Winter buff
+<br/>&emsp;&ensp;&emsp;&ensp;- `$bowTime` -- how long is left on Blessing of Winter buff
+<br/>&emsp;&ensp;&emsp;&ensp;- `$bowTicks` -- how many ticks of mana regen remain on Blessing of Winter buff
+
 ## Localization
 
 - [#351 - NEW (Twintop)](#351) Add default Google Translate localizations for all supported languages. Human-sourced translations will take precidence over these entries where available.

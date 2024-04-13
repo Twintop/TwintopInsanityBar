@@ -869,7 +869,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 			passiveGeneration = {
 				innervate = true,
 				manaTideTotem = true,
-				symbolOfHope = true
+				symbolOfHope = true,
+				blessingOfWinter = true
 			},
 			endOfAscendance = {
 				enabled=true,
@@ -2614,6 +2615,17 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		
 		yCoord = yCoord - 60
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerPassiveExternalManaGenerationTrackingHeader"], oUi.xCoord, yCoord)
+						
+		yCoord = yCoord - 30
+		controls.checkBoxes.blessingOfWinterRegen = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_BlessingOfWinterMana_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.blessingOfWinterRegen
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["HealerCheckboxTrackBlessingOfWinter"])
+		f.tooltip = L["HealerCheckboxTrackBlessingOfWinterTooltip"]
+		f:SetChecked(spec.passiveGeneration.blessingOfWinter)
+		f:SetScript("OnClick", function(self, ...)
+			spec.passiveGeneration.blessingOfWinter = self:GetChecked()
+		end)
 		
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervateRegen = CreateFrame("CheckButton", "TwintopResourceBar_Shaman_Restoration_InnervatePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
