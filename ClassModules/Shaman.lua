@@ -2092,11 +2092,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 					local barBorderColor = specSettings.colors.bar.border
 
 					local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
-					local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
-					local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
-					local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 					local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
-					local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 
 					if potionOfChilledClarity.buff.isActive then
 						if specSettings.colors.bar.potionOfChilledClarityBorderChange then

@@ -854,7 +854,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 		specCache.holy.snapshotData.snapshots[specCache.holy.spells.potionOfChilledClarity.id] = TRB.Classes.Healer.PotionOfChilledClarity:New(specCache.holy.spells.potionOfChilledClarity)
 		---@type TRB.Classes.Healer.ManaTideTotem
 		specCache.holy.snapshotData.snapshots[specCache.holy.spells.manaTideTotem.id] = TRB.Classes.Healer.ManaTideTotem:New(specCache.holy.spells.manaTideTotem)
-		---@type TRB.Classes.Snapshot
+		---@type TRB.Classes.Healer.HealerRegenBase
 		specCache.holy.snapshotData.snapshots[specCache.holy.spells.shadowfiend.id] = TRB.Classes.Healer.HealerRegenBase:New(specCache.holy.spells.shadowfiend, {
 			guid = nil,
 			totemId = nil,
@@ -3817,11 +3817,7 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local barBorderColor = specSettings.colors.bar.border
 
 					local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
-					local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
-					local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
-					local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 					local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
-					local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 
 					if snapshots[spells.surgeOfLight.id].buff.isActive then
 						if snapshots[spells.surgeOfLight.id].buff.applications == 1 then
@@ -4068,11 +4064,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 					local barBorderColor = specSettings.colors.bar.border
 
 					local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
-					local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 					local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
-					local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 					local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
-					local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 
 					if snapshots[spells.lightweaver.id].buff.isActive then
 						if specSettings.colors.bar.lightweaverBorderChange then

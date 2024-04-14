@@ -11,7 +11,7 @@ local content = [====[
 
 ---
 
-# 10.2.6.7-release (2024-04-14)
+# 10.2.6.7-release (2024-04-15)
 ## General
 
 - [#349 - NEW](#344) Add support for Holy Paladin, tracking Mana and Holy Power.
@@ -39,6 +39,7 @@ local content = [====[
 <br/>&emsp;&ensp;&emsp;&ensp;- `$bowMana` -- how much mana will be returned over the remaining duration of Blessing of Winter buff
 <br/>&emsp;&ensp;&emsp;&ensp;- `$bowTime` -- how long is left on Blessing of Winter buff
 <br/>&emsp;&ensp;&emsp;&ensp;- `$bowTicks` -- how many ticks of mana regen remain on Blessing of Winter buff
+- (FIX) Prevent the passive mana gain threshold line and passive bar from continuing to show when a Symbol of Hope cast completes.
 
 ## Localization
 

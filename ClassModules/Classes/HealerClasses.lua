@@ -6,9 +6,9 @@ TRB.Classes.Healer = TRB.Classes.Healer or {}
 
 
 --[[
-    *********************
+    ***************************
     ***** HealerRegenBase *****
-    *********************
+    ***************************
     ]]
 
 ---@class TRB.Classes.Healer.HealerRegenBase : TRB.Classes.Snapshot
@@ -25,7 +25,6 @@ function TRB.Classes.Healer.HealerRegenBase:New(spell, attributes)
     local snapshot = TRB.Classes.Snapshot
     local self = setmetatable(snapshot:New(spell, attributes), TRB.Classes.Healer.HealerRegenBase)
     self:Reset()
-    self.attributes = {}
     return self
 end
 
@@ -195,6 +194,7 @@ end
 ---Resets SymbolOfHope's values to default
 function TRB.Classes.Healer.SymbolOfHope:Reset()
     self.buff:Reset()
+    self.mana = 0
 end
 
 ---comment
@@ -230,15 +230,16 @@ end
 
 ---Updates SymbolOfHope's values
 function TRB.Classes.Healer.SymbolOfHope:Update()
+    local activePreviously = self.buff.isActive
     self.buff:Refresh(nil, nil, nil)
     if self.buff.isActive then
         if self.buff.ticks <= 0 or self.buff.tickRate == 0 then
-            self.buff:Reset()
+            self:Reset()
             return
         end
 
         if self.buff.ticks > self.spell.ticks then
-            self.buff:Reset()
+            self:Reset()
             return
         end
 
@@ -247,6 +248,9 @@ function TRB.Classes.Healer.SymbolOfHope:Update()
         
         self.buff.manaRaw = manaRaw
         self.buff.mana = self.buff.CalculateManaGainFunction(self.buff.manaRaw, false)
+        self.mana = self.buff.mana
+    elseif activePreviously then
+        self:Reset()
     end
 end
 
