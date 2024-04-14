@@ -14,7 +14,7 @@ local content = [====[
 # 10.2.6.7-release (2024-04-15)
 ## General
 
-- [#349 - NEW](#344) Add support for Holy Paladin, tracking Mana and Holy Power.
+- [#349 - NEW (Twintop)](#344) Add support for Holy Paladin, tracking Mana and Holy Power.
 <br/>&emsp;&ensp;- Holy Power colors for the border and fill, including different colors of the penultimate and final combo point.<br/>&emsp;&ensp;- Threshold lines denoting how much mana will be restored from using an Aerated Mana Potion, Potion of Frozen Focus, or Conjured Chillglobe.
 <br/>&emsp;&ensp;- Timer, stack count, bar border color changes, and audio cues for Infusion of Light stacks.
 <br/>&emsp;&ensp;- Bar Text variables and icons for customization.
@@ -28,18 +28,18 @@ local content = [====[
 <br/>&emsp;&ensp;&emsp;&ensp;- Potion of Chilled Clarity
 <br/>&emsp;&ensp;&emsp;&ensp;- Molten Radiance
 <br/>&emsp;&ensp;&emsp;&ensp;- Daybreak
-- (FIX) Prevent Combo Points, Maelstrom Weapon, Soul Fragments, Holy Words, Power Words, and Essence from not being properly filled in.
-- (FIX) Correct inconsistencies with stack tracking of buffs.
+- (FIX (Twintop)) Prevent Combo Points, Maelstrom Weapon, Soul Fragments, Holy Words, Power Words, and Essence from not being properly filled in.
+- (FIX (Twintop)) Correct inconsistencies with stack tracking of buffs.
 
 ## Healers
 
-- [#353 - NEW](#353) Add passive mana generation tracking from Blessing of Winter.
+- [#353 - NEW (Twintop)](#353) Add passive mana generation tracking from Blessing of Winter.
 <br/>&emsp;&ensp;- New bar text icons and variables:
 <br/>&emsp;&ensp;&emsp;&ensp;- `#bow` or `#blessingOfWinter` -- Blessing of Winter buff icon
 <br/>&emsp;&ensp;&emsp;&ensp;- `$bowMana` -- how much mana will be returned over the remaining duration of Blessing of Winter buff
 <br/>&emsp;&ensp;&emsp;&ensp;- `$bowTime` -- how long is left on Blessing of Winter buff
 <br/>&emsp;&ensp;&emsp;&ensp;- `$bowTicks` -- how many ticks of mana regen remain on Blessing of Winter buff
-- (FIX) Prevent the passive mana gain threshold line and passive bar from continuing to show when a Symbol of Hope cast completes.
+- (FIX (Twintop)) Prevent the passive mana gain threshold line and passive bar from continuing to show when a Symbol of Hope cast completes.
 
 ## Localization
 
@@ -48,12 +48,12 @@ local content = [====[
 ## Druid
 ### Restoration
 
-- (FIX) Prevent LUA errors when using Incarnation: Tree of Life.
+- (FIX (Twintop)) Prevent LUA errors when using Incarnation: Tree of Life.
 
 ## Paladin
 ### Holy
 
-- [NEW - #349](#349) Add support for Holy Paladin, tracking Mana and Holy Power.
+- [NEW - #349 (Twintop)](#349) Add support for Holy Paladin, tracking Mana and Holy Power.
 
 ---
 
