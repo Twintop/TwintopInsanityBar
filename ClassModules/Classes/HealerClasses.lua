@@ -66,7 +66,6 @@ function TRB.Classes.Healer.Innervate:New(spell)
     local self = setmetatable(snapshot:New(spell), TRB.Classes.Healer.Innervate)
     self.buff:SetCustomProperties(definitions)
     self:Reset()
-    self.attributes = {}
     return self
 end
 

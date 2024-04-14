@@ -45,6 +45,11 @@ local content = [====[
 
 - [#351 - NEW (Twintop)](#351) Add default Google Translate localizations for all supported languages. Human-sourced translations will take precidence over these entries where available.
 
+## Druid
+### Restoration
+
+- (FIX) Prevent LUA errors when using Incarnation: Tree of Life.
+
 ## Paladin
 ### Holy
 

@@ -4004,7 +4004,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							end
 						end
 
-						if useEndOfIncarnationColor and snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff.remaining <= timeThreshold then
+						if useEndOfIncarnationColor and snapshotData.snapshots[spells.incarnationTreeOfLife.id].buff.remaining <= timeThreshold then
 							resourceBarColor = specSettings.colors.bar.incarnationEnd
 						else
 							resourceBarColor = specSettings.colors.bar.incarnation
