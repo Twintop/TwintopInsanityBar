@@ -8,6 +8,7 @@ TRB.Classes.CombatLogEntry = {}
 ---@field public sourceGuid string
 ---@field public sourceName string
 ---@field public destinationGuid string
+---@field public destinationFlags number
 ---@field public spellId integer
 
 
@@ -19,6 +20,6 @@ function TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
     local entry = {}
 
     ---@diagnostic disable-next-line: assign-type-mismatch
-    _, entry.type, _, entry.sourceGuid, entry.sourceName, _, _, entry.destinationGuid, _, _, _, entry.spellId, _ = CombatLogGetCurrentEventInfo()
+    _, entry.type, _, entry.sourceGuid, entry.sourceName, _, _, entry.destinationGuid, _, entry.destinationFlags, _, entry.spellId, _ = CombatLogGetCurrentEventInfo()
     return entry
 end

@@ -378,3 +378,61 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 		resourceFrame.thresholds[7]:Hide()
 	end
 end
+
+---comment
+---@param settings table # Settings for the specific specialization.
+---@param spells table # Spells used by the specialization. Must include spell definitions for all shared passive regen healer spells!
+---@param snapshots TRB.Classes.Snapshot[] # Snapshots that contain information about all shared passive regen healer spells.
+---@param frame Frame # Frame that these thresholds are drawn on and children of.
+---@param castingBarValue number # Current value of the casting bar.
+---@return number, number # The total mana regen of all shared passive regen healer spells.
+function TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(settings, spells, snapshots, frame, castingBarValue)
+	local passiveValue = 0
+	if settings.bar.showPassive then
+		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 1, castingBarValue, passiveValue)
+		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 2, castingBarValue, passiveValue)
+		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 3, castingBarValue, passiveValue)
+		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 4, castingBarValue, passiveValue)
+		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 5, castingBarValue, passiveValue)
+		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 6, castingBarValue, passiveValue)
+	else
+		TRB.Frames.passiveFrame.thresholds[1]:Hide()
+		TRB.Frames.passiveFrame.thresholds[2]:Hide()
+		TRB.Frames.passiveFrame.thresholds[3]:Hide()
+		TRB.Frames.passiveFrame.thresholds[4]:Hide()
+		TRB.Frames.passiveFrame.thresholds[5]:Hide()
+		TRB.Frames.passiveFrame.thresholds[6]:Hide()
+	end
+	return passiveValue, 6
+end
+
+---comment
+---@param settings table # Settings for the specific specialization.
+---@param snapshot TRB.Classes.Healer.HealerRegenBase # Snapshot of the shared passive regen healer spell we're updating the threshold line of.
+---@param frame Frame # Frame that these thresholds are drawn on and children of.
+---@param thresholdId integer # Threshold to be updated
+---@param castingBarValue number # Current value of the casting bar.
+---@param passiveValue number # The total mana regen of all previous shared passive regen healer spells.
+---@return number # The total mana regen of all shared passive regen healer spells so far.
+function TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshot, frame, thresholdId, castingBarValue, passiveValue)
+	if frame == nil or frame.thresholds == nil then
+		return passiveValue
+	end
+
+	if snapshot.mana > 0 then
+		passiveValue = passiveValue + snapshot.mana
+
+		if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
+			TRB.Functions.Threshold:RepositionThreshold(settings, frame.thresholds[thresholdId], frame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+			---@diagnostic disable-next-line: undefined-field
+			frame.thresholds[thresholdId].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settings.colors.threshold.mindbender, true))
+			frame.thresholds[thresholdId]:Show()
+		else
+			frame.thresholds[thresholdId]:Hide()
+		end
+	else
+		frame.thresholds[thresholdId]:Hide()
+	end
+	
+	return passiveValue
+end

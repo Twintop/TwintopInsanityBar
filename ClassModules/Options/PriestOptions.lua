@@ -335,7 +335,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			passiveGeneration = {
 				innervate = true,
 				manaTideTotem = true,
-				symbolOfHope = true
+				symbolOfHope = true,
+				blessingOfWinter = true
 			},
 			colors={
 				text={
@@ -833,7 +834,8 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			passiveGeneration = {
 				innervate = true,
 				manaTideTotem = true,
-				symbolOfHope = true
+				symbolOfHope = true,
+				blessingOfWinter = true
 			},
 			colors={
 				text={
@@ -2064,6 +2066,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		yCoord = yCoord - 60
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerPassiveExternalManaGenerationTrackingHeader"], oUi.xCoord, yCoord)
+				
+		yCoord = yCoord - 30
+		controls.checkBoxes.blessingOfWinterRegen = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_BlessingOfWinterMana_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.blessingOfWinterRegen
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["HealerCheckboxTrackBlessingOfWinter"])
+		f.tooltip = L["HealerCheckboxTrackBlessingOfWinterTooltip"]
+		f:SetChecked(spec.passiveGeneration.blessingOfWinter)
+		f:SetScript("OnClick", function(self, ...)
+			spec.passiveGeneration.blessingOfWinter = self:GetChecked()
+		end)
 		
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervateRegen = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Discipline_InnervatePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")
@@ -3220,6 +3233,17 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 
 		yCoord = yCoord - 60
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerPassiveExternalManaGenerationTrackingHeader"], oUi.xCoord, yCoord)
+						
+		yCoord = yCoord - 30
+		controls.checkBoxes.blessingOfWinterRegen = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_BlessingOfWinterMana_CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.blessingOfWinterRegen
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["HealerCheckboxTrackBlessingOfWinter"])
+		f.tooltip = L["HealerCheckboxTrackBlessingOfWinterTooltip"]
+		f:SetChecked(spec.passiveGeneration.blessingOfWinter)
+		f:SetScript("OnClick", function(self, ...)
+			spec.passiveGeneration.blessingOfWinter = self:GetChecked()
+		end)
 		
 		yCoord = yCoord - 30
 		controls.checkBoxes.innervateRegen = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Holy_InnervatePassiveMana_CB", parent, "ChatConfigCheckButtonTemplate")

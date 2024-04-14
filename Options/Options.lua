@@ -270,6 +270,17 @@ local function LoadDefaultSettings()
 						thresholds = true
 					}
 				},
+				paladin = {
+					holy = {
+						specEnable = false,
+						bar = true,
+						comboPoints = true,
+						displayBar = true,
+						font = true,
+						textures = true,
+						thresholds = true
+					},
+				},
 				priest = {
 					discipline = {
 						specEnable = false,
@@ -402,6 +413,9 @@ local function LoadDefaultSettings()
 					mistweaver = true,
 					windwalker = true
 				},
+				paladin = {
+					holy = true
+				},
 				priest = {
 					discipline = true,
 					holy = true,
@@ -452,6 +466,9 @@ local function LoadDefaultSettings()
 		monk = {
 			mistweaver = {},
 			windwalker = {}
+		},
+		paladin = {
+			holy = {}
 		},
 		priest = {
 			discipline = {},
@@ -1608,6 +1625,45 @@ local function ConstructImportExportPanel()
 	
 
 	yCoord = yCoord - 35
+	controls.labels.Paladin = TRB.Functions.OptionsUi:BuildLabel(parent, L["Paladin"], oUi.xCoord, yCoord, 110, 20)
+	buttonOffset = oUi.xCoord + oUi.xPadding + 100
+
+	yCoord = yCoord - 25
+	specName = L["PaladinHoly"]
+	controls.labels.druidHoly = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+
+	buttonOffset = oUi.xCoord + oUi.xPadding + 100
+	controls.buttons.exportButton_Paladin_Holy_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
+	controls.buttons.exportButton_Paladin_Holy_All:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinHolyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 2, 1, true, true, true, true, false)
+	end)
+
+	buttonOffset = buttonOffset + buttonSpacing + 50
+	controls.exportButton_Paladin_Holy_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
+	controls.exportButton_Paladin_Holy_BarDisplay:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinHolyFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 2, 1, true, false, false, false, false)
+	end)
+
+	buttonOffset = buttonOffset + buttonSpacing + 80
+	controls.exportButton_Paladin_Holy_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
+	controls.exportButton_Paladin_Holy_FontAndText:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinHolyFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 2, 1, false, true, false, false, false)
+	end)
+
+	buttonOffset = buttonOffset + buttonSpacing + 90
+	controls.exportButton_Paladin_Holy_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
+	controls.exportButton_Paladin_Holy_AudioAndTracking:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinHolyFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 2, 1, false, false, true, false, false)
+	end)
+
+	buttonOffset = buttonOffset + buttonSpacing + 120
+	controls.exportButton_Paladin_Holy_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
+	controls.exportButton_Paladin_Holy_BarText:SetScript("OnClick", function(self, ...)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinHolyFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 2, 1, false, false, false, true, false)
+	end)
+
+
+	yCoord = yCoord - 35
 	controls.labels.priest = TRB.Functions.OptionsUi:BuildLabel(parent, L["Priest"], oUi.xCoord, yCoord, 110, 20)
 
 	buttonOffset = oUi.xCoord + oUi.xPadding + 100
@@ -2174,19 +2230,19 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "zhTW", "zhTW")
 
 	local percentFormat = "%3.2f%%"
-	local localeText2 = string.format(percentFormat, 12.33)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 9.83)
+	local localeText2 = string.format(percentFormat, 12.00)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.62)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.70)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.49)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.48)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.48)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.41)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.48)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.48)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.48)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.48)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.48)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.48)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.48)
 
 	local localeText3 = "unfung; Google Translate"
 	localeText3 = localeText3 .. "\n" .. "Twintop"
@@ -2217,7 +2273,7 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText4 = localeText4 .. "\n" .. "谷歌翻譯 — 需要翻譯！"
 
 
-	yCoord = yCoord - 140
+	yCoord = yCoord - 150
 	interfaceSettingsFrame.controls.labels.localization1 = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "Localization" .. ":", localeText1, oUi.xCoord+(oUi.xPadding*2), yCoord, 0, 100, 15, 300)
 	interfaceSettingsFrame.controls.labels.localization2 = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "", localeText2, oUi.xCoord+(oUi.xPadding*2)+50, yCoord, 0, 100, 15, 300, "RIGHT")
 	interfaceSettingsFrame.controls.labels.localization3 = TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, "", localeText3, oUi.xCoord+(oUi.xPadding*2)+200, yCoord, 0, 375, 15, 300)

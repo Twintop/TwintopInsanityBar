@@ -320,8 +320,8 @@ function TRB.Classes.SnapshotBuff:Refresh(eventType, simple, unit)
                 self:GetRemainingTime()
             end
         elseif eventType == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
-            if self.stacks ~= nil then
-                self.stacks = self.stacks - 1
+            if self.applications ~= nil then
+                self.applications = self.applications - 1
             end
         elseif eventType == "SPELL_AURA_REMOVED" or eventType == "SPELL_DISPEL" then -- Lost buff
             self:Reset()

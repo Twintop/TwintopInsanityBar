@@ -745,9 +745,9 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local targetData = snapshotData.targetData
 
 		if specId == 1 then
-			targetData:UpdateDebuffs(currentTime)
+			targetData:UpdateTrackedSpells(currentTime)
 		elseif specId == 2 then
-			targetData:UpdateDebuffs(currentTime)
+			targetData:UpdateTrackedSpells(currentTime)
 		end
 	end
 

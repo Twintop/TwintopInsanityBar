@@ -15,7 +15,7 @@
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 10.2.6.7
 ## X-ReleaseType: release
-## X-ReleaseDate: 2024-04-10
+## X-ReleaseDate: 2024-04-15
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -100,6 +100,7 @@ ClassModules\Druid.lua
 ClassModules\Evoker.lua
 ClassModules\Hunter.lua
 ClassModules\Monk.lua
+ClassModules\Paladin.lua
 ClassModules\Priest.lua
 ClassModules\Rogue.lua
 ClassModules\Shaman.lua
@@ -112,6 +113,7 @@ ClassModules\Options\DruidOptions.lua
 ClassModules\Options\EvokerOptions.lua
 ClassModules\Options\HunterOptions.lua
 ClassModules\Options\MonkOptions.lua
+ClassModules\Options\PaladinOptions.lua
 ClassModules\Options\PriestOptions.lua
 ClassModules\Options\RogueOptions.lua
 ClassModules\Options\ShamanOptions.lua

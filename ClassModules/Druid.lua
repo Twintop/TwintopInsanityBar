@@ -905,6 +905,15 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				icon = "",
 				duration = 8
 			},
+			blessingOfWinter = {
+				id = 388011,
+				name = "",
+				icon = "",
+				tickRate = 2,
+				hasTicks = true,
+				resourcePerTick = 0,
+				manaPercent = 0.01
+			},
 
 			-- Potions
 			aeratedManaPotionRank1 = {
@@ -1040,6 +1049,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		specCache.restoration.snapshotData.snapshots[specCache.restoration.spells.conjuredChillglobe.id] = TRB.Classes.Snapshot:New(specCache.restoration.spells.conjuredChillglobe)
 		---@type TRB.Classes.Healer.MoltenRadiance
 		specCache.restoration.snapshotData.snapshots[specCache.restoration.spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(specCache.restoration.spells.moltenRadiance)
+		---@type TRB.Classes.Healer.BlessingOfWinter
+		specCache.restoration.snapshotData.snapshots[specCache.restoration.spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(specCache.restoration.spells.blessingOfWinter)
 		---@type TRB.Classes.Snapshot
 		specCache.restoration.snapshotData.snapshots[specCache.restoration.spells.incarnationTreeOfLife.id] = TRB.Classes.Snapshot:New(specCache.restoration.spells.incarnationTreeOfLife)
 
@@ -1395,8 +1406,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "#reforestation", icon = spells.reforestation.icon, description = spells.reforestation.name, printInSettings = true },
 			
 			{ variable = "#moonfire", icon = spells.moonfire.icon, description = spells.moonfire.name, printInSettings = true },
-			{ variable = "#sunfire", icon = spells.sunfire.icon, description = spells.sunfire.name, printInSettings = true },
+			{ variable = "#sunfire", icon = spells.sunfire.icon, description = spells.sunfire.name, printInSettings = true },			
 			
+			{ variable = "#bow", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = true },
+			{ variable = "#blessingOfWinter", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = false },
+
 			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
 			{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
 
@@ -1468,6 +1482,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{ variable = "$sunfireTime", description = L["DruidRestorationBarTextVariable_sunfireTime"], printInSettings = true, color = false },
 			{ variable = "$moonfireCount", description = L["DruidRestorationBarTextVariable_moonfireCount"], printInSettings = true, color = false },
 			{ variable = "$moonfireTime", description = L["DruidRestorationBarTextVariable_moonfireTime"], printInSettings = true, color = false },
+			
+			{ variable = "$bowMana", description = L["DruidRestorationBarTextVariable_bowMana"], printInSettings = true, color = false },
+			{ variable = "$bowTime", description = L["DruidRestorationBarTextVariable_bowTime"], printInSettings = true, color = false },
+			{ variable = "$bowTicks", description = L["DruidRestorationBarTextVariable_bowTicks"], printInSettings = true, color = false },
 
 			{ variable = "$sohMana", description = L["DruidRestorationBarTextVariable_sohMana"], printInSettings = true, color = false },
 			{ variable = "$sohTime", description = L["DruidRestorationBarTextVariable_sohTime"], printInSettings = true, color = false },
@@ -1557,7 +1575,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		---@type TRB.Classes.TargetData
 		local targetData = snapshotData.targetData
-		targetData:UpdateDebuffs(currentTime)
+		targetData:UpdateTrackedSpells(currentTime)
 	end
 
 	local function TargetsCleanup(clearAll)
@@ -1628,7 +1646,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
 
-			for x = 1, 5 do
+			for x = 1, 6 do
 				if TRB.Frames.passiveFrame.thresholds[x] == nil then
 					TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 				end
@@ -2704,6 +2722,17 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		--$mrTime
 		local _mrTime = moltenRadiance.buff.remaining
 		local mrTime = TRB.Functions.BarText:TimerPrecision(_mrTime)
+		
+		local blessingOfWinter = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
+		--$bowMana
+		local _bowMana = blessingOfWinter.mana
+		local bowMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_bowMana, manaPrecision, "floor", true))
+		--$bowTime
+		local _bowTime = blessingOfWinter.buff.remaining
+		local bowTime = TRB.Functions.BarText:TimerPrecision(_bowTime)
+		--$bowTicks
+		local _bowTicks = blessingOfWinter.buff.ticks or 0
+		local bowTicks = string.format("%.0f", _bowTicks)
 
 		--$potionCooldownSeconds
 		local _potionCooldown = snapshots[spells.aeratedManaPotionRank1.id].cooldown.remaining
@@ -2725,7 +2754,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local potionOfFrozenFocusTime = TRB.Functions.BarText:TimerPrecision(_potionOfFrozenFocusTime)
 
 		--$passive
-		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana
+		local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana + _bowMana
 		local passiveMana = string.format("|c%s%s|r", TRB.Data.settings.druid.restoration.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 		--$manaTotal
 		local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
@@ -2854,6 +2883,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["#manaTideTotem"] = spells.manaTideTotem.icon
 		lookup["#soh"] = spells.symbolOfHope.icon
 		lookup["#symbolOfHope"] = spells.symbolOfHope.icon
+		lookup["#blessingOfWinter"] = spells.blessingOfWinter.icon
+		lookup["#bow"] = spells.blessingOfWinter.icon
 		lookup["#amp"] = spells.aeratedManaPotionRank1.icon
 		lookup["#aeratedManaPotion"] = spells.aeratedManaPotionRank1.icon
 		lookup["#poff"] = spells.potionOfFrozenFocusRank1.icon
@@ -2892,6 +2923,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookup["$mrTime"] = mrTime
 		lookup["$mttMana"] = mttMana
 		lookup["$mttTime"] = mttTime
+		lookup["$bowMana"] = bowMana
+		lookup["$bowTime"] = bowTime
+		lookup["$bowTicks"] = bowTicks
 		lookup["$channeledMana"] = channeledMana
 		lookup["$potionOfFrozenFocusTicks"] = potionOfFrozenFocusTicks
 		lookup["$potionOfFrozenFocusTime"] = potionOfFrozenFocusTime
@@ -2923,6 +2957,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		lookupLogic["$innervateTime"] = _innervateTime
 		lookupLogic["$mrMana"] = _mrMana
 		lookupLogic["$mrTime"] = _mrTime
+		lookupLogic["$bowMana"] = _bowMana
+		lookupLogic["$bowTime"] = _bowTime
+		lookupLogic["$bowTicks"] = _bowTicks
 		lookupLogic["$mttMana"] = _mttMana
 		lookupLogic["$mttTime"] = _mttTime
 		lookupLogic["$channeledMana"] = _channeledMana
@@ -3207,6 +3244,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 		moltenRadiance:Update()
+
+		local blessingOfWinter = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
+		blessingOfWinter:Update()
 		
 		local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		potionOfChilledClarity:Update()
@@ -3890,11 +3930,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					local barBorderColor = specSettings.colors.bar.border
 
 					local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
-					local manaTideTotem = snapshotData.snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
-					local symbolOfHope = snapshotData.snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
-					local moltenRadiance = snapshotData.snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 					local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
-					local channeledManaPotion = snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 		
 					if potionOfChilledClarity.buff.isActive then
 						if specSettings.colors.bar.potionOfChilledClarityBorderChange then
@@ -3921,89 +3957,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentResource, castingBarValue, specSettings, snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown, snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown, TRB.Data.character, resourceFrame, CalculateManaGain)
 		
-					local passiveValue = 0
-					if specSettings.bar.showPassive then
-						if channeledManaPotion.buff.isActive then
-							passiveValue = passiveValue + channeledManaPotion.mana
-		
-							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
-		---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
-								TRB.Frames.passiveFrame.thresholds[1]:Show()
-							else
-								TRB.Frames.passiveFrame.thresholds[1]:Hide()
-							end
-						else
-							TRB.Frames.passiveFrame.thresholds[1]:Hide()
-						end
-
-						if innervate.mana > 0 or potionOfChilledClarity.mana > 0 then
-							passiveValue = passiveValue + math.max(innervate.mana, potionOfChilledClarity.mana)
-		
-							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
-		---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
-								TRB.Frames.passiveFrame.thresholds[2]:Show()
-							else
-								TRB.Frames.passiveFrame.thresholds[2]:Hide()
-							end
-						else
-							TRB.Frames.passiveFrame.thresholds[2]:Hide()
-						end
-		
-						if symbolOfHope.buff.mana > 0 then
-							passiveValue = passiveValue + symbolOfHope.buff.mana
-		
-							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
-		---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
-								TRB.Frames.passiveFrame.thresholds[3]:Show()
-							else
-								TRB.Frames.passiveFrame.thresholds[3]:Hide()
-							end
-						else
-							TRB.Frames.passiveFrame.thresholds[3]:Hide()
-						end
-		
-						if manaTideTotem.mana > 0 then
-							passiveValue = passiveValue + manaTideTotem.mana
-		
-							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
-		---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
-								TRB.Frames.passiveFrame.thresholds[4]:Show()
-							else
-								TRB.Frames.passiveFrame.thresholds[4]:Hide()
-							end
-						else
-							TRB.Frames.passiveFrame.thresholds[4]:Hide()
-						end
-
-						if moltenRadiance.mana > 0 then
-							passiveValue = passiveValue + moltenRadiance.mana
-
-							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
-								TRB.Frames.passiveFrame.thresholds[5]:Show()
-							else
-								TRB.Frames.passiveFrame.thresholds[5]:Hide()
-							end
-						else
-							TRB.Frames.passiveFrame.thresholds[5]:Hide()
-						end
-					else
-						TRB.Frames.passiveFrame.thresholds[1]:Hide()
-						TRB.Frames.passiveFrame.thresholds[2]:Hide()
-						TRB.Frames.passiveFrame.thresholds[3]:Hide()
-						TRB.Frames.passiveFrame.thresholds[4]:Hide()
-						TRB.Frames.passiveFrame.thresholds[5]:Hide()
-					end
+					local passiveValue, _ = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
 		
 					passiveBarValue = castingBarValue + passiveValue
 					if castingBarValue < currentResource then --Using a spender
@@ -4050,7 +4004,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							end
 						end
 
-						if useEndOfIncarnationColor and snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff.remaining <= timeThreshold then
+						if useEndOfIncarnationColor and snapshotData.snapshots[spells.incarnationTreeOfLife.id].buff.remaining <= timeThreshold then
 							resourceBarColor = specSettings.colors.bar.incarnationEnd
 						else
 							resourceBarColor = specSettings.colors.bar.incarnation
@@ -4106,6 +4060,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 					elseif entry.spellId == spells.moltenRadiance.id then
 						local moltenRadiance = snapshotData.snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 						moltenRadiance.buff:Initialize(entry.type)
+					elseif settings.passiveGeneration.blessingOfWinter and entry.spellId == spells.blessingOfWinter.id then
+						local blessingOfWinter = snapshotData.snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
+						blessingOfWinter.buff:Initialize(entry.type)
 					end
 				end
 			end
@@ -5315,6 +5272,21 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 			elseif var == "$mrTime" then
 				local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
+				if moltenRadiance.buff.isActive then
+					valid = true
+				end
+			elseif var == "$bowMana" then
+				local moltenRadiance = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
+				if moltenRadiance.buff.isActive then
+					valid = true
+				end
+			elseif var == "$bowTime" then
+				local moltenRadiance = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
+				if moltenRadiance.buff.isActive then
+					valid = true
+				end
+			elseif var == "$bowTicks" then
+				local moltenRadiance = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
 				if moltenRadiance.buff.isActive then
 					valid = true
 				end

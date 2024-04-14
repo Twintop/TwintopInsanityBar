@@ -25,6 +25,11 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			if specId == 1 then -- Arms
 			elseif specId == 2 then -- Fury
 				configuration.endOfEnrage = settings.endOfEnrage
+			end		
+		elseif classId == 2 then -- Paladin
+			if specId == 1 then -- Holy
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
 			end
 		elseif classId == 3 then -- Hunters
 			if specId == 1 then -- Beast Mastery
@@ -114,6 +119,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Fury
 				configuration.resourcePrecision = settings.resourcePrecision
 			end
+		elseif classId == 2 then -- Paladins
+			if specId == 1 then -- Holy
+			end
 		elseif classId == 3 then -- Hunters
 			if specId == 1 then -- Beast Mastery
 			elseif specId == 2 then -- Marksmanship
@@ -167,6 +175,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 				configuration.resourcePrecision = settings.resourcePrecision
 			elseif specId == 2 then -- Fury
 				configuration.resourcePrecision = settings.resourcePrecision
+			end
+		elseif classId == 2 then -- Paladin
+			if specId == 2 then -- Holy
+				configuration.passiveGeneration = settings.passiveGeneration
 			end
 		elseif classId == 3 then -- Hunters
 			configuration.generation = settings.generation
@@ -265,6 +277,12 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 
 			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.warrior.fury) > 0 then -- Fury
 				configuration.warrior.fury = ExportConfigurationSections(1, 2, settings.warrior.fury, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end		
+		elseif classId == 2 and settings.paladin ~= nil then -- Paladin
+			configuration.paladin = {}
+			
+			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.paladin.holy) > 0 then -- Holy
+				configuration.paladin.holy = ExportConfigurationSections(2, 1, settings.paladin.holy, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 3 and settings.hunter ~= nil then -- Hunter
 			configuration.hunter = {}
@@ -380,6 +398,10 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Fury
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		
+		-- Paladin
+		-- Holy
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(2, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
 		-- Hunter
 		-- Beast Mastery
@@ -489,6 +511,8 @@ function TRB.Functions.IO:Import(input)
 		(configuration.warrior ~= nil and
 			(configuration.warrior.arms ~= nil or
 			configuration.warrior.fury ~= nil)) or
+		(configuration.paladin ~= nil and
+			(configuration.paladin.holy ~= nil)) or
 		(configuration.rogue ~= nil and
 			(configuration.rogue.assassination ~= nil or
 			configuration.rogue.outlaw ~= nil or

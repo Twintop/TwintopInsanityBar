@@ -193,7 +193,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			},
 			barbedShot = {
 				id = 217200,
-				buffId = {
+				buffIdList = {
 					246152,
 					246851,
 					246852,
@@ -1337,7 +1337,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
 		local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
-		targetData:UpdateDebuffs(currentTime)
+		targetData:UpdateTrackedSpells(currentTime)
 	end
 
 	local function TargetsCleanup(clearAll)
@@ -2887,7 +2887,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						end
 					elseif entry.spellId == spells.barbedShot.id then
 						snapshots[entry.spellId].cooldown:Initialize()
-					elseif entry.spellId == spells.barbedShot.buffId[1] or entry.spellId == spells.barbedShot.buffId[2] or entry.spellId == spells.barbedShot.buffId[3] or entry.spellId == spells.barbedShot.buffId[4] or entry.spellId == spells.barbedShot.buffId[5] then
+					elseif entry.spellId == spells.barbedShot.buffIdList[1] or entry.spellId == spells.barbedShot.buffIdList[2] or entry.spellId == spells.barbedShot.buffIdList[3] or entry.spellId == spells.barbedShot.buffIdList[4] or entry.spellId == spells.barbedShot.buffIdList[5] then
 						if entry.type == "SPELL_AURA_APPLIED" then -- Gain Barbed Shot buff
 							table.insert(snapshots[spells.barbedShot.id].attributes.list, {
 								ticksRemaining = spells.barbedShot.ticks,

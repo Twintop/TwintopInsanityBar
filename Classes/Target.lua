@@ -48,10 +48,10 @@ function TRB.Classes.TargetData:AddSpellTracking(spell, isDot, hasCounter, hasSn
         autoUpdate = true
     end
 
-    local id = spell.debuffId or spell.spellId or spell.id or nil
+    local id = spell.debuffId or spell.buffId or spell.spellId or spell.id or nil
 
     if id ~= nil and self.trackedSpells[id] == nil then
-        self.trackedSpells[id] = TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot, autoUpdate)
+        self.trackedSpells[id] = TRB.Classes.TargetSpell:New(spell, nil, isDot, hasCounter, hasSnapshot, autoUpdate)
         self.count[id] = 0
     end
 end
@@ -71,7 +71,7 @@ end
 
 ---Updates the status of debuffs on the target
 ---@param currentTime number? # Timestamp to use for calculations. If not specified, the current time from `GetTime()` will be used instead.
-function TRB.Classes.TargetData:UpdateDebuffs(currentTime)
+function TRB.Classes.TargetData:UpdateTrackedSpells(currentTime)
     currentTime = currentTime or GetTime()
     local counts = {}
     for guid, _ in pairs(self.targets) do
@@ -168,7 +168,7 @@ function TRB.Classes.TargetData:Cleanup(clearAll)
         local currentTime = GetTime()
         for guid, _ in pairs(self.targets) do
             local target = self.targets[guid]
-            if not target.isFriend and (currentTime - target.lastUpdate) > 10 and target.guid ~= self.currentTargetGuid then
+            if not target.isFriend and (currentTime - target.lastUpdate) > 30 and target.guid ~= self.currentTargetGuid then
                 self:Remove(guid)
             elseif target.isFriend and (currentTime - target.lastUpdate) > 30 and target.guid ~= self.currentTargetGuid then
                 self:Remove(guid)
@@ -238,7 +238,7 @@ function TRB.Classes.Target:AddSpellTracking(spell, isDot, hasCounter, hasSnapsh
     local id = spell.debuffId or spell.spellId or spell.id or nil
 
     if id ~= nil and self.spells[id] == nil then
-        self.spells[id] = TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot, autoUpdate)
+        self.spells[id] = TRB.Classes.TargetSpell:New(spell, self, isDot, hasCounter, hasSnapshot, autoUpdate)
         self.spells[id]:SetTargetGuid(self.guid)
     end
 end
@@ -250,7 +250,7 @@ end
 function TRB.Classes.Target:HandleCombatLogDebuff(spellId, type)
     if self.spells[spellId] == nil then
         print(string.format(L["SpellIdMissing"], spellId))
-        self.spells[spellId] = TRB.Classes.TargetSpell:New({ id = spellId })
+        self.spells[spellId] = TRB.Classes.TargetSpell:New({ id = spellId, target = self })
     end
 
     return self.spells[spellId]:HandleCombatLogBuffOrDebuff(type)
@@ -263,7 +263,7 @@ end
 function TRB.Classes.Target:HandleCombatLogBuff(spellId, type)
     if self.spells[spellId] == nil then
         print(string.format(L["SpellIdMissing"], spellId))
-        self.spells[spellId] = TRB.Classes.TargetSpell:New({ id = spellId, isBuff = true })
+        self.spells[spellId] = TRB.Classes.TargetSpell:New({ id = spellId, isBuff = true, target = self })
     end
     return self.spells[spellId]:HandleCombatLogBuffOrDebuff(type)
 end
@@ -309,17 +309,19 @@ end
 ---@field public snapshot number
 ---@field public autoUpdate boolean
 ---@field private guid string
+---@field private target TRB.Classes.Target
 TRB.Classes.TargetSpell = {}
 TRB.Classes.TargetSpell.__index = TRB.Classes.TargetSpell
 
 ---Adds a new spell to be tracked against a target
 ---@param spell table # Spell we are tracking
+---@param target? TRB.Classes.Target # Target this spell is tracked against
 ---@param isDot boolean? # Is this a DoT?
 ---@param hasCounter boolean? # Does this have a counter component to it?
 ---@param hasSnapshot boolean? # Is there any snapshotting required?
 ---@param autoUpdate boolean? # Should this spell's tracked values be automatically updated?
 ---@return TRB.Classes.TargetSpell
-function TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot, autoUpdate)
+function TRB.Classes.TargetSpell:New(spell, target, isDot, hasCounter, hasSnapshot, autoUpdate)
     local self = {}
     setmetatable(self, TRB.Classes.TargetSpell)
 
@@ -340,6 +342,7 @@ function TRB.Classes.TargetSpell:New(spell, isDot, hasCounter, hasSnapshot, auto
     end
 
     self.id = spell.debuffId or spell.spellId or spell.id
+    self.target = target
     self.spell = spell
     self.active = false
     self.isDot = isDot
@@ -370,13 +373,28 @@ function TRB.Classes.TargetSpell:Update(currentTime)
     if unitToken ~= nil then
         if self.autoUpdate then
             if self.isDot then
-                if self.spell.isBuff then
+                if self.spell.isBuff and self.spell.isDebuff then -- Buff on friendly, debuff on unfriendly
+                    if self.target ~= nil and self.target.isFriend then
+                        local buff = TRB.Functions.Aura:FindBuffById(self.id, unitToken, "player")
+                        if buff ~= nil then
+                            self.active = true
+                            self.remainingTime = buff.expirationTime - currentTime
+                            self.endTime = buff.expirationTime
+                        end
+                    else
+                        local debuff = TRB.Functions.Aura:FindDebuffById(self.id, unitToken, "player")
+                        if debuff ~= nil then
+                            self.active = true
+                            self.remainingTime = debuff.expirationTime - currentTime
+                            self.endTime = debuff.expirationTime
+                        end
+                    end
+                elseif self.spell.isBuff then
                     local buff = TRB.Functions.Aura:FindBuffById(self.id, unitToken, "player")
                     if buff ~= nil then
                         self.active = true
                         self.remainingTime = buff.expirationTime - currentTime
-                        self.endTime = buff
-                        .expirationTime
+                        self.endTime = buff.expirationTime
                     end
                 else
                     local debuff = TRB.Functions.Aura:FindDebuffById(self.id, unitToken, "player")
