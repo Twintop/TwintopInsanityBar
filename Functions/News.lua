@@ -16,20 +16,20 @@ local content = [====[
 
 - [#349 - NEW](#344) Add support for Holy Paladin, tracking Mana and Holy Power.
 <br/>&emsp;&ensp;- Holy Power colors for the border and fill, including different colors of the penultimate and final combo point.<br/>&emsp;&ensp;- Threshold lines denoting how much mana will be restored from using an Aerated Mana Potion, Potion of Frozen Focus, or Conjured Chillglobe.
-<br/>&emsp;&ensp;- Bar color change when ???????????????. is active and when it is close to ending.
-<br/>&emsp;&ensp;- Passive Mana generation from ???????????????.
-<br/>&emsp;&ensp;- Timers for ???????????????. time remaining.
+<br/>&emsp;&ensp;- Timer, stack count, bar border color changes, and audio cues for Infusion of Light stacks.
 <br/>&emsp;&ensp;- Bar Text variables and icons for customization.
 <br/>&emsp;&ensp;- Importing and Exporting support.
 <br/>&emsp;&ensp;- Mana regeneration support for:
 <br/>&emsp;&ensp;&emsp;&ensp;- Symbol of Hope (Holy Priest)
 <br/>&emsp;&ensp;&emsp;&ensp;- Innervate (Druid)
 <br/>&emsp;&ensp;&emsp;&ensp;- Mana Tide Totem (Restoration Shaman)
+<br/>&emsp;&ensp;&emsp;&ensp;- Blessing of Winter (Holy Paladin)
 <br/>&emsp;&ensp;&emsp;&ensp;- Potion of Frozen Focus
 <br/>&emsp;&ensp;&emsp;&ensp;- Potion of Chilled Clarity
 <br/>&emsp;&ensp;&emsp;&ensp;- Molten Radiance
-<br/>&emsp;&ensp;&emsp;&ensp;- Emerald Communion
+<br/>&emsp;&ensp;&emsp;&ensp;- Daybreak
 - (FIX) Prevent Combo Points, Maelstrom Weapon, Soul Fragments, Holy Words, Power Words, and Essence from not being properly filled in.
+- (FIX) Correct inconsistencies with stack tracking of buffs.
 
 ## Healers
 

@@ -99,6 +99,17 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 		}
 
 		specCache.holy.spells = {
+			-- Paladin Class Baseline Abilities
+
+			-- Holy Baseline Abilities
+			infusionOfLight = {
+				id = 54149,
+				name = "",
+				icon = "",
+				isTalent = false,
+				baseline = true
+			},
+
 			-- Paladin Class Talents		
 			
 			-- Holy Spec Talents
@@ -272,6 +283,8 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 		specCache.holy.snapshotData.attributes.manaRegen = 0
 		specCache.holy.snapshotData.audio = {
 			innervateCue = false,
+			infusionOfLightCue = false,
+			infusionOfLight2Cue = false
 		}
 
 		---@type TRB.Classes.Healer.Innervate
@@ -301,6 +314,8 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 
 		---@type TRB.Classes.Snapshot
 		specCache.holy.snapshotData.snapshots[specCache.holy.spells.daybreak.id] = TRB.Classes.Snapshot:New(specCache.holy.spells.daybreak)
+		---@type TRB.Classes.Snapshot
+		specCache.holy.snapshotData.snapshots[specCache.holy.spells.infusionOfLight.id] = TRB.Classes.Snapshot:New(specCache.holy.spells.infusionOfLight)
 
 
 		specCache.holy.barTextVariables = {
@@ -333,6 +348,9 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 
 			{ variable = "#glimmer", icon = spells.glimmerOfLight.icon, description = spells.glimmerOfLight.name, printInSettings = true },
 			{ variable = "#glimmerOfLight", icon = spells.glimmerOfLight.icon, description = spells.glimmerOfLight.name, printInSettings = false },
+
+			{ variable = "#iol", icon = spells.infusionOfLight.icon, description = spells.infusionOfLight.name, printInSettings = true },
+			{ variable = "#infusionOfLight", icon = spells.infusionOfLight.icon, description = spells.infusionOfLight.name, printInSettings = false },
 
 			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
 			{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
@@ -401,6 +419,9 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 			{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 			{ variable = "$holyPowerMax", description = L["PaladinHolyBarTextVariable_holyPowerMax"], printInSettings = true, color = false },
 			{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
+
+			{ variable = "$iolTime", description =   L["PaladinHolyBarTextVariable_iolTime"], printInSettings = true, color = false },
+			{ variable = "$iolStacks", description = L["PaladinHolyBarTextVariable_iolStacks"], printInSettings = true, color = false },
 
 			{ variable = "$glimmerCount", description =   L["PaladinHolyBarTextVariable_glimmerCount"], printInSettings = true, color = false },
 			{ variable = "$glimmerTime", description =    L["PaladinHolyBarTextVariable_glimmerTime"], printInSettings = true, color = false },
@@ -561,7 +582,13 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 		--$glimmerCount
 		local _glimmerCount = snapshotData.targetData.count[spells.glimmerOfLight.buffId] or 0
 		local glimmerCount = string.format("%s", _glimmerCount)
-
+		
+		--$iolTime
+		local _iolTime = snapshots[spells.infusionOfLight.id].buff:GetRemainingTime(currentTime)
+		local iolTime = TRB.Functions.BarText:TimerPrecision(_iolTime)
+		--$iolTicks
+		local _iolStacks = snapshots[spells.infusionOfLight.id].buff.applications
+		local iolStacks = string.format("%.0f", _iolStacks)
 
 		local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 		--$sohMana
@@ -744,6 +771,8 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 		lookup["$glimmerMaxTime"] = glimmerMaxTime
 		lookup["$glimmerTime"] = glimmerTime
 		lookup["$glimmerCount"] = glimmerCount
+		lookup["$iolTime"] = iolTime
+		lookup["$iolStacks"] = iolStacks
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
@@ -788,6 +817,8 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 		lookupLogic["$glimmerMaxTime"] = _glimmerMaxTime
 		lookupLogic["$glimmerTime"] = _glimmerTime
 		lookupLogic["$glimmerCount"] = _glimmerCount
+		lookupLogic["$iolTime"] = _iolTime
+		lookupLogic["$iolStacks"] = _iolStacks
 		TRB.Data.lookupLogic = lookupLogic
 	end
 
@@ -952,6 +983,31 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 
 					local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 					local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
+
+					if snapshots[spells.infusionOfLight.id].buff.isActive then
+						if snapshots[spells.infusionOfLight.id].buff.applications == 1 then
+							if specSettings.colors.bar.infusionOfLight.enabled then
+								barBorderColor = specSettings.colors.bar.infusionOfLight.color
+							end
+
+							if specSettings.audio.infusionOfLight.enabled and not snapshotData.audio.infusionOfLightCue then
+								snapshotData.audio.infusionOfLightCue = true
+								PlaySoundFile(specSettings.audio.infusionOfLight.sound, coreSettings.audio.channel.channel)
+							end
+						end
+
+						if snapshots[spells.infusionOfLight.id].buff.applications == 2 then
+							if specSettings.colors.bar.infusionOfLight2.enabled then
+								barBorderColor = specSettings.colors.bar.infusionOfLight2.color
+							end
+
+							if specSettings.audio.infusionOfLight2.enabled and not snapshotData.audio.infusionOfLight2Cue then
+								snapshotData.audio.infusionOfLightCue = true
+								snapshotData.audio.infusionOfLight2Cue = true
+								PlaySoundFile(specSettings.audio.infusionOfLight2.sound, coreSettings.audio.channel.channel)
+							end
+						end
+					end
 
 					if potionOfChilledClarity.buff.isActive then
 						if specSettings.colors.bar.potionOfChilledClarityBorderChange then
@@ -1138,6 +1194,14 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 					elseif entry.spellId == spells.daybreak.id then
 						if entry.type == "SPELL_AURA_REMOVED" then -- Use this instead of SPELL_CAST_SUCCESS because of delays in triggering the cooldown
 							snapshots[entry.spellId].cooldown:Initialize()
+						end
+					elseif entry.spellId == spells.infusionOfLight.id then
+						snapshots[spells.infusionOfLight.id].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
+							snapshotData.audio.infusionOfLight2Cue = false
+						elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
+							snapshotData.audio.infusionOfLightCue = false
+							snapshotData.audio.infusionOfLight2Cue = false
 						end
 					end
 				end
@@ -1574,6 +1638,14 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 				end
 			elseif var == "$potionCooldownSeconds" then
 				if snapshots[spells.aeratedManaPotionRank1.id].cooldown:IsUnusable() then
+					valid = true
+				end
+			elseif var == "$iolTime" then
+				if snapshots[spells.infusionOfLight.id].buff.isActive then
+					valid = true
+				end
+			elseif var == "$iolStacks" then
+				if snapshots[spells.infusionOfLight.id].buff.isActive then
 					valid = true
 				end
 			end

@@ -25,7 +25,7 @@ if classIndexId == 2 then --Only do this if we're on a Paladin!
 				enabled = true,
 				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
-				text="",
+				text="$glimmerCount",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
@@ -102,7 +102,7 @@ if classIndexId == 2 then --Only do this if we're on a Paladin!
 				enabled = true,
 				name = L["PositionLeft"],
 				guid=TRB.Functions.String:Guid(),
-				text="{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
+				text="#glimmer $glimmerCount ($glimmerMinTime)||n{$potionCooldown}[#potionOfFrozenFocus $potionCooldown] ",
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
@@ -274,7 +274,15 @@ if classIndexId == 2 then --Only do this if we're on a Paladin!
 					spending="FFFFFFFF",
 					passive="FF8080FF",
 					innervateBorderChange=true,
-					potionOfChilledClarityBorderChange=true
+					potionOfChilledClarityBorderChange=true,
+					infusionOfLight = {
+						color = "FFFCE58E",
+						enabled = true
+					},
+					infusionOfLight2 = {
+						color = "FFAF9942",
+						enabled = true
+					},
 				},
 				comboPoints = {
 					border="FFAF9942",
@@ -308,6 +316,18 @@ if classIndexId == 2 then --Only do this if we're on a Paladin!
 					enabled=false,
 					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 					soundName = L["LSMSoundBoxingArenaGong"]
+				},
+				infusionOfLight={
+					name = L["PaladinHolyAudioInfusionOfLightStack1"],
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"]
+				},
+				infusionOfLight2={
+					name = L["PaladinHolyAudioInfusionOfLightStack2"],
+					enabled=false,
+					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+					soundName = L["LSMSoundAirHorn"]
 				},
 			},
 			textures={
@@ -526,6 +546,40 @@ if classIndexId == 2 then --Only do this if we're on a Paladin!
 		yCoord = yCoord - 40
 		yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 2, 1, yCoord, L["ResourceMana"], false, true)
 		
+		yCoord = yCoord - 30
+		controls.checkBoxes.infusionOfLightBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Holy_Threshold_Option_infusionOfLightBorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.infusionOfLightBorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["PaladinHolyAudioInfusionOfLightStack1"])
+		f.tooltip = L["PaladinHolyCheckboxInfusionOfLightStack1Tooltip"]
+		f:SetChecked(spec.colors.bar.infusionOfLight.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.infusionOfLight.enabled = self:GetChecked()
+		end)
+
+		controls.colors.infusionOfLight = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyColorPickerInfusionOfLightStack1"], spec.colors.bar.infusionOfLight.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.infusionOfLight
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "infusionOfLight")
+		end)
+		
+		yCoord = yCoord - 30
+		controls.checkBoxes.infusionOfLight2BorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Holy_Threshold_Option_infusionOfLight2BorderChange", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.infusionOfLight2BorderChange
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["PaladinHolyAudioInfusionOfLightStack2"])
+		f.tooltip = L["PaladinHolyCheckboxInfusionOfLightStack2Tooltip"]
+		f:SetChecked(spec.colors.bar.infusionOfLight2.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.colors.bar.infusionOfLight2.enabled = self:GetChecked()
+		end)
+
+		controls.colors.infusionOfLight2 = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyColorPickerInfusionOfLightStack2"], spec.colors.bar.infusionOfLight2.color, 300, 25, oUi.xCoord2, yCoord)
+		f = controls.colors.infusionOfLight2
+		f:SetScript("OnMouseDown", function(self, button, ...)
+			TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "infusionOfLight2")
+		end)
+
 		yCoord = yCoord - 40
 		controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PaladinHolyPowerColorsHeader"], oUi.xCoord, yCoord)
 		controls.colors.comboPoints = {}
@@ -666,7 +720,137 @@ if classIndexId == 2 then --Only do this if we're on a Paladin!
 
 		controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
 
+
 		yCoord = yCoord - 30
+		controls.checkBoxes.infusionOfLight = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Holy_infusionOfLightCB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.infusionOfLight
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["PaladinHolyAudioCheckboxInfusionOfLightStack1"])
+		f.tooltip = L["PaladinHolyAudioCheckboxInfusionOfLightStack1Tooltip"]
+		f:SetChecked(spec.audio.infusionOfLight.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.audio.infusionOfLight.enabled = self:GetChecked()
+
+			if spec.audio.infusionOfLight.enabled then
+				PlaySoundFile(spec.audio.infusionOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.infusionOfLightAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Paladin_Holy_infusionOfLightAudio", parent)
+		controls.dropDown.infusionOfLightAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.infusionOfLightAudio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.infusionOfLightAudio, spec.audio.infusionOfLight.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.infusionOfLightAudio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.infusionOfLightAudio, function(self, level, menuList)
+			local entries = 25
+			local info = LibDD:UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = string.format(L["DropdownLabelSoundsX"], i+1)
+					info.menuList = i
+					LibDD:UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == spec.audio.infusionOfLight.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						LibDD:UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.infusionOfLightAudio:SetValue(newValue, newName)
+			spec.audio.infusionOfLight.sound = newValue
+			spec.audio.infusionOfLight.soundName = newName
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.infusionOfLightAudio, newName)
+			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
+			PlaySoundFile(spec.audio.infusionOfLight.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+
+		yCoord = yCoord - 60
+		controls.checkBoxes.infusionOfLight2 = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Holy_infusionOfLight2CB", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.infusionOfLight2
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["PaladinHolyAudioCheckboxInfusionOfLightStack2"])
+		f.tooltip = L["PaladinHolyAudioCheckboxInfusionOfLightStack2Tooltip"]
+		f:SetChecked(spec.audio.infusionOfLight2.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.audio.infusionOfLight2.enabled = self:GetChecked()
+
+			if spec.audio.infusionOfLight2.enabled then
+				PlaySoundFile(spec.audio.infusionOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
+			end
+		end)
+
+		-- Create the dropdown, and configure its appearance
+		controls.dropDown.infusionOfLight2Audio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Paladin_Holy_infusionOfLightAudio", parent)
+		controls.dropDown.infusionOfLight2Audio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
+		LibDD:UIDropDownMenu_SetWidth(controls.dropDown.infusionOfLight2Audio, oUi.sliderWidth)
+		LibDD:UIDropDownMenu_SetText(controls.dropDown.infusionOfLight2Audio, spec.audio.infusionOfLight2.soundName)
+		LibDD:UIDropDownMenu_JustifyText(controls.dropDown.infusionOfLight2Audio, "LEFT")
+
+		-- Create and bind the initialization function to the dropdown menu
+		LibDD:UIDropDownMenu_Initialize(controls.dropDown.infusionOfLight2Audio, function(self, level, menuList)
+			local entries = 25
+			local info = LibDD:UIDropDownMenu_CreateInfo()
+			local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
+			local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
+			if (level or 1) == 1 or menuList == nil then
+				local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
+				for i=0, menus-1 do
+					info.hasArrow = true
+					info.notCheckable = true
+					info.text = string.format(L["DropdownLabelSoundsX"], i+1)
+					info.menuList = i
+					LibDD:UIDropDownMenu_AddButton(info)
+				end
+			else
+				local start = entries * menuList
+
+				for k, v in pairs(soundsList) do
+					if k > start and k <= start + entries then
+						info.text = v
+						info.value = sounds[v]
+						info.checked = sounds[v] == spec.audio.infusionOfLight2.sound
+						info.func = self.SetValue
+						info.arg1 = sounds[v]
+						info.arg2 = v
+						LibDD:UIDropDownMenu_AddButton(info, level)
+					end
+				end
+			end
+		end)
+
+		-- Implement the function to change the audio
+		function controls.dropDown.infusionOfLight2Audio:SetValue(newValue, newName)
+			spec.audio.infusionOfLight2.sound = newValue
+			spec.audio.infusionOfLight2.soundName = newName
+			LibDD:UIDropDownMenu_SetText(controls.dropDown.infusionOfLight2Audio, newName)
+			CloseDropDownMenus()
+---@diagnostic disable-next-line: redundant-parameter
+			PlaySoundFile(spec.audio.infusionOfLight2.sound, TRB.Data.settings.core.audio.channel.channel)
+		end
+
+		yCoord = yCoord - 60
 		controls.checkBoxes.innervate = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Holy_Innervate_CB", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.innervate
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)

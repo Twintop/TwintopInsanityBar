@@ -168,7 +168,7 @@ function TRB.Classes.TargetData:Cleanup(clearAll)
         local currentTime = GetTime()
         for guid, _ in pairs(self.targets) do
             local target = self.targets[guid]
-            if not target.isFriend and (currentTime - target.lastUpdate) > 10 and target.guid ~= self.currentTargetGuid then
+            if not target.isFriend and (currentTime - target.lastUpdate) > 30 and target.guid ~= self.currentTargetGuid then
                 self:Remove(guid)
             elseif target.isFriend and (currentTime - target.lastUpdate) > 30 and target.guid ~= self.currentTargetGuid then
                 self:Remove(guid)

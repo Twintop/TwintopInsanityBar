@@ -807,7 +807,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		--$ebTime
 		local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
 		local ebTime = TRB.Functions.BarText:TimerPrecision(_ebTime)
-		--$ecTicks
+		--$ebTicks
 		local _ebStacks = snapshots[spells.essenceBurst.id].buff.applications
 		local ebStacks = string.format("%.0f", _ebStacks)
 

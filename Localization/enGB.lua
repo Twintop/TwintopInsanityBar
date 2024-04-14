@@ -189,4 +189,6 @@ if locale == "enGB" then
     L["PaladinHolyPowerColorsHeader"] = "Holy Power Colours"
     L["PaladinHolyPowerCheckboxUseHighestForAll"] = "Use highest Holy Power colour for all?"
     L["PaladinHolyPowerCheckboxUseHighestForAllTooltip"] = "When checked, the highest Holy Power's colour will be used for all Holy Power. E.g., if you have maximum 5 Holy Power and currently have 4, the Penultimate colour will be used for all Holy Power instead of just the second to last."
+    L["PaladinHolyCheckboxInfusionOfLightStack1Tooltip"] = "This will change the bar border colour when you have 1 stack of Infusion of Light."
+    L["PaladinHolyCheckboxInfusionOfLightStack2Tooltip"] = "This will change the bar border colour when you have 2 stacks of Infusion of Light."
 end
