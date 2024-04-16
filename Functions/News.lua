@@ -7,7 +7,14 @@ local LMD = LibStub("LibMarkdown-1.0")
 local oUi = TRB.Data.constants.optionsUi
 
 local content = [====[
-*Localization of the addon is underway! If you're interested in helping translate, please [join the Discord server](https://discord.gg/eThqxM78xm) or [visit the GitHub issue](#8) and let Twintop know. Thank you!*
+*Localization of the addon is underway! If you're interested in helping translate, please [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know. Thank you!*
+
+---
+
+# 10.2.6.8-beta01 (2024-04-16)
+## Priest
+
+- Attempt to fix Shadowfiend/Mindbender issues.
 
 ---
 

@@ -3493,14 +3493,10 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 	---Update a specific Shadowfiend's values
 	---@param shadowfiend TRB.Classes.Snapshot|TRB.Classes.Healer.HealerRegenBase
 	local function UpdateSpecificShadowfiendValues(shadowfiend)
-		if shadowfiend.attributes.totemId == nil then
-			return
-		end
-		
 		local specId = GetSpecialization()
 		local currentTime = GetTime()
 		local settings
-		local _
+		local _		
 		
 		if specId == 1 then
 			settings = TRB.Data.settings.priest.discipline.shadowfiend
@@ -3512,57 +3508,66 @@ if classIndexId == 5 then --Only do this if we're on a Priest!
 			return
 		end
 
-		local haveTotem, name, startTime, duration, icon = GetTotemInfo(shadowfiend.attributes.totemId)
-		local timeRemaining = startTime+duration-currentTime
-
-		if settings.enabled and haveTotem and timeRemaining > 0 then
-			shadowfiend.buff.isActive = true
-			if settings.enabled then
-				local _, timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = GetMaximumShadowfiendResults()
-				shadowfiend.attributes.remaining.time = timeRemaining
-				shadowfiend.attributes.remaining.swings = swingsRemaining
-				shadowfiend.attributes.remaining.gcds = gcdsRemaining
-
-				shadowfiend.attributes.swingTime = currentTime
-
-				local countValue = 0
-
-				if settings.mode == "swing" then
-					if shadowfiend.attributes.remaining.swings > settings.swingsMax then
-						countValue = settings.swingsMax
-					else
-						countValue = shadowfiend.attributes.remaining.swings
-					end
-				elseif settings.mode == "time" then
-					if shadowfiend.attributes.remaining.time > settings.timeMax then
-						countValue = math.ceil((settings.timeMax - timeToNextSwing) / swingSpeed)
-					else
-						countValue = math.ceil((shadowfiend.attributes.remaining.time - timeToNextSwing) / swingSpeed)
-					end
-				else --assume GCD
-					if shadowfiend.attributes.remaining.gcds > settings.gcdsMax then
-						countValue = settings.gcdsMax
-					else
-						countValue = shadowfiend.attributes.remaining.gcds
-					end
-				end
-
-				if specId == 1 then
-					shadowfiend.attributes.resourceRaw = countValue * shadowfiend.spell.manaPercent * TRB.Data.character.maxResource
-					shadowfiend.attributes.resourceFinal = CalculateManaGain(shadowfiend.attributes.resourceRaw, false)
-				elseif specId == 2 then
-					shadowfiend.attributes.resourceRaw = countValue * shadowfiend.spell.manaPercent * TRB.Data.character.maxResource
-					shadowfiend.attributes.resourceFinal = CalculateManaGain(shadowfiend.attributes.resourceRaw, false)
-				elseif specId == 3 then
-					shadowfiend.attributes.resourceRaw = countValue * shadowfiend.spell.resource
-					shadowfiend.attributes.resourceFinal = CalculateResourceGain(shadowfiend.attributes.resourceRaw)
-				end
-
-				if specId == 1 or specId == 2 then
-					shadowfiend.mana = shadowfiend.attributes.resourceFinal
-				end
-			end
+		local doReset = false
+		if shadowfiend.attributes.totemId == nil then
+			doReset = true
 		else
+			local haveTotem, name, startTime, duration, icon = GetTotemInfo(shadowfiend.attributes.totemId)
+			local timeRemaining = startTime+duration-currentTime
+
+			if settings.enabled and haveTotem and timeRemaining > 0 then
+				shadowfiend.buff.isActive = true
+				if settings.enabled then
+					local _, timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = GetMaximumShadowfiendResults()
+					shadowfiend.attributes.remaining.time = timeRemaining
+					shadowfiend.attributes.remaining.swings = swingsRemaining
+					shadowfiend.attributes.remaining.gcds = gcdsRemaining
+
+					shadowfiend.attributes.swingTime = currentTime
+
+					local countValue = 0
+
+					if settings.mode == "swing" then
+						if shadowfiend.attributes.remaining.swings > settings.swingsMax then
+							countValue = settings.swingsMax
+						else
+							countValue = shadowfiend.attributes.remaining.swings
+						end
+					elseif settings.mode == "time" then
+						if shadowfiend.attributes.remaining.time > settings.timeMax then
+							countValue = math.ceil((settings.timeMax - timeToNextSwing) / swingSpeed)
+						else
+							countValue = math.ceil((shadowfiend.attributes.remaining.time - timeToNextSwing) / swingSpeed)
+						end
+					else --assume GCD
+						if shadowfiend.attributes.remaining.gcds > settings.gcdsMax then
+							countValue = settings.gcdsMax
+						else
+							countValue = shadowfiend.attributes.remaining.gcds
+						end
+					end
+
+					if specId == 1 then
+						shadowfiend.attributes.resourceRaw = countValue * shadowfiend.spell.manaPercent * TRB.Data.character.maxResource
+						shadowfiend.attributes.resourceFinal = CalculateManaGain(shadowfiend.attributes.resourceRaw, false)
+					elseif specId == 2 then
+						shadowfiend.attributes.resourceRaw = countValue * shadowfiend.spell.manaPercent * TRB.Data.character.maxResource
+						shadowfiend.attributes.resourceFinal = CalculateManaGain(shadowfiend.attributes.resourceRaw, false)
+					elseif specId == 3 then
+						shadowfiend.attributes.resourceRaw = countValue * shadowfiend.spell.resource
+						shadowfiend.attributes.resourceFinal = CalculateResourceGain(shadowfiend.attributes.resourceRaw)
+					end
+
+					if specId == 1 or specId == 2 then
+						shadowfiend.mana = shadowfiend.attributes.resourceFinal
+					end
+				end
+			else			
+				doReset = true
+			end
+		end
+		
+		if doReset then
 			shadowfiend.buff:Reset()
 			shadowfiend.attributes.swingTime = 0
 			shadowfiend.attributes.remaining.swings = 0
