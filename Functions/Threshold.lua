@@ -27,7 +27,7 @@ local function SetThresholdIconSizeAndPosition(settings, thresholdLine)
 	end
 end
 
-function TRB.Functions.Threshold:RepositionThreshold(settings, thresholdLine, parentFrame, resourceThreshold, resourceMax)
+function TRB.Functions.Threshold:RepositionThreshold(settings, thresholdLine, parentFrame, resourceThreshold, resourceMax, debug)
 	if settings == nil or settings.bar == nil or thresholdLine == nil then
 		print(L["RepositionThresholdInvalid"])
 		return

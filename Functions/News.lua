@@ -11,10 +11,11 @@ local content = [====[
 
 ---
 
-# 10.2.6.8-beta01 (2024-04-16)
-## Priest
+# 10.2.6.8-release (2024-04-18)
+## Rogue
 
-- Attempt to fix Shadowfiend/Mindbender issues.
+- (FIX (Twintop)) Fix LUA errors from a bad API call.
+- (FIX (Twintop)) Fix threshold position being incorrect.
 
 ---
 
