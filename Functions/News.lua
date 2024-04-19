@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 10.2.6.9-release (2024-04-20)
+## Priest
+### Shadow
+
+- [#336 - FIX (Twintop)](#336) Correct Mindbender predictive incoming Insanity when Devoured Despair proc is active.
+
+---
+
 # 10.2.6.8-release (2024-04-18)
 ## Rogue
 

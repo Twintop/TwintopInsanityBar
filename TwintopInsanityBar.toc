@@ -13,9 +13,9 @@
 ## Title-zhTW: Twintop 的資源欄
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 10.2.6.8
+## Version: 10.2.6.9
 ## X-ReleaseType: release
-## X-ReleaseDate: 2024-04-18
+## X-ReleaseDate: 2024-04-20
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
