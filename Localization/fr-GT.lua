@@ -139,7 +139,7 @@ if locale == "frFR" then
     L["PotionCooldownConfigurationHeader"] = "Potion sur la configuration du temps de recharge"
     L["PotionThresholdShow"] = "Afficher les lignes de seuil de potion lorsque la potion est en temps de recharge"
     L["PotionThresholdShowTooltip"] = "Affiche les lignes de seuil de potion pendant que l'utilisation de la potion est encore en temps de recharge. Configurez ci-dessous combien de temps à l'avance pour que les lignes soient visibles, entre 0 et 300 secondes (300 étant effectivement « toujours visibles »)."
-    L["PotionThresholdShowGCDs"] = "CD restants pendant le temps de recharge des potions"
+    L["PotionThresholdShowGCDs"] = "GCD restants pendant le temps de recharge des potions"
     L["PotionThresholdShowGCDsSlider"] = "GCD de temps de recharge des potions - 0,75 seconde"
     L["PotionThresholdShowTime"] = "Temps restant pour le temps de recharge des potions"
     L["PotionThresholdShowTimeSlider"] = "Temps de recharge restant pour la potion"

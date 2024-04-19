@@ -12,6 +12,10 @@ local content = [====[
 ---
 
 # 10.2.6.9-release (2024-04-20)
+## Localization
+
+- [#8 - UPDATE (Koroshy)](#8) Add more French (frFR) localizations.
+
 ## Priest
 
 - [#336 - FIX (Twintop)](#336) Respect disabling of mana/Insanity gain tracking for Shadowfiend and Mindbender in a few places the setting was being overlooked.

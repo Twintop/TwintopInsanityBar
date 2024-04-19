@@ -139,7 +139,7 @@ if locale == "esES" or locale == "esMX" then
     L["PotionCooldownConfigurationHeader"] = "Poción en la configuración de enfriamiento"
     L["PotionThresholdShow"] = "Mostrar líneas de umbral de poción cuando la poción está en tiempo de reutilización"
     L["PotionThresholdShowTooltip"] = "Muestra las líneas de umbral de la poción mientras el uso de la poción aún está en tiempo de reutilización. Configure a continuación con cuánta antelación las líneas serán visibles, entre 0 y 300 segundos (300 es efectivamente 'siempre visible')."
-    L["PotionThresholdShowGCDs"] = "CD restantes en el tiempo de reutilización de pociones"
+    L["PotionThresholdShowGCDs"] = "GCD restantes en el tiempo de reutilización de pociones"
     L["PotionThresholdShowGCDsSlider"] = "GCD de enfriamiento de pociones: piso de 0,75 segundos"
     L["PotionThresholdShowTime"] = "Tiempo restante en el tiempo de reutilización de pociones"
     L["PotionThresholdShowTimeSlider"] = "Tiempo de recuperación de poción restante"

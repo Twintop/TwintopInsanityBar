@@ -139,7 +139,7 @@ if locale == "deDE" then
     L["PotionCooldownConfigurationHeader"] = "Trank zur Abklingkonfiguration"
     L["PotionThresholdShow"] = "Trankschwellenlinien werden angezeigt, wenn sich der Trank in der Abklingzeit befindet"
     L["PotionThresholdShowTooltip"] = "Zeigt die Trankschwellenlinien an, während die Abklingzeit der Trankverwendung noch läuft. Konfigurieren Sie unten, wie lange im Voraus die Linien sichtbar sein sollen, zwischen 0 und 300 Sekunden (wobei 300 praktisch „immer sichtbar“ ist)."
-    L["PotionThresholdShowGCDs"] = "CDs verbleiben in der Abklingzeit von Trank"
+    L["PotionThresholdShowGCDs"] = "GCDs verbleiben in der Abklingzeit von Trank"
     L["PotionThresholdShowGCDsSlider"] = "Trank-Abklingzeit GCDs – 0,75 Sek. Boden"
     L["PotionThresholdShowTime"] = "Verbleibende Zeit für die Abklingzeit des Tranks"
     L["PotionThresholdShowTimeSlider"] = "Verbleibende Abklingzeit des Tranks"

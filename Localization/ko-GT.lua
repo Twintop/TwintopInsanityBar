@@ -139,7 +139,7 @@ if locale == "koKR" then
     L["PotionCooldownConfigurationHeader"] = "쿨다운 구성에 대한 물약"
     L["PotionThresholdShow"] = "물약이 재사용 대기 중일 때 물약 임계값 선 표시"
     L["PotionThresholdShowTooltip"] = "물약 사용이 여전히 재사용 대기 중일 때 물약 임계값 선을 표시합니다. 아래에서 선이 표시되는 시간을 0~300초 사이에서 구성합니다(300은 사실상 '항상 표시'임)."
-    L["PotionThresholdShowGCDs"] = "포션 쿨다운 시 CD가 남음"
+    L["PotionThresholdShowGCDs"] = "포션 쿨다운 시 GCD가 남음"
     L["PotionThresholdShowGCDsSlider"] = "포션 쿨타임 GCD - 0.75초 바닥"
     L["PotionThresholdShowTime"] = "물약 쿨다운에 남은 시간"
     L["PotionThresholdShowTimeSlider"] = "남은 물약 재사용 시간"

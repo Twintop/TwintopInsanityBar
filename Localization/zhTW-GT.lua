@@ -139,7 +139,7 @@ if locale == "zhTW" then
     L["PotionCooldownConfigurationHeader"] = "冷卻配置藥水"
     L["PotionThresholdShow"] = "當藥水處於冷卻狀態時顯示藥水閾值線"
     L["PotionThresholdShowTooltip"] = "當藥水使用仍處於冷卻狀態時顯示藥水閾值線。 在下方配置線條可見的提前時間，範圍為 0 - 300 秒（300 秒實際上「始終可見」）。"
-    L["PotionThresholdShowGCDs"] = "藥水冷卻剩餘 CD"
+    L["PotionThresholdShowGCDs"] = "藥水冷卻剩餘 GCD"
     L["PotionThresholdShowGCDsSlider"] = "藥水冷卻 GCD - 0.75 秒下限"
     L["PotionThresholdShowTime"] = "藥水冷卻剩餘時間"
     L["PotionThresholdShowTimeSlider"] = "藥水剩餘冷卻時間"

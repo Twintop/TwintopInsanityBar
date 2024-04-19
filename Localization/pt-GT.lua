@@ -139,7 +139,7 @@ if locale == "ptBR" or locale == "ptPT" then
     L["PotionCooldownConfigurationHeader"] = "Poção na configuração do tempo de espera"
     L["PotionThresholdShow"] = "Mostrar linhas de limite de poção quando a poção estiver em espera"
     L["PotionThresholdShowTooltip"] = "Mostra as linhas de limite da poção enquanto o uso da poção ainda está em espera. Configure abaixo com que antecedência as linhas ficarão visíveis, entre 0 - 300 segundos (300 sendo efetivamente 'sempre visíveis')."
-    L["PotionThresholdShowGCDs"] = "CDs restantes no tempo de espera da Poção"
+    L["PotionThresholdShowGCDs"] = "GCDs restantes no tempo de espera da Poção"
     L["PotionThresholdShowGCDsSlider"] = "GCDs de resfriamento de poções - piso de 0,75 segundos"
     L["PotionThresholdShowTime"] = "Tempo restante para o tempo de espera da Poção"
     L["PotionThresholdShowTimeSlider"] = "Tempo restante de espera da poção"

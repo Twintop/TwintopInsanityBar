@@ -139,7 +139,7 @@ if locale == "itIT" then
     L["PotionCooldownConfigurationHeader"] = "Pozione sulla configurazione del tempo di recupero"
     L["PotionThresholdShow"] = "Mostra le linee della soglia della pozione quando la pozione è in ricarica"
     L["PotionThresholdShowTooltip"] = "Mostra le linee della soglia della pozione mentre l'uso della pozione è ancora in ricarica. Configura di seguito con quanto anticipo le linee saranno visibili, tra 0 e 300 secondi (300 sono effettivamente 'sempre visibili')."
-    L["PotionThresholdShowGCDs"] = "CD rimasti nel tempo di recupero di Pozioni"
+    L["PotionThresholdShowGCDs"] = "GCD rimasti nel tempo di recupero di Pozioni"
     L["PotionThresholdShowGCDsSlider"] = "GCD di recupero della pozione: pavimento di 0,75 secondi"
     L["PotionThresholdShowTime"] = "Tempo rimasto al tempo di recupero della Pozione"
     L["PotionThresholdShowTimeSlider"] = "Tempo rimanente di recupero della pozione"
