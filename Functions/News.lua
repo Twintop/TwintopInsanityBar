@@ -13,6 +13,9 @@ local content = [====[
 
 # 10.2.6.9-release (2024-04-20)
 ## Priest
+
+- [#336 - FIX (Twintop)](#336) Respect disabling of mana/Insanity gain tracking for Shadowfiend and Mindbender in a few places the setting was being overlooked.
+
 ### Shadow
 
 - [#336 - FIX (Twintop)](#336) Correct Mindbender predictive incoming Insanity when Devoured Despair proc is active.

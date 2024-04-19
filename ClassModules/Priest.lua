@@ -3498,8 +3498,7 @@ local function UpdateSpecificShadowfiendValues(shadowfiend)
 	local specId = GetSpecialization()
 	local currentTime = GetTime()
 	local settings
-	local _		
-	
+
 	if specId == 1 then
 		settings = TRB.Data.settings.priest.discipline.shadowfiend
 	elseif specId == 2 and talents:IsTalentActive(TRB.Data.spells.shadowfiend) then
@@ -3586,7 +3585,7 @@ local function UpdateSpecificShadowfiendValues(shadowfiend)
 		end
 	end
 
-	shadowfiend.cooldown:Refresh()
+	shadowfiend.cooldown:Refresh(true)
 end
 
 local function UpdateShadowfiendValues()
@@ -3912,7 +3911,7 @@ local function UpdateResourceBar()
 
 				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
 				thresholdCount = thresholdCount + 1
-				if specSettings.bar.showPassive then
+				if specSettings.thresholds.shadowfiend.enabled and specSettings.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
 				else
 					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
@@ -4214,7 +4213,7 @@ local function UpdateResourceBar()
 
 				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
 				thresholdCount = thresholdCount + 1
-				if specSettings.bar.showPassive then
+				if specSettings.thresholds.shadowfiend.enabled and specSettings.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
 				else
 					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
@@ -4760,13 +4759,13 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif settings.passiveGeneration.blessingOfWinter and entry.spellId == spells.blessingOfWinter.id then
 					local blessingOfWinter = snapshotData.snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
 					blessingOfWinter.buff:Initialize(entry.type)
-				elseif settings.shadowfiend.enabled and entry.type == "SPELL_ENERGIZE" and entry.spellId == snapshots[spells.shadowfiend.id].spell.energizeId and entry.sourceName == snapshots[spells.shadowfiend.id].spell.name then
+				elseif entry.type == "SPELL_ENERGIZE" and entry.spellId == snapshots[spells.shadowfiend.id].spell.energizeId then
 					snapshots[spells.shadowfiend.id].attributes.swingTime = currentTime
 					snapshots[spells.shadowfiend.id].cooldown:Refresh(true)
 					triggerUpdate = true
 				end
 			elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" then
-				if settings.mindbender.enabled and entry.type == "SPELL_ENERGIZE" and (entry.spellId == spells.mindbender.energizeId or entry.spellId == spells.shadowfiend.energizeId) and entry.sourceName == spells.shadowfiend.name then
+				if entry.type == "SPELL_ENERGIZE" and (entry.spellId == spells.mindbender.energizeId or entry.spellId == spells.shadowfiend.energizeId) then
 					if entry.sourceGuid == snapshots[spells.shadowfiend.id].attributes.guid then
 						snapshots[spells.shadowfiend.id].attributes.swingTime = currentTime
 						snapshots[spells.shadowfiend.id].cooldown:Refresh(true)
