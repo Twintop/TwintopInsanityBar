@@ -35,7 +35,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		if isPotion then
 			if TRB.Data.character.items.alchemyStone then
-				modifier = modifier * TRB.Data.spells.alchemistStone.manaModifier
+				modifier = modifier * TRB.Data.spells.alchemistStone.resourcePercent
 			end
 		end
 
@@ -174,7 +174,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				name = "",
 				icon = "",
 				duration = 4.0, --Hasted
-				manaPercent = 0.02,
+				resourcePercent = 0.02,
 				ticks = 4,
 				tickId = 265144
 			},
@@ -197,7 +197,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				tickRate = 2,
 				hasTicks = true,
 				resourcePerTick = 0,
-				manaPercent = 0.01
+				resourcePercent = 0.01
 			},
 
 			-- Potions
@@ -293,7 +293,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				id = 17619,
 				name = "",
 				icon = "",
-				manaModifier = 1.4,
+				resourcePercent = 1.4,
 				itemIds = {
 					171323,
 					175941,
@@ -727,7 +727,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
 					TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-					TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+					TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell, settings)
 
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
@@ -770,7 +770,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
 					TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-					TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+					TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell, settings)
 
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)

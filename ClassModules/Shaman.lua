@@ -35,7 +35,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 
 		if isPotion then
 			if TRB.Data.character.items.alchemyStone then
-				modifier = modifier * spells.alchemistStone.manaModifier
+				modifier = modifier * spells.alchemistStone.resourcePercent
 			end
 		end
 
@@ -474,7 +474,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				name = "",
 				icon = "",
 				duration = 4.0, --Hasted
-				manaPercent = 0.02,
+				resourcePercent = 0.02,
 				ticks = 4,
 				tickId = 265144
 			},
@@ -491,7 +491,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				tickRate = 2,
 				hasTicks = true,
 				resourcePerTick = 0,
-				manaPercent = 0.01
+				resourcePercent = 0.01
 			},
 
 			-- Potions
@@ -587,7 +587,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				id = 17619,
 				name = "",
 				icon = "",
-				manaModifier = 1.4,
+				resourcePercent = 1.4,
 				itemIds = {
 					171323,
 					175941,
@@ -974,7 +974,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
 					TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-					TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+					TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell, settings)
 	
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
@@ -990,7 +990,7 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
 					TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-					TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+					TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell, settings)
 	
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
@@ -1019,13 +1019,13 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				TRB.Frames.passiveFrame.thresholds[x]:Hide()
 			end
 			
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.aeratedManaPotionRank1.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.aeratedManaPotionRank2.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], spells.aeratedManaPotionRank3.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], spells.potionOfFrozenFocusRank1.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.shaman.restoration)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], spells.conjuredChillglobe.settingKey, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.aeratedManaPotionRank1, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.aeratedManaPotionRank2, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], spells.aeratedManaPotionRank3, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], spells.potionOfFrozenFocusRank1, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], spells.potionOfFrozenFocusRank2, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], spells.potionOfFrozenFocusRank3, TRB.Data.settings.shaman.restoration)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], spells.conjuredChillglobe, TRB.Data.settings.shaman.restoration)
 			TRB.Frames.resource2ContainerFrame:Hide()
 		end
 
@@ -2483,8 +2483,8 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 ---@diagnostic disable-next-line: missing-parameter
 			TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Maelstrom)
 
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spells.earthShock.thresholdId], spells.earthShock.settingKey, TRB.Data.settings.shaman.elemental)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spells.elementalBlast.thresholdId], spells.elementalBlast.settingKey, TRB.Data.settings.shaman.elemental)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spells.earthShock.thresholdId], spells.earthShock, TRB.Data.settings.shaman.elemental)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spells.elementalBlast.thresholdId], spells.elementalBlast, TRB.Data.settings.shaman.elemental)
 
 			if (talents:IsTalentActive(spells.elementalBlast) and spells.elementalBlast.resource < TRB.Data.character.maxResource) then
 				TRB.Data.character.earthShockThreshold = -(spells.elementalBlast.resource - spells.eyeOfTheStorm.resourceMod[talents.talents[spells.eyeOfTheStorm.id].currentRank].elementalBlast)

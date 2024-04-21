@@ -7,7 +7,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public barTextVariables table
 ---@field public character table
 ---@field public settings TRB.Classes.SharedSpecSetting
----@field public spells table
+---@field public spells { [string]: TRB.Classes.SpellBase }
 ---@field public snapshotData TRB.Classes.SnapshotData
 ---@field public talents TRB.Classes.Talents
 TRB.Classes.SpecCache = {}
@@ -27,6 +27,7 @@ function TRB.Classes.SpecCache:New(snapshotDataAttributes)
     }
     self.character = {}
     self.settings = {}
+    ---@type { [string]: TRB.Classes.SpellBase }
     self.spells = {}
     self.snapshotData = TRB.Classes.SnapshotData:New(snapshotDataAttributes)
     self.talents = TRB.Classes.Talents:New()

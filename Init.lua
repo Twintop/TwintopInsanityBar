@@ -150,6 +150,7 @@ TRB.Data.character = {
 	items = {}
 }
 
+---@type { [string]: TRB.Classes.SpellBase }
 TRB.Data.spells = {}
 
 TRB.Data.lookup = {}

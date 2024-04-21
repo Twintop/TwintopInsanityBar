@@ -48,12 +48,16 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, thresholdLine, pa
 	SetThresholdIconSizeAndPosition(settings, thresholdLine)
 end
 
-function TRB.Functions.Threshold:SetThresholdIcon(threshold, settingKey, settings)
+---Sets the icon for a threshold
+---@param threshold frame
+---@param spell TRB.Classes.SpellThreshold
+---@param settings table
+function TRB.Functions.Threshold:SetThresholdIcon(threshold, spell, settings)
 	if threshold.icon == nil then
 		return
 	end
 
-	threshold.icon.texture:SetTexture(TRB.Data.spells[settingKey].texture)
+	threshold.icon.texture:SetTexture(spell.texture)
 	
 	if settings.thresholds.icons.enabled then
 		threshold.icon:Show()

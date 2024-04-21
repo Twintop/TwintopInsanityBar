@@ -67,11 +67,13 @@ Classes\CombatLog.lua
 Classes\Snapshot.lua
 Classes\TimeToDie.lua
 Classes\Target.lua
+Classes\Spell.lua
 Classes\Talent.lua
 
 Classes\Settings.lua
 Classes\SpecCache.lua
 
+ClassModules\Classes\PriestClasses.lua
 ClassModules\Classes\HealerClasses.lua
 
 Init.lua

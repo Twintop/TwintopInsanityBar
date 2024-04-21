@@ -33,7 +33,7 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 
 		if isPotion then
 			if TRB.Data.character.items.alchemyStone then
-				modifier = modifier * TRB.Data.spells.alchemistStone.manaModifier
+				modifier = modifier * TRB.Data.spells.alchemistStone.resourcePercent
 			end
 		end
 
@@ -133,7 +133,7 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 				hasTicks = true,
 				resourcePerTick = 0,
 				tickRate = 2,
-				manaPercent = 0.01
+				resourcePercent = 0.01
 			},
 			daybreak = {
 				id = 414170,
@@ -143,7 +143,7 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 				thresholdId = 8,
 				settingKey = "daybreak",
 				isTalent = true,
-				manaPercent = 0.008
+				resourcePercent = 0.008
 			},
 
 			-- External mana
@@ -152,7 +152,7 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 				name = "",
 				icon = "",
 				duration = 4.0, --Hasted
-				manaPercent = 0.02,
+				resourcePercent = 0.02,
 				ticks = 4,
 				tickId = 265144
 			},
@@ -262,7 +262,7 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 				id = 17619,
 				name = "",
 				icon = "",
-				manaModifier = 1.4,
+				resourcePercent = 1.4,
 				itemIds = {
 					171323,
 					175941,
@@ -524,14 +524,14 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 				TRB.Frames.passiveFrame.thresholds[x]:Hide()
 			end
 			
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.aeratedManaPotionRank1.settingKey, TRB.Data.settings.paladin.holy)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.aeratedManaPotionRank2.settingKey, TRB.Data.settings.paladin.holy)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.aeratedManaPotionRank3.settingKey, TRB.Data.settings.paladin.holy)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.potionOfFrozenFocusRank1.settingKey, TRB.Data.settings.paladin.holy)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], TRB.Data.spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.paladin.holy)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], TRB.Data.spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.paladin.holy)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], TRB.Data.spells.conjuredChillglobe.settingKey, TRB.Data.settings.paladin.holy)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[8], TRB.Data.spells.daybreak.settingKey, TRB.Data.settings.paladin.holy)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.aeratedManaPotionRank1, TRB.Data.settings.paladin.holy)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.aeratedManaPotionRank2, TRB.Data.settings.paladin.holy)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.aeratedManaPotionRank3, TRB.Data.settings.paladin.holy)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.potionOfFrozenFocusRank1, TRB.Data.settings.paladin.holy)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], TRB.Data.spells.potionOfFrozenFocusRank2, TRB.Data.settings.paladin.holy)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], TRB.Data.spells.potionOfFrozenFocusRank3, TRB.Data.settings.paladin.holy)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], TRB.Data.spells.conjuredChillglobe, TRB.Data.settings.paladin.holy)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[8], TRB.Data.spells.daybreak, TRB.Data.settings.paladin.holy)
 		end
 
 		TRB.Functions.Class:CheckCharacter()
@@ -1038,7 +1038,7 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 						local daybreak = snapshots[spells.daybreak.id]
 						local daybreakThresholdColor = specSettings.colors.threshold.over
 						if specSettings.thresholds.daybreak.enabled and (not daybreak.cooldown:IsUnusable() or specSettings.thresholds.daybreak.cooldown) then
-							local daybreakMana = snapshotData.targetData.count[spells.glimmerOfLight.buffId] * daybreak.spell.manaPercent * TRB.Data.character.maxResource
+							local daybreakMana = snapshotData.targetData.count[spells.glimmerOfLight.buffId] * daybreak.spell.resourcePercent * TRB.Data.character.maxResource
 
 							if daybreak.cooldown:IsUnusable() then
 								daybreakThresholdColor = specSettings.colors.threshold.unusable

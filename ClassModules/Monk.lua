@@ -34,7 +34,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		if isPotion then
 			if TRB.Data.character.items.alchemyStone then
-				modifier = modifier * TRB.Data.spells.alchemistStone.manaModifier
+				modifier = modifier * TRB.Data.spells.alchemistStone.resourcePercent
 			end
 		end
 
@@ -127,7 +127,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				name = "",
 				icon = "",
 				duration = 4.0, --Hasted
-				manaPercent = 0.02,
+				resourcePercent = 0.02,
 				ticks = 4,
 				tickId = 265144
 			},
@@ -150,7 +150,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				tickRate = 2,
 				hasTicks = true,
 				resourcePerTick = 0,
-				manaPercent = 0.01
+				resourcePercent = 0.01
 			},
 			
 			-- Potions
@@ -246,7 +246,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				id = 17619,
 				name = "",
 				icon = "",
-				manaModifier = 1.4,
+				resourcePercent = 1.4,
 				itemIds = {
 					171323,
 					175941,
@@ -849,13 +849,13 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 				TRB.Frames.passiveFrame.thresholds[x]:Hide()
 			end
 			
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.aeratedManaPotionRank1.settingKey, TRB.Data.settings.monk.mistweaver)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.aeratedManaPotionRank2.settingKey, TRB.Data.settings.monk.mistweaver)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], spells.aeratedManaPotionRank3.settingKey, TRB.Data.settings.monk.mistweaver)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], spells.potionOfFrozenFocusRank1.settingKey, TRB.Data.settings.monk.mistweaver)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.monk.mistweaver)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.monk.mistweaver)
-			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], spells.conjuredChillglobe.settingKey, TRB.Data.settings.monk.mistweaver)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.aeratedManaPotionRank1, TRB.Data.settings.monk.mistweaver)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.aeratedManaPotionRank2, TRB.Data.settings.monk.mistweaver)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], spells.aeratedManaPotionRank3, TRB.Data.settings.monk.mistweaver)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], spells.potionOfFrozenFocusRank1, TRB.Data.settings.monk.mistweaver)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], spells.potionOfFrozenFocusRank2, TRB.Data.settings.monk.mistweaver)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], spells.potionOfFrozenFocusRank3, TRB.Data.settings.monk.mistweaver)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], spells.conjuredChillglobe, TRB.Data.settings.monk.mistweaver)
 			TRB.Frames.resource2ContainerFrame:Hide()
 		elseif specId == 3 then
 			for k, v in pairs(spells) do
@@ -865,7 +865,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 						TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 					end
 					TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-					TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+					TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell, settings)
 
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
