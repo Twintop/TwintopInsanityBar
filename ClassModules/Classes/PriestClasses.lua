@@ -65,7 +65,7 @@ function TRB.Classes.Priest.HealerSpells:New()
            thresholdId = 8,
            settingKey = "shadowfiend",
            isTalent = true,
-           baseline = true,
+           baseline = false,
            resourcePercent = 0.005,
            duration = 15
        })
@@ -110,6 +110,8 @@ function TRB.Classes.Priest.DisciplineSpells:New()
         baseline = true
     })
 
+    self.shadowfiend.baseline = true
+    
     -- Discipline Baseline Abilities
 
     -- Priest Talent Abilities
