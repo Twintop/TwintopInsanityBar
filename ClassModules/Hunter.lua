@@ -1,6 +1,7 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 3 then --Only do this if we're on a Hunter!
+	local L = TRB.Localization
 	TRB.Functions.Class = TRB.Functions.Class or {}
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
@@ -13,7 +14,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local timerFrame = TRB.Frames.timerFrame
 	local combatFrame = TRB.Frames.combatFrame
 	
-	local talents --[[@as TRB.Classes.Talents]]
+	---@type TRB.Classes.Talents
+	local talents
 
 	Global_TwintopResourceBar = {}
 	TRB.Data.character = {}
@@ -57,7 +59,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 1,
 				settingKey = "arcaneShot",
-				thresholdUsable = false,
 				baseline = true
 			},
 			revivePet = {
@@ -68,7 +69,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 2,
 				settingKey = "revivePet",
-				thresholdUsable = false,
 				baseline = true
 			},
 			wingClip = {
@@ -79,7 +79,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 3,
 				settingKey = "wingClip",
-				thresholdUsable = false,
 				baseline = true
 			},
 
@@ -94,7 +93,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "killCommand",
 				isSnowflake = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				baseline = true,
 				isTalent = true
 			},
@@ -114,8 +112,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "killShot",
 				healthMinimum = 0.2,
 				hasCooldown = true,
-				isSnowflake = true,
-				thresholdUsable = false
+				isSnowflake = true
 			},
 			scareBeast = {
 				id = 1513,
@@ -124,8 +121,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				resource = -25,
 				texture = "",
 				thresholdId = 6,
-				settingKey = "scareBeast",
-				thresholdUsable = false
+				settingKey = "scareBeast"
 			},
 			explosiveShot = {
 				id = 212431,
@@ -137,7 +133,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "explosiveShot",
 				hasCooldown = true,
 				cooldown = 30,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			barrage = {
@@ -150,7 +145,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "barrage",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				cooldown = 20
 			},
 			serpentSting = {
@@ -162,7 +156,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 9,
 				settingKey = "serpentSting",
 				isTalent = true,
-				thresholdUsable = false,
 				baseDuration = 18,
 				--pandemic = true,
 				--pandemicTime = 18 * 0.3
@@ -186,8 +179,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 10,
 				settingKey = "cobraShot",
 				killCommandCooldownReduction = 2,
-				isSnowflake = true,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			multiShot = {
@@ -198,12 +189,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 11,
 				settingKey = "multiShot",
-				thresholdUsable = false,
 				isTalent = true
 			},
 			barbedShot = {
 				id = 217200,
-				buffId = {
+				buffIdList = {
 					246152,
 					246851,
 					246852,
@@ -219,6 +209,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				hasCooldown = true,
 				beastialWrathCooldownReduction = 12,
 				isTalent = true
+			},
+			savagery = {
+				id = 424557,
+				name = "",
+				icon = "",
+				isTalent = true,
+				duration = 2
 			},
 			frenzy = {
 				id = 272790,
@@ -248,7 +245,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 12,
 				settingKey = "aMurderOfCrows",
 				hasCooldown = true,
-				thresholdUsable = false,
 				cooldown = 60,
 				isTalent = true
 			},
@@ -286,7 +282,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 13,
 				settingKey = "wailingArrow",
-				thresholdUsable = false,
 				hasCooldown = true,
 				cooldown = 60,
 				isTalent = true
@@ -303,13 +298,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				isTalent = true,
 				resourceMod = 0.5
-			},
-			aspectOfTheWild = {
-				id = 193530,
-				name = "",
-				icon = "",
-				isTalent = true,
-				resourceMod = -10
 			},
 			beastCleave = {
 				id = 115939,
@@ -340,7 +328,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 14,
 				settingKey = "direBeastBasilisk",
-				thresholdUsable = false,
 				hasCooldown = true,
 				cooldown = 120,
 				isPvp = true,
@@ -353,7 +340,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 15,
 				settingKey = "direBeastHawk",
-				thresholdUsable = false,
 				hasCooldown = true,
 				cooldown = 30,
 				isPvp = true,
@@ -381,8 +367,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.wailingArrow.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.wailingArrow)
 		---@type TRB.Classes.Snapshot
 		specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.direPack.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.direPack)
-		---@type TRB.Classes.Snapshot
-		specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.aspectOfTheWild.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.aspectOfTheWild)
 		---@type TRB.Classes.Snapshot
 		specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.callOfTheWild.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.callOfTheWild)
 		---@type TRB.Classes.Snapshot
@@ -442,7 +426,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 1,
 				settingKey = "arcaneShot",
-				thresholdUsable = false,
 				baseline = true
 			},
 			revivePet = {
@@ -453,7 +436,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 2,
 				settingKey = "revivePet",
-				thresholdUsable = false,
 				baseline = true
 			},
 			wingClip = {
@@ -464,7 +446,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 3,
 				settingKey = "wingClip",
-				thresholdUsable = false,
 				baseline = true
 			},
 
@@ -478,7 +459,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 4,
 				settingKey = "killCommand",
 				hasCooldown = true,
-				thresholdUsable = false,
 				isTalent = true,
 				baseline = false
 			},
@@ -499,7 +479,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				healthMinimum = 0.2,
 				hasCooldown = true,
 				isSnowflake = true,
-				thresholdUsable = false,
 				baseline = true,
 				isTalent = true
 			},
@@ -510,8 +489,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				resource = -25,
 				texture = "",
 				thresholdId = 6,
-				settingKey = "scareBeast",
-				thresholdUsable = false
+				settingKey = "scareBeast"
 			},
 			explosiveShot = {
 				id = 212431,
@@ -523,7 +501,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "explosiveShot",
 				hasCooldown = true,
 				cooldown = 30,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			barrage = {
@@ -536,7 +513,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "barrage",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				cooldown = 20
 			},
 			serpentSting = {
@@ -548,7 +524,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 9,
 				settingKey = "serpentSting",
 				isTalent = true,
-				thresholdUsable = false,
 				baseDuration = 18,
 				--pandemic = true,
 				--pandemicTime = 18 * 0.3
@@ -580,7 +555,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "aimedShot",
 				hasCooldown = true,
 				isSnowflake = true,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			crackShot = {
@@ -614,7 +588,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 11,
 				settingKey = "chimaeraShot",
-				thresholdUsable = false,
 				isTalent = true
 			},
 			-- TODO: Add Deathblow support
@@ -632,7 +605,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 12,
 				settingKey = "multiShot",
-				thresholdUsable = false,
 				isTalent = true
 			},
 			burstingShot = {
@@ -644,7 +616,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 13,
 				settingKey = "burstingShot",
 				hasCooldown = true,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			-- TODO: Add Deadeye implementation
@@ -709,7 +680,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 14,
 				settingKey = "wailingArrow",
-				thresholdUsable = false,
 				hasCooldown = true,
 				cooldown = 60,
 				isTalent = true
@@ -724,7 +694,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 15,
 				settingKey = "sniperShot",
-				thresholdUsable = false,
 				hasCooldown = true,
 				cooldown = 10,
 				isPvp = true,
@@ -807,7 +776,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 1,
 				settingKey = "arcaneShot",
-				thresholdUsable = false,
 				baseline = true
 			},
 			revivePet = {
@@ -818,7 +786,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 2,
 				settingKey = "revivePet",
-				thresholdUsable = false,
 				baseline = true
 			},
 			wingClip = {
@@ -829,7 +796,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 3,
 				settingKey = "wingClip",
-				thresholdUsable = false,
 				baseline = true
 			},
 
@@ -844,7 +810,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				--settingKey = "killCommand",
 				isSnowflake = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				baseline = true,
 				isTalent = true
 			},
@@ -864,8 +829,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "killShot",
 				healthMinimum = 0.2,
 				hasCooldown = true,
-				isSnowflake = true,
-				thresholdUsable = false
+				isSnowflake = true
 			},
 			scareBeast = {
 				id = 1513,
@@ -874,8 +838,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				resource = -25,
 				texture = "",
 				thresholdId = 6,
-				settingKey = "scareBeast",
-				thresholdUsable = false
+				settingKey = "scareBeast"
 			},
 			explosiveShot = {
 				id = 212431,
@@ -887,7 +850,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "explosiveShot",
 				hasCooldown = true,
 				cooldown = 30,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			barrage = {
@@ -900,7 +862,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				settingKey = "barrage",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				cooldown = 20
 			},
 			serpentSting = {
@@ -912,7 +873,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 9,
 				settingKey = "serpentSting",
 				isTalent = true,
-				thresholdUsable = false,
 				baseDuration = 18,
 				--pandemic = true,
 				--pandemicTime = 18 * 0.3
@@ -936,7 +896,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 10,
 				isSnowflake = true,
 				settingKey = "raptorStrike",
-				thresholdUsable = false,
 				isTalent = true
 			},
 			guerrillaTactics = {
@@ -977,7 +936,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				thresholdId = 11,
 				settingKey = "carve",
 				hasCooldown = true,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			butchery = {
@@ -990,8 +948,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				hasCharges = true,
 				texture = "",
 				thresholdId = 12,
-				settingKey = "butchery",
-				thresholdUsable = false
+				settingKey = "butchery"
 			},
 			mongooseBite = {
 				id = 259387,
@@ -1002,7 +959,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				texture = "",
 				thresholdId = 4, --NOTE this take's Kill Command's stypical threshold ID only so all the rest at the class level stay consistent!
 				settingKey = "mongooseBite",
-				thresholdUsable = false,
 				isTalent = true
 			},
 			flankingStrike = {
@@ -1011,7 +967,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				icon = "",
 				resource = 30,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isTalent = true
 			},
 			coordinatedAssault = {
@@ -1084,90 +1039,90 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.beastMastery.barTextVariables.icons = {
-			{ variable = "#casting", icon = "", description = "The icon of the Focus generating spell you are currently hardcasting", printInSettings = true },
-			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+			{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
-			{ variable = "#aMurderOfCrows", icon = spells.aMurderOfCrows.icon, description = "A Murder of Crows", printInSettings = true },
-			{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = "Arcane Shot", printInSettings = true },
-			{ variable = "#barbedShot", icon = spells.barbedShot.icon, description = "Barbed Shot", printInSettings = true },
-			{ variable = "#barrage", icon = spells.barrage.icon, description = "Barrage", printInSettings = true },
-			{ variable = "#beastCleave", icon = spells.beastCleave.icon, description = "Beast Cleave", printInSettings = true },
-			{ variable = "#beastailWrath", icon = spells.beastialWrath.icon, description = "Beastial Wrath", printInSettings = true },
-			{ variable = "#cobraShot", icon = spells.cobraShot.icon, description = "Cobra Shot", printInSettings = true },
-			{ variable = "#frenzy", icon = spells.frenzy.icon, description = "Frenzy", printInSettings = true },
-			{ variable = "#killCommand", icon = spells.killCommand.icon, description = "Kill Command", printInSettings = true },
-			{ variable = "#killShot", icon = spells.killShot.icon, description = "Kill Shot", printInSettings = true },
-			{ variable = "#multiShot", icon = spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
-			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
-			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
-			{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = "Serpent Sting", printInSettings = true },
-			{ variable = "#wailingArrow", icon = spells.wailingArrow.icon, description = "Wailing Arrow", printInSettings = true },
+			{ variable = "#aMurderOfCrows", icon = spells.aMurderOfCrows.icon, description = spells.aMurderOfCrows.name, printInSettings = true },
+			{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = spells.arcaneShot.name, printInSettings = true },
+			{ variable = "#barbedShot", icon = spells.barbedShot.icon, description = spells.barbedShot.name, printInSettings = true },
+			{ variable = "#barrage", icon = spells.barrage.icon, description = spells.barrage.name, printInSettings = true },
+			{ variable = "#beastCleave", icon = spells.beastCleave.icon, description = spells.beastCleave.name, printInSettings = true },
+			{ variable = "#beastialWrath", icon = spells.beastialWrath.icon, description = spells.beastialWrath.name, printInSettings = true },
+			{ variable = "#cobraShot", icon = spells.cobraShot.icon, description = spells.cobraShot.name, printInSettings = true },
+			{ variable = "#frenzy", icon = spells.frenzy.icon, description = spells.frenzy.name, printInSettings = true },
+			{ variable = "#killCommand", icon = spells.killCommand.icon, description = spells.killCommand.name, printInSettings = true },
+			{ variable = "#killShot", icon = spells.killShot.icon, description = spells.killShot.name, printInSettings = true },
+			{ variable = "#multiShot", icon = spells.multiShot.icon, description = spells.multiShot.name, printInSettings = true },
+			{ variable = "#revivePet", icon = spells.revivePet.icon, description = spells.revivePet.name, printInSettings = true },
+			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = spells.scareBeast.name, printInSettings = true },
+			{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = spells.serpentSting.name, printInSettings = true },
+			{ variable = "#wailingArrow", icon = spells.wailingArrow.icon, description = spells.wailingArrow.name, printInSettings = true },
 		}
 		specCache.beastMastery.barTextVariables.values = {
-			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
-			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
-			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
-			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
-			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
-			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
-			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
-			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
-			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
-			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+			{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
+			{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
+			{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
+			{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
+			{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
+			{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
+			{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
+			{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
+			{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
 
-			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
-			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
-			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
-			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
-			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
-			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
-			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
-			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
+			{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
+			{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
+			{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
+			{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
+			{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
+			{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
+			{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 			
-			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+			{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
-			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
-			{ variable = "$focusMax", description = "Maximum Focus", printInSettings = true, color = false },
-			{ variable = "$resourceMax", description = "Maximum Focus", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Builder Focus from Hardcasting Spells", printInSettings = true, color = false },
-			{ variable = "$casting", description = "Spender Focus from Hardcasting Spells", printInSettings = true, color = false },
-			{ variable = "$passive", description = "Focus from Passive Sources including Regen and Barbed Shot buffs", printInSettings = true, color = false },
-			{ variable = "$barbedShotFocus", description = "Focus from Barbed Shot buffs", printInSettings = true, color = false },
-			{ variable = "$regen", description = "Focus from Passive Regen", printInSettings = true, color = false },
-			{ variable = "$regenFocus", description = "Focus from Passive Regen", printInSettings = false, color = false },
-			{ variable = "$focusRegen", description = "Focus from Passive Regen", printInSettings = false, color = false },
-			{ variable = "$focusPlusCasting", description = "Current + Casting Focus Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusCasting", description = "Current + Casting Focus Total", printInSettings = false, color = false },
-			{ variable = "$focusPlusPassive", description = "Current + Passive Focus Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusPassive", description = "Current + Passive Focus Total", printInSettings = false, color = false },
-			{ variable = "$focusTotal", description = "Current + Passive + Casting Focus Total", printInSettings = true, color = false },
-			{ variable = "$resourceTotal", description = "Current + Passive + Casting Focus Total", printInSettings = false, color = false },
+			{ variable = "$focus", description = L["HunterBeastMasteryBarTextVariable_focus"], printInSettings = true, color = false },
+			{ variable = "$resource", description = "", printInSettings = false, color = false },
+			{ variable = "$focusMax", description = L["HunterBeastMasteryBarTextVariable_focusMax"], printInSettings = true, color = false },
+			{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+			{ variable = "$casting", description = L["HunterBeastMasteryBarTextVariable_casting"], printInSettings = true, color = false },
+			{ variable = "$casting", description = L["HunterBeastMasteryBarTextVariable_casting"], printInSettings = true, color = false },
+			{ variable = "$passive", description = L["HunterBeastMasteryBarTextVariable_passive"], printInSettings = true, color = false },
+			{ variable = "$barbedShotFocus", description = L["HunterBeastMasteryBarTextVariable_barbedShotFocus"], printInSettings = true, color = false },
+			{ variable = "$regen", description = L["HunterBeastMasteryBarTextVariable_regen"], printInSettings = true, color = false },
+			{ variable = "$regenFocus", description = "", printInSettings = false, color = false },
+			{ variable = "$focusRegen", description = "", printInSettings = false, color = false },
+			{ variable = "$focusPlusCasting", description = L["HunterBeastMasteryBarTextVariable_focusPlusCasting"], printInSettings = true, color = false },
+			{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
+			{ variable = "$focusPlusPassive", description = L["HunterBeastMasteryBarTextVariable_focusPlusPassive"], printInSettings = true, color = false },
+			{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
+			{ variable = "$focusTotal", description = L["HunterBeastMasteryBarTextVariable_focusTotal"], printInSettings = true, color = false },
+			{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
 
-			{ variable = "$serpentSting", description = "Is Serpent Sting talented? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
-			{ variable = "$ssCount", description = "Number of Serpent Stings active on targets", printInSettings = true, color = false },
-			{ variable = "$ssTime", description = "Time remaining on Serpent Sting on your current target", printInSettings = true, color = false },
+			{ variable = "$serpentSting", description = L["HunterBeastMasteryBarTextVariable_serpentSting"], printInSettings = true, color = false },
+			{ variable = "$ssCount", description = L["HunterBeastMasteryBarTextVariable_ssCount"], printInSettings = true, color = false },
+			{ variable = "$ssTime", description = L["HunterBeastMasteryBarTextVariable_ssTime"], printInSettings = true, color = false },
 
-			{ variable = "$frenzyTime", description = "Time remaining on your pet's Frenzy buff", printInSettings = true, color = false },
-			{ variable = "$frenzyStacks", description = "Current stack count on your pet's Frenzy buff", printInSettings = true, color = false },
+			{ variable = "$frenzyTime", description = L["HunterBeastMasteryBarTextVariable_frenzyTime"], printInSettings = true, color = false },
+			{ variable = "$frenzyStacks", description = L["HunterBeastMasteryBarTextVariable_frenzyStacks"], printInSettings = true, color = false },
 
-			{ variable = "$barbedShotTicks", description = "Total number of Barbed Shot buff ticks remaining", printInSettings = true, color = false },
-			{ variable = "$barbedShotTime", description = "Time remaining until the most recent Barbed Shot buff expires", printInSettings = true, color = false },
+			{ variable = "$barbedShotTicks", description = L["HunterBeastMasteryBarTextVariable_barbedShotTicks"], printInSettings = true, color = false },
+			{ variable = "$barbedShotTime", description = L["HunterBeastMasteryBarTextVariable_barbedShotTime"], printInSettings = true, color = false },
 			
-			{ variable = "$beastCleaveTime", description = "Time remaining on the Beast Cleave effect, either from Beast Cleave itself or from Call of the Wild with Bloody Frenzy", printInSettings = true, color = false },
+			{ variable = "$beastCleaveTime", description = L["HunterBeastMasteryBarTextVariable_beastCleaveTime"], printInSettings = true, color = false },
 
-			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+			{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 		}
 
 		specCache.beastMastery.spells = spells
@@ -1179,89 +1134,88 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.marksmanship.barTextVariables.icons = {
-			{ variable = "#casting", icon = "", description = "The icon of the Focus generating spell you are currently hardcasting", printInSettings = true },
-			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+			{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
-			{ variable = "#aimedShot", icon = spells.aimedShot.icon, description = "Aimed Shot", printInSettings = true },
-			{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = "Arcane Shot", printInSettings = true },
-			{ variable = "#barrage", icon = spells.barrage.icon, description = "Barrage", printInSettings = true },
-			{ variable = "#burstingShot", icon = spells.burstingShot.icon, description = "Bursting Shot", printInSettings = true },
-			{ variable = "#chimaeraShot", icon = spells.chimaeraShot.icon, description = "Chimaera Shot", printInSettings = true },
-			{ variable = "#explosiveShot", icon = spells.explosiveShot.icon, description = "Explosive Shot", printInSettings = true },
-			{ variable = "#killShot", icon = spells.killShot.icon, description = "Kill Shot", printInSettings = true },
-			{ variable = "#lockAndLoad", icon = spells.lockAndLoad.icon, description = "Lock and Load", printInSettings = true },
-			{ variable = "#multiShot", icon = spells.multiShot.icon, description = "Multi-Shot", printInSettings = true },
-			{ variable = "#rapidFire", icon = spells.rapidFire.icon, description = "Rapid Fire", printInSettings = true },
-			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
-			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
-			{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = "Serpent Sting", printInSettings = true },
-			{ variable = "#steadyFocus", icon = spells.steadyFocus.icon, description = "Steady Focus", printInSettings = true },
-			{ variable = "#steadyShot", icon = spells.steadyShot.icon, description = "Steady Shot", printInSettings = true },
-			{ variable = "#trickShots", icon = spells.trickShots.icon, description = "Trick Shots", printInSettings = true },
-			{ variable = "#trueshot", icon = spells.trueshot.icon, description = "Trueshot", printInSettings = true },
-			{ variable = "#wailingArrow", icon = spells.wailingArrow.icon, description = "Wailing Arrow", printInSettings = true }
+			{ variable = "#aimedShot", icon = spells.aimedShot.icon, description = spells.aimedShot.name, printInSettings = true },
+			{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = spells.arcaneShot.name, printInSettings = true },
+			{ variable = "#barrage", icon = spells.barrage.icon, description = spells.barrage.name, printInSettings = true },
+			{ variable = "#burstingShot", icon = spells.burstingShot.icon, description = spells.burstingShot.name, printInSettings = true },
+			{ variable = "#chimaeraShot", icon = spells.chimaeraShot.icon, description = spells.chimaeraShot.name, printInSettings = true },
+			{ variable = "#explosiveShot", icon = spells.explosiveShot.icon, description = spells.explosiveShot.name, printInSettings = true },
+			{ variable = "#killShot", icon = spells.killShot.icon, description = spells.killShot.name, printInSettings = true },
+			{ variable = "#lockAndLoad", icon = spells.lockAndLoad.icon, description = spells.lockAndLoad.name, printInSettings = true },
+			{ variable = "#multiShot", icon = spells.multiShot.icon, description = spells.multiShot.name, printInSettings = true },
+			{ variable = "#rapidFire", icon = spells.rapidFire.icon, description = spells.rapidFire.name, printInSettings = true },
+			{ variable = "#revivePet", icon = spells.revivePet.icon, description = spells.revivePet.name, printInSettings = true },
+			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = spells.scareBeast.name, printInSettings = true },
+			{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = spells.serpentSting.name, printInSettings = true },
+			{ variable = "#steadyFocus", icon = spells.steadyFocus.icon, description = spells.steadyFocus.name, printInSettings = true },
+			{ variable = "#steadyShot", icon = spells.steadyShot.icon, description = spells.steadyShot.name, printInSettings = true },
+			{ variable = "#trickShots", icon = spells.trickShots.icon, description = spells.trickShots.name, printInSettings = true },
+			{ variable = "#trueshot", icon = spells.trueshot.icon, description = spells.trueshot.name, printInSettings = true },
+			{ variable = "#wailingArrow", icon = spells.wailingArrow.icon, description = spells.wailingArrow.name, printInSettings = true }
 		}
 		specCache.marksmanship.barTextVariables.values = {
-			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
-			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
-			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
-			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
-			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
-			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
-			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
-			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
-			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
-			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+			{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
+			{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
+			{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
+			{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
+			{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
+			{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
+			{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
+			{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
+			{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
 
-			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
-			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
-			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
-			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
-			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
-			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
-			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
-			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
+			{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
+			{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
+			{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
+			{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
+			{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
+			{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
+			{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 			
-			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+			{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
-			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
-			{ variable = "$focusMax", description = "Maximum Focus", printInSettings = true, color = false },
-			{ variable = "$resourceMax", description = "Maximum Focus", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Builder Focus from Hardcasting Spells", printInSettings = true, color = false },
-			{ variable = "$casting", description = "Spender Focus from Hardcasting Spells", printInSettings = true, color = false },
-			{ variable = "$passive", description = "Focus from Passive Sources including Regen", printInSettings = true, color = false },
-			{ variable = "$regen", description = "Focus from Passive Regen", printInSettings = true, color = false },
-			{ variable = "$regenFocus", description = "Focus from Passive Regen", printInSettings = false, color = false },
-			{ variable = "$focusRegen", description = "Focus from Passive Regen", printInSettings = false, color = false },
-			{ variable = "$focusPlusCasting", description = "Current + Casting Focus Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusCasting", description = "Current + Casting Focus Total", printInSettings = false, color = false },
-			{ variable = "$focusPlusPassive", description = "Current + Passive Focus Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusPassive", description = "Current + Passive Focus Total", printInSettings = false, color = false },
-			{ variable = "$focusTotal", description = "Current + Passive + Casting Focus Total", printInSettings = true, color = false },
-			{ variable = "$resourceTotal", description = "Current + Passive + Casting Focus Total", printInSettings = false, color = false },
+			{ variable = "$focus", description = L["HunterMarksmanshipBarTextVariable_focus"], printInSettings = true, color = false },
+			{ variable = "$resource", description = "", printInSettings = false, color = false },
+			{ variable = "$focusMax", description = L["HunterMarksmanshipBarTextVariable_focusMax"], printInSettings = true, color = false },
+			{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+			{ variable = "$casting", description = L["HunterMarksmanshipBarTextVariable_casting"], printInSettings = true, color = false },
+			{ variable = "$passive", description = L["HunterMarksmanshipBarTextVariable_passive"], printInSettings = true, color = false },
+			{ variable = "$regen", description = L["HunterMarksmanshipBarTextVariable_regen"], printInSettings = true, color = false },
+			{ variable = "$regenFocus", description = "", printInSettings = false, color = false },
+			{ variable = "$focusRegen", description = "", printInSettings = false, color = false },
+			{ variable = "$focusPlusCasting", description = L["HunterMarksmanshipBarTextVariable_focusPlusCasting"], printInSettings = true, color = false },
+			{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
+			{ variable = "$focusPlusPassive", description = L["HunterMarksmanshipBarTextVariable_focusPlusPassive"], printInSettings = true, color = false },
+			{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
+			{ variable = "$focusTotal", description = L["HunterMarksmanshipBarTextVariable_focusTotal"], printInSettings = true, color = false },
+			{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
 
-			{ variable = "$trueshotTime", description = "Time remaining on Trueshot buff", printInSettings = true, color = false },
-			{ variable = "$lockAndLoadTime", description = "Time remaining on Lock and Load buff", printInSettings = true, color = false },
+			{ variable = "$trueshotTime", description = L["HunterMarksmanshipBarTextVariable_trueshotTime"], printInSettings = true, color = false },
+			{ variable = "$lockAndLoadTime", description = L["HunterMarksmanshipBarTextVariable_lockAndLoadTime"], printInSettings = true, color = false },
 
-			{ variable = "$steadyFocusTime", description = "Time remaining on Steady Focus buff", printInSettings = true, color = false },
+			{ variable = "$steadyFocusTime", description = L["HunterMarksmanshipBarTextVariable_steadyFocusTime"], printInSettings = true, color = false },
 
-			{ variable = "$serpentSting", description = "Is Serpent Sting talented? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
-			{ variable = "$ssCount", description = "Number of Serpent Stings active on targets", printInSettings = true, color = false },
-			{ variable = "$ssTime", description = "Time remaining on Serpent Sting on your current target", printInSettings = true, color = false },
+			{ variable = "$serpentSting", description = L["HunterMarksmanshipBarTextVariable_serpentSting"], printInSettings = true, color = false },
+			{ variable = "$ssCount", description = L["HunterMarksmanshipBarTextVariable_ssCount"], printInSettings = true, color = false },
+			{ variable = "$ssTime", description = L["HunterMarksmanshipBarTextVariable_ssTime"], printInSettings = true, color = false },
 
-			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+			{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 		}
 
 		specCache.marksmanship.spells = spells
@@ -1273,111 +1227,93 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.survival.barTextVariables.icons = {
-			{ variable = "#casting", icon = "", description = "The icon of the Focus generating spell you are currently hardcasting", printInSettings = true },
-			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+			{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
-			{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = "Arcane Shot", printInSettings = true },
-			{ variable = "#butchery", icon = spells.butchery.icon, description = "Butchery", printInSettings = true },
-			{ variable = "#carve", icon = spells.carve.icon, description = "Carve", printInSettings = true },
-			{ variable = "#coordinatedAssault", icon = spells.coordinatedAssault.icon, description = "Coordinated Assault", printInSettings = true },
-			{ variable = "#ca", icon = spells.coordinatedAssault.icon, description = "Coordinated Assault", printInSettings = false },
-			{ variable = "#flankingStrike", icon = spells.flankingStrike.icon, description = "Flanking Strike", printInSettings = true },
-			{ variable = "#harpoon", icon = spells.harpoon.icon, description = "Harpoon", printInSettings = true },
-			{ variable = "#killCommand", icon = spells.killCommand.icon, description = "Kill Command", printInSettings = true },
-			{ variable = "#killShot", icon = spells.killShot.icon, description = "Kill Shot", printInSettings = true },
-			{ variable = "#mongooseBite", icon = spells.mongooseBite.icon, description = "Mongoose Bite", printInSettings = true },
-			{ variable = "#raptorStrike", icon = spells.raptorStrike.icon, description = "Raptor Strike", printInSettings = true },
-			{ variable = "#revivePet", icon = spells.revivePet.icon, description = "Revive Pet", printInSettings = true },
-			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = "Scare Beast", printInSettings = true },
-			{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = "Serpent Sting", printInSettings = true },
-			{ variable = "#termsOfEngagement", icon = spells.termsOfEngagement.icon, description = "Terms of Engagement", printInSettings = true },
-			{ variable = "#wildfireBomb", icon = spells.wildfireBomb.icon, description = "Wildfire Bomb", printInSettings = true },
-			{ variable = "#wingClip", icon = spells.wingClip.icon, description = "Wing Clip", printInSettings = true },
+			{ variable = "#arcaneShot", icon = spells.arcaneShot.icon, description = spells.arcaneShot.name, printInSettings = true },
+			{ variable = "#butchery", icon = spells.butchery.icon, description = spells.butchery.name, printInSettings = true },
+			{ variable = "#carve", icon = spells.carve.icon, description = spells.carve.name, printInSettings = true },
+			{ variable = "#coordinatedAssault", icon = spells.coordinatedAssault.icon, description = spells.coordinatedAssault.name, printInSettings = true },
+			{ variable = "#ca", icon = spells.coordinatedAssault.icon, description = spells.coordinatedAssault.name, printInSettings = false },
+			{ variable = "#flankingStrike", icon = spells.flankingStrike.icon, description = spells.flankingStrike.name, printInSettings = true },
+			{ variable = "#harpoon", icon = spells.harpoon.icon, description = spells.harpoon.name, printInSettings = true },
+			{ variable = "#killCommand", icon = spells.killCommand.icon, description = spells.killCommand.name, printInSettings = true },
+			{ variable = "#killShot", icon = spells.killShot.icon, description = spells.killShot.name, printInSettings = true },
+			{ variable = "#mongooseBite", icon = spells.mongooseBite.icon, description = spells.mongooseBite.name, printInSettings = true },
+			{ variable = "#raptorStrike", icon = spells.raptorStrike.icon, description = spells.raptorStrike.name, printInSettings = true },
+			{ variable = "#revivePet", icon = spells.revivePet.icon, description = spells.revivePet.name, printInSettings = true },
+			{ variable = "#scareBeast", icon = spells.scareBeast.icon, description = spells.scareBeast.name, printInSettings = true },
+			{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = spells.serpentSting.name, printInSettings = true },
+			{ variable = "#termsOfEngagement", icon = spells.termsOfEngagement.icon, description = spells.termsOfEngagement.name, printInSettings = true },
+			{ variable = "#wildfireBomb", icon = spells.wildfireBomb.icon, description = spells.wildfireBomb.name, printInSettings = true },
+			{ variable = "#wingClip", icon = spells.wingClip.icon, description = spells.wingClip.name, printInSettings = true },
 		}
 		specCache.survival.barTextVariables.values = {
-			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
-			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
-			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
-			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
-			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
-			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
-			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
-			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
-			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
-			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+			{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
+			{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
+			{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
+			{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
+			{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
+			{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
+			{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
+			{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
+			{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
 
-			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
-			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
-			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
-			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
-			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
-			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
-			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
-			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
+			{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
+			{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
+			{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
+			{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
+			{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
+			{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
+			{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 			
-			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+			{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-			{ variable = "$focus", description = "Current Focus", printInSettings = true, color = false },
-			{ variable = "$resource", description = "Current Focus", printInSettings = false, color = false },
-			{ variable = "$focusMax", description = "Maximum Focus", printInSettings = true, color = false },
-			{ variable = "$resourceMax", description = "Maximum Focus", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Builder Focus from Hardcasting Spells", printInSettings = true, color = false },
-			{ variable = "$casting", description = "Spender Focus from Hardcasting Spells", printInSettings = true, color = false },
-			{ variable = "$passive", description = "Focus from Passive Sources including Regen", printInSettings = true, color = false },
-			{ variable = "$regen", description = "Focus from Passive Regen", printInSettings = true, color = false },
-			{ variable = "$regenFocus", description = "Focus from Passive Regen", printInSettings = false, color = false },
-			{ variable = "$focusRegen", description = "Focus from Passive Regen", printInSettings = false, color = false },
-			{ variable = "$focusPlusCasting", description = "Current + Casting Focus Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusCasting", description = "Current + Casting Focus Total", printInSettings = false, color = false },
-			{ variable = "$focusPlusPassive", description = "Current + Passive Focus Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusPassive", description = "Current + Passive Focus Total", printInSettings = false, color = false },
-			{ variable = "$focusTotal", description = "Current + Passive + Casting Focus Total", printInSettings = true, color = false },
-			{ variable = "$resourceTotal", description = "Current + Passive + Casting Focus Total", printInSettings = false, color = false },
+			{ variable = "$focus", description = L["HunterSurvivalBarTextVariable_focus"], printInSettings = true, color = false },
+			{ variable = "$resource", description = "", printInSettings = false, color = false },
+			{ variable = "$focusMax", description = L["HunterSurvivalBarTextVariable_focusMax"], printInSettings = true, color = false },
+			{ variable = "$resource", description = "", printInSettings = false, color = false },
+			{ variable = "$casting", description = L["HunterSurvivalBarTextVariable_casting"], printInSettings = true, color = false },
+			{ variable = "$passive", description = L["HunterSurvivalBarTextVariable_passive"], printInSettings = true, color = false },
+			{ variable = "$regen", description = L["HunterSurvivalBarTextVariable_regen"], printInSettings = true, color = false },
+			{ variable = "$focusRegen", description = "", printInSettings = false, color = false },
+			{ variable = "$regenFocus", description = "", printInSettings = false, color = false },
+			{ variable = "$focusPlusCasting", description = L["HunterSurvivalBarTextVariable_focusPlusCasting"], printInSettings = true, color = false },
+			{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
+			{ variable = "$focusPlusPassive", description = L["HunterSurvivalBarTextVariable_focusPlusPassive"], printInSettings = true, color = false },
+			{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
+			{ variable = "$focusTotal", description = L["HunterSurvivalBarTextVariable_focusTotal"], printInSettings = true, color = false },
+			{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
 
-			{ variable = "$coordinatedAssaultTime", description = "Time remaining on Coordinated Assault buff", printInSettings = true, color = false },
+			{ variable = "$coordinatedAssaultTime", description = L["HunterSurvivalBarTextVariable_coordinatedAssaultTime"], printInSettings = true, color = false },
 
-			{ variable = "$serpentSting", description = "Is Serpent Sting talented? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
-			{ variable = "$ssCount", description = "Number of Serpent Stings active on targets", printInSettings = true, color = false },
-			{ variable = "$ssTime", description = "Time remaining on Serpent Sting on your current target", printInSettings = true, color = false },
+			{ variable = "$serpentSting", description = L["HunterSurvivalBarTextVariable_serpentSting"], printInSettings = true, color = false },
+			{ variable = "$ssCount", description = L["HunterSurvivalBarTextVariable_ssCount"], printInSettings = true, color = false },
+			{ variable = "$ssTime", description = L["HunterSurvivalBarTextVariable_ssTime"], printInSettings = true, color = false },
 
-			{ variable = "$toeFocus", description = "Focus from Terms of Engagement", printInSettings = true, color = false },
-			{ variable = "$toeTicks", description = "Number of ticks left on Terms of Engagement", printInSettings = true, color = false },
+			{ variable = "$toeFocus", description = L["HunterSurvivalBarTextVariable_toeFocus"], printInSettings = true, color = false },
+			{ variable = "$toeTicks", description = L["HunterSurvivalBarTextVariable_toeTicks"], printInSettings = true, color = false },
 
-			{ variable = "$wildfireBombCharges", description = "Number of charges of Wildfire Bomb available", printInSettings = true, color = false },
+			{ variable = "$wildfireBombCharges", description = L["HunterSurvivalBarTextVariable_wildfireBombCharges"], printInSettings = true, color = false },
 
-			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+			{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 		}
 
 		specCache.survival.spells = spells
 	end
-
-	--[[
-	local function GetBeastialWrathCooldownRemainingTime()
-		local currentTime = GetTime()
-		local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
-		local spells = TRB.Data.spells
-		local snapshotData = TRB.Data.snapshotData --[ [@as TRB.Classes.SnapshotData] ]
-		local remainingTime = 0
-
-		if TRB.Data.snapshotData.beastialWrath.duration == gcd or TRB.Data.snapshotData.beastialWrath.startTime == 0 or TRB.Data.snapshotData.beastialWrath.duration == 0 then
-			remainingTime = 0
-		else
-			remainingTime = (TRB.Data.snapshotData.beastialWrath.startTime + TRB.Data.snapshotData.beastialWrath.duration) - currentTime
-		end
-
-		return remainingTime
-	end]]
 
 	local function CalculateAbilityResourceValue(resource, threshold)
 		local modifier = 1.0
@@ -1401,7 +1337,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 	local function RefreshTargetTracking()
 		local currentTime = GetTime()
 		local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
-		targetData:UpdateDebuffs(currentTime)
+		targetData:UpdateTrackedSpells(currentTime)
 	end
 
 	local function TargetsCleanup(clearAll)
@@ -1422,18 +1358,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		for k, v in pairs(spells) do
 			local spell = spells[k]
 			if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
-					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+				if resourceFrame.thresholds[spell.thresholdId] == nil then
+					resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, resourceFrame)
 				end
-				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
+				TRB.Functions.Threshold:ResetThresholdLine(resourceFrame.thresholds[spell.thresholdId], settings, true)
+				TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spell.thresholdId], spell.settingKey, settings)
 
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
+				resourceFrame.thresholds[spell.thresholdId]:Show()
+				resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
+				resourceFrame.thresholds[spell.thresholdId]:Hide()
 			end
 		end
 
+		TRB.Functions.Class:CheckCharacter()
 		TRB.Functions.Bar:Construct(settings)
 		TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 	end
@@ -1459,12 +1396,11 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 			if specSettings.colors.text.overcapEnabled and overcap then
 				currentFocusColor = specSettings.colors.text.overcap
-				castingFocusColor = specSettings.colors.text.overcap
 			elseif specSettings.colors.text.overThresholdEnabled then
 				local _overThreshold = false
 				for k, v in pairs(spells) do
 					local spell = spells[k]
-					if	spell ~= nil and spell.thresholdUsable == true then
+					if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
 						_overThreshold = true
 						break
 					end
@@ -1472,7 +1408,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 				if _overThreshold then
 					currentFocusColor = specSettings.colors.text.overThreshold
-					castingFocusColor = specSettings.colors.text.overThreshold
 				end
 			end
 		end
@@ -1512,17 +1447,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		--$barbedShotTime
 		local _barbedShotTime = snapshots[spells.barbedShot.id].buff:GetRemainingTime(currentTime)
-		local barbedShotTime = string.format("%.1f", _barbedShotTime)
+		local barbedShotTime = TRB.Functions.BarText:TimerPrecision(_barbedShotTime)
 		
 		--$beastCleaveTime
 		local _beastCleaveTime = snapshots[spells.beastCleave.id].buff:GetRemainingTime(currentTime)
-		local beastCleaveTime = string.format("%.1f", _beastCleaveTime)
+		local beastCleaveTime = TRB.Functions.BarText:TimerPrecision(_beastCleaveTime)
 
 		if talents:IsTalentActive(spells.bloodFrenzy) and (snapshots[spells.callOfTheWild.id].buff:GetRemainingTime(currentTime)) > (snapshots[spells.beastCleave.id].buff.remaining) then
 			_beastCleaveTime = snapshots[spells.callOfTheWild.id].buff.remaining
 		end
 
-		beastCleaveTime = string.format("%.1f", _beastCleaveTime)
+		beastCleaveTime = TRB.Functions.BarText:TimerPrecision(_beastCleaveTime)
 		
 		_passiveFocus = _regenFocus + _barbedShotFocus
 		_passiveFocusMinusRegen = _passiveFocus - _regenFocus
@@ -1541,10 +1476,10 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		--$frenzyTime
 		local _frenzyTime = snapshots[spells.frenzy.id].buff:GetRemainingTime(currentTime)
-		local frenzyTime = string.format("%.1f", _frenzyTime)
+		local frenzyTime = TRB.Functions.BarText:TimerPrecision(_frenzyTime)
 
 		--$frenzyStacks
-		local frenzyStacks = snapshots[spells.frenzy.id].buff.stacks or 0
+		local frenzyStacks = snapshots[spells.frenzy.id].buff.applications or 0
 
 
 		--$ssCount and $ssTime
@@ -1562,17 +1497,17 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if target ~= nil and target.spells[spells.serpentSting.id].active then
 				--if target.spells[spells.serpentSting.id].remainingTime > spells.serpentSting.pandemicTime then
 					serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _serpentStingCount)
-					serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _serpentStingTime)
+					serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 				--[[else
 					serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _serpentStingCount)
-					serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _serpentStingTime)
+					serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 				end]]
 			else
 				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			serpentStingTime = string.format("%.1f", _serpentStingTime)
+			serpentStingTime = TRB.Functions.BarText:TimerPrecision(_serpentStingTime)
 		end
 
 		----------------------------
@@ -1605,6 +1540,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#revivePet"] = spells.revivePet.icon
 		lookup["#scareBeast"] = spells.scareBeast.icon
 		lookup["#serpentSting"] = spells.serpentSting.icon
+		lookup["#wailingArrow"] = spells.wailingArrow.icon
 		lookup["$frenzyTime"] = frenzyTime
 		lookup["$frenzyStacks"] = frenzyStacks
 		lookup["$focusPlusCasting"] = focusPlusCasting
@@ -1612,7 +1548,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$focusMax"] = TRB.Data.character.maxResource
 		lookup["$focus"] = currentFocus
 		lookup["$resourcePlusCasting"] = focusPlusCasting
+		lookup["$focusPlusCasting"] = focusPlusCasting
 		lookup["$resourcePlusPassive"] = focusPlusPassive
+		lookup["$focusPlusPassive"] = focusPlusPassive
 		lookup["$resourceTotal"] = focusTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentFocus
@@ -1628,7 +1566,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$barbedShotTicks"] = barbedShotTicks
 		lookup["$barbedShotTime"] = barbedShotTime
 		lookup["$beastCleaveTime"] = beastCleaveTime
-		lookup["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
+		lookup["$serpentSting"] = ""
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
 		lookup["$regen"] = regenFocus
@@ -1640,6 +1578,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
+		lookupLogic["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
 		lookupLogic["$frenzyTime"] = _frenzyTime
 		lookupLogic["$frenzyStacks"] = frenzyStacks
 		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
@@ -1647,7 +1586,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookupLogic["$focusMax"] = TRB.Data.character.maxResource
 		lookupLogic["$focus"] = snapshotData.attributes.resource
 		lookupLogic["$resourcePlusCasting"] = _focusPlusCasting
+		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _focusPlusPassive
+		lookupLogic["$focusPlusPassive"] = _focusPlusPassive
 		lookupLogic["$resourceTotal"] = _focusTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
@@ -1692,7 +1633,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local currentFocusColor = specSettings.colors.text.current
 		local castingFocusColor = specSettings.colors.text.casting
-
+		
 		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 			if specSettings.colors.text.overcapEnabled and overcap then
 				currentFocusColor = specSettings.colors.text.overcap
@@ -1701,7 +1642,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				local _overThreshold = false
 				for k, v in pairs(spells) do
 					local spell = spells[k]
-					if	spell ~= nil and spell.thresholdUsable == true then
+					if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
 						_overThreshold = true
 						break
 					end
@@ -1753,15 +1694,15 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		--$trueshotTime
 		local _trueshotTime = snapshots[spells.trueshot.id].buff:GetRemainingTime(currentTime)
-		local trueshotTime = string.format("%.1f", _trueshotTime)
+		local trueshotTime = TRB.Functions.BarText:TimerPrecision(_trueshotTime)
 
 		--$steadyFocusTime
 		local _steadyFocusTime = snapshots[spells.steadyFocus.id].buff:GetRemainingTime(currentTime)
-		local steadyFocusTime = string.format("%.1f", _steadyFocusTime)
+		local steadyFocusTime = TRB.Functions.BarText:TimerPrecision(_steadyFocusTime)
 
 		--$lockAndLoadTime
 		local _lockAndLoadTime = snapshots[spells.lockAndLoad.id].buff:GetRemainingTime(currentTime)
-		local lockAndLoadTime = string.format("%.1f", _lockAndLoadTime)
+		local lockAndLoadTime = TRB.Functions.BarText:TimerPrecision(_lockAndLoadTime)
 
 		--$ssCount and $ssTime
 		local _serpentStingCount = targetData.count[spells.serpentSting.id] or 0
@@ -1776,19 +1717,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 			if target ~= nil and target.spells[spells.serpentSting.id].active then
-				--if _serpentStingTime > spells.serpentSting.pandemicTime then
+				--if target.spells[spells.serpentSting.id].remainingTime > spells.serpentSting.pandemicTime then
 					serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _serpentStingCount)
-					serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _serpentStingTime)
+					serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 				--[[else
 					serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _serpentStingCount)
-					serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _serpentStingTime)
+					serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 				end]]
 			else
 				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			serpentStingTime = string.format("%.1f", _serpentStingTime)
+			serpentStingTime = TRB.Functions.BarText:TimerPrecision(_serpentStingTime)
 		end
 
 		----------------------------
@@ -1817,18 +1758,21 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#steadyShot"] = spells.steadyShot.icon
 		lookup["#trickShots"] = spells.trickShots.icon
 		lookup["#trueshot"] = spells.trueshot.icon
+		lookup["#wailingArrow"] = spells.wailingArrow.icon
 		lookup["$steadyFocusTime"] = steadyFocusTime
 		lookup["$trueshotTime"] = trueshotTime
 		lookup["$lockAndLoadTime"] = lockAndLoadTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
-		lookup["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
+		lookup["$serpentSting"] = ""
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
 		lookup["$focusTotal"] = focusTotal
 		lookup["$focusMax"] = TRB.Data.character.maxResource
 		lookup["$focus"] = currentFocus
 		lookup["$resourcePlusCasting"] = focusPlusCasting
+		lookup["$focusPlusCasting"] = focusPlusCasting
 		lookup["$resourcePlusPassive"] = focusPlusPassive
+		lookup["$focusPlusPassive"] = focusPlusPassive
 		lookup["$resourceTotal"] = focusTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentFocus
@@ -1854,7 +1798,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookupLogic["$focusMax"] = TRB.Data.character.maxResource
 		lookupLogic["$focus"] = snapshotData.attributes.resource
 		lookupLogic["$resourcePlusCasting"] = _focusPlusCasting
+		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _focusPlusPassive
+		lookupLogic["$focusPlusPassive"] = _focusPlusPassive
 		lookupLogic["$resourceTotal"] = _focusTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
@@ -1886,7 +1832,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local currentFocusColor = specSettings.colors.text.current
 		local castingFocusColor = specSettings.colors.text.casting
-
+		
 		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 			if specSettings.colors.text.overcapEnabled and overcap then
 				currentFocusColor = specSettings.colors.text.overcap
@@ -1895,7 +1841,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 				local _overThreshold = false
 				for k, v in pairs(spells) do
 					local spell = spells[k]
-					if	spell ~= nil and spell.thresholdUsable == true then
+					if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
 						_overThreshold = true
 						break
 					end
@@ -1955,7 +1901,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		--$coordinatedAssaultTime
 		local _coordinatedAssaultTime = snapshots[spells.coordinatedAssault.id].buff:GetRemainingTime(currentTime)
-		local coordinatedAssaultTime = string.format("%.1f", _coordinatedAssaultTime)
+		local coordinatedAssaultTime = TRB.Functions.BarText:TimerPrecision(_coordinatedAssaultTime)
 
 		--$wildfireBombCharges
 		local wildfireBombCharges = snapshots[spells.wildfireBomb.id].cooldown.charges
@@ -1973,19 +1919,19 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 			if target ~= nil and target.spells[spells.serpentSting.id].active then
-				--if _serpentStingTime > spells.serpentSting.pandemicTime then
+				--if target.spells[spells.serpentSting.id].remainingTime > spells.serpentSting.pandemicTime then
 					serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _serpentStingCount)
-					serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _serpentStingTime)
+					serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 				--[[else
 					serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _serpentStingCount)
-					serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _serpentStingTime)
+					serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_serpentStingTime))
 				end]]
 			else
 				serpentStingCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _serpentStingCount)
-				serpentStingTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				serpentStingTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			serpentStingTime = string.format("%.1f", _serpentStingTime)
+			serpentStingTime = TRB.Functions.BarText:TimerPrecision(_serpentStingTime)
 		end
 
 		----------------------------
@@ -2021,7 +1967,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["#wildfireBomb"] = spells.wildfireBomb.icon
 		lookup["$coordinatedAssaultTime"] = coordinatedAssaultTime
 		lookup["$focusPlusCasting"] = focusPlusCasting
-		lookup["$serpentSting"] = talents:IsTalentActive(spells.serpentSting)
+		lookup["$serpentSting"] = ""
 		lookup["$ssCount"] = serpentStingCount
 		lookup["$ssTime"] = serpentStingTime
 		lookup["$wildfireBombCharges"] = wildfireBombCharges
@@ -2029,7 +1975,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookup["$focusMax"] = TRB.Data.character.maxResource
 		lookup["$focus"] = currentFocus
 		lookup["$resourcePlusCasting"] = focusPlusCasting
+		lookup["$focusPlusCasting"] = focusPlusCasting
 		lookup["$resourcePlusPassive"] = focusPlusPassive
+		lookup["$focusPlusPassive"] = focusPlusPassive
 		lookup["$resourceTotal"] = focusTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentFocus
@@ -2057,7 +2005,9 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		lookupLogic["$focusMax"] = TRB.Data.character.maxResource
 		lookupLogic["$focus"] = snapshotData.attributes.resource
 		lookupLogic["$resourcePlusCasting"] = _focusPlusCasting
+		lookupLogic["$focusPlusCasting"] = _focusPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _focusPlusPassive
+		lookupLogic["$focusPlusPassive"] = _focusPlusPassive
 		lookupLogic["$resourceTotal"] = _focusTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = snapshotData.attributes.resource
@@ -2101,12 +2051,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			if specId == 1 then
 				if currentSpell == nil then
 					local spellName = select(1, currentChannel)
-					if spellName == spells.barrage.name then
-						spells.barrage.thresholdUsable = false
-					else
-						TRB.Functions.Character:ResetCastingSnapshotData()
-						return false
-					end
+					TRB.Functions.Character:ResetCastingSnapshotData()
+					return false
 					--See Priest implementation for handling channeled spells
 				else
 					local spellName = select(1, currentSpell)
@@ -2199,7 +2145,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					table.remove(barbedShot.attributes.list, x)
 				else
 					activeCount = activeCount + 1
-					barbedShot.attributes.list[x].ticksRemaining = math.ceil((barbedShot.attributes.list[x].endTime - currentTime) / (spells.barbedShot.duration / spells.barbedShot.ticks))
+					barbedShot.attributes.list[x].ticksRemaining = math.ceil((barbedShot.attributes.list[x].endTime - currentTime) / ((spells.barbedShot.duration + (talents.talents[spells.savagery.id].currentRank * spells.savagery.duration)) / spells.barbedShot.ticks))
 					barbedShot.attributes.list[x].resource = CalculateAbilityResourceValue(barbedShot.attributes.list[x].ticksRemaining * spells.barbedShot.resource)
 					totalResource = totalResource + barbedShot.attributes.list[x].resource
 					totalTicksRemaining = totalTicksRemaining + barbedShot.attributes.list[x].ticksRemaining
@@ -2229,7 +2175,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		TRB.Functions.Character:UpdateSnapshot()
 
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 		
 		snapshots[spells.killShot.id].cooldown:Refresh()
@@ -2242,7 +2188,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		local currentTime = GetTime()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		snapshots[spells.beastialWrath.id].cooldown:Refresh()
@@ -2250,14 +2196,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		snapshots[spells.barrage.id].cooldown:Refresh()
 		snapshots[spells.wailingArrow.id].cooldown:Refresh()
 		
-		snapshots[spells.frenzy.id].buff:Refresh(currentTime, false, "pet")
+		snapshots[spells.frenzy.id].buff:Refresh(nil, false, "pet")
 	end
 
 	local function UpdateSnapshot_Marksmanship()
 		UpdateSnapshot()
 		
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		snapshots[spells.aimedShot.id].cooldown:Refresh()
@@ -2265,6 +2211,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		snapshots[spells.barrage.id].cooldown:Refresh()
 		snapshots[spells.wailingArrow.id].cooldown:Refresh()
 		snapshots[spells.explosiveShot.id].cooldown:Refresh()
+
+		snapshots[spells.trueshot.id].buff:Refresh()
 	end
 
 	local function UpdateSnapshot_Survival()
@@ -2272,7 +2220,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		
 		local currentTime = GetTime()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		snapshots[spells.termsOfEngagement.id].buff:UpdateTicks(currentTime)
@@ -2306,6 +2254,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 
 					local passiveValue = 0
@@ -2320,32 +2269,32 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = snapshotData.attributes.resource + snapshotData.casting.resourceFinal
+						castingBarValue = currentResource + snapshotData.casting.resourceFinal
 					else
-						castingBarValue = snapshotData.attributes.resource
+						castingBarValue = currentResource
 					end
 
-					if castingBarValue < snapshotData.attributes.resource then --Using a spender
+					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
-						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -2355,7 +2304,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						local spell = spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -2375,7 +2324,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										snapshotData.audio.playedKillShotCue = false
-									elseif snapshotData.attributes.resource >= -resourceAmount then
+									elseif currentResource >= -resourceAmount then
 										if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
 											snapshotData.audio.playedKillShotCue = true
 											PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
@@ -2389,25 +2338,13 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								elseif spell.id == spells.killCommand.id then
 									if snapshots[spells.direPack.id].buff.isActive then
 										resourceAmount = resourceAmount * spells.direPack.resourceMod
-										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 									end
 
 									if snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif snapshotData.attributes.resource >= -resourceAmount or snapshots[spells.cobraSting.id].buff.isActive then
-										thresholdColor = specSettings.colors.threshold.over
-									else
-										thresholdColor = specSettings.colors.threshold.under
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end
-								elseif spell.id == spells.cobraShot.id then
-									if snapshots[spells.aspectOfTheWild.id].buff.isActive then
-										resourceAmount = resourceAmount - spells.aspectOfTheWild.resourceMod
-										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
-									end
-
-									if snapshotData.attributes.resource >= -resourceAmount then
+									elseif currentResource >= -resourceAmount or snapshots[spells.cobraSting.id].buff.isActive then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -2422,14 +2359,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif snapshotData.attributes.resource >= -resourceAmount then
+								elseif currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
-								if snapshotData.attributes.resource >= -resourceAmount then
+								if currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -2532,6 +2469,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 					local borderColor = specSettings.colors.bar.border
 					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
@@ -2574,32 +2512,32 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = snapshotData.attributes.resource + snapshotData.casting.resourceFinal
+						castingBarValue = currentResource + snapshotData.casting.resourceFinal
 					else
-						castingBarValue = snapshotData.attributes.resource
+						castingBarValue = currentResource
 					end
 
-					if castingBarValue < snapshotData.attributes.resource then --Using a spender
+					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
-						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -2609,7 +2547,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						local spell = spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -2619,7 +2557,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								if spell.id == spells.arcaneShot.id then
 									if talents:IsTalentActive(spells.chimaeraShot) == true then
 										showThreshold = false
-									elseif snapshotData.attributes.resource >= -resourceAmount then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -2629,7 +2567,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									if snapshots[spell.id].cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif snapshots[spells.lockAndLoad.id].buff.isActive or snapshotData.attributes.resource >= -resourceAmount then
+									elseif snapshots[spells.lockAndLoad.id].buff.isActive or currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -2637,7 +2575,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									end
 
 									if specSettings.audio.aimedShot.enabled and (not snapshotData.audio.playedAimedShotCue) and snapshots[spells.aimedShot.id].cooldown:IsUsable() then
-										local remainingCd = snapshots[spells.aimedShot.id].cooldown.GetRemainingTime(currentTime)
+										local remainingCd = snapshots[spells.aimedShot.id].cooldown:GetRemainingTime()
 										local timeThreshold = 0
 										local castTime = select(4, GetSpellInfo(spell.id)) / 1000
 										if specSettings.audio.aimedShot.mode == "gcd" then
@@ -2668,7 +2606,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										snapshotData.audio.playedKillShotCue = false
-									elseif snapshotData.attributes.resource >= -resourceAmount then
+									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 										if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
 											snapshotData.audio.playedKillShotCue = true
@@ -2688,14 +2626,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif snapshotData.attributes.resource >= -resourceAmount then
+								elseif currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
-								if snapshotData.attributes.resource >= -resourceAmount then
+								if currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -2746,6 +2684,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local gcd = TRB.Functions.Character:GetCurrentGCDTime(true)
 					if specSettings.colors.bar.overcapEnabled and TRB.Functions.Class:IsValidVariableForSpec("$overcap") and TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 						barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.borderOvercap, true))
@@ -2773,32 +2712,32 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 					end
 
 					if CastingSpell() and specSettings.bar.showCasting then
-						castingBarValue = snapshotData.attributes.resource + snapshotData.casting.resourceFinal
+						castingBarValue = currentResource + snapshotData.casting.resourceFinal
 					else
-						castingBarValue = snapshotData.attributes.resource
+						castingBarValue = currentResource
 					end
 
-					if castingBarValue < snapshotData.attributes.resource then --Using a spender
+					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
-						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -2808,7 +2747,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 						local spell = spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -2828,7 +2767,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 										thresholdColor = specSettings.colors.threshold.unusable
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 										snapshotData.audio.playedKillShotCue = false
-									elseif snapshotData.attributes.resource >= -resourceAmount then
+									elseif currentResource >= -resourceAmount then
 										if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
 											snapshotData.audio.playedKillShotCue = true
 											PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
@@ -2843,7 +2782,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									if talents:IsTalentActive(spells.mongooseBite) then
 										showThreshold = false
 									else
-										if snapshotData.attributes.resource >= -resourceAmount then
+										if currentResource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
 										else
 											thresholdColor = specSettings.colors.threshold.under
@@ -2854,7 +2793,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 									if not talents:IsTalentActive(spells.mongooseBite) then
 										showThreshold = false
 									else
-										if snapshotData.attributes.resource >= -resourceAmount then
+										if currentResource >= -resourceAmount then
 											thresholdColor = specSettings.colors.threshold.over
 										else
 											thresholdColor = specSettings.colors.threshold.under
@@ -2870,14 +2809,14 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 								if snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif snapshotData.attributes.resource >= -resourceAmount then
+								elseif currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							else -- This is an active/available/normal spell threshold
-								if snapshotData.attributes.resource >= -resourceAmount then
+								if currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -2938,127 +2877,120 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		local targetData = snapshotData.targetData
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
+			local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
-			if sourceGUID == TRB.Data.character.guid then
+			if entry.sourceGuid == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "beastMastery" then --Beast Mastery
-					if spellId == spells.barrage.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					if entry.spellId == spells.barrage.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.barbedShot.id then
-						snapshots[spellId].cooldown:Initialize()
-					elseif spellId == spells.barbedShot.buffId[1] or spellId == spells.barbedShot.buffId[2] or spellId == spells.barbedShot.buffId[3] or spellId == spells.barbedShot.buffId[4] or spellId == spells.barbedShot.buffId[5] then
-						if type == "SPELL_AURA_APPLIED" then -- Gain Barbed Shot buff
+					elseif entry.spellId == spells.barbedShot.id then
+						snapshots[entry.spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.barbedShot.buffIdList[1] or entry.spellId == spells.barbedShot.buffIdList[2] or entry.spellId == spells.barbedShot.buffIdList[3] or entry.spellId == spells.barbedShot.buffIdList[4] or entry.spellId == spells.barbedShot.buffIdList[5] then
+						if entry.type == "SPELL_AURA_APPLIED" then -- Gain Barbed Shot buff
 							table.insert(snapshots[spells.barbedShot.id].attributes.list, {
 								ticksRemaining = spells.barbedShot.ticks,
 								resource = snapshots[spells.barbedShot.id].attributes.ticksRemaining * spells.barbedShot.resource,
-								endTime = currentTime + spells.barbedShot.duration
+								endTime = currentTime + spells.barbedShot.duration + (talents.talents[spells.savagery.id].currentRank * spells.savagery.duration)
 							})
 						end
-					elseif spellId == spells.frenzy.id and destGUID == TRB.Data.character.petGuid then
-						snapshots[spellId].buff:Initialize(type, nil, "pet")
-					elseif spellId == spells.killCommand.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.frenzy.id and entry.destinationGuid == TRB.Data.character.petGuid then
+						snapshots[entry.spellId].buff:Initialize(entry.type, nil, "pet")
+					elseif entry.spellId == spells.killCommand.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.beastialWrath.id then
-						snapshots[spellId].cooldown:Initialize()
-					elseif spellId == spells.cobraSting.id then
-						snapshots[spellId].buff:Initialize(type, true)
-					elseif spellId == spells.wailingArrow.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.beastialWrath.id then
+						snapshots[entry.spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.cobraSting.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type, true)
+					elseif entry.spellId == spells.wailingArrow.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.aMurderOfCrows.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.aMurderOfCrows.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.direPack.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.aspectOfTheWild.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.callOfTheWild.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.beastCleave.buffId then
-						snapshots[spells.beastCleave.id].buff:Initialize(type)
-					elseif spellId == spells.direBeastBasilisk.id then
-						snapshots[spellId].cooldown:Initialize()
-					elseif spellId == spells.direBeastHawk.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.direPack.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.callOfTheWild.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.beastCleave.buffId then
+						snapshots[spells.beastCleave.id].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.direBeastBasilisk.id then
+						snapshots[entry.spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.direBeastHawk.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "marksmanship" then --Marksmanship
-					if spellId == spells.burstingShot.id then
-						snapshots[spellId].cooldown:Initialize()
-					elseif spellId == spells.aimedShot.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					if entry.spellId == spells.burstingShot.id then
+						snapshots[entry.spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.aimedShot.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 							snapshotData.audio.playedAimedShotCue = false
 						end
-					elseif spellId == spells.barrage.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.barrage.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.explosiveShot.id then
-						snapshots[spellId].cooldown:Initialize()
-					elseif spellId == spells.trueshot.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.steadyFocus.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.lockAndLoad.id then
-						snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then
+					elseif entry.spellId == spells.explosiveShot.id then
+						snapshots[entry.spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.trueshot.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.steadyFocus.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.lockAndLoad.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.enabled then
 								PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
-					elseif spellId == spells.eagletalonsTrueFocus.id then
-						snapshots[spellId].buff:Initialize(type, true)
-					elseif spellId == spells.wailingArrow.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.eagletalonsTrueFocus.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type, true)
+					elseif entry.spellId == spells.wailingArrow.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.sniperShot.id then
-						snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.sniperShot.id then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "survival" then --Survival
-					if spellId == spells.carve.id then
-						snapshots[spellId].cooldown:Initialize()
-					elseif spellId == spells.flankingStrike.id then
-						snapshots[spellId].cooldown:Initialize()
-					elseif spellId == spells.termsOfEngagement.id then
-						snapshots[spells.termsOfEngagement.id].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" then
+					if entry.spellId == spells.carve.id then
+						snapshots[entry.spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.flankingStrike.id then
+						snapshots[entry.spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.termsOfEngagement.id then
+						snapshots[spells.termsOfEngagement.id].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" then
 							snapshots[spells.termsOfEngagement.id].buff:UpdateTicks(currentTime)
 						end
-					elseif spellId == spells.coordinatedAssault.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.wildfireBomb.id then
-						snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.coordinatedAssault.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.wildfireBomb.id then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				end
 
 				-- Spec agnostic
 
-				if spellId == spells.killShot.id then
+				if entry.spellId == spells.killShot.id then
 					snapshotData.audio.playedKillShotCue = false
-				elseif spellId == spells.serpentSting.id then
-					if TRB.Functions.Class:InitializeTarget(destGUID) then
-						triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+				elseif entry.spellId == spells.serpentSting.id then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
 				end
 			end
 
-			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				targetData:Remove(destGUID)
+			if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
+				targetData:Remove(entry.destinationGuid)
 				RefreshTargetTracking()
-				triggerUpdate = true
-			end
-
-			if UnitIsDeadOrGhost("player") then -- We died/are dead go ahead and purge the list
-				TargetsCleanup(true)
 				triggerUpdate = true
 			end
 		end

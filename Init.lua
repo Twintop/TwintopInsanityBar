@@ -1,4 +1,5 @@
 local addonName, TRB = ...
+local L = TRB.Localization
 local _, _, classIndexId = UnitClass("player")
 
 -- Addon details data
@@ -8,7 +9,16 @@ TRB.Details.addonAuthor = C_AddOns.GetAddOnMetadata(addonName, "Author")
 TRB.Details.addonAuthorServer = C_AddOns.GetAddOnMetadata(addonName, "X-AuthorServer")
 TRB.Details.addonTitle = C_AddOns.GetAddOnMetadata(addonName, "Title")
 TRB.Details.addonReleaseDate = C_AddOns.GetAddOnMetadata(addonName, "X-ReleaseDate")
-TRB.Details.supportedSpecs = "|cFFA330C9Demon Hunter|r - Havoc\n|cFFFF7C0ADruid|r - Balance, Feral, Restoration\n|cFF33937FEvoker|r - Devastation (Experimental/Minimal), Preservation, Augmentation (Experimental/Minimal)\n|cFFAAD372Hunter|r - Beast Mastery, Marksmanship, Survival\n|cFF00FF98Monk|r - Mistweaver, Windwalker\n|cFFFFFFFFPriest|r - Discipline (Experimental), Holy, Shadow\n|cFFFFF468Rogue|r - Assassination, Outlaw\n|cFF0070DDShaman|r - Elemental, Enhancement (Experimental/Minimal), Restoration\n|cFFC69B6DWarrior|r - Arms, Fury"
+TRB.Details.supportedSpecs = "|cFFA330C9" .. L["DemonHunter"] .. "|r - " .. L["DemonHunterHavoc"] .. ", " .. L["DemonHunterVengeance"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFFF7C0A" .. L["Druid"] .. "|r - " .. L["DruidBalance"] .. ", " .. L["DruidFeral"] .. ", " .. L["DruidRestoration"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF33937F" .. L["Evoker"] .. "|r - " .. L["EvokerDevastation"] .. ", " .. L["EvokerPreservation"] .. ", " .. L["EvokerAugmentation"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFAAD372" .. L["Hunter"] .. "|r - " .. L["HunterBeastMastery"] .. ", " .. L["HunterMarksmanship"] .. ", Survival\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF00FF98" .. L["Monk"] .. "|r - " .. L["MonkMistweaver"] .. ", " .. L["MonkWindwalker"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFF48CBA" .. L["Paladin"] .. "|r - " .. L["PaladinHoly"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFFFFFFF" .. L["Priest"] .. "|r - " .. L["PriestDiscipline"] .. ", " .. L["PriestHoly"] .. ", " .. L["PriestShadow"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFFFF468" .. L["Rogue"] .. "|r - " .. L["RogueAssassination"] .. ", " .. L["RogueOutlaw"] .. ", " .. L["RogueSubtlety"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF0070DD" .. L["Shaman"] .. "|r - " .. L["ShamanElemental"] .. ", " .. L["ShamanEnhancement"] .. " (" .. L["ExperimentalMinimal"] .. "), " .. L["ShamanRestoration"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFC69B6D" .. L["Warrior"] .. "|r - " .. L["WarriorArms"] .. ", " .. L["WarriorFury"]
 
 local addonData = {
 	loaded = false,
@@ -16,15 +26,17 @@ local addonData = {
 	libs = {}
 }
 addonData.libs.SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
-addonData.libs.SharedMedia:Register("sound", "TRB: Wilhelm Scream", "Interface\\Addons\\TwintopInsanityBar\\Sounds\\wilhelm.ogg")
-addonData.libs.SharedMedia:Register("sound", "TRB: Boxing Arena Gong", "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg")
-addonData.libs.SharedMedia:Register("sound", "TRB: Air Horn", "Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg")
+addonData.libs.SharedMedia:Register("sound", L["LSMSoundWilhelmScream"], "Interface\\Addons\\TwintopInsanityBar\\Sounds\\wilhelm.ogg")
+addonData.libs.SharedMedia:Register("sound", L["LSMSoundBoxingArenaGong"], "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg")
+addonData.libs.SharedMedia:Register("sound", L["LSMSoundAirHorn"], "Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg")
 
-if not addonData.libs.SharedMedia:IsValid("border", "1 Pixel") then
+if not addonData.libs.SharedMedia:IsValid("border", "1 Pixel") then -- No localization on this as it is usually provided by WeakAuras
 	addonData.libs.SharedMedia:Register("border", "1 Pixel", "Interface\\Buttons\\WHITE8X8")
 end
 
 addonData.libs.ScrollingTable = LibStub:GetLibrary("ScrollingTable")
+
+addonData.libs.LibSmoothStatusBar = LibStub:GetLibrary("LibSmoothStatusBar-1.0")
 
 TRB.Details.addonData = addonData
 
@@ -51,7 +63,7 @@ TRB.Data.constants = {
 		},
 		sounds = {
 			sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-			soundName="TRB: Air Horn"
+			soundName = L["LSMSoundAirHorn"]
 		}
 	},
 	frameCategories = {
@@ -116,7 +128,7 @@ TRB.Data.barTextVariables = {
 	icons = {},
 	values = {},
 	pipe = {
-		{ variable = "||n", description = "Insert a Newline. Alternative to pressing Enter.", printInSettings = true },
+		{ variable = "||n", description = L["BarTextNewline"], printInSettings = true },
 		{ variable = "||c", description = "", printInSettings = false },
 		{ variable = "||r", description = "", printInSettings = false },
 	},
@@ -132,7 +144,6 @@ TRB.Data.character = {
 	guid = UnitGUID("player"),
 	className = "",
 	specName = "",
----@diagnostic disable-next-line: missing-parameter
 	specGroup = GetActiveSpecGroup(),
 	maxResource = 100,
 	talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]],
@@ -184,14 +195,12 @@ TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 
 -- For the following specs, we need to have a secondary bar/bars created
 -- We're going to make these as StatusBars so we can use them for Death Knight runes and Warlock soulshards in the future
-if classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 13 then
+if classIndexId == 2 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then
 	TRB.Frames.resource2Frames = {}
-	---@diagnostic disable-next-line: param-type-mismatch
 	TRB.Frames.resource2ContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame2", TRB.Frames.barContainerFrame, "BackdropTemplate")
 	
 	for x = 1, 10 do
 		TRB.Frames.resource2Frames[x] = {}
-		---@diagnostic disable-next-line: param-type-mismatch
 		TRB.Frames.resource2Frames[x].containerFrame = CreateFrame("Frame", "TwintopResourceBarFrame_ComboPoint_"..x, TRB.Frames.resource2ContainerFrame, "BackdropTemplate")
 		TRB.Frames.resource2Frames[x].borderFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
 		TRB.Frames.resource2Frames[x].resourceFrame = CreateFrame("StatusBar", nil, TRB.Frames.resource2Frames[x].containerFrame, "BackdropTemplate")
@@ -202,7 +211,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 	---@type TRB.Classes.TargetData
 	local targetData = TRB.Data.snapshotData.targetData
 
-	local currentTime = GetTime()	
+	local currentTime = GetTime()
 	self.sinceLastUpdate = self.sinceLastUpdate + sinceLastUpdate
 	self.ttdSinceLastUpdate = self.ttdSinceLastUpdate + sinceLastUpdate
 	self.characterCheckSinceLastUpdate  = self.characterCheckSinceLastUpdate  + sinceLastUpdate
@@ -229,7 +238,7 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
 		elseif guid ~= TRB.Data.character.guid and targetData.ttdIsActive then
 			targetData:InitializeTarget(guid)
 			local target = targetData.targets[targetData.currentTargetGuid]
-			if self.ttdSinceLastUpdate >= target.timeToDie.settings.sampleRate then -- in seconds			
+			if self.ttdSinceLastUpdate >= target.timeToDie.settings.sampleRate then
 				target.timeToDie:Update(currentTime)
 				self.ttdSinceLastUpdate = 0
 			end
@@ -270,7 +279,6 @@ function SlashCmdList.TWINTOP(msg)
 	elseif cmd == "news" then
 		TRB.Functions.News:Show()
 	else
-		--Settings.OpenToCategory(TRB.Frames.interfaceSettingsFrameContainer.panel)
 		if TRB.Data.barConstructedForSpec == nil then
 			InterfaceOptionsFrame_OpenToCategory(TRB.Frames.interfaceSettingsFrameContainer.panel)
 		else
@@ -278,3 +286,5 @@ function SlashCmdList.TWINTOP(msg)
 		end
 	end
 end
+
+Twintop_Data = TRB.Data

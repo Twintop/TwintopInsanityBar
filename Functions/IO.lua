@@ -25,6 +25,11 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			if specId == 1 then -- Arms
 			elseif specId == 2 then -- Fury
 				configuration.endOfEnrage = settings.endOfEnrage
+			end		
+		elseif classId == 2 then -- Paladin
+			if specId == 1 then -- Holy
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
 			end
 		elseif classId == 3 then -- Hunters
 			if specId == 1 then -- Beast Mastery
@@ -41,11 +46,19 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Outlaw
 				configuration.colors.comboPoints = settings.colors.comboPoints
 				configuration.comboPoints = settings.comboPoints
+			elseif specId == 3 then -- Subtlety
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
 			end 
 		elseif classId == 5 then -- Priests
 			if specId == 1 then -- Discipline
+				configuration.endOfRapture = settings.endOfRapture
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
 			elseif specId == 2 then -- Holy
 				configuration.endOfApotheosis = settings.endOfApotheosis
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
 			elseif specId == 3 then -- Shadow
 				configuration.endOfVoidform = settings.endOfVoidform
 			end
@@ -73,8 +86,14 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 4 then -- Restoration
 				configuration.endOfIncarnation = settings.endOfIncarnation
 			end
-		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
-			configuration.endOfMetamorphosis = settings.endOfMetamorphosis
+		elseif classId == 12 then -- Demon Hunter
+			if specId == 1 then -- Havoc
+				configuration.endOfMetamorphosis = settings.endOfMetamorphosis
+			elseif specId == 2 then -- Vengeance
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.comboPoints = settings.comboPoints
+				configuration.endOfMetamorphosis = settings.endOfMetamorphosis
+			end
 		elseif classId == 13 then -- Evoker
 			if specId == 1 then -- Devastation
 				configuration.colors.comboPoints = settings.colors.comboPoints
@@ -100,6 +119,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Fury
 				configuration.resourcePrecision = settings.resourcePrecision
 			end
+		elseif classId == 2 then -- Paladins
+			if specId == 1 then -- Holy
+			end
 		elseif classId == 3 then -- Hunters
 			if specId == 1 then -- Beast Mastery
 			elseif specId == 2 then -- Marksmanship
@@ -108,6 +130,7 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 		elseif classId == 4 then -- Rogue
 			if specId == 1 then -- Assassination
 			elseif specId == 2 then -- Outlaw
+			elseif specId == 3 then -- Subtlety
 			end 
 		elseif classId == 5 then -- Priests
 			if specId == 1 then -- Discipline
@@ -132,7 +155,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Feral
 			elseif specId == 4 then -- Restoration
 			end
-		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
+		elseif classId == 12 then -- Demon Hunter
+			if specId == 1 then -- Havoc
+			elseif specId == 2 then -- Vengeance
+			end
 		elseif classId == 13 then -- Evoker
 			if specId == 1 then -- Devastation
 			elseif specId == 2 then -- Preservation
@@ -150,6 +176,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Fury
 				configuration.resourcePrecision = settings.resourcePrecision
 			end
+		elseif classId == 2 then -- Paladin
+			if specId == 2 then -- Holy
+				configuration.passiveGeneration = settings.passiveGeneration
+			end
 		elseif classId == 3 then -- Hunters
 			configuration.generation = settings.generation
 			if specId == 1 then -- Beast Mastery
@@ -160,6 +190,8 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			if specId == 1 then -- Assassination
 				configuration.generation = settings.generation
 			elseif specId == 2 then -- Outlaw
+				configuration.generation = settings.generation
+			elseif specId == 3 then -- Subtlety
 				configuration.generation = settings.generation
 			end
 		elseif classId == 5 then -- Priests
@@ -191,7 +223,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 4 then -- Restoration
 				configuration.passiveGeneration = settings.passiveGeneration
 			end
-		elseif classId == 12 and specId == 1 then -- Havoc Demon Hunter
+		elseif classId == 12 then -- Demon Hunter
+			if specId == 1 then -- Havoc
+			elseif specId == 2 then -- Vengeance
+			end
 		elseif classId == 13 then -- Evoker
 			if specId == 1 then -- Devastation
 			elseif specId == 2 then -- Preservation
@@ -242,6 +277,12 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 
 			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.warrior.fury) > 0 then -- Fury
 				configuration.warrior.fury = ExportConfigurationSections(1, 2, settings.warrior.fury, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end		
+		elseif classId == 2 and settings.paladin ~= nil then -- Paladin
+			configuration.paladin = {}
+			
+			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.paladin.holy) > 0 then -- Holy
+				configuration.paladin.holy = ExportConfigurationSections(2, 1, settings.paladin.holy, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 3 and settings.hunter ~= nil then -- Hunter
 			configuration.hunter = {}
@@ -267,13 +308,14 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.rogue.outlaw) > 0 then -- Outlaw
 				configuration.rogue.outlaw = ExportConfigurationSections(4, 2, settings.rogue.outlaw, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
+
+			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.rogue.subtlety) > 0 then -- Subtlety
+				configuration.rogue.subtlety = ExportConfigurationSections(4, 3, settings.rogue.subtlety, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
 		elseif classId == 5 and settings.priest ~= nil then -- Priest
 			configuration.priest = {}
-			
-			if TRB.Data.settings.core.experimental.specs.priest.discipline then
-				if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.priest.discipline) > 0 then -- Discipline
-					configuration.priest.discipline = ExportConfigurationSections(5, 1, settings.priest.discipline, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
-				end
+			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.priest.discipline) > 0 then -- Discipline
+				configuration.priest.discipline = ExportConfigurationSections(5, 1, settings.priest.discipline, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 
 			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.priest.holy) > 0 then -- Holy
@@ -329,35 +371,39 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.demonhunter.havoc) > 0 then -- Havoc
 				configuration.demonhunter.havoc = ExportConfigurationSections(12, 1, settings.demonhunter.havoc, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
+
+			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.demonhunter.vengeance) > 0 then -- Vengeance
+				configuration.demonhunter.vengeance = ExportConfigurationSections(12, 2, settings.demonhunter.vengeance, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
 		elseif classId == 13 and settings.evoker ~= nil then -- Evoker
 			configuration.evoker = {}
 			
-			if TRB.Data.settings.core.experimental.specs.evoker.devastation then
-				if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.devastation) > 0 then -- Devastation
-					configuration.evoker.devastation = ExportConfigurationSections(13, 1, settings.evoker.devastation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
-				end
+			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.devastation) > 0 then -- Devastation
+				configuration.evoker.devastation = ExportConfigurationSections(13, 1, settings.evoker.devastation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
-			
+
 			if (specId == 2 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.preservation) > 0 then -- Preservation
 				configuration.evoker.preservation = ExportConfigurationSections(13, 2, settings.evoker.preservation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 			
-			if TRB.Data.settings.core.experimental.specs.evoker.augmentation then
-				if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.augmentation) > 0 then -- Augmentation
-					configuration.evoker.augmentation = ExportConfigurationSections(13, 1, settings.evoker.augmentation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
-				end
-			end	
+			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.evoker.augmentation) > 0 then -- Augmentation
+				configuration.evoker.augmentation = ExportConfigurationSections(13, 1, settings.evoker.augmentation, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
 		end
 	elseif classId == nil and specId == nil then -- Everything
 		-- Instead of just dumping the whole table, let's clean it up
 
-		-- Warriors
+		-- Warrior
 		-- Arms
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Fury
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(1, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		
+		-- Paladin
+		-- Holy
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(2, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
-		-- Hunters
+		-- Hunter
 		-- Beast Mastery
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(3, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Marksmanship
@@ -365,29 +411,23 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		-- Survival
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(3, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
-		-- Monks
-		-- Mistweaver
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Windwalker
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		-- Rogue
+		-- Assassination
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(4, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		-- Outlaw
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(4, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		-- Subtlety
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(4, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
-		-- Priests
-		if TRB.Data.settings.core.experimental.specs.priest.discipline then
-			-- Discipline
+		-- Priest
+		-- Discipline
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(5, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-		end
 		-- Holy
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(5, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Shadow
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(5, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
-		-- Rogues
-		-- Assassination
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(4, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-		-- Outlaw
-		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(4, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-
-		-- Shamans
+		-- Shaman
 		-- Elemental
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		if TRB.Data.settings.core.experimental.specs.shaman.enhancement then
@@ -397,7 +437,13 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		-- Restoration
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
-		-- Druids
+		-- Monk
+		-- Mistweaver
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		-- Windwalker
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		
+		-- Druid
 		-- Balance
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(11, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Feral
@@ -408,20 +454,16 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		-- Demon Hunter
 		-- Havoc
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(12, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+		-- Vengeance
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(12, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		
 		-- Evoker
-		if TRB.Data.settings.core.experimental.specs.evoker.devastation then
-			-- Devastation
-			configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-		end
-
+		-- Devastation
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 		-- Preservation
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-
-		if TRB.Data.settings.core.experimental.specs.evoker.augmentation then
-			-- Augmentation
-			configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
-		end
+		-- Augmentation
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(13, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 	end
 
 	if includeCore then
@@ -466,17 +508,42 @@ function TRB.Functions.IO:Import(input)
 	end
 
 	if not (configuration.core ~= nil or
-		(configuration.warrior ~= nil and (configuration.warrior.arms ~= nil or configuration.warrior.fury ~= nil)) or
-		(configuration.rogue ~= nil and (configuration.rogue.assassination ~= nil or configuration.rogue.outlaw ~= nil)) or
-		(configuration.hunter ~= nil and (configuration.hunter.beastMastery ~= nil or configuration.hunter.marksmanship ~= nil or configuration.hunter.survival ~= nil)) or
-		(configuration.monk ~= nil and (configuration.monk.mistweaver ~= nil or configuration.monk.windwalker ~= nil)) or
-		(configuration.priest ~= nil and (configuration.priest.holy ~= nil or configuration.priest.shadow ~= nil)) or
+		(configuration.warrior ~= nil and
+			(configuration.warrior.arms ~= nil or
+			configuration.warrior.fury ~= nil)) or
+		(configuration.paladin ~= nil and
+			(configuration.paladin.holy ~= nil)) or
+		(configuration.rogue ~= nil and
+			(configuration.rogue.assassination ~= nil or
+			configuration.rogue.outlaw ~= nil or
+			configuration.rogue.subtlety ~= nil)) or
+		(configuration.hunter ~= nil and
+			(configuration.hunter.beastMastery ~= nil or
+			configuration.hunter.marksmanship ~= nil or
+			configuration.hunter.survival ~= nil)) or
+		(configuration.monk ~= nil and
+			(configuration.monk.mistweaver ~= nil or
+			configuration.monk.windwalker ~= nil)) or
+		(configuration.priest ~= nil and
+			(configuration.priest.discipline ~= nil or
+			configuration.priest.holy ~= nil or
+			configuration.priest.shadow ~= nil)) or
 		(configuration.shaman ~= nil and
 			(configuration.shaman.elemental ~= nil or
 			configuration.shaman.restoration ~= nil or
 			(TRB.Data.settings.core.experimental.specs.shaman.enhancement and configuration.shaman.enhancement ~= nil))) or
-		(configuration.druid ~= nil and (configuration.druid.balance ~= nil or configuration.druid.feral ~= nil)) or
-		(configuration.evoker ~= nil and (TRB.Data.settings.core.experimental.specs.evoker.devastation and configuration.evoker.devastation ~= nil) or (configuration.evoker.preservation ~= nil) or (TRB.Data.settings.core.experimental.specs.evoker.augmentation and configuration.evoker.augmentation ~= nil))) then
+		(configuration.druid ~= nil and
+			(configuration.druid.balance ~= nil or
+			configuration.druid.feral ~= nil or
+			configuration.druid.restoration)) or
+		(configuration.demonhunter ~= nil and
+			(configuration.demonhunter.havoc ~= nil or
+			configuration.demonhunter.vengeance ~= nil)) or
+		(configuration.evoker ~= nil and
+			(configuration.evoker.devastation ~= nil or
+			configuration.evoker.preservation ~= nil or
+			configuration.evoker.augmentation ~= nil)
+		)) then
 		return -3
 	end
 

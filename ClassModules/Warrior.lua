@@ -1,6 +1,7 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 1 then --Only do this if we're on a Warrior!
+	local L = TRB.Localization
 	TRB.Functions.Class = TRB.Functions.Class or {}
 
 	local barContainerFrame = TRB.Frames.barContainerFrame
@@ -71,7 +72,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				baseline = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			executeMinimum = {
@@ -86,7 +86,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				baseline = true,
 				hasCooldown = false,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			executeMaximum = {
@@ -101,7 +100,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				baseline = true,
 				hasCooldown = false,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			hamstring = {
@@ -113,8 +111,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 4,
 				settingKey = "hamstring",
 				isTalent = false,
-				baseline = true,
-				thresholdUsable = false
+				baseline = true
 			},
 			shieldBlock = {
 				id = 2565,
@@ -126,8 +123,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "shieldBlock",
 				isTalent = false,
 				baseline = true,
-				hasCooldown = true,
-				thresholdUsable = false
+				hasCooldown = true
 			},
 			slam = {
 				id = 1464,
@@ -139,8 +135,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "slam",
 				isTalent = false,
 				baseline = true,
-				hasCooldown = false,
-				thresholdUsable = false
+				hasCooldown = false
 			},
 			whirlwind = {
 				id = 1680,
@@ -152,8 +147,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "whirlwind",
 				isTalent = false,
 				baseline = true,
-				isSnowflake = true,
-				thresholdUsable = false
+				isSnowflake = true
 			},
 
 			-- Arms Baseline Abilities
@@ -176,8 +170,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 8,
 				settingKey = "impendingVictory",
 				isTalent = true,
-				hasCooldown = true,
-				thresholdUsable = false
+				hasCooldown = true
 			},
 			thunderClap = {
 				id = 396719,
@@ -189,7 +182,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "thunderClap",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			bloodAndThunder = {
@@ -198,13 +190,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				icon = "",
 				resourceMod = -10,
 				isTalent = true
-			},
-			
-			spearOfBastion = {
-				id = 376079,
-				name = "",
-				icon = "",
-				resource = 20
 			},
 
 			--Arms Talent abilities
@@ -218,7 +203,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "mortalStrike",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			improvedExecute = {
@@ -238,7 +222,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "rend",
 				isTalent = true,
 				hasCooldown = false,
-				thresholdUsable = false,
 				baseDuration = 15,
 				pandemic = true,
 				pandemicTime = 15 * 0.3
@@ -253,7 +236,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "cleave",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			ignorePain = {
@@ -266,7 +248,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "ignorePain",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				duration = 11
 			},
 			suddenDeath = {
@@ -373,7 +354,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				baseline = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			executeMinimum = {
@@ -388,7 +368,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				baseline = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			executeMaximum = {
@@ -403,7 +382,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				baseline = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			hamstring = {
@@ -415,8 +393,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 4,
 				settingKey = "hamstring",
 				isTalent = false,
-				baseline = true,
-				thresholdUsable = false
+				baseline = true
 			},
 			shieldBlock = {
 				id = 2565,
@@ -428,8 +405,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "shieldBlock",
 				isTalent = false,
 				baseline = true,
-				hasCooldown = true,
-				thresholdUsable = false
+				hasCooldown = true
 			},
 			slam = {
 				id = 1464,
@@ -442,7 +418,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				isTalent = false,
 				baseline = true,
 				hasCooldown = false,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			whirlwind = {
@@ -470,8 +445,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 7,
 				settingKey = "impendingVictory",
 				isTalent = true,
-				hasCooldown = true,
-				thresholdUsable = false
+				hasCooldown = true
 			},
 			thunderClap = {
 				id = 396719,
@@ -483,7 +457,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				settingKey = "thunderClap",
 				isTalent = true,
 				hasCooldown = true,
-				thresholdUsable = false,
 				isSnowflake = true
 			},
 			bloodAndThunder = {
@@ -492,13 +465,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				icon = "",
 				resourceMod = -10,
 				isTalent = true
-			},
-
-			spearOfBastion = {
-				id = 376079,
-				name = "",
-				icon = "",
-				resource = 20
 			},
 
 			-- Fury Talent abilities
@@ -513,8 +479,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				thresholdId = 9,
 				settingKey = "rampage",
 				isTalent = true,
-				hasCooldown = false,
-				thresholdUsable = false
+				hasCooldown = false
 			},
 			improvedExecute = {
 				id = 316402,
@@ -604,79 +569,77 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.arms.barTextVariables.icons = {
-			{ variable = "#casting", icon = "", description = "The icon of the Rage generating spell you are currently hardcasting", printInSettings = true },
-			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+			{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
-			{ variable = "#charge", icon = spells.charge.icon, description = "Charge", printInSettings = true },
-			{ variable = "#cleave", icon = spells.cleave.icon, description = "Cleave", printInSettings = true },
-			{ variable = "#deepWounds", icon = spells.deepWounds.icon, description = "Deep Wounds", printInSettings = true },
-			{ variable = "#execute", icon = spells.execute.icon, description = "Execute", printInSettings = true },			
-			{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = "Impending Victory", printInSettings = true },
-			{ variable = "#mortalStrike", icon = spells.mortalStrike.icon, description = "Mortal Strike", printInSettings = true },
-			{ variable = "#rend", icon = spells.rend.icon, description = "Rend", printInSettings = true },
-			{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = "Shield Block", printInSettings = true },
-			{ variable = "#slam", icon = spells.slam.icon, description = "Slam", printInSettings = true },
-			{ variable = "#spearOfBastion", icon = spells.spearOfBastion.icon, description = "Spear of Bastion", printInSettings = true },
-			{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = "Whirlwind", printInSettings = true },			
+			{ variable = "#charge", icon = spells.charge.icon, description = spells.charge.name, printInSettings = true },
+			{ variable = "#cleave", icon = spells.cleave.icon, description = spells.cleave.name, printInSettings = true },
+			{ variable = "#deepWounds", icon = spells.deepWounds.icon, description = spells.deepWounds.name, printInSettings = true },
+			{ variable = "#execute", icon = spells.execute.icon, description = spells.execute.name, printInSettings = true },			
+			{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = spells.impendingVictory.name, printInSettings = true },
+			{ variable = "#mortalStrike", icon = spells.mortalStrike.icon, description = spells.mortalStrike.name, printInSettings = true },
+			{ variable = "#rend", icon = spells.rend.icon, description = spells.rend.name, printInSettings = true },
+			{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = spells.shieldBlock.name, printInSettings = true },
+			{ variable = "#slam", icon = spells.slam.icon, description = spells.slam.name, printInSettings = true },
+			{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = spells.whirlwind.name, printInSettings = true },			
 		}
 		specCache.arms.barTextVariables.values = {
-			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
-			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
-			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
-			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
-			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
-			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
-			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
-			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
-			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
-			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+			{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
+			{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
+			{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
+			{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
+			{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
+			{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
+			{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
+			{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
+			{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
 
-			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
-			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
-			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
-			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
-			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
-			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
-			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
-			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
+			{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
+			{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
+			{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
+			{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
+			{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
+			{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
+			{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 			
-			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+			{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-			{ variable = "$rage", description = "Current Rage", printInSettings = true, color = false },
-			{ variable = "$resource", description = "Current Rage", printInSettings = false, color = false },
-			{ variable = "$rageMax", description = "Maximum Rage", printInSettings = true, color = false },
-			{ variable = "$resourceMax", description = "Maximum Rage", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Builder Rage from Hardcasting Spells", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Spender Rage from Hardcasting Spells", printInSettings = false, color = false },
-			{ variable = "$passive", description = "Rage from Passive Sources", printInSettings = true, color = false },
-			{ variable = "$ragePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
-			{ variable = "$resourcePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
-			{ variable = "$ragePlusPassive", description = "Current + Passive Rage Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusPassive", description = "Current + Passive Rage Total", printInSettings = false, color = false },
-			{ variable = "$rageTotal", description = "Current + Passive + Casting Rage Total", printInSettings = true, color = false },   
-			{ variable = "$resourceTotal", description = "Current + Passive + Casting Rage Total", printInSettings = false, color = false },   
+			{ variable = "$rage", description = L["WarriorArmsBarTextVariable_rage"], printInSettings = true, color = false },
+			{ variable = "$resource", description = "", printInSettings = false, color = false },
+			{ variable = "$rageMax", description = L["WarriorArmsBarTextVariable_rageMax"], printInSettings = true, color = false },
+			{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+			{ variable = "$casting", description = "", printInSettings = false, color = false },
+			{ variable = "$passive", description = L["WarriorArmsBarTextVariable_passive"], printInSettings = true, color = false },
+			{ variable = "$ragePlusCasting", description = "", printInSettings = false, color = false },
+			{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
+			{ variable = "$ragePlusPassive", description = L["WarriorArmsBarTextVariable_ragePlusPassive"], printInSettings = true, color = false },
+			{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
+			{ variable = "$rageTotal", description = L["WarriorArmsBarTextVariable_rageTotal"], printInSettings = true, color = false },   
+			{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },   
 
-			{ variable = "$rend", description = "Is Rend currently talented. Logic variable only!", printInSettings = true, color = false },
+			{ variable = "$rend", description = L["WarriorArmsBarTextVariable_rend"], printInSettings = true, color = false },
 
-			{ variable = "$deepWoundsCount", description = "Number of Deep Wounds active on targets", printInSettings = true, color = false },
-			{ variable = "$deepWoundsTime", description = "Time remaining on Deep Wounds on your current target", printInSettings = true, color = false },
-			{ variable = "$rendCount", description = "Number of Rends active on targets", printInSettings = true, color = false },
-			{ variable = "$rendTime", description = "Time remaining on Rend on your current target", printInSettings = true, color = false },
+			{ variable = "$deepWoundsCount", description = L["WarriorArmsBarTextVariable_deepWoundsCount"], printInSettings = true, color = false },
+			{ variable = "$deepWoundsTime", description = L["WarriorArmsBarTextVariable_deepWoundsTime"], printInSettings = true, color = false },
+			{ variable = "$rendCount", description = L["WarriorArmsBarTextVariable_rendCount"], printInSettings = true, color = false },
+			{ variable = "$rendTime", description = L["WarriorArmsBarTextVariable_rendTime"], printInSettings = true, color = false },
 
-			{ variable = "$suddenDeathTime", description = "Time remaining on Sudden Death proc", printInSettings = true, color = false },
+			{ variable = "$suddenDeathTime", description = L["WarriorArmsBarTextVariable_suddenDeathTime"], printInSettings = true, color = false },
 
-			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+			{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 		}
 
 		specCache.arms.spells = spells
@@ -688,79 +651,78 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.fury.barTextVariables.icons = {
-			{ variable = "#casting", icon = "", description = "The icon of the Rage generating spell you are currently hardcasting", printInSettings = true },
-			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+			{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
-			{ variable = "#charge", icon = spells.charge.icon, description = "Charge", printInSettings = true },
-			{ variable = "#enrage", icon = spells.enrage.icon, description = "Enrage", printInSettings = true },
-			{ variable = "#execute", icon = spells.execute.icon, description = "Execute", printInSettings = true },
-			{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = "Impending Victory", printInSettings = true },
-			{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = "Shield Block", printInSettings = true },
-			{ variable = "#slam", icon = spells.slam.icon, description = "Slam", printInSettings = true },
-			{ variable = "#spearOfBastion", icon = spells.spearOfBastion.icon, description = "Spear of Bastion", printInSettings = true },
-			{ variable = "#ravager", icon = spells.ravager.icon, description = "Ravager", printInSettings = true },
-			{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = "Whirlwind", printInSettings = true }
+			{ variable = "#charge", icon = spells.charge.icon, description = spells.charge.name, printInSettings = true },
+			{ variable = "#enrage", icon = spells.enrage.icon, description = spells.enrage.name, printInSettings = true },
+			{ variable = "#execute", icon = spells.execute.icon, description = spells.execute.name, printInSettings = true },
+			{ variable = "#impendingVictory", icon = spells.impendingVictory.icon, description = spells.impendingVictory.name, printInSettings = true },
+			{ variable = "#shieldBlock", icon = spells.shieldBlock.icon, description = spells.shieldBlock.name, printInSettings = true },
+			{ variable = "#slam", icon = spells.slam.icon, description = spells.slam.name, printInSettings = true },
+			{ variable = "#ravager", icon = spells.ravager.icon, description = spells.ravager.name, printInSettings = true },
+			{ variable = "#whirlwind", icon = spells.whirlwind.icon, description = spells.whirlwind.name, printInSettings = true }
 		}
 
 		specCache.fury.barTextVariables.values = {
-			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
-			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
-			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
-			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
-			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
-			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
-			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
-			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
-			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
-			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+			{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
+			{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
+			{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
+			{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
+			{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
+			{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
+			{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
+			{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
+			{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
 
-			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
-			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
-			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
-			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
-			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
-			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
-			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
-			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
+			{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
+			{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
+			{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
+			{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
+			{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
+			{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
+			{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 			
-			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+			{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-			{ variable = "$rage", description = "Current Rage", printInSettings = true, color = false },
-			{ variable = "$resource", description = "Current Rage", printInSettings = false, color = false },
-			{ variable = "$rageMax", description = "Maximum Rage", printInSettings = true, color = false },
-			{ variable = "$resourceMax", description = "Maximum Rage", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Builder Rage from Hardcasting Spells", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Spender Rage from Hardcasting Spells", printInSettings = false, color = false },
-			{ variable = "$passive", description = "Rage from Passive Sources including Ravager", printInSettings = true, color = false },
-			{ variable = "$ragePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
-			{ variable = "$resourcePlusCasting", description = "Current + Casting Rage Total", printInSettings = false, color = false },
-			{ variable = "$ragePlusPassive", description = "Current + Passive Rage Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusPassive", description = "Current + Passive Rage Total", printInSettings = false, color = false },
-			{ variable = "$rageTotal", description = "Current + Passive + Casting Rage Total", printInSettings = true, color = false },   
-			{ variable = "$resourceTotal", description = "Current + Passive + Casting Rage Total", printInSettings = false, color = false },   
+			{ variable = "$rage", description = L["WarriorFuryBarTextVariable_rage"], printInSettings = true, color = false },
+			{ variable = "$resource", description = "", printInSettings = false, color = false },
+			{ variable = "$rageMax", description = L["WarriorFuryBarTextVariable_rageMax"], printInSettings = true, color = false },
+			{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+			{ variable = "$casting", description = "", printInSettings = false, color = false },
+			{ variable = "$casting", description = "", printInSettings = false, color = false },
+			{ variable = "$passive", description = L["WarriorFuryBarTextVariable_passive"], printInSettings = true, color = false },
+			{ variable = "$ragePlusCasting", description = "", printInSettings = false, color = false },
+			{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
+			{ variable = "$ragePlusPassive", description = L["WarriorFuryBarTextVariable_ragePlusPassive"], printInSettings = true, color = false },
+			{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
+			{ variable = "$rageTotal", description = L["WarriorFuryBarTextVariable_rageTotal"], printInSettings = true, color = false },   
+			{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },   
 
-			{ variable = "$enrageTime", description = "Time remaining on Enrage", printInSettings = true, color = false },
+			{ variable = "$enrageTime", description = L["WarriorFuryBarTextVariable_enrageTime"], printInSettings = true, color = false },
 
-			{ variable = "$suddenDeathTime", description = "Time remaining on Sudden Death proc", printInSettings = true, color = false },
+			{ variable = "$suddenDeathTime", description = L["WarriorFuryBarTextVariable_suddenDeathTime"], printInSettings = true, color = false },
 			
-			{ variable = "$ravagerTicks", description = "Number of expected ticks remaining on Ravager", printInSettings = true, color = false }, 
-			{ variable = "$ravagerRage", description = "Rage from Ravager", printInSettings = true, color = false }, 
+			{ variable = "$ravagerTicks", description = L["WarriorFuryBarTextVariable_ravagerTicks"], printInSettings = true, color = false }, 
+			{ variable = "$ravagerRage", description = L["WarriorFuryBarTextVariable_ravagerRage"], printInSettings = true, color = false }, 
 
-			{ variable = "$whirlwindTime", description = "Time remaining on Whirlwind buff", printInSettings = true, color = false },
-			{ variable = "$whirlwindStacks", description = "Number of stacks remaining on Whirlwind buff", printInSettings = true, color = false },
+			{ variable = "$whirlwindTime", description = L["WarriorFuryBarTextVariable_whirlwindTime"], printInSettings = true, color = false },
+			{ variable = "$whirlwindStacks", description = L["WarriorFuryBarTextVariable_whirlwindStacks"], printInSettings = true, color = false },
 			
-			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+			{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 		}
 
 		specCache.fury.spells = spells
@@ -779,14 +741,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local currentTime = GetTime()
 		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local targetData = snapshotData.targetData
 
 		if specId == 1 then
-			targetData:UpdateDebuffs(currentTime)
+			targetData:UpdateTrackedSpells(currentTime)
 		elseif specId == 2 then
-			targetData:UpdateDebuffs(currentTime)
+			targetData:UpdateTrackedSpells(currentTime)
 		end
 	end
 
@@ -822,6 +783,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			end
 		end
 
+		TRB.Functions.Class:CheckCharacter()
 		TRB.Functions.Bar:Construct(settings)
 
 		if specId == 1 or specId == 2 then
@@ -831,8 +793,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local function RefreshLookupData_Arms()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local specSettings = TRB.Data.settings.warrior.arms
 		---@type TRB.Classes.TargetData
@@ -847,7 +808,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		local currentRageColor = specSettings.colors.text.current
 		local castingRageColor = specSettings.colors.text.casting
-
+		
 		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 			if specSettings.colors.text.overcapEnabled and overcap then
 				currentRageColor = specSettings.colors.text.overcap
@@ -856,7 +817,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				local _overThreshold = false
 				for k, v in pairs(spells) do
 					local spell = spells[k]
-					if spell ~= nil and spell.thresholdUsable == true then
+					if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= normalizedRage then
 						_overThreshold = true
 						break
 					end
@@ -875,7 +836,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		--$suddenDeathTime
 		local _suddenDeathTime = snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)
-		local suddenDeathTime = string.format("%.1f", _suddenDeathTime)
+		local suddenDeathTime = TRB.Functions.BarText:TimerPrecision(_suddenDeathTime)
 
 		--$rage
 		local resourcePrecision = specSettings.resourcePrecision or 0
@@ -922,31 +883,31 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			if target ~= nil and target.spells[spells.rend.id].active then
 				if _rendTime > ((spells.rend.baseDuration + TRB.Data.character.pandemicModifier) * 0.3) then
 					rendCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _rendCount)
-					rendTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _rendTime)
+					rendTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_rendTime))
 				else
 					rendCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _rendCount)
-					rendTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _rendTime)
+					rendTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_rendTime))
 				end
 			else
 				rendCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _rendCount)
-				rendTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				rendTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 
 			if target ~= nil and target.spells[spells.deepWounds.id].active then
 				if _deepWoundsTime > ((spells.deepWounds.baseDuration + TRB.Data.character.pandemicModifier) * 0.3) then
 					deepWoundsCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _deepWoundsCount)
-					deepWoundsTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.up, _deepWoundsTime)
+					deepWoundsTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_deepWoundsTime))
 				else
 					deepWoundsCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _deepWoundsCount)
-					deepWoundsTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.pandemic, _deepWoundsTime)
+					deepWoundsTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_deepWoundsTime))
 				end
 			else
 				deepWoundsCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _deepWoundsCount)
-				deepWoundsTime = string.format("|c%s%.1f|r", specSettings.colors.text.dots.down, 0)
+				deepWoundsTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 			end
 		else
-			rendTime = string.format("%.1f", _rendTime)
-			deepWoundsTime = string.format("%.1f", _deepWoundsTime)
+			rendTime = TRB.Functions.BarText:TimerPrecision(_rendTime)
+			deepWoundsTime = TRB.Functions.BarText:TimerPrecision(_deepWoundsTime)
 		end
 		----------------------------
 
@@ -967,20 +928,20 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#rend"] = spells.rend.icon
 		lookup["#shieldBlock"] = spells.shieldBlock.icon
 		lookup["#slam"] = spells.slam.icon
-		lookup["#spearOfBastion"] = spells.spearOfBastion.icon
 		lookup["#whirlwind"] = spells.whirlwind.icon
-		lookup["$rend"] = talents:IsTalentActive(spells.rend)
+		lookup["$rend"] = ""
 		lookup["$rendCount"] = rendCount
 		lookup["$rendTime"] = rendTime
 		lookup["$deepWoundsCount"] = deepWoundsCount
 		lookup["$deepWoundsTime"] = deepWoundsTime
 		lookup["$suddenDeathTime"] = suddenDeathTime
-		lookup["$ragePlusCasting"] = ragePlusCasting
 		lookup["$rageTotal"] = rageTotal
 		lookup["$rageMax"] = TRB.Data.character.maxResource
 		lookup["$rage"] = currentRage
 		lookup["$resourcePlusCasting"] = ragePlusCasting
+		lookup["$ragePlusCasting"] = ragePlusCasting
 		lookup["$resourcePlusPassive"] = ragePlusPassive
+		lookup["$ragePlusPassive"] = ragePlusPassive
 		lookup["$resourceTotal"] = rageTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentRage
@@ -998,12 +959,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookupLogic["$deepWoundsCount"] = _deepWoundsCount
 		lookupLogic["$deepWoundsTime"] = _deepWoundsTime
 		lookupLogic["$suddenDeathTime"] = _suddenDeathTime
-		lookupLogic["$ragePlusCasting"] = _ragePlusCasting
 		lookupLogic["$rageTotal"] = _rageTotal
 		lookupLogic["$rageMax"] = TRB.Data.character.maxResource
 		lookupLogic["$rage"] = normalizedRage
 		lookupLogic["$resourcePlusCasting"] = _ragePlusCasting
+		lookupLogic["$ragePlusCasting"] = _ragePlusCasting
 		lookupLogic["$resourcePlusPassive"] = _ragePlusPassive
+		lookupLogic["$ragePlusPassive"] = _ragePlusPassive
 		lookupLogic["$resourceTotal"] = _rageTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = normalizedRage
@@ -1017,8 +979,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local function RefreshLookupData_Fury()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local specSettings = TRB.Data.settings.warrior.fury
 		---@type TRB.Classes.TargetData
@@ -1033,7 +994,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		local currentRageColor = specSettings.colors.text.current
 		local castingRageColor = specSettings.colors.text.casting
-
+		
 		if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 			if specSettings.colors.text.overcapEnabled and overcap then
 				currentRageColor = specSettings.colors.text.overcap
@@ -1042,7 +1003,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				local _overThreshold = false
 				for k, v in pairs(spells) do
 					local spell = spells[k]
-					if spell ~= nil and spell.thresholdUsable == true then
+					if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= normalizedRage then
 						_overThreshold = true
 						break
 					end
@@ -1087,17 +1048,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		--$enrageTime
 		local _enrageTime = snapshots[spells.enrage.id].buff:GetRemainingTime(currentTime)
-		local enrageTime = string.format("%.1f", _enrageTime)
+		local enrageTime = TRB.Functions.BarText:TimerPrecision(_enrageTime)
 		
 		--$whirlwindTime
 		local _whirlwindTime = snapshots[spells.whirlwind.id].buff:GetRemainingTime(currentTime)
-		local whirlwindTime = string.format("%.1f", _whirlwindTime)
+		local whirlwindTime = TRB.Functions.BarText:TimerPrecision(_whirlwindTime)
 		--$whirlwindStacks
-		local whirlwindStacks = snapshots[spells.enrage.id].buff.stacks
+		local whirlwindStacks = snapshots[spells.whirlwind.id].buff.applications
 
 		--$suddenDeathTime
 		local _suddenDeathTime = snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)
-		local suddenDeathTime = string.format("%.1f", _suddenDeathTime)
+		local suddenDeathTime = TRB.Functions.BarText:TimerPrecision(_suddenDeathTime)
 
 		----------------------------
 
@@ -1117,18 +1078,18 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookup["#ravager"] = spells.ravager.icon
 		lookup["#shieldBlock"] = spells.shieldBlock.icon
 		lookup["#slam"] = spells.slam.icon
-		lookup["#spearOfBastion"] = spells.spearOfBastion.icon
 		lookup["#whirlwind"] = spells.whirlwind.icon
 		lookup["$suddenDeathTime"] = suddenDeathTime
 		lookup["$enrageTime"] = enrageTime
 		lookup["$whirlwindTime"] = whirlwindTime
 		lookup["$whirlwindStacks"] = whirlwindStacks
-		lookup["$ragePlusCasting"] = ragePlusCasting
 		lookup["$rageTotal"] = rageTotal
 		lookup["$rageMax"] = TRB.Data.character.maxResource
 		lookup["$rage"] = currentRage
 		lookup["$resourcePlusCasting"] = ragePlusCasting
+		lookup["$ragePlusCasting"] = ragePlusCasting
 		lookup["$resourcePlusPassive"] = ragePlusPassive
+		lookup["$ragePlusPassive"] = ragePlusPassive
 		lookup["$resourceTotal"] = rageTotal
 		lookup["$resourceMax"] = TRB.Data.character.maxResource
 		lookup["$resource"] = currentRage
@@ -1147,12 +1108,13 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		lookupLogic["$suddenDeathTime"] = _suddenDeathTime
 		lookupLogic["$whirlwindTime"] = _whirlwindTime
 		lookupLogic["$whirlwindStacks"] = whirlwindStacks
-		lookupLogic["$ragePlusCasting"] = _ragePlusCasting
 		lookupLogic["$rageTotal"] = _rageTotal
 		lookupLogic["$rageMax"] = TRB.Data.character.maxResource
 		lookupLogic["$rage"] = normalizedRage
 		lookupLogic["$resourcePlusCasting"] = _ragePlusCasting
+		lookupLogic["$ragePlusCasting"] = _ragePlusCasting
 		lookupLogic["$resourcePlusPassive"] = _ragePlusPassive
+		lookupLogic["$ragePlusPassive"] = _ragePlusPassive
 		lookupLogic["$resourceTotal"] = _rageTotal
 		lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
 		lookupLogic["$resource"] = normalizedRage
@@ -1177,7 +1139,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 	local function CastingSpell()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 		local currentTime = GetTime()
 		local currentSpellName, _, _, currentSpellStartTime, currentSpellEndTime, _, _, _, currentSpellId = UnitCastingInfo("player")
@@ -1217,7 +1179,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		TRB.Functions.Character:UpdateSnapshot()
 		
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		snapshots[spells.impendingVictory.id].cooldown:Refresh()
@@ -1230,7 +1192,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		UpdateSnapshot()
 
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)
@@ -1245,7 +1207,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		UpdateSnapshot()
 
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 
 		snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)
@@ -1262,8 +1224,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local coreSettings = TRB.Data.settings.core
 		local classSettings = TRB.Data.settings.warrior
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 
@@ -1294,24 +1255,24 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue) 
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, currentResource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue) 
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, currentResource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentResource)
-						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -1324,7 +1285,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 							local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
 							if not (spell.id == spells.execute.id or spell.id == spells.whirlwind.id or spell.id == spells.thunderClap) then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 							end
 
 							local showThreshold = true
@@ -1346,21 +1307,19 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										healthMinimum = spells.massacre.healthMinimum
 									end
 
-									local suddenDeathTime = snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)
-
-									if suddenDeathTime > 0 then
-										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -spells.execute.resourceMax, TRB.Data.character.maxResource)
+									if snapshots[spells.suddenDeath.id].buff.isActive then
+										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -spells.execute.resourceMax, TRB.Data.character.maxResource)
 									else
-										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, math.min(math.max(-resourceAmount, normalizedResource), -spells.execute.resourceMax), TRB.Data.character.maxResource)
+										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, math.min(math.max(-resourceAmount, normalizedResource), -spells.execute.resourceMax), TRB.Data.character.maxResource)
 									end
 
 									if UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
 										showThreshold = false
-									elseif spell.settingKey == "executeMinimum" and (targetUnitHealth >= healthMinimum) and suddenDeathTime == 0 then
+									elseif spell.settingKey == "executeMinimum" and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
 										showThreshold = false
-									elseif spell.settingKey == "executeMaximum"  and (targetUnitHealth >= healthMinimum) and suddenDeathTime == 0 then
+									elseif spell.settingKey == "executeMaximum"  and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
 										showThreshold = false
-									elseif spell.settingKey == "execute" and (targetUnitHealth >= healthMinimum) and suddenDeathTime == 0 then
+									elseif spell.settingKey == "execute" and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
 										showThreshold = false
 									elseif currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
@@ -1383,7 +1342,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 									
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 								elseif spell.id == spells.cleave.id then
 									if snapshots[spells.battlelord.id].buff.isActive then
 										resourceAmount = resourceAmount - spells.battlelord.resourceMod
@@ -1399,7 +1358,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 									
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 								elseif spell.id == spells.whirlwind.id then
 									if talents:IsTalentActive(spells.stormOfSwords) then
 										resourceAmount = resourceAmount + spells.stormOfSwords.resourceMod
@@ -1412,7 +1371,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 								elseif spell.id == spells.thunderClap.id then
 									if talents:IsTalentActive(spells.bloodAndThunder) then
 										resourceAmount = resourceAmount + spells.bloodAndThunder.resourceMod
@@ -1428,7 +1387,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 									
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 								end
 							elseif spell.hasCooldown then
 								if snapshots[spell.id].cooldown:IsUnusable() then
@@ -1506,36 +1465,46 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 					if castingBarValue < currentResource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, currentResource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
 							passiveBarValue = castingBarValue + passiveValue
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, currentResource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
 						passiveBarValue = castingBarValue + passiveValue
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentResource)
-						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
 
 					local pairOffset = 0
+					local targetUnitHealth
+					if target ~= nil then
+						targetUnitHealth = target:GetHealthPercent()
+					end
+										
+					local healthMinimum = spells.execute.healthMinimum
+					if talents:IsTalentActive(spells.massacre) then
+						healthMinimum = spells.massacre.healthMinimum
+					end
+
 					for k, v in pairs(spells) do
 						local spell = spells[k]
 						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							local resourceAmount = CalculateAbilityResourceValue(spell.resource)
 							local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 							
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -1548,30 +1517,17 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 									if talents:IsTalentActive(spells.improvedExecute) then
 										showThreshold = false
 									else
-										local targetUnitHealth
-										if target ~= nil then
-											targetUnitHealth = target:GetHealthPercent()
-										end
-										
-										local healthMinimum = spells.execute.healthMinimum
-										
-										if talents:IsTalentActive(spells.massacre) then
-											healthMinimum = spells.massacre.healthMinimum
-										end
-
-										local suddenDeathTime = snapshots[spells.suddenDeath.id].buff:GetRemainingTime(currentTime)
-
 										if UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
 											showThreshold = false
-										elseif spell.settingKey == "executeMinimum" and (targetUnitHealth >= healthMinimum) and suddenDeathTime == 0 then
+										elseif spell.settingKey == "executeMinimum" and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
 											showThreshold = false
-										elseif spell.settingKey == "executeMaximum"  and (targetUnitHealth >= healthMinimum) and suddenDeathTime == 0 then
+										elseif spell.settingKey == "executeMaximum"  and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
 											showThreshold = false
-										elseif spell.settingKey == "execute" and (targetUnitHealth >= healthMinimum) and suddenDeathTime == 0 then
+										elseif spell.settingKey == "execute" and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
 											showThreshold = false
 										else
 											if spell.settingKey == "execute" then
-												TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, math.min(math.max(-resourceAmount, normalizedResource), -spells.execute.resourceMax), TRB.Data.character.maxResource)
+												TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, math.min(math.max(-resourceAmount, normalizedResource), -spells.execute.resourceMax), TRB.Data.character.maxResource)
 											end
 
 											if snapshots[spell.id].cooldown:IsUnusable() then
@@ -1608,7 +1564,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 									
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, specSettings.thresholds.width, -resourceAmount, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 								end
 							elseif spell.hasCooldown then
 								if snapshots[spell.id].cooldown:IsUnusable() then
@@ -1670,79 +1626,72 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		local _
 		local specId = GetSpecialization()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local targetData = snapshotData.targetData
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
+			local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 
-			if sourceGUID == TRB.Data.character.guid then
+			if entry.sourceGuid == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "arms" then --Arms
-					if spellId == spells.mortalStrike.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					if entry.spellId == spells.mortalStrike.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.cleave.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].cooldown:Initialize()
+					elseif entry.spellId == spells.cleave.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.ignorePain.id then
-						if type == "SPELL_CAST_SUCCESS" or type == "SPELL_AURA_APPLIED" then
-							snapshots[spellId].cooldown:Initialize()
-							-- This API call isn't working. Manual override for now.
-							--snapshot.ignorePain.startTime, snapshot.ignorePain.duration, _, _ = GetSpellCooldown(spells.ignorePain.id)
-							--snapshot.ignorePain.startTime = currentTime
-							--snapshot.ignorePain.duration = spells.ignorePain.duration
+					elseif entry.spellId == spells.ignorePain.id then
+						if entry.type == "SPELL_CAST_SUCCESS" or entry.type == "SPELL_AURA_APPLIED" then
+							snapshots[entry.spellId].cooldown:Initialize()
 						end
-					elseif spellId == spells.suddenDeath.id then
-						snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
+					elseif entry.spellId == spells.suddenDeath.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_APPLIED_DOSE" or entry.type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.warrior.arms.audio.suddenDeath.enabled then
 								PlaySoundFile(TRB.Data.settings.warrior.arms.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
-					elseif spellId == spells.battlelord.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.rend.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+					elseif entry.spellId == spells.battlelord.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.rend.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
-					elseif spellId == spells.deepWounds.id then
-						if TRB.Functions.Class:InitializeTarget(destGUID) then
-							triggerUpdate = targetData:HandleCombatLogDebuff(spellId, type, destGUID)
+					elseif entry.spellId == spells.deepWounds.id then
+						if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+							triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						end
 					end
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "fury" then
-					if spellId == spells.enrage.id then
-						snapshots[spellId].buff:Initialize(type)
-					elseif spellId == spells.whirlwind.id then
-						if type == "SPELL_CAST_SUCCESS" then
-							snapshots[spellId].buff:Initialize(type)
-						end
-					elseif spellId == spells.suddenDeath.id then
-						snapshots[spellId].buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_APPLIED_DOSE" or type == "SPELL_AURA_REFRESH" then
+					if entry.spellId == spells.enrage.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.whirlwind.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+					elseif entry.spellId == spells.suddenDeath.id then
+						snapshots[entry.spellId].buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_APPLIED_DOSE" or entry.type == "SPELL_AURA_REFRESH" then
 							if TRB.Data.settings.warrior.fury.audio.suddenDeath.enabled then
 								PlaySoundFile(TRB.Data.settings.warrior.fury.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 							end
 						end
-					elseif spellId == spells.ravager.id then
-						if type == "SPELL_CAST_SUCCESS" then -- Ravager used
+					elseif entry.spellId == spells.ravager.id then
+						if entry.type == "SPELL_CAST_SUCCESS" then -- Ravager used
 							local duration = spells.ravager.duration * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)
-							snapshots[spellId].buff:InitializeCustom(duration)
+							snapshots[entry.spellId].buff:InitializeCustom(duration)
 			
 							if talents:IsTalentActive(spells.stormOfSteel) then
-								snapshots[spellId].buff:SetTickData(true, spells.ravager.resourcePerTick + spells.stormOfSteel.resourcePerTick, spells.ravager.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
+								snapshots[entry.spellId].buff:SetTickData(true, spells.ravager.resourcePerTick + spells.stormOfSteel.resourcePerTick, spells.ravager.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
 							else
-								snapshots[spellId].buff:SetTickData(true, spells.ravager.resourcePerTick, spells.ravager.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
+								snapshots[entry.spellId].buff:SetTickData(true, spells.ravager.resourcePerTick, spells.ravager.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
 							end
 
-							snapshots[spellId].buff:UpdateTicks(currentTime)
+							snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 						end
-					elseif spellId == spells.ravager.energizeId then
-						if type == "SPELL_ENERGIZE" then
+					elseif entry.spellId == spells.ravager.energizeId then
+						if entry.type == "SPELL_ENERGIZE" then
 							if snapshots[spells.ravager.id].buff.isActive then
 								snapshots[spells.ravager.id].buff:UpdateTicks(currentTime)
 							end
@@ -1751,33 +1700,28 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				end
 
 				-- Spec Agnostic
-				if spellId == spells.impendingVictory.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Initialize()
+				if entry.spellId == spells.impendingVictory.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif spellId == spells.thunderClap.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Initialize()
+				elseif entry.spellId == spells.thunderClap.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif spellId == spells.execute.id and not talents:IsTalentActive(spells.improvedExecute) then
-					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Initialize()
+				elseif entry.spellId == spells.execute.id and not talents:IsTalentActive(spells.improvedExecute) then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif spellId == spells.shieldBlock.id then
-					if type == "SPELL_CAST_SUCCESS" then
-						snapshots[spellId].cooldown:Initialize()
+				elseif entry.spellId == spells.shieldBlock.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				end
 			end
 
-			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				targetData:Remove(destGUID)
+			if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
+				targetData:Remove(entry.destinationGuid)
 				RefreshTargetTracking()
-				triggerUpdate = true
-			end
-
-			if UnitIsDeadOrGhost("player") then -- We died/are dead go ahead and purge the list
-				TargetsCleanup(true)
 				triggerUpdate = true
 			end
 		end
@@ -2069,8 +2013,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			return valid
 		end
 		local specId = GetSpecialization()
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local targetData = snapshotData.targetData
 		local target = targetData.targets[targetData.currentTargetGuid]
@@ -2166,7 +2109,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 				if snapshots[spells.ravager.id].buff.isActive then
 					valid = true
 				end
-			elseif var == "$ravagerResource" then
+			elseif var == "$ravagerResource" or var == "$ravagerRage" then
 				if snapshots[spells.ravager.id].buff.isActive then
 					valid = true
 				end

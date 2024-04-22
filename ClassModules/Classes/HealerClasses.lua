@@ -4,16 +4,49 @@ TRB.Classes = TRB.Classes or {}
 TRB.Classes.Healer = TRB.Classes.Healer or {}
 
 
+
+--[[
+    ***************************
+    ***** HealerRegenBase *****
+    ***************************
+    ]]
+
+---@class TRB.Classes.Healer.HealerRegenBase : TRB.Classes.Snapshot
+---@field public mana number
+TRB.Classes.Healer.HealerRegenBase = setmetatable({}, {__index = TRB.Classes.Snapshot})
+TRB.Classes.Healer.HealerRegenBase.__index = TRB.Classes.Healer.HealerRegenBase
+
+---Creates a new HealerRegenBase object
+---@param spell table # Spell we are snapshotting.
+---@param attributes table? # Custom attributes to be tracked.
+---@return TRB.Classes.Healer.HealerRegenBase
+function TRB.Classes.Healer.HealerRegenBase:New(spell, attributes)
+    ---@type TRB.Classes.Snapshot
+    local snapshot = TRB.Classes.Snapshot
+    local self = setmetatable(snapshot:New(spell, attributes), TRB.Classes.Healer.HealerRegenBase)
+    self:Reset()
+    return self
+end
+
+---Resets HealerRegenBase's values to default
+function TRB.Classes.Healer.HealerRegenBase:Reset()
+    ---@type TRB.Classes.Snapshot
+    local snapshot = TRB.Classes.Snapshot
+    snapshot.Reset(self)
+    self.mana = 0
+end
+
+
 --[[
     *********************
     ***** Innervate *****
     *********************
     ]]
 
----@class TRB.Classes.Healer.Innervate : TRB.Classes.Snapshot
+---@class TRB.Classes.Healer.Innervate : TRB.Classes.Healer.HealerRegenBase
 ---@field public mana number
 ---@field public modifier number
-TRB.Classes.Healer.Innervate = setmetatable({}, {__index = TRB.Classes.Snapshot})
+TRB.Classes.Healer.Innervate = setmetatable({}, {__index = TRB.Classes.Healer.HealerRegenBase})
 TRB.Classes.Healer.Innervate.__index = TRB.Classes.Healer.Innervate
 
 ---Creates a new Innervate object
@@ -25,37 +58,29 @@ function TRB.Classes.Healer.Innervate:New(spell)
         {
             name = "modifier",
             dataType = "number",
-            index = 16
+            index = 1
         }
     }
-    ---@type TRB.Classes.Snapshot
-    local snapshot = TRB.Classes.Snapshot
+    ---@type TRB.Classes.Healer.HealerRegenBase
+    local snapshot = TRB.Classes.Healer.HealerRegenBase
     local self = setmetatable(snapshot:New(spell), TRB.Classes.Healer.Innervate)
     self.buff:SetCustomProperties(definitions)
     self:Reset()
-    self.attributes = {}
     return self
 end
 
 ---Resets Innervate's values to default
 function TRB.Classes.Healer.Innervate:Reset()
-    ---@type TRB.Classes.Snapshot
-    local snapshot = TRB.Classes.Snapshot
+    ---@type TRB.Classes.Healer.HealerRegenBase
+    local snapshot = TRB.Classes.Healer.HealerRegenBase
     snapshot.Reset(self)
-    self.mana = 0
     self.modifier = 1
 end
 
 ---Updates Innervate's values
 function TRB.Classes.Healer.Innervate:Update()
     if self.buff.isActive then
-        local manaRegen = 0
-
-        if TRB.Data.snapshotData ~= nil then
-            manaRegen = TRB.Data.snapshotData.attributes.manaRegen
-        else
-            manaRegen = TRB.Data.snapshot.manaRegen
-        end
+        local manaRegen = TRB.Data.snapshotData.attributes.manaRegen
         self.modifier = (100 + (self.buff.customProperties["modifier"] or 100)) / 100
         self.mana = self.buff:GetRemainingTime() * manaRegen * (1 - self.modifier)
     else
@@ -71,9 +96,9 @@ end
     ***************************
     ]]
 
----@class TRB.Classes.Healer.ManaTideTotem : TRB.Classes.Snapshot
+---@class TRB.Classes.Healer.ManaTideTotem : TRB.Classes.Healer.HealerRegenBase
 ---@field public mana number
-TRB.Classes.Healer.ManaTideTotem = setmetatable({}, {__index = TRB.Classes.Snapshot})
+TRB.Classes.Healer.ManaTideTotem = setmetatable({}, {__index = TRB.Classes.Healer.HealerRegenBase})
 TRB.Classes.Healer.ManaTideTotem.__index = TRB.Classes.Healer.ManaTideTotem
 
 ---Creates a new ManaTideTotem object
@@ -85,11 +110,11 @@ function TRB.Classes.Healer.ManaTideTotem:New(spell)
         {
             name = "manaPerTick",
             dataType = "number",
-            index = 16
+            index = 1
         }
     }
-    ---@type TRB.Classes.Snapshot
-    local snapshot = TRB.Classes.Snapshot
+    ---@type TRB.Classes.Healer.HealerRegenBase
+    local snapshot = TRB.Classes.Healer.HealerRegenBase
     local self = setmetatable(snapshot:New(spell), TRB.Classes.Healer.ManaTideTotem)
     self.buff:SetCustomProperties(definitions)
     self:Reset()
@@ -118,8 +143,8 @@ end
 
 ---Resets ManaTideTotem's values to default
 function TRB.Classes.Healer.ManaTideTotem:Reset()
-    ---@type TRB.Classes.Snapshot
-    local snapshot = TRB.Classes.Snapshot
+    ---@type TRB.Classes.Healer.HealerRegenBase
+    local snapshot = TRB.Classes.Healer.HealerRegenBase
     snapshot.Reset(self)
     self.mana = 0
 end
@@ -127,13 +152,7 @@ end
 ---Updates ManaTideTotem's values
 function TRB.Classes.Healer.ManaTideTotem:Update()
     if self.buff.isActive then
-        local manaRegen = 0
-        if TRB.Data.snapshotData ~= nil then
-            manaRegen = TRB.Data.snapshotData.attributes.manaRegen
-        else
-            manaRegen = TRB.Data.snapshot.manaRegen
-        end
-
+        local manaRegen = TRB.Data.snapshotData.attributes.manaRegen
         self.mana = self.buff:GetRemainingTime() * manaRegen / 2
     else
         self.mana = 0
@@ -147,9 +166,9 @@ end
     **************************
     ]]
 
----@class TRB.Classes.Healer.SymbolOfHope : TRB.Classes.Snapshot
+---@class TRB.Classes.Healer.SymbolOfHope : TRB.Classes.Healer.HealerRegenBase
 ---@field public buff TRB.Classes.Healer.SymbolOfHopeBuff
-TRB.Classes.Healer.SymbolOfHope = setmetatable({}, {__index = TRB.Classes.Snapshot})
+TRB.Classes.Healer.SymbolOfHope = setmetatable({}, {__index = TRB.Classes.Healer.HealerRegenBase})
 TRB.Classes.Healer.SymbolOfHope.__index = TRB.Classes.Healer.SymbolOfHope
 
 ---Creates a new SymbolOfHope object
@@ -158,8 +177,8 @@ TRB.Classes.Healer.SymbolOfHope.__index = TRB.Classes.Healer.SymbolOfHope
 function TRB.Classes.Healer.SymbolOfHope:New(spell, calculateManaGainFunction)
     ---@type TRB.Classes.BuffCustomProperty[]
     local definitions = {}
-    ---@type TRB.Classes.Snapshot
-    local snapshot = TRB.Classes.Snapshot
+    ---@type TRB.Classes.Healer.HealerRegenBase
+    local snapshot = TRB.Classes.Healer.HealerRegenBase
     ---@type TRB.Classes.Healer.SymbolOfHope
     local self = setmetatable(snapshot:New(spell, nil), TRB.Classes.Healer.SymbolOfHope)
     ---@type TRB.Classes.Healer.SymbolOfHopeBuff
@@ -174,56 +193,63 @@ end
 ---Resets SymbolOfHope's values to default
 function TRB.Classes.Healer.SymbolOfHope:Reset()
     self.buff:Reset()
+    self.mana = 0
+end
+
+---comment
+---@param totalTicks integer
+---@param tickRate number
+---@param nextTickRemaining number
+---@param forceManaInclusion boolean?
+---@return number
+function TRB.Classes.Healer.SymbolOfHope:CalculateTime(totalTicks, tickRate, nextTickRemaining, forceManaInclusion)
+    local manaRaw = 0
+    local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+    local casting = snapshotData.casting
+    local manaRegen = snapshotData.attributes.manaRegen
+    local resource = snapshotData.attributes.resource
+
+    for x = 1, totalTicks do
+        local casterRegen = 0
+        if casting.spellId == self.spell.id or forceManaInclusion then
+            if x == 1 then
+                casterRegen = nextTickRemaining * manaRegen
+            else
+                casterRegen = manaRegen * tickRate
+            end
+        end
+
+        local estimatedManaMissing = TRB.Data.character.maxResource - (casterRegen + manaRaw + (resource / TRB.Data.resourceFactor))
+        local nextTick = self.spell.manaPercent * math.max(0, math.min(TRB.Data.character.maxResource, estimatedManaMissing))
+        manaRaw = manaRaw + nextTick + casterRegen
+    end
+
+    return manaRaw
 end
 
 ---Updates SymbolOfHope's values
 function TRB.Classes.Healer.SymbolOfHope:Update()
+    local activePreviously = self.buff.isActive
     self.buff:Refresh(nil, nil, nil)
     if self.buff.isActive then
         if self.buff.ticks <= 0 or self.buff.tickRate == 0 then
-            self.buff:Reset()
+            self:Reset()
             return
         end
 
         if self.buff.ticks > self.spell.ticks then
-            self.buff:Reset()
+            self:Reset()
             return
         end
 
         local nextTickRemaining = self.buff.remaining - ((self.buff.ticks - 1) * self.buff.tickRate)
-        self.buff.manaRaw = 0
-
-        local casting
-        local manaRegen
-        local resource
-
-        if TRB.Data.snapshotData ~= nil then
-            ---@type TRB.Classes.SnapshotCasting
-            casting = TRB.Data.snapshotData.casting
-            manaRegen = TRB.Data.snapshotData.attributes.manaRegen
-            resource = TRB.Data.snapshotData.attributes.resource
-        else
-            casting = TRB.Data.snapshot.casting
-            manaRegen = TRB.Data.snapshot.manaRegen
-            resource = TRB.Data.snapshot.resource
-        end
-
-        for x = 1, self.buff.ticks do
-            local casterRegen = 0
-            if casting.spellId == self.spell.id then
-                if x == 1 then
-                    casterRegen = nextTickRemaining * manaRegen
-                else
-                    casterRegen = manaRegen * self.buff.tickRate
-                end
-            end
-
-            local estimatedManaMissing = TRB.Data.character.maxResource - (casterRegen + self.buff.manaRaw + (resource / TRB.Data.resourceFactor))
-            local nextTick = self.spell.manaPercent * math.max(0, math.min(TRB.Data.character.maxResource, estimatedManaMissing))
-            self.buff.manaRaw = self.buff.manaRaw + nextTick + casterRegen
-        end
+        local manaRaw = self:CalculateTime(self.buff.ticks, self.buff.tickRate, nextTickRemaining)
         
+        self.buff.manaRaw = manaRaw
         self.buff.mana = self.buff.CalculateManaGainFunction(self.buff.manaRaw, false)
+        self.mana = self.buff.mana
+    elseif activePreviously then
+        self:Reset()
     end
 end
 
@@ -238,7 +264,7 @@ TRB.Classes.Healer.SymbolOfHopeBuff = setmetatable({}, {__index = TRB.Classes.Sn
 TRB.Classes.Healer.SymbolOfHopeBuff.__index = TRB.Classes.Healer.SymbolOfHopeBuff
 
 ---Creates a new SymbolOfHopeBuff object
----@param parent TRB.Classes.Snapshot
+---@param parent TRB.Classes.Healer.HealerRegenBase
 ---@return TRB.Classes.Healer.SymbolOfHopeBuff
 function TRB.Classes.Healer.SymbolOfHopeBuff:New(parent)
     ---@type TRB.Classes.SnapshotBuff
@@ -307,10 +333,10 @@ end
     *************************************
     ]]
 
----@class TRB.Classes.Healer.PotionOfChilledClarity : TRB.Classes.Snapshot
+---@class TRB.Classes.Healer.PotionOfChilledClarity : TRB.Classes.Healer.HealerRegenBase
 ---@field public mana number
 ---@field public modifier number
-TRB.Classes.Healer.PotionOfChilledClarity = setmetatable({}, {__index = TRB.Classes.Snapshot})
+TRB.Classes.Healer.PotionOfChilledClarity = setmetatable({}, {__index = TRB.Classes.Healer.HealerRegenBase})
 TRB.Classes.Healer.PotionOfChilledClarity.__index = TRB.Classes.Healer.PotionOfChilledClarity
 
 ---Creates a new PotionOfChilledClarity object
@@ -322,11 +348,11 @@ function TRB.Classes.Healer.PotionOfChilledClarity:New(spell)
         {
             name = "modifier",
             dataType = "number",
-            index = 17
+            index = 2
         }
     }
-    ---@type TRB.Classes.Snapshot
-    local snapshot = TRB.Classes.Snapshot
+    ---@type TRB.Classes.Healer.HealerRegenBase
+    local snapshot = TRB.Classes.Healer.HealerRegenBase
     local self = setmetatable(snapshot:New(spell), TRB.Classes.Healer.PotionOfChilledClarity)
     self.buff:SetCustomProperties(definitions)
     self:Reset()
@@ -336,8 +362,8 @@ end
 
 ---Resets PotionOfChilledClarity's values to default
 function TRB.Classes.Healer.PotionOfChilledClarity:Reset()
-    ---@type TRB.Classes.Snapshot
-    local snapshot = TRB.Classes.Snapshot
+    ---@type TRB.Classes.Healer.HealerRegenBase
+    local snapshot = TRB.Classes.Healer.HealerRegenBase
     snapshot.Reset(self)
     self.mana = 0
     self.modifier = 1
@@ -346,13 +372,7 @@ end
 ---Updates PotionOfChilledClarity's values
 function TRB.Classes.Healer.PotionOfChilledClarity:Update()
     if self.buff.isActive then
-        local manaRegen = 0
-        if TRB.Data.snapshotData ~= nil then
-            manaRegen = TRB.Data.snapshotData.attributes.manaRegen
-        else
-            manaRegen = TRB.Data.snapshot.manaRegen
-        end
-
+        local manaRegen = TRB.Data.snapshotData.attributes.manaRegen
         self.modifier = (100 + (self.buff.customProperties["modifier"] or 100)) / 100
         self.mana = self.buff:GetRemainingTime() * manaRegen * (1 - self.modifier)
     else
@@ -368,11 +388,11 @@ end
     *********************************
     ]]
 
----@class TRB.Classes.Healer.ChanneledManaPotion : TRB.Classes.Snapshot
+---@class TRB.Classes.Healer.ChanneledManaPotion : TRB.Classes.Healer.HealerRegenBase
 ---@field public mana number
 ---@field public ticks integer
 ---@field public CalculateManaGainFunction function
-TRB.Classes.Healer.ChanneledManaPotion = setmetatable({}, {__index = TRB.Classes.Snapshot})
+TRB.Classes.Healer.ChanneledManaPotion = setmetatable({}, {__index = TRB.Classes.Healer.HealerRegenBase})
 TRB.Classes.Healer.ChanneledManaPotion.__index = TRB.Classes.Healer.ChanneledManaPotion
 
 ---Creates a new ChanneledManaPotion object
@@ -384,11 +404,11 @@ function TRB.Classes.Healer.ChanneledManaPotion:New(spell, calculateManaGainFunc
         {
             name = "manaPerTick",
             dataType = "number",
-            index = 16
+            index = 1
         }
     }
-    ---@type TRB.Classes.Snapshot
-    local snapshot = TRB.Classes.Snapshot
+    ---@type TRB.Classes.Healer.HealerRegenBase
+    local snapshot = TRB.Classes.Healer.HealerRegenBase
     local self = setmetatable(snapshot:New(spell), TRB.Classes.Healer.ChanneledManaPotion)
     self.CalculateManaGainFunction = calculateManaGainFunction
     self.buff:SetCustomProperties(definitions)
@@ -399,23 +419,16 @@ end
 
 ---Resets ChanneledManaPotion's values to default
 function TRB.Classes.Healer.ChanneledManaPotion:Reset()
-    ---@type TRB.Classes.Snapshot
-    local snapshot = TRB.Classes.Snapshot
+    ---@type TRB.Classes.Healer.HealerRegenBase
+    local snapshot = TRB.Classes.Healer.HealerRegenBase
     snapshot.Reset(self)
-    self.mana = 0
     self.ticks = 0
 end
 
 ---Updates ChanneledManaPotion's values
 function TRB.Classes.Healer.ChanneledManaPotion:Update()
     if self.buff.isActive then
-        local manaRegen = 0
-        if TRB.Data.snapshotData ~= nil then
-            manaRegen = TRB.Data.snapshotData.attributes.manaRegen
-        else
-            manaRegen = TRB.Data.snapshot.manaRegen
-        end
-
+        local manaRegen = TRB.Data.snapshotData.attributes.manaRegen
         self.ticks = TRB.Functions.Number:RoundTo(self.buff:GetRemainingTime(), 0, "ceil", true)
         self.mana = self.ticks * self.CalculateManaGainFunction(self.buff.customProperties["manaPerTick"] or 0, true) + (self.buff:GetRemainingTime() * manaRegen)
     else
@@ -431,10 +444,10 @@ end
     ***************************
     ]]
 
----@class TRB.Classes.Healer.MoltenRadiance : TRB.Classes.Snapshot
+---@class TRB.Classes.Healer.MoltenRadiance : TRB.Classes.Healer.HealerRegenBase
 ---@field public mana number
 ---@field public ticks integer
-TRB.Classes.Healer.MoltenRadiance = setmetatable({}, {__index = TRB.Classes.Snapshot})
+TRB.Classes.Healer.MoltenRadiance = setmetatable({}, {__index = TRB.Classes.Healer.HealerRegenBase})
 TRB.Classes.Healer.MoltenRadiance.__index = TRB.Classes.Healer.MoltenRadiance
 
 ---Creates a new MoltenRadiance object
@@ -446,11 +459,11 @@ function TRB.Classes.Healer.MoltenRadiance:New(spell)
         {
             name = "manaPerTick",
             dataType = "number",
-            index = 18
+            index = 3
         }
     }
-    ---@type TRB.Classes.Snapshot
-    local snapshot = TRB.Classes.Snapshot
+    ---@type TRB.Classes.Healer.HealerRegenBase
+    local snapshot = TRB.Classes.Healer.HealerRegenBase
     local self = setmetatable(snapshot:New(spell), TRB.Classes.Healer.MoltenRadiance)
     self.buff:SetCustomProperties(definitions)
     self:Reset()
@@ -460,10 +473,9 @@ end
 
 ---Resets MoltenRadiance's values to default
 function TRB.Classes.Healer.MoltenRadiance:Reset()
-    ---@type TRB.Classes.Snapshot
-    local snapshot = TRB.Classes.Snapshot
+    ---@type TRB.Classes.Healer.HealerRegenBase
+    local snapshot = TRB.Classes.Healer.HealerRegenBase
     snapshot.Reset(self)
-    self.mana = 0
     self.ticks = 0
 end
 
@@ -472,6 +484,50 @@ function TRB.Classes.Healer.MoltenRadiance:Update()
     if self.buff.isActive then
         self.ticks = TRB.Functions.Number:RoundTo(self.buff:GetRemainingTime(), 0, "ceil", true)
         self.mana = (self.buff.customProperties["manaPerTick"] or 0) * self.ticks
+    else
+        self.ticks = 0
+        self.mana = 0
+    end
+end
+
+
+--[[
+    ******************************
+    ***** Blessing of Winter *****
+    ******************************
+    ]]
+
+---@class TRB.Classes.Healer.BlessingOfWinter : TRB.Classes.Healer.HealerRegenBase
+---@field public mana number
+---@field public ticks integer
+TRB.Classes.Healer.BlessingOfWinter = setmetatable({}, {__index = TRB.Classes.Healer.HealerRegenBase})
+TRB.Classes.Healer.BlessingOfWinter.__index = TRB.Classes.Healer.BlessingOfWinter
+
+---Creates a new BlessingOfWinter object
+---@param spell table # Spell we are snapshotting, in this case BlessingOfWinter
+---@return TRB.Classes.Healer.BlessingOfWinter
+function TRB.Classes.Healer.BlessingOfWinter:New(spell)
+    ---@type TRB.Classes.Healer.HealerRegenBase
+    local snapshot = TRB.Classes.Healer.HealerRegenBase
+    local self = setmetatable(snapshot:New(spell), TRB.Classes.Healer.BlessingOfWinter)
+    self:Reset()
+    self.attributes = {}
+    return self
+end
+
+---Resets BlessingOfWinter's values to default
+function TRB.Classes.Healer.BlessingOfWinter:Reset()
+    ---@type TRB.Classes.Healer.HealerRegenBase
+    local snapshot = TRB.Classes.Healer.HealerRegenBase
+    snapshot.Reset(self)
+    self.ticks = 0
+end
+
+---Updates BlessingOfWinter's values
+function TRB.Classes.Healer.BlessingOfWinter:Update()
+    if self.buff.isActive then
+        self.buff:UpdateTicks()
+        self.mana = self.spell.manaPercent * TRB.Data.character.maxResource * self.buff.ticks
     else
         self.ticks = 0
         self.mana = 0

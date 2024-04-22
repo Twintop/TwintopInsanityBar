@@ -1,7 +1,7 @@
 ---@diagnostic disable: inject-field, duplicate-set-field
 --[[
 Name: LibSharedMedia-3.0
-Revision: $Revision: 114 $
+Revision: $Revision: 128 $
 Author: Elkano (elkano@gmx.de)
 Inspired By: SurfaceLib by Haste/Otravi (troeks@gmail.com)
 Website: http://www.wowace.com/projects/libsharedmedia-3-0/
@@ -76,7 +76,7 @@ lib.MediaTable.background["Blizzard Parchment 2"]					= [[Interface\AchievementF
 lib.MediaTable.background["Blizzard Rock"]							= [[Interface\FrameGeneral\UI-Background-Rock]]
 lib.MediaTable.background["Blizzard Tabard Background"]				= [[Interface\TabardFrame\TabardFrameBackground]]
 lib.MediaTable.background["Blizzard Tooltip"]						= [[Interface\Tooltips\UI-Tooltip-Background]]
-lib.MediaTable.background["1 Pixel"]									= [[Interface\Buttons\WHITE8X8]]
+lib.MediaTable.background["Solid"]									= [[Interface\Buttons\WHITE8X8]]
 lib.DefaultMedia.background = "None"
 
 -- BORDER
@@ -194,7 +194,7 @@ if not lib.MediaTable.statusbar then lib.MediaTable.statusbar = {} end
 lib.MediaTable.statusbar["Blizzard"]						= [[Interface\TargetingFrame\UI-StatusBar]]
 lib.MediaTable.statusbar["Blizzard Character Skills Bar"]	= [[Interface\PaperDollInfoFrame\UI-Character-Skills-Bar]]
 lib.MediaTable.statusbar["Blizzard Raid Bar"]				= [[Interface\RaidFrame\Raid-Bar-Hp-Fill]]
-lib.MediaTable.statusbar["1 Pixel"]							= [[Interface\Buttons\WHITE8X8]]
+lib.MediaTable.statusbar["Solid"]							= [[Interface\Buttons\WHITE8X8]]
 lib.DefaultMedia.statusbar = "Blizzard"
 
 -- SOUND

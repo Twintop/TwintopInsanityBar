@@ -21,6 +21,11 @@ function TRB.Functions.Character:UpdateSnapshot()
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
 
+	if target == nil and targetData.currentTargetGuid ~= nil then
+		targetData:InitializeTarget(targetData.currentTargetGuid, UnitIsFriend("target", "player"))
+		target = targetData.targets[targetData.currentTargetGuid]
+	end
+	
 	if target ~= nil then
 		target:UpdateAllSpellTracking(currentTime)
 	end
@@ -29,8 +34,13 @@ function TRB.Functions.Character:UpdateSnapshot()
 
 	if TRB.Data.resource2 ~= nil then
 		if TRB.Data.resource2 == "SPELL" and TRB.Data.resource2Id ~= nil then
-			local _, _, stacks, _, duration, endTime, _, _, _, spellId = TRB.Functions.Aura:FindBuffById(TRB.Data.resource2Id)
-			snapshotData.attributes.resource2 = stacks or 0
+			local resourceBuff = C_UnitAuras.GetPlayerAuraBySpellID(TRB.Data.resource2Id)
+			if resourceBuff ~= nil then
+				snapshotData.attributes.resource2 = resourceBuff.applications or 0
+			else
+				snapshotData.attributes.resource2 = 0
+			end
+			
 		elseif TRB.Data.resource2 == "CUSTOM" then
 			-- Do nothing
 		else
@@ -70,19 +80,21 @@ end
 
 ---Fills the specialization cache with a combination of global and spec specific settings
 ---@param settings table
----@param cache TRB.Classes.SharedSpecSetting[] # The full cache of all specs for the current class
+---@param cache table<string, TRB.Classes.SharedSpecSetting> # The full cache of all specs for the current class
 ---@param className string # Class name
 ---| '"demonhunter"' # Demon Hunter
 ---| '"druid"' # Druid 
 ---| '"evoker"' # Evoker
 ---| '"hunter"' # Hunter
 ---| '"monk"' # Monk
+---| '"paladin' # Paladin
 ---| '"priest"' # Priest
 ---| '"rogue"' # Rogue
 ---| '"shaman"' # Shaman
 ---| '"warrior"' # Warrior
 ---@param specName string
 ---| '"havoc"' # Havoc (Demon Hunter)
+---| '"vengeance"' # Vengeance (Demon Hunter)
 ---| '"balance"' # Balance (Druid)
 ---| '"feral"' # Feral (Druid)
 ---| '"restoration"' # Restoration (Druid, Shaman)
@@ -93,10 +105,11 @@ end
 ---| '"marksmanship"' # Marksmanship (Hunter)
 ---| '"survival"' # Survival (Hunter)
 ---| '"discipline"' # Discipline (Priest)
----| '"holy"' # Holy (Priest)
+---| '"holy"' # Holy (Paladin, Priest)
 ---| '"shadow"' # Shadow (Priest)
 ---| '"assassination"' # Assassination (Rogue)
 ---| '"outlaw"' # Outlaw (Rogue)
+---| '"subtlety"' # Subtlety (Rogue)
 ---| '"elemental"' # Elemental (Shaman)
 ---| '"enhancement"' # Enhancement (Shaman)
 ---| '"arms"' # Arms (Warrior)
@@ -153,11 +166,13 @@ function TRB.Functions.Character:IsComboPointUser()
 	local _, _, classIndexId = UnitClass("player")
 	local specId = GetSpecialization()
 
-	if 	(classIndexId == 4) or -- Rogue
-		(classIndexId == 5 and specId == 2) or -- Holy Priest
+	if 	(classIndexId == 2) or -- Paladin
+		(classIndexId == 4) or -- Rogue
+		(classIndexId == 5 and (specId == 1 or specId == 2)) or -- Discipline or Holy Priest
 		(classIndexId == 7 and specId == 2) or -- Enhancement Shaman
 		(classIndexId == 10 and specId == 3) or -- Windwalker Monk
 		(classIndexId == 11 and specId == 2) or -- Feral Druid
+		(classIndexId == 12 and specId == 2) or -- Vengeance Demon Hunter
 		(classIndexId == 13) -- Evoker
 		then
 		return true

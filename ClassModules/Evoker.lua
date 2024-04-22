@@ -1,6 +1,7 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
 if classIndexId == 13 then --Only do this if we're on an Evoker!
+	local L = TRB.Localization
 	TRB.Functions.Class = TRB.Functions.Class or {}
 	
 	local barContainerFrame = TRB.Frames.barContainerFrame
@@ -141,24 +142,8 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				conjuredChillglobe = {
 					id = 194300,
 					isEquipped = false,
-					equippedVersion = "lfr",
 					manaThresholdPercent = 0.65,
-					lfr = {
-						bonusId = 7982,
-						mana = 10877
-					},
-					normal = {
-						bonusId = 7979,
-						mana = 11735
-					},
-					heroic = {
-						bonusId = 7980,
-						mana = 14430
-					},
-					mythic = {
-						bonusId = 7981,
-						mana = 17625
-					}
+					mana = 0
 				},
 				alchemyStone = false
 			}
@@ -189,7 +174,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				name = "",
 				icon = "",
 				duration = 4.0, --Hasted
-				manaPercent = 0.03,
+				manaPercent = 0.02,
 				ticks = 4,
 				tickId = 265144
 			},
@@ -205,6 +190,15 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				icon = "",
 				duration = 8
 			},
+			blessingOfWinter = {
+				id = 388011,
+				name = "",
+				icon = "",
+				tickRate = 2,
+				hasTicks = true,
+				resourcePerTick = 0,
+				manaPercent = 0.01
+			},
 
 			-- Potions
 			aeratedManaPotionRank1 = {
@@ -217,8 +211,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 1,
-				settingKey = "aeratedManaPotionRank1",
-				thresholdUsable = false
+				settingKey = "aeratedManaPotionRank1"
 			},
 			aeratedManaPotionRank2 = {
 				itemId = 191385,
@@ -229,8 +222,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 2,
-				settingKey = "aeratedManaPotionRank2",
-				thresholdUsable = false
+				settingKey = "aeratedManaPotionRank2"
 			},
 			aeratedManaPotionRank3 = {
 				itemId = 191386,
@@ -241,8 +233,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 3,
-				settingKey = "aeratedManaPotionRank3",
-				thresholdUsable = false
+				settingKey = "aeratedManaPotionRank3"
 			},
 			potionOfFrozenFocusRank1 = {
 				id = 371033,
@@ -253,8 +244,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 4,
-				settingKey = "potionOfFrozenFocusRank1",
-				thresholdUsable = false
+				settingKey = "potionOfFrozenFocusRank1"
 			},
 			potionOfFrozenFocusRank2 = {
 				itemId = 191364,
@@ -264,8 +254,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 5,
-				settingKey = "potionOfFrozenFocusRank2",
-				thresholdUsable = false
+				settingKey = "potionOfFrozenFocusRank2"
 			},
 			potionOfFrozenFocusRank3 = {
 				itemId = 191365,
@@ -275,8 +264,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				useSpellIcon = true,
 				texture = "",
 				thresholdId = 6,
-				settingKey = "potionOfFrozenFocusRank3",
-				thresholdUsable = false
+				settingKey = "potionOfFrozenFocusRank3"
 			},
 			potionOfChilledClarity = {
 				id = 371052,
@@ -295,7 +283,6 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				texture = "",
 				thresholdId = 7,
 				settingKey = "conjuredChillglobe",
-				thresholdUsable = false,
 				mana = 4830,
 				duration = 10,
 				ticks = 10
@@ -347,8 +334,10 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.conjuredChillglobe.id] = TRB.Classes.Snapshot:New(specCache.preservation.spells.conjuredChillglobe)
 		---@type TRB.Classes.Healer.MoltenRadiance
 		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(specCache.preservation.spells.moltenRadiance)
+		---@type TRB.Classes.Healer.BlessingOfWinter
+		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(specCache.preservation.spells.blessingOfWinter)
 		---@type TRB.Classes.Snapshot
-		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.emeraldCommunion.id] = TRB.Classes.Snapshot:New(specCache.preservation.spells.emeraldCommunion)
+		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.emeraldCommunion.id] = TRB.Classes.Healer.HealerRegenBase:New(specCache.preservation.spells.emeraldCommunion)
 		---@type TRB.Classes.Snapshot
 		specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.essenceBurst.id] = TRB.Classes.Snapshot:New(specCache.preservation.spells.essenceBurst)
 
@@ -439,60 +428,60 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.devastation.barTextVariables.icons = {
+			{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 			{ variable = "#eb", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = true },
 			{ variable = "#essenceBurst", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = false },
-			{ variable = "#casting", icon = "", description = "The icon of the Mana generating spell you are currently hardcasting", printInSettings = true },
-			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
 		}
 		specCache.devastation.barTextVariables.values = {
-			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
-			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
-			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
-			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
-			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
-			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
-			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
-			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
-			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
-			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+			{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
+			{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
+			{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
+			{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
+			{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
+			{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
+			{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
+			{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
+			{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
 
-			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
-			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
-			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
-			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
-			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
-			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
-			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
-			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
+			{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
+			{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
+			{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
+			{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
+			{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
+			{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
+			{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 			
-			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+			{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-			{ variable = "$mana", description = "Current Mana", printInSettings = true, color = false },
-			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },
-			{ variable = "$manaMax", description = "Maximum Mana", printInSettings = true, color = false },
-			{ variable = "$resourceMax", description = "Maximum Mana", printInSettings = false, color = false },
+			{ variable = "$mana", description = L["EvokerDevastationBarTextVariable_mana"], printInSettings = true, color = false },
+			{ variable = "$resource", description = "", printInSettings = false, color = false },
+			{ variable = "$manaMax", description = L["EvokerDevastationBarTextVariable_manaMax"], printInSettings = true, color = false },
+			{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 			
-			{ variable = "$essence", description = "Current Essence", printInSettings = true, color = false },
-			{ variable = "$comboPoints", description = "Current Essence", printInSettings = false, color = false },
-			{ variable = "$essenceRegenTime", description = "Remaining time until your next Essence finishes regenerating", printInSettings = true, color = false },
-			{ variable = "$essenceMax", description = "Maximum Essence", printInSettings = true, color = false },
-			{ variable = "$comboPointsMax", description = "Maximum Essence", printInSettings = false, color = false },
+			{ variable = "$essence", description = L["EvokerDevastationBarTextVariable_essence"], printInSettings = true, color = false },
+			{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
+			{ variable = "$essenceRegenTime", description = L["EvokerDevastationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
+			{ variable = "$essenceMax", description = L["EvokerDevastationBarTextVariable_essenceMax"], printInSettings = true, color = false },
+			{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 
-			{ variable = "$ebTime", description = "Time remaining on your Essence Burst buff", printInSettings = true, color = false },
-			{ variable = "$ebStacks", description = "Current stack count on your Essence Burst buff", printInSettings = true, color = false },
+			{ variable = "$ebTime", description = L["EvokerDevastationBarTextVariable_ebTime"], printInSettings = true, color = false },
+			{ variable = "$ebStacks", description = L["EvokerDevastationBarTextVariable_ebStacks"], printInSettings = true, color = false },
 
-			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+			{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 		}
 
 		specCache.devastation.spells = spells
@@ -504,9 +493,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		-- This is done here so that we can get icons for the options menu!
 		specCache.preservation.barTextVariables.icons = {
-			{ variable = "#casting", icon = "", description = "The icon of the mana spending spell you are currently casting", printInSettings = true },
-			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+			{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 
 			{ variable = "#eb", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = true },
 			{ variable = "#essenceBurst", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = false },
@@ -516,6 +505,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 			{ variable = "#mtt", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = true },
 			{ variable = "#manaTideTotem", icon = spells.manaTideTotem.icon, description = spells.manaTideTotem.name, printInSettings = false },
+			
+			{ variable = "#bow", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = true },
+			{ variable = "#blessingOfWinter", icon = spells.blessingOfWinter.icon, description = spells.blessingOfWinter.name, printInSettings = false },
 
 			{ variable = "#mr", icon = spells.moltenRadiance.icon, description = spells.moltenRadiance.name, printInSettings = true },
 			{ variable = "#moltenRadiance", icon = spells.moltenRadiance.icon, description = spells.moltenRadiance.name, printInSettings = false },
@@ -531,90 +523,94 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			{ variable = "#potionOfFrozenFocus", icon = spells.potionOfFrozenFocusRank1.icon, description = spells.potionOfFrozenFocusRank1.name, printInSettings = true },
 		}
 		specCache.preservation.barTextVariables.values = {
-			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
-			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
-			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
-			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
-			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
-			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
-			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
-			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
-			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
-			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+			{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
+			{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
+			{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
+			{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
+			{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
+			{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
+			{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
+			{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
+			{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
 
-			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
-			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
-			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
-			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
-			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
-			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
-			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
-			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
+			{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
+			{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
+			{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
+			{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
+			{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
+			{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
+			{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 			
-			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+			{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-			{ variable = "$mana", description = "Current Mana", printInSettings = true, color = false },
-			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },
-			{ variable = "$manaPercent", description = "Current Mana Percentage", printInSettings = true, color = false },
-			{ variable = "$resourcePercent", description = "Current Mana Percentage", printInSettings = false, color = false },
-			{ variable = "$manaMax", description = "Maximum Mana", printInSettings = true, color = false },
-			{ variable = "$resourceMax", description = "Maximum Mana", printInSettings = false, color = false },
-			{ variable = "$casting", description = "Mana from Hardcasting Spells", printInSettings = true, color = false },
-			{ variable = "$passive", description = "Mana from Passive Sources", printInSettings = true, color = false },
-			{ variable = "$manaPlusCasting", description = "Current + Casting Mana Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusCasting", description = "Current + Casting Mana Total", printInSettings = false, color = false },
-			{ variable = "$manaPlusPassive", description = "Current + Passive Mana Total", printInSettings = true, color = false },
-			{ variable = "$resourcePlusPassive", description = "Current + Passive Mana Total", printInSettings = false, color = false },
-			{ variable = "$manaTotal", description = "Current + Passive + Casting Mana Total", printInSettings = true, color = false },
-			{ variable = "$resourceTotal", description = "Current + Passive + Casting Mana Total", printInSettings = false, color = false },
+			{ variable = "$mana", description = L["EvokerPreservationBarTextVariable_mana"], printInSettings = true, color = false },
+			{ variable = "$resource", description = "", printInSettings = false, color = false },
+			{ variable = "$manaPercent", description = L["EvokerPreservationBarTextVariable_manaPercent"], printInSettings = true, color = false },
+			{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
+			{ variable = "$manaMax", description = L["EvokerPreservationBarTextVariable_manaMax"], printInSettings = true, color = false },
+			{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
+			{ variable = "$casting", description = L["EvokerPreservationBarTextVariable_casting"], printInSettings = true, color = false },
+			{ variable = "$passive", description = L["EvokerPreservationBarTextVariable_passive"], printInSettings = true, color = false },
+			{ variable = "$manaPlusCasting", description = L["EvokerPreservationBarTextVariable_manaPlusCasting"], printInSettings = true, color = false },
+			{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
+			{ variable = "$manaPlusPassive", description = L["EvokerPreservationBarTextVariable_manaPlusPassive"], printInSettings = true, color = false },
+			{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
+			{ variable = "$manaTotal", description = L["EvokerPreservationBarTextVariable_manaTotal"], printInSettings = true, color = false },
+			{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
 						
-			{ variable = "$essence", description = "Current Essence", printInSettings = true, color = false },
-			{ variable = "$comboPoints", description = "Current Essence", printInSettings = false, color = false },
-			{ variable = "$essenceRegenTime", description = "Remaining time until your next Essence finishes regenerating", printInSettings = true, color = false },
-			{ variable = "$essenceMax", description = "Maximum Essence", printInSettings = true, color = false },
-			{ variable = "$comboPointsMax", description = "Maximum Essence", printInSettings = false, color = false },
+			{ variable = "$essence", description = L["EvokerPreservationBarTextVariable_essence"], printInSettings = true, color = false },
+			{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
+			{ variable = "$essenceRegenTime", description = L["EvokerPreservationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
+			{ variable = "$essenceMax", description = L["EvokerPreservationBarTextVariable_essenceMax"], printInSettings = true, color = false },
+			{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
 
-			{ variable = "$ebTime", description = "Time remaining on your Essence Burst buff", printInSettings = true, color = false },
-			{ variable = "$ebStacks", description = "Current stack count on your Essence Burst buff", printInSettings = true, color = false },
+			{ variable = "$ebTime", description = L["EvokerPreservationBarTextVariable_ebTime"], printInSettings = true, color = false },
+			{ variable = "$ebStacks", description = L["EvokerPreservationBarTextVariable_ebStacks"], printInSettings = true, color = false },
 
-			{ variable = "$ecMana", description = "Mana from Emerald Communion", printInSettings = true, color = false },
-			{ variable = "$ecTime", description = "Time left on Emerald Communion", printInSettings = true, color = false },
-			{ variable = "$ecTicks", description = "Number of ticks left from Emerald Communion", printInSettings = true, color = false },
-
-			{ variable = "$sohMana", description = "Mana from Symbol of Hope", printInSettings = true, color = false },
-			{ variable = "$sohTime", description = "Time left on Symbol of Hope", printInSettings = true, color = false },
-			{ variable = "$sohTicks", description = "Number of ticks left from Symbol of Hope", printInSettings = true, color = false },
-
-			{ variable = "$innervateMana", description = "Passive mana regen while Innervate is active", printInSettings = true, color = false },
-			{ variable = "$innervateTime", description = "Time left on Innervate", printInSettings = true, color = false },
+			{ variable = "$ecMana", description = L["EvokerPreservationBarTextVariable_ecMana"], printInSettings = true, color = false },
+			{ variable = "$ecTime", description = L["EvokerPreservationBarTextVariable_ecTime"], printInSettings = true, color = false },
+			{ variable = "$ecTicks", description = L["EvokerPreservationBarTextVariable_ecTicks"], printInSettings = true, color = false },
 			
-			{ variable = "$mttMana", description = "Bonus passive mana regen while Mana Tide Totem is active", printInSettings = true, color = false },
-			{ variable = "$mttTime", description = "Time left on Mana Tide Totem", printInSettings = true, color = false },
+			{ variable = "$bowMana", description = L["EvokerPreservationBarTextVariable_bowMana"], printInSettings = true, color = false },
+			{ variable = "$bowTime", description = L["EvokerPreservationBarTextVariable_bowTime"], printInSettings = true, color = false },
+			{ variable = "$bowTicks", description = L["EvokerPreservationBarTextVariable_bowTicks"], printInSettings = true, color = false },
+
+			{ variable = "$sohMana", description = L["EvokerPreservationBarTextVariable_sohMana"], printInSettings = true, color = false },
+			{ variable = "$sohTime", description = L["EvokerPreservationBarTextVariable_sohTime"], printInSettings = true, color = false },
+			{ variable = "$sohTicks", description = L["EvokerPreservationBarTextVariable_sohTicks"], printInSettings = true, color = false },
+
+			{ variable = "$innervateMana", description = L["EvokerPreservationBarTextVariable_innervateMana"], printInSettings = true, color = false },
+			{ variable = "$innervateTime", description = L["EvokerPreservationBarTextVariable_innervateTime"], printInSettings = true, color = false },
+			
+			{ variable = "$mttMana", description = L["EvokerPreservationBarTextVariable_mttMana"], printInSettings = true, color = false },
+			{ variable = "$mttTime", description = L["EvokerPreservationBarTextVariable_mttTime"], printInSettings = true, color = false },
 						
-			{ variable = "$mrMana", description = "Mana from Molten Radiance", printInSettings = true, color = false },
-			{ variable = "$mrTime", description = "Time left on Molten Radiance", printInSettings = true, color = false },
+			{ variable = "$mrMana", description = L["EvokerPreservationBarTextVariable_mrMana"], printInSettings = true, color = false },
+			{ variable = "$mrTime", description = L["EvokerPreservationBarTextVariable_mrTime"], printInSettings = true, color = false },
 
-			{ variable = "$channeledMana", description = "Mana while channeling of Potion of Frozen Focus", printInSettings = true, color = false },
-			{ variable = "$potionOfFrozenFocusTicks", description = "Number of ticks left channeling Potion of Frozen Focus", printInSettings = true, color = false },
-			{ variable = "$potionOfFrozenFocusTime", description = "Amount of time, in seconds, remaining of your channel of Potion of Frozen Focus", printInSettings = true, color = false },
+			{ variable = "$channeledMana", description = L["EvokerPreservationBarTextVariable_channeledMana"], printInSettings = true, color = false },
+			{ variable = "$potionOfFrozenFocusTicks", description = L["EvokerPreservationBarTextVariable_potionOfFrozenFocusTicks"], printInSettings = true, color = false },
+			{ variable = "$potionOfFrozenFocusTime", description = L["EvokerPreservationBarTextVariable_potionOfFrozenFocusTime"], printInSettings = true, color = false },
 			
-			{ variable = "$potionOfChilledClarityMana", description = "Passive mana regen while Potion of Chilled Clarity's effect is active", printInSettings = true, color = false },
-			{ variable = "$potionOfChilledClarityTime", description = "Time left on Potion of Chilled Clarity's effect", printInSettings = true, color = false },
+			{ variable = "$potionOfChilledClarityMana", description = L["EvokerPreservationBarTextVariable_potionOfChilledClarityMana"], printInSettings = true, color = false },
+			{ variable = "$potionOfChilledClarityTime", description = L["EvokerPreservationBarTextVariable_potionOfChilledClarityTime"], printInSettings = true, color = false },
 
-			{ variable = "$potionCooldown", description = "How long, in seconds, is left on your potion's cooldown in MM:SS format", printInSettings = true, color = false },
-			{ variable = "$potionCooldownSeconds", description = "How long, in seconds, is left on your potion's cooldown in seconds", printInSettings = true, color = false },
+			{ variable = "$potionCooldown", description = L["EvokerPreservationBarTextVariable_potionCooldown"], printInSettings = true, color = false },
+			{ variable = "$potionCooldownSeconds", description = L["EvokerPreservationBarTextVariable_potionCooldownSeconds"], printInSettings = true, color = false },
 
-			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+			{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 		}
 
 		specCache.preservation.spells = spells
@@ -628,58 +624,58 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		specCache.augmentation.barTextVariables.icons = {
 			{ variable = "#eb", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = true },
 			{ variable = "#essenceBurst", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = false },
-			{ variable = "#casting", icon = "", description = "The icon of the Mana generating spell you are currently hardcasting", printInSettings = true },
-			{ variable = "#item_ITEMID_", icon = "", description = "Any item's icon available via its item ID (e.g.: #item_18609_).", printInSettings = true },
-			{ variable = "#spell_SPELLID_", icon = "", description = "Any spell's icon available via its spell ID (e.g.: #spell_2691_).", printInSettings = true },
+			{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
+			{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
+			{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 		}
 		specCache.augmentation.barTextVariables.values = {
-			{ variable = "$gcd", description = "Current GCD, in seconds", printInSettings = true, color = false },
-			{ variable = "$haste", description = "Current Haste %", printInSettings = true, color = false },
-			{ variable = "$hastePercent", description = "Current Haste %", printInSettings = false, color = false },
-			{ variable = "$hasteRating", description = "Current Haste rating", printInSettings = true, color = false },
-			{ variable = "$crit", description = "Current Critical Strike %", printInSettings = true, color = false },
-			{ variable = "$critPercent", description = "Current Critical Strike %", printInSettings = false, color = false },
-			{ variable = "$critRating", description = "Current Critical Strike rating", printInSettings = true, color = false },
-			{ variable = "$mastery", description = "Current Mastery %", printInSettings = true, color = false },
-			{ variable = "$masteryPercent", description = "Current Mastery %", printInSettings = false, color = false },
-			{ variable = "$masteryRating", description = "Current Mastery rating", printInSettings = true, color = false },
-			{ variable = "$vers", description = "Current Versatility % (damage increase/offensive)", printInSettings = true, color = false },
-			{ variable = "$versPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$versatility", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVers", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$oVersPercent", description = "Current Versatility % (damage increase/offensive)", printInSettings = false, color = false },
-			{ variable = "$dVers", description = "Current Versatility % (damage reduction/defensive)", printInSettings = true, color = false },
-			{ variable = "$dVersPercent", description = "Current Versatility % (damage reduction/defensive)", printInSettings = false, color = false },
-			{ variable = "$versRating", description = "Current Versatility rating", printInSettings = true, color = false },
-			{ variable = "$versatilityRating", description = "Current Versatility rating", printInSettings = false, color = false },
+			{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
+			{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
+			{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
+			{ variable = "$hasteRating", description = L["BarTextVariableHasteRating"], printInSettings = true, color = false },
+			{ variable = "$crit", description = L["BarTextVariableCrit"], printInSettings = true, color = false },
+			{ variable = "$critPercent", description = L["BarTextVariableCrit"], printInSettings = false, color = false },
+			{ variable = "$critRating", description = L["BarTextVariableCritRating"], printInSettings = true, color = false },
+			{ variable = "$mastery", description = L["BarTextVariableMastery"], printInSettings = true, color = false },
+			{ variable = "$masteryPercent", description = L["BarTextVariableMastery"], printInSettings = false, color = false },
+			{ variable = "$masteryRating", description = L["BarTextVariableMasteryRating"], printInSettings = true, color = false },
+			{ variable = "$vers", description = L["BarTextVariableVers"], printInSettings = true, color = false },
+			{ variable = "$versPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$versatility", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVers", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$oVersPercent", description = L["BarTextVariableVers"], printInSettings = false, color = false },
+			{ variable = "$dVers", description = L["BarTextVariableVersDefense"], printInSettings = true, color = false },
+			{ variable = "$dVersPercent", description = L["BarTextVariableVersDefense"], printInSettings = false, color = false },
+			{ variable = "$versRating", description = L["BarTextVariableVersRating"], printInSettings = true, color = false },
+			{ variable = "$versatilityRating", description = L["BarTextVariableVersRating"], printInSettings = false, color = false },
 
-			{ variable = "$int", description = "Current Intellect", printInSettings = true, color = false },
-			{ variable = "$intellect", description = "Current Intellect", printInSettings = false, color = false },
-			{ variable = "$agi", description = "Current Agility", printInSettings = true, color = false },
-			{ variable = "$agility", description = "Current Agility", printInSettings = false, color = false },
-			{ variable = "$str", description = "Current Strength", printInSettings = true, color = false },
-			{ variable = "$strength", description = "Current Strength", printInSettings = false, color = false },
-			{ variable = "$stam", description = "Current Stamina", printInSettings = true, color = false },
-			{ variable = "$stamina", description = "Current Stamina", printInSettings = false, color = false },
+			{ variable = "$int", description = L["BarTextVariableIntellect"], printInSettings = true, color = false },
+			{ variable = "$intellect", description = L["BarTextVariableIntellect"], printInSettings = false, color = false },
+			{ variable = "$agi", description = L["BarTextVariableAgility"], printInSettings = true, color = false },
+			{ variable = "$agility", description = L["BarTextVariableAgility"], printInSettings = false, color = false },
+			{ variable = "$str", description = L["BarTextVariableStrength"], printInSettings = true, color = false },
+			{ variable = "$strength", description = L["BarTextVariableStrength"], printInSettings = false, color = false },
+			{ variable = "$stam", description = L["BarTextVariableStamina"], printInSettings = true, color = false },
+			{ variable = "$stamina", description = L["BarTextVariableStamina"], printInSettings = false, color = false },
 
-			{ variable = "$inCombat", description = "Are you currently in combat? LOGIC VARIABLE ONLY!", printInSettings = true, color = false },
+			{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-			{ variable = "$mana", description = "Current Mana", printInSettings = true, color = false },
-			{ variable = "$resource", description = "Current Mana", printInSettings = false, color = false },
-			{ variable = "$manaMax", description = "Maximum Mana", printInSettings = true, color = false },
-			{ variable = "$resourceMax", description = "Maximum Mana", printInSettings = false, color = false },
+			{ variable = "$mana", description = L["EvokerAugmentationBarTextVariable_mana"], printInSettings = true, color = false },
+			{ variable = "$resource", description = "", printInSettings = false, color = false },
+			{ variable = "$manaMax", description = L["EvokerAugmentationBarTextVariable_manaMax"], printInSettings = true, color = false },
+			{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
 			
-			{ variable = "$essence", description = "Current Essence", printInSettings = true, color = false },
-			{ variable = "$comboPoints", description = "Current Essence", printInSettings = false, color = false },
-			{ variable = "$essenceRegenTime", description = "Remaining time until your next Essence finishes regenerating", printInSettings = true, color = false },
-			{ variable = "$essenceMax", description = "Maximum Essence", printInSettings = true, color = false },
-			{ variable = "$comboPointsMax", description = "Maximum Essence", printInSettings = false, color = false },
+			{ variable = "$essence", description = L["EvokerAugmentationBarTextVariable_essence"], printInSettings = true, color = false },
+			{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
+			{ variable = "$essenceRegenTime", description = L["EvokerAugmentationBarTextVariable_essenceRegenTime"], printInSettings = true, color = false },
+			{ variable = "$essenceMax", description = L["EvokerAugmentationBarTextVariable_essenceMax"], printInSettings = true, color = false },
+			{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
 
-			{ variable = "$ebTime", description = "Time remaining on your Essence Burst buff", printInSettings = true, color = false },
-			{ variable = "$ebStacks", description = "Current stack count on your Essence Burst buff", printInSettings = true, color = false },
+			{ variable = "$ebTime", description = L["EvokerAugmentationBarTextVariable_ebTime"], printInSettings = true, color = false },
+			{ variable = "$ebStacks", description = L["EvokerAugmentationBarTextVariable_ebStacks"], printInSettings = true, color = false },
 
-			{ variable = "$ttd", description = "Time To Die of current target in MM:SS format", printInSettings = true, color = true },
-			{ variable = "$ttdSeconds", description = "Time To Die of current target in seconds", printInSettings = true, color = true }
+			{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
+			{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 		}
 
 		specCache.augmentation.spells = spells
@@ -749,7 +745,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
 
-			for x = 1, 6 do
+			for x = 1, 7 do
 				if TRB.Frames.passiveFrame.thresholds[x] == nil then
 					TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 				end
@@ -783,21 +779,16 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			end
 		end
 
-		
-		if (specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation) or
-		(specId == 2) or
-		(specId == 3 and TRB.Data.settings.core.experimental.specs.evoker.augmentation) then
-			TRB.Frames.resource2ContainerFrame:Show()
-			TRB.Functions.Bar:Construct(settings)
-			TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
-		end
+		TRB.Functions.Class:CheckCharacter()
+		TRB.Frames.resource2ContainerFrame:Show()
+		TRB.Functions.Bar:Construct(settings)
+		TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
 	end
 
 	local function RefreshLookupData_Devastation()
 		local currentTime = GetTime()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local specSettings = TRB.Data.settings.evoker.devastation
 		--Spec specific implementation
@@ -815,9 +806,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		
 		--$ebTime
 		local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
-		local ebTime = string.format("%.1f", _ebTime)
-		--$ecTicks
-		local _ebStacks = snapshots[spells.essenceBurst.id].buff.stacks
+		local ebTime = TRB.Functions.BarText:TimerPrecision(_ebTime)
+		--$ebTicks
+		local _ebStacks = snapshots[spells.essenceBurst.id].buff.applications
 		local ebStacks = string.format("%.0f", _ebStacks)
 
 		--$essenceRegenTime
@@ -825,7 +816,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
 			_essenceRegenTime = 0
 		end
-		local essenceRegenTime = string.format("%.1f", _essenceRegenTime)
+		local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
 
 		----------------------------
 
@@ -863,8 +854,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 	
 	local function RefreshLookupData_Preservation()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local specSettings = TRB.Data.settings.evoker.preservation
 		local currentTime = GetTime()
@@ -893,7 +883,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local ecTicks = string.format("%.0f", _ecTicks)
 		--$ecTime
 		local _ecTime = snapshots[spells.emeraldCommunion.id].buff:GetRemainingTime(currentTime)
-		local ecTime = string.format("%.1f", _ecTime)
+		local ecTime = TRB.Functions.BarText:TimerPrecision(_ecTime)
 		local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 		--$sohMana
 		local _sohMana = symbolOfHope.buff.mana
@@ -903,7 +893,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local sohTicks = string.format("%.0f", _sohTicks)
 		--$sohTime
 		local _sohTime = symbolOfHope.buff:GetRemainingTime(currentTime)
-		local sohTime = string.format("%.1f", _sohTime)
+		local sohTime = TRB.Functions.BarText:TimerPrecision(_sohTime)
 
 		local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		--$innervateMana
@@ -911,7 +901,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local innervateMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_innervateMana, manaPrecision, "floor", true))
 		--$innervateTime
 		local _innervateTime = innervate.buff:GetRemainingTime(currentTime)
-		local innervateTime = string.format("%.1f", _innervateTime)
+		local innervateTime = TRB.Functions.BarText:TimerPrecision(_innervateTime)
 
 		local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		--$potionOfChilledClarityMana
@@ -919,7 +909,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local potionOfChilledClarityMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_potionOfChilledClarityMana, manaPrecision, "floor", true))
 		--$potionOfChilledClarityTime
 		local _potionOfChilledClarityTime = potionOfChilledClarity.buff:GetRemainingTime(currentTime)
-		local potionOfChilledClarityTime = string.format("%.1f", _potionOfChilledClarityTime)
+		local potionOfChilledClarityTime = TRB.Functions.BarText:TimerPrecision(_potionOfChilledClarityTime)
 		
 		local manaTideTotem = snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
 		--$mttMana
@@ -927,7 +917,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local mttMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mttMana, manaPrecision, "floor", true))
 		--$mttTime
 		local _mttTime = manaTideTotem.buff:GetRemainingTime(currentTime)
-		local mttTime = string.format("%.1f", _mttTime)
+		local mttTime = TRB.Functions.BarText:TimerPrecision(_mttTime)
 		
 		local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 		--$mrMana
@@ -935,11 +925,22 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local mrMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_mrMana, manaPrecision, "floor", true))
 		--$mrTime
 		local _mrTime = moltenRadiance.buff.remaining
-		local mrTime = string.format("%.1f", _mrTime)
+		local mrTime = TRB.Functions.BarText:TimerPrecision(_mrTime)
+		
+		local blessingOfWinter = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
+		--$bowMana
+		local _bowMana = blessingOfWinter.mana
+		local bowMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_bowMana, manaPrecision, "floor", true))
+		--$bowTime
+		local _bowTime = blessingOfWinter.buff.remaining
+		local bowTime = TRB.Functions.BarText:TimerPrecision(_bowTime)
+		--$bowTicks
+		local _bowTicks = blessingOfWinter.buff.ticks or 0
+		local bowTicks = string.format("%.0f", _bowTicks)
 
 		--$potionCooldownSeconds
 		local _potionCooldown = snapshots[spells.aeratedManaPotionRank1.id].cooldown.remaining
-		local potionCooldownSeconds = string.format("%.1f", _potionCooldown)
+		local potionCooldownSeconds = TRB.Functions.BarText:TimerPrecision(_potionCooldown)
 		local _potionCooldownMinutes = math.floor(_potionCooldown / 60)
 		local _potionCooldownSeconds = _potionCooldown % 60
 		--$potionCooldown
@@ -954,10 +955,10 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local potionOfFrozenFocusTicks = string.format("%.0f", _potionOfFrozenFocusTicks)
 		--$potionOfFrozenFocusTime
 		local _potionOfFrozenFocusTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
-		local potionOfFrozenFocusTime = string.format("%.1f", _potionOfFrozenFocusTime)
+		local potionOfFrozenFocusTime = TRB.Functions.BarText:TimerPrecision(_potionOfFrozenFocusTime)
 
 		--$passive
-		local _passiveMana = _ecMana + _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana
+		local _passiveMana = _ecMana + _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana + _bowMana
 		local passiveMana = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 		--$manaTotal
 		local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
@@ -984,9 +985,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		--$ebTime
 		local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
-		local ebTime = string.format("%.1f", _ebTime)
+		local ebTime = TRB.Functions.BarText:TimerPrecision(_ebTime)
 		--$ecTicks
-		local _ebStacks = snapshots[spells.essenceBurst.id].buff.stacks
+		local _ebStacks = snapshots[spells.essenceBurst.id].buff.applications
 		local ebStacks = string.format("%.0f", _ebStacks)
 
 		--$essenceRegenTime
@@ -994,7 +995,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
 			_essenceRegenTime = 0
 		end
-		local essenceRegenTime = string.format("%.1f", _essenceRegenTime)
+		local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
 
 		----------
 
@@ -1031,19 +1032,21 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		lookup["#moltenRadiance"] = spells.moltenRadiance.icon
 		lookup["#soh"] = spells.symbolOfHope.icon
 		lookup["#symbolOfHope"] = spells.symbolOfHope.icon
+		lookup["#blessingOfWinter"] = spells.blessingOfWinter.icon
+		lookup["#bow"] = spells.blessingOfWinter.icon
 		lookup["#amp"] = spells.aeratedManaPotionRank1.icon
 		lookup["#aeratedManaPotion"] = spells.aeratedManaPotionRank1.icon
 		lookup["#poff"] = spells.potionOfFrozenFocusRank1.icon
 		lookup["#potionOfFrozenFocus"] = spells.potionOfFrozenFocusRank1.icon
 		lookup["#pocc"] = spells.potionOfChilledClarity.icon
 		lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
-		lookup["$manaPlusCasting"] = manaPlusCasting
-		lookup["$manaPlusPassive"] = manaPlusPassive
 		lookup["$manaTotal"] = manaTotal
 		lookup["$manaMax"] = manaMax
 		lookup["$mana"] = currentMana
 		lookup["$resourcePlusCasting"] = manaPlusCasting
+		lookup["$manaPlusCasting"] = manaPlusCasting
 		lookup["$resourcePlusPassive"] = manaPlusPassive
+		lookup["$manaPlusPassive"] = manaPlusPassive
 		lookup["$resourceTotal"] = manaTotal
 		lookup["$resourceMax"] = manaMax
 		lookup["$manaPercent"] = manaPercent
@@ -1065,6 +1068,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		lookup["$mttTime"] = mttTime
 		lookup["$mrMana"] = mrMana
 		lookup["$mrTime"] = mrTime
+		lookup["$bowMana"] = bowMana
+		lookup["$bowTime"] = bowTime
+		lookup["$bowTicks"] = bowTicks
 		lookup["$channeledMana"] = channeledMana
 		lookup["$potionOfFrozenFocusTicks"] = potionOfFrozenFocusTicks
 		lookup["$potionOfFrozenFocusTime"] = potionOfFrozenFocusTime
@@ -1080,13 +1086,13 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		TRB.Data.lookup = lookup
 
 		local lookupLogic = TRB.Data.lookupLogic or {}
-		lookupLogic["$manaPlusCasting"] = _manaPlusCasting
-		lookupLogic["$manaPlusPassive"] = _manaPlusPassive
 		lookupLogic["$manaTotal"] = _manaTotal
 		lookupLogic["$manaMax"] = maxResource
 		lookupLogic["$mana"] = normalizedMana
 		lookupLogic["$resourcePlusCasting"] = _manaPlusCasting
+		lookupLogic["$manaPlusCasting"] = _manaPlusCasting
 		lookupLogic["$resourcePlusPassive"] = _manaPlusPassive
+		lookupLogic["$manaPlusPassive"] = _manaPlusPassive
 		lookupLogic["$resourceTotal"] = _manaTotal
 		lookupLogic["$resourceMax"] = maxResource
 		lookupLogic["$manaPercent"] = _manaPercent
@@ -1108,6 +1114,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		lookupLogic["$mttTime"] = _mttTime
 		lookupLogic["$mrMana"] = _mrMana
 		lookupLogic["$mrTime"] = _mrTime
+		lookupLogic["$bowMana"] = _bowMana
+		lookupLogic["$bowTime"] = _bowTime
+		lookupLogic["$bowTicks"] = _bowTicks
 		lookupLogic["$channeledMana"] = _channeledMana
 		lookupLogic["$potionOfFrozenFocusTicks"] = _potionOfFrozenFocusTicks
 		lookupLogic["$potionOfFrozenFocusTime"] = _potionOfFrozenFocusTime
@@ -1126,8 +1135,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 	local function RefreshLookupData_Augmentation()
 		local currentTime = GetTime()
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local snapshots = snapshotData.snapshots
 		local specSettings = TRB.Data.settings.evoker.augmentation
 		--Spec specific implementation
@@ -1145,9 +1153,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		--$ebTime
 		local _ebTime = snapshots[spells.essenceBurst.id].buff:GetRemainingTime(currentTime)
-		local ebTime = string.format("%.1f", _ebTime)
+		local ebTime = TRB.Functions.BarText:TimerPrecision(_ebTime)
 		--$ecTicks
-		local _ebStacks = snapshots[spells.essenceBurst.id].buff.stacks
+		local _ebStacks = snapshots[spells.essenceBurst.id].buff.applications
 		local ebStacks = string.format("%.0f", _ebStacks)
 
 		--$essenceRegenTime
@@ -1155,7 +1163,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
 			_essenceRegenTime = 0
 		end
-		local essenceRegenTime = string.format("%.1f", _essenceRegenTime)
+		local essenceRegenTime = TRB.Functions.BarText:TimerPrecision(_essenceRegenTime)
 
 		----------------------------
 
@@ -1207,8 +1215,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 	local function UpdateCastingResourceFinal_Preservation()
 		-- Do nothing for now
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.SnapshotData
-		local snapshotData = TRB.Data.snapshotData
+		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 		local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 		-- Do nothing for now
@@ -1297,7 +1304,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		
 		local _
 		local spells = TRB.Data.spells
-		---@type TRB.Classes.Snapshot[]
+		---@type table<integer, TRB.Classes.Snapshot>
 		local snapshots = TRB.Data.snapshotData.snapshots
 		
 		local innervate = snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
@@ -1308,6 +1315,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		local symbolOfHope = snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
 		symbolOfHope:Update()
+
+		local blessingOfWinter = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
+		blessingOfWinter:Update()
 
 		local moltenRadiance = snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 		moltenRadiance:Update()
@@ -1325,7 +1335,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		snapshots[spells.conjuredChillglobe.id].cooldown.startTime, snapshots[spells.conjuredChillglobe.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
 		snapshots[spells.conjuredChillglobe.id].cooldown:GetRemainingTime(currentTime)
 
-		snapshots[spells.emeraldCommunion.id].buff:UpdateTicks(currentTime)
+		local emeraldCommunion = snapshots[spells.emeraldCommunion.id] --[[@as TRB.Classes.Healer.HealerRegenBase]]
+		emeraldCommunion.buff:UpdateTicks(currentTime)
+		emeraldCommunion.mana = emeraldCommunion.buff.resource
 	end
 
 	local function UpdateSnapshot_Augmentation()
@@ -1355,17 +1367,20 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
+					local passiveBarValue = 0
+					local castingBarValue = 0
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border
 
-					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
-					TRB.Functions.Bar:SetValue(specSettings, castingFrame, 0, 1)
-					TRB.Functions.Bar:SetValue(specSettings, passiveFrame, 0, 1)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
 
 					barContainerFrame:SetAlpha(1.0)
 
 					if snapshots[spells.essenceBurst.id].buff.isActive then
-						if snapshots[spells.essenceBurst.id].buff.stacks == 1 then
+						if snapshots[spells.essenceBurst.id].buff.applications == 1 then
 							if specSettings.colors.bar.essenceBurst.enabled then
 								barBorderColor = specSettings.colors.bar.essenceBurst.color
 							end
@@ -1376,7 +1391,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							end
 						end
 
-						if snapshots[spells.essenceBurst.id].buff.stacks == 2 then
+						if snapshots[spells.essenceBurst.id].buff.applications == 2 then
 							if specSettings.colors.bar.essenceBurst2.enabled then
 								barBorderColor = specSettings.colors.bar.essenceBurst2.color
 							end
@@ -1391,17 +1406,6 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
 					resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
-
-					--[[
-					local partial = UnitPartialPower("player", Enum.PowerType.Essence) / 1000
-					local totalEssence = math.min(partial + snapshot.resource2, TRB.Data.character.maxResource2)
-					--print(partial, partial + snapshot.resource2, snapshot.resource2)
-
-					TRB.Frames.resource2Frames[1].resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.base, true))
-					TRB.Frames.resource2Frames[1].borderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.border, true))
-					TRB.Frames.resource2Frames[1].containerFrame:SetBackdropColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true))
-					TRB.Functions.Bar:SetValue(specSettings, TRB.Frames.resource2Frames[1].resourceFrame, totalEssence, TRB.Data.character.maxResource2)
-					]]
 					
 					local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = TRB.Functions.Color:GetRGBAFromString(specSettings.colors.comboPoints.background, true)
 					for x = 1, TRB.Data.character.maxResource2 do
@@ -1443,19 +1447,14 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 					refreshText = true
 					local passiveBarValue = 0
 					local castingBarValue = 0
-					local currentMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local barBorderColor = specSettings.colors.bar.border
 
 					local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
-					local manaTideTotem = snapshotData.snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
-					local symbolOfHope = snapshotData.snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
-					local moltenRadiance = snapshotData.snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
 					local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
-					local channeledManaPotion = snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
-					local emeraldCommunion = snapshotData.snapshots[spells.emeraldCommunion.id]
 
 					if snapshots[spells.essenceBurst.id].buff.isActive then
-						if snapshots[spells.essenceBurst.id].buff.stacks == 1 then
+						if snapshots[spells.essenceBurst.id].buff.applications == 1 then
 							if specSettings.colors.bar.essenceBurst.enabled then
 								barBorderColor = specSettings.colors.bar.essenceBurst.color
 							end
@@ -1466,7 +1465,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							end
 						end
 
-						if snapshots[spells.essenceBurst.id].buff.stacks == 2 then
+						if snapshots[spells.essenceBurst.id].buff.applications == 2 then
 							if specSettings.colors.bar.essenceBurst2.enabled then
 								barBorderColor = specSettings.colors.bar.essenceBurst2.color
 							end
@@ -1495,137 +1494,41 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 					barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
 
-					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, currentMana)
-
 					if CastingSpell() and specSettings.bar.showCasting  then
-						castingBarValue = currentMana + snapshotData.casting.resourceFinal
+						castingBarValue = currentResource + snapshotData.casting.resourceFinal
 					else
-						castingBarValue = currentMana
+						castingBarValue = currentResource
 					end
 
-					TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
+					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentResource, castingBarValue, specSettings, snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown, snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown, TRB.Data.character, resourceFrame, CalculateManaGain)
 
-					TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, castingBarValue, specSettings, snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown, snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown, TRB.Data.character, resourceFrame, CalculateManaGain)
-
-					local passiveValue = 0
+					local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
+					thresholdCount = thresholdCount + 1
 					if specSettings.bar.showPassive then
-						if channeledManaPotion.buff.isActive then
-							passiveValue = passiveValue + channeledManaPotion.mana
-		
-							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[1], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
-		---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
-								TRB.Frames.passiveFrame.thresholds[1]:Show()
-							else
-								TRB.Frames.passiveFrame.thresholds[1]:Hide()
-							end
-						else
-							TRB.Frames.passiveFrame.thresholds[1]:Hide()
-						end
-
-						if innervate.mana > 0 or potionOfChilledClarity.mana > 0 then
-							passiveValue = passiveValue + math.max(innervate.mana, potionOfChilledClarity.mana)
-		
-							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[2], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
-		---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
-								TRB.Frames.passiveFrame.thresholds[2]:Show()
-							else
-								TRB.Frames.passiveFrame.thresholds[2]:Hide()
-							end
-						else
-							TRB.Frames.passiveFrame.thresholds[2]:Hide()
-						end
-		
-						if symbolOfHope.buff.mana > 0 then
-							passiveValue = passiveValue + symbolOfHope.buff.mana
-		
-							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[3], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
-		---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
-								TRB.Frames.passiveFrame.thresholds[3]:Show()
-							else
-								TRB.Frames.passiveFrame.thresholds[3]:Hide()
-							end
-						else
-							TRB.Frames.passiveFrame.thresholds[3]:Hide()
-						end
-		
-						if manaTideTotem.mana > 0 then
-							passiveValue = passiveValue + manaTideTotem.mana
-		
-							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[4], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
-		---@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
-								TRB.Frames.passiveFrame.thresholds[4]:Show()
-							else
-								TRB.Frames.passiveFrame.thresholds[4]:Hide()
-							end
-						else
-							TRB.Frames.passiveFrame.thresholds[4]:Hide()
-						end
-
-						if moltenRadiance.mana > 0 then
-							passiveValue = passiveValue + moltenRadiance.mana
-
-							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[5], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
-								TRB.Frames.passiveFrame.thresholds[5]:Show()
-							else
-								TRB.Frames.passiveFrame.thresholds[5]:Hide()
-							end
-						else
-							TRB.Frames.passiveFrame.thresholds[5]:Hide()
-						end
-
-						if emeraldCommunion.buff.resource > 0 then
-							passiveValue = passiveValue + emeraldCommunion.buff.resource
-
-							if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, TRB.Frames.passiveFrame.thresholds[6], passiveFrame, specSettings.thresholds.width, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
----@diagnostic disable-next-line: undefined-field
-								TRB.Frames.passiveFrame.thresholds[6].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.threshold.mindbender, true))
-								TRB.Frames.passiveFrame.thresholds[6]:Show()
-							else
-								TRB.Frames.passiveFrame.thresholds[6]:Hide()
-							end
-						else
-							TRB.Frames.passiveFrame.thresholds[6]:Hide()
-						end
+						passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.emeraldCommunion.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
 					else
-						TRB.Frames.passiveFrame.thresholds[1]:Hide()
-						TRB.Frames.passiveFrame.thresholds[2]:Hide()
-						TRB.Frames.passiveFrame.thresholds[3]:Hide()
-						TRB.Frames.passiveFrame.thresholds[4]:Hide()
-						TRB.Frames.passiveFrame.thresholds[5]:Hide()
-						TRB.Frames.passiveFrame.thresholds[6]:Hide()
+						TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
 					end
 		
 					passiveBarValue = castingBarValue + passiveValue
 					if castingBarValue < snapshotData.attributes.resource then --Using a spender
 						if -snapshotData.casting.resourceFinal > passiveValue then
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 						else
-							TRB.Functions.Bar:SetValue(specSettings, resourceFrame, castingBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-							TRB.Functions.Bar:SetValue(specSettings, castingFrame, snapshotData.attributes.resource)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, castingBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+							TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, currentResource)
 							castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.spending, true))
 							passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 						end
 					else
-						TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
-						TRB.Functions.Bar:SetValue(specSettings, passiveFrame, passiveBarValue)
-						TRB.Functions.Bar:SetValue(specSettings, castingFrame, castingBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
+						TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
 						castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 						passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 					end
@@ -1682,17 +1585,20 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 				if specSettings.displayBar.neverShow == false then
 					refreshText = true
+					local passiveBarValue = 0
+					local castingBarValue = 0
+					local currentResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 					local barColor = specSettings.colors.bar.base
 					local barBorderColor = specSettings.colors.bar.border
 
-					TRB.Functions.Bar:SetValue(specSettings, resourceFrame, snapshotData.attributes.resource)
-					TRB.Functions.Bar:SetValue(specSettings, castingFrame, 0, 1)
-					TRB.Functions.Bar:SetValue(specSettings, passiveFrame, 0, 1)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, resourceFrame, currentResource)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
+					TRB.Functions.Bar:SetPrimaryValue(specSettings, passiveFrame, passiveBarValue)
 
 					barContainerFrame:SetAlpha(1.0)
 
 					if snapshots[spells.essenceBurst.id].buff.isActive then
-						if snapshots[spells.essenceBurst.id].buff.stacks == 1 then
+						if snapshots[spells.essenceBurst.id].buff.applications == 1 then
 							if specSettings.colors.bar.essenceBurst.enabled then
 								barBorderColor = specSettings.colors.bar.essenceBurst.color
 							end
@@ -1703,7 +1609,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							end
 						end
 
-						if snapshots[spells.essenceBurst.id].buff.stacks == 2 then
+						if snapshots[spells.essenceBurst.id].buff.applications == 2 then
 							if specSettings.colors.bar.essenceBurst2.enabled then
 								barBorderColor = specSettings.colors.bar.essenceBurst2.color
 							end
@@ -1761,81 +1667,81 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local snapshots = snapshotData.snapshots
 
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-			local time, type, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo() --, _, _, _,_,_,_,_,spellcritical,_,_,_,_ = ...
+			local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
 			
 			local settings
 			if specId == 1 then
 				settings = TRB.Data.settings.evoker.devastation
 			elseif specId == 2 then
 				settings = TRB.Data.settings.evoker.preservation
+			elseif specId == 3 then
+				settings = TRB.Data.settings.evoker.augmentation
 			end
 
-			if destGUID == TRB.Data.character.guid then
+			if entry.destinationGuid == TRB.Data.character.guid then
 				if specId == 2 and TRB.Data.barConstructedForSpec == "preservation" then -- Let's check raid effect mana stuff
-					if settings.passiveGeneration.symbolOfHope and (spellId == spells.symbolOfHope.tickId or spellId == spells.symbolOfHope.id) then
+					if settings.passiveGeneration.symbolOfHope and (entry.spellId == spells.symbolOfHope.tickId or entry.spellId == spells.symbolOfHope.id) then
 						local symbolOfHope = snapshotData.snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.SymbolOfHope]]
-						local castByToken = UnitTokenFromGUID(sourceGUID)
-						symbolOfHope.buff:Initialize(type, nil, castByToken)
-					elseif settings.passiveGeneration.innervate and spellId == spells.innervate.id then
+						local castByToken = UnitTokenFromGUID(entry.sourceGuid)
+						symbolOfHope.buff:Initialize(entry.type, nil, castByToken)
+					elseif settings.passiveGeneration.innervate and entry.spellId == spells.innervate.id then
 						local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
-						innervate.buff:Initialize(type)
-						if type == "SPELL_AURA_APPLIED" or type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
+						innervate.buff:Initialize(entry.type)
+						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then -- Gained buff or refreshed
 							snapshotData.audio.innervateCue = false
-						elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+						elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
 							snapshotData.audio.innervateCue = false
 						end
-					elseif settings.passiveGeneration.manaTideTotem and spellId == spells.manaTideTotem.id then
+					elseif settings.passiveGeneration.manaTideTotem and entry.spellId == spells.manaTideTotem.id then
 						local manaTideTotem = snapshotData.snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.ManaTideTotem]]
-						manaTideTotem:Initialize(type)
-					elseif spellId == spells.moltenRadiance.id then
+						manaTideTotem:Initialize(entry.type)
+					elseif entry.spellId == spells.moltenRadiance.id then
 						local moltenRadiance = snapshotData.snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.MoltenRadiance]]
-						moltenRadiance.buff:Initialize(type)
+						moltenRadiance.buff:Initialize(entry.type)
+					elseif settings.passiveGeneration.blessingOfWinter and entry.spellId == spells.blessingOfWinter.id then
+						local blessingOfWinter = snapshotData.snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
+						blessingOfWinter.buff:Initialize(entry.type)
 					end
 				end
 			end	
 
-			if sourceGUID == TRB.Data.character.guid then
+			if entry.sourceGuid == TRB.Data.character.guid then
 				if specId == 1 and TRB.Data.barConstructedForSpec == "devastation" then --Devastation					
 				elseif specId == 2 and TRB.Data.barConstructedForSpec == "preservation" then
-					if spellId == spells.potionOfFrozenFocusRank1.spellId or spellId == spells.potionOfFrozenFocusRank2.spellId or spellId == spells.potionOfFrozenFocusRank3.spellId then
+					if entry.spellId == spells.potionOfFrozenFocusRank1.spellId or entry.spellId == spells.potionOfFrozenFocusRank2.spellId or entry.spellId == spells.potionOfFrozenFocusRank3.spellId then
 						local channeledManaPotion = snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
-						channeledManaPotion.buff:Initialize(type)
-					elseif spellId == spells.potionOfChilledClarity.id then
+						channeledManaPotion.buff:Initialize(entry.type)
+					elseif entry.spellId == spells.potionOfChilledClarity.id then
 						local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
-						potionOfChilledClarity.buff:Initialize(type)
-					elseif spellId == spells.emeraldCommunion.id then
-						if type == "SPELL_PERIODIC_ENERGIZE" then
-							if not snapshots[spellId].buff.isActive then
+						potionOfChilledClarity.buff:Initialize(entry.type)
+					elseif entry.spellId == spells.emeraldCommunion.id then
+						if entry.type == "SPELL_PERIODIC_ENERGIZE" then
+							if not snapshots[entry.spellId].buff.isActive then
 								local duration = spells.emeraldCommunion.duration * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5)								
-								snapshots[spellId].buff:InitializeCustom(duration)
-								snapshots[spellId].buff:SetTickData(true, CalculateManaGain(spells.emeraldCommunion.resourcePerTick * TRB.Data.character.maxResource, false), spells.emeraldCommunion.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
+								snapshots[entry.spellId].buff:InitializeCustom(duration)
+								snapshots[entry.spellId].buff:SetTickData(true, CalculateManaGain(spells.emeraldCommunion.resourcePerTick * TRB.Data.character.maxResource, false), spells.emeraldCommunion.tickRate * (TRB.Functions.Character:GetCurrentGCDTime(true) / 1.5))
 							end
-							snapshots[spellId].buff:UpdateTicks(currentTime)
+							snapshots[entry.spellId].buff:UpdateTicks(currentTime)
 						end
 					end
 				elseif specId == 3 and TRB.Data.barConstructedForSpec == "augmentation" then --Augmentation
 				end
 
 				-- Spec Agnostic
-				if spellId == spells.essenceBurst.id then
-					snapshots[spellId].buff:Initialize(type)
-					if type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
+				if entry.spellId == spells.essenceBurst.id then
+					snapshots[entry.spellId].buff:Initialize(entry.type)
+					if entry.type == "SPELL_AURA_REMOVED_DOSE" then -- Lost stack
 						snapshotData.audio.essenceBurst2Cue = false
-					elseif type == "SPELL_AURA_REMOVED" then -- Lost buff
+					elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
 						snapshotData.audio.essenceBurstCue = false
 						snapshotData.audio.essenceBurst2Cue = false
 					end
 				end
 			end
 
-			if destGUID ~= TRB.Data.character.guid and (type == "UNIT_DIED" or type == "UNIT_DESTROYED" or type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
-				targetData:Remove(destGUID)
+			if entry.destinationGuid ~= TRB.Data.character.guid and (entry.type == "UNIT_DIED" or entry.type == "UNIT_DESTROYED" or entry.type == "SPELL_INSTAKILL") then -- Unit Died, remove them from the target list.
+				targetData:Remove(entry.destinationGuid)
 				RefreshTargetTracking()
-				triggerUpdate = true
-			end
-
-			if UnitIsDeadOrGhost("player") then -- We died/are dead go ahead and purge the list
-				TargetsCleanup(true)
 				triggerUpdate = true
 			end
 		end
@@ -1868,7 +1774,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 		barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		local specId = GetSpecialization()
-		if specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation then
+		if specId == 1 then
 			specCache.devastation.talents:GetTalents()
 			FillSpellData_Devastation()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.devastation)
@@ -1902,7 +1808,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				TRB.Data.barConstructedForSpec = "preservation"
 				ConstructResourceBar(specCache.preservation.settings)
 			end
-		elseif specId == 3 and TRB.Data.settings.core.experimental.specs.evoker.augmentation then
+		elseif specId == 3 then
 			specCache.augmentation.talents:GetTalents()
 			FillSpellData_Augmentation()
 			TRB.Functions.Character:LoadFromSpecializationCache(specCache.augmentation)
@@ -1943,10 +1849,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 						local settings = TRB.Options.Evoker.LoadDefaultSettings(false)
 
-						if TwintopInsanityBarSettings.core.experimental.specs.evoker.devastation and
-							(TwintopInsanityBarSettings.evoker == nil or
+						if TwintopInsanityBarSettings.evoker == nil or
 							TwintopInsanityBarSettings.evoker.devastation == nil or
-							TwintopInsanityBarSettings.evoker.devastation.displayText == nil) then
+							TwintopInsanityBarSettings.evoker.devastation.displayText == nil then
 							settings.evoker.devastation.displayText.barText = TRB.Options.Evoker.DevastationLoadDefaultBarTextSimpleSettings()
 						end
 
@@ -1956,10 +1861,9 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 							settings.evoker.preservation.displayText.barText = TRB.Options.Evoker.PreservationLoadDefaultBarTextSimpleSettings()
 						end
 
-						if TwintopInsanityBarSettings.core.experimental.specs.evoker.augmentation and
-							(TwintopInsanityBarSettings.evoker == nil or
+						if TwintopInsanityBarSettings.evoker == nil or
 							TwintopInsanityBarSettings.evoker.augmentation == nil or
-							TwintopInsanityBarSettings.evoker.augmentation.displayText == nil) then
+							TwintopInsanityBarSettings.evoker.augmentation.displayText == nil then
 							settings.evoker.augmentation.displayText.barText = TRB.Options.Evoker.AugmentationLoadDefaultBarTextSimpleSettings()
 						end
 
@@ -2031,7 +1935,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		TRB.Data.character.maxResource2 = 1
 		local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
 		local settings = nil
-		if specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation then
+		if specId == 1 then
 			settings = TRB.Data.settings.evoker.devastation
 			TRB.Data.character.specName = "devastation"
 		elseif specId == 2 then
@@ -2044,7 +1948,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 			local alchemyStone = false
 			local conjuredChillglobe = false
-			local conjuredChillglobeVersion = ""
+			local conjuredChillglobeMana = ""
 			
 			if trinket1ItemLink ~= nil then
 				for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.itemIds) do
@@ -2056,7 +1960,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				end
 
 				if alchemyStone == false then
-					conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
+					conjuredChillglobe, conjuredChillglobeMana = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
 				end
 			end
 
@@ -2071,13 +1975,13 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			end
 
 			if conjuredChillglobe == false and trinket2ItemLink ~= nil then
-				conjuredChillglobe, conjuredChillglobeVersion = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
+				conjuredChillglobe, conjuredChillglobeMana = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
 			end
 
 			TRB.Data.character.items.alchemyStone = alchemyStone
 			TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
-			TRB.Data.character.items.conjuredChillglobe.equippedVersion = conjuredChillglobeVersion
-		elseif specId == 3 and TRB.Data.settings.core.experimental.specs.evoker.augmentation then
+			TRB.Data.character.items.conjuredChillglobe.mana = conjuredChillglobeMana
+		elseif specId == 3 then
 			settings = TRB.Data.settings.evoker.augmentation
 			TRB.Data.character.specName = "augmentation"
 		end
@@ -2092,7 +1996,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 	function TRB.Functions.Class:EventRegistration()
 		local specId = GetSpecialization()
-		if specId == 1 and TRB.Data.settings.core.enabled.evoker.devastation and TRB.Data.settings.core.experimental.specs.evoker.devastation then
+		if specId == 1 and TRB.Data.settings.core.enabled.evoker.devastation then
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.devastation)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
@@ -2106,7 +2010,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 			TRB.Data.resourceFactor = 1
 			TRB.Data.resource2 = Enum.PowerType.Essence
 			TRB.Data.resourceFactor = 1
-		elseif specId == 3 and TRB.Data.settings.core.enabled.evoker.augmentation and TRB.Data.settings.core.experimental.specs.evoker.augmentation then
+		elseif specId == 3 and TRB.Data.settings.core.enabled.evoker.augmentation then
 			TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.evoker.augmentation)
 			TRB.Data.specSupported = true
 			TRB.Data.resource = Enum.PowerType.Mana
@@ -2148,7 +2052,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 		local specId = GetSpecialization()
 
-		if specId == 1 and TRB.Data.settings.core.experimental.specs.evoker.devastation then
+		if specId == 1 then
 			if not TRB.Data.specSupported or force or ((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.evoker.devastation.displayBar.alwaysShow) and (
@@ -2326,6 +2230,21 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				if moltenRadiance.buff.isActive then
 					valid = true
 				end
+			elseif var == "$bowMana" then
+				local moltenRadiance = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
+				if moltenRadiance.buff.isActive then
+					valid = true
+				end
+			elseif var == "$bowTime" then
+				local moltenRadiance = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
+				if moltenRadiance.buff.isActive then
+					valid = true
+				end
+			elseif var == "$bowTicks" then
+				local moltenRadiance = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
+				if moltenRadiance.buff.isActive then
+					valid = true
+				end
 			elseif var == "$channeledMana" then
 				local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 				if channeledManaPotion.buff.isActive then
@@ -2420,9 +2339,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 	function TRB.Functions.Class:TriggerResourceBarUpdates()
 		local specId = GetSpecialization()
-		if (specId ~= 1 and specId ~= 2 and specId ~= 3) or
-			(specId == 1 and not TRB.Data.settings.core.experimental.specs.evoker.devastation) or
-			(specId == 3 and not TRB.Data.settings.core.experimental.specs.evoker.augmentation) then
+		if (specId ~= 1 and specId ~= 2 and specId ~= 3) then
 			TRB.Functions.Bar:HideResourceBar(true)
 			return
 		end

@@ -38,7 +38,7 @@ function TRB.Classes.Talent:IsActive()
 end
 
 ---@class TRB.Classes.Talents
----@field public talents TRB.Classes.Talent[]
+---@field public talents table<integer, TRB.Classes.Talent>
 TRB.Classes.Talents = {}
 TRB.Classes.Talents.__index = TRB.Classes.Talents
 

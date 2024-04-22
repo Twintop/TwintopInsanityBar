@@ -1,5 +1,6 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
+local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Threshold = {}
 
@@ -26,9 +27,9 @@ local function SetThresholdIconSizeAndPosition(settings, thresholdLine)
 	end
 end
 
-function TRB.Functions.Threshold:RepositionThreshold(settings, thresholdLine, parentFrame, thresholdWidth, resourceThreshold, resourceMax)
-	if thresholdLine == nil then
-		print("|cFFFFFF00TRB Warning: |r RepositionThreshold() called without a valid thresholdLine!")
+function TRB.Functions.Threshold:RepositionThreshold(settings, thresholdLine, parentFrame, resourceThreshold, resourceMax, debug)
+	if settings == nil or settings.bar == nil or thresholdLine == nil then
+		print(L["RepositionThresholdInvalid"])
 		return
 	end
 
@@ -39,32 +40,12 @@ function TRB.Functions.Threshold:RepositionThreshold(settings, thresholdLine, pa
 		end
 	end
 
-	local min, max = parentFrame:GetMinMaxValues()
+	local _, max = parentFrame:GetMinMaxValues()
 	local factor = (max - (settings.bar.border * 2)) / resourceMax
 
-	if settings ~= nil and settings.bar ~= nil then
-		thresholdLine:SetPoint("LEFT", parentFrame,	"LEFT",	(resourceThreshold * factor), 0)
-	
-		if thresholdLine.icon ~= nil then
-			local setPoint = "TOP"
-			local setPointRelativeTo = "BOTTOM"
-			
-			if settings.thresholds.icons.relativeTo == "TOP" then
-				setPoint = "BOTTOM"
-				setPointRelativeTo = "TOP"
-			elseif settings.thresholds.icons.relativeTo == "CENTER" then
-				setPoint = "CENTER"
-				setPointRelativeTo = "CENTER"
-			elseif settings.thresholds.icons.relativeTo == "BOTTOM" then
-				setPoint = "TOP"
-				setPointRelativeTo = "BOTTOM"
-			end
-		
-			thresholdLine.icon:ClearAllPoints()
-			thresholdLine.icon:SetPoint(setPoint, thresholdLine, setPointRelativeTo, settings.thresholds.icons.xPos, settings.thresholds.icons.yPos)
-			thresholdLine.icon:SetSize(settings.thresholds.icons.width, settings.thresholds.icons.height)
-		end
-	end
+	thresholdLine:SetPoint("LEFT", parentFrame,	"LEFT",	(resourceThreshold * factor), 0)
+
+	SetThresholdIconSizeAndPosition(settings, thresholdLine)
 end
 
 function TRB.Functions.Threshold:SetThresholdIcon(threshold, settingKey, settings)
@@ -190,6 +171,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, threshold, showTh
 		local currentTime = GetTime()
 		local frameLevel = currentFrameLevel
 		local outOfRange = settings.thresholds.outOfRange == true and UnitAffectingCombat("player") and IsSpellInRange(spell.name, "target") == 0
+		local thresholdUsable = false
 
 		if outOfRange then
 			thresholdColor = settings.colors.threshold.outOfRange
@@ -211,13 +193,11 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, threshold, showTh
 ---@diagnostic disable-next-line: undefined-field
 		threshold.icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(thresholdColor, true))
 		if currentFrameLevel >= TRB.Data.constants.frameLevels.thresholdOver then
-			spell.thresholdUsable = true
-		else
-			spell.thresholdUsable = false
+			thresholdUsable = true
 		end
-
+		
 		if settings.thresholds.icons.desaturated == true then
-			threshold.icon.texture:SetDesaturated(not spell.thresholdUsable or outOfRange)
+			threshold.icon.texture:SetDesaturated(not thresholdUsable or outOfRange)
 		end
 		
 		if settings.thresholds.icons.showCooldown and spell.hasCooldown and snapshot.cooldown:GetRemainingTime(currentTime) > 0 and (snapshot.maxCharges == nil or snapshot.charges < snapshot.maxCharges) then
@@ -227,7 +207,6 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, threshold, showTh
 		end
 	else
 		threshold:Hide()
-		spell.thresholdUsable = false
 	end
 end
 
@@ -253,7 +232,7 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 		end
 		local ampr1Total = calculateManaGainFunction(character.items.potions.aeratedManaPotionRank1.mana, true)
 		if specSettings.thresholds.aeratedManaPotionRank1.enabled and (castingBarValue + ampr1Total) < character.maxResource then
-			TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[1], resourceFrame, specSettings.thresholds.width, (castingBarValue + ampr1Total), character.maxResource)
+			TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[1], resourceFrame, (castingBarValue + ampr1Total), character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 			resourceFrame.thresholds[1].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
@@ -271,7 +250,7 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 		
 		local ampr2Total = calculateManaGainFunction(character.items.potions.aeratedManaPotionRank2.mana, true)
 		if specSettings.thresholds.aeratedManaPotionRank2.enabled and (castingBarValue + ampr2Total) < character.maxResource then
-			TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[2], resourceFrame, specSettings.thresholds.width, (castingBarValue + ampr2Total), character.maxResource)
+			TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[2], resourceFrame, (castingBarValue + ampr2Total), character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 			resourceFrame.thresholds[2].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
@@ -289,7 +268,7 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 		
 		local ampr3Total = calculateManaGainFunction(character.items.potions.aeratedManaPotionRank3.mana, true)
 		if specSettings.thresholds.aeratedManaPotionRank3.enabled and (castingBarValue + ampr3Total) < character.maxResource then
-			TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[3], resourceFrame, specSettings.thresholds.width, (castingBarValue + ampr3Total), character.maxResource)
+			TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[3], resourceFrame, (castingBarValue + ampr3Total), character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 			resourceFrame.thresholds[3].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
@@ -307,7 +286,7 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 
 		local poffr1Total = calculateManaGainFunction(character.items.potions.potionOfFrozenFocusRank1.mana, true)
 		if specSettings.thresholds.potionOfFrozenFocusRank1.enabled and (castingBarValue + poffr1Total) < character.maxResource then
-			TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[4], resourceFrame, specSettings.thresholds.width, (castingBarValue + poffr1Total), character.maxResource)
+			TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[4], resourceFrame, (castingBarValue + poffr1Total), character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 			resourceFrame.thresholds[4].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
@@ -325,7 +304,7 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 
 		local poffr2Total = calculateManaGainFunction(character.items.potions.potionOfFrozenFocusRank2.mana, true)
 		if specSettings.thresholds.potionOfFrozenFocusRank2.enabled and (castingBarValue + poffr2Total) < character.maxResource then
-			TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[5], resourceFrame, specSettings.thresholds.width, (castingBarValue + poffr2Total), character.maxResource)
+			TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[5], resourceFrame, (castingBarValue + poffr2Total), character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 			resourceFrame.thresholds[5].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
@@ -343,7 +322,7 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 
 		local poffr3Total = calculateManaGainFunction(character.items.potions.potionOfFrozenFocusRank3.mana, true)
 		if specSettings.thresholds.potionOfFrozenFocusRank3.enabled and (castingBarValue + poffr3Total) < character.maxResource then
-			TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[6], resourceFrame, specSettings.thresholds.width, (castingBarValue + poffr3Total), character.maxResource)
+			TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[6], resourceFrame, (castingBarValue + poffr3Total), character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 			resourceFrame.thresholds[6].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
@@ -376,12 +355,12 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 	end
 	
 	if character.items.conjuredChillglobe.isEquipped and (currentMana / character.maxResource) < character.items.conjuredChillglobe.manaThresholdPercent then
-		local conjuredChillglobeTotal = calculateManaGainFunction(character.items.conjuredChillglobe[character.items.conjuredChillglobe.equippedVersion].mana, true)
+		local conjuredChillglobeTotal = calculateManaGainFunction(character.items.conjuredChillglobe.mana, true)
 		if specSettings.thresholds.conjuredChillglobe.enabled and (castingBarValue + conjuredChillglobeTotal) < character.maxResource and (not conjuredChillglobe.onCooldown or specSettings.thresholds.conjuredChillglobe.cooldown) then
 			if conjuredChillglobe.onCooldown then
 				potionThresholdColor = specSettings.colors.threshold.unusable
 			end
-			TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[7], resourceFrame, specSettings.thresholds.width, (castingBarValue + conjuredChillglobeTotal), character.maxResource)
+			TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[7], resourceFrame, (castingBarValue + conjuredChillglobeTotal), character.maxResource)
 ---@diagnostic disable-next-line: undefined-field
 			resourceFrame.thresholds[7].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(potionThresholdColor, true))
 ---@diagnostic disable-next-line: undefined-field
@@ -399,4 +378,62 @@ function TRB.Functions.Threshold:ManageCommonHealerThresholds(currentMana, casti
 	else
 		resourceFrame.thresholds[7]:Hide()
 	end
+end
+
+---comment
+---@param settings table # Settings for the specific specialization.
+---@param spells table # Spells used by the specialization. Must include spell definitions for all shared passive regen healer spells!
+---@param snapshots TRB.Classes.Snapshot[] # Snapshots that contain information about all shared passive regen healer spells.
+---@param frame Frame # Frame that these thresholds are drawn on and children of.
+---@param castingBarValue number # Current value of the casting bar.
+---@return number, number # The total mana regen of all shared passive regen healer spells.
+function TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(settings, spells, snapshots, frame, castingBarValue)
+	local passiveValue = 0
+	if settings.bar.showPassive then
+		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 1, castingBarValue, passiveValue)
+		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 2, castingBarValue, passiveValue)
+		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.symbolOfHope.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 3, castingBarValue, passiveValue)
+		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.manaTideTotem.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 4, castingBarValue, passiveValue)
+		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.moltenRadiance.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 5, castingBarValue, passiveValue)
+		passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], frame, 6, castingBarValue, passiveValue)
+	else
+		TRB.Frames.passiveFrame.thresholds[1]:Hide()
+		TRB.Frames.passiveFrame.thresholds[2]:Hide()
+		TRB.Frames.passiveFrame.thresholds[3]:Hide()
+		TRB.Frames.passiveFrame.thresholds[4]:Hide()
+		TRB.Frames.passiveFrame.thresholds[5]:Hide()
+		TRB.Frames.passiveFrame.thresholds[6]:Hide()
+	end
+	return passiveValue, 6
+end
+
+---comment
+---@param settings table # Settings for the specific specialization.
+---@param snapshot TRB.Classes.Healer.HealerRegenBase # Snapshot of the shared passive regen healer spell we're updating the threshold line of.
+---@param frame Frame # Frame that these thresholds are drawn on and children of.
+---@param thresholdId integer # Threshold to be updated
+---@param castingBarValue number # Current value of the casting bar.
+---@param passiveValue number # The total mana regen of all previous shared passive regen healer spells.
+---@return number # The total mana regen of all shared passive regen healer spells so far.
+function TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(settings, snapshot, frame, thresholdId, castingBarValue, passiveValue)
+	if frame == nil or frame.thresholds == nil then
+		return passiveValue
+	end
+
+	if snapshot.mana > 0 then
+		passiveValue = passiveValue + snapshot.mana
+
+		if (castingBarValue + passiveValue) < TRB.Data.character.maxResource then
+			TRB.Functions.Threshold:RepositionThreshold(settings, frame.thresholds[thresholdId], frame, (passiveValue + castingBarValue), TRB.Data.character.maxResource)
+			---@diagnostic disable-next-line: undefined-field
+			frame.thresholds[thresholdId].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(settings.colors.threshold.mindbender, true))
+			frame.thresholds[thresholdId]:Show()
+		else
+			frame.thresholds[thresholdId]:Hide()
+		end
+	else
+		frame.thresholds[thresholdId]:Hide()
+	end
+	
+	return passiveValue
 end

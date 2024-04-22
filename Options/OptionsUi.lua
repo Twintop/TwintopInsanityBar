@@ -4,6 +4,7 @@ TRB.Functions = TRB.Functions or {}
 TRB.Functions.OptionsUi = {}
 local oUi = TRB.Data.constants.optionsUi
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
+local L = TRB.Localization
 
 -- Code modified from this post by Reskie on the WoW Interface forums: http://www.wowinterface.com/forums/showpost.php?p=296574&postcount=18
 function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, defaultValue, stepValue, numDecimalPlaces, sizeX, sizeY, posX, posY)
@@ -16,7 +17,7 @@ function TRB.Functions.OptionsUi:BuildSlider(parent, title, minValue, maxValue, 
 	f:SetSize(sizeX-36, sizeY)
 	f:EnableMouseWheel(true)
 	f:SetObeyStepOnDrag(true)
-	f:SetOrientation("Horizontal")
+	f:SetOrientation("HORIZONTAL")
 	---@diagnostic disable-next-line: missing-fields
 	f:SetBackdrop({
 	   bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
@@ -205,22 +206,28 @@ function TRB.Functions.OptionsUi:EditBoxSetTextMinMax(box, value)
 end
 
 function TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, a, callback)
-	ColorPickerFrame.func, ColorPickerFrame.opacityFunc, ColorPickerFrame.cancelFunc = 
-		callback, callback, callback
-	ColorPickerFrame:SetColorRGB(r, g, b)
-	ColorPickerFrame.hasOpacity, ColorPickerFrame.opacity = (a ~= nil), a
-	ColorPickerFrame.previousValues = {r, g, b, a}
-	ColorPickerFrame:Hide() -- Need to run the OnShow handler.
-	ColorPickerFrame:Show()
+	ColorPickerFrame:SetupColorPickerAndShow({
+		swatchFunc = callback,
+		opacityFunc = callback,
+		cancelFunc = callback,--cancelCallback,
+		r = r,
+		g = g,
+		b = b,
+		opacity = 1-a,
+		hasOpacity = (a ~= nil)
+	})
 end
 
 function TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
 	local r, g, b, a
 	if color then
-		r, g, b, a = unpack(color)
+		r = color.r
+		g = color.g
+		b = color.b
+		a = color.a
 	else
 		r, g, b = ColorPickerFrame:GetColorRGB()
-		a = OpacitySliderFrame:GetValue()
+		a = ColorPickerFrame:GetColorAlpha()
 	end
 	return r, g, b, a
 end
@@ -229,9 +236,9 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown(button, colorTable, colorContr
 	if button == "LeftButton" then
 		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorTable[key].color, true)
 		TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
-			local r, g, b, a = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
-			colorControlsTable[key].Texture:SetColorTexture(r, g, b, 1-a)
-			colorTable[key].color = TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, 1-a)
+			local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
+			colorControlsTable[key].Texture:SetColorTexture(r_1, g_1, b_1, a_1)
+			colorTable[key].color = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
 		
 			if frameType == "backdrop" then
 				TRB.Functions.Color:SetBackdropColor(frames, colorTable[key].color, true, specId)
@@ -250,9 +257,9 @@ function TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, colorTable, colorC
 	if button == "LeftButton" then
 		local r, g, b, a = TRB.Functions.Color:GetRGBAFromString(colorTable[key], true)
 		TRB.Functions.OptionsUi:ShowColorPicker(r, g, b, 1-a, function(color)
-			local r, g, b, a = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
-			colorControlsTable[key].Texture:SetColorTexture(r, g, b, 1-a)
-			colorTable[key] = TRB.Functions.Color:ConvertColorDecimalToHex(r, g, b, 1-a)
+			local r_1, g_1, b_1, a_1 = TRB.Functions.OptionsUi:ExtractColorFromColorPicker(color)
+			colorControlsTable[key].Texture:SetColorTexture(r_1, g_1, b_1, a_1)
+			colorTable[key] = TRB.Functions.Color:ConvertColorDecimalToHex(r_1, g_1, b_1, a_1)
 		
 			if frameType == "backdrop" then
 				TRB.Functions.Color:SetBackdropColor(frames, colorTable[key], true, specId)
@@ -314,9 +321,10 @@ function TRB.Functions.OptionsUi:BuildSectionHeader(parent, title, posX, posY)
 	return f
 end
 
-function TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, width, height, height2)
-	height = height or 20
+function TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, var, desc, posX, posY, offset, width, height, height2, justifyH, fontFile)
+	height = height or 30
 	height2 = height2 or (height * 3)
+	justifyH = justifyH or "LEFT"
 	local f = CreateFrame("Frame", nil, parent)
 	f:ClearAllPoints()
 	f:SetPoint("TOPLEFT", parent)
@@ -325,9 +333,9 @@ function TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, var, desc, po
 	f:SetHeight(height)
 	---@diagnostic disable-next-line: inject-field
 	f.font = f:CreateFontString(nil)
-	f.font:SetFontObject(GameFontNormalSmall)
+	f.font:SetFontObject(GameFontNormal)
 	f.font:SetPoint("LEFT", f, "LEFT")
-	f.font:SetSize(0, 14)
+	f.font:SetSize(0, 20)
 	f.font:SetJustifyH("RIGHT")
 	f.font:SetJustifyV("TOP")
 	f.font:SetSize(offset, height)
@@ -338,15 +346,20 @@ function TRB.Functions.OptionsUi:BuildDisplayTextHelpEntry(parent, var, desc, po
 	local fd = f.description
 	fd:ClearAllPoints()
 	fd:SetPoint("TOPLEFT", parent)
-	fd:SetPoint("TOPLEFT", posX+5, posY-height)
+	fd:SetPoint("TOPLEFT", posX+10, posY-height)
 	fd:SetWidth(width-5)
 	fd:SetHeight(height2)
 	---@diagnostic disable-next-line: inject-field
 	fd.font = fd:CreateFontString(nil)
-	fd.font:SetFontObject(GameFontHighlightSmall)
+	fd.font:SetFontObject(GameFontHighlight)
+	
+	if fontFile ~= nil then
+		fd.font:SetFont(fontFile, 12)
+	end
+
 	fd.font:SetPoint("LEFT", fd, "LEFT")
-	fd.font:SetSize(0, 14)
-	fd.font:SetJustifyH("LEFT")
+	fd.font:SetSize(0, 16)
+	fd.font:SetJustifyH(justifyH)
 	fd.font:SetJustifyV("TOP")
 	fd.font:SetSize(width, height2)
 	fd.font:SetText(desc)
@@ -362,6 +375,7 @@ function TRB.Functions.OptionsUi:BuildButton(parent, text, posX, posY, width, he
 	f:SetWidth(width)
 	f:SetHeight(height)
 	f:SetText(text)
+---@diagnostic disable-next-line: param-type-mismatch
 	f:SetNormalFontObject("GameFontNormal")
 	---@diagnostic disable-next-line: inject-field
 	f.ntex = f:CreateTexture()
@@ -615,13 +629,13 @@ function TRB.Functions.OptionsUi:ToggleCheckboxOnOff(checkbox, enable, changeTex
 		getglobal(checkbox:GetName().."Text"):SetTextColor(0, 1, 0)
 
 		if changeText == true then
-			getglobal(checkbox:GetName().."Text"):SetText("Enabled")
+			getglobal(checkbox:GetName().."Text"):SetText(L["Enabled"])
 		end
 	else
 		getglobal(checkbox:GetName().."Text"):SetTextColor(1, 0, 0)
 		
 		if changeText == true then
-			getglobal(checkbox:GetName().."Text"):SetText("Disabled")
+			getglobal(checkbox:GetName().."Text"):SetText(L["Disabled"])
 		end
 	end
 end
@@ -635,10 +649,10 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
 
-	controls.barPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Position and Size", oUi.xCoord, yCoord)
+	controls.barPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarPositionSize"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 40
-	title = "Bar Width"
+	title = L["BarWidth"]
 	controls.width = TRB.Functions.OptionsUi:BuildSlider(parent, title, sanityCheckValues.barMinWidth, sanityCheckValues.barMaxWidth, spec.bar.width, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.width:SetScript("OnValueChanged", function(self, value)
@@ -654,10 +668,11 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		if GetSpecialization() == specId then
 			TRB.Functions.Bar:SetWidth(spec)
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(spec)
 		end
 	end)
 
-	title = "Bar Height"
+	title = L["BarHeight"]
 	controls.height = TRB.Functions.OptionsUi:BuildSlider(parent, title, sanityCheckValues.barMinHeight, sanityCheckValues.barMaxHeight, spec.bar.height, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.height:SetScript("OnValueChanged", function(self, value)
@@ -669,7 +684,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 
 		controls.borderWidth:SetMinMaxValues(0, maxBorderSize)
 		controls.borderWidth.MaxLabel:SetText(tostring(maxBorderSize))
-		controls.borderWidth.EditBox:SetText(borderSize)
+		controls.borderWidth.EditBox:SetText(tostring(borderSize))
 
 		if GetSpecialization() == specId then
 			TRB.Functions.Bar:SetHeight(spec)
@@ -677,7 +692,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		end
 	end)
 
-	title = "Bar Horizontal Position"
+	title = L["BarHorizontalPosition"]
 	yCoord = yCoord - 60
 	controls.horizontal = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.bar.xPos, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
@@ -693,7 +708,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		end
 	end)
 
-	title = "Bar Vertical Position"
+	title = L["BarVerticalPosition"]
 	controls.vertical = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.bar.yPos, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.vertical:SetScript("OnValueChanged", function(self, value)
@@ -708,7 +723,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 		end
 	end)
 
-	title = "Bar Border Width"
+	title = L["BarBorderWidth"]
 	yCoord = yCoord - 60
 	controls.borderWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, maxBorderHeight, spec.bar.border, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
@@ -746,6 +761,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 			TRB.Functions.Bar:SetMinMax(spec)
 			TRB.Functions.Bar:SetHeight(spec)
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(spec)
 		end
 
 		local minsliderWidth = math.max((spec.bar.border)*2+1, 120)
@@ -759,7 +775,7 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	end)
 
 	if spec.thresholds ~= nil then
-		title = "Threshold Line Width"
+		title = L["ThresholdLineWidth"]
 		controls.thresholdWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 10, spec.thresholds.width, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.thresholdWidth:SetScript("OnValueChanged", function(self, value)
@@ -779,9 +795,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	controls.checkBoxes.lockPosition = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_dragAndDrop", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.lockPosition
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Drag & Drop Movement Enabled")
+	getglobal(f:GetName() .. 'Text'):SetText(L["DragAndDropEnabled"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "Disable Drag & Drop functionality of the bar to keep it from accidentally being moved.\n\nWhen 'Pin to Personal Resource Display' is checked, this value is ignored and cannot be changed."
+	f.tooltip = L["DragAndDropTooltip"]
 	f:SetChecked(spec.bar.dragAndDrop)
 	f:SetScript("OnClick", function(self, ...)
 		spec.bar.dragAndDrop = self:GetChecked()
@@ -794,9 +810,9 @@ function TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, 
 	controls.checkBoxes.pinToPRD = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_pinToPRD", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.pinToPRD
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Pin to Personal Resource Display")
+	getglobal(f:GetName() .. 'Text'):SetText(L["PinToPRDEnabled"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "Pins the bar to the Blizzard Personal Resource Display. Adjust the Horizontal and Vertical positions above to offset it from PRD. When enabled, Drag & Drop positioning is not allowed. If PRD is not enabled, will behave as if you didn't have this enabled.\n\nNOTE: This will also be the position (relative to the center of the screen, NOT the PRD) that it shows when out of combat/the PRD is not displayed! It is recommended you set 'Bar Display' to 'Only show bar in combat' if you plan to pin it to your PRD."
+	f.tooltip = L["PinToPRDTooltip"]
 	f:SetChecked(spec.bar.pinToPersonalResourceDisplay)
 	f:SetScript("OnClick", function(self, ...)
 		spec.bar.pinToPersonalResourceDisplay = self:GetChecked()
@@ -813,11 +829,11 @@ end
 
 function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, secondaryResourceString)
 	if primaryResourceString == nil then
-		primaryResourceString = "Energy"
+		primaryResourceString = L["ResourceEnergy"]
 	end
 	
 	if secondaryResourceString == nil then
-		secondaryResourceString = "Combo Point"
+		secondaryResourceString = L["ResourceComboPoints"]
 	end
 
 	local _, className, _ = GetClassInfo(classId)
@@ -829,10 +845,10 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 
 	local sanityCheckValues = TRB.Functions.Bar:GetSanityCheckValues(spec)
 
-	controls.comboPointPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, secondaryResourceString .. " Position and Size", oUi.xCoord, yCoord)
+	controls.comboPointPositionSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["SecondaryPositionAndSize"], secondaryResourceString), oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 40
-	title = secondaryResourceString .. " Width"
+	title = string.format(L["SecondaryWidth"], secondaryResourceString)
 	controls.comboPointWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, TRB.Functions.Number:RoundTo(sanityCheckValues.barMaxWidth / 6, 0, "floor"), spec.comboPoints.width, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.comboPointWidth:SetScript("OnValueChanged", function(self, value)
@@ -852,10 +868,11 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 
 		if GetSpecialization() == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(spec)
 		end
 	end)
 
-	title = secondaryResourceString .. " Height"
+	title = string.format(L["SecondaryHeight"], secondaryResourceString)
 	controls.comboPointHeight = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, sanityCheckValues.barMaxHeight, spec.comboPoints.height, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.comboPointHeight:SetScript("OnValueChanged", function(self, value)
@@ -875,12 +892,11 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 
 		if GetSpecialization() == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(spec)
 		end
 	end)
 
-
-
-	title = secondaryResourceString .. " Horizontal Position (Relative)"
+	title = string.format(L["SecondaryHorizontalPosition"], secondaryResourceString)
 	yCoord = yCoord - 60
 	controls.comboPointHorizontal = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.comboPoints.xPos, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
@@ -893,7 +909,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		end
 	end)
 
-	title = secondaryResourceString .. " Vertical Position (Relative)"
+	title = string.format(L["SecondaryVerticalPosition"], secondaryResourceString)
 	controls.comboPointVertical = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.comboPoints.yPos, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.comboPointVertical:SetScript("OnValueChanged", function(self, value)
@@ -905,7 +921,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 		end
 	end)
 
-	title = secondaryResourceString .. " Border Width"
+	title = string.format(L["SecondaryBorderWidth"], secondaryResourceString)
 	yCoord = yCoord - 60
 	controls.comboPointBorderWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, maxBorderHeight, spec.comboPoints.border, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
@@ -915,6 +931,7 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 
 		if GetSpecialization() == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(spec)
 		end
 
 		local minsliderWidth = math.max(spec.comboPoints.border*2, 1)
@@ -936,13 +953,14 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 
 		if GetSpecialization() == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(spec)
 		end
 	end)
 
 	yCoord = yCoord - 40
 	-- Create the dropdown, and configure its appearance
 	controls.dropDown.comboPointsRelativeTo = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_comboPointsRelativeTo", parent)
-	controls.dropDown.comboPointsRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Relative Position of "..secondaryResourceString.." to "..primaryResourceString.." Bar", oUi.xCoord, yCoord)
+	controls.dropDown.comboPointsRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["SecondaryRelativeTo"], secondaryResourceString, primaryResourceString), oUi.xCoord, yCoord)
 	controls.dropDown.comboPointsRelativeTo.label.font:SetFontObject(GameFontNormal)
 	controls.dropDown.comboPointsRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.comboPointsRelativeTo, oUi.dropdownWidth)
@@ -953,20 +971,21 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	LibDD:UIDropDownMenu_Initialize(controls.dropDown.comboPointsRelativeTo, function(self, level, menuList)
 		local entries = 25
 		local info = LibDD:UIDropDownMenu_CreateInfo()
+		-- TODO: Make these dropdown values localizable
 		local relativeTo = {}
-		relativeTo["Above - Left"] = "TOPLEFT"
-		relativeTo["Above - Middle"] = "TOP"
-		relativeTo["Above - Right"] = "TOPRIGHT"
-		relativeTo["Below - Left"] = "BOTTOMLEFT"
-		relativeTo["Below - Middle"] = "BOTTOM"
-		relativeTo["Below - Right"] = "BOTTOMRIGHT"
+		relativeTo[L["PositionAboveLeft"]] = "TOPLEFT"
+		relativeTo[L["PositionAboveMiddle"]] = "TOP"
+		relativeTo[L["PositionAboveRight"]] = "TOPRIGHT"
+		relativeTo[L["PositionBelowLeft"]] = "BOTTOMLEFT"
+		relativeTo[L["PositionBelowMiddle"]] = "BOTTOM"
+		relativeTo[L["PositionBelowRight"]] = "BOTTOMRIGHT"
 		local relativeToList = {
-			"Above - Left",
-			"Above - Middle",
-			"Above - Right",
-			"Below - Left",
-			"Below - Middle",
-			"Below - Right"
+			L["PositionAboveLeft"],
+			L["PositionAboveMiddle"],
+			L["PositionAboveRight"],
+			L["PositionBelowLeft"],
+			L["PositionBelowMiddle"],
+			L["PositionBelowRight"]
 		}
 
 		for k, v in pairs(relativeToList) do
@@ -994,15 +1013,16 @@ function TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, con
 	controls.checkBoxes.comboPointsFullWidth = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_comboPointsFullWidth", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.comboPointsFullWidth
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding, yCoord-30)
-	getglobal(f:GetName() .. 'Text'):SetText(secondaryResourceString .. " are full bar width?")
+	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["SecondaryFullBarWidth"], secondaryResourceString))
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "Makes the "..secondaryResourceString.." bars take up the same total width of the bar, spaced according to "..secondaryResourceString.." Spacing (above). The horizontal position adjustment will be ignored and the width of "..secondaryResourceString.." bars will be automatically calculated and will ignore the value set above."
+	f.tooltip = string.format(L["SecondaryFullBarWidthTooltip"], secondaryResourceString, secondaryResourceString, secondaryResourceString)
 	f:SetChecked(spec.comboPoints.fullWidth)
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.fullWidth = self:GetChecked()
 		
 		if GetSpecialization() == specId then
 			TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
+			TRB.Functions.Bar:SetMinMax(spec)
 		end
 	end)
 
@@ -1068,42 +1088,42 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	end
 	
 	if secondaryResourceString == nil then
-		secondaryResourceString = "Combo Point"
+		secondaryResourceString = L["ResourceComboPoints"]
 	end
 
 	local _, className, _ = GetClassInfo(classId)
 	local f = nil
 	
 	if includeComboPoints then
-		controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar and "..secondaryResourceString.." Textures", oUi.xCoord, yCoord)
+		controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format(L["BarTexturesHeader"], secondaryResourceString), oUi.xCoord, yCoord)
 	else
-		controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Textures", oUi.xCoord, yCoord)
+		controls.textBarTexturesSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarTexturesHeader"], oUi.xCoord, yCoord)
 	end
 		
 	controls.dropDown.textures = {}
 
 	yCoord = yCoord - 30
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "resourceBar", "Main Bar Texture", "Status Bar Textures")
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "resourceBar", L["MainBarTexture"], L["StatusBarTextures"])
 	-- Implement the function to change the texture
 	function controls.dropDown.textures.resourceBar:SetValue(newValue, newName)
 		TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "resource", specId, includeComboPoints)
 	end
 
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "castingBar", "Casting Bar Texture", "Status Bar Textures")
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "castingBar", L["CastingBarTexture"], L["StatusBarTextures"])
 	-- Implement the function to change the texture
 	function controls.dropDown.textures.castingBar:SetValue(newValue, newName)
 		TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "casting", specId, includeComboPoints)
 	end
 
 	yCoord = yCoord - 60
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "passiveBar", "Passive Bar Texture", "Status Bar Textures")
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "statusbar", "passiveBar", L["PassiveBarTexture"], L["StatusBarTextures"])
 	-- Implement the function to change the texture
 	function controls.dropDown.textures.passiveBar:SetValue(newValue, newName)
 		TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "passive", specId, includeComboPoints)
 	end
 
 	if includeComboPoints then
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "comboPointsBar", secondaryResourceString.." Bar Texture", "Status Bar Textures")
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "statusbar", "comboPointsBar", string.format(L["SecondaryBarTexture"], secondaryResourceString), L["StatusBarTextures"])
 		-- Implement the function to change the texture
 		function controls.dropDown.textures.comboPointsBar:SetValue(newValue, newName)
 			TRB.Functions.OptionsUi:UpdateTextureDropdowns(controls.dropDown.textures, spec.textures, newValue, newName, "comboPoints", specId, includeComboPoints)
@@ -1114,9 +1134,9 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	f = controls.checkBoxes.textureLock
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	f:SetChecked(spec.textures.textureLock)
-	getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars")
+	getglobal(f:GetName() .. 'Text'):SetText(L["UseSameTexture"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "This will lock the texture for each part of the bar to be the same."
+	f.tooltip = L["UseSameTextureTooltip"]
 
 	f:SetScript("OnClick", function(self, ...)
 		spec.textures.textureLock = self:GetChecked()
@@ -1173,7 +1193,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 	end)
 
 	yCoord = yCoord - 60
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "border", "Border Texture", "Border Textures")
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "border", L["BorderTexture"], L["BorderTextures"])
 	-- Implement the function to change the texture
 	function controls.dropDown.textures.border:SetValue(newValue, newName)
 		spec.textures.border = newValue
@@ -1224,7 +1244,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		LibDD:CloseDropDownMenus()
 	end
 	
-	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "background", "Background (Empty Bar) Texture", "Background Textures")
+	TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "background", L["BackgroundTexture"], L["BackgroundTextures"])
 	-- Implement the function to change the texture
 	function controls.dropDown.textures.background:SetValue(newValue, newName)
 		spec.textures.background = newValue
@@ -1268,7 +1288,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 
 	if includeComboPoints then
 		yCoord = yCoord - 60
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "comboPointsBorder", secondaryResourceString.." Border Texture", "Border Textures")
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord, yCoord, "border", "comboPointsBorder", string.format(L["SecondaryBorderTexture"], secondaryResourceString), L["BorderTextures"])
 		-- Implement the function to change the texture
 		function controls.dropDown.textures.comboPointsBorder:SetValue(newValue, newName)
 			spec.textures.comboPointsBorder = newValue
@@ -1319,7 +1339,7 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 			LibDD:CloseDropDownMenus()
 		end
 
-		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "comboPointsBackground", secondaryResourceString.." Background (Empty Bar) Texture", "Background Textures")
+		TRB.Functions.OptionsUi:CreateLsmDropdown(parent, controls.dropDown.textures, spec.textures, classId, specId, oUi.xCoord2, yCoord, "background", "comboPointsBackground", string.format(L["SecondaryBackgroundTexture"], secondaryResourceString), L["BackgroundTextures"])
 		-- Implement the function to change the texture
 		function controls.dropDown.textures.comboPointsBackground:SetValue(newValue, newName)
 			spec.textures.comboPointsBackground = newValue
@@ -1365,9 +1385,9 @@ function TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, sp
 		yCoord = yCoord - 60
 		f = controls.checkBoxes.textureLock
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Use the same texture for all bars, borders, and backgrounds (respectively)")
+		getglobal(f:GetName() .. 'Text'):SetText(L["TextureLock"])
 		---@diagnostic disable-next-line: inject-field
-		f.tooltip = "This will lock the texture for each type of texture to be the same for all parts of the bar. E.g.: All bar textures will be the same, all border textures will be the same, and all background textures will be the same."
+		f.tooltip = L["TextureLockTooltip"]
 	else
 		yCoord = yCoord - 30
 	end
@@ -1380,11 +1400,11 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	local f = nil
 	local title = ""
 
-	controls.barDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Display", oUi.xCoord, yCoord)
+	controls.barDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayHeader"], oUi.xCoord, yCoord)
 
 	if includeFlashAlpha then
 		yCoord = yCoord - 50
-		title = flashAlphaName.." Flash Alpha"
+		title = string.format(L["FlashAlpha"], flashAlphaName)
 		controls.flashAlpha = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 1, spec.colors.bar.flashAlpha, 0.01, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 		controls.flashAlpha:SetScript("OnValueChanged", function(self, value)
@@ -1394,7 +1414,7 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 			spec.colors.bar.flashAlpha = value
 		end)
 
-		title = flashAlphaName.." Flash Period (sec)"
+		title = string.format(L["FlashPeriod"], flashAlphaName)
 		controls.flashPeriod = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 2, spec.colors.bar.flashPeriod, 0.05, 2,
 										oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 		controls.flashPeriod:SetScript("OnValueChanged", function(self, value)
@@ -1410,10 +1430,8 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	controls.checkBoxes.alwaysShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_AlwaysShow", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.alwaysShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Always show bar")
+	getglobal(f:GetName() .. 'Text'):SetText(L["ShowBarAlways"])
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "This will make the Resource Bar always visible on your UI, even when out of combat."
 	f:SetChecked(spec.displayBar.alwaysShow)
 	f:SetScript("OnClick", function(self, ...)
 		controls.checkBoxes.alwaysShow:SetChecked(true)
@@ -1432,17 +1450,11 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
 
 	if showWhenCategory == "notFull" then
-		getglobal(f:GetName() .. 'Text'):SetText("Show bar when "..primaryResourceString.." is not full")
-		---@diagnostic disable-next-line: inject-field
-		f.tooltip = "This will make the Resource Bar show out of combat only if "..primaryResourceString.." is not full, hidden otherwise when out of combat."
+		getglobal(f:GetName() .. 'Text'):SetText(string.format(L["ShowBarNotZeroNotFull"], primaryResourceString))
 	elseif showWhenCategory == "balance" then
-		getglobal(f:GetName() .. 'Text'):SetText("Show bar when AP > 0 (or < 50 w/NB)")
-		---@diagnostic disable-next-line: inject-field
-		f.tooltip = "This will make the Resource Bar show out of combat only if Astral Power > 0 (or < 50 with Nature's Balance), hidden otherwise when out of combat."
+		getglobal(f:GetName() .. 'Text'):SetText(L["ShowBarNotZeroBalance"])
 	else
-		getglobal(f:GetName() .. 'Text'):SetText("Show bar when "..primaryResourceString.." > 0")
-		---@diagnostic disable-next-line: inject-field
-		f.tooltip = "This will make the Resource Bar show out of combat only if "..primaryResourceString.." > 0, hidden otherwise when out of combat."
+		getglobal(f:GetName() .. 'Text'):SetText(string.format(L["ShowBarNotZero"], primaryResourceString))
 	end
 
 	f:SetChecked(spec.displayBar.notZeroShow)
@@ -1460,10 +1472,8 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	controls.checkBoxes.combatShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_CombatShow", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.combatShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
-	getglobal(f:GetName() .. 'Text'):SetText("Only show bar in combat")
+	getglobal(f:GetName() .. 'Text'):SetText(L["ShowBarCombat"])
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "This will make the Resource Bar only be visible on your UI when in combat."
 	f:SetChecked((not spec.displayBar.alwaysShow) and (not spec.displayBar.notZeroShow) and (not spec.displayBar.neverShow))
 	f:SetScript("OnClick", function(self, ...)
 		controls.checkBoxes.alwaysShow:SetChecked(false)
@@ -1479,10 +1489,8 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 	controls.checkBoxes.neverShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_NeverShow", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.neverShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-45)
-	getglobal(f:GetName() .. 'Text'):SetText("Never show bar (run in background)")
+	getglobal(f:GetName() .. 'Text'):SetText(L["ShowBarNever"])
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "This will make the Resource Bar never display but still run in the background to update the global variable."
 	f:SetChecked(spec.displayBar.neverShow)
 	f:SetScript("OnClick", function(self, ...)
 		controls.checkBoxes.alwaysShow:SetChecked(false)
@@ -1501,9 +1509,9 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 		controls.checkBoxes.flashEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_FlashEnabled", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.flashEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord2)
-		getglobal(f:GetName() .. 'Text'):SetText("Flash bar when "..flashAlphaNameShort.." is usable")
+		getglobal(f:GetName() .. 'Text'):SetText(string.format(L["FlashBar"], flashAlphaNameShort))
 		---@diagnostic disable-next-line: inject-field
-		f.tooltip = "This will flash the bar when "..flashAlphaName.." can be cast."
+		f.tooltip = string.format(L["FlashBarTooltip"], flashAlphaName)
 		f:SetChecked(spec.colors.bar.flashEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.flashEnabled = self:GetChecked()
@@ -1522,7 +1530,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 
 	-- Create the dropdown, and configure its appearance
 	controls.dropDown.thresholdIconRelativeTo = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_ThresholdIconRelativeTo", parent)
-	controls.dropDown.thresholdIconRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Relative Position of Threshold Line Icons", oUi.xCoord, yCoord)
+	controls.dropDown.thresholdIconRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdIconRelativePosition"], oUi.xCoord, yCoord)
 	controls.dropDown.thresholdIconRelativeTo.label.font:SetFontObject(GameFontNormal)
 	controls.dropDown.thresholdIconRelativeTo:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.thresholdIconRelativeTo, oUi.dropdownWidth)
@@ -1534,13 +1542,13 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		local entries = 25
 		local info = LibDD:UIDropDownMenu_CreateInfo()
 		local relativeTo = {}
-		relativeTo["Above"] = "TOP"
-		relativeTo["Middle"] = "CENTER"
-		relativeTo["Below"] = "BOTTOM"
+		relativeTo[L["PositionAbove"]] = "TOP"
+		relativeTo[L["PositionMiddle"]] = "CENTER"
+		relativeTo[L["PositionBelow"]] = "BOTTOM"
 		local relativeToList = {
-			"Above",
-			"Middle",
-			"Below"
+			L["PositionAbove"],
+			L["PositionMiddle"],
+			L["PositionBelow"]
 		}
 
 		for k, v in pairs(relativeToList) do
@@ -1569,9 +1577,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	controls.checkBoxes.thresholdIconEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_ThresholdIconEnabled", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.thresholdIconEnabled
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-	getglobal(f:GetName() .. 'Text'):SetText("Show ability icons for threshold lines?")
+	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdIconShow"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "When checked, icons for the threshold each line represents will be displayed. Configuration of size and location of these icons is below."
+	f.tooltip = L["ThresholdIconShowTooltip"]
 	f:SetChecked(spec.thresholds.icons.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.icons.enabled = self:GetChecked()
@@ -1584,9 +1592,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	controls.checkBoxes.thresholdIconDesaturated = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_ThresholdIconDesaturated", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.thresholdIconDesaturated
 	f:SetPoint("TOPLEFT", oUi.xCoord2+oUi.xPadding*2, yCoord-50)
-	getglobal(f:GetName() .. 'Text'):SetText("Desaturate icons when not usable")
+	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdIconDesaturate"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "When checked, icons will be desaturated when an ability is not usable (on cooldown, below minimum resource, lacking other requirements, etc.)."
+	f.tooltip = L["ThresholdIconDesaturateTooltip"]
 	f:SetChecked(spec.thresholds.icons.desaturated)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.icons.desaturated = self:GetChecked()
@@ -1597,7 +1605,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	end)
 
 	yCoord = yCoord - 100
-	title = "Threshold Icon Width"
+	title = L["ThresholdIconWidth"]
 	controls.thresholdIconWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.width, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.thresholdIconWidth:SetScript("OnValueChanged", function(self, value)
@@ -1620,7 +1628,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		end
 	end)
 
-	title = "Threshold Icon Height"
+	title = L["ThresholdIconHeight"]
 	controls.thresholdIconHeight = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 128, spec.thresholds.icons.height, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.thresholdIconHeight:SetScript("OnValueChanged", function(self, value)
@@ -1644,7 +1652,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 	end)
 
 
-	title = "Threshold Icon Horizontal Position (Relative)"
+	title = L["ThresholdIconHorizontal"]
 	yCoord = yCoord - 60
 	controls.thresholdIconHorizontal = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxWidth/2), math.floor(sanityCheckValues.barMaxWidth/2), spec.thresholds.icons.xPos, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
@@ -1654,11 +1662,10 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 		
 		if GetSpecialization() == specId then
 			TRB.Functions.Threshold:RedrawThresholdLines(spec)
-			--TRB.Functions.Bar:SetPosition(spec, TRB.Frames.barContainerFrame)
 		end
 	end)
 
-	title = "Threshold Icon Vertical Position (Relative)"
+	title = L["ThresholdIconVertical"]
 	controls.thresholdIconVertical = TRB.Functions.OptionsUi:BuildSlider(parent, title, math.ceil(-sanityCheckValues.barMaxHeight/2), math.floor(sanityCheckValues.barMaxHeight/2), spec.thresholds.icons.yPos, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.thresholdIconVertical:SetScript("OnValueChanged", function(self, value)
@@ -1672,7 +1679,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, contr
 
 	local maxIconBorderHeight = math.min(math.floor(spec.thresholds.icons.height / TRB.Data.constants.borderWidthFactor), math.floor(spec.thresholds.icons.width / TRB.Data.constants.borderWidthFactor))
 
-	title = "Threshold Icon Border Width"
+	title = L["ThresholdIconBorderWidth"]
 	yCoord = yCoord - 60
 	controls.thresholdIconBorderWidth = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, maxIconBorderHeight, spec.thresholds.icons.border, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
@@ -1702,15 +1709,15 @@ function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(pa
 	local title = ""
 
 	yCoord = yCoord - 40
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Potion on Cooldown Configuration", oUi.xCoord, yCoord)
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PotionCooldownConfigurationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 	controls.checkBoxes.potionCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_PotionCooldown_CB", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.potionCooldown
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Show potion threshold lines when potion is on cooldown")
+	getglobal(f:GetName() .. 'Text'):SetText(L["PotionThresholdShow"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "Shows the potion threshold lines while potion use is still on cooldown. Configure below how far in advance to have the lines be visible, between 0 - 300 seconds (300 being effectively 'always visible')."
+	f.tooltip = L["PotionThresholdShowTooltip"]
 	f:SetChecked(spec.thresholds.potionCooldown.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.potionCooldown.enabled = self:GetChecked()
@@ -1720,10 +1727,8 @@ function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(pa
 	controls.checkBoxes.potionCooldownModeGCDs = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_PotionCooldown_M_GCD", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.potionCooldownModeGCDs
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("GCDs left on Potion cooldown")
+	getglobal(f:GetName() .. 'Text'):SetText(L["PotionThresholdShowGCDs"])
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "Show potion threshold lines based on how many GCDs remain on potion cooldown."
 	if spec.thresholds.potionCooldown.mode == "gcd" then
 		f:SetChecked(true)
 	end
@@ -1733,7 +1738,7 @@ function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(pa
 		spec.thresholds.potionCooldown.mode = "gcd"
 	end)
 
-	title = "Potion Cooldown GCDs - 0.75sec Floor"
+	title = L["PotionThresholdShowGCDsSlider"]
 	controls.potionCooldownGCDs = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 400, spec.thresholds.potionCooldown.gcdsMax, 0.25, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.potionCooldownGCDs:SetScript("OnValueChanged", function(self, value)
@@ -1746,10 +1751,8 @@ function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(pa
 	controls.checkBoxes.potionCooldownModeTime = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_PotionCooldown_M_TIME", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.potionCooldownModeTime
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Time left on Potion cooldown")
+	getglobal(f:GetName() .. 'Text'):SetText(L["PotionThresholdShowTime"])
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "Change the bar color based on how many seconds remain until potions will come off cooldown."
 	if spec.thresholds.potionCooldown.mode == "time" then
 		f:SetChecked(true)
 	end
@@ -1759,7 +1762,7 @@ function TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(pa
 		spec.thresholds.potionCooldown.mode = "time"
 	end)
 
-	title = "Potion Cooldown Time Remaining"
+	title = L["PotionThresholdShowTimeSlider"]
 	controls.potionCooldownTime = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 300, spec.thresholds.potionCooldown.timeMax, 0.25, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.potionCooldownTime:SetScript("OnValueChanged", function(self, value)
@@ -1776,24 +1779,30 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	local _, className, _ = GetClassInfo(classId)
 	local f = nil
 
-	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Threshold Lines", oUi.xCoord, yCoord)
+	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ThresholdLinesHeader"], oUi.xCoord, yCoord)
 
 	controls.colors.threshold = {}
 
+	local overText = L["ThresholdHealerOver"]
+
+	if classId == 5 then
+		overText = L["ThresholdHealerOver2"]
+	end
+
 	yCoord = yCoord - 25
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana gain from potions and items (when usable)", spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-0)
+	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, overText, spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-0)
 	f = controls.colors.threshold.over
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
 	end)
 
-	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Mana potion or item on cooldown", spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-30)
+	controls.colors.threshold.unusable = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdHealerUnusable"], spec.colors.threshold.unusable, 300, 25, oUi.xCoord2, yCoord-30)
 	f = controls.colors.threshold.unusable
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "unusable")
 	end)
 
-	controls.colors.threshold.mindbender = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Passive mana gain per source", spec.colors.threshold.mindbender, 300, 25, oUi.xCoord2, yCoord-60)
+	controls.colors.threshold.mindbender = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdHealerPassive"], spec.colors.threshold.mindbender, 300, 25, oUi.xCoord2, yCoord-60)
 	f = controls.colors.threshold.mindbender
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "mindbender")
@@ -1802,24 +1811,24 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_ThresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.thresholdOverlapBorder
 	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-90)
-	getglobal(f:GetName() .. 'Text'):SetText("Threshold lines overlap bar border?")
+	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdLinesOverlap"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "When checked, threshold lines will span the full height of the bar and overlap the bar border."
+	f.tooltip = L["ThresholdLinesOverlapTooltip"]
 	f:SetChecked(spec.thresholds.overlapBorder)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.overlapBorder = self:GetChecked()
 		TRB.Functions.Threshold:RedrawThresholdLines(spec)
 	end)
 
-	controls.labels.thresholdPotions = TRB.Functions.OptionsUi:BuildLabel(parent, "Aerated Mana Potion", 5, yCoord, 300, 20)
+	controls.labels.thresholdPotions = TRB.Functions.OptionsUi:BuildLabel(parent, L["AeratedManaPotion"], 5, yCoord, 300, 20)
 	yCoord = yCoord - 20
 
 	controls.checkBoxes.aeratedManaPotionRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_AeratedManaPotionRank3", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.aeratedManaPotionRank3ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. "27,600 mana")
+	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. L["AeratedManaPotionRank3"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8) .. " (27,600 mana)"
+	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["AeratedManaPotion"], CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8), L["AeratedManaPotionRank3"])
 	f:SetChecked(spec.thresholds.aeratedManaPotionRank3.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.aeratedManaPotionRank3.enabled = self:GetChecked()
@@ -1829,9 +1838,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	controls.checkBoxes.aeratedManaPotionRank2ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_AeratedManaPotionRank2", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.aeratedManaPotionRank2ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. "24,000 mana")
+	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. L["AeratedManaPotionRank2"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8) .. " (24,000 mana)"
+	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["AeratedManaPotion"], CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8), L["AeratedManaPotionRank2"])
 	f:SetChecked(spec.thresholds.aeratedManaPotionRank2.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.aeratedManaPotionRank2.enabled = self:GetChecked()
@@ -1841,24 +1850,24 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	controls.checkBoxes.aeratedManaPotionRank1ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_AeratedManaPotionRank1", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.aeratedManaPotionRank1ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. "20,869 mana")
+	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. L["AeratedManaPotionRank1"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8) .. " (20,869 mana)"
+	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["AeratedManaPotion"], CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8), L["AeratedManaPotionRank1"])
 	f:SetChecked(spec.thresholds.aeratedManaPotionRank1.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.aeratedManaPotionRank1.enabled = self:GetChecked()
 	end)
 	yCoord = yCoord - 25
 
-	controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, "Potion of Frozen Focus", 5, yCoord, 300, 20)
+	controls.labels.builders = TRB.Functions.OptionsUi:BuildLabel(parent, L["PotionOfFrozenFocus"], 5, yCoord, 300, 20)
 	yCoord = yCoord - 20
 
 	controls.checkBoxes.potionOfFrozenFocusRank3ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_potionOfFrozenFocusRank3", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.potionOfFrozenFocusRank3ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. "48,300 mana + regen")
+	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 8, -8) .. L["PotionOfFrozenFocusRank3"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8) .. " (48,300 mana + regen)"
+	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["PotionOfFrozenFocus"], CreateAtlasMarkup("Professions-Icon-Quality-Tier3-Inv", 40, 32, 0, -8), L["PotionOfFrozenFocusRank3"])
 	f:SetChecked(spec.thresholds.potionOfFrozenFocusRank3.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.potionOfFrozenFocusRank3.enabled = self:GetChecked()
@@ -1868,9 +1877,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	controls.checkBoxes.potionOfFrozenFocusRank2ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_potionOfFrozenFocusRank2", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.potionOfFrozenFocusRank2ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. "42,000 mana + regen")
+	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 8, -8) .. L["PotionOfFrozenFocusRank2"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8) .. " (42,000 mana + regen)"
+	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["PotionOfFrozenFocus"], CreateAtlasMarkup("Professions-Icon-Quality-Tier2-Inv", 40, 32, 0, -8), L["PotionOfFrozenFocusRank2"])
 	f:SetChecked(spec.thresholds.potionOfFrozenFocusRank2.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.potionOfFrozenFocusRank2.enabled = self:GetChecked()
@@ -1880,26 +1889,57 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	controls.checkBoxes.potionOfFrozenFocusRank1ThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_potionOfFrozenFocusRank1", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.potionOfFrozenFocusRank1ThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. "36,531 mana + regen")
+	getglobal(f:GetName() .. 'Text'):SetText(CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 8, -8) .. L["PotionOfFrozenFocusRank1"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use an Aerated Mana Potion " .. CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8) .. " (36,531 mana + regen)"
+	f.tooltip = string.format("%s %s %s (%s)", L["ThresholdHealerPotionTooltipBase"], L["PotionOfFrozenFocus"], CreateAtlasMarkup("Professions-Icon-Quality-Tier1-Inv", 40, 32, 0, -8), L["PotionOfFrozenFocusRank1"])
 	f:SetChecked(spec.thresholds.potionOfFrozenFocusRank1.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.potionOfFrozenFocusRank1.enabled = self:GetChecked()
 	end)
 
-	if classId == 5 then
+	if classId == 2 and specId == 1 then
 		yCoord = yCoord - 25
-		controls.labels.thresholdAbilities = TRB.Functions.OptionsUi:BuildLabel(parent, "Abilities", 5, yCoord, 300, 20)
+		controls.labels.thresholdAbilities = TRB.Functions.OptionsUi:BuildLabel(parent, L["Abilities"], 5, yCoord, 300, 20)
+		
+		--NOTE: the order of these checkboxes is reversed!
+		yCoord = yCoord - 20
+		controls.checkBoxes.daybreakThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_daybreak_cooldown", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.daybreakThresholdShowCooldown
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
+		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
+		---@diagnostic disable-next-line: inject-field
+		f.tooltip = string.format(L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"], L["Daybreak"])
+		f:SetChecked(spec.thresholds.daybreak.cooldown)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.daybreak.cooldown = self:GetChecked()
+		end)
+		
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.daybreakThresholdShowCooldown, spec.thresholds.daybreak.enabled)
+		
+		controls.checkBoxes.daybreakThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_daybreak", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.daybreakThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["Daybreak"])
+		---@diagnostic disable-next-line: inject-field
+		f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["Daybreak"])
+		f:SetChecked(spec.thresholds.daybreak.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.daybreak.enabled = self:GetChecked()
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.daybreakThresholdShowCooldown, spec.thresholds.daybreak.enabled)
+		end)
+		yCoord = yCoord - 20
+	elseif classId == 5 then
+		yCoord = yCoord - 25
+		controls.labels.thresholdAbilities = TRB.Functions.OptionsUi:BuildLabel(parent, L["Abilities"], 5, yCoord, 300, 20)
 		
 		--NOTE: the order of these checkboxes is reversed!
 		yCoord = yCoord - 20
 		controls.checkBoxes.shadowfiendThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_shadowfiend_cooldown", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.shadowfiendThresholdShowCooldown
 		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
-		getglobal(f:GetName() .. 'Text'):SetText("Show while on cooldown?")
+		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
 		---@diagnostic disable-next-line: inject-field
-		f.tooltip = "Show the Shadowfiend threshold line when the ability is on cooldown."
+		f.tooltip = string.format(L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"], L["Shadowfiend"])
 		f:SetChecked(spec.thresholds.shadowfiend.cooldown)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shadowfiend.cooldown = self:GetChecked()
@@ -1910,28 +1950,69 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		controls.checkBoxes.shadowfiendThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_shadowfiend", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.shadowfiendThresholdShow
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Shadowfiend")
+		getglobal(f:GetName() .. 'Text'):SetText(L["Shadowfiend"])
 		---@diagnostic disable-next-line: inject-field
-		f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use Shadowfiend."
+		f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["Shadowfiend"])
 		f:SetChecked(spec.thresholds.shadowfiend.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shadowfiend.enabled = self:GetChecked()
 			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.shadowfiend.enabled)
 		end)
 		yCoord = yCoord - 20
+
+		if specId == 2 then		
+			--NOTE: the order of these checkboxes is reversed!
+			yCoord = yCoord - 25
+			controls.checkBoxes.symbolOfHopeThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_symbolOfHope_cooldown", parent, "ChatConfigCheckButtonTemplate")
+			f = controls.checkBoxes.symbolOfHopeThresholdShowCooldown
+			f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
+			getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
+			---@diagnostic disable-next-line: inject-field
+			f.tooltip = string.format(L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"], L["SymbolOfHope"])
+			f:SetChecked(spec.thresholds.symbolOfHope.cooldown)
+			f:SetScript("OnClick", function(self, ...)
+				spec.thresholds.symbolOfHope.cooldown = self:GetChecked()
+			end)
+			
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.symbolOfHopeThresholdShowCooldown, spec.thresholds.symbolOfHope.enabled)
+			
+			controls.checkBoxes.symbolOfHopeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_symbolOfHope", parent, "ChatConfigCheckButtonTemplate")
+			f = controls.checkBoxes.symbolOfHopeThresholdShow
+			f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+			getglobal(f:GetName() .. 'Text'):SetText(L["SymbolOfHope"])
+			---@diagnostic disable-next-line: inject-field
+			f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["SymbolOfHope"])
+			f:SetChecked(spec.thresholds.symbolOfHope.enabled)
+			f:SetScript("OnClick", function(self, ...)
+				spec.thresholds.symbolOfHope.enabled = self:GetChecked()
+				TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.symbolOfHopeThresholdShowCooldown, spec.thresholds.symbolOfHope.enabled)
+			end)
+
+			local title = L["ThresholdHealerSymbolOfHopeManaPercent"]
+			controls.symbolOfHopePercent = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 100, spec.thresholds.symbolOfHope.minimumManaPercent, 5, 5,
+											oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord-20)
+			controls.symbolOfHopePercent:SetScript("OnValueChanged", function(self, value)
+				value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+				value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+				self.EditBox:SetText(value)
+				spec.thresholds.symbolOfHope.minimumManaPercent = value
+			end)
+
+			yCoord = yCoord - 20
+		end
 	end
 
 	yCoord = yCoord - 25
-	controls.labels.thresholdItems = TRB.Functions.OptionsUi:BuildLabel(parent, "Items", 5, yCoord, 300, 20)
+	controls.labels.thresholdItems = TRB.Functions.OptionsUi:BuildLabel(parent, L["Items"], 5, yCoord, 300, 20)
 	
 	--NOTE: the order of these checkboxes is reversed!
 	yCoord = yCoord - 20
 	controls.checkBoxes.conjuredChillglobeThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_conjuredChillglobe_cooldown", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.conjuredChillglobeThresholdShowCooldown
 	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
-	getglobal(f:GetName() .. 'Text'):SetText("Show while on cooldown?")
+	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "Show the Conjured Chillglobe threshold line when the item is on cooldown."
+	f.tooltip = string.format(L["ThresholdHealerShowWhileOnCooldownTooltipWithItem"], L["ConjuredChillglobe"])
 	f:SetChecked(spec.thresholds.conjuredChillglobe.cooldown)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.conjuredChillglobe.cooldown = self:GetChecked()
@@ -1944,7 +2025,7 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText("Conjured Chillglobe")
 	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "This will show the vertical line on the bar denoting how much Mana you will gain if you use the Conjured Chillglobe trinket. Only shown below 65% mana."
+	f.tooltip = L["ThresholdHealerToggleConjuredChillglobe"]
 	f:SetChecked(spec.thresholds.conjuredChillglobe.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.conjuredChillglobe.enabled = self:GetChecked()
@@ -1958,13 +2039,13 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 end
 
 function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, includeOvercap)
-	local _, className, _ = GetClassInfo(classId)
+	--local _, className, _ = GetClassInfo(classId)
 	local f = nil
-	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Colors + Changing", oUi.xCoord, yCoord)
+	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarColorsChangingHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
 	controls.colors.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, primaryResourceString, spec.colors.bar.base, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.base		
+	f = controls.colors.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "base")
 	end)
@@ -1976,13 +2057,13 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 	local _, className, _ = GetClassInfo(classId)
 	local f = nil
 
-	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Bar Border Color + Changing", oUi.xCoord, yCoord)
+	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarBorderColorsChangingHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 25
-	controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border is normal/base border", spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["BorderColorBase"], spec.colors.bar.border, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame, 3)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "border", "border", barBorderFrame)
 	end)
 
 	if includeOvercap then
@@ -1990,15 +2071,15 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 		controls.checkBoxes.overcapEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Border_Option_overcapBorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.overcapEnabled
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Change border color when overcapping")
+		getglobal(f:GetName() .. 'Text'):SetText(L["BorderColorOvercapToggle"])
 		---@diagnostic disable-next-line: inject-field
-		f.tooltip = "This will change the bar's border color when your current hardcast spell will result in overcapping "..primaryResourceString.." (as configured)."
+		f.tooltip = string.format(L["BorderColorOvercapToggleTooltip"], primaryResourceString)
 		f:SetChecked(spec.colors.bar.overcapEnabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.overcapEnabled = self:GetChecked()
 		end)
 
-		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when your current hardcast will overcap "..primaryResourceString, spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.borderOvercap = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["BorderColorOvercap"], primaryResourceString), spec.colors.bar.borderOvercap, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.borderOvercap
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "borderOvercap")
@@ -2010,15 +2091,15 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 		controls.checkBoxes.innervateBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_innervateBorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.innervateBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Innervate")
+		getglobal(f:GetName() .. 'Text'):SetText(L["Innervate"])
 		---@diagnostic disable-next-line: inject-field
-		f.tooltip = "This will change the bar border color when you have Innervate."
+		f.tooltip = L["BorderColorInnervateToggleTooltip"]
 		f:SetChecked(spec.colors.bar.innervateBorderChange)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.innervateBorderChange = self:GetChecked()
 		end)
 
-		controls.colors.innervate = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Innervate", spec.colors.bar.innervate, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.innervate = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["BorderColorInnervate"], spec.colors.bar.innervate, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.innervate
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "innervate")
@@ -2028,15 +2109,15 @@ function TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls,
 		controls.checkBoxes.potionOfChilledClarityBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_potionOfChilledClarityBorderChange", parent, "ChatConfigCheckButtonTemplate")
 		f = controls.checkBoxes.potionOfChilledClarityBorderChange
 		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText("Potion of Chilled Clarity")
+		getglobal(f:GetName() .. 'Text'):SetText(L["PotionOfChilledClarity"])
 		---@diagnostic disable-next-line: inject-field
-		f.tooltip = "This will change the bar border color when you have Potion of Chilled Clarity's effect."
+		f.tooltip =  L["BorderColorPotionOfChilledClarityToggleTooltip"]
 		f:SetChecked(spec.colors.bar.potionOfChilledClarityBorderChange)
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.potionOfChilledClarityBorderChange = self:GetChecked()
 		end)
 		
-		controls.colors.potionOfChilledClarity = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Border when you have Potion of Chilled Clarity's effect", spec.colors.bar.potionOfChilledClarity, 300, 25, oUi.xCoord2, yCoord)
+		controls.colors.potionOfChilledClarity = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["BorderColorPotionOfChilledClarity"], spec.colors.bar.potionOfChilledClarity, 300, 25, oUi.xCoord2, yCoord)
 		f = controls.colors.potionOfChilledClarity
 		f:SetScript("OnMouseDown", function(self, button, ...)
 			TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "potionOfChilledClarity")
@@ -2051,19 +2132,14 @@ function TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 
 	local f = nil
 	local title = ""
 
-	local exampleMinus = -25
-	local exampleDiff = primaryResourceMax + exampleMinus
-
-	controls.overcappingConfiguration = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Overcapping Configuration", oUi.xCoord, yCoord)
+	controls.overcappingConfiguration = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["OvercappingConfigurationHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 40
 	controls.checkBoxes.overcapModeRelative = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Overcap_RadioButton_Relative", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.overcapModeRelative
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Relative offset from maximum")
+	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapRelativeOffset"], primaryResourceString))
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "Set the overcap to be some relative value below your current maximum "..primaryResourceString..". Example: when the maximum "..primaryResourceString.." is "..primaryResourceMax..", setting this to "..exampleMinus.." will cause overcapping to occur at "..exampleDiff.." "..primaryResourceString.."."
 	if spec.overcap.mode == "relative" then
 		f:SetChecked(true)
 	end
@@ -2073,7 +2149,7 @@ function TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 
 		spec.overcap.mode = "relative"
 	end)
 
-	title = "Relative Offset Amount"
+	title = string.format(L["OvercapRelativeOffsetAmount"], primaryResourceString)
 	controls.overcapRelative = TRB.Functions.OptionsUi:BuildSlider(parent, title, -primaryResourceMax, 0, spec.overcap.relative, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.overcapRelative:SetScript("OnValueChanged", function(self, value)
@@ -2087,10 +2163,8 @@ function TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 
 	controls.checkBoxes.overcapModeFixed = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Overcap_RadioButton_Fixed", parent, "UIRadioButtonTemplate")
 	f = controls.checkBoxes.overcapModeFixed
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Fixed value")
+	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["OvercapFixedValue"], primaryResourceString))
 	getglobal(f:GetName() .. 'Text'):SetFontObject(GameFontHighlight)
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = "Set the overcap to be at an exact value, regardless of maximum "..primaryResourceString.."."
 	if spec.overcap.mode == "fixed" then
 		f:SetChecked(true)
 	end
@@ -2100,7 +2174,7 @@ function TRB.Functions.OptionsUi:GenerateOvercapOptions(parent, controls, spec, 
 		spec.overcap.mode = "fixed"
 	end)
 
-	title = "Overcap Above"
+	title = string.format(L["OvercapAbove"], primaryResourceString)
 	controls.overcapFixed = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, primaryResourceMax, spec.overcap.fixed, 1, 2,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.overcapFixed:SetScript("OnValueChanged", function(self, value)
@@ -2118,12 +2192,12 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 	controls.colors.text = controls.colors.text or {}
 	controls.dropDown.fonts = {}
 
-	controls.textDisplayDefaultSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Default Bar Text Font Settings", oUi.xCoord, yCoord)
+	controls.textDisplayDefaultSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DefaultBarTextFontSettingsHeader"], oUi.xCoord, yCoord)
 	yCoord = yCoord - 30
 
 	-- Create the dropdown, and configure its appearance
 	controls.dropDown.fontDefault = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_fontDefault", parent)
-	controls.dropDown.fontDefault.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, "Default Font Face", oUi.xCoord, yCoord)
+	controls.dropDown.fontDefault.label = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["DefaultFontFace"], oUi.xCoord, yCoord)
 	controls.dropDown.fontDefault.label.font:SetFontObject(GameFontNormal)
 	controls.dropDown.fontDefault:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.fontDefault, oUi.dropdownWidth)
@@ -2141,7 +2215,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 			for i=0, menus-1 do
 				info.hasArrow = true
 				info.notCheckable = true
-				info.text = "Fonts " .. i+1
+				info.text = L["Fonts"] .. " " .. i+1
 				info.menuList = i
 				LibDD:UIDropDownMenu_AddButton(info)
 			end
@@ -2173,7 +2247,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 	end
 
 	yCoord = yCoord - 30
-	controls.colors.text.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, "Default Font Color", spec.displayText.default.color,
+	controls.colors.text.color = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["DefaultFontColor"], spec.displayText.default.color,
 																		250, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.color
 	f:SetScript("OnMouseDown", function(self, button, ...)
@@ -2182,7 +2256,7 @@ function TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, sp
 	end)
 
 	yCoord = yCoord - 60
-	title = "Default Font Size"
+	title = L["DefaultFontSize"]
 	controls.fontSizeDefault = TRB.Functions.OptionsUi:BuildSlider(parent, title, 6, 72, spec.displayText.default.fontSize, 1, 0,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.fontSizeDefault:SetScript("OnValueChanged", function(self, value)
@@ -2275,7 +2349,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	local btoHeight = 400
 	local barTextTable = TRB.Details.addonData.libs.ScrollingTable:CreateST(columns, 4, 15, nil, btc, false, false)
 	
-	local addButton = TRB.Functions.OptionsUi:BuildButton(parent, "Add New Bar Text Area", 450, yCoord, 175, 25)
+	local addButton = TRB.Functions.OptionsUi:BuildButton(parent, L["AddNewBarTextArea"], 450, yCoord, 175, 25)
 
 	local barTextOptionsFrame = CreateFrame("Frame", "TwintopResourceBar_"..classId.."_"..specId.."_BarTextOptionsFrame", parent, "BackdropTemplate")
 	barTextOptionsFrame:SetPoint("TOPLEFT", btc, "BOTTOMLEFT", 0, 0)
@@ -2289,16 +2363,17 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	local barTextName = TRB.Functions.OptionsUi:BuildTextBox(barTextOptionsFrame, "", 200, 250, 20, oUi.xCoord, yCoord)
 ---@diagnostic disable-next-line: inject-field
-	barTextName.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, "Name", oUi.xCoord, yCoord+25)
+	barTextName.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["Name"], oUi.xCoord, yCoord+25)
 	barTextName.label.font:SetFontObject(GameFontNormal)
 	
 	local barTextEntryEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_TextEnabled", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	barTextEntryEnabled:SetPoint("TOPLEFT", oUi.xCoord2, yCoord)
-	getglobal(barTextEntryEnabled:GetName() .. 'Text'):SetText("Enabled")
-	barTextEntryEnabled.tooltip = "Is this Bar Text enabled and will be shown?"
+	getglobal(barTextEntryEnabled:GetName() .. 'Text'):SetText(L["Enabled"])
+---@diagnostic disable-next-line: inject-field
+	barTextEntryEnabled.tooltip = L["BarTextEntryEnabledTooltip"]
 
 	yCoord = yCoord - 40
-	title = "Horizontal Offset"
+	title = L["HorizontalOffset"]
 	local barTextHorizontal = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, math.ceil(-sanityCheckValues.barMaxWidth), math.floor(sanityCheckValues.barMaxWidth), 0, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	barTextHorizontal:SetScript("OnValueChanged", function(self, value)
@@ -2307,7 +2382,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
 	end)
 
-	title = "Vertical Offset"
+	title = L["VerticalOffset"]
 	local barTextVertical = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, math.ceil(-sanityCheckValues.barMaxHeight), math.floor(sanityCheckValues.barMaxHeight), 0, 1, 2,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	barTextVertical:SetScript("OnValueChanged", function(self, value)
@@ -2319,7 +2394,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	yCoord = yCoord - 40
 	-- Create the dropdown, and configure its appearance
 	local barTextRelativeToFrame = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_barTextRelativeToFrame", barTextOptionsFrame)
-	barTextRelativeToFrame.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, "Bound to Bar", oUi.xCoord, yCoord)
+	barTextRelativeToFrame.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["BoundToBar"], oUi.xCoord, yCoord)
 	barTextRelativeToFrame.label.font:SetFontObject(GameFontNormal)
 	barTextRelativeToFrame:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 	LibDD:UIDropDownMenu_SetWidth(barTextRelativeToFrame, oUi.dropdownWidth)
@@ -2331,146 +2406,203 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		local entries = 25
 		local info = LibDD:UIDropDownMenu_CreateInfo()
 		local relativeTo = {}
-		relativeTo["Main Resource Bar"] = "Resource"
-		relativeTo["Screen"] = "UIParent"
-		--relativeTo["Center"] = "CENTER"
-		--relativeTo["Right"] = "RIGHT"
+		relativeTo[L["MainResourceBar"]] = "Resource"
+		relativeTo[L["Screen"]] = "UIParent"
 		local relativeToList = {
-			"Main Resource Bar",
-			"Screen"
+			L["MainResourceBar"],
+			L["Screen"]
 		}
 
-		if (classId == 4 and specId == 1) then -- Assassination Rogue
-			relativeTo["Combo Point 1"] = "ComboPoint_1"
-			relativeTo["Combo Point 2"] = "ComboPoint_2"
-			relativeTo["Combo Point 3"] = "ComboPoint_3"
-			relativeTo["Combo Point 4"] = "ComboPoint_4"
-			relativeTo["Combo Point 5"] = "ComboPoint_5"
-			relativeTo["Combo Point 6"] = "ComboPoint_6"
+		
+		if (classId == 2) then -- Paladin
+			relativeTo[L["HolyPower1"]] = "ComboPoint_1"
+			relativeTo[L["HolyPower2"]] = "ComboPoint_2"
+			relativeTo[L["HolyPower3"]] = "ComboPoint_3"
+			relativeTo[L["HolyPower4"]] = "ComboPoint_4"
+			relativeTo[L["HolyPower5"]] = "ComboPoint_5"
 			relativeToList = {
-				"Main Resource Bar",
-				"Combo Point 1",
-				"Combo Point 2",
-				"Combo Point 3",
-				"Combo Point 4",
-				"Combo Point 5",
-				"Combo Point 6",
-				"Screen",
+				L["MainResourceBar"],
+				L["HolyPower1"],
+				L["HolyPower2"],
+				L["HolyPower3"],
+				L["HolyPower4"],
+				L["HolyPower5"],
+				L["Screen"],
+			}
+		elseif (classId == 4 and specId == 1) then -- Assassination Rogue
+			relativeTo[L["ComboPoint1"]] = "ComboPoint_1"
+			relativeTo[L["ComboPoint2"]] = "ComboPoint_2"
+			relativeTo[L["ComboPoint3"]] = "ComboPoint_3"
+			relativeTo[L["ComboPoint4"]] = "ComboPoint_4"
+			relativeTo[L["ComboPoint5"]] = "ComboPoint_5"
+			relativeTo[L["ComboPoint6"]] = "ComboPoint_6"
+			relativeToList = {
+				L["MainResourceBar"],
+				L["ComboPoint1"],
+				L["ComboPoint2"],
+				L["ComboPoint3"],
+				L["ComboPoint4"],
+				L["ComboPoint5"],
+				L["ComboPoint6"],
+				L["Screen"],
 			}
 		elseif (classId == 4 and specId == 2) then -- Outlaw Rogue
-			relativeTo["Combo Point 1"] = "ComboPoint_1"
-			relativeTo["Combo Point 2"] = "ComboPoint_2"
-			relativeTo["Combo Point 3"] = "ComboPoint_3"
-			relativeTo["Combo Point 4"] = "ComboPoint_4"
-			relativeTo["Combo Point 5"] = "ComboPoint_5"
-			relativeTo["Combo Point 6"] = "ComboPoint_6"
-			relativeTo["Combo Point 7"] = "ComboPoint_7"
+			relativeTo[L["ComboPoint1"]] = "ComboPoint_1"
+			relativeTo[L["ComboPoint2"]] = "ComboPoint_2"
+			relativeTo[L["ComboPoint3"]] = "ComboPoint_3"
+			relativeTo[L["ComboPoint4"]] = "ComboPoint_4"
+			relativeTo[L["ComboPoint5"]] = "ComboPoint_5"
+			relativeTo[L["ComboPoint6"]] = "ComboPoint_6"
+			relativeTo[L["ComboPoint7"]] = "ComboPoint_7"
 			relativeToList = {
-				"Main Resource Bar",
-				"Combo Point 1",
-				"Combo Point 2",
-				"Combo Point 3",
-				"Combo Point 4",
-				"Combo Point 5",
-				"Combo Point 6",
-				"Combo Point 7",
-				"Screen",
+				L["MainResourceBar"],
+				L["ComboPoint1"],
+				L["ComboPoint2"],
+				L["ComboPoint3"],
+				L["ComboPoint4"],
+				L["ComboPoint5"],
+				L["ComboPoint6"],
+				L["ComboPoint7"],
+				L["Screen"],
+			}
+		elseif (classId == 4 and specId == 3) then -- Subtlety Rogue
+			relativeTo[L["ComboPoint1"]] = "ComboPoint_1"
+			relativeTo[L["ComboPoint2"]] = "ComboPoint_2"
+			relativeTo[L["ComboPoint3"]] = "ComboPoint_3"
+			relativeTo[L["ComboPoint4"]] = "ComboPoint_4"
+			relativeTo[L["ComboPoint5"]] = "ComboPoint_5"
+			relativeTo[L["ComboPoint6"]] = "ComboPoint_6"
+			relativeTo[L["ComboPoint7"]] = "ComboPoint_7"
+			relativeToList = {
+				L["MainResourceBar"],
+				L["ComboPoint1"],
+				L["ComboPoint2"],
+				L["ComboPoint3"],
+				L["ComboPoint4"],
+				L["ComboPoint5"],
+				L["ComboPoint6"],
+				L["ComboPoint7"],
+				L["Screen"],
+			}
+		elseif (classId == 5 and specId == 1) then -- Discipline Priest
+			relativeTo[L["PowerWordRadianceCharge1"]] = "PowerWord_Radiance_1"
+			relativeTo[L["PowerWordRadianceCharge2"]] = "PowerWord_Radiance_2"
+			relativeToList = {
+				L["MainResourceBar"],
+				L["PowerWordRadianceCharge1"],
+				L["PowerWordRadianceCharge2"],
+				L["Screen"],
 			}
 		elseif (classId == 5 and specId == 2) then -- Holy Priest
-			relativeTo["Holy Word: Serenity (1st Charge)"] = "HolyWord_Serenity_1"
-			relativeTo["Holy Word: Serenity (2nd Charge)"] = "HolyWord_Serenity_2"
-			relativeTo["Holy Word: Sanctify (1st Charge)"] = "HolyWord_Sanctify_1"
-			relativeTo["Holy Word: Sanctify (2nd Charge)"] = "HolyWord_Sanctify_2"
-			relativeTo["Holy Word: Chastise"] = "HolyWord_Chastise_1"
+			relativeTo[L["HolyWordSerenityCharge1"]] = "HolyWord_Serenity_1"
+			relativeTo[L["HolyWordSerenityCharge2"]] = "HolyWord_Serenity_2"
+			relativeTo[L["HolyWordSanctifyCharge1"]] = "HolyWord_Sanctify_1"
+			relativeTo[L["HolyWordSanctifyCharge2"]] = "HolyWord_Sanctify_2"
+			relativeTo[L["HolyWordChastiseCharge1"]] = "HolyWord_Chastise_1"
 			relativeToList = {
-				"Main Resource Bar",
-				"Holy Word: Serenity (1st Charge)",
-				"Holy Word: Serenity (2nd Charge)",
-				"Holy Word: Sanctify (1st Charge)",
-				"Holy Word: Sanctify (2nd Charge)",
-				"Holy Word: Chastise",
-				"Screen",
+				L["MainResourceBar"],
+				L["HolyWordSerenityCharge1"],
+				L["HolyWordSerenityCharge2"],
+				L["HolyWordSanctifyCharge1"],
+				L["HolyWordSanctifyCharge2"],
+				L["HolyWordChastiseCharge1"],
+				L["Screen"],
 			}
 		elseif (classId == 7 and specId == 2) then -- Enhancement Shaman
-			relativeTo["Maelstrom 1"] = "ComboPoint_1"
-			relativeTo["Maelstrom 2"] = "ComboPoint_2"
-			relativeTo["Maelstrom 3"] = "ComboPoint_3"
-			relativeTo["Maelstrom 4"] = "ComboPoint_4"
-			relativeTo["Maelstrom 5"] = "ComboPoint_5"
-			relativeTo["Maelstrom 6"] = "ComboPoint_6"
-			relativeTo["Maelstrom 7"] = "ComboPoint_7"
-			relativeTo["Maelstrom 8"] = "ComboPoint_8"
-			relativeTo["Maelstrom 9"] = "ComboPoint_9"
-			relativeTo["Maelstrom 10"] = "ComboPoint_10"
+			relativeTo[L["Maelstrom1"]] = "ComboPoint_1"
+			relativeTo[L["Maelstrom2"]] = "ComboPoint_2"
+			relativeTo[L["Maelstrom3"]] = "ComboPoint_3"
+			relativeTo[L["Maelstrom4"]] = "ComboPoint_4"
+			relativeTo[L["Maelstrom5"]] = "ComboPoint_5"
+			relativeTo[L["Maelstrom6"]] = "ComboPoint_6"
+			relativeTo[L["Maelstrom7"]] = "ComboPoint_7"
+			relativeTo[L["Maelstrom8"]] = "ComboPoint_8"
+			relativeTo[L["Maelstrom9"]] = "ComboPoint_9"
+			relativeTo[L["Maelstrom10"]] = "ComboPoint_10"
 			relativeToList = {
-				"Main Resource Bar",
-				"Maelstrom 1",
-				"Maelstrom 2",
-				"Maelstrom 3",
-				"Maelstrom 4",
-				"Maelstrom 5",
-				"Maelstrom 6",
-				"Maelstrom 7",
-				"Maelstrom 8",
-				"Maelstrom 9",
-				"Maelstrom 10",
-				"Screen",
+				L["MainResourceBar"],
+				L["Maelstrom1"],
+				L["Maelstrom2"],
+				L["Maelstrom3"],
+				L["Maelstrom4"],
+				L["Maelstrom5"],
+				L["Maelstrom6"],
+				L["Maelstrom7"],
+				L["Maelstrom8"],
+				L["Maelstrom9"],
+				L["Maelstrom10"],
+				L["Screen"],
 			}
 		elseif (classId == 10 and specId == 3) then -- Windwalker Monk
-			relativeTo["Chi 1"] = "ComboPoint_1"
-			relativeTo["Chi 2"] = "ComboPoint_2"
-			relativeTo["Chi 3"] = "ComboPoint_3"
-			relativeTo["Chi 4"] = "ComboPoint_4"
-			relativeTo["Chi 5"] = "ComboPoint_5"
-			relativeTo["Chi 6"] = "ComboPoint_6"
+			relativeTo[L["Chi1"]] = "ComboPoint_1"
+			relativeTo[L["Chi2"]] = "ComboPoint_2"
+			relativeTo[L["Chi3"]] = "ComboPoint_3"
+			relativeTo[L["Chi4"]] = "ComboPoint_4"
+			relativeTo[L["Chi5"]] = "ComboPoint_5"
+			relativeTo[L["Chi6"]] = "ComboPoint_6"
 			relativeToList = {
-				"Main Resource Bar",
-				"Chi 1",
-				"Chi 2",
-				"Chi 3",
-				"Chi 4",
-				"Chi 5",
-				"Chi 6",
-				"Screen",
+				L["MainResourceBar"],
+				L["Chi1"],
+				L["Chi2"],
+				L["Chi3"],
+				L["Chi4"],
+				L["Chi5"],
+				L["Chi6"],
+				L["Screen"],
 			}
 		elseif (classId == 11 and specId == 2) then -- Feral Druid
-			relativeTo["Combo Point 1"] = "ComboPoint_1"
-			relativeTo["Combo Point 2"] = "ComboPoint_2"
-			relativeTo["Combo Point 3"] = "ComboPoint_3"
-			relativeTo["Combo Point 4"] = "ComboPoint_4"
-			relativeTo["Combo Point 5"] = "ComboPoint_5"
+			relativeTo[L["ComboPoint1"]] = "ComboPoint_1"
+			relativeTo[L["ComboPoint2"]] = "ComboPoint_2"
+			relativeTo[L["ComboPoint3"]] = "ComboPoint_3"
+			relativeTo[L["ComboPoint4"]] = "ComboPoint_4"
+			relativeTo[L["ComboPoint5"]] = "ComboPoint_5"
 			relativeToList = {
-				"Main Resource Bar",
-				"Combo Point 1",
-				"Combo Point 2",
-				"Combo Point 3",
-				"Combo Point 4",
-				"Combo Point 5",
-				"Screen",
+				L["MainResourceBar"],
+				L["ComboPoint1"],
+				L["ComboPoint2"],
+				L["ComboPoint3"],
+				L["ComboPoint4"],
+				L["ComboPoint5"],
+				L["Screen"],
+			}
+		elseif (classId == 12 and specId == 2) then -- Vengeance Demon Hunter
+			relativeTo[L["SoulFragment1"]] = "ComboPoint_1"
+			relativeTo[L["SoulFragment2"]] = "ComboPoint_2"
+			relativeTo[L["SoulFragment3"]] = "ComboPoint_3"
+			relativeTo[L["SoulFragment4"]] = "ComboPoint_4"
+			relativeTo[L["SoulFragment5"]] = "ComboPoint_5"
+			relativeToList = {
+				L["MainResourceBar"],
+				L["SoulFragment1"],
+				L["SoulFragment2"],
+				L["SoulFragment3"],
+				L["SoulFragment4"],
+				L["SoulFragment5"],
+				L["Screen"],
 			}
 		elseif (classId == 13) then -- Evoker
-			relativeTo["Essence 1"] = "ComboPoint_1"
-			relativeTo["Essence 2"] = "ComboPoint_2"
-			relativeTo["Essence 3"] = "ComboPoint_3"
-			relativeTo["Essence 4"] = "ComboPoint_4"
-			relativeTo["Essence 5"] = "ComboPoint_5"
-			relativeTo["Essence 6"] = "ComboPoint_6"
+			relativeTo[L["Essence1"]] = "ComboPoint_1"
+			relativeTo[L["Essence2"]] = "ComboPoint_2"
+			relativeTo[L["Essence3"]] = "ComboPoint_3"
+			relativeTo[L["Essence4"]] = "ComboPoint_4"
+			relativeTo[L["Essence5"]] = "ComboPoint_5"
+			relativeTo[L["Essence6"]] = "ComboPoint_6"
 			relativeToList = {
-				"Main Resource Bar",
-				"Essence 1",
-				"Essence 2",
-				"Essence 3",
-				"Essence 4",
-				"Essence 5",
-				"Essence 6",
-				"Screen",
+				L["MainResourceBar"],
+				L["Essence1"],
+				L["Essence2"],
+				L["Essence3"],
+				L["Essence4"],
+				L["Essence5"],
+				L["Essence6"],
+				L["Screen"],
 			}
 		end
 
 		for k, v in pairs(relativeToList) do
 			info.text = v
 			info.value = relativeTo[v]
-			info.checked = false --relativeTo[v] == spec.comboPoints.relativeTo
+			info.checked = false
 			info.func = self.SetValue
 			info.arg1 = relativeTo[v]
 			info.arg2 = v
@@ -2481,7 +2613,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	-- Create the dropdown, and configure its appearance
 	local barTextRelativeTo = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_barTextRelativeTo", barTextOptionsFrame)
-	barTextRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, "Relative Position of Bar Text to selected Bar", oUi.xCoord2, yCoord)
+	barTextRelativeTo.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["RelativePositionBarTextHeader"], oUi.xCoord2, yCoord)
 	barTextRelativeTo.label.font:SetFontObject(GameFontNormal)
 	barTextRelativeTo:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	LibDD:UIDropDownMenu_SetWidth(barTextRelativeTo, oUi.dropdownWidth)
@@ -2493,31 +2625,31 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		local entries = 25
 		local info = LibDD:UIDropDownMenu_CreateInfo()
 		local relativeTo = {}
-		relativeTo["Top Left"] = "TOPLEFT"
-		relativeTo["Top"] = "TOP"
-		relativeTo["Top Right"] = "TOPRIGHT"
-		relativeTo["Left"] = "LEFT"
-		relativeTo["Center"] = "CENTER"
-		relativeTo["Right"] = "RIGHT"
-		relativeTo["Bottom Left"] = "BOTTOMLEFT"
-		relativeTo["Bottom"] = "BOTTOM"
-		relativeTo["Bottom Right"] = "BOTTOMRIGHT"
+		relativeTo[L["PositionTopLeft"]] = "TOPLEFT"
+		relativeTo[L["PositionTop"]] = "TOP"
+		relativeTo[L["PositionTopRight"]] = "TOPRIGHT"
+		relativeTo[L["PositionLeft"]] = "LEFT"
+		relativeTo[L["PositionCenter"]] = "CENTER"
+		relativeTo[L["PositionRight"]] = "RIGHT"
+		relativeTo[L["PositionBottomLeft"]] = "BOTTOMLEFT"
+		relativeTo[L["PositionBottom"]] = "BOTTOM"
+		relativeTo[L["PositionBottomRight"]] = "BOTTOMRIGHT"
 		local relativeToList = {
-			"Top Left",
-			"Top",
-			"Top Right",
-			"Left",
-			"Center",
-			"Right",
-			"Bottom Left",
-			"Bottom",
-			"Bottom Right"
+			L["PositionTopLeft"],
+			L["PositionTop"],
+			L["PositionTopRight"],
+			L["PositionLeft"],
+			L["PositionCenter"],
+			L["PositionRight"],
+			L["PositionBottomLeft"],
+			L["PositionBottom"],
+			L["PositionBottomRight"]
 		}
 
 		for k, v in pairs(relativeToList) do
 			info.text = v
 			info.value = relativeTo[v]
-			info.checked = false --relativeTo[v] == spec.comboPoints.relativeTo
+			info.checked = false
 			info.func = self.SetValue
 			info.arg1 = relativeTo[v]
 			info.arg2 = v
@@ -2539,7 +2671,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	-- Create the dropdown, and configure its appearance
 	local font = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_font", barTextOptionsFrame)
-	font.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, "Font Face", oUi.xCoord, yCoord)
+	font.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["FontFaceHeader"], oUi.xCoord, yCoord)
 	font.label.font:SetFontObject(GameFontNormal)
 	font:SetPoint("TOPLEFT", oUi.xCoord, yCoord-30)
 	LibDD:UIDropDownMenu_SetWidth(font, oUi.dropdownWidth)
@@ -2557,7 +2689,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			for i=0, menus-1 do
 				info.hasArrow = true
 				info.notCheckable = true
-				info.text = "Fonts " .. i+1
+				info.text = L["Fonts"] .. " " .. i+1
 				info.menuList = i
 				LibDD:UIDropDownMenu_AddButton(info)
 			end
@@ -2568,7 +2700,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				if k > start and k <= start + entries then
 					info.text = v
 					info.value = fonts[v]
-					info.checked = false -- fonts[v] == spec.displayText.default.fontFace
+					info.checked = false
 					info.func = self.SetValue
 					info.arg1 = fonts[v]
 					info.arg2 = v
@@ -2590,8 +2722,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	local useDefaultFontFace = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontFace", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontFace:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-60)
-	getglobal(useDefaultFontFace:GetName() .. 'Text'):SetText("Use default Font Face")
-	useDefaultFontFace.tooltip = "This will make this bar text area use the default font face instead of the font face chosen above."
+	getglobal(useDefaultFontFace:GetName() .. 'Text'):SetText(L["UseDefaultFontFace"])
+	---@diagnostic disable-next-line: inject-field
+	useDefaultFontFace.tooltip = L["UseDefaultFontFaceTooltip"]
 	useDefaultFontFace:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontFace = self:GetChecked()
 		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
@@ -2599,7 +2732,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	-- Create the dropdown, and configure its appearance
 	local barTextJustifyHorizontal = LibDD:Create_UIDropDownMenu("TwintopResourceBar_"..className.."_"..specId.."_barTextJustifyHorizontal", barTextOptionsFrame)
-	barTextJustifyHorizontal.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, "Font Horizontal Alignment (Justify)", oUi.xCoord2, yCoord)
+	barTextJustifyHorizontal.label = TRB.Functions.OptionsUi:BuildSectionHeader(barTextOptionsFrame, L["FontHorizontalAlignmentHeader"], oUi.xCoord2, yCoord)
 	barTextJustifyHorizontal.label.font:SetFontObject(GameFontNormal)
 	barTextJustifyHorizontal:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
 	LibDD:UIDropDownMenu_SetWidth(barTextJustifyHorizontal, oUi.dropdownWidth)
@@ -2611,19 +2744,19 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		local entries = 25
 		local info = LibDD:UIDropDownMenu_CreateInfo()
 		local relativeTo = {}
-		relativeTo["Left"] = "LEFT"
-		relativeTo["Center"] = "CENTER"
-		relativeTo["Right"] = "RIGHT"
+		relativeTo[L["PositionLeft"]] = "LEFT"
+		relativeTo[L["PositionCenter"]] = "CENTER"
+		relativeTo[L["PositionRight"]] = "RIGHT"
 		local relativeToList = {
-			"Left",
-			"Center",
-			"Right",
+			L["PositionLeft"],
+			L["PositionCenter"],
+			L["PositionRight"],
 		}
 
 		for k, v in pairs(relativeToList) do
 			info.text = v
 			info.value = relativeTo[v]
-			info.checked = false --relativeTo[v] == spec.comboPoints.relativeTo
+			info.checked = false
 			info.func = self.SetValue
 			info.arg1 = relativeTo[v]
 			info.arg2 = v
@@ -2638,10 +2771,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		LibDD:CloseDropDownMenus()
 		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
 	end
-
 	
 	yCoord = yCoord - 100
-	title = "Font Size"
+	title = L["FontSize"]
 	local fontSize = TRB.Functions.OptionsUi:BuildSlider(barTextOptionsFrame, title, 6, 72, 18, 1, 0,
 								oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	fontSize:SetScript("OnValueChanged", function(self, value)
@@ -2652,17 +2784,17 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	local useDefaultFontSize = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontSize", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontSize:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding, yCoord-40)
-	getglobal(useDefaultFontSize:GetName() .. 'Text'):SetText("Use default Font Size")
-	useDefaultFontSize.tooltip = "This will make this bar text area use the default font size instead of the font size chosen above."
+	getglobal(useDefaultFontSize:GetName() .. 'Text'):SetText(L["UseDefaultFontSize"])
+	---@diagnostic disable-next-line: inject-field
+	useDefaultFontSize.tooltip = L["UseDefaultFontSizeTooltip"]
 	useDefaultFontSize:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontSize = self:GetChecked()
 		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
 	end)
 
-	--yCoord = yCoord - 30
 	controls.colors = controls.colors or {}
 	controls.colors.barText = controls.colors.barText or {}
-	controls.colors.barText.color = TRB.Functions.OptionsUi:BuildColorPicker(barTextOptionsFrame, "Font Color", "FFFFFFFF",
+	controls.colors.barText.color = TRB.Functions.OptionsUi:BuildColorPicker(barTextOptionsFrame, L["FontColor"], "FFFFFFFF",
 																			250, 25, oUi.xCoord2, yCoord)
 	local barTextColor = controls.colors.barText.color
 	barTextColor:SetScript("OnMouseDown", function(self, button, ...)
@@ -2671,8 +2803,9 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	local useDefaultFontColor = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_useDefaultFontColor", barTextOptionsFrame, "ChatConfigCheckButtonTemplate")
 	useDefaultFontColor:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-30)
-	getglobal(useDefaultFontColor:GetName() .. 'Text'):SetText("Use default Font Color")
-	useDefaultFontColor.tooltip = "This will make this bar text area use the default font color instead of the font color chosen above."
+	getglobal(useDefaultFontColor:GetName() .. 'Text'):SetText(L["UseDefaultFontColor"])
+	---@diagnostic disable-next-line: inject-field
+	useDefaultFontColor.tooltip = L["UseDefaultFontColorTooltip"]
 	useDefaultFontColor:SetScript("OnClick", function(self, ...)
 		workingBarText.useDefaultFontColor = self:GetChecked()
 		TRB.Functions.BarText:CreateBarTextFrames(spec, classId, specId)
@@ -2680,14 +2813,13 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 
 	yCoord = yCoord - 70
-	controls.labels.barText = TRB.Functions.OptionsUi:BuildLabel(barTextOptionsFrame, "Bar Text", oUi.xCoord, yCoord, 90, 20)
+	controls.labels.barText = TRB.Functions.OptionsUi:BuildLabel(barTextOptionsFrame, L["BarText"], oUi.xCoord, yCoord, 90, 20)
 
 	yCoord = yCoord - 20
 	local barText = TRB.Functions.OptionsUi:CreateBarTextInputPanel(barTextOptionsFrame, namePrefix .. "_Text", "",
 													590, 45, oUi.xCoord, yCoord)
 	barText:SetCursorPosition(0)
 
-	---comment
 	---@param displayText TRB.Classes.DisplayText
 	---@param btt table # LibScrollingTable
 	local function SetTableValues(displayText, btt)
@@ -2703,36 +2835,15 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 						},
 						{
 							value = displayText.barText[i].name,
-							--["args"] = nil,
-							--[[["color"] = {
-								["r"] = r,
-								["g"] = g,
-								["b"] = b,
-								["a"] = a,
-							},]]
-							--["colorargs"] = nil,
-							--["DoCellUpdate"] = nil,
 						},
 						{
 							value = displayText.barText[i].position.relativeToFrameName,
 						},
 						{
 							value = displayText.barText[i].text,
-							--[[["color"] = {
-								["r"] = r,
-								["g"] = g,
-								["b"] = b,
-								["a"] = a,
-							},]]
 						},
 						{
 							value = "X",
-							--[[["color"] = {
-								["r"] = 1,
-								["g"] = 0,
-								["b"] = 0,
-								["a"] = 1,
-							}]]
 						}
 					}
 				})
@@ -2742,7 +2853,6 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 		btt:EnableSelection(true)
 	end
 
-	---comment
 	---@return TRB.Classes.DisplayTextEntry
 	local function GetNewDisplayTextEntry()
 		return {
@@ -2750,27 +2860,26 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			useDefaultFontFace = false,
 			useDefaultFontSize = false,
 			useDefaultFontColor = false,
-			name = "New Bar Text Entry",
+			name = L["NewBarTextEntry"],
 			text = "",
 			guid = TRB.Functions.String:Guid(),
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
-			fontJustifyHorizontalName = "Left",
+			fontJustifyHorizontalName = L["PositionLeft"],
 			fontSize=18,
 			color="FFFFFFFF",
 			position = {
 				xPos = 0,
 				yPos = 0,
 				relativeTo = "LEFT",
-				relativeToName = "Left",
+				relativeToName = L["PositionLeft"],
 				relativeToFrame = "Resource",
-				relativeToFrameName = "Main Resource Bar"
+				relativeToFrameName = L["MainResourceBar"]
 			}
 		}
 	end
 
-	---comment
 	---@param guid string
 	---@param dt TRB.Classes.DisplayText
 	local function FillBarTextEditorFields(guid, dt)
@@ -2862,6 +2971,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 	local function DeleteBarTextRow(displayText, deleteClassId, deleteSpecId, row, btt)
 		btt:SetSelection()
 		table.remove(displayText.barText, row)
+---@diagnostic disable-next-line: missing-fields
 		workingBarText = {}
 		SetTableValues(displayText, btt)
 		TRB.Functions.BarText:CreateBarTextFrames(spec, deleteClassId, deleteSpecId)
@@ -2870,8 +2980,8 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 	StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteBarText"] = {
 		text = "",
-		button1 = "Yes",
-		button2 = "No",
+		button1 = L["Yes"],
+		button2 = L["No"],
 		OnShow = function(self, data)
 			self.text:SetFormattedText(data.message)
 			self.data = data
@@ -2895,7 +3005,7 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 
 					if column == 5 then
 						StaticPopup_Show("TwintopResourceBar_ConfirmDeleteBarText", nil, nil, {
-							message = "Are you sure you want to delete '"..data[realrow].cols[2].value.."'?",
+							message = string.format(L["BarTextDeleteConfirmation"], data[realrow].cols[2].value),
 							displayText = spec.displayText,
 							row = realrow,
 							btt = scrollingTable,

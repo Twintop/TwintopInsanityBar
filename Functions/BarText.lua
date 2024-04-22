@@ -1,11 +1,11 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
-local _, _, classIndexId = UnitClass("player")
+local L = TRB.Localization
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.BarText = {}
 
 local function TryUpdateText(frame, text)
 	frame.font:SetText(text)
+	frame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
 end
 
 local function ScanForLogicSymbols(input)
@@ -25,6 +25,7 @@ local function ScanForLogicSymbols(input)
 	local index = 0
 
 	local all = {}
+	local ins = {}
 
 	local endLength = (string.len(input) + 1)
 
@@ -85,20 +86,14 @@ local function ScanForLogicSymbols(input)
 			e = endLength
 		end
 
-		--if k == k_1 then
-		--	k = endLength
-		--end
-
 		min = math.min(a, b, c, d, e, f, g, h, i, j, k, k_1, l, m, n, o, p, q, r, s, t)
 		index = index + 1
 
 		if min <= string.len(input) then
-			local ins = {
-				position = min,
-				level = currentLevel,
-				parenthesisLevel = currentParenthesisLevel,
-				index = index
-			}
+			ins.position = min
+			ins.level = currentLevel
+			ins.parenthesisLevel = currentParenthesisLevel
+			ins.index = index
 
 			if min == a then
 				currentLevel = currentLevel + 1
@@ -183,7 +178,13 @@ local function ScanForLogicSymbols(input)
 				break
 			end
 
-			table.insert(all, ins)
+			table.insert(all, {
+				position = ins.position,
+				level = ins.level,
+				parenthesisLevel = ins.parenthesisLevel,
+				index = ins.index,
+				symbol = ins.symbol
+			})
 		else
 			currentPosition = string.len(input) + 1
 			break
@@ -384,7 +385,7 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 							if resultCode then
 								local pcallSuccess, result = pcall(resultFunc)
 								if not pcallSuccess then-- Something went wrong, show the error text instead
-									returnText = returnText .. "{INVALID IF/ELSE LOGIC}"
+									returnText = returnText .. L["BarTextInvalidIfElseLogic"]
 								elseif result == true or result then
 									-- Recursive call for "IF", once we find the matched ]
 									local trueText = string.sub(input, nextOpenResult.position - positionOffset + 1, nextCloseResult.position - positionOffset - 1)
@@ -395,7 +396,7 @@ local function RemoveInvalidVariablesFromBarText(inputString)
 									returnText = returnText .. RemoveInvalidVariablesFromBarText_Inner(falseText, elseOpenResult.index, elseCloseResult.index - 1, elseOpenResult.position, elseCloseResult.position - 1)
 								end
 							else -- Something went wrong, show the error text instead
-								returnText = returnText .. "{INVALID IF/ELSE LOGIC}"
+								returnText = returnText .. L["BarTextInvalidIfElseLogic"]
 							end
 
 							if elseCloseResult ~= nil and hasElse == true then
@@ -450,16 +451,21 @@ local function AddToBarTextCache(input)
 		function(a, b)
 			return string.len(a.variable) > string.len(b.variable)
 		end)
+	local barTextIconsVars = barTextVariables.icons
+	table.sort(barTextIconsVars,
+		function(a, b)
+			return string.len(a.variable) > string.len(b.variable)
+		end)
 	
 	--Only loop through this while we're not at the end of the string AND we haven't done 1000 checks. This is a sanity checker to prevent an infinite run for some reason!
 	while p <= string.len(input) and infinity < 1000 do
 		infinity = infinity + 1
-		local a, b, c, d, z, a1, b1, c1, d1, z1
+		local a, b, c, d, z, z1
 		local match = false
-		a, a1 = string.find(input, "#", p)
-		b, b1 = string.find(input, "%$", p)
-		c, c1 = string.find(input, "|", p)
-		d, d1 = string.find(input, "%%", p)
+		a, _ = string.find(input, "#", p)
+		b, _ = string.find(input, "%$", p)
+		c, _ = string.find(input, "|", p)
+		d, _ = string.find(input, "%%", p)
 		if a ~= nil and (b == nil or a < b) and (c == nil or a < c) and (d == nil or a < d) then
 			if string.sub(input, a+1, a+6) == "spell_" then
 				z, z1 = string.find(input, "_", a+7)
@@ -503,7 +509,7 @@ local function AddToBarTextCache(input)
 				end
 			else
 				for x = 1, iconEntries do
-					z, z1 = string.find(input, barTextVariables.icons[x].variable, a-1)
+					z, z1 = string.find(input, barTextIconsVars[x].variable, a-1)
 					if z ~= nil and z == a then
 						match = true
 						if p ~= a then
@@ -511,7 +517,7 @@ local function AddToBarTextCache(input)
 						end
 
 						returnText = returnText .. "%s"
-						table.insert(returnVariables, barTextVariables.icons[x].variable)
+						table.insert(returnVariables, barTextIconsVars[x].variable)
 
 						p = z1 + 1
 						break
@@ -845,7 +851,7 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 		valid = true
 	elseif var == "$ttd" or var == "$ttdSeconds" then
 		local targetData = TRB.Data.snapshotData.targetData --[[@as TRB.Classes.TargetData]]
-		if targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and target ~= nil and target.timeToDie.time > 0 then
+		if targetData.currentTargetGuid ~= nil and UnitGUID("target") ~= nil and targetData.targets[targetData.currentTargetGuid] ~= nil and targetData.targets[targetData.currentTargetGuid].timeToDie.time > 0 then
 			valid = true
 		end
 	elseif var == "$inCombat" then
@@ -858,18 +864,19 @@ function TRB.Functions.BarText:IsValidVariableBase(var)
 end
 
 function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
-	if settings ~= nil and settings.bar ~= nil then
-		TRB.Functions.BarText:RefreshLookupDataBase(settings)
-		TRB.Functions.RefreshLookupData()
+	--Always refresh the lookup data as this also updates the global variable used by other addons/WAs
+	TRB.Functions.BarText:RefreshLookupDataBase(settings)
+	TRB.Functions.RefreshLookupData()
 	
-		if refreshText then
-			---@type Frame[]
-			local textFrames = TRB.Frames.textFrames
-			local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
-
-			local entries = TRB.Functions.Table:Length(displayText.barText)
-			if entries > 0 then
-				for i = 1, entries do
+	--Only parse bar text if we're we need to refresh the text
+	if settings ~= nil and settings.bar ~= nil and refreshText then
+		---@type Frame[]
+		local textFrames = TRB.Frames.textFrames
+		local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
+		local entries = TRB.Functions.Table:Length(displayText.barText)
+		if entries > 0 then
+			for i = 1, entries do
+				if displayText.barText[i].enabled then
 					local e = displayText.barText[i]
 					local color = e.color
 					
@@ -884,14 +891,11 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 
 					local returnText = GetReturnText(barText)
 
-					local pcallResult = pcall(TryUpdateText, textFrames[i], returnText)
+					--local pcallResult = pcall(TryUpdateText, textFrames[i], returnText)
+					pcall(TryUpdateText, textFrames[i], returnText)
 					
 					textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
 					textFrames[i]:SetFrameStrata(TRB.Data.settings.core.strata.level)
-					--[[textFrames[i].font:SetJustifyH(fontJustifyHorizontal)
-					textFrames[i].font:SetFont(fontFace, fontSize, "OUTLINE")
-					textFrames[i].font:ClearAllPoints()
-					textFrames[i].font:SetPoint(relativeTo, relativeToFrame, relativeTo, e.position.xPos, e.position.yPos)]]
 				end
 			end
 		end
@@ -958,20 +962,23 @@ function TRB.Functions.BarText:CreateBarTextFrames(settings, classId, specId)
 			textFrames[frameCount]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
 			textFrames[frameCount]:SetFrameStrata(TRB.Data.settings.core.strata.level)
 
+---@diagnostic disable-next-line: undefined-field
+			local font = textFrames[frameCount].font
+
 			if relativeToFrame ~= nil and e.enabled then
-				textFrames[frameCount].font:SetTextColor(255/255, 255/255, 255/255, 1.0)
-				textFrames[frameCount].font:SetJustifyH(fontJustifyHorizontal)
-				textFrames[frameCount].font:SetFont(fontFace, fontSize, "OUTLINE")
-				textFrames[frameCount].font:Show()
-				textFrames[frameCount].font:ClearAllPoints()
-				textFrames[frameCount].font:SetPoint(relativeTo, relativeToFrame, relativeTo, e.position.xPos, e.position.yPos)				
+				font:SetTextColor(255/255, 255/255, 255/255, 1.0)
+				font:SetJustifyH(fontJustifyHorizontal)
+				font:SetFont(fontFace, fontSize, "OUTLINE")
+				font:Show()
+				font:ClearAllPoints()
+				font:SetPoint(relativeTo, relativeToFrame, relativeTo, e.position.xPos, e.position.yPos)				
 				textFrames[frameCount]:SetParent(relativeToFrame)
 				textFrames[frameCount]:ClearAllPoints()
-				textFrames[frameCount]:SetAllPoints(textFrames[frameCount].font)
+				textFrames[frameCount]:SetAllPoints(font)
 				textFrames[frameCount]:Show()
 			else
 				textFrames[frameCount]:Hide()
-				textFrames[frameCount].font:Hide()
+				font:Hide()
 			end
 		end
 	end
@@ -979,9 +986,21 @@ function TRB.Functions.BarText:CreateBarTextFrames(settings, classId, specId)
 	local textFramesEntries = TRB.Functions.Table:Length(textFrames)
 	-- We have extra frames we don't need now, probably because we changed talents/specs/deleted one in config. Hide extras.
 	if textFramesEntries > frameCount then
-		for i = frameCount, textFramesEntries do
+		for i = frameCount+1, textFramesEntries do
 			textFrames[i]:Hide()
+			---@diagnostic disable-next-line: undefined-field
 			textFrames[i].font:Hide()
 		end
+	end
+end
+
+---Returns a string formatted time value based on settings for precision
+---@param value number # Timer value to format
+---@return string # String formatted value with correct precision based on thresholds
+function TRB.Functions.BarText:TimerPrecision(value)
+	if value >= TRB.Data.settings.core.timers.precisionThreshold then
+		return string.format("%."..TRB.Data.settings.core.timers.precisionHigh.."f", value)
+	else
+		return string.format("%."..TRB.Data.settings.core.timers.precisionLow.."f", value)
 	end
 end

@@ -93,7 +93,7 @@ local unitDeathHealthPercentageList = {
     ["36597"] = 0.1, -- The Lich King
 
     ---- Cataclysm ----
-    --- Grim Batol ---
+    --- Grim Batol ---  
     ["40320"] = 0.2, -- Valiona
     --- Firelands ---
     ["52409"] = Firelands_Ragnaros,
@@ -123,7 +123,7 @@ local unitDeathHealthPercentageList = {
     ---- Battle for Azeroth ----
     --- Uldir ---
     ["135452"] = 0.1, -- MOTHER
-    -- Battle of Dazar'alor ---
+    --- Battle of Dazar'alor ---
     ["165396"] = 0.055, -- Lady Jaina Proudmoore
 
     ---- Shadowlands ----
@@ -138,6 +138,7 @@ local unitDeathHealthPercentageList = {
     ["175732"] = SanctumOfDomination_SylvanasWindrunner,
 
     ---- Dragonflight ----
+    ["209574"] = 0.2, -- Aurostor
     --- Brackenhide Hollow ---
     ["186121"] = 0.045, -- Decatriarch Wratheye
     --- Uldaman: Legacy of Tyr ---
