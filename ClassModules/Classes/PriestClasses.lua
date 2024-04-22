@@ -46,7 +46,7 @@ TRB.Classes.Priest.HealerSpell.__index = TRB.Classes.Priest.HealerSpell
 function TRB.Classes.Priest.HealerSpells:New()
        ---@type TRB.Classes.Healer.HealerSpells
        local base = TRB.Classes.Healer.HealerSpells
-       self = setmetatable(base:New(), TRB.Classes.Priest.DisciplineSpells) --[[@as TRB.Classes.Priest.DisciplineSpells]]
+       self = setmetatable(base:New(), TRB.Classes.Priest.HealerSpells) --[[@as TRB.Classes.Priest.HealerSpells]]
    
        -- Priest Class Baseline Abilities
        self.shadowWordPain = TRB.Classes.SpellBase:New({
