@@ -411,6 +411,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 				id = 203981,
 				name = "",
 				icon = "",
+				texture = "",
+				attributes = {},
 				maxResource = 5
 			},
 

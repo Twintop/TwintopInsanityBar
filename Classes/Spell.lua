@@ -2,6 +2,49 @@
 local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
 
+---@class TRB.Classes.SpellsData
+---@field public spells TRB.Classes.SpecializationSpellsBase # Dictionary of spells
+---@field public fillManaCost boolean # Should the mana cost of spells also be filled when `FillSpellData()` is called?
+
+TRB.Classes.SpellsData = {}
+TRB.Classes.SpellsData.__index = TRB.Classes.SpellsData
+
+---Create a new SpellsData
+---@param fillManaCost boolean? # Should the mana cost of spells also be filled with `FillSpellData()` is called?
+---@return TRB.Classes.SpellsData
+function TRB.Classes.Spells:New(fillManaCost)
+    local self = {}
+    setmetatable(self, TRB.Classes.SpellsData)
+    
+    ---@type TRB.Classes.SpecializationSpellsBase
+    self.spells = {}
+    self.fillManaCost = fillManaCost or false
+
+    return self
+end
+
+---Fills extra spell data for all spells in the dictionary.
+function TRB.Classes.SpellsData:FillSpellData()
+	for _, v in pairs(self.spells) do
+        
+        v--[[@as TRB.Classes.SpellBase]]:FillSpellData()
+	end
+end
+
+
+---@class TRB.Classes.SpecializationSpellsBase
+TRB.Classes.SpecializationSpellsBase = {}
+TRB.Classes.SpecializationSpellsBase.__index = TRB.Classes.SpecializationSpellsBase
+
+---Create a new SpecializationSpellsBase
+---@return TRB.Classes.SpecializationSpellsBase
+function TRB.Classes.SpecializationSpellsBase:New()
+    local self = {}
+    setmetatable(self, TRB.Classes.SpecializationSpellsBase)
+    return self
+end
+
+
 ---@class TRB.Classes.SpellBase
 ---@field public id integer # Primary spell ID of the spell. This can be the spellbook ID, spell associated with the talent ID, the buff/debuff ID, an energize ID, or something else. This is the spell ID that is used, by default, to populate the `name` and `icon` properties.
 ---@field public spellId integer? # Spell ID differs from the main `id`.
@@ -33,6 +76,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public resourcePerTicks number? # How many resources are generated per tick.
 ---@field public isBuff boolean? # Is this spell a buff?
 ---@field public isPvp boolean? # Is this a PvP only spell?
+---@field public tocMinVersion number? # Minimum TOC version of WoW before attempting to use/load this spell.
 ---@field public attributes { [string]: any } # Spell specific values that will need to be looked up during gameplay.
 
 TRB.Classes.SpellBase = {}
@@ -46,7 +90,7 @@ function TRB.Classes.SpellBase:New(spellAttributes)
     setmetatable(self, TRB.Classes.SpellBase)
     
     ---@type { [string]: any }
-    self.attributes = {}
+    local attributes = {}
     for key, value in pairs(spellAttributes) do
         if  (key == "id"              and type(value) == "number" and tonumber(value, 10) ~= nil) or
             (key == "spellId"         and type(value) == "number" and tonumber(value, 10) ~= nil) or
@@ -75,18 +119,27 @@ function TRB.Classes.SpellBase:New(spellAttributes)
             (key == "tickRate"        and type(value) == "number") or
             (key == "resourcePerTick" and type(value) == "number") or
             (key == "isBuff"          and type(value) == "boolean") or
-            (key == "isPvP"           and type(value) == "boolean") then
+            (key == "isPvP"           and type(value) == "boolean") or
+            (key == "tocMinVersion"   and type(value) == "number") then
             self[key] = value
         elseif key == "name" or key == "icon" then
             print(string.format("TRB: Unexpected property `%s` provided with value `%s`.", key, value))
+        elseif key == "attributes" then
+            --Do nothing, we'll merge after
         else
             --[[if key ~= "settingKey" and key ~= "thresholdId" and key ~= "mana" and key ~= "resourcePercent" and key ~= "itemIds" and key ~= "isSnowflake" and
                key ~= "holyWordKey" and key ~= "holyWordReduction" and key ~= "holyWordModifier" and key ~= "tickDuration" then
                 print(string.format("TRB: Attribute `%s`", key))
             end]]
-            self.attributes[key] = value
+            attributes[key] = value
         end
     end
+
+    if spellAttributes["attributes"] ~= nil then
+        TRB.Functions.Table:Merge(attributes, spellAttributes["attributes"])
+    end
+
+    self.attributes = attributes
 
     if self.pandemic and self.baseDuration ~= nil and type(self.baseDuration) == "number" and self.baseDuration > 0 and self.pandemicTime == nil then
         self.pandemicTime = self.baseDuration * 0.3
@@ -99,6 +152,73 @@ function TRB.Classes.SpellBase:New(spellAttributes)
     return self
 end
 
+---Fills extra spell data from various API calls. Properties to be filled include: `name`, `icon`, and `texture`.
+function TRB.Classes.SpellBase:FillSpellData()
+    if self.tocMinVersion == nil or TRB.Details.addonData.toc >= self.tocMinVersion then
+        if self.itemId ~= nil and self.useSpellIcon ~= true then
+            local _, name, icon
+            name, _, _, _, _, _, _, _, _, icon = GetItemInfo(self.itemId)
+            if name ~= nil then
+                self.name = name
+            end
+
+            if self.iconName ~= nil then
+                icon = "Interface\\Icons\\" .. self.iconName
+            end
+            
+            if icon ~= nil then
+                self.icon = string.format("|T%s:0|t", icon)
+                self.texture = icon
+            end
+        elseif self.id ~= nil or (self.spellId ~= nil and self.useSpellIcon == true) then
+            local _, name, icon
+            if self.spellId ~= nil and self.useSpellIcon == true then
+                name, _, icon = GetSpellInfo(self.spellId)
+            else
+                name, _, icon = GetSpellInfo(self.id)
+            end
+            
+            if self.iconName ~= nil then
+                icon = "Interface\\Icons\\" .. self.iconName
+            end
+
+            self.icon = string.format("|T%s:0|t", icon)
+            self.name = name
+
+            if self.thresholdId ~= nil then
+                self.texture = icon
+            end
+        end
+    end
+end
+
+---Gets the current mana cost of the spell.
+---@return number # Mana cost of the spell.
+function TRB.Classes.SpellBase:GetManaCost()
+	local spc = GetSpellPowerCost(self.spellId)
+	local length = TRB.Functions.Table:Length(spc)
+
+	for x = 1, length do
+		if spc[x]["name"] == "MANA" and spc[x]["cost"] > 0 then
+			return spc[x]["cost"]
+		end
+	end
+	return 0
+end
+
+---Gets the current mana cost per second of the spell.
+---@return number # Mana cost per second of the spell.
+function TRB.Classes.SpellBase:GetSpellManaCostPerSecond()
+	local spc = GetSpellPowerCost(self.spellId)
+	local length = TRB.Functions.Table:Length(spc)
+
+	for x = 1, length do
+		if spc[x]["name"] == "MANA" and spc[x]["costPerSec"] > 0 then
+			return spc[x]["costPerSec"]
+		end
+	end
+	return 0
+end
 
 
 ---@class TRB.Classes.SpellThreshold : TRB.Classes.SpellBase
