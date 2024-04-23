@@ -78,7 +78,8 @@ local function LoadDefaultSettings()
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			bar = {
 				width=1555,
@@ -2230,12 +2231,12 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "zhTW", "zhTW")
 
 	local percentFormat = "%3.2f%%"
-	local localeText2 = string.format(percentFormat, 12.00)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.62)
+	local localeText2 = string.format(percentFormat, 11.99)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.61)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.48)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.48)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 12.21)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 12.20)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.48)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.48)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.48)

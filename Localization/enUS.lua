@@ -1973,3 +1973,6 @@ L["PaladinHolyAudioCheckboxInfusionOfLightStack2"] = "Play audio cue when you ha
 L["PaladinHolyAudioCheckboxInfusionOfLightStack2Tooltip"] = "Play audio cue when you get a second (and maximum) Infusion of Light proc. If both are checked, only this sound will play."
 L["PaladinHolyBarTextVariable_iolTime"] = "Time remaining on your Infusion of Light buff"
 L["PaladinHolyBarTextVariable_iolStacks"] = "Current stack count on your Infusion of Light buff"
+
+L["ShowBarDragonriding"] = "Show while on a Dragonriding mount?"
+L["ShowBarDragonridingTooltip"] = "If unchecked, the Resource Bar will be hidden when on a Dragonriding mount regardless of the above settings."

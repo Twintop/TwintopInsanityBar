@@ -130,6 +130,7 @@ end
 ---@param customProperties TRB.Classes.BuffCustomProperty[]
 function TRB.Classes.SnapshotBuff:SetCustomProperties(customProperties)
     self.customPropertiesDefinitions = customProperties
+    self:Reset()
 end
 
 ---Resets the object to default values
@@ -252,9 +253,9 @@ local function ParseBuffData(buff, aura)
                 buff.customProperties[prop.name] = aura.points[prop.index]
                 if buff.customProperties[prop.name] ~= nil then
                     if prop.dataType == "number" then
-                        buff.customProperties[prop.name] = tonumber(buff.customProperties[prop.name])
+                        buff.customProperties[prop.name] = tonumber(buff.customProperties[prop.name] * prop.modifier)
                     elseif prop.dataType == "integer" then
-                        buff.customProperties[prop.name] = math.floor(tonumber(buff.customProperties[prop.name]))
+                        buff.customProperties[prop.name] = math.floor(tonumber(buff.customProperties[prop.name] * prop.modifier))
                     end
                 else
                     if prop.dataType == "number" then
@@ -535,18 +536,24 @@ end
 ---@field public index integer
 ---@field public dataType string
 ---@field public name string
+---@field public modifier number
 TRB.Classes.BuffCustomProperty = {}
 TRB.Classes.BuffCustomProperty.__index = TRB.Classes.BuffCustomProperty
 
 
 ---Creates a new BuffCustomProperty object
+---@param index integer
+---@param dataType string
+---@param name string
+---@param modifier number?
 ---@return TRB.Classes.BuffCustomProperty
-function TRB.Classes.BuffCustomProperty:New(index, dataType, name)
+function TRB.Classes.BuffCustomProperty:New(index, dataType, name, modifier)
     local self = {}
     setmetatable(self, TRB.Classes.BuffCustomProperty)
 
     self.index = index
     self.dataType = dataType
     self.name = name
+    self.modifier = modifier or 1
     return self
 end

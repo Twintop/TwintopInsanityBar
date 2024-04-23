@@ -4627,7 +4627,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
 	if specId == 1 then
-		if not TRB.Data.specSupported or force or ((not affectingCombat) and
+		if not TRB.Data.specSupported or force or
+			(TRB.Data.character.advancedFlight and not TRB.Data.settings.priest.discipline.displayBar.dragonriding) or 
+			((not affectingCombat) and
 			(not UnitInVehicle("player")) and (
 				(not TRB.Data.settings.priest.discipline.displayBar.alwaysShow) and (
 					(not TRB.Data.settings.priest.discipline.displayBar.notZeroShow) or
@@ -4645,7 +4647,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			end
 		end
 	elseif specId == 2 then
-		if not TRB.Data.specSupported or force or ((not affectingCombat) and
+		if not TRB.Data.specSupported or force or
+			(TRB.Data.character.advancedFlight and not TRB.Data.settings.priest.holy.displayBar.dragonriding) or 
+			((not affectingCombat) and
 			(not UnitInVehicle("player")) and (
 				(not TRB.Data.settings.priest.holy.displayBar.alwaysShow) and (
 					(not TRB.Data.settings.priest.holy.displayBar.notZeroShow) or
@@ -4663,7 +4667,9 @@ function TRB.Functions.Class:HideResourceBar(force)
 			end
 		end
 	elseif specId == 3 then
-		if not TRB.Data.specSupported or force or ((not affectingCombat) and
+		if not TRB.Data.specSupported or force or
+			(TRB.Data.character.advancedFlight and not TRB.Data.settings.priest.shadow.displayBar.dragonriding) or 
+			((not affectingCombat) and
 			(not UnitInVehicle("player")) and (
 				(not TRB.Data.settings.priest.shadow.displayBar.alwaysShow) and (
 					(not TRB.Data.settings.priest.shadow.displayBar.notZeroShow) or

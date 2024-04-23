@@ -216,7 +216,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			endOfEclipse = {
 				enabled=true,
@@ -710,7 +711,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			bar = {
 				width=555,
@@ -1047,7 +1049,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			bar = {
 				width=555,
@@ -1287,7 +1290,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"], "balance", true, L["DruidBalanceStarsurge"], L["DruidBalanceStarsurge"])
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 100
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 1, yCoord, L["ResourceAstralPower"])
 
 		yCoord = yCoord - 30
@@ -2229,7 +2232,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"], "notFull", false)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 100
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 2, yCoord, L["ResourceEnergy"])
 
 		yCoord = yCoord - 30
@@ -3185,7 +3188,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"], "notFull", false)
 
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 100
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 11, 4, yCoord, L["ResourceMana"])
 
 		yCoord = yCoord - 30

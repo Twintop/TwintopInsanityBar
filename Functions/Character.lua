@@ -3,6 +3,19 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Character = {}
 
+--TODO: Find a better home for this.
+local function OnAdvFlyEnabled()
+	TRB.Data.character.advancedFlight = true
+	TRB.Functions.Bar:HideResourceBar()
+end
+
+local function OnAdvFlyDisabled()
+	TRB.Data.character.advancedFlight = false
+	TRB.Functions.Bar:ShowResourceBar()
+end
+
+TRB.Details.addonData.libs.LibAdvFlight.RegisterCallback(TRB.Details.addonData.libs.LibAdvFlight.Events.ADV_FLYING_ENABLED, OnAdvFlyEnabled);
+TRB.Details.addonData.libs.LibAdvFlight.RegisterCallback(TRB.Details.addonData.libs.LibAdvFlight.Events.ADV_FLYING_DISABLED, OnAdvFlyDisabled);
 
 function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.guid = UnitGUID("player")
@@ -11,6 +24,7 @@ function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
 	TRB.Data.character.inPetBattle = C_PetBattles.IsInBattle()
 	TRB.Data.character.onTaxi = UnitOnTaxi("player")
+	TRB.Data.character.advancedFlight = TRB.Details.addonData.libs.LibAdvFlight.IsAdvFlyEnabled()
 
 	TRB.Data.barTextCache = {}
 	TRB.Functions.Spell:FillSpellData()

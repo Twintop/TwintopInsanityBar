@@ -1897,4 +1897,6 @@ if locale == "frFR" then
     L["PaladinHolyAudioCheckboxInfusionOfLightStack2Tooltip"] = "Jouez un signal audio lorsque vous obtenez un deuxième (et maximum) processus d'infusion de lumière. Si les deux sont cochés, seul ce son sera joué."
     L["PaladinHolyBarTextVariable_iolTime"] = "Temps restant sur votre buff Infusion de Lumière"
     L["PaladinHolyBarTextVariable_iolStacks"] = "Nombre actuel de stacks sur votre buff Infusion de Lumière"
+    L["ShowBarDragonriding"] = "Afficher sur une monture Dragonrider ?"
+    L["ShowBarDragonridingTooltip"] = "Si cette case n'est pas cochée, la barre de ressources sera masquée sur une monture Dragonriding, quels que soient les paramètres ci-dessus."
 end

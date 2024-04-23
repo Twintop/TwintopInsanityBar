@@ -2603,7 +2603,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]] or TRB.Classes.SnapshotData:New()
 
 		if specId == 1 then
-			if not TRB.Data.specSupported or force or GetSpecialization() ~= 1 or ((not affectingCombat) and
+			if not TRB.Data.specSupported or force or
+			(TRB.Data.character.advancedFlight and not TRB.Data.settings.shaman.elemental.displayBar.dragonriding) or 
+			((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.shaman.elemental.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.shaman.elemental.displayBar.notZeroShow) or
@@ -2621,7 +2623,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end
 			end
 		elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
-			if not TRB.Data.specSupported or force or ((not affectingCombat) and
+			if not TRB.Data.specSupported or force or
+			(TRB.Data.character.advancedFlight and not TRB.Data.settings.shaman.enhancement.displayBar.dragonriding) or 
+			((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.shaman.enhancement.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.shaman.enhancement.displayBar.notZeroShow) or
@@ -2639,7 +2643,9 @@ if classIndexId == 7 then --Only do this if we're on a Shaman!
 				end
 			end
 		elseif specId == 3 then
-			if not TRB.Data.specSupported or force or ((not affectingCombat) and
+			if not TRB.Data.specSupported or force or
+			(TRB.Data.character.advancedFlight and not TRB.Data.settings.shaman.restoration.displayBar.dragonriding) or 
+			((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.shaman.restoration.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.shaman.restoration.displayBar.notZeroShow) or
