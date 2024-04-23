@@ -3364,7 +3364,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 					local rattleTheStarsModifier = 1
 					
-					if talents:IsTalentActive(spells.rattleTheStars) then
+					if talents:IsTalentActive(spells.rattleTheStars) then						
 						rattleTheStarsModifier = 1 + spells.rattleTheStars.modifier
 					end
 
@@ -3375,7 +3375,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							pairOffset = (spell.thresholdId - 1) * 3
 
 							local resourceAmount = spell.resource
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+							--NOTE: We're just going to draw this inside every isSnowflake for the time being.
+							--TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
 							local thresholdColor = specSettings.colors.threshold.over
@@ -3383,7 +3384,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 								if spell.settingKey == spells.starsurge.settingKey then
-									local redrawThreshold = false
+									local redrawThreshold = true
 
 									if snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff.isActive and talents:IsTalentActive(spells.elunesGuidance) then
 										resourceAmount = resourceAmount - spells.elunesGuidance.modifierStarsurge
@@ -3425,7 +3426,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										snapshotData.audio.playedstarweaverCue = false
 									end
 								elseif spell.settingKey == spells.starsurge2.settingKey then
-									local redrawThreshold = false
+									local redrawThreshold = true
 									local touchTheCosmosMod = 0
 									if snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff.isActive and talents:IsTalentActive(spells.elunesGuidance) then
 										resourceAmount = resourceAmount - (spells.elunesGuidance.modifierStarsurge * 2)
@@ -3458,7 +3459,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.settingKey == spells.starsurge3.settingKey then
-									local redrawThreshold = false
+									local redrawThreshold = true
 									local touchTheCosmosMod = 0
 									if snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff.isActive and talents:IsTalentActive(spells.elunesGuidance) then
 										resourceAmount = resourceAmount - (spells.elunesGuidance.modifierStarsurge * 3)
@@ -3473,7 +3474,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 									resourceAmount = resourceAmount * rattleTheStarsModifier
 
-									if redrawThreshold then	
+									if redrawThreshold then
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 									end
 
@@ -3491,7 +3492,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								elseif spell.id == spells.starfall.id then
-									local redrawThreshold = false
+									local redrawThreshold = true
 									if snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff.isActive and talents:IsTalentActive(spells.elunesGuidance) then
 										resourceAmount = resourceAmount - spells.elunesGuidance.modifierStarfall
 										redrawThreshold = true
