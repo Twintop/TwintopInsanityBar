@@ -225,7 +225,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			bar = {
 				width=555,
@@ -528,7 +529,8 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			endOfSerenity = {
 				enabled=true,
@@ -804,7 +806,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"], "notFull", false)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 90
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 2, yCoord, L["ResourceMana"])
 
 		yCoord = yCoord - 30
@@ -1354,7 +1356,7 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"], "notFull", false)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 90
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 10, 3, yCoord, L["ResourceEnergy"])
 
 		yCoord = yCoord - 30

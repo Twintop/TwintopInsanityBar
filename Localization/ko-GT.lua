@@ -1897,4 +1897,6 @@ if locale == "koKR" then
     L["PaladinHolyAudioCheckboxInfusionOfLightStack2Tooltip"] = "두 번째(최대) 빛 주입 발동을 받으면 오디오 신호를 재생합니다. 둘 다 체크하면 이 소리만 재생됩니다."
     L["PaladinHolyBarTextVariable_iolTime"] = "빛 주입 버프에 남은 시간"
     L["PaladinHolyBarTextVariable_iolStacks"] = "빛 주입 버프의 현재 스택 수"
+    L["ShowBarDragonriding"] = "Dragonriding 탈것에있는 동안 표시 하시겠습니까?"
+    L["ShowBarDragonridingTooltip"] = "선택 해제하면 위 설정과 관계없이 Dragonriding 탈것에 있을 때 자원 표시줄이 숨겨집니다."
 end

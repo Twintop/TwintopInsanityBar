@@ -1456,7 +1456,9 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 		local specId = GetSpecialization()
 
 		if specId == 1 then
-			if not TRB.Data.specSupported or force or ((not affectingCombat) and
+			if not TRB.Data.specSupported or force or
+			(TRB.Data.character.advancedFlight and not TRB.Data.settings.paladin.holy.displayBar.dragonriding) or 
+			((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.paladin.holy.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.paladin.holy.displayBar.notZeroShow) or

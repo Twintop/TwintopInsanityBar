@@ -1897,4 +1897,6 @@ if locale == "ruRU" then
     L["PaladinHolyAudioCheckboxInfusionOfLightStack2Tooltip"] = "Включите звуковой сигнал, когда получите второй (и максимальный) эффект Infusion of Light. Если отмечены оба, будет воспроизводиться только этот звук."
     L["PaladinHolyBarTextVariable_iolTime"] = "Оставшееся время действия баффа «Настой света»"
     L["PaladinHolyBarTextVariable_iolStacks"] = "Текущее количество стаков вашего баффа «Настой света»"
+    L["ShowBarDragonriding"] = "Показать, находясь на ездовом драконе?"
+    L["ShowBarDragonridingTooltip"] = "Если этот флажок снят, панель ресурсов будет скрыта при использовании верхового дракона независимо от вышеуказанных настроек."
 end

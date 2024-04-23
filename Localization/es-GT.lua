@@ -1897,4 +1897,6 @@ if locale == "esES" or locale == "esMX" then
     L["PaladinHolyAudioCheckboxInfusionOfLightStack2Tooltip"] = "Reproduce una señal de audio cuando obtengas un segundo (y máximo) proceso de Infusión de Luz. Si ambos están marcados, sólo se reproducirá este sonido."
     L["PaladinHolyBarTextVariable_iolTime"] = "Tiempo restante en tu beneficio de Infusión de Luz"
     L["PaladinHolyBarTextVariable_iolStacks"] = "Recuento de acumulación actual en tu beneficio de Infusión de Luz"
+    L["ShowBarDragonriding"] = "¿Mostrar mientras estás en una montura Dragonriding?"
+    L["ShowBarDragonridingTooltip"] = "Si no está marcada, la barra de recursos se ocultará cuando estés en una montura Dragonriding, independientemente de la configuración anterior."
 end

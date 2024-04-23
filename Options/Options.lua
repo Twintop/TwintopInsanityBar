@@ -78,7 +78,8 @@ local function LoadDefaultSettings()
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			bar = {
 				width=1555,

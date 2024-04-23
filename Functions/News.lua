@@ -11,11 +11,15 @@ local content = [====[
 
 ---
 
-# 10.2.6.9-release (2024-04-20)
+# 10.2.6.10-release (2024-04-23)
+## General
+
+- [#383 - NEW (Twintop)](#383) Add a new option to hide the Resource Bar while on a Dragonriding mount. This is located under the "Bar Display" section of the "Bar Display" tab on a per-specialization basis.
+
 ## Druid
 ### Balance
 
-- (UPDATE) Update interaction and implementation of Touch the Cosmos (S4 4P buff) to be more reliable.
+- (UPDATE (Twintop)) Update interaction and implementation of Touch the Cosmos (S4 4P buff) to be more reliable.
 
 ---
 

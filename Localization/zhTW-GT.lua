@@ -1897,4 +1897,6 @@ if locale == "zhTW" then
     L["PaladinHolyAudioCheckboxInfusionOfLightStack2Tooltip"] = "當您獲得第二個（也是最大）光之注入過程時播放音訊提示。 如果兩者都選中，則只會播放此聲音。"
     L["PaladinHolyBarTextVariable_iolTime"] = "光之注入增益的剩餘時間"
     L["PaladinHolyBarTextVariable_iolStacks"] = "您的光之注入增益的當前堆疊計數"
+    L["ShowBarDragonriding"] = "在騎龍坐騎時表演？"
+    L["ShowBarDragonridingTooltip"] = "如果未選中，則無論上述設定如何，在騎龍坐騎時資源欄都會隱藏。"
 end

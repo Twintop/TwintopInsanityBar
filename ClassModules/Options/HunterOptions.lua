@@ -246,7 +246,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			overcap={
 				mode="relative",
@@ -586,7 +587,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			endOfTrueshot = {
 				enabled=true,
@@ -947,7 +949,8 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			endOfCoordinatedAssault = {
 				enabled=true,
@@ -1196,7 +1199,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"], "notFull", true, L["HunterBeastMasteryBeastialWrath"], L["HunterBeastMasteryBeastialWrath"])
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 90
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 1, yCoord, L["ResourceFocus"])
 
 		yCoord = yCoord - 30
@@ -2095,7 +2098,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 2, yCoord, L["ResourceFocus"], "notFull", false)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 90
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 2, yCoord, "Fury")
 
 		yCoord = yCoord - 30
@@ -3338,7 +3341,7 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"], "notFull", false)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 90
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 3, 3, yCoord, L["ResourceFocus"])
 
 		yCoord = yCoord - 30

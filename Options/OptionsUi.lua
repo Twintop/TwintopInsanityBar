@@ -1517,7 +1517,19 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 			spec.colors.bar.flashEnabled = self:GetChecked()
 		end)
 		yCoord2 = yCoord2-20
-	end	
+	end
+
+	controls.checkBoxes.dragonridingEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_DragonridingEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dragonridingEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-70)
+	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["ShowBarDragonriding"], flashAlphaNameShort))
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = string.format(L["ShowBarDragonridingTooltip"], flashAlphaName)
+	f:SetChecked(spec.displayBar.dragonriding)
+	f:SetScript("OnClick", function(self, ...)
+		spec.displayBar.dragonriding = self:GetChecked()
+	end)
+
 
 	return yCoord
 end

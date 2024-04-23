@@ -238,7 +238,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			overcap={
 				mode="relative",
@@ -548,7 +549,8 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			overcap={
 				mode="relative",
@@ -787,7 +789,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"], "notEmpty", false)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 100
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 1, yCoord, L["ResourceRage"])
 
 		yCoord = yCoord - 30
@@ -1549,7 +1551,7 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"], "notEmpty", false)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 100
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 1, 2, yCoord, L["ResourceRage"])
 
 		yCoord = yCoord - 30

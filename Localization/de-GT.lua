@@ -1897,4 +1897,6 @@ if locale == "deDE" then
     L["PaladinHolyAudioCheckboxInfusionOfLightStack2Tooltip"] = "Spielen Sie einen Audiohinweis ab, wenn Sie einen zweiten (und maximalen) Infusion of Light-Proc erhalten. Wenn beides aktiviert ist, wird nur dieser Ton abgespielt."
     L["PaladinHolyBarTextVariable_iolTime"] = "Verbleibende Zeit für den Buff „Infusion des Lichts“."
     L["PaladinHolyBarTextVariable_iolStacks"] = "Aktuelle Stapelzahl Ihres Buffs „Infusion des Lichts“."
+    L["ShowBarDragonriding"] = "Auf einem Drachenreiten-Reittier zeigen?"
+    L["ShowBarDragonridingTooltip"] = "Wenn diese Option deaktiviert ist, wird die Ressourcenleiste unabhängig von den oben genannten Einstellungen ausgeblendet, wenn Sie sich auf einem Drachenreiten-Reittier befinden."
 end

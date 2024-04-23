@@ -1897,4 +1897,6 @@ if locale == "ptBR" or locale == "ptPT" then
     L["PaladinHolyAudioCheckboxInfusionOfLightStack2Tooltip"] = "Reproduza o áudio quando obtiver um segundo (e máximo) processo de Infusão de Luz. Se ambos estiverem marcados, apenas este som será reproduzido."
     L["PaladinHolyBarTextVariable_iolTime"] = "Tempo restante no seu bônus de Infusão de Luz"
     L["PaladinHolyBarTextVariable_iolStacks"] = "Contagem atual de stacks do seu bônus de Infusão de Luz"
+    L["ShowBarDragonriding"] = "Mostrar enquanto estiver em uma montaria Dragonriding?"
+    L["ShowBarDragonridingTooltip"] = "Se desmarcada, a Barra de Recursos ficará oculta quando você estiver em uma montaria Dragonriding, independentemente das configurações acima."
 end

@@ -13,9 +13,9 @@
 ## Title-zhTW: Twintop 的資源欄
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 10.2.6.9
+## Version: 10.2.6.10
 ## X-ReleaseType: release
-## X-ReleaseDate: 2024-04-20
+## X-ReleaseDate: 2024-04-23
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -35,6 +35,7 @@ Libs\json.lua
 Libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
 Libs\LibMarkdown\LibMarkdown.xml
 Libs\LibScrollingTable\lib-st.xml
+Libs\LibAdvFlight-1.0\lib.xml
 
 Localization\Localization.lua
 Localization\enUS.lua

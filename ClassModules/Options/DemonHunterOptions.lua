@@ -223,7 +223,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			endOfMetamorphosis = {
 				enabled=true,
@@ -511,7 +512,8 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			endOfMetamorphosis = {
 				enabled=true,
@@ -750,7 +752,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"], "notEmpty", false)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 100
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 1, yCoord, L["ResourceFury"])
 
 		yCoord = yCoord - 30
@@ -1431,7 +1433,7 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"], "notEmpty", false)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 100
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 12, 2, yCoord, L["ResourceFury"])
 
 		yCoord = yCoord - 30

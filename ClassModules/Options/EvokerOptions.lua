@@ -366,7 +366,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			bar = {
 				width=555,
@@ -705,7 +706,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			bar = {
 				width=555,
@@ -1030,7 +1032,8 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			bar = {
 				width=555,
@@ -1275,7 +1278,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"], "notFull", false)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 90
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"])
 
 		yCoord = yCoord - 30
@@ -1819,7 +1822,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"], "notFull", false)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 90
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 2, yCoord, L["ResourceMana"])
 
 		yCoord = yCoord - 30
@@ -2513,7 +2516,7 @@ if classIndexId == 13 then --Only do this if we're on a Evoker!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"], "notFull", false)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 90
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"])
 
 		yCoord = yCoord - 30

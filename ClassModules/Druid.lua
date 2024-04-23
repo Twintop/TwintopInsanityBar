@@ -4620,8 +4620,10 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 		local specId = GetSpecialization()
 
-		if specId == 1 then
-			if not TRB.Data.specSupported or force or GetSpecialization() ~= 1 or (not affectingCombat) and
+		if specId == 1 then			
+			if not TRB.Data.specSupported or force or 
+			(TRB.Data.character.advancedFlight and not TRB.Data.settings.druid.balance.displayBar.dragonriding) or
+			((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.druid.balance.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.druid.balance.displayBar.notZeroShow) or
@@ -4630,7 +4632,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 							(talents:IsTalentActive(spells.naturesBalance) and (snapshotData.attributes.resource / TRB.Data.resourceFactor) >= 50))
 						)
 					)
-				) then
+				)) then
 				TRB.Frames.barContainerFrame:Hide()
 				snapshotData.attributes.isTracking = false
 			else
@@ -4642,7 +4644,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 			end
 		elseif specId == 2 then
-			if not TRB.Data.specSupported or force or ((not affectingCombat) and
+			if not TRB.Data.specSupported or force or
+			(TRB.Data.character.advancedFlight and not TRB.Data.settings.druid.feral.displayBar.dragonriding) or
+			((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.druid.feral.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.druid.feral.displayBar.notZeroShow) or
@@ -4660,7 +4664,9 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				end
 			end
 		elseif specId == 4 then
-			if not TRB.Data.specSupported or force or ((not affectingCombat) and
+			if not TRB.Data.specSupported or force or
+			(TRB.Data.character.advancedFlight and not TRB.Data.settings.druid.restoration.displayBar.dragonriding) or 
+			((not affectingCombat) and
 				(not UnitInVehicle("player")) and (
 					(not TRB.Data.settings.druid.restoration.displayBar.alwaysShow) and (
 						(not TRB.Data.settings.druid.restoration.displayBar.notZeroShow) or

@@ -223,7 +223,8 @@ if classIndexId == 2 then --Only do this if we're on a Paladin!
 			displayBar = {
 				alwaysShow=false,
 				notZeroShow=true,
-				neverShow=false
+				neverShow=false,
+				dragonriding=true
 			},
 			bar = {
 				width=555,
@@ -499,7 +500,7 @@ if classIndexId == 2 then --Only do this if we're on a Paladin!
 		yCoord = yCoord - 30
 		yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 2, 1, yCoord, L["ResourceMana"], "notFull", false)
 
-		yCoord = yCoord - 70
+		yCoord = yCoord - 90
 		yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 2, 1, yCoord, L["ResourceMana"])
 
 		yCoord = yCoord - 30
