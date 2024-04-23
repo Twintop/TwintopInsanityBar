@@ -361,11 +361,20 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			{
 				name = "currentResource",
 				dataType = "number",
-				index = 1
+				index = 1,
+				modifier = 1
 			}
 		})
 		---@type TRB.Classes.Snapshot
 		specCache.balance.snapshotData.snapshots[specCache.balance.spells.touchTheCosmos.id] = TRB.Classes.Snapshot:New(specCache.balance.spells.touchTheCosmos)
+		specCache.balance.snapshotData.snapshots[specCache.balance.spells.touchTheCosmos.id].buff:SetCustomProperties({
+			{
+				name = "resourceMod",
+				dataType = "number",
+				index = 1,
+				modifier = 0.1
+			}
+		})
 
 		-- Feral
 		specCache.feral.Global_TwintopResourceBar = {
@@ -3171,8 +3180,8 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 			incarnationChosenOfEluneStarsurgeModifier = spells.elunesGuidance.modifierStarsurge
 		end
 
-		TRB.Data.character.starsurgeThreshold = (-spells.starsurge.resource + incarnationChosenOfEluneStarsurgeModifier) * rattleTheStarsModifier
-		TRB.Data.character.starfallThreshold = (-spells.starfall.resource + incarnationChosenOfEluneStarfallModifier) * rattleTheStarsModifier
+		TRB.Data.character.starsurgeThreshold = (-spells.starsurge.resource + incarnationChosenOfEluneStarsurgeModifier + snapshotData.snapshots[spells.touchTheCosmos.id].buff.customProperties["resourceMod"]) * rattleTheStarsModifier
+		TRB.Data.character.starfallThreshold = (-spells.starfall.resource + incarnationChosenOfEluneStarfallModifier + snapshotData.snapshots[spells.touchTheCosmos.id].buff.customProperties["resourceMod"]) * rattleTheStarsModifier
 
 		snapshotData.snapshots[spells.moonkinForm.id].buff:Refresh()
 		snapshotData.snapshots[spells.furyOfElune.id].buff:UpdateTicks(currentTime)
@@ -3365,7 +3374,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 						if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
 							pairOffset = (spell.thresholdId - 1) * 3
 
-							local resourceAmount = spell.resource * rattleTheStarsModifier
+							local resourceAmount = spell.resource
 							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 							local showThreshold = true
@@ -3382,10 +3391,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									end
 
 									if snapshotData.snapshots[spells.touchTheCosmos.id].buff.isActive then
-										resourceAmount = resourceAmount - spells.touchTheCosmos.resourceMod
+										resourceAmount = resourceAmount - snapshotData.snapshots[spells.touchTheCosmos.id].buff.customProperties["resourceMod"]
 										redrawThreshold = true
 									end
 
+									resourceAmount = resourceAmount * rattleTheStarsModifier
 									if redrawThreshold then
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 									end
@@ -3423,10 +3433,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									end
 
 									if snapshotData.snapshots[spells.touchTheCosmos.id].buff.isActive then
-										resourceAmount = resourceAmount - spells.touchTheCosmos.resourceMod
+										resourceAmount = resourceAmount - snapshotData.snapshots[spells.touchTheCosmos.id].buff.customProperties["resourceMod"]
 										redrawThreshold = true
-										touchTheCosmosMod = spells.touchTheCosmos.resourceMod
+										touchTheCosmosMod = snapshotData.snapshots[spells.touchTheCosmos.id].buff.customProperties["resourceMod"]
 									end
+
+									resourceAmount = resourceAmount * rattleTheStarsModifier
 
 									if redrawThreshold then
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
@@ -3454,10 +3466,12 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									end
 
 									if snapshotData.snapshots[spells.touchTheCosmos.id].buff.isActive then
-										resourceAmount = resourceAmount - spells.touchTheCosmos.resourceMod
+										resourceAmount = resourceAmount - snapshotData.snapshots[spells.touchTheCosmos.id].buff.customProperties["resourceMod"]
 										redrawThreshold = true
-										touchTheCosmosMod = spells.touchTheCosmos.resourceMod
+										touchTheCosmosMod = snapshotData.snapshots[spells.touchTheCosmos.id].buff.customProperties["resourceMod"]
 									end
+
+									resourceAmount = resourceAmount * rattleTheStarsModifier
 
 									if redrawThreshold then	
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
@@ -3484,9 +3498,11 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 									end
 
 									if snapshotData.snapshots[spells.touchTheCosmos.id].buff.isActive then
-										resourceAmount = resourceAmount - spells.touchTheCosmos.resourceMod
+										resourceAmount = resourceAmount - snapshotData.snapshots[spells.touchTheCosmos.id].buff.customProperties["resourceMod"]
 										redrawThreshold = true
 									end
+
+									resourceAmount = resourceAmount * rattleTheStarsModifier
 
 									if redrawThreshold then
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
