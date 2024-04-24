@@ -43,7 +43,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		specCache.assassination.character = {
 			guid = UnitGUID("player"),
-			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
 			maxResource2 = 5,
@@ -645,8 +644,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		specCache.outlaw.character = {
 			guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
 			maxResource2 = 5,
@@ -1309,7 +1306,6 @@ if classIndexId == 4 then --Only do this if we're on a Rogue!
 
 		specCache.subtlety.character = {
 			guid = UnitGUID("player"),
-			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
 			maxResource2 = 5,

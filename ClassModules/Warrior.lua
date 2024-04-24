@@ -40,8 +40,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		specCache.arms.character = {
 			guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
 			effects = {
@@ -323,8 +321,6 @@ if classIndexId == 1 then --Only do this if we're on a Warrior!
 
 		specCache.fury.character = {
 			guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
 			effects = {

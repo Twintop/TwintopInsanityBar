@@ -147,7 +147,6 @@ TRB.Data.character = {
 	guid = UnitGUID("player"),
 	className = "",
 	specName = "",
-	specGroup = GetActiveSpecGroup(),
 	maxResource = 100,
 	talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]],
 	items = {}

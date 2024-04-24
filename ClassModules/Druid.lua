@@ -66,8 +66,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		
 		specCache.balance.character = {
 			guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,
 			starsurgeThreshold = 40,
 			starfallThreshold = 50,
@@ -392,8 +390,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		specCache.feral.character = {
 			guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
 			maxResource2 = 5,
@@ -798,8 +794,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 
 		specCache.restoration.character = {
 			guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,
 			effects = {
 			},

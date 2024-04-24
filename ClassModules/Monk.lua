@@ -56,8 +56,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		specCache.mistweaver.character = {
 			guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,
 			effects = {
 			},
@@ -327,8 +325,6 @@ if classIndexId == 10 then --Only do this if we're on a Monk!
 
 		specCache.windwalker.character = {
 			guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 100,
 			maxResource2 = 5,

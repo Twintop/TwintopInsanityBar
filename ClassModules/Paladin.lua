@@ -56,8 +56,6 @@ if classIndexId == 2 then --Only do this if we're on an Paladin!
 
 		specCache.holy.character = {
 			guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,			
 			effects = {
 			},

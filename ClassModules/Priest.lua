@@ -70,8 +70,6 @@ local function FillSpecializationCache()
 
 	specCache.discipline.character = {
 		guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-		specGroup = GetActiveSpecGroup(),
 		maxResource = 100,
 		effects = {
 		},
@@ -194,8 +192,6 @@ local function FillSpecializationCache()
 
 	specCache.holy.character = {
 		guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-		specGroup = GetActiveSpecGroup(),
 		maxResource = 100,
 		effects = {
 		},
@@ -332,8 +328,6 @@ local function FillSpecializationCache()
 
 	specCache.shadow.character = {
 		guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-		specGroup = GetActiveSpecGroup(),
 		maxResource = 100,
 		devouringPlagueThreshold = 50,
 		effects = {

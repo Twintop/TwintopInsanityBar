@@ -43,7 +43,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		specCache.beastMastery.character = {
 			guid = UnitGUID("player"),
-			specGroup = GetActiveSpecGroup(),
 			petGuid = UnitGUID("pet"),
 			specId = 1,
 			maxResource = 100
@@ -409,7 +408,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		specCache.marksmanship.character = {
 			guid = UnitGUID("player"),
-			specGroup = GetActiveSpecGroup(),
 			specId = 2,
 			maxResource = 100
 		}
@@ -760,8 +758,6 @@ if classIndexId == 3 then --Only do this if we're on a Hunter!
 
 		specCache.survival.character = {
 			guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-			specGroup = GetActiveSpecGroup(),
 			specId = 3,
 			maxResource = 100
 		}
