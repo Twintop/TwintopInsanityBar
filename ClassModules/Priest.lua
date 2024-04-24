@@ -1030,7 +1030,6 @@ end
 
 local function ConstructResourceBar(settings)
 	local specId = GetSpecialization()
-	local spells = TRB.Data.spells --[[@as { [string]: TRB.Classes.SpellThreshold }]]
 
 	local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
 	if entries > 0 then
@@ -1047,6 +1046,7 @@ local function ConstructResourceBar(settings)
 	end
 
 	if specId == 1 then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 		for x = 1, 9 do
 			if TRB.Frames.resourceFrame.thresholds[x] == nil then
 				TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
@@ -1082,6 +1082,7 @@ local function ConstructResourceBar(settings)
 			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[8], spells.shadowfiend, settings)
 		end
 	elseif specId == 2 then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 		for x = 1, 9 do
 			if TRB.Frames.resourceFrame.thresholds[x] == nil then
 				TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
@@ -1113,6 +1114,7 @@ local function ConstructResourceBar(settings)
 		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[9], spells.symbolOfHope, settings)
 		TRB.Frames.resource2ContainerFrame:Show()
 	elseif specId == 3 then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		for x = 1, 3 do
 			if TRB.Frames.resourceFrame.thresholds[x] == nil then
 				TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
@@ -3558,7 +3560,6 @@ local function UpdateResourceBar()
 				for k, v in pairs(spells) do
 					local spell = spells[k] --[[@as TRB.Classes.SpellThreshold]]
 					if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-						print(spell.name, spell.thresholdId, spell.settingKey)
 						pairOffset = (spell.thresholdId - 1) * 3
 						local resourceAmount = spell.resource
 						local currentResource = currentResource

@@ -74,8 +74,8 @@ Classes\Talent.lua
 Classes\Settings.lua
 Classes\SpecCache.lua
 
-ClassModules\Classes\PriestClasses.lua
 ClassModules\Classes\HealerClasses.lua
+ClassModules\Classes\PriestClasses.lua
 
 Init.lua
 

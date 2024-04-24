@@ -77,11 +77,13 @@ function TRB.Functions.Character:UpdateSnapshot()
 	snapshotData.attributes.intellect, _, _, _ = UnitStat("player", 4)
 end
 
+---Loads data from the specialization cache in to the main TRB.Data table
+---@param cache TRB.Classes.SpecCache
 function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	Global_TwintopResourceBar = cache.Global_TwintopResourceBar
 
 	TRB.Data.character = cache.character
-	TRB.Data.spells = cache.spells
+	TRB.Data.spellsData = cache.spellsData
 	TRB.Data.talents = cache.talents
 	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons
 	TRB.Data.barTextVariables.values = cache.barTextVariables.values

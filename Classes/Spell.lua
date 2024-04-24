@@ -12,7 +12,7 @@ TRB.Classes.SpellsData.__index = TRB.Classes.SpellsData
 ---Create a new SpellsData
 ---@param fillManaCost boolean? # Should the mana cost of spells also be filled with `FillSpellData()` is called?
 ---@return TRB.Classes.SpellsData
-function TRB.Classes.Spells:New(fillManaCost)
+function TRB.Classes.SpellsData:New(fillManaCost)
     local self = {}
     setmetatable(self, TRB.Classes.SpellsData)
     

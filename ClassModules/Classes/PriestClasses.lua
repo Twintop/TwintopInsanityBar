@@ -40,8 +40,8 @@ end
 ---@field public shadowfiend TRB.Classes.SpellThreshold
 ---@field public surgeOfLight TRB.Classes.SpellBase
 ---@field public imbuedFrostweaveSlippers TRB.Classes.SpellBase
-TRB.Classes.Priest.HealerSpell = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
-TRB.Classes.Priest.HealerSpell.__index = TRB.Classes.Priest.HealerSpell
+TRB.Classes.Priest.HealerSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
+TRB.Classes.Priest.HealerSpells.__index = TRB.Classes.Priest.HealerSpells
 
 function TRB.Classes.Priest.HealerSpells:New()
        ---@type TRB.Classes.Healer.HealerSpells
@@ -95,10 +95,12 @@ end
 ---@field public shadowCovenant TRB.Classes.SpellBase
 ---@field public purgeTheWicked TRB.Classes.SpellBase
 ---@field public mindbender TRB.Classes.SpellBase
+TRB.Classes.Priest.DisciplineSpells = setmetatable({}, {__index = TRB.Classes.Priest.HealerSpells})
+TRB.Classes.Priest.DisciplineSpells.__index = TRB.Classes.Priest.DisciplineSpells
 
 function TRB.Classes.Priest.DisciplineSpells:New()
-    ---@type TRB.Classes.Healer.HealerSpells
-    local base = TRB.Classes.Healer.HealerSpells
+    ---@type TRB.Classes.Priest.HealerSpells
+    local base = TRB.Classes.Priest.HealerSpells
     self = setmetatable(base:New(), TRB.Classes.Priest.DisciplineSpells) --[[@as TRB.Classes.Priest.DisciplineSpells]]
 
     -- Priest Class Baseline Abilities
@@ -189,6 +191,8 @@ end
 ---@field public divineConversation TRB.Classes.SpellBase
 ---@field public prayerFocus TRB.Classes.SpellBase
 ---@field public sacredReverence TRB.Classes.SpellBase
+TRB.Classes.Priest.HolySpells = setmetatable({}, {__index = TRB.Classes.Priest.HealerSpells})
+TRB.Classes.Priest.HolySpells.__index = TRB.Classes.Priest.HolySpells
 
 function TRB.Classes.Priest.HolySpells:New()
     ---@type TRB.Classes.Priest.HealerSpells
@@ -381,6 +385,8 @@ end
 ---@field public idolOfYoggSaron TRB.Classes.SpellBase
 ---@field public thingFromBeyond TRB.Classes.SpellBase
 ---@field public deathsTorment TRB.Classes.SpellBase
+TRB.Classes.Priest.ShadowSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Priest.ShadowSpells.__index = TRB.Classes.Priest.ShadowSpells
 
 function TRB.Classes.Priest.ShadowSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase

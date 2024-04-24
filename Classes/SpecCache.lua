@@ -27,8 +27,7 @@ function TRB.Classes.SpecCache:New(snapshotDataAttributes)
     }
     self.character = {}
     self.settings = {}
-    ---@type { [string]: TRB.Classes.SpellBase }
-    self.spells = {}
+    self.spellsData = TRB.Classes.SpellsData:New()
     self.snapshotData = TRB.Classes.SnapshotData:New(snapshotDataAttributes)
     self.talents = TRB.Classes.Talents:New()
 
