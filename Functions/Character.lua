@@ -19,8 +19,6 @@ TRB.Details.addonData.libs.LibAdvFlight.RegisterCallback(TRB.Details.addonData.l
 
 function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.guid = UnitGUID("player")
----@diagnostic disable-next-line: missing-parameter
-	TRB.Data.character.specGroup = GetActiveSpecGroup()
 	TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
 	TRB.Data.character.inPetBattle = C_PetBattles.IsInBattle()
 	TRB.Data.character.onTaxi = UnitOnTaxi("player")
@@ -83,7 +81,6 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	Global_TwintopResourceBar = cache.Global_TwintopResourceBar
 
 	TRB.Data.character = cache.character
-	TRB.Data.character.specGroup = GetActiveSpecGroup()
 	TRB.Data.spells = cache.spells
 	TRB.Data.talents = cache.talents
 	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons

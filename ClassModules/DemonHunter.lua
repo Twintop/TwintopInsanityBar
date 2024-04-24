@@ -48,8 +48,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		specCache.havoc.character = {
 			guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 120,
 			effects = {
@@ -395,8 +393,6 @@ if classIndexId == 12 then --Only do this if we're on a DemonHunter!
 
 		specCache.vengeance.character = {
 			guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-			specGroup = GetActiveSpecGroup(),
 			specId = 2,
 			maxResource = 120,
 			effects = {

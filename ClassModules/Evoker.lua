@@ -59,8 +59,6 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		specCache.devastation.character = {
 			guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 10000,
 			maxResource2 = 5,
@@ -107,8 +105,6 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		specCache.preservation.character = {
 			guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-			specGroup = GetActiveSpecGroup(),
 			maxResource = 100,			
 			effects = {
 			},
@@ -362,8 +358,6 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 
 		specCache.augmentation.character = {
 			guid = UnitGUID("player"),
----@diagnostic disable-next-line: missing-parameter
-			specGroup = GetActiveSpecGroup(),
 			specId = 1,
 			maxResource = 10000,
 			maxResource2 = 5,
