@@ -9,6 +9,15 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 *Localization of the addon is underway! If you're interested in helping translate, please [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know. Thank you!*
 
+# 10.2.6.11-release (2024-04-27)
+## General
+
+- [#386 - REFACTOR (Twintop)](#386) Overhaul how spelldata is stored and used under the hood.
+
+### Healers
+
+- (FIX (Twintop)) Ensure the passive mana generation lines for Potion of Frozen Focus and Potion of Chilled Clarity render properly.
+
 ---
 
 # 10.2.6.10-release (2024-04-23)

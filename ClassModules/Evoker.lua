@@ -739,7 +739,7 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
 
-			for x = 1, 7 do
+			for x = 1, 8 do
 				if TRB.Frames.passiveFrame.thresholds[x] == nil then
 					TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 				end

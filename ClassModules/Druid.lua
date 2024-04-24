@@ -1649,7 +1649,7 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 				TRB.Frames.resourceFrame.thresholds[x]:Hide()
 			end
 
-			for x = 1, 6 do
+			for x = 1, 7 do
 				if TRB.Frames.passiveFrame.thresholds[x] == nil then
 					TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
 				end
