@@ -540,7 +540,6 @@ function TRB.Classes.Healer.BlessingOfWinter:Update()
 end
 
 
-
 ---@class TRB.Classes.Healer.HealerSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public symbolOfHope TRB.Classes.SpellBase
 ---@field public innervate TRB.Classes.SpellBase

@@ -104,7 +104,6 @@ local function FillSpecializationCache()
 	
 	---@type TRB.Classes.Paladin.HolySpells
 	specCache.holy.spellsData.spells = TRB.Classes.Paladin.HolySpells:New()
-
 	local spells = specCache.holy.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 
 	specCache.holy.snapshotData.attributes.manaRegen = 0

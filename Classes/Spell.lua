@@ -2,6 +2,13 @@
 local _, TRB = ...
 TRB.Classes = TRB.Classes or {}
 
+---@alias trbSpellType
+---| '"TRB.Classes.SpellBase"' # TRB.Classes.SpellBase
+---| '"TRB.Classes.SpellComboPoint"' # TRB.Classes.SpellComboPointThreshold
+---| '"TRB.Classes.SpellThreshold"' # TRB.Classes.SpellThreshold
+---| '"TRB.Classes.SpellComboPointThreshold"' # TRB.Classes.SpellComboPointThreshold
+---| '"TRB.Classes.Priest.HolyWordSpell"' # TRB.Classes.Priest.HolyWordSpell
+
 ---@class TRB.Classes.SpellsData
 ---@field public spells TRB.Classes.SpecializationSpellsBase # Dictionary of spells
 ---@field public fillManaCost boolean # Should the mana cost of spells also be filled when `FillSpellData()` is called?
@@ -72,12 +79,12 @@ end
 ---@field public hasTicks boolean? # Does this spell have a buff/debuff/channel that has ticks?
 ---@field public ticks integer? # How many ticks this spell have at the beginning.
 ---@field public tickRate number? # How many seconds between ticks.
----@field public resourcePerTicks number? # How many resources are generated per tick.
+---@field public resourcePerTick number? # How many resources are generated per tick.
 ---@field public isBuff boolean? # Is this spell a buff?
 ---@field public isPvp boolean? # Is this a PvP only spell?
 ---@field public tocMinVersion number? # Minimum TOC version of WoW before attempting to use/load this spell.
 ---@field public attributes { [string]: any } # Spell specific values that will need to be looked up during gameplay.
-
+---@field protected classTypes trbSpellType[] # List of types that this class implements. Used for checking if a specific class implements some derived class, e.g. SpellThreshold 
 TRB.Classes.SpellBase = {}
 TRB.Classes.SpellBase.__index = TRB.Classes.SpellBase
 
@@ -85,9 +92,14 @@ TRB.Classes.SpellBase.__index = TRB.Classes.SpellBase
 ---@param spellAttributes { [string]: any } # Attributes associated with the spell
 ---@return TRB.Classes.SpellBase
 function TRB.Classes.SpellBase:New(spellAttributes)
-    local self = {}
+    ---@diagnostic disable-next-line: missing-fields
+    local self = {} --[[@as TRB.Classes.SpellBase]]
     setmetatable(self, TRB.Classes.SpellBase)
     
+    self.classTypes = {
+        "TRB.Classes.SpellBase"
+    }
+
     ---@type { [string]: any }
     local attributes = {}
     for key, value in pairs(spellAttributes) do
@@ -219,6 +231,36 @@ function TRB.Classes.SpellBase:GetSpellManaCostPerSecond()
 	return 0
 end
 
+---Determines if the current SpellBase is also another type, such as SpellThreshold.
+---@param spellType trbSpellType # Spell Class type we're checking
+---@return boolean # Is it of this type
+function TRB.Classes.SpellBase:Is(spellType)
+    for _, value in ipairs(self.classTypes) do
+        if spellType == value then
+            return true
+        end
+    end
+    return false
+end
+
+---Determines if the spell is in a valid state. Mostly used by inherited classes to add extra checking.
+---@return boolean
+function TRB.Classes.SpellBase:IsValid()
+    return true
+end
+
+
+
+---Determines if the threshold spell is in a valid state.
+---@param spell TRB.Classes.SpellThreshold|TRB.Classes.SpellComboPointThreshold # Spell to check
+---@return boolean # Is this a valid Threshold spell
+local function spellThreshold_IsValid(spell)
+    if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+        return true
+    end
+    return false
+end
+
 
 ---@class TRB.Classes.SpellThreshold : TRB.Classes.SpellBase
 ---@field public thresholdId integer # Index of the threshold to be controlled
@@ -233,8 +275,12 @@ TRB.Classes.SpellThreshold.__index = TRB.Classes.SpellThreshold
 function TRB.Classes.SpellThreshold:New(spellAttributes)
     ---@type TRB.Classes.SpellBase
     local spellBase = TRB.Classes.SpellBase
-    local self = setmetatable(spellBase:New(spellAttributes), TRB.Classes.SpellBase)
+    ---@type TRB.Classes.SpellThreshold
+    ---@diagnostic disable-next-line: assign-type-mismatch
+    local self = setmetatable(spellBase:New(spellAttributes), {__index = TRB.Classes.SpellThreshold})
+    self.isSnowflake = false
 
+    table.insert(self.classTypes, "TRB.Classes.SpellThreshold")
     
     for key, value in pairs(spellAttributes) do
         if  (key == "thresholdId"   and type(value) == "number" and tonumber(value, 10) ~= nil) or
@@ -246,4 +292,93 @@ function TRB.Classes.SpellThreshold:New(spellAttributes)
     end
 
     return self
+end
+
+---Determines if the spell is in a valid state. Mostly used by inherited classes to add extra checking.
+---@return boolean # Is this valid
+function TRB.Classes.SpellThreshold:IsValid()
+    local base = TRB.Classes.SpellBase
+    if spellThreshold_IsValid(self) then
+        return base.IsValid(self)
+    end
+    return false
+end
+
+
+---@class TRB.Classes.SpellComboPoint : TRB.Classes.SpellBase
+---@field public comboPoints boolean # Does this ability require Combo Points to be used
+---@field public comboPointsGenerated integer # Number of Combo Points generated when the ability is used
+---@field public settingKey string # Key used for lookups. Typically the same as the name in the `spells` dictionary.
+---@field public isSnowflake boolean? # Is this threshold a special snowflake that needs to be handled manually?
+TRB.Classes.SpellComboPoint = setmetatable({}, {__index = TRB.Classes.SpellBase})
+TRB.Classes.SpellComboPoint.__index = TRB.Classes.SpellComboPoint
+
+---Creates a new SpellComboPoint object
+---@param spellAttributes { [string]: any } # Attributes associated with the spell
+---@return TRB.Classes.SpellComboPoint
+function TRB.Classes.SpellComboPoint:New(spellAttributes)
+    ---@type TRB.Classes.SpellBase
+    local spellBase = TRB.Classes.SpellBase
+    ---@type TRB.Classes.SpellComboPoint
+    ---@diagnostic disable-next-line: assign-type-mismatch
+    local self = setmetatable(spellBase:New(spellAttributes), {__index = TRB.Classes.SpellComboPoint})
+    
+    self.comboPoints = false
+    self.comboPointsGenerated = 0
+
+    table.insert(self.classTypes, "TRB.Classes.SpellComboPoint")
+    
+    for key, value in pairs(spellAttributes) do
+        if  (key == "comboPointsGenerated"   and type(value) == "number" and tonumber(value, 10) ~= nil) or
+            (key == "comboPoints"            and type(value) == "boolean") then
+            self[key] = value
+            self.attributes[key] = nil
+        end
+    end
+
+    return self
+end
+
+
+---@class TRB.Classes.SpellComboPointThreshold : TRB.Classes.SpellComboPoint
+---@field public thresholdId integer # Index of the threshold to be controlled
+---@field public settingKey string # Key used for lookups. Typically the same as the name in the `spells` dictionary.
+---@field public isSnowflake boolean? # Is this threshold a special snowflake that needs to be handled manually?
+TRB.Classes.SpellComboPointThreshold = setmetatable({}, {__index = TRB.Classes.SpellComboPoint})
+TRB.Classes.SpellComboPointThreshold.__index = TRB.Classes.SpellComboPointThreshold
+
+
+---Creates a new SpellComboPointThreshold object
+---@param spellAttributes { [string]: any } # Attributes associated with the spell
+---@return TRB.Classes.SpellComboPointThreshold
+function TRB.Classes.SpellComboPointThreshold:New(spellAttributes)
+    ---@type TRB.Classes.SpellComboPoint
+    local base = TRB.Classes.SpellComboPoint
+    ---@type TRB.Classes.SpellComboPointThreshold
+    ---@diagnostic disable-next-line: assign-type-mismatch
+    local self = setmetatable(base:New(spellAttributes), {__index = TRB.Classes.SpellComboPointThreshold})
+    self.isSnowflake = false
+
+    table.insert(self.classTypes, "TRB.Classes.SpellComboPointThreshold")
+    
+    for key, value in pairs(spellAttributes) do
+        if  (key == "thresholdId"   and type(value) == "number" and tonumber(value, 10) ~= nil) or
+            (key == "settingKey") or
+            (key == "isSnowflake"   and type(value) == "boolean") then
+            self[key] = value
+            self.attributes[key] = nil
+        end
+    end
+
+    return self
+end
+
+---Determines if the spell is in a valid state. Mostly used by inherited classes to add extra checking.
+---@return boolean # Is this valid
+function TRB.Classes.SpellComboPointThreshold:IsValid()
+    local base = TRB.Classes.SpellComboPoint
+    if spellThreshold_IsValid(self) then
+        return base.IsValid(self)
+    end
+    return false
 end
