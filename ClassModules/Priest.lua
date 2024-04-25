@@ -23,6 +23,7 @@ local talents
 Global_TwintopResourceBar = {}
 TRB.Data.character = {}
 
+---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
 	discipline = TRB.Classes.SpecCache:New(),
 	holy = TRB.Classes.SpecCache:New(),
@@ -109,9 +110,11 @@ local function FillSpecializationCache()
 			alchemyStone = false
 		}
 	}
-
-	---@type TRB.Classes.Priest.DisciplineSpells
+	
 	specCache.discipline.spellsData.spells = TRB.Classes.Priest.DisciplineSpells:New()
+	---@type TRB.Classes.Priest.DisciplineSpells
+---@diagnostic disable-next-line: assign-type-mismatch
+	local spells = specCache.discipline.spellsData.spells
 
 	specCache.discipline.snapshotData.attributes.manaRegen = 0
 	specCache.discipline.snapshotData.audio = {
@@ -120,25 +123,25 @@ local function FillSpecializationCache()
 		surgeOfLight2Cue = false
 	}
 	---@type TRB.Classes.Healer.Innervate
-	specCache.discipline.snapshotData.snapshots[specCache.discipline.spellsData.spells.innervate.id] = TRB.Classes.Healer.Innervate:New(specCache.discipline.spellsData.spells.innervate)
+	specCache.discipline.snapshotData.snapshots[spells.innervate.id] = TRB.Classes.Healer.Innervate:New(spells.innervate)
 	---@type TRB.Classes.Healer.PotionOfChilledClarity
-	specCache.discipline.snapshotData.snapshots[specCache.discipline.spellsData.spells.potionOfChilledClarity.id] = TRB.Classes.Healer.PotionOfChilledClarity:New(specCache.discipline.spellsData.spells.potionOfChilledClarity)
+	specCache.discipline.snapshotData.snapshots[spells.potionOfChilledClarity.id] = TRB.Classes.Healer.PotionOfChilledClarity:New(spells.potionOfChilledClarity)
 	---@type TRB.Classes.Healer.ManaTideTotem
-	specCache.discipline.snapshotData.snapshots[specCache.discipline.spellsData.spells.manaTideTotem.id] = TRB.Classes.Healer.ManaTideTotem:New(specCache.discipline.spellsData.spells.manaTideTotem)
+	specCache.discipline.snapshotData.snapshots[spells.manaTideTotem.id] = TRB.Classes.Healer.ManaTideTotem:New(spells.manaTideTotem)
 	---@type TRB.Classes.Healer.SymbolOfHope
-	specCache.discipline.snapshotData.snapshots[specCache.discipline.spellsData.spells.symbolOfHope.id] = TRB.Classes.Healer.SymbolOfHope:New(specCache.discipline.spellsData.spells.symbolOfHope, CalculateManaGain)
+	specCache.discipline.snapshotData.snapshots[spells.symbolOfHope.id] = TRB.Classes.Healer.SymbolOfHope:New(spells.symbolOfHope, CalculateManaGain)
 	---@type TRB.Classes.Healer.ChanneledManaPotion
-	specCache.discipline.snapshotData.snapshots[specCache.discipline.spellsData.spells.potionOfFrozenFocusRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(specCache.discipline.spellsData.spells.potionOfFrozenFocusRank1, CalculateManaGain)
+	specCache.discipline.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(spells.potionOfFrozenFocusRank1, CalculateManaGain)
 	---@type TRB.Classes.Snapshot
-	specCache.discipline.snapshotData.snapshots[specCache.discipline.spellsData.spells.aeratedManaPotionRank1.id] = TRB.Classes.Snapshot:New(specCache.discipline.spellsData.spells.aeratedManaPotionRank1)
+	specCache.discipline.snapshotData.snapshots[spells.aeratedManaPotionRank1.id] = TRB.Classes.Snapshot:New(spells.aeratedManaPotionRank1)
 	---@type TRB.Classes.Snapshot
-	specCache.discipline.snapshotData.snapshots[specCache.discipline.spellsData.spells.conjuredChillglobe.id] = TRB.Classes.Snapshot:New(specCache.discipline.spellsData.spells.conjuredChillglobe)
+	specCache.discipline.snapshotData.snapshots[spells.conjuredChillglobe.id] = TRB.Classes.Snapshot:New(spells.conjuredChillglobe)
 	---@type TRB.Classes.Healer.MoltenRadiance
-	specCache.discipline.snapshotData.snapshots[specCache.discipline.spellsData.spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(specCache.discipline.spellsData.spells.moltenRadiance)
+	specCache.discipline.snapshotData.snapshots[spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(spells.moltenRadiance)
 	---@type TRB.Classes.Healer.BlessingOfWinter
-	specCache.discipline.snapshotData.snapshots[specCache.discipline.spellsData.spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(specCache.discipline.spellsData.spells.blessingOfWinter)
+	specCache.discipline.snapshotData.snapshots[spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(spells.blessingOfWinter)
 	---@type TRB.Classes.Snapshot
-	specCache.discipline.snapshotData.snapshots[specCache.discipline.spellsData.spells.shadowfiend.id] = TRB.Classes.Healer.HealerRegenBase:New(specCache.discipline.spellsData.spells.shadowfiend, {
+	specCache.discipline.snapshotData.snapshots[spells.shadowfiend.id] = TRB.Classes.Healer.HealerRegenBase:New(spells.shadowfiend, {
 		guid = nil,
 		totemId = nil,
 		onCooldown = false,
@@ -152,15 +155,15 @@ local function FillSpecializationCache()
 		resourceFinal = 0
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.discipline.snapshotData.snapshots[specCache.discipline.spellsData.spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(specCache.discipline.spellsData.spells.surgeOfLight)
+	specCache.discipline.snapshotData.snapshots[spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(spells.surgeOfLight)
 	---@type TRB.Classes.Snapshot
-	specCache.discipline.snapshotData.snapshots[specCache.discipline.spellsData.spells.powerWordRadiance.id] = TRB.Classes.Snapshot:New(specCache.discipline.spellsData.spells.powerWordRadiance)
+	specCache.discipline.snapshotData.snapshots[spells.powerWordRadiance.id] = TRB.Classes.Snapshot:New(spells.powerWordRadiance)
 	---@type TRB.Classes.Snapshot
-	specCache.discipline.snapshotData.snapshots[specCache.discipline.spellsData.spells.shadowCovenant.id] = TRB.Classes.Snapshot:New(specCache.discipline.spellsData.spells.shadowCovenant)
+	specCache.discipline.snapshotData.snapshots[spells.shadowCovenant.id] = TRB.Classes.Snapshot:New(spells.shadowCovenant)
 	---@type TRB.Classes.Snapshot
-	specCache.discipline.snapshotData.snapshots[specCache.discipline.spellsData.spells.rapture.id] = TRB.Classes.Snapshot:New(specCache.discipline.spellsData.spells.rapture)
+	specCache.discipline.snapshotData.snapshots[spells.rapture.id] = TRB.Classes.Snapshot:New(spells.rapture)
 	---@type TRB.Classes.Snapshot
-	specCache.discipline.snapshotData.snapshots[specCache.discipline.spellsData.spells.atonement.id] = TRB.Classes.Snapshot:New(specCache.discipline.spellsData.spells.atonement, {
+	specCache.discipline.snapshotData.snapshots[spells.atonement.id] = TRB.Classes.Snapshot:New(spells.atonement, {
 		minRemainingTime = 0,
 		maxRemainingTime = 0
 	})
@@ -234,6 +237,9 @@ local function FillSpecializationCache()
 
 	---@type TRB.Classes.Priest.HolySpells
 	specCache.holy.spellsData.spells = TRB.Classes.Priest.HolySpells:New()
+	
+---@diagnostic disable-next-line: cast-local-type
+	spells = specCache.holy.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 
 	specCache.holy.snapshotData.attributes.manaRegen = 0
 	specCache.holy.snapshotData.audio = {
@@ -244,13 +250,13 @@ local function FillSpecializationCache()
 		surgeOfLight2Cue = false
 	}
 	---@type TRB.Classes.Healer.Innervate
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.innervate.id] = TRB.Classes.Healer.Innervate:New(specCache.holy.spellsData.spells.innervate)
+	specCache.holy.snapshotData.snapshots[spells.innervate.id] = TRB.Classes.Healer.Innervate:New(spells.innervate)
 	---@type TRB.Classes.Healer.PotionOfChilledClarity
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.potionOfChilledClarity.id] = TRB.Classes.Healer.PotionOfChilledClarity:New(specCache.holy.spellsData.spells.potionOfChilledClarity)
+	specCache.holy.snapshotData.snapshots[spells.potionOfChilledClarity.id] = TRB.Classes.Healer.PotionOfChilledClarity:New(spells.potionOfChilledClarity)
 	---@type TRB.Classes.Healer.ManaTideTotem
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.manaTideTotem.id] = TRB.Classes.Healer.ManaTideTotem:New(specCache.holy.spellsData.spells.manaTideTotem)
+	specCache.holy.snapshotData.snapshots[spells.manaTideTotem.id] = TRB.Classes.Healer.ManaTideTotem:New(spells.manaTideTotem)
 	---@type TRB.Classes.Healer.HealerRegenBase
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.shadowfiend.id] = TRB.Classes.Healer.HealerRegenBase:New(specCache.holy.spellsData.spells.shadowfiend, {
+	specCache.holy.snapshotData.snapshots[spells.shadowfiend.id] = TRB.Classes.Healer.HealerRegenBase:New(spells.shadowfiend, {
 		guid = nil,
 		totemId = nil,
 		onCooldown = false,
@@ -264,37 +270,37 @@ local function FillSpecializationCache()
 		resourceFinal = 0
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.apotheosis.id] = TRB.Classes.Snapshot:New(specCache.holy.spellsData.spells.apotheosis)
+	specCache.holy.snapshotData.snapshots[spells.apotheosis.id] = TRB.Classes.Snapshot:New(spells.apotheosis)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(specCache.holy.spellsData.spells.surgeOfLight)
+	specCache.holy.snapshotData.snapshots[spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(spells.surgeOfLight)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.resonantWords.id] = TRB.Classes.Snapshot:New(specCache.holy.spellsData.spells.resonantWords)
+	specCache.holy.snapshotData.snapshots[spells.resonantWords.id] = TRB.Classes.Snapshot:New(spells.resonantWords)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.lightweaver.id] = TRB.Classes.Snapshot:New(specCache.holy.spellsData.spells.lightweaver)
+	specCache.holy.snapshotData.snapshots[spells.lightweaver.id] = TRB.Classes.Snapshot:New(spells.lightweaver)
 	---@type TRB.Classes.Healer.SymbolOfHope
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.symbolOfHope.id] = TRB.Classes.Healer.SymbolOfHope:New(specCache.holy.spellsData.spells.symbolOfHope, CalculateManaGain)
+	specCache.holy.snapshotData.snapshots[spells.symbolOfHope.id] = TRB.Classes.Healer.SymbolOfHope:New(spells.symbolOfHope, CalculateManaGain)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.holyWordSerenity.id] = TRB.Classes.Snapshot:New(specCache.holy.spellsData.spells.holyWordSerenity)
+	specCache.holy.snapshotData.snapshots[spells.holyWordSerenity.id] = TRB.Classes.Snapshot:New(spells.holyWordSerenity)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.holyWordSanctify.id] = TRB.Classes.Snapshot:New(specCache.holy.spellsData.spells.holyWordSanctify)
+	specCache.holy.snapshotData.snapshots[spells.holyWordSanctify.id] = TRB.Classes.Snapshot:New(spells.holyWordSanctify)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.holyWordChastise.id] = TRB.Classes.Snapshot:New(specCache.holy.spellsData.spells.holyWordChastise)
+	specCache.holy.snapshotData.snapshots[spells.holyWordChastise.id] = TRB.Classes.Snapshot:New(spells.holyWordChastise)
 	---@type TRB.Classes.Healer.ChanneledManaPotion
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.potionOfFrozenFocusRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(specCache.holy.spellsData.spells.potionOfFrozenFocusRank1, CalculateManaGain)
+	specCache.holy.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(spells.potionOfFrozenFocusRank1, CalculateManaGain)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.aeratedManaPotionRank1.id] = TRB.Classes.Snapshot:New(specCache.holy.spellsData.spells.aeratedManaPotionRank1)
+	specCache.holy.snapshotData.snapshots[spells.aeratedManaPotionRank1.id] = TRB.Classes.Snapshot:New(spells.aeratedManaPotionRank1)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.conjuredChillglobe.id] = TRB.Classes.Snapshot:New(specCache.holy.spellsData.spells.conjuredChillglobe)
+	specCache.holy.snapshotData.snapshots[spells.conjuredChillglobe.id] = TRB.Classes.Snapshot:New(spells.conjuredChillglobe)
 	---@type TRB.Classes.Healer.MoltenRadiance
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(specCache.holy.spellsData.spells.moltenRadiance)
+	specCache.holy.snapshotData.snapshots[spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(spells.moltenRadiance)
 	---@type TRB.Classes.Healer.BlessingOfWinter
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(specCache.holy.spellsData.spells.blessingOfWinter)
+	specCache.holy.snapshotData.snapshots[spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(spells.blessingOfWinter)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.divineConversation.id] = TRB.Classes.Snapshot:New(specCache.holy.spellsData.spells.divineConversation)
+	specCache.holy.snapshotData.snapshots[spells.divineConversation.id] = TRB.Classes.Snapshot:New(spells.divineConversation)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.prayerFocus.id] = TRB.Classes.Snapshot:New(specCache.holy.spellsData.spells.prayerFocus)
+	specCache.holy.snapshotData.snapshots[spells.prayerFocus.id] = TRB.Classes.Snapshot:New(spells.prayerFocus)
 	---@type TRB.Classes.Snapshot
-	specCache.holy.snapshotData.snapshots[specCache.holy.spellsData.spells.sacredReverence.id] = TRB.Classes.Snapshot:New(specCache.holy.spellsData.spells.sacredReverence, nil, true)
+	specCache.holy.snapshotData.snapshots[spells.sacredReverence.id] = TRB.Classes.Snapshot:New(spells.sacredReverence, nil, true)
 
 	-- Shadow
 	specCache.shadow.Global_TwintopResourceBar = {
@@ -339,6 +345,9 @@ local function FillSpecializationCache()
 
 	---@type TRB.Classes.Priest.ShadowSpells
 	specCache.shadow.spellsData.spells = TRB.Classes.Priest.ShadowSpells:New()
+	
+	---@diagnostic disable-next-line: cast-local-type
+	spells = specCache.shadow.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 
 	specCache.shadow.snapshotData.audio = {
 		playedDpCue = false,
@@ -348,11 +357,11 @@ local function FillSpecializationCache()
 		deathsTormentMaxCue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[specCache.shadow.spellsData.spells.voidform.id] = TRB.Classes.Snapshot:New(specCache.shadow.spellsData.spells.voidform)
+	specCache.shadow.snapshotData.snapshots[spells.voidform.id] = TRB.Classes.Snapshot:New(spells.voidform)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[specCache.shadow.spellsData.spells.darkAscension.id] = TRB.Classes.Snapshot:New(specCache.shadow.spellsData.spells.darkAscension)
+	specCache.shadow.snapshotData.snapshots[spells.darkAscension.id] = TRB.Classes.Snapshot:New(spells.darkAscension)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[specCache.shadow.spellsData.spells.shadowfiend.id] = TRB.Classes.Snapshot:New(specCache.shadow.spellsData.spells.shadowfiend, {
+	specCache.shadow.snapshotData.snapshots[spells.shadowfiend.id] = TRB.Classes.Snapshot:New(spells.shadowfiend, {
 		guid = nil,
 		totemId = nil,
 		onCooldown = false,
@@ -366,12 +375,12 @@ local function FillSpecializationCache()
 		resourceFinal = 0
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[specCache.shadow.spellsData.spells.devouredDespair.id] = TRB.Classes.Snapshot:New(specCache.shadow.spellsData.spells.devouredDespair, {
+	specCache.shadow.snapshotData.snapshots[spells.devouredDespair.id] = TRB.Classes.Snapshot:New(spells.devouredDespair, {
 		resourceRaw = 0,
 		resourceFinal = 0
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[specCache.shadow.spellsData.spells.idolOfCthun.id] = TRB.Classes.Snapshot:New(specCache.shadow.spellsData.spells.idolOfCthun, {
+	specCache.shadow.snapshotData.snapshots[spells.idolOfCthun.id] = TRB.Classes.Snapshot:New(spells.idolOfCthun, {
 		numberActive = 0,
 		resourceRaw = 0,
 		resourceFinal = 0,
@@ -379,30 +388,30 @@ local function FillSpecializationCache()
 		activeList = {}
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[specCache.shadow.spellsData.spells.mindDevourer.id] = TRB.Classes.Snapshot:New(specCache.shadow.spellsData.spells.mindDevourer)
+	specCache.shadow.snapshotData.snapshots[spells.mindDevourer.id] = TRB.Classes.Snapshot:New(spells.mindDevourer)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[specCache.shadow.spellsData.spells.surgeOfInsanity.id] = TRB.Classes.Snapshot:New(specCache.shadow.spellsData.spells.mindFlayInsanity)
+	specCache.shadow.snapshotData.snapshots[spells.surgeOfInsanity.id] = TRB.Classes.Snapshot:New(spells.mindFlayInsanity)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[specCache.shadow.spellsData.spells.deathspeaker.id] = TRB.Classes.Snapshot:New(specCache.shadow.spellsData.spells.deathspeaker)
+	specCache.shadow.snapshotData.snapshots[spells.deathspeaker.id] = TRB.Classes.Snapshot:New(spells.deathspeaker)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[specCache.shadow.spellsData.spells.twistOfFate.id] = TRB.Classes.Snapshot:New(specCache.shadow.spellsData.spells.twistOfFate)
+	specCache.shadow.snapshotData.snapshots[spells.twistOfFate.id] = TRB.Classes.Snapshot:New(spells.twistOfFate)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[specCache.shadow.spellsData.spells.mindMelt.id] = TRB.Classes.Snapshot:New(specCache.shadow.spellsData.spells.mindMelt)
+	specCache.shadow.snapshotData.snapshots[spells.mindMelt.id] = TRB.Classes.Snapshot:New(spells.mindMelt)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[specCache.shadow.spellsData.spells.shadowyInsight.id] = TRB.Classes.Snapshot:New(specCache.shadow.spellsData.spells.shadowyInsight)
+	specCache.shadow.snapshotData.snapshots[spells.shadowyInsight.id] = TRB.Classes.Snapshot:New(spells.shadowyInsight)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[specCache.shadow.spellsData.spells.voidBolt.id] = TRB.Classes.Snapshot:New(specCache.shadow.spellsData.spells.voidBolt, {
+	specCache.shadow.snapshotData.snapshots[spells.voidBolt.id] = TRB.Classes.Snapshot:New(spells.voidBolt, {
 		lastSuccess = nil,
 		flightTime = 1.0
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[specCache.shadow.spellsData.spells.mindBlast.id] = TRB.Classes.Snapshot:New(specCache.shadow.spellsData.spells.mindBlast)
+	specCache.shadow.snapshotData.snapshots[spells.mindBlast.id] = TRB.Classes.Snapshot:New(spells.mindBlast)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[specCache.shadow.spellsData.spells.idolOfYoggSaron.id] = TRB.Classes.Snapshot:New(specCache.shadow.spellsData.spells.idolOfYoggSaron)
+	specCache.shadow.snapshotData.snapshots[spells.idolOfYoggSaron.id] = TRB.Classes.Snapshot:New(spells.idolOfYoggSaron)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[specCache.shadow.spellsData.spells.thingFromBeyond.id] = TRB.Classes.Snapshot:New(specCache.shadow.spellsData.spells.thingFromBeyond)
+	specCache.shadow.snapshotData.snapshots[spells.thingFromBeyond.id] = TRB.Classes.Snapshot:New(spells.thingFromBeyond)
 	---@type TRB.Classes.Snapshot
-	specCache.shadow.snapshotData.snapshots[specCache.shadow.spellsData.spells.deathsTorment.id] = TRB.Classes.Snapshot:New(specCache.shadow.spellsData.spells.deathsTorment)
+	specCache.shadow.snapshotData.snapshots[spells.deathsTorment.id] = TRB.Classes.Snapshot:New(spells.deathsTorment)
 end
 
 local function Setup_Discipline()
@@ -415,8 +424,9 @@ end
 
 local function FillSpellData_Discipline()
 	Setup_Discipline()
+	---@type TRB.Classes.SpellsData
 	specCache.discipline.spellsData:FillSpellData()
-	local spells = specCache.discipline.spellsData.spells
+	local spells = specCache.discipline.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
 	specCache.discipline.barTextVariables.icons = {
@@ -578,7 +588,7 @@ end
 local function FillSpellData_Holy()
 	Setup_Holy()
 	specCache.holy.spellsData:FillSpellData()
-	local spells = specCache.holy.spellsData.spells
+	local spells = specCache.holy.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 
 	-- This is done here so that we can get icons for the options menu!
 	specCache.holy.barTextVariables.icons = {
@@ -772,7 +782,7 @@ end
 local function FillSpellData_Shadow()
 	Setup_Shadow()
 	specCache.shadow.spellsData:FillSpellData()
-	local spells = specCache.shadow.spellsData.spells
+	local spells = specCache.shadow.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
 	specCache.shadow.barTextVariables.icons = {
@@ -951,8 +961,7 @@ local function FillSpellData_Shadow()
 end
 
 local function CheckVoidTendrilExists(guid)
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local idolOfCthun = snapshotData.snapshots[spells.idolOfCthun.id]
 	if guid == nil or (not idolOfCthun.attributes.activeList[guid] or idolOfCthun.attributes.activeList[guid] == nil) then
@@ -989,8 +998,7 @@ end
 local function RefreshTargetTracking()
 	local currentTime = GetTime()
 	local specId = GetSpecialization()
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 	---@type TRB.Classes.TargetData
@@ -1146,8 +1154,7 @@ local function ConstructResourceBar(settings)
 end
 
 local function CalculateHolyWordCooldown(base, spellId)
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local mod = 1
@@ -1185,8 +1192,7 @@ end
 
 local function RefreshLookupData_Discipline()
 	local specSettings = TRB.Data.settings.priest.discipline
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
@@ -1561,8 +1567,7 @@ local function RefreshLookupData_Discipline()
 end
 
 local function RefreshLookupData_Holy()
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.priest.holy
@@ -1930,8 +1935,7 @@ end
 
 local function RefreshLookupData_Shadow()
 	local specSettings = TRB.Data.settings.priest.shadow
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local targetData = snapshotData.targetData
@@ -2293,8 +2297,7 @@ end
 
 local function UpdateCastingResourceFinal_Discipline()
 	-- Do nothing for now
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 	local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
@@ -2304,8 +2307,7 @@ end
 
 local function UpdateCastingResourceFinal_Holy()
 	-- Do nothing for now
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 	local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
@@ -2482,8 +2484,7 @@ local function CastingSpell()
 end
 
 local function GetMaximumShadowfiendResults()
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells|TRB.Classes.Priest.ShadowSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells|TRB.Classes.Priest.ShadowSpells]]
 	local specId = GetSpecialization()
 	if specId ~= 1 and specId ~= 2 and specId ~= 3 then
 		return false, 0, 0, 0, 0, 0
@@ -2550,8 +2551,7 @@ local function UpdateSpecificShadowfiendValues(shadowfiend)
 	local specId = GetSpecialization()
 	local currentTime = GetTime()
 	local settings
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells|TRB.Classes.Priest.ShadowSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells|TRB.Classes.Priest.ShadowSpells]]
 
 	if specId == 1 then
 		settings = TRB.Data.settings.priest.discipline.shadowfiend
@@ -2645,8 +2645,7 @@ end
 local function UpdateShadowfiendValues()
 	local specId = GetSpecialization()
 	local _
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells|TRB.Classes.Priest.ShadowSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells|TRB.Classes.Priest.ShadowSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local shadowfiend = snapshotData.snapshots[spells.shadowfiend.id]
 
@@ -2661,8 +2660,7 @@ local function UpdateShadowfiendValues()
 end
 
 local function UpdateExternalCallToTheVoidValues()
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local idolOfCthun = snapshotData.snapshots[spells.idolOfCthun.id]
 	local currentTime = GetTime()
@@ -2726,8 +2724,7 @@ local function UpdateExternalCallToTheVoidValues()
 end
 
 local function UpdateAtonement()
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 	local atonement = TRB.Data.snapshotData.snapshots[spells.atonement.id] --[[@as TRB.Classes.Snapshot]]
 	local targets = TRB.Data.snapshotData.targetData.targets
 	local minRemainingTime = nil
@@ -2760,8 +2757,7 @@ end
 
 local function UpdateSnapshot_Healers()
 	local _
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells|TRB.Classes.Priest.HolySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -2804,8 +2800,7 @@ local function UpdateSnapshot_Discipline()
 	UpdateSnapshot_Healers()
 	UpdateAtonement()
 	
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -2819,8 +2814,7 @@ local function UpdateSnapshot_Holy()
 	UpdateSnapshot()
 	UpdateSnapshot_Healers()
 	
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -2840,8 +2834,7 @@ local function UpdateSnapshot_Shadow()
 	UpdateSnapshot()
 	--TODO #339: Comment out to reduce load while testing
 	UpdateExternalCallToTheVoidValues()
-	local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
-	local spells = spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	

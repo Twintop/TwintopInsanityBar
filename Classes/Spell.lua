@@ -5,7 +5,6 @@ TRB.Classes = TRB.Classes or {}
 ---@class TRB.Classes.SpellsData
 ---@field public spells TRB.Classes.SpecializationSpellsBase # Dictionary of spells
 ---@field public fillManaCost boolean # Should the mana cost of spells also be filled when `FillSpellData()` is called?
-
 TRB.Classes.SpellsData = {}
 TRB.Classes.SpellsData.__index = TRB.Classes.SpellsData
 

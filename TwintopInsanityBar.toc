@@ -75,6 +75,7 @@ Classes\Settings.lua
 Classes\SpecCache.lua
 
 ClassModules\Classes\HealerClasses.lua
+ClassModules\Classes\PaladinClasses.lua
 ClassModules\Classes\PriestClasses.lua
 
 Init.lua
