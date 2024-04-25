@@ -24,8 +24,8 @@ function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.onTaxi = UnitOnTaxi("player")
 	TRB.Data.character.advancedFlight = TRB.Details.addonData.libs.LibAdvFlight.IsAdvFlyEnabled()
 
-	TRB.Data.barTextCache = {}
-	TRB.Functions.Spell:FillSpellData()
+	--TRB.Data.barTextCache = {}
+	--TRB.Functions.Spell:FillSpellData()
 end
 
 function TRB.Functions.Character:UpdateSnapshot()

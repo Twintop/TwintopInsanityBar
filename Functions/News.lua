@@ -18,6 +18,11 @@ local content = [====[
 
 - (FIX (Twintop)) Ensure the passive mana generation lines for Potion of Frozen Focus and Potion of Chilled Clarity render properly.
 
+## Demon Hunter
+### Vengeance
+
+- (FIX (Twintop)) Correctly show Spirit Bomb's threshold line as unusable when you have 0 Soul Fragments.
+
 ---
 
 # 10.2.6.10-release (2024-04-23)
