@@ -396,7 +396,6 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		end
 
 		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "evoker", "devastation")
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.devastation)
 	end
 
 	local function Setup_Preservation()
@@ -405,7 +404,6 @@ if classIndexId == 13 then --Only do this if we're on an Evoker!
 		end
 
 		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "evoker", "preservation")
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.preservation)
 	end
 
 	local function Setup_Augmentation()

@@ -1069,7 +1069,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "druid", "balance")
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.balance)
 	end
 
 	local function FillSpellData_Balance()
@@ -1230,7 +1229,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "druid", "feral")
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.feral)
 	end
 
 	local function FillSpellData_Feral()
@@ -1390,7 +1388,6 @@ if classIndexId == 11 then --Only do this if we're on a Druid!
 		end
 
 		TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "druid", "restoration")
-		TRB.Functions.Character:LoadFromSpecializationCache(specCache.restoration)
 	end
 
 	local function FillSpellData_Restoration()

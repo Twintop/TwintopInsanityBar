@@ -163,7 +163,6 @@ local function Setup_Havoc()
 	end
 
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "demonhunter", "havoc")
-	TRB.Functions.Character:LoadFromSpecializationCache(specCache.havoc)
 end
 
 local function FillSpellData_Havoc()
@@ -267,7 +266,6 @@ local function Setup_Vengeance()
 	end
 
 	TRB.Functions.Character:FillSpecializationCacheSettings(TRB.Data.settings, specCache, "demonhunter", "vengeance")
-	TRB.Functions.Character:LoadFromSpecializationCache(specCache.vengeance)
 end
 
 local function FillSpellData_Vengeance()

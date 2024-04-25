@@ -88,7 +88,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons
 	TRB.Data.barTextVariables.values = cache.barTextVariables.values
 	TRB.Data.snapshotData = cache.snapshotData
-
+	TRB.Data.barTextCache = {}
 end
 
 ---Fills the specialization cache with a combination of global and spec specific settings
