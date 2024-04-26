@@ -1,5 +1,9 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
+local _, _, classIndexId = UnitClass("player")
+if classIndexId ~= 2 and classIndexId ~= 5 and classIndexId ~= 7 and classIndexId ~= 10 and classIndexId ~= 11 and classIndexId ~= 13 then --Only do this if we're on a Healer Class!
+	return
+end
+
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.Healer = TRB.Classes.Healer or {}
 
@@ -321,7 +325,7 @@ function TRB.Classes.Healer.SymbolOfHopeBuff:Refresh(eventType, simple, unit)
                 if self.ticks <= 0 then
                     self.parent:Reset()
                 else
-                    self.parent:Update()
+                    self:UpdateTicks()
                 end
             end
         end

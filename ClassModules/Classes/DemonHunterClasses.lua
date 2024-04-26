@@ -1,5 +1,9 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
+local _, _, classIndexId = UnitClass("player")
+if classIndexId ~= 12 then --Only do this if we're on a DemonHunter!
+	return
+end
+
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.DemonHunter = TRB.Classes.DemonHunter or {}
 

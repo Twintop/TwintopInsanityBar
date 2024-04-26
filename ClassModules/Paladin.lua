@@ -691,7 +691,7 @@ local function CastingSpell()
 				local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 				if spellId then
-					local manaCost = -TRB.Functions.Spell:GetSpellManaCost(spellId)
+					local manaCost = -TRB.Classes.SpellBase.GetManaCost({ spellId = spellId })
 
 					casting.startTime = currentSpellStartTime / 1000
 					casting.endTime = currentSpellEndTime / 1000
@@ -1174,7 +1174,6 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 end)
 
 function TRB.Functions.Class:CheckCharacter()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 	local specId = GetSpecialization()
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "paladin"
@@ -1183,9 +1182,9 @@ function TRB.Functions.Class:CheckCharacter()
 	local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
 	local settings = nil
 	if specId == 1 then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
 		settings = TRB.Data.settings.paladin.holy
 		TRB.Data.character.specName = "holy"
-		TRB.Functions.Spell:FillSpellDataManaCost(spells)
 
 		local trinket1ItemLink = GetInventoryItemLink("player", 13)
 		local trinket2ItemLink = GetInventoryItemLink("player", 14)

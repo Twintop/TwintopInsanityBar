@@ -1533,7 +1533,7 @@ local function CastingSpell()
 		if specId == 2 then
 			if currentSpellName == nil then
 				if currentChannelId == spells.soothingMist.id then
-					local manaCost = -TRB.Functions.Spell:GetSpellManaCostPerSecond(currentChannelId)
+					local manaCost = -TRB.Functions.Spell:GetManaCostPerSecond(currentChannelId)
 
 					snapshotData.casting.spellId = spells.soothingMist.id
 					snapshotData.casting.startTime = currentTime
@@ -1549,7 +1549,7 @@ local function CastingSpell()
 				local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 				if spellId then
-					local manaCost = -TRB.Functions.Spell:GetSpellManaCost(spellId)
+					local manaCost = -TRB.Classes.SpellBase.GetManaCost({ spellId = spellId })
 
 					snapshotData.casting.startTime = currentSpellStartTime / 1000
 					snapshotData.casting.endTime = currentSpellEndTime / 1000
@@ -2269,7 +2269,6 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.specName = "mistweaver"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
-		TRB.Functions.Spell:FillSpellDataManaCost(spells)
 
 		local trinket1ItemLink = GetInventoryItemLink("player", 13)
 		local trinket2ItemLink = GetInventoryItemLink("player", 14)

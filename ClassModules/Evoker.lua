@@ -1253,7 +1253,7 @@ local function CastingSpell()
 				local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 				if spellId then
-					local manaCost = -TRB.Functions.Spell:GetSpellManaCost(spellId)
+					local manaCost = -TRB.Classes.SpellBase.GetManaCost({ spellId = spellId })
 
 					casting.startTime = currentSpellStartTime / 1000
 					casting.endTime = currentSpellEndTime / 1000
@@ -1936,7 +1936,6 @@ function TRB.Functions.Class:CheckCharacter()
 	elseif specId == 2 then
 		settings = TRB.Data.settings.evoker.preservation
 		TRB.Data.character.specName = "preservation"
-		TRB.Functions.Spell:FillSpellDataManaCost(spells)
 
 		local trinket1ItemLink = GetInventoryItemLink("player", 13)
 		local trinket2ItemLink = GetInventoryItemLink("player", 14)

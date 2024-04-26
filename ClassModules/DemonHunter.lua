@@ -1095,7 +1095,7 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
-				for _, v in pairs(TRB.Data.spellsData.spells) do
+				for _, v in pairs(spells) do
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]

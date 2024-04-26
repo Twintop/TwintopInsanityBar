@@ -1708,7 +1708,7 @@ local function CastingSpell()
 				local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 				if spellId then
-					local manaCost = -TRB.Functions.Spell:GetSpellManaCost(spellId)
+					local manaCost = -TRB.Classes.SpellBase.GetManaCost({ spellId = spellId })
 
 					snapshotData.casting.startTime = currentSpellStartTime / 1000
 					snapshotData.casting.endTime = currentSpellEndTime / 1000
@@ -2500,7 +2500,6 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.specName = "restoration"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
-		TRB.Functions.Spell:FillSpellDataManaCost(spells)
 
 		local trinket1ItemLink = GetInventoryItemLink("player", 13)
 		local trinket2ItemLink = GetInventoryItemLink("player", 14)

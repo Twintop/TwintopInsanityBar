@@ -11,20 +11,18 @@ TRB.Classes = TRB.Classes or {}
 
 ---@class TRB.Classes.SpellsData
 ---@field public spells TRB.Classes.SpecializationSpellsBase # Dictionary of spells
----@field public fillManaCost boolean # Should the mana cost of spells also be filled when `FillSpellData()` is called?
+--@field public fillManaCost boolean # Should the mana cost of spells also be filled when `FillSpellData()` is called?
 TRB.Classes.SpellsData = {}
 TRB.Classes.SpellsData.__index = TRB.Classes.SpellsData
 
 ---Create a new SpellsData
----@param fillManaCost boolean? # Should the mana cost of spells also be filled with `FillSpellData()` is called?
 ---@return TRB.Classes.SpellsData
-function TRB.Classes.SpellsData:New(fillManaCost)
+function TRB.Classes.SpellsData:New()
     local self = {}
     setmetatable(self, TRB.Classes.SpellsData)
     
     ---@type TRB.Classes.SpecializationSpellsBase
     self.spells = {}
-    self.fillManaCost = fillManaCost or false
 
     return self
 end
@@ -32,8 +30,9 @@ end
 ---Fills extra spell data for all spells in the dictionary.
 function TRB.Classes.SpellsData:FillSpellData()
 	for _, v in pairs(self.spells) do
-        
-        v--[[@as TRB.Classes.SpellBase]]:FillSpellData()
+        ---@type TRB.Classes.SpellBase
+        local spell = v
+        spell:FillSpellData()
 	end
 end
 
@@ -219,7 +218,7 @@ end
 
 ---Gets the current mana cost per second of the spell.
 ---@return number # Mana cost per second of the spell.
-function TRB.Classes.SpellBase:GetSpellManaCostPerSecond()
+function TRB.Classes.SpellBase:GetManaCostPerSecond()
 	local spc = GetSpellPowerCost(self.spellId)
 	local length = TRB.Functions.Table:Length(spc)
 

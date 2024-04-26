@@ -76,6 +76,7 @@ Classes\SpecCache.lua
 
 ClassModules\Classes\HealerClasses.lua
 ClassModules\Classes\DemonHunterClasses.lua
+ClassModules\Classes\DruidClasses.lua
 ClassModules\Classes\PaladinClasses.lua
 ClassModules\Classes\PriestClasses.lua
 
@@ -90,7 +91,6 @@ Functions\Item.lua
 Functions\IO.lua
 Functions\LibSharedMedia.lua
 Functions\Number.lua
-Functions\Spell.lua
 Functions\String.lua
 Functions\Table.lua
 Functions\Talent.lua

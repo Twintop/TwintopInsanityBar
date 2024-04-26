@@ -2035,8 +2035,9 @@ local function FuryConstructOptionsPanel(cache)
 	controls.dropDown = {}
 
 	interfaceSettingsFrame.furyDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warrior_Fury", UIParent)
+---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.furyDisplayPanel.name = L["WarriorFuryFull"]
----@diagnostic disable-next-line: undefined-field
+---@diagnostic disable-next-line: undefined-field, inject-field
 	interfaceSettingsFrame.furyDisplayPanel.parent = parent.name
 	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.furyDisplayPanel, L["WarriorFuryFull"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.furyDisplayPanel)

@@ -1,5 +1,10 @@
 ---@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
+local _, _, classIndexId = UnitClass("player")
+if classIndexId ~= 5 then --Only do this if we're on a Priest!
+	return
+end
+
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.Priest = TRB.Classes.Priest or {}
 
