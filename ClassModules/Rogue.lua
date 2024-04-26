@@ -23,10 +23,11 @@ local talents --[[@as TRB.Classes.Talents]]
 Global_TwintopResourceBar = {}
 TRB.Data.character = {}
 
+---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
-	assassination = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
-	outlaw = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
-	subtlety = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
+	assassination = TRB.Classes.SpecCache:New(),
+	outlaw = TRB.Classes.SpecCache:New(),
+	subtlety = TRB.Classes.SpecCache:New()
 }
 
 local function FillSpecializationCache()

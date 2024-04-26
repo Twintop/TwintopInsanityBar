@@ -23,9 +23,10 @@ local talents --[[@as TRB.Classes.Talents]]
 Global_TwintopResourceBar = {}
 TRB.Data.character = {}
 
+---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
-	windwalker = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
-	mistweaver = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
+	mistweaver = TRB.Classes.SpecCache:New(),
+	windwalker = TRB.Classes.SpecCache:New()
 }
 
 local function CalculateManaGain(mana, isPotion)

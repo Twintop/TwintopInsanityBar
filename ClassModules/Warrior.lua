@@ -23,8 +23,8 @@ Global_TwintopResourceBar = {}
 TRB.Data.character = {}
 
 local specCache = {
-	arms = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
-	fury = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
+	arms = TRB.Classes.SpecCache:New(),
+	fury = TRB.Classes.SpecCache:New()
 }
 
 local function FillSpecializationCache()

@@ -152,8 +152,9 @@ TRB.Data.character = {
 	items = {}
 }
 
----@type { [string]: TRB.Classes.SpellBase }
-TRB.Data.spells = {}
+---@type TRB.Classes.SpellsData
+---@diagnostic disable-next-line: missing-fields
+TRB.Data.spellsData = {}
 
 TRB.Data.lookup = {}
 TRB.Data.lookupLogic = {}

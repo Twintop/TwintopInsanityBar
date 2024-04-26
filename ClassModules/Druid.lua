@@ -22,12 +22,13 @@ local talents --[[@as TRB.Classes.Talents]]
 Global_TwintopResourceBar = {}
 TRB.Data.character = {}
 
+---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
-	balance = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
+	balance = TRB.Classes.SpecCache:New(),
 	feral = TRB.Classes.SpecCache:New({
 		bleeds = {}
-	}) --[[@as TRB.Classes.SpecCache]],
-	restoration = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
+	}),
+	restoration = TRB.Classes.SpecCache:New()
 }
 
 local function CalculateManaGain(mana, isPotion)
@@ -854,7 +855,7 @@ local function ConstructResourceBar(settings)
 		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif specId == 2 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
-		for k, v in pairs(spells) do
+		for _, v in pairs(spells) do
 			local spell = v --[[@as TRB.Classes.SpellBase]]
 			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 				spell = spell --[[@as TRB.Classes.SpellThreshold]]

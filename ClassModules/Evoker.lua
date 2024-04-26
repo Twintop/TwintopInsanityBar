@@ -23,6 +23,7 @@ local talents --[[@as TRB.Classes.Talents]]
 Global_TwintopResourceBar = {}
 TRB.Data.character = {}
 
+---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
 	devastation = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
 	preservation = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
@@ -71,14 +72,12 @@ local function FillSpecializationCache()
 		},
 		items = {}
 	}
-
-	specCache.devastation.spells = {
-		essenceBurst = {
-			id = 359618,
-			name = "",
-			icon = ""
-		},
-	}
+	
+	---@type TRB.Classes.Evoker.DevastationSpells
+	specCache.devastation.spellsData.spells = TRB.Classes.Evoker.DevastationSpells:New()
+	---@type TRB.Classes.Evoker.DevastationSpells
+	---@diagnostic disable-next-line: assign-type-mismatch
+	local spells = specCache.devastation.spellsData.spells
 
 	specCache.devastation.snapshotData.attributes.manaRegen = 0
 	specCache.devastation.snapshotData.audio = {
@@ -86,7 +85,7 @@ local function FillSpecializationCache()
 		essenceBurst2Cue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.devastation.snapshotData.snapshots[specCache.devastation.spells.essenceBurst.id] = TRB.Classes.Snapshot:New(specCache.devastation.spells.essenceBurst)
+	specCache.devastation.snapshotData.snapshots[spells.essenceBurst.id] = TRB.Classes.Snapshot:New(spells.essenceBurst)
 
 	specCache.devastation.barTextVariables = {
 		icons = {},
@@ -108,7 +107,7 @@ local function FillSpecializationCache()
 
 	specCache.preservation.character = {
 		guid = UnitGUID("player"),
-		maxResource = 100,			
+		maxResource = 100,
 		effects = {
 		},
 		items = {
@@ -147,168 +146,11 @@ local function FillSpecializationCache()
 			alchemyStone = false
 		}
 	}
-
-	specCache.preservation.spells = {
-		-- Evoker Class Talents		
-		
-		-- Preservation Spec Talents			
-		emeraldCommunion = {
-			id = 370960,
-			name = "",
-			icon = "",
-			duration = 5.0, --Hasted
-			resourcePerTick = 0.02,
-			tickRate = 1,
-			isTalent = true
-		},
-		essenceBurst = {
-			id = 369299,
-			name = "",
-			icon = ""
-		},
-
-		-- External mana
-		symbolOfHope = {
-			id = 64901,
-			name = "",
-			icon = "",
-			duration = 4.0, --Hasted
-			resourcePercent = 0.02,
-			ticks = 4,
-			tickId = 265144
-		},
-		innervate = {
-			id = 29166,
-			name = "",
-			icon = "",
-			duration = 10
-		},
-		manaTideTotem = {
-			id = 320763,
-			name = "",
-			icon = "",
-			duration = 8
-		},
-		blessingOfWinter = {
-			id = 388011,
-			name = "",
-			icon = "",
-			tickRate = 2,
-			hasTicks = true,
-			resourcePerTick = 0,
-			resourcePercent = 0.01
-		},
-
-		-- Potions
-		aeratedManaPotionRank1 = {
-			id = 370607,
-			itemId = 191384,
-			spellId = 370607,
-			iconName = "inv_10_alchemy_bottle_shape1_blue",
-			name = "",
-			icon = "",
-			useSpellIcon = true,
-			texture = "",
-			thresholdId = 1,
-			settingKey = "aeratedManaPotionRank1"
-		},
-		aeratedManaPotionRank2 = {
-			itemId = 191385,
-			spellId = 370607,
-			iconName = "inv_10_alchemy_bottle_shape1_blue",
-			name = "",
-			icon = "",
-			useSpellIcon = true,
-			texture = "",
-			thresholdId = 2,
-			settingKey = "aeratedManaPotionRank2"
-		},
-		aeratedManaPotionRank3 = {
-			itemId = 191386,
-			spellId = 370607,
-			iconName = "inv_10_alchemy_bottle_shape1_blue",
-			name = "",
-			icon = "",
-			useSpellIcon = true,
-			texture = "",
-			thresholdId = 3,
-			settingKey = "aeratedManaPotionRank3"
-		},
-		potionOfFrozenFocusRank1 = {
-			id = 371033,
-			itemId = 191363,
-			spellId = 371033,
-			name = "",
-			icon = "",
-			useSpellIcon = true,
-			texture = "",
-			thresholdId = 4,
-			settingKey = "potionOfFrozenFocusRank1"
-		},
-		potionOfFrozenFocusRank2 = {
-			itemId = 191364,
-			spellId = 371033,
-			name = "",
-			icon = "",
-			useSpellIcon = true,
-			texture = "",
-			thresholdId = 5,
-			settingKey = "potionOfFrozenFocusRank2"
-		},
-		potionOfFrozenFocusRank3 = {
-			itemId = 191365,
-			spellId = 371033,
-			name = "",
-			icon = "",
-			useSpellIcon = true,
-			texture = "",
-			thresholdId = 6,
-			settingKey = "potionOfFrozenFocusRank3"
-		},
-		potionOfChilledClarity = {
-			id = 371052,
-			name = "",
-			icon = ""
-		},
-
-		-- Conjured Chillglobe
-		conjuredChillglobe = {
-			id = 396391,
-			itemId = 194300,
-			spellId = 396391,
-			name = "",
-			icon = "",
-			useSpellIcon = true,
-			texture = "",
-			thresholdId = 7,
-			settingKey = "conjuredChillglobe",
-			mana = 4830,
-			duration = 10,
-			ticks = 10
-		},
-
-		-- Alchemist Stone
-		alchemistStone = {
-			id = 17619,
-			name = "",
-			icon = "",
-			resourcePercent = 1.4,
-			itemIds = {
-				171323,
-				175941,
-				175942,
-				175943
-			}
-		},
-
-		-- Rashok's Molten Heart
-		moltenRadiance = {
-			id = 409898,
-			name = "",
-			icon = "",
-		}
-
-	}
+	
+	---@type TRB.Classes.Evoker.PreservationSpells
+	specCache.preservation.spellsData.spells = TRB.Classes.Evoker.PreservationSpells:New()
+	---@diagnostic disable-next-line: cast-local-type
+	spells = specCache.preservation.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 
 	specCache.preservation.snapshotData.attributes.manaRegen = 0
 	specCache.preservation.snapshotData.audio = {
@@ -318,27 +160,27 @@ local function FillSpecializationCache()
 	}
 	
 	---@type TRB.Classes.Healer.Innervate
-	specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.innervate.id] = TRB.Classes.Healer.Innervate:New(specCache.preservation.spells.innervate)
+	specCache.preservation.snapshotData.snapshots[spells.innervate.id] = TRB.Classes.Healer.Innervate:New(spells.innervate)
 	---@type TRB.Classes.Healer.PotionOfChilledClarity
-	specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.potionOfChilledClarity.id] = TRB.Classes.Healer.PotionOfChilledClarity:New(specCache.preservation.spells.potionOfChilledClarity)
+	specCache.preservation.snapshotData.snapshots[spells.potionOfChilledClarity.id] = TRB.Classes.Healer.PotionOfChilledClarity:New(spells.potionOfChilledClarity)
 	---@type TRB.Classes.Healer.ManaTideTotem
-	specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.manaTideTotem.id] = TRB.Classes.Healer.ManaTideTotem:New(specCache.preservation.spells.manaTideTotem)
+	specCache.preservation.snapshotData.snapshots[spells.manaTideTotem.id] = TRB.Classes.Healer.ManaTideTotem:New(spells.manaTideTotem)
 	---@type TRB.Classes.Healer.SymbolOfHope
-	specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.symbolOfHope.id] = TRB.Classes.Healer.SymbolOfHope:New(specCache.preservation.spells.symbolOfHope, CalculateManaGain)
+	specCache.preservation.snapshotData.snapshots[spells.symbolOfHope.id] = TRB.Classes.Healer.SymbolOfHope:New(spells.symbolOfHope, CalculateManaGain)
 	---@type TRB.Classes.Healer.ChanneledManaPotion
-	specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.potionOfFrozenFocusRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(specCache.preservation.spells.potionOfFrozenFocusRank1, CalculateManaGain)
+	specCache.preservation.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(spells.potionOfFrozenFocusRank1, CalculateManaGain)
 	---@type TRB.Classes.Snapshot
-	specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.aeratedManaPotionRank1.id] = TRB.Classes.Snapshot:New(specCache.preservation.spells.aeratedManaPotionRank1)
+	specCache.preservation.snapshotData.snapshots[spells.aeratedManaPotionRank1.id] = TRB.Classes.Snapshot:New(spells.aeratedManaPotionRank1)
 	---@type TRB.Classes.Snapshot
-	specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.conjuredChillglobe.id] = TRB.Classes.Snapshot:New(specCache.preservation.spells.conjuredChillglobe)
+	specCache.preservation.snapshotData.snapshots[spells.conjuredChillglobe.id] = TRB.Classes.Snapshot:New(spells.conjuredChillglobe)
 	---@type TRB.Classes.Healer.MoltenRadiance
-	specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(specCache.preservation.spells.moltenRadiance)
+	specCache.preservation.snapshotData.snapshots[spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(spells.moltenRadiance)
 	---@type TRB.Classes.Healer.BlessingOfWinter
-	specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(specCache.preservation.spells.blessingOfWinter)
+	specCache.preservation.snapshotData.snapshots[spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(spells.blessingOfWinter)
 	---@type TRB.Classes.Snapshot
-	specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.emeraldCommunion.id] = TRB.Classes.Healer.HealerRegenBase:New(specCache.preservation.spells.emeraldCommunion)
+	specCache.preservation.snapshotData.snapshots[spells.emeraldCommunion.id] = TRB.Classes.Healer.HealerRegenBase:New(spells.emeraldCommunion)
 	---@type TRB.Classes.Snapshot
-	specCache.preservation.snapshotData.snapshots[specCache.preservation.spells.essenceBurst.id] = TRB.Classes.Snapshot:New(specCache.preservation.spells.essenceBurst)
+	specCache.preservation.snapshotData.snapshots[spells.essenceBurst.id] = TRB.Classes.Snapshot:New(spells.essenceBurst)
 
 	specCache.preservation.barTextVariables = {
 		icons = {},
@@ -370,14 +212,11 @@ local function FillSpecializationCache()
 		},
 		items = {}
 	}
-
-	specCache.augmentation.spells = {
-		essenceBurst = {
-			id = 392268,
-			name = "",
-			icon = ""
-		},
-	}
+	
+	---@type TRB.Classes.Evoker.AugmentationSpells
+	specCache.augmentation.spellsData.spells = TRB.Classes.Evoker.AugmentationSpells:New()
+	---@diagnostic disable-next-line: cast-local-type
+	spells = specCache.augmentation.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 
 	specCache.augmentation.snapshotData.attributes.manaRegen = 0
 	specCache.augmentation.snapshotData.audio = {
@@ -385,7 +224,7 @@ local function FillSpecializationCache()
 		essenceBurst2Cue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.augmentation.snapshotData.snapshots[specCache.augmentation.spells.essenceBurst.id] = TRB.Classes.Snapshot:New(specCache.augmentation.spells.essenceBurst)
+	specCache.augmentation.snapshotData.snapshots[spells.essenceBurst.id] = TRB.Classes.Snapshot:New(spells.essenceBurst)
 
 	specCache.augmentation.barTextVariables = {
 		icons = {},
@@ -419,7 +258,8 @@ end
 
 local function FillSpellData_Devastation()
 	Setup_Devastation()
-	local spells = TRB.Functions.Spell:FillSpellData(specCache.devastation.spells)
+	specCache.devastation.spellsData:FillSpellData()
+	local spells = specCache.devastation.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
 	specCache.devastation.barTextVariables.icons = {
@@ -478,13 +318,12 @@ local function FillSpellData_Devastation()
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 	}
-
-	specCache.devastation.spells = spells
 end
 
 local function FillSpellData_Preservation()
 	Setup_Preservation()
-	local spells = TRB.Functions.Spell:FillSpellData(specCache.preservation.spells)
+	specCache.preservation.spellsData:FillSpellData()
+	local spells = specCache.preservation.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
 	specCache.preservation.barTextVariables.icons = {
@@ -607,13 +446,12 @@ local function FillSpellData_Preservation()
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 	}
-
-	specCache.preservation.spells = spells
 end
 
 local function FillSpellData_Augmentation()
 	Setup_Augmentation()
-	local spells = TRB.Functions.Spell:FillSpellData(specCache.augmentation.spells)
+	specCache.augmentation.spellsData:FillSpellData()
+	local spells = specCache.augmentation.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
 	specCache.augmentation.barTextVariables.icons = {
@@ -672,8 +510,6 @@ local function FillSpellData_Augmentation()
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 	}
-
-	specCache.augmentation.spells = spells
 end
 
 local function CalculateAbilityResourceValue(resource, threshold)
@@ -715,9 +551,11 @@ local function ConstructResourceBar(settings)
 	end
 
 	if specId == 1 then
-		for k, v in pairs(TRB.Data.spells) do
-			local spell = TRB.Data.spells[k]
-			if spell ~= nil and spell.id ~= nil and spell.mana ~= nil and spell.mana < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
+		for _, v in pairs(spells) do
+			local spell = v --[[@as TRB.Classes.SpellBase]]
+			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+				spell = spell --[[@as TRB.Classes.SpellThreshold]]
 				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
@@ -730,6 +568,7 @@ local function ConstructResourceBar(settings)
 			end
 		end
 	elseif specId == 2 then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 		for x = 1, 7 do
 			if TRB.Frames.resourceFrame.thresholds[x] == nil then
 				TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
@@ -750,17 +589,19 @@ local function ConstructResourceBar(settings)
 			TRB.Frames.passiveFrame.thresholds[x]:Hide()
 		end
 		
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spells.aeratedManaPotionRank1.settingKey, TRB.Data.settings.evoker.preservation)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spells.aeratedManaPotionRank2.settingKey, TRB.Data.settings.evoker.preservation)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spells.aeratedManaPotionRank3.settingKey, TRB.Data.settings.evoker.preservation)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spells.potionOfFrozenFocusRank1.settingKey, TRB.Data.settings.evoker.preservation)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], TRB.Data.spells.potionOfFrozenFocusRank2.settingKey, TRB.Data.settings.evoker.preservation)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], TRB.Data.spells.potionOfFrozenFocusRank3.settingKey, TRB.Data.settings.evoker.preservation)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], TRB.Data.spells.conjuredChillglobe.settingKey, TRB.Data.settings.evoker.preservation)
+		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.aeratedManaPotionRank1, TRB.Data.settings.evoker.preservation)
+		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.aeratedManaPotionRank2, TRB.Data.settings.evoker.preservation)
+		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], spells.aeratedManaPotionRank3, TRB.Data.settings.evoker.preservation)
+		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], spells.potionOfFrozenFocusRank1, TRB.Data.settings.evoker.preservation)
+		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], spells.potionOfFrozenFocusRank2, TRB.Data.settings.evoker.preservation)
+		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], spells.potionOfFrozenFocusRank3, TRB.Data.settings.evoker.preservation)
+		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], spells.conjuredChillglobe, TRB.Data.settings.evoker.preservation)
 	elseif specId == 3 then
-		for k, v in pairs(TRB.Data.spells) do
-			local spell = TRB.Data.spells[k]
-			if spell ~= nil and spell.id ~= nil and spell.mana ~= nil and spell.mana < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
+		for _, v in pairs(spells) do
+			local spell = v --[[@as TRB.Classes.SpellBase]]
+			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+				spell = spell --[[@as TRB.Classes.SpellThreshold]]
 				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
@@ -782,7 +623,7 @@ end
 
 local function RefreshLookupData_Devastation()
 	local currentTime = GetTime()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.evoker.devastation
@@ -848,7 +689,7 @@ local function RefreshLookupData_Devastation()
 end
 
 local function RefreshLookupData_Preservation()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.evoker.preservation
@@ -1129,7 +970,7 @@ end
 
 local function RefreshLookupData_Augmentation()
 	local currentTime = GetTime()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.evoker.augmentation
@@ -1209,7 +1050,7 @@ end
 
 local function UpdateCastingResourceFinal_Preservation()
 	-- Do nothing for now
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 	local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
@@ -1218,7 +1059,6 @@ local function UpdateCastingResourceFinal_Preservation()
 end
 
 local function CastingSpell()
-	local spells = TRB.Data.spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local casting = snapshotData.casting
 	local currentTime = GetTime()
@@ -1238,6 +1078,7 @@ local function CastingSpell()
 				return false
 			--end
 		elseif specId == 2 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 			if currentSpellName == nil then
 				if currentChannelId == spells.emeraldCommunion.id then
 					casting.spellId = spells.emeraldCommunion.id
@@ -1296,9 +1137,7 @@ end
 local function UpdateSnapshot_Preservation()
 	local currentTime = GetTime()
 	UpdateSnapshot()
-	
-	local _
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	
@@ -1348,7 +1187,6 @@ local function UpdateResourceBar()
 	local specId = GetSpecialization()
 	local coreSettings = TRB.Data.settings.core
 	local classSettings = TRB.Data.settings.evoker
-	local spells = TRB.Data.spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 
@@ -1361,6 +1199,7 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
@@ -1439,6 +1278,7 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
@@ -1579,6 +1419,7 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
@@ -1656,7 +1497,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local triggerUpdate = false
 	local _
 	local specId = GetSpecialization()
-	local spells = TRB.Data.spells
+	local spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local targetData = snapshotData.targetData
 	local snapshots = snapshotData.snapshots
@@ -1666,10 +1507,13 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 		
 		local settings
 		if specId == 1 then
+			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 			settings = TRB.Data.settings.evoker.devastation
 		elseif specId == 2 then
+			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 			settings = TRB.Data.settings.evoker.preservation
 		elseif specId == 3 then
+			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 			settings = TRB.Data.settings.evoker.augmentation
 		end
 
@@ -1922,7 +1766,6 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 end)
 
 function TRB.Functions.Class:CheckCharacter()
-	local spells = TRB.Data.spells
 	local specId = GetSpecialization()
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "evoker"
@@ -1934,6 +1777,7 @@ function TRB.Functions.Class:CheckCharacter()
 		settings = TRB.Data.settings.evoker.devastation
 		TRB.Data.character.specName = "devastation"
 	elseif specId == 2 then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 		settings = TRB.Data.settings.evoker.preservation
 		TRB.Data.character.specName = "preservation"
 
@@ -1945,9 +1789,9 @@ function TRB.Functions.Class:CheckCharacter()
 		local conjuredChillglobeMana = ""
 		
 		if trinket1ItemLink ~= nil then
-			for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.itemIds) do
+			for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.attributes.itemIds) do
 				if alchemyStone == false then
-					alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, spells.alchemistStone.itemIds[x])
+					alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, spells.alchemistStone.attributes.itemIds[x])
 				else
 					break
 				end
@@ -1959,9 +1803,9 @@ function TRB.Functions.Class:CheckCharacter()
 		end
 
 		if alchemyStone == false and trinket2ItemLink ~= nil then
-			for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.itemIds) do
+			for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.attributes.itemIds) do
 				if alchemyStone == false then
-					alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, spells.alchemistStone.itemIds[x])
+					alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, spells.alchemistStone.attributes.itemIds[x])
 				else
 					break
 				end
@@ -2138,14 +1982,17 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local specId = GetSpecialization()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	local spells = TRB.Data.spells
+	local spells
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 	local settings = nil
 	if specId == 1 then
+		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 		settings = TRB.Data.settings.evoker.devastation
 	elseif specId == 2 then
+		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.PreservationSpells]]
 		settings = TRB.Data.settings.evoker.preservation
 	elseif specId == 3 then
+		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 		settings = TRB.Data.settings.evoker.augmentation
 	else
 		return false
@@ -2322,15 +2169,16 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	local specId = GetSpecialization()
-	local settings = TRB.Data.settings.evoker
-	local spells = TRB.Data.spells
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	--local specId = GetSpecialization()
+	--local settings = TRB.Data.settings.evoker
+	--local spells = TRB.Data.spells
+	--local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
+	--[[
 	if specId == 1 then
 	elseif specId == 2 then
 	elseif specId == 3 then
-	end
+	end]]
 	return nil
 end
 

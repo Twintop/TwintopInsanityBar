@@ -113,7 +113,7 @@ local function FillSpecializationCache()
 	
 	specCache.discipline.spellsData.spells = TRB.Classes.Priest.DisciplineSpells:New()
 	---@type TRB.Classes.Priest.DisciplineSpells
----@diagnostic disable-next-line: assign-type-mismatch
+	---@diagnostic disable-next-line: assign-type-mismatch
 	local spells = specCache.discipline.spellsData.spells
 
 	specCache.discipline.snapshotData.attributes.manaRegen = 0
@@ -238,7 +238,7 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Priest.HolySpells
 	specCache.holy.spellsData.spells = TRB.Classes.Priest.HolySpells:New()
 	
----@diagnostic disable-next-line: cast-local-type
+	---@diagnostic disable-next-line: cast-local-type
 	spells = specCache.holy.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 
 	specCache.holy.snapshotData.attributes.manaRegen = 0

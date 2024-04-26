@@ -77,6 +77,7 @@ Classes\SpecCache.lua
 ClassModules\Classes\HealerClasses.lua
 ClassModules\Classes\DemonHunterClasses.lua
 ClassModules\Classes\DruidClasses.lua
+ClassModules\Classes\EvokerClasses.lua
 ClassModules\Classes\PaladinClasses.lua
 ClassModules\Classes\PriestClasses.lua
 

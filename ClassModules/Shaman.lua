@@ -23,9 +23,9 @@ Global_TwintopResourceBar = {}
 TRB.Data.character = {}
 
 local specCache = {
-	elemental = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
-	enhancement = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]],
-	restoration = TRB.Classes.SpecCache:New() --[[@as TRB.Classes.SpecCache]]
+	elemental = TRB.Classes.SpecCache:New(),
+	enhancement = TRB.Classes.SpecCache:New(),
+	restoration = TRB.Classes.SpecCache:New()
 }
 
 local function CalculateManaGain(mana, isPotion)
