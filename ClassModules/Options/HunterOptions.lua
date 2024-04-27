@@ -902,40 +902,40 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-				arcaneShot = {
+			arcaneShot = {
 				enabled = false, -- 1
 			},
-				revivePet = {
+			revivePet = {
 				enabled = false, -- 2
 			},
-				wingClip = {
+			wingClip = {
 				enabled = false, -- 3
 			},
 			--[[killCommand = {
 				enabled = true, -- 4
 			},]]
-				killShot = {
+			killShot = {
 				enabled = true, -- 5
 			},
-				scareBeast = {
+			scareBeast = {
 				enabled = false, -- 6
 			},
-				explosiveShot = {
+			explosiveShot = {
 				enabled = true, -- 7
 			},
-				barrage = {
+			barrage = {
 				enabled = true, -- 8
 			},
-				serpentSting = {
+			serpentSting = {
 				enabled = true, -- 9
 			},
-				raptorStrike = {
+			raptorStrike = {
 				enabled = true, -- 10
 			},
-				carve = {
+			carve = {
 				enabled = true, -- 11
 			},
-				butchery = {
+			butchery = {
 				enabled = true, -- 12
 			},
 			mongooseBite = {

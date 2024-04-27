@@ -32,7 +32,7 @@ end
 
 
 ---@class TRB.Classes.Snapshot
----@field public spell? table
+---@field public spell TRB.Classes.SpellBase?
 ---@field public buff TRB.Classes.SnapshotBuff
 ---@field public cooldown TRB.Classes.SnapshotCooldown
 ---@field public stacks integer
@@ -41,7 +41,7 @@ TRB.Classes.Snapshot = {}
 TRB.Classes.Snapshot.__index = TRB.Classes.Snapshot
 
 ---Creates a new Snapshot object
----@param spell table # Spell we are snapshotting
+---@param spell TRB.Classes.SpellBase # Spell we are snapshotting
 ---@param attributes table? # Custom attributes to be tracked
 ---@param alwaysSimpleBuff boolean? # Should the buff tracking always run in simple mode?
 ---@param onlyRefreshOnRequest boolean? # Should the buff refresh only occur when explictly requested?

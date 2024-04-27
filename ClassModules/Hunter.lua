@@ -51,303 +51,11 @@ local function FillSpecializationCache()
 		specId = 1,
 		maxResource = 100
 	}
-
-	specCache.beastMastery.spells = {
-		-- Hunter Class Baseline Abilities
-		arcaneShot = {
-			id = 185358,
-			name = "",
-			icon = "",
-			resource = -40,
-			texture = "",
-			thresholdId = 1,
-			settingKey = "arcaneShot",
-			baseline = true
-		},
-		revivePet = {
-			id = 982,
-			name = "",
-			icon = "",
-			resource = -35,
-			texture = "",
-			thresholdId = 2,
-			settingKey = "revivePet",
-			baseline = true
-		},
-		wingClip = {
-			id = 195645,
-			name = "",
-			icon = "",
-			resource = -20,
-			texture = "",
-			thresholdId = 3,
-			settingKey = "wingClip",
-			baseline = true
-		},
-
-		-- Hunter Talent Abilities	
-		killCommand = {
-			id = 34026,
-			name = "",
-			icon = "",
-			resource = -30,
-			texture = "",
-			thresholdId = 4,
-			settingKey = "killCommand",
-			isSnowflake = true,
-			hasCooldown = true,
-			baseline = true,
-			isTalent = true
-		},
-		concussiveShot = {
-			id = 5116,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		killShot = {
-			id = 53351,
-			name = "",
-			icon = "",
-			resource = -10,
-			texture = "",
-			thresholdId = 5,
-			settingKey = "killShot",
-			healthMinimum = 0.2,
-			hasCooldown = true,
-			isSnowflake = true
-		},
-		scareBeast = {
-			id = 1513,
-			name = "",
-			icon = "",
-			resource = -25,
-			texture = "",
-			thresholdId = 6,
-			settingKey = "scareBeast"
-		},
-		explosiveShot = {
-			id = 212431,
-			name = "",
-			icon = "",
-			resource = -20,
-			texture = "",
-			thresholdId = 7,
-			settingKey = "explosiveShot",
-			hasCooldown = true,
-			cooldown = 30,
-			isTalent = true
-		},
-		barrage = {
-			id = 120360,
-			name = "",
-			icon = "",
-			resource = -60,
-			texture = "",
-			thresholdId = 8,
-			settingKey = "barrage",
-			isTalent = true,
-			hasCooldown = true,
-			cooldown = 20
-		},
-		serpentSting = {
-			id = 271788,
-			name = "",
-			icon = "",
-			resource = -10,
-			texture = "",
-			thresholdId = 9,
-			settingKey = "serpentSting",
-			isTalent = true,
-			baseDuration = 18,
-			--pandemic = true,
-			--pandemicTime = 18 * 0.3
-		},
-		alphaPredator = {
-			id = 269737,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-
-		-- Beast Mastery Spec Baseline Abilities
-
-		-- Beast Mastery Spec Talents			
-		cobraShot = {
-			id = 193455,
-			name = "",
-			icon = "",
-			resource = -35,
-			texture = "",
-			thresholdId = 10,
-			settingKey = "cobraShot",
-			killCommandCooldownReduction = 2,
-			isTalent = true
-		},
-		multiShot = {
-			id = 2643,
-			name = "",
-			icon = "",
-			resource = -40,
-			texture = "",
-			thresholdId = 11,
-			settingKey = "multiShot",
-			isTalent = true
-		},
-		barbedShot = {
-			id = 217200,
-			buffIdList = {
-				246152,
-				246851,
-				246852,
-				246853,
-				246854
-			},
-			name = "",
-			icon = "",
-			resource = 5,
-			ticks = 4,
-			duration = 8,
-			hasCharges = true,
-			hasCooldown = true,
-			beastialWrathCooldownReduction = 12,
-			isTalent = true
-		},
-		savagery = {
-			id = 424557,
-			name = "",
-			icon = "",
-			isTalent = true,
-			duration = 2
-		},
-		frenzy = {
-			id = 272790,
-			name = "",
-			icon = "",
-			duration = 8
-		},
-		cobraSting = {
-			id = 392296,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		cobraSenses = {
-			id = 378244,
-			name = "",
-			icon = "",
-			killCommandCooldownReductionModifier = 1,
-			isTalent = true
-		},
-		aMurderOfCrows = {
-			id = 131894,
-			name = "",
-			icon = "",
-			resource = -30,
-			texture = "",
-			thresholdId = 12,
-			settingKey = "aMurderOfCrows",
-			hasCooldown = true,
-			cooldown = 60,
-			isTalent = true
-		},
-		warOrders = {
-			id = 393933,
-			name = "",
-			icon = "",
-			perRankMod = 0.5, --Needed?
-			isTalent = true
-		},
-		huntersPrey = {
-			id = 378210,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		beastialWrath = {
-			id = 19574,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		barbedWrath = {
-			id = 19574,
-			name = "",
-			icon = "",
-			beastialWrathCooldownReduction = 12,
-			isTalent = true
-		},
-		wailingArrow = {
-			id = 392060,
-			name = "",
-			icon = "",
-			resource = -15,
-			texture = "",
-			thresholdId = 13,
-			settingKey = "wailingArrow",
-			hasCooldown = true,
-			cooldown = 60,
-			isTalent = true
-		},
-		scentOfBlood = {
-			id = 193532,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		direPack = {
-			id = 378745,
-			name = "",
-			icon = "",
-			isTalent = true,
-			resourceMod = 0.5
-		},
-		beastCleave = {
-			id = 115939,
-			name = "",
-			icon = "",
-			buffId = 268877,
-			isTalent = true
-		},
-		callOfTheWild = {
-			id = 359844,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		bloodFrenzy = {
-			id = 407412,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-
-		-- PvP
-		direBeastBasilisk = {
-			id = 205691,
-			name = "",
-			icon = "",
-			resource = -60,
-			texture = "",
-			thresholdId = 14,
-			settingKey = "direBeastBasilisk",
-			hasCooldown = true,
-			cooldown = 120,
-			isPvp = true,
-		},
-		direBeastHawk = {
-			id = 208652,
-			name = "",
-			icon = "",
-			resource = -30,
-			texture = "",
-			thresholdId = 15,
-			settingKey = "direBeastHawk",
-			hasCooldown = true,
-			cooldown = 30,
-			isPvp = true,
-		}
-	}
+	
+	---@type TRB.Classes.Hunter.BeastMasterySpells
+	specCache.beastMastery.spellsData.spells = TRB.Classes.Hunter.BeastMasterySpells:New()
+	---@diagnostic disable-next-line: cast-local-type
+	local spells = specCache.beastMastery.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 
 	specCache.beastMastery.snapshotData.attributes.resourceRegen = 0
 	specCache.beastMastery.snapshotData.audio = {
@@ -355,35 +63,35 @@ local function FillSpecializationCache()
 		playedKillShotCue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.killShot.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.killShot)
+	specCache.beastMastery.snapshotData.snapshots[spells.killShot.id] = TRB.Classes.Snapshot:New(spells.killShot)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.killCommand.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.killCommand)
+	specCache.beastMastery.snapshotData.snapshots[spells.killCommand.id] = TRB.Classes.Snapshot:New(spells.killCommand)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.barrage.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.barrage)
+	specCache.beastMastery.snapshotData.snapshots[spells.barrage.id] = TRB.Classes.Snapshot:New(spells.barrage)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.aMurderOfCrows.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.aMurderOfCrows)
+	specCache.beastMastery.snapshotData.snapshots[spells.aMurderOfCrows.id] = TRB.Classes.Snapshot:New(spells.aMurderOfCrows)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.explosiveShot.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.explosiveShot)
+	specCache.beastMastery.snapshotData.snapshots[spells.explosiveShot.id] = TRB.Classes.Snapshot:New(spells.explosiveShot)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.beastialWrath.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.beastialWrath)
+	specCache.beastMastery.snapshotData.snapshots[spells.beastialWrath.id] = TRB.Classes.Snapshot:New(spells.beastialWrath)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.wailingArrow.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.wailingArrow)
+	specCache.beastMastery.snapshotData.snapshots[spells.wailingArrow.id] = TRB.Classes.Snapshot:New(spells.wailingArrow)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.direPack.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.direPack)
+	specCache.beastMastery.snapshotData.snapshots[spells.direPack.id] = TRB.Classes.Snapshot:New(spells.direPack)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.callOfTheWild.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.callOfTheWild)
+	specCache.beastMastery.snapshotData.snapshots[spells.callOfTheWild.id] = TRB.Classes.Snapshot:New(spells.callOfTheWild)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.beastCleave.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.beastCleave)
+	specCache.beastMastery.snapshotData.snapshots[spells.beastCleave.id] = TRB.Classes.Snapshot:New(spells.beastCleave)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.frenzy.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.frenzy)
+	specCache.beastMastery.snapshotData.snapshots[spells.frenzy.id] = TRB.Classes.Snapshot:New(spells.frenzy)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.cobraSting.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.cobraSting, nil, true)
+	specCache.beastMastery.snapshotData.snapshots[spells.cobraSting.id] = TRB.Classes.Snapshot:New(spells.cobraSting, nil, true)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.direBeastBasilisk.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.direBeastBasilisk)
+	specCache.beastMastery.snapshotData.snapshots[spells.direBeastBasilisk.id] = TRB.Classes.Snapshot:New(spells.direBeastBasilisk)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.direBeastHawk.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.direBeastHawk)
+	specCache.beastMastery.snapshotData.snapshots[spells.direBeastHawk.id] = TRB.Classes.Snapshot:New(spells.direBeastHawk)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[specCache.beastMastery.spells.barbedShot.id] = TRB.Classes.Snapshot:New(specCache.beastMastery.spells.barbedShot, {
+	specCache.beastMastery.snapshotData.snapshots[spells.barbedShot.id] = TRB.Classes.Snapshot:New(spells.barbedShot, {
 		count = 0,
 		ticksRemaining = 0,
 		resource = 0,
@@ -415,293 +123,11 @@ local function FillSpecializationCache()
 		specId = 2,
 		maxResource = 100
 	}
-
-	specCache.marksmanship.spells = {
-		
-		-- Hunter Class Baseline Abilities
-		arcaneShot = {
-			id = 185358,
-			iconName = "ability_impalingbolt",
-			name = "",
-			icon = "",
-			resource = -40,
-			texture = "",
-			thresholdId = 1,
-			settingKey = "arcaneShot",
-			baseline = true
-		},
-		revivePet = {
-			id = 982,
-			name = "",
-			icon = "",
-			resource = -35,
-			texture = "",
-			thresholdId = 2,
-			settingKey = "revivePet",
-			baseline = true
-		},
-		wingClip = {
-			id = 195645,
-			name = "",
-			icon = "",
-			resource = -20,
-			texture = "",
-			thresholdId = 3,
-			settingKey = "wingClip",
-			baseline = true
-		},
-
-		-- Hunter Talent Abilities	
-		killCommand = {
-			id = 34026,
-			name = "",
-			icon = "",
-			resource = -30,
-			texture = "",
-			thresholdId = 4,
-			settingKey = "killCommand",
-			hasCooldown = true,
-			isTalent = true,
-			baseline = false
-		},
-		concussiveShot = {
-			id = 5116,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		killShot = {
-			id = 53351,
-			name = "",
-			icon = "",
-			resource = -10,
-			texture = "",
-			thresholdId = 5,
-			settingKey = "killShot",
-			healthMinimum = 0.2,
-			hasCooldown = true,
-			isSnowflake = true,
-			baseline = true,
-			isTalent = true
-		},
-		scareBeast = {
-			id = 1513,
-			name = "",
-			icon = "",
-			resource = -25,
-			texture = "",
-			thresholdId = 6,
-			settingKey = "scareBeast"
-		},
-		explosiveShot = {
-			id = 212431,
-			name = "",
-			icon = "",
-			resource = -20,
-			texture = "",
-			thresholdId = 7,
-			settingKey = "explosiveShot",
-			hasCooldown = true,
-			cooldown = 30,
-			isTalent = true
-		},
-		barrage = {
-			id = 120360,
-			name = "",
-			icon = "",
-			resource = -30,
-			texture = "",
-			thresholdId = 8,
-			settingKey = "barrage",
-			isTalent = true,
-			hasCooldown = true,
-			cooldown = 20
-		},
-		serpentSting = {
-			id = 271788,
-			name = "",
-			icon = "",
-			resource = -10,
-			texture = "",
-			thresholdId = 9,
-			settingKey = "serpentSting",
-			isTalent = true,
-			baseDuration = 18,
-			--pandemic = true,
-			--pandemicTime = 18 * 0.3
-		},
-		alphaPredator = {
-			id = 269737,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-
-		-- Marksmanship Spec Baseline Abilities
-		steadyShot = {
-			id = 56641,
-			name = "",
-			icon = "",
-			resource = 0,
-			baseline = true
-		},
-
-		-- Marksmanship Spec Talents
-		aimedShot = {
-			id = 19434,
-			name = "",
-			icon = "",
-			resource = -35,
-			texture = "",
-			thresholdId = 10,
-			settingKey = "aimedShot",
-			hasCooldown = true,
-			isSnowflake = true,
-			isTalent = true
-		},
-		crackShot = {
-			id = 321293,
-			name = "",
-			icon = "",
-			resource = -20, --Arcane Shot and Chimaera Shot
-			isTalent = true
-		},
-		improvedSteadyShot = {
-			id = 321018,
-			name = "",
-			icon = "",
-			resource = 10,
-			isTalent = true
-		},
-		rapidFire = {
-			id = 257044,
-			name = "",
-			icon = "",
-			resource = 1,
-			shots = 7,
-			duration = 2, --On cast then every 1/3 sec, hasted
-			isTalent = true
-		},
-		chimaeraShot = {
-			id = 342049,
-			name = "",
-			icon = "",
-			resource = -20,
-			texture = "",
-			thresholdId = 11,
-			settingKey = "chimaeraShot",
-			isTalent = true
-		},
-		-- TODO: Add Deathblow support
-		deathblow = {
-			id = 378769,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		multiShot = {
-			id = 257620,
-			name = "",
-			icon = "",
-			resource = -20,
-			texture = "",
-			thresholdId = 12,
-			settingKey = "multiShot",
-			isTalent = true
-		},
-		burstingShot = {
-			id = 186387,
-			name = "",
-			icon = "",
-			resource = -10,
-			texture = "",
-			thresholdId = 13,
-			settingKey = "burstingShot",
-			hasCooldown = true,
-			isTalent = true
-		},
-		-- TODO: Add Deadeye implementation
-		deadeye = {
-			id = 321460,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		-- TODO:Quick Load implementation. May not be needed?
-		quickLoad = {
-			id = 378771,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		trickShots = { --TODO: Do these ricochets generate Focus from Rapid Fire Rank 2?
-			id = 257044,
-			name = "",
-			icon = "",
-			shots = 5,
-			isTalent = true
-		},
-		steadyFocus = {
-			id = 193534,
-			talentId = 193533,
-			name = "",
-			icon = "",
-			duration = 15,
-			isTalent = true
-		},
-		trueshot = {
-			id = 288613,
-			name = "",
-			icon = "",
-			modifier = 1.5,
-			isTalent = true
-		},
-
-		-- TODO: Bulletstorm support?
-		lockAndLoad = {
-			id = 194594,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		-- TODO: Apply this to Arcane Shot, Chimaera Shot, Multi-Shot, and Aimed Shot.
-		eagletalonsTrueFocus = {
-			id = 336851,
-			name = "",
-			icon = "",
-			modifier = 0.75,
-			isTalent = true
-		},
-
-		-- Sylvanas Bow
-		wailingArrow = {
-			id = 355589,
-			name = "",
-			icon = "",
-			resource = -15,
-			texture = "",
-			thresholdId = 14,
-			settingKey = "wailingArrow",
-			hasCooldown = true,
-			cooldown = 60,
-			isTalent = true
-		},
-
-		-- PvP
-		sniperShot = {
-			id = 203155,
-			name = "", 
-			icon = "",
-			resource = -40,
-			texture = "",
-			thresholdId = 15,
-			settingKey = "sniperShot",
-			hasCooldown = true,
-			cooldown = 10,
-			isPvp = true,
-		}
-
-	}
+	
+	---@type TRB.Classes.Hunter.MarksmanshipSpells
+	specCache.marksmanship.spellsData.spells = TRB.Classes.Hunter.MarksmanshipSpells:New()
+	---@diagnostic disable-next-line: cast-local-type
+	spells = specCache.marksmanship.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 
 	specCache.marksmanship.snapshotData.attributes.resourceRegen = 0
 	specCache.marksmanship.snapshotData.audio = {
@@ -710,31 +136,31 @@ local function FillSpecializationCache()
 		playedAimedShotCue = true
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[specCache.marksmanship.spells.killCommand.id] = TRB.Classes.Snapshot:New(specCache.marksmanship.spells.killCommand)
+	specCache.marksmanship.snapshotData.snapshots[spells.killCommand.id] = TRB.Classes.Snapshot:New(spells.killCommand)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[specCache.marksmanship.spells.wailingArrow.id] = TRB.Classes.Snapshot:New(specCache.marksmanship.spells.wailingArrow)
+	specCache.marksmanship.snapshotData.snapshots[spells.wailingArrow.id] = TRB.Classes.Snapshot:New(spells.wailingArrow)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[specCache.marksmanship.spells.lockAndLoad.id] = TRB.Classes.Snapshot:New(specCache.marksmanship.spells.lockAndLoad)
+	specCache.marksmanship.snapshotData.snapshots[spells.lockAndLoad.id] = TRB.Classes.Snapshot:New(spells.lockAndLoad)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[specCache.marksmanship.spells.trueshot.id] = TRB.Classes.Snapshot:New(specCache.marksmanship.spells.trueshot)
+	specCache.marksmanship.snapshotData.snapshots[spells.trueshot.id] = TRB.Classes.Snapshot:New(spells.trueshot)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[specCache.marksmanship.spells.steadyFocus.id] = TRB.Classes.Snapshot:New(specCache.marksmanship.spells.steadyFocus)
+	specCache.marksmanship.snapshotData.snapshots[spells.steadyFocus.id] = TRB.Classes.Snapshot:New(spells.steadyFocus)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[specCache.marksmanship.spells.aimedShot.id] = TRB.Classes.Snapshot:New(specCache.marksmanship.spells.aimedShot)
+	specCache.marksmanship.snapshotData.snapshots[spells.aimedShot.id] = TRB.Classes.Snapshot:New(spells.aimedShot)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[specCache.marksmanship.spells.killShot.id] = TRB.Classes.Snapshot:New(specCache.marksmanship.spells.killShot)
+	specCache.marksmanship.snapshotData.snapshots[spells.killShot.id] = TRB.Classes.Snapshot:New(spells.killShot)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[specCache.marksmanship.spells.burstingShot.id] = TRB.Classes.Snapshot:New(specCache.marksmanship.spells.burstingShot)
+	specCache.marksmanship.snapshotData.snapshots[spells.burstingShot.id] = TRB.Classes.Snapshot:New(spells.burstingShot)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[specCache.marksmanship.spells.explosiveShot.id] = TRB.Classes.Snapshot:New(specCache.marksmanship.spells.explosiveShot)
+	specCache.marksmanship.snapshotData.snapshots[spells.explosiveShot.id] = TRB.Classes.Snapshot:New(spells.explosiveShot)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[specCache.marksmanship.spells.wailingArrow.id] = TRB.Classes.Snapshot:New(specCache.marksmanship.spells.wailingArrow)
+	specCache.marksmanship.snapshotData.snapshots[spells.wailingArrow.id] = TRB.Classes.Snapshot:New(spells.wailingArrow)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[specCache.marksmanship.spells.sniperShot.id] = TRB.Classes.Snapshot:New(specCache.marksmanship.spells.sniperShot)
+	specCache.marksmanship.snapshotData.snapshots[spells.sniperShot.id] = TRB.Classes.Snapshot:New(spells.sniperShot)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[specCache.marksmanship.spells.eagletalonsTrueFocus.id] = TRB.Classes.Snapshot:New(specCache.marksmanship.spells.eagletalonsTrueFocus, nil, true)
+	specCache.marksmanship.snapshotData.snapshots[spells.eagletalonsTrueFocus.id] = TRB.Classes.Snapshot:New(spells.eagletalonsTrueFocus, nil, true)
 	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[specCache.marksmanship.spells.barrage.id] = TRB.Classes.Snapshot:New(specCache.marksmanship.spells.barrage)
+	specCache.marksmanship.snapshotData.snapshots[spells.barrage.id] = TRB.Classes.Snapshot:New(spells.barrage)
 
 	specCache.marksmanship.barTextVariables = {
 		icons = {},
@@ -765,217 +191,11 @@ local function FillSpecializationCache()
 		specId = 3,
 		maxResource = 100
 	}
-
-	specCache.survival.spells = {
-		-- Hunter Class Baseline Abilities
-		arcaneShot = {
-			id = 185358,
-			name = "",
-			icon = "",
-			resource = -40,
-			texture = "",
-			thresholdId = 1,
-			settingKey = "arcaneShot",
-			baseline = true
-		},
-		revivePet = {
-			id = 982,
-			name = "",
-			icon = "",
-			resource = -35,
-			texture = "",
-			thresholdId = 2,
-			settingKey = "revivePet",
-			baseline = true
-		},
-		wingClip = {
-			id = 195645,
-			name = "",
-			icon = "",
-			resource = -20,
-			texture = "",
-			thresholdId = 3,
-			settingKey = "wingClip",
-			baseline = true
-		},
-
-		-- Hunter Talent Abilities	
-		killCommand = {
-			id = 34026,
-			name = "",
-			icon = "",
-			resource = 21,
-			texture = "",
-			--thresholdId = 4,
-			--settingKey = "killCommand",
-			isSnowflake = true,
-			hasCooldown = true,
-			baseline = true,
-			isTalent = true
-		},
-		concussiveShot = {
-			id = 5116,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		killShot = {
-			id = 53351,
-			name = "",
-			icon = "",
-			resource = -10,
-			texture = "",
-			thresholdId = 5,
-			settingKey = "killShot",
-			healthMinimum = 0.2,
-			hasCooldown = true,
-			isSnowflake = true
-		},
-		scareBeast = {
-			id = 1513,
-			name = "",
-			icon = "",
-			resource = -25,
-			texture = "",
-			thresholdId = 6,
-			settingKey = "scareBeast"
-		},
-		explosiveShot = {
-			id = 212431,
-			name = "",
-			icon = "",
-			resource = -20,
-			texture = "",
-			thresholdId = 7,
-			settingKey = "explosiveShot",
-			hasCooldown = true,
-			cooldown = 30,
-			isTalent = true
-		},
-		barrage = {
-			id = 120360,
-			name = "",
-			icon = "",
-			resource = -60,
-			texture = "",
-			thresholdId = 8,
-			settingKey = "barrage",
-			isTalent = true,
-			hasCooldown = true,
-			cooldown = 20
-		},
-		serpentSting = {
-			id = 271788,
-			name = "",
-			icon = "",
-			resource = -10,
-			texture = "",
-			thresholdId = 9,
-			settingKey = "serpentSting",
-			isTalent = true,
-			baseDuration = 18,
-			--pandemic = true,
-			--pandemicTime = 18 * 0.3
-		},
-		alphaPredator = {
-			id = 269737,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-
-		-- Survival Spec Baseline Abilities
-
-		-- Survival Spec Talents
-		raptorStrike = {
-			id = 186270,
-			name = "",
-			icon = "",
-			resource = -30,
-			texture = "",
-			thresholdId = 10,
-			isSnowflake = true,
-			settingKey = "raptorStrike",
-			isTalent = true
-		},
-		guerrillaTactics = {
-			id = 264332,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		wildfireBomb = {
-			id = 259495,
-			name = "",
-			icon = "",
-			isTalent = true,
-			hasCharges = true,
-			hasCooldown = true
-		},
-		harpoon = {
-			id = 190925,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		termsOfEngagement = {
-			id = 265898,
-			name = "",
-			icon = "",
-			hasTicks = true,
-			resourcePerTick = 2,
-			tickRate = 1,
-			isTalent = true
-		},
-		carve = {
-			id = 187708,
-			name = "",
-			icon = "",
-			resource = -35,
-			texture = "",
-			thresholdId = 11,
-			settingKey = "carve",
-			hasCooldown = true,
-			isTalent = true
-		},
-		butchery = {
-			id = 212436,
-			name = "",
-			icon = "",
-			resource = -30,
-			isTalent = true,
-			hasCooldown = true,
-			hasCharges = true,
-			texture = "",
-			thresholdId = 12,
-			settingKey = "butchery"
-		},
-		mongooseBite = {
-			id = 259387,
-			name = "",
-			icon = "",
-			resource = -30,
-			isSnowflake = true,
-			texture = "",
-			thresholdId = 4, --NOTE this take's Kill Command's stypical threshold ID only so all the rest at the class level stay consistent!
-			settingKey = "mongooseBite",
-			isTalent = true
-		},
-		flankingStrike = {
-			id = 269751,
-			name = "",
-			icon = "",
-			resource = 30,
-			hasCooldown = true,
-			isTalent = true
-		},
-		coordinatedAssault = {
-			id = 266779,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-	}
+	
+	---@type TRB.Classes.Hunter.SurvivalSpells
+	specCache.survival.spellsData.spells = TRB.Classes.Hunter.SurvivalSpells:New()
+	---@diagnostic disable-next-line: cast-local-type
+	spells = specCache.survival.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 
 	specCache.survival.snapshotData.attributes.resourceRegen = 0
 	specCache.survival.snapshotData.audio = {
@@ -983,25 +203,25 @@ local function FillSpecializationCache()
 		playedKillShotCue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.survival.snapshotData.snapshots[specCache.survival.spells.coordinatedAssault.id] = TRB.Classes.Snapshot:New(specCache.survival.spells.coordinatedAssault)
+	specCache.survival.snapshotData.snapshots[spells.coordinatedAssault.id] = TRB.Classes.Snapshot:New(spells.coordinatedAssault)
 	---@type TRB.Classes.Snapshot
-	specCache.survival.snapshotData.snapshots[specCache.survival.spells.termsOfEngagement.id] = TRB.Classes.Snapshot:New(specCache.survival.spells.termsOfEngagement)
+	specCache.survival.snapshotData.snapshots[spells.termsOfEngagement.id] = TRB.Classes.Snapshot:New(spells.termsOfEngagement)
 	---@type TRB.Classes.Snapshot
-	specCache.survival.snapshotData.snapshots[specCache.survival.spells.carve.id] = TRB.Classes.Snapshot:New(specCache.survival.spells.carve)
+	specCache.survival.snapshotData.snapshots[spells.carve.id] = TRB.Classes.Snapshot:New(spells.carve)
 	---@type TRB.Classes.Snapshot
-	specCache.survival.snapshotData.snapshots[specCache.survival.spells.killShot.id] = TRB.Classes.Snapshot:New(specCache.survival.spells.killShot)
+	specCache.survival.snapshotData.snapshots[spells.killShot.id] = TRB.Classes.Snapshot:New(spells.killShot)
 	---@type TRB.Classes.Snapshot
-	specCache.survival.snapshotData.snapshots[specCache.survival.spells.killCommand.id] = TRB.Classes.Snapshot:New(specCache.survival.spells.killCommand)
+	specCache.survival.snapshotData.snapshots[spells.killCommand.id] = TRB.Classes.Snapshot:New(spells.killCommand)
 	---@type TRB.Classes.Snapshot
-	specCache.survival.snapshotData.snapshots[specCache.survival.spells.barrage.id] = TRB.Classes.Snapshot:New(specCache.survival.spells.barrage)
+	specCache.survival.snapshotData.snapshots[spells.barrage.id] = TRB.Classes.Snapshot:New(spells.barrage)
 	---@type TRB.Classes.Snapshot
-	specCache.survival.snapshotData.snapshots[specCache.survival.spells.explosiveShot.id] = TRB.Classes.Snapshot:New(specCache.survival.spells.explosiveShot)
+	specCache.survival.snapshotData.snapshots[spells.explosiveShot.id] = TRB.Classes.Snapshot:New(spells.explosiveShot)
 	---@type TRB.Classes.Snapshot
-	specCache.survival.snapshotData.snapshots[specCache.survival.spells.butchery.id] = TRB.Classes.Snapshot:New(specCache.survival.spells.butchery)
+	specCache.survival.snapshotData.snapshots[spells.butchery.id] = TRB.Classes.Snapshot:New(spells.butchery)
 	---@type TRB.Classes.Snapshot
-	specCache.survival.snapshotData.snapshots[specCache.survival.spells.flankingStrike.id] = TRB.Classes.Snapshot:New(specCache.survival.spells.flankingStrike)
+	specCache.survival.snapshotData.snapshots[spells.flankingStrike.id] = TRB.Classes.Snapshot:New(spells.flankingStrike)
 	---@type TRB.Classes.Snapshot
-	specCache.survival.snapshotData.snapshots[specCache.survival.spells.wildfireBomb.id] = TRB.Classes.Snapshot:New(specCache.survival.spells.wildfireBomb)
+	specCache.survival.snapshotData.snapshots[spells.wildfireBomb.id] = TRB.Classes.Snapshot:New(spells.wildfireBomb)
 
 	specCache.survival.barTextVariables = {
 		icons = {},
@@ -1035,7 +255,8 @@ end
 
 local function FillSpellData_BeastMastery()
 	Setup_BeastMastery()
-	local spells = TRB.Functions.Spell:FillSpellData(specCache.beastMastery.spells)
+	specCache.beastMastery.spellsData:FillSpellData()
+	local spells = specCache.beastMastery.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 
 	-- This is done here so that we can get icons for the options menu!
 	specCache.beastMastery.barTextVariables.icons = {
@@ -1124,13 +345,12 @@ local function FillSpellData_BeastMastery()
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 	}
-
-	specCache.beastMastery.spells = spells
 end
 
 local function FillSpellData_Marksmanship()
 	Setup_Marksmanship()
-	local spells = TRB.Functions.Spell:FillSpellData(specCache.marksmanship.spells)
+	specCache.marksmanship.spellsData:FillSpellData()
+	local spells = specCache.marksmanship.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
 	specCache.marksmanship.barTextVariables.icons = {
@@ -1217,13 +437,12 @@ local function FillSpellData_Marksmanship()
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 	}
-
-	specCache.marksmanship.spells = spells
 end
 
 local function FillSpellData_Survival()
 	Setup_Survival()
-	local spells = TRB.Functions.Spell:FillSpellData(specCache.survival.spells)
+	specCache.survival.spellsData:FillSpellData()
+	local spells = specCache.survival.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
 	specCache.survival.barTextVariables.icons = {
@@ -1311,18 +530,16 @@ local function FillSpellData_Survival()
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 	}
-
-	specCache.survival.spells = spells
 end
 
 local function CalculateAbilityResourceValue(resource, threshold)
 	local modifier = 1.0
 	if GetSpecialization() == 2 then
 		if resource > 0 then
-			local spells = TRB.Data.spells
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 			local trueshot = TRB.Data.snapshotData.snapshots[spells.trueshot.id] --[[@as TRB.Classes.Snapshot]]
 			if trueshot.buff.isActive and not threshold then
-				modifier = modifier * trueshot.spell.modifier
+				modifier = modifier * trueshot.spell.resourcePercent
 			end
 		end
 	end
@@ -1346,7 +563,7 @@ local function TargetsCleanup(clearAll)
 end
 
 local function ConstructResourceBar(settings)
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells|TRB.Classes.Hunter.MarksmanshipSpells|TRB.Classes.Hunter.SurvivalSpells]]
 
 	local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
 	if entries > 0 then
@@ -1355,9 +572,10 @@ local function ConstructResourceBar(settings)
 		end
 	end
 
-	for k, v in pairs(spells) do
-		local spell = spells[k]
-		if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+	for _, v in pairs(spells) do
+		local spell = v --[[@as TRB.Classes.SpellBase]]
+		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+			spell = spell --[[@as TRB.Classes.SpellThreshold]]
 			if resourceFrame.thresholds[spell.thresholdId] == nil then
 				resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, resourceFrame)
 			end
@@ -1377,7 +595,7 @@ end
 
 local function RefreshLookupData_BeastMastery()
 	local specSettings = TRB.Data.settings.hunter.beastMastery
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local targetData = snapshotData.targetData
@@ -1618,7 +836,7 @@ end
 
 local function RefreshLookupData_Marksmanship()
 	local specSettings = TRB.Data.settings.hunter.marksmanship
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local targetData = snapshotData.targetData
@@ -1817,7 +1035,7 @@ end
 
 local function RefreshLookupData_Survival()
 	local specSettings = TRB.Data.settings.hunter.survival
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local targetData = snapshotData.targetData
@@ -2036,7 +1254,6 @@ end
 
 --TODO Refactor this to match other modules
 local function CastingSpell()
-	local spells = TRB.Data.spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local casting = snapshotData.casting
@@ -2055,6 +1272,7 @@ local function CastingSpell()
 				return false
 				--See Priest implementation for handling channeled spells
 			else
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 				local spellName = select(1, currentSpell)
 				if spellName == spells.scareBeast.name then
 					FillSnapshotDataCasting(spells.scareBeast)
@@ -2065,7 +1283,8 @@ local function CastingSpell()
 				end
 			end
 		elseif specId == 2 then
-			if currentSpell == nil then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
+			if currentSpell == nil then				
 				local spellName = select(1, currentChannel)
 				if spellName == spells.rapidFire.name then
 					local currentTime = GetTime()
@@ -2076,7 +1295,7 @@ local function CastingSpell()
 
 					local duration = casting.endTime - casting.startTime
 					local remainingTime = casting.endTime - currentTime
-					local ticksRemaining = math.ceil(remainingTime / (duration / (spells.rapidFire.shots - 1)))
+					local ticksRemaining = math.ceil(remainingTime / (duration / (spells.rapidFire.attributes.shots - 1)))
 
 					casting.resourceRaw = ticksRemaining * spells.rapidFire.resource
 					casting.resourceFinal = CalculateAbilityResourceValue(casting.resourceRaw)
@@ -2112,6 +1331,7 @@ local function CastingSpell()
 				return false
 				--See Priest implementation for handling channeled spells
 			else
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 				local spellName = select(1, currentSpell)
 				if spellName == spells.scareBeast.name then
 					FillSnapshotDataCasting(spells.scareBeast)
@@ -2132,7 +1352,7 @@ end
 ---@param currentTime number? # Timestamp to use for calculations
 local function UpdateBarbedShot(currentTime)
 	currentTime = currentTime or GetTime()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 	local barbedShot = TRB.Data.snapshotData.snapshots[spells.barbedShot.id] --[[@as TRB.Classes.Snapshot]]
 	local entries = TRB.Functions.Table:Length(barbedShot.attributes.list)
 	local totalResource = 0
@@ -2174,7 +1394,7 @@ end
 local function UpdateSnapshot()
 	TRB.Functions.Character:UpdateSnapshot()
 
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.HunterBaseSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	
@@ -2187,7 +1407,7 @@ local function UpdateSnapshot_BeastMastery()
 	UpdateBarbedShot()
 
 	local currentTime = GetTime()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -2202,7 +1422,7 @@ end
 local function UpdateSnapshot_Marksmanship()
 	UpdateSnapshot()
 	
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -2219,7 +1439,7 @@ local function UpdateSnapshot_Survival()
 	UpdateSnapshot()
 	
 	local currentTime = GetTime()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -2237,7 +1457,6 @@ local function UpdateResourceBar()
 	local specId = GetSpecialization()
 	local coreSettings = TRB.Data.settings.core
 	local classSettings = TRB.Data.settings.hunter
-	local spells = TRB.Data.spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
@@ -2251,6 +1470,7 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
@@ -2300,9 +1520,10 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
-				for k, v in pairs(spells) do
-					local spell = spells[k]
-					if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+				for _, v in pairs(TRB.Data.spellsData.spells) do
+					local spell = v --[[@as TRB.Classes.SpellBase]]
+					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+						spell = spell --[[@as TRB.Classes.SpellThreshold]]
 						local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
 						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
@@ -2317,7 +1538,7 @@ local function UpdateResourceBar()
 									targetUnitHealth = target:GetHealthPercent()
 								end
 
-								if UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= spell.healthMinimum then
+								if UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= spell.attributes.healthMinimum then
 									showThreshold = false
 									snapshotData.audio.playedKillShotCue = false
 								elseif snapshots[spell.id].buff.isActive then
@@ -2401,16 +1622,16 @@ local function UpdateResourceBar()
 						barColor = specSettings.colors.bar.frenzyUse
 					elseif snapshots[spells.barbedShot.id].cooldown.remaining <= reactionTimeGcds and snapshots[spells.barbedShot.id].cooldown.charges == 1 then
 						barColor = specSettings.colors.bar.frenzyUse
-					elseif talents:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.remainingTotal <= reactionTimeGcds and beastialWrathCooldownRemaining < (spells.barbedWrath.beastialWrathCooldownReduction + reactionTimeGcds) then
+					elseif talents:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.remainingTotal <= reactionTimeGcds and beastialWrathCooldownRemaining < (spells.barbedWrath.attributes.beastialWrathCooldownReduction + reactionTimeGcds) then
 						barColor = specSettings.colors.bar.frenzyUse
-					elseif talents:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * spells.barbedWrath.beastialWrathCooldownReduction) then
+					elseif talents:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * spells.barbedWrath.attributes.beastialWrathCooldownReduction) then
 						barColor = specSettings.colors.bar.frenzyUse
 					end
 				else
 					if affectingCombat then
 						if snapshots[spells.barbedShot.id].cooldown.charges == 2 then
 							barColor = specSettings.colors.bar.frenzyUse
-						elseif talents:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * spells.barbedWrath.beastialWrathCooldownReduction) then
+						elseif talents:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * spells.barbedWrath.attributes.beastialWrathCooldownReduction) then
 							barColor = specSettings.colors.bar.frenzyUse
 						elseif snapshots[spells.barbedShot.id].cooldown.remainingTotal <= reactionTimeGcds then
 							barColor = specSettings.colors.bar.frenzyUse
@@ -2466,6 +1687,7 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
@@ -2543,9 +1765,10 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
-				for k, v in pairs(spells) do
-					local spell = spells[k]
-					if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+				for _, v in pairs(TRB.Data.spellsData.spells) do
+					local spell = v --[[@as TRB.Classes.SpellBase]]
+					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+						spell = spell --[[@as TRB.Classes.SpellThreshold]]
 						local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
 						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
@@ -2599,7 +1822,7 @@ local function UpdateResourceBar()
 									targetUnitHealth = target:GetHealthPercent()
 								end
 
-								if UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= spells.killShot.healthMinimum then
+								if UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= spells.killShot.attributes.healthMinimum then
 									showThreshold = false
 									snapshotData.audio.playedKillShotCue = false
 								elseif snapshots[spell.id].cooldown:IsUnusable() then
@@ -2681,6 +1904,7 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
@@ -2743,9 +1967,10 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
-				for k, v in pairs(spells) do
-					local spell = spells[k]
-					if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+				for _, v in pairs(TRB.Data.spellsData.spells) do
+					local spell = v --[[@as TRB.Classes.SpellBase]]
+					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+						spell = spell --[[@as TRB.Classes.SpellThreshold]]
 						local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
 						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
@@ -2760,7 +1985,7 @@ local function UpdateResourceBar()
 									targetUnitHealth = target:GetHealthPercent()
 								end
 								
-								if UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= spells.killShot.healthMinimum then
+								if UnitIsDeadOrGhost("target") or targetUnitHealth == nil or targetUnitHealth >= spells.killShot.attributes.healthMinimum then
 									showThreshold = false
 									snapshotData.audio.playedKillShotCue = false
 								elseif snapshots[spell.id].cooldown:IsUnusable() then
@@ -2871,10 +2096,11 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local triggerUpdate = false
 	local _
 	local specId = GetSpecialization()
-	local spells = TRB.Data.spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local targetData = snapshotData.targetData
+
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells|TRB.Classes.Hunter.MarksmanshipSpells|TRB.Classes.Hunter.SurvivalSpells]]
 
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		local entry = TRB.Classes.CombatLogEntry:GetCurrentEventInfo()
@@ -2887,7 +2113,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					end
 				elseif entry.spellId == spells.barbedShot.id then
 					snapshots[entry.spellId].cooldown:Initialize()
-				elseif entry.spellId == spells.barbedShot.buffIdList[1] or entry.spellId == spells.barbedShot.buffIdList[2] or entry.spellId == spells.barbedShot.buffIdList[3] or entry.spellId == spells.barbedShot.buffIdList[4] or entry.spellId == spells.barbedShot.buffIdList[5] then
+				elseif entry.spellId == spells.barbedShot.attributes.buffIdList[1] or entry.spellId == spells.barbedShot.attributes.buffIdList[2] or entry.spellId == spells.barbedShot.attributes.buffIdList[3] or entry.spellId == spells.barbedShot.attributes.buffIdList[4] or entry.spellId == spells.barbedShot.attributes.buffIdList[5] then
 					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Barbed Shot buff
 						table.insert(snapshots[spells.barbedShot.id].attributes.list, {
 							ticksRemaining = spells.barbedShot.ticks,
@@ -3028,7 +2254,7 @@ local function SwitchSpec()
 		FillSpellData_BeastMastery()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.beastMastery)
 		
-		local spells = TRB.Data.spells
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -3048,7 +2274,7 @@ local function SwitchSpec()
 		FillSpellData_Marksmanship()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.marksmanship)
 		
-		local spells = TRB.Data.spells
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -3068,7 +2294,7 @@ local function SwitchSpec()
 		FillSpellData_Survival()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.survival)
 		
-		local spells = TRB.Data.spells
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -3185,8 +2411,6 @@ end)
 
 function TRB.Functions.Class:CheckCharacter()
 	local specId = GetSpecialization()
-	local spells = TRB.Data.spells
-	local snapshot = TRB.Data.snapshotData
 	TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.className = "hunter"
 	TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Focus)
@@ -3343,13 +2567,16 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local spells = TRB.Data.spells
+	local spells
 	local settings = nil
 	if specId == 1 then
+		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 		settings = TRB.Data.settings.hunter.beastMastery
 	elseif specId == 2 then
+		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 		settings = TRB.Data.settings.hunter.marksmanship
 	elseif specId == 3 then
+		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.SurvivalSpells]]
 		settings = TRB.Data.settings.hunter.survival
 	else
 		return false
@@ -3489,14 +2716,6 @@ end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 	local specId = GetSpecialization()
-	local settings = TRB.Data.settings.hunter
-	local spells = TRB.Data.spells
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-
-	if specId == 1 then
-	elseif specId == 2 then
-	elseif specId == 3 then
-	end
 	return nil
 end
 
