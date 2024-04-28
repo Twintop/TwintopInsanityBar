@@ -30,6 +30,7 @@ local specCache = {
 }
 
 local function CalculateManaGain(mana, isPotion)
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 	if isPotion == nil then
 		isPotion = false
 	end
@@ -38,7 +39,7 @@ local function CalculateManaGain(mana, isPotion)
 
 	if isPotion then
 		if TRB.Data.character.items.alchemyStone then
-			modifier = modifier * TRB.Data.spells.alchemistStone.resourcePercent
+			modifier = modifier * spells.alchemistStone.resourcePercent
 		end
 	end
 
@@ -99,213 +100,40 @@ local function FillSpecializationCache()
 			alchemyStone = false
 		}
 	}
-
-	specCache.mistweaver.spells = {
-		-- Monk Class Talents		
-		soothingMist = {
-			id = 115175,
-			name = "",
-			icon = "",
-			isTalent = true,
-			baseline = true
-		},
-		vivaciousVivification = {
-			id = 392883,
-			name = "", 
-			icon = ""
-		},
-
-		-- Mistweaver Spec Talents
-		manaTea = {
-			id = 197908,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-
-		-- External mana
-		symbolOfHope = {
-			id = 64901,
-			name = "",
-			icon = "",
-			duration = 4.0, --Hasted
-			resourcePercent = 0.02,
-			ticks = 4,
-			tickId = 265144
-		},
-		innervate = {
-			id = 29166,
-			name = "",
-			icon = "",
-			duration = 10,
-		},
-		manaTideTotem = {
-			id = 320763,
-			name = "",
-			icon = "",
-			duration = 8,
-		},
-		blessingOfWinter = {
-			id = 388011,
-			name = "",
-			icon = "",
-			tickRate = 2,
-			hasTicks = true,
-			resourcePerTick = 0,
-			resourcePercent = 0.01
-		},
-		
-		-- Potions
-		aeratedManaPotionRank1 = {
-			id = 370607,
-			itemId = 191384,
-			spellId = 370607,
-			iconName = "inv_10_alchemy_bottle_shape1_blue",
-			name = "",
-			icon = "",
-			useSpellIcon = true,
-			texture = "",
-			thresholdId = 1,
-			settingKey = "aeratedManaPotionRank1"
-		},
-		aeratedManaPotionRank2 = {
-			itemId = 191385,
-			spellId = 370607,
-			iconName = "inv_10_alchemy_bottle_shape1_blue",
-			name = "",
-			icon = "",
-			useSpellIcon = true,
-			texture = "",
-			thresholdId = 2,
-			settingKey = "aeratedManaPotionRank2"
-		},
-		aeratedManaPotionRank3 = {
-			itemId = 191386,
-			spellId = 370607,
-			iconName = "inv_10_alchemy_bottle_shape1_blue",
-			name = "",
-			icon = "",
-			useSpellIcon = true,
-			texture = "",
-			thresholdId = 3,
-			settingKey = "aeratedManaPotionRank3"
-		},
-		potionOfFrozenFocusRank1 = {
-			id = 371033,
-			itemId = 191363,
-			spellId = 371033,
-			name = "",
-			icon = "",
-			useSpellIcon = true,
-			texture = "",
-			thresholdId = 4,
-			settingKey = "potionOfFrozenFocusRank1"
-		},
-		potionOfFrozenFocusRank2 = {
-			itemId = 191364,
-			spellId = 371033,
-			name = "",
-			icon = "",
-			useSpellIcon = true,
-			texture = "",
-			thresholdId = 5,
-			settingKey = "potionOfFrozenFocusRank2"
-		},
-		potionOfFrozenFocusRank3 = {
-			itemId = 191365,
-			spellId = 371033,
-			name = "",
-			icon = "",
-			useSpellIcon = true,
-			texture = "",
-			thresholdId = 6,
-			settingKey = "potionOfFrozenFocusRank3"
-		},
-		potionOfChilledClarity = {
-			id = 371052,
-			name = "",
-			icon = ""
-		},
-
-		-- Conjured Chillglobe
-		conjuredChillglobe = {
-			id = 396391,
-			itemId = 194300,
-			spellId = 396391,
-			name = "",
-			icon = "",
-			useSpellIcon = true,
-			texture = "",
-			thresholdId = 7,
-			settingKey = "conjuredChillglobe",
-			mana = 4830,
-			duration = 10,
-			ticks = 10
-		},
-
-		-- Alchemist Stone
-		alchemistStone = {
-			id = 17619,
-			name = "",
-			icon = "",
-			resourcePercent = 1.4,
-			itemIds = {
-				171323,
-				175941,
-				175942,
-				175943
-			}
-		},
-
-		-- Rashok's Molten Heart
-		moltenRadiance = {
-			id = 409898,
-			name = "",
-			icon = "",
-		},
-
-		-- Tier Bonuses
-		soulfangInfusion = { -- T30 2P
-			id = 410007,
-			name = "",
-			icon = "",
-			ticks = 3,
-			hasTicks = true,
-			tickRate = 1,
-			resourcePerTick = 0.01, --1% max mana. fill manually
-			duration = 3
-		}
-
-	}
+	
+	specCache.mistweaver.spellsData.spells = TRB.Classes.Monk.MistweaverSpells:New()
+	---@type TRB.Classes.Monk.MistweaverSpells
+	---@diagnostic disable-next-line: assign-type-mismatch
+	local spells = specCache.mistweaver.spellsData.spells
 
 	specCache.mistweaver.snapshotData.attributes.manaRegen = 0
 	specCache.mistweaver.snapshotData.audio = {
 		innervateCue = false
 	}
 	---@type TRB.Classes.Healer.Innervate
-	specCache.mistweaver.snapshotData.snapshots[specCache.mistweaver.spells.innervate.id] = TRB.Classes.Healer.Innervate:New(specCache.mistweaver.spells.innervate)
+	specCache.mistweaver.snapshotData.snapshots[spells.innervate.id] = TRB.Classes.Healer.Innervate:New(spells.innervate)
 	---@type TRB.Classes.Healer.PotionOfChilledClarity
-	specCache.mistweaver.snapshotData.snapshots[specCache.mistweaver.spells.potionOfChilledClarity.id] = TRB.Classes.Healer.PotionOfChilledClarity:New(specCache.mistweaver.spells.potionOfChilledClarity)
+	specCache.mistweaver.snapshotData.snapshots[spells.potionOfChilledClarity.id] = TRB.Classes.Healer.PotionOfChilledClarity:New(spells.potionOfChilledClarity)
 	---@type TRB.Classes.Healer.ManaTideTotem
-	specCache.mistweaver.snapshotData.snapshots[specCache.mistweaver.spells.manaTideTotem.id] = TRB.Classes.Healer.ManaTideTotem:New(specCache.mistweaver.spells.manaTideTotem)
+	specCache.mistweaver.snapshotData.snapshots[spells.manaTideTotem.id] = TRB.Classes.Healer.ManaTideTotem:New(spells.manaTideTotem)
 	---@type TRB.Classes.Healer.SymbolOfHope
-	specCache.mistweaver.snapshotData.snapshots[specCache.mistweaver.spells.symbolOfHope.id] = TRB.Classes.Healer.SymbolOfHope:New(specCache.mistweaver.spells.symbolOfHope, CalculateManaGain)
+	specCache.mistweaver.snapshotData.snapshots[spells.symbolOfHope.id] = TRB.Classes.Healer.SymbolOfHope:New(spells.symbolOfHope, CalculateManaGain)
 	---@type TRB.Classes.Healer.ChanneledManaPotion
-	specCache.mistweaver.snapshotData.snapshots[specCache.mistweaver.spells.potionOfFrozenFocusRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(specCache.mistweaver.spells.potionOfFrozenFocusRank1, CalculateManaGain)
+	specCache.mistweaver.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(spells.potionOfFrozenFocusRank1, CalculateManaGain)
 	---@type TRB.Classes.Snapshot
-	specCache.mistweaver.snapshotData.snapshots[specCache.mistweaver.spells.aeratedManaPotionRank1.id] = TRB.Classes.Snapshot:New(specCache.mistweaver.spells.aeratedManaPotionRank1)
+	specCache.mistweaver.snapshotData.snapshots[spells.aeratedManaPotionRank1.id] = TRB.Classes.Snapshot:New(spells.aeratedManaPotionRank1)
 	---@type TRB.Classes.Snapshot
-	specCache.mistweaver.snapshotData.snapshots[specCache.mistweaver.spells.conjuredChillglobe.id] = TRB.Classes.Snapshot:New(specCache.mistweaver.spells.conjuredChillglobe)
+	specCache.mistweaver.snapshotData.snapshots[spells.conjuredChillglobe.id] = TRB.Classes.Snapshot:New(spells.conjuredChillglobe)
 	---@type TRB.Classes.Healer.MoltenRadiance
-	specCache.mistweaver.snapshotData.snapshots[specCache.mistweaver.spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(specCache.mistweaver.spells.moltenRadiance)
+	specCache.mistweaver.snapshotData.snapshots[spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(spells.moltenRadiance)
 	---@type TRB.Classes.Healer.BlessingOfWinter
-	specCache.mistweaver.snapshotData.snapshots[specCache.mistweaver.spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(specCache.mistweaver.spells.blessingOfWinter)
+	specCache.mistweaver.snapshotData.snapshots[spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(spells.blessingOfWinter)
 	---@type TRB.Classes.Snapshot
-	specCache.mistweaver.snapshotData.snapshots[specCache.mistweaver.spells.manaTea.id] = TRB.Classes.Snapshot:New(specCache.mistweaver.spells.manaTea)
+	specCache.mistweaver.snapshotData.snapshots[spells.manaTea.id] = TRB.Classes.Snapshot:New(spells.manaTea)
 	---@type TRB.Classes.Snapshot
-	specCache.mistweaver.snapshotData.snapshots[specCache.mistweaver.spells.vivaciousVivification.id] = TRB.Classes.Snapshot:New(specCache.mistweaver.spells.vivaciousVivification, nil, true)
+	specCache.mistweaver.snapshotData.snapshots[spells.vivaciousVivification.id] = TRB.Classes.Snapshot:New(spells.vivaciousVivification, nil, true)
 	---@type TRB.Classes.Snapshot
-	specCache.mistweaver.snapshotData.snapshots[specCache.mistweaver.spells.soulfangInfusion.id] = TRB.Classes.Healer.HealerRegenBase:New(specCache.mistweaver.spells.soulfangInfusion)
+	specCache.mistweaver.snapshotData.snapshots[spells.soulfangInfusion.id] = TRB.Classes.Healer.HealerRegenBase:New(spells.soulfangInfusion)
 
 	specCache.mistweaver.barTextVariables = {
 		icons = {},
@@ -336,192 +164,11 @@ local function FillSpecializationCache()
 		},
 		items = {}
 	}
-
-	specCache.windwalker.spells = {
-		-- Monk Class Baseline Abilities
-		blackoutKick = {
-			id = 100784,
-			name = "",
-			icon = "",
-			comboPoints = 1,
-			isTalent = false,
-			baseline = true
-		},
-		cracklingJadeLightning = {
-			id = 117952,
-			name = "",
-			icon = "",
-			resource = -20,
-			comboPointsGenerated = 0,
-			texture = "",
-			thresholdId = 1,
-			settingKey = "cracklingJadeLightning",
-			isTalent = false,
-			baseline = true
-		},
-		expelHarm = {
-			id = 322101,
-			name = "",
-			icon = "",
-			resource = -15,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 2,
-			settingKey = "expelHarm",
-			hasCooldown = true,
-			cooldown = 15,
-			isTalent = false,
-			baseline = true
-		},
-		markOfTheCrane = {
-			id = 228287,
-			name = "",
-			icon = "",
-			duration = 20,
-			isTalent = false,
-			baseline = true
-		},
-		spinningCraneKick = {
-			id = 101546,
-			name = "",
-			icon = "",
-			comboPoints = 2,
-			isTalent = false,
-			baseline = true
-		},
-		tigerPalm = {
-			id = 100780,
-			name = "",
-			icon = "",
-			resource = -50,
-			comboPointsGenerated = 2,
-			texture = "",
-			thresholdId = 3,
-			settingKey = "tigerPalm",
-			isTalent = false,
-			baseline = true
-		},
-		touchOfDeath = {
-			id = 322109,
-			name = "",
-			icon = "",
-			healthPercent = 0.35,
-			eliteHealthPercent = 0.15,
-			isTalent = false,
-			baseline = true
-		},
-		vivify = {
-			id = 116670,
-			name = "",
-			icon = "",
-			resource = -30,
-			comboPointsGenerated = 0,
-			texture = "",
-			thresholdId = 4,
-			settingKey = "vivify",
-			isTalent = false,
-			baseline = true
-		},
-
-		-- Windwalker Spec Baseline Abilities
-
-		-- Monk Class Talents
-		risingSunKick = {
-			id = 107428,
-			name = "",
-			icon = "",
-			comboPoints = 2,
-			isTalent = true,
-			baseline = true
-		},
-		detox = {
-			id = 218164,
-			name = "",
-			icon = "",
-			resource = -20,
-			comboPointsGenerated = 0,
-			texture = "",
-			thresholdId = 5,
-			settingKey = "detox",
-			hasCooldown = true,
-			cooldown = 8,
-			isTalent = true,
-			baseline = true -- TODO: Check this in a future build
-		},
-		disable = {
-			id = 116095,
-			name = "",
-			icon = "",
-			resource = -15,
-			comboPoints = true,
-			texture = "",
-			thresholdId = 6,
-			settingKey = "disable",
-			hasCooldown = false
-		},
-		paralysis = {
-			id = 115078,
-			name = "",
-			icon = "",
-			resource = -20,
-			comboPointsGenerated = 0,
-			texture = "",
-			thresholdId = 7,
-			settingKey = "paralysis",
-			hasCooldown = true,
-			cooldown = 45,
-			isTalent = true,
-		},
-		paralysisRank2 = {
-			id = 344359,
-			name = "",
-			icon = "",
-			cooldownMod = -15,
-			isTalent = true,
-		},
-		
-		-- Windwalker Spec Talent Abilities
-
-		fistsOfFury = {
-			id = 113656,
-			name = "",
-			icon = "",
-			comboPoints = 3,
-			isTalent = true
-		},
-
-		-- Talents
-		strikeOfTheWindlord = {
-			id = 392983,
-			name = "",
-			icon = "",
-			hasCooldown = true,
-			isTalent = true,
-			cooldown = 40
-		},
-		energizingElixir = {
-			id = 115288,
-			name = "",
-			icon = "",
-			comboPointsGenerated = 2,
-			resourcePerTick = 15,
-			ticks = 5,
-			tickRate = 1,
-			isTalent = true
-		},
-		danceOfChiJi = {
-			id = 325202,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		serenity = {
-			id = 152173,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-	}
+	
+	specCache.windwalker.spellsData.spells = TRB.Classes.Monk.WindwalkerSpells:New()
+	---@type TRB.Classes.Monk.WindwalkerSpells
+	---@diagnostic disable-next-line: assign-type-mismatch, cast-local-type
+	spells = specCache.windwalker.spellsData.spells
 
 	specCache.windwalker.snapshotData.attributes.resourceRegen = 0
 	specCache.windwalker.snapshotData.audio = {
@@ -529,19 +176,19 @@ local function FillSpecializationCache()
 		playedDanceOfChiJiCue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[specCache.windwalker.spells.detox.id] = TRB.Classes.Snapshot:New(specCache.windwalker.spells.detox)
+	specCache.windwalker.snapshotData.snapshots[spells.detox.id] = TRB.Classes.Snapshot:New(spells.detox)
 	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[specCache.windwalker.spells.expelHarm.id] = TRB.Classes.Snapshot:New(specCache.windwalker.spells.expelHarm)
+	specCache.windwalker.snapshotData.snapshots[spells.expelHarm.id] = TRB.Classes.Snapshot:New(spells.expelHarm)
 	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[specCache.windwalker.spells.paralysis.id] = TRB.Classes.Snapshot:New(specCache.windwalker.spells.paralysis)
+	specCache.windwalker.snapshotData.snapshots[spells.paralysis.id] = TRB.Classes.Snapshot:New(spells.paralysis)
 	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[specCache.windwalker.spells.strikeOfTheWindlord.id] = TRB.Classes.Snapshot:New(specCache.windwalker.spells.strikeOfTheWindlord)
+	specCache.windwalker.snapshotData.snapshots[spells.strikeOfTheWindlord.id] = TRB.Classes.Snapshot:New(spells.strikeOfTheWindlord)
 	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[specCache.windwalker.spells.serenity.id] = TRB.Classes.Snapshot:New(specCache.windwalker.spells.serenity)
+	specCache.windwalker.snapshotData.snapshots[spells.serenity.id] = TRB.Classes.Snapshot:New(spells.serenity)
 	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[specCache.windwalker.spells.danceOfChiJi.id] = TRB.Classes.Snapshot:New(specCache.windwalker.spells.danceOfChiJi)
+	specCache.windwalker.snapshotData.snapshots[spells.danceOfChiJi.id] = TRB.Classes.Snapshot:New(spells.danceOfChiJi)
 	---@type TRB.Classes.Snapshot
-	specCache.windwalker.snapshotData.snapshots[specCache.windwalker.spells.markOfTheCrane.id] = TRB.Classes.Snapshot:New(specCache.windwalker.spells.markOfTheCrane, {
+	specCache.windwalker.snapshotData.snapshots[spells.markOfTheCrane.id] = TRB.Classes.Snapshot:New(spells.markOfTheCrane, {
 		count = 0,
 		activeCount = 0,
 		minEndTime = nil,
@@ -573,7 +220,9 @@ end
 
 local function FillSpellData_Mistweaver()
 	Setup_Mistweaver()
-	local spells = TRB.Functions.Spell:FillSpellData(specCache.mistweaver.spells)
+	---@type TRB.Classes.SpellsData
+	specCache.discipline.spellsData:FillSpellData()
+	local spells = specCache.mistweaver.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
 	specCache.mistweaver.barTextVariables.icons = {
@@ -689,13 +338,13 @@ local function FillSpellData_Mistweaver()
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 	}
-
-	specCache.mistweaver.spells = spells
 end
 
 local function FillSpellData_Windwalker()
 	Setup_Windwalker()
-	local spells = TRB.Functions.Spell:FillSpellData(specCache.windwalker.spells)
+	---@type TRB.Classes.SpellsData
+	specCache.windwalker.spellsData:FillSpellData()
+	local spells = specCache.windwalker.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
 	specCache.windwalker.barTextVariables.icons = {
@@ -791,8 +440,6 @@ local function FillSpellData_Windwalker()
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 	}
-
-	specCache.windwalker.spells = spells
 end
 
 local function CalculateAbilityResourceValue(resource, threshold)
@@ -819,7 +466,6 @@ end
 
 local function ConstructResourceBar(settings)
 	local specId = GetSpecialization()
-	local spells = TRB.Data.spells
 
 	local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
 	if entries > 0 then
@@ -829,6 +475,7 @@ local function ConstructResourceBar(settings)
 	end
 
 	if specId == 2 then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 		for x = 1, 7 do
 			if TRB.Frames.resourceFrame.thresholds[x] == nil then
 				TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
@@ -858,9 +505,11 @@ local function ConstructResourceBar(settings)
 		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], spells.conjuredChillglobe, TRB.Data.settings.monk.mistweaver)
 		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif specId == 3 then
-		for k, v in pairs(spells) do
-			local spell = spells[k]
-			if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
+		for _, v in pairs(spells) do
+			local spell = v --[[@as TRB.Classes.SpellBase]]
+			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+				spell = spell --[[@as TRB.Classes.SpellThreshold]]
 				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
@@ -884,7 +533,7 @@ local function ConstructResourceBar(settings)
 end
 
 local function GetGuidPositionInMarkOfTheCraneList(guid)
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 	local markOfTheCrane = TRB.Data.snapshotData.snapshots[spells.markOfTheCrane.id] --[[@as TRB.Classes.Snapshot]]
 	local entries = TRB.Functions.Table:Length(markOfTheCrane.attributes.list)
 	for x = 1, entries do
@@ -896,7 +545,7 @@ local function GetGuidPositionInMarkOfTheCraneList(guid)
 end
 
 local function ApplyMarkOfTheCrane(guid)
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local markOfTheCrane = snapshotData.snapshots[spells.markOfTheCrane.id]
 	local targetData = snapshotData.targetData
@@ -917,7 +566,7 @@ local function ApplyMarkOfTheCrane(guid)
 end
 
 local function GetOldestOrExpiredMarkOfTheCraneListEntry(any, aliveOnly)
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local markOfTheCrane = snapshotData.snapshots[spells.markOfTheCrane.id]
 	local targetData = snapshotData.targetData
@@ -947,7 +596,7 @@ local function GetOldestOrExpiredMarkOfTheCraneListEntry(any, aliveOnly)
 end
 
 local function RemoveExcessMarkOfTheCraneEntries()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local markOfTheCrane = snapshotData.snapshots[spells.markOfTheCrane.id]
 	local targetData = snapshotData.targetData
@@ -967,7 +616,7 @@ local function RemoveExcessMarkOfTheCraneEntries()
 end
 
 local function IsTargetLowestInMarkOfTheCraneList()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local targetData = snapshotData.targetData
 	if targetData.currentTargetGuid == nil then
@@ -985,7 +634,7 @@ local function IsTargetLowestInMarkOfTheCraneList()
 end
 
 local function RefreshLookupData_Mistweaver()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.monk.mistweaver
@@ -1244,7 +893,7 @@ local function RefreshLookupData_Mistweaver()
 end
 
 local function RefreshLookupData_Windwalker()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.monk.windwalker
@@ -1510,7 +1159,7 @@ end
 
 local function UpdateCastingResourceFinal_Mistweaver()
 	-- Do nothing for now
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local innervate = snapshotData.snapshots[spells.innervate.id] --[[@as TRB.Classes.Healer.Innervate]]
 	local potionOfChilledClarity = snapshotData.snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
@@ -1519,7 +1168,6 @@ local function UpdateCastingResourceFinal_Mistweaver()
 end
 
 local function CastingSpell()
-	local spells = TRB.Data.spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local currentTime = GetTime()
 	local affectingCombat = UnitAffectingCombat("player")
@@ -1532,6 +1180,7 @@ local function CastingSpell()
 		return false
 	else
 		if specId == 2 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 			if currentSpellName == nil then
 				if currentChannelId == spells.soothingMist.id then
 					local manaCost = -TRB.Functions.Spell:GetManaCostPerSecond(currentChannelId)
@@ -1567,6 +1216,7 @@ local function CastingSpell()
 			return true
 		elseif specId == 3 then
 			if currentSpellName == nil then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 				if currentChannelId == spells.cracklingJadeLightning.id then
 					snapshotData.casting.spellId = spells.cracklingJadeLightning.id
 					snapshotData.casting.startTime = currentTime
@@ -1587,7 +1237,7 @@ end
 
 local function UpdateMarkOfTheCrane()
 	RemoveExcessMarkOfTheCraneEntries()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 	local markOfTheCrane = TRB.Data.snapshotData.snapshots[spells.markOfTheCrane.id] --[[@as TRB.Classes.Snapshot]]
 	local entries = TRB.Functions.Table:Length(markOfTheCrane.attributes.list)
 	local minEndTime = nil
@@ -1637,8 +1287,7 @@ local function UpdateSnapshot_Mistweaver()
 	local currentTime = GetTime()
 	UpdateSnapshot()
 	
-	local _
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -1679,8 +1328,7 @@ local function UpdateSnapshot_Windwalker()
 	UpdateSnapshot()
 	UpdateMarkOfTheCrane()
 
-	local _
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -1699,7 +1347,6 @@ local function UpdateResourceBar()
 	local specId = GetSpecialization()
 	local coreSettings = TRB.Data.settings.core
 	local classSettings = TRB.Data.settings.monk
-	local spells = TRB.Data.spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	
@@ -1711,6 +1358,7 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
@@ -1799,6 +1447,7 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
@@ -1962,9 +1611,8 @@ end
 barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local currentTime = GetTime()
 	local triggerUpdate = false
-	local _
 	local specId = GetSpecialization()
-	local spells = TRB.Data.spells
+	local spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local targetData = snapshotData.targetData
@@ -1974,8 +1622,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 
 		local settings
 		if specId == 2 then
+			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 			settings = TRB.Data.settings.monk.mistweaver
 		elseif specId == 3 then
+			spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 			settings = TRB.Data.settings.monk.windwalker
 		end
 
@@ -2085,7 +1735,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshots[entry.spellId].cooldown:Initialize()
 
 						if talents:IsTalentActive(spells.paralysisRank2) then
-							snapshots[entry.spellId].cooldown.duration = snapshots[entry.spellId].cooldown.duration + spells.paralysisRank2.cooldownMod
+							snapshots[entry.spellId].cooldown.duration = snapshots[entry.spellId].cooldown.duration + spells.paralysisRank2.attributes.cooldownMod
 						end
 					end
 				end
@@ -2150,7 +1800,7 @@ local function SwitchSpec()
 		FillSpellData_Windwalker()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.windwalker)
 		
-		local spells = TRB.Data.spells
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -2264,9 +1914,9 @@ function TRB.Functions.Class:CheckCharacter()
 	TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
 	local maxComboPoints = 0
 	local settings = nil
-	local spells = TRB.Data.spells
 	
 	if specId == 2 then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 		TRB.Data.character.specName = "mistweaver"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
@@ -2279,9 +1929,9 @@ function TRB.Functions.Class:CheckCharacter()
 		local conjuredChillglobeMana = ""
 					
 		if trinket1ItemLink ~= nil then
-			for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.itemIds) do
+			for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.attributes.itemIds) do
 				if alchemyStone == false then
-					alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, spells.alchemistStone.itemIds[x])
+					alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, spells.alchemistStone.attributes.itemIds[x])
 				else
 					break
 				end
@@ -2293,9 +1943,9 @@ function TRB.Functions.Class:CheckCharacter()
 		end
 
 		if alchemyStone == false and trinket2ItemLink ~= nil then
-			for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.itemIds) do
+			for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.attributes.itemIds) do
 				if alchemyStone == false then
-					alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, spells.alchemistStone.itemIds[x])
+					alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, spells.alchemistStone.attributes.itemIds[x])
 				else
 					break
 				end
@@ -2310,6 +1960,7 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
 		TRB.Data.character.items.conjuredChillglobe.mana = conjuredChillglobeMana
 	elseif specId == 3 then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 ---@diagnostic disable-next-line: missing-parameter, missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", TRB.Data.resource)
 ---@diagnostic disable-next-line: missing-parameter, missing-parameter
@@ -2448,11 +2099,13 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local spells = TRB.Data.spells
+	local spells
 	local settings = nil
 	if specId == 2 then
+		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 		settings = TRB.Data.settings.monk.mistweaver
 	elseif specId == 3 then
+		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.WindwalkerSpells]]
 		settings = TRB.Data.settings.monk.windwalker
 	else
 		return false
@@ -2680,15 +2333,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	local specId = GetSpecialization()
-	local settings = TRB.Data.settings.monk
-	local spells = TRB.Data.spells
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-
-	if specId == 1 then
-	elseif specId == 2 then
-	elseif specId == 3 then
-	end
+	local specId = GetSpecialization()	
 	return nil
 end
 

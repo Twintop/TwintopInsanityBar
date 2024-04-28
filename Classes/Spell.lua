@@ -137,10 +137,6 @@ function TRB.Classes.SpellBase:New(spellAttributes)
         elseif key == "attributes" then
             --Do nothing, we'll merge after
         else
-            --[[if key ~= "settingKey" and key ~= "thresholdId" and key ~= "mana" and key ~= "resourcePercent" and key ~= "itemIds" and key ~= "isSnowflake" and
-               key ~= "holyWordKey" and key ~= "holyWordReduction" and key ~= "holyWordModifier" and key ~= "tickDuration" then
-                print(string.format("TRB: Attribute `%s`", key))
-            end]]
             attributes[key] = value
         end
     end

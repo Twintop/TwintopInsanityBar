@@ -64,7 +64,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
     })
     self.starsurge = TRB.Classes.SpellThreshold:New({
         id = 78674,
-        texture = "",
         resource = -40,
         thresholdId = 1,
         settingKey = "starsurge",
@@ -74,7 +73,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
     })
     self.starsurge2 = TRB.Classes.SpellThreshold:New({
         id = 78674,
-        texture = "",
         resource = -80,
         thresholdId = 2,
         settingKey = "starsurge2",
@@ -84,7 +82,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
     })
     self.starsurge3 = TRB.Classes.SpellThreshold:New({
         id = 78674,
-        texture = "",
         resource = -120,
         thresholdId = 3,
         settingKey = "starsurge3",
@@ -130,7 +127,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
     })
     self.starfall = TRB.Classes.SpellThreshold:New({
         id = 191034,
-        texture = "",
         resource = -50,
         thresholdId = 4,
         settingKey = "starfall",
@@ -278,27 +274,20 @@ function TRB.Classes.Druid.FeralSpells:New()
 
     -- Racial abilities
     self.shadowmeld = TRB.Classes.SpellBase:New({
-        id = 58984,
-        name = "",
-        icon = ""
+        id = 58984
     })
 
     -- Druid Class Baseline Abilities
     self.catForm = TRB.Classes.SpellBase:New({
         id = 768,
-        name = "",
-        icon = "",
         baseline = true
     })
 
     -- Druid Class Talents
     self.rake = TRB.Classes.SpellComboPointThreshold:New({
         id = 155722,
-        name = "",
-        icon = "",
         resource = -35,
         comboPointsGenerated = 1,
-        texture = "",
         thresholdId = 1,
         settingKey = "rake",
         hasSnapshot = true,
@@ -314,12 +303,9 @@ function TRB.Classes.Druid.FeralSpells:New()
     self.thrash = TRB.Classes.SpellComboPointThreshold:New({
         id = 405233,
         talentId = 106830,
-        name = "",
-        icon = "",
         resource = -40,
         comboPointsGenerated = 1,
         thresholdId = 2,
-        texture = "",
         settingKey = "thrash",
         hasSnapshot = true,
         pandemic = true,
@@ -332,12 +318,9 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.rip = TRB.Classes.SpellComboPointThreshold:New({
         id = 1079,
-        name = "",
-        icon = "",
         resource = -20,
         comboPoints = true,
         thresholdId = 4,
-        texture = "",
         settingKey = "rip",
         hasSnapshot = true,
         pandemicTimes = {
@@ -357,11 +340,8 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.maim = TRB.Classes.SpellComboPointThreshold:New({
         id = 22570,
-        name = "",
-        icon = "",
         resource = -30,
         comboPoints = true,
-        texture = "",
         thresholdId = 5,
         settingKey = "maim",
         hasCooldown = true,
@@ -370,8 +350,6 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.sunfire = TRB.Classes.SpellBase:New({
         id = 164815,
-        name = "",
-        icon = "",
         resource = 2,
         pandemic = true,
         pandemicTime = 13.5 * 0.3,
@@ -381,12 +359,9 @@ function TRB.Classes.Druid.FeralSpells:New()
     -- Feral Spec Baseline Abilities
     self.ferociousBite = TRB.Classes.SpellComboPointThreshold:New({
         id = 22568,
-        name = "",
-        icon = "",
         resource = -25,
         resourceMax = -50,
         comboPoints = true,
-        texture = "",
         thresholdId = 6,
         settingKey = "ferociousBite",
         isSnowflake = true, -- Really between 25-50 energy, minus Relentless Predator
@@ -394,11 +369,8 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.ferociousBiteMinimum = TRB.Classes.SpellComboPointThreshold:New({
         id = 22568,
-        name = "",
-        icon = "",
         resource = -25,
         comboPoints = true,
-        texture = "",
         thresholdId = 7,
         settingKey = "ferociousBiteMinimum",
         isSnowflake = true,
@@ -406,11 +378,8 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.ferociousBiteMaximum = TRB.Classes.SpellComboPointThreshold:New({
         id = 22568,
-        name = "",
-        icon = "",
         resource = -50,
         comboPoints = true,
-        texture = "",
         thresholdId = 8,
         settingKey = "ferociousBiteMaximum",
         isSnowflake = true,
@@ -418,30 +387,22 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.prowl = TRB.Classes.SpellBase:New({
         id = 5215,
-        name = "",
-        icon = "",
         idIncarnation = 102547,
         modifier = 1.6
     })
     self.shred = TRB.Classes.SpellComboPointThreshold:New({
         id = 5221,
-        name = "",
-        icon = "",
         resource = -40,
         comboPointsGenerated = 1,
-        texture = "",
         thresholdId = 9,
         settingKey = "shred",
         isClearcasting = true
     })
     self.swipe = TRB.Classes.SpellComboPointThreshold:New({
         id = 106785,
-        name = "",
-        icon = "",
         resource = -35,
         comboPointsGenerated = 1,
         thresholdId = 3,
-        texture = "",
         settingKey = "swipe",
         isSnowflake = true,
         isTalent = false,
@@ -451,55 +412,39 @@ function TRB.Classes.Druid.FeralSpells:New()
     -- Feral Spec Talents
     self.tigersFury = TRB.Classes.SpellBase:New({
         id = 5217,
-        name = "",
-        icon = "",
         modifier = 1.15,
         hasCooldown = true,
         isTalent = true
     })
     self.omenOfClarity = TRB.Classes.SpellBase:New({
         id = 16864,
-        name = "",
-        icon = "",
         isTalent = true
     })
     self.momentOfClarity = TRB.Classes.SpellBase:New({
         id = 236068,
-        name = "",
-        icon = "",
         modifier = 1.15,
         isTalent = true
     })
     self.clearcasting = TRB.Classes.SpellBase:New({
-        id = 135700,
-        name = "",
-        icon = ""
+        id = 135700
     })
     self.primalWrath = TRB.Classes.SpellComboPointThreshold:New({
         id = 285381,
-        name = "",
-        icon = "",
         resource = -20,
         comboPoints = true,
         thresholdId = 10,
-        texture = "",
         settingKey = "primalWrath",
         isTalent = true
     })
     self.lunarInspiration = TRB.Classes.SpellBase:New({
         id = 155580,
-        name = "",
-        icon = "",
         isTalent = true
     })
     self.moonfire = TRB.Classes.SpellComboPointThreshold:New({
         id = 155625,
-        name = "",
-        icon = "",
         resource = -30,
         comboPointsGenerated = 1,
         thresholdId = 11,
-        texture = "",
         settingKey = "moonfire",
         isSnowflake = true,
         hasSnapshot = true,
@@ -511,34 +456,25 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.suddenAmbush = TRB.Classes.SpellBase:New({
         id = 384667,
-        name = "",
-        icon = "",
         isTalent = true
     })
     self.berserk = TRB.Classes.SpellBase:New({
         id = 106951,
-        name = "",
-        icon = "",
         isTalent = true,
         energizeId = 343216,
         tickRate = 1.5
     })
     self.predatorySwiftness = TRB.Classes.SpellBase:New({
         id = 69369,
-        name = "",
-        icon = "",
         isTalent = true
     })
     self.brutalSlash = TRB.Classes.SpellComboPointThreshold:New({
         id = 202028,
-        name = "",
-        icon = "",
         cooldown = 8,
         isHasted = true,
         resource = -25,
         comboPointsGenerated = 1,
         thresholdId = 12,
-        texture = "",
         settingKey = "brutalSlash",
         isSnowflake = true,
         isTalent = true,
@@ -548,19 +484,14 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.carnivorousInstinct = TRB.Classes.SpellBase:New({
         id = 390902,
-        name = "",
-        icon = "",
         modifierPerStack = 0.06,
         isTalent = true
     })
     self.bloodtalons = TRB.Classes.SpellThreshold:New({
         id = 145152,
-        name = "",
-        icon = "",
         window = 4,
         resource = -80, --Make this dynamic
         thresholdId = 13,
-        texture = "",
         settingKey = "bloodtalons",
         isTalent = true,
         --isSnowflake = true,
@@ -568,46 +499,33 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.feralFrenzy = TRB.Classes.SpellComboPointThreshold:New({
         id = 274837,
-        name = "",
-        icon = "",
         resource = -25,
         comboPointsGenerated = 5,
         thresholdId = 14,
-        texture = "",
         settingKey = "feralFrenzy",
         isTalent = true,
         hasCooldown = true
     })
     self.incarnationAvatarOfAshamane = TRB.Classes.SpellBase:New({
         id = 102543,
-        name = "",
-        icon = "",
         resourceMod = 0.8
     })
     self.relentlessPredator = TRB.Classes.SpellBase:New({
         id = 393771,
-        name = "",
-        icon = "",
         isTalent = true,
         resourceMod = 0.9
     })
     self.circleOfLifeAndDeath = TRB.Classes.SpellBase:New({
         id = 391969,
-        name = "",
-        icon = "",
         isTalent = true,
         modifier = 0.75
     })
     self.apexPredatorsCraving = TRB.Classes.SpellBase:New({
-        id = 391882,
-        name = "",
-        icon = ""
+        id = 391882
     })
     -- T30 4P
     self.predatorRevealed = TRB.Classes.SpellBase:New({
         id = 408468,
-        name = "",
-        icon = "",
         energizeId = 411344,
         tickRate = 2.0,
         spellKey = "predatorRevealed"
@@ -636,8 +554,6 @@ function TRB.Classes.Druid.RestorationSpells:New()
     -- Druid Class Baseline Abilities
     self.moonfire = TRB.Classes.SpellBase:New({
         id = 164812,
-        name = "",
-        icon = "",
         resource = 2,
         pandemic = true,
         pandemicTime = 16 * 0.3
@@ -646,8 +562,6 @@ function TRB.Classes.Druid.RestorationSpells:New()
     -- Druid Class Talents
     self.sunfire = TRB.Classes.SpellBase:New({
         id = 164815,
-        name = "",
-        icon = "",
         isTalent = true,
         pandemic = true,
         pandemicTime = 12 * 0.3
@@ -657,32 +571,22 @@ function TRB.Classes.Druid.RestorationSpells:New()
     -- Restoration Spec Talents
     self.efflorescence = TRB.Classes.SpellBase:New({
         id = 145205,
-        name = "",
-        icon = "",
         duration = 30,
         isTalent = true
     })
     self.incarnationTreeOfLife = TRB.Classes.SpellBase:New({
-        id = 117679,
-        name = "",
-        icon = ""
+        id = 117679
     })
     self.cenariusGuidance = TRB.Classes.SpellBase:New({
         id = 393371,
-        name = "",
-        icon = "",
         isTalent = true
     })
     self.reforestation = TRB.Classes.SpellBase:New({
         id = 392360,
-        name = "",
-        icon = "",
         --isTalent = true
     })
     self.clearcasting = TRB.Classes.SpellBase:New({
-        id = 16870,
-        name = "",
-        icon = ""
+        id = 16870
     })
 
     return self
