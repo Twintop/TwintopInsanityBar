@@ -89,8 +89,7 @@ local function FillSpecializationCache()
 			name = "",
 			icon = "",
 			baseDuration = 18,
-			pandemic = true,
-			pandemicTime = 18 * 0.3
+			pandemic = true
 		},
 
 		-- Elemental Baseline Abilities
@@ -350,8 +349,7 @@ local function FillSpecializationCache()
 			name = "",
 			icon = "",
 			baseDuration = 18,
-			pandemic = true,
-			pandemicTime = 18 * 0.3
+			pandemic = true
 		},
 
 		-- Enhancement Spec Baseline Abilities
@@ -456,8 +454,7 @@ local function FillSpecializationCache()
 			name = "",
 			icon = "",
 			baseDuration = 18,
-			pandemic = true,
-			pandemicTime = 18 * 0.3
+			pandemic = true
 		},
 		ascendance = {
 			id = 114052,

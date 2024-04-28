@@ -224,8 +224,7 @@ local function FillSpecializationCache()
 			isTalent = true,
 			hasCooldown = false,
 			baseDuration = 15,
-			pandemic = true,
-			pandemicTime = 15 * 0.3
+			pandemic = true
 		},
 		cleave = {
 			id = 845,

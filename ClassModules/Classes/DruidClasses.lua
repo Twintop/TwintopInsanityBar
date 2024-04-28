@@ -51,7 +51,7 @@ function TRB.Classes.Druid.BalanceSpells:New()
         id = 164812,
         resource = 6,
         pandemic = true,
-        pandemicTime = 22 * 0.3,
+        baseDuration = 22,
         baseline = true
     })
 
@@ -97,7 +97,7 @@ function TRB.Classes.Druid.BalanceSpells:New()
         id = 164815,
         resource = 6,
         pandemic = true,
-        pandemicTime = 18 * 0.3,
+        baseDuration = 18,
         isTalent = true
     })
 
@@ -131,7 +131,7 @@ function TRB.Classes.Druid.BalanceSpells:New()
         thresholdId = 4,
         settingKey = "starfall",
         pandemic = true,
-        pandemicTime = 8 * 0.3,
+        baseDuration = 8,
         isTalent = true,
         isSnowflake = true
     })
@@ -139,7 +139,7 @@ function TRB.Classes.Druid.BalanceSpells:New()
         id = 202347,
         resource = 10,
         pandemic = true,
-        pandemicTime = 24 * 0.3,
+        baseDuration = 24,
         isTalent = true
     })
     self.wildSurges = TRB.Classes.SpellBase:New({
@@ -292,7 +292,7 @@ function TRB.Classes.Druid.FeralSpells:New()
         settingKey = "rake",
         hasSnapshot = true,
         pandemic = true,
-        pandemicTime = 15 * 0.3,
+        baseDuration = 15,
         bonuses = {
             stealth = true,
             tigersFury = true
@@ -309,7 +309,7 @@ function TRB.Classes.Druid.FeralSpells:New()
         settingKey = "thrash",
         hasSnapshot = true,
         pandemic = true,
-        pandemicTime = 15 * 0.3,
+        baseDuration = 15,
         bonuses = {
             momentOfClarity = true,
             tigersFury = true
@@ -352,7 +352,7 @@ function TRB.Classes.Druid.FeralSpells:New()
         id = 164815,
         resource = 2,
         pandemic = true,
-        pandemicTime = 13.5 * 0.3,
+        baseDuration = 13.5,
         isTalent = true
     })
 
@@ -449,7 +449,7 @@ function TRB.Classes.Druid.FeralSpells:New()
         isSnowflake = true,
         hasSnapshot = true,
         pandemic = true,
-        pandemicTime = 16 * 0.3,
+        baseDuration = 16,
         bonuses = {
             tigersFury = true
         }
@@ -556,7 +556,7 @@ function TRB.Classes.Druid.RestorationSpells:New()
         id = 164812,
         resource = 2,
         pandemic = true,
-        pandemicTime = 16 * 0.3
+        baseDuration = 16
     })
 
     -- Druid Class Talents
@@ -564,7 +564,7 @@ function TRB.Classes.Druid.RestorationSpells:New()
         id = 164815,
         isTalent = true,
         pandemic = true,
-        pandemicTime = 12 * 0.3
+        baseDuration = 12
     })
 
     -- Restoration Spec Baseline Abilities

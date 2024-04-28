@@ -106,7 +106,7 @@ function TRB.Classes.Hunter.HunterBaseSpells:New()
         isTalent = true,
         baseDuration = 18,
         --pandemic = true,
-        --pandemicTime = 18 * 0.3
+        --baseDuration = 18
     })
     self.alphaPredator = TRB.Classes.SpellBase:New({
         id = 269737,

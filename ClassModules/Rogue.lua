@@ -370,7 +370,7 @@ local function FillSpecializationCache()
 			settingKey = "garrote",
 			hasCooldown = true,
 			cooldown = 6,
-			pandemicTime = 18 * 0.3,
+			baseDuration = 18,
 			baseline = true,
 			isSnowflake = true
 		},
