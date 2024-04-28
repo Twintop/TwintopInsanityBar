@@ -2305,7 +2305,7 @@ local function CastingSpell()
 				local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 				if spellId then
-					local manaCost = -TRB.Classes.SpellBase.GetManaCost({ spellId = spellId })
+					local manaCost = -TRB.Classes.SpellBase.GetManaCost({ id = spellId })
 
 					snapshotData.casting.startTime = currentSpellStartTime / 1000
 					snapshotData.casting.endTime = currentSpellEndTime / 1000

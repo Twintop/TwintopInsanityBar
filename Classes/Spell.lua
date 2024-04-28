@@ -201,7 +201,7 @@ end
 ---Gets the current mana cost of the spell.
 ---@return number # Mana cost of the spell.
 function TRB.Classes.SpellBase:GetManaCost()
-	local spc = GetSpellPowerCost(self.spellId)
+	local spc = GetSpellPowerCost(self.id)
 	local length = TRB.Functions.Table:Length(spc)
 
 	for x = 1, length do
@@ -215,7 +215,7 @@ end
 ---Gets the current mana cost per second of the spell.
 ---@return number # Mana cost per second of the spell.
 function TRB.Classes.SpellBase:GetManaCostPerSecond()
-	local spc = GetSpellPowerCost(self.spellId)
+	local spc = GetSpellPowerCost(self.id)
 	local length = TRB.Functions.Table:Length(spc)
 
 	for x = 1, length do

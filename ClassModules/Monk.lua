@@ -221,7 +221,7 @@ end
 local function FillSpellData_Mistweaver()
 	Setup_Mistweaver()
 	---@type TRB.Classes.SpellsData
-	specCache.discipline.spellsData:FillSpellData()
+	specCache.mistweaver.spellsData:FillSpellData()
 	local spells = specCache.mistweaver.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
@@ -1183,7 +1183,7 @@ local function CastingSpell()
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 			if currentSpellName == nil then
 				if currentChannelId == spells.soothingMist.id then
-					local manaCost = -TRB.Functions.Spell:GetManaCostPerSecond(currentChannelId)
+					local manaCost = spells.soothingMist:GetManaCostPerSecond()
 
 					snapshotData.casting.spellId = spells.soothingMist.id
 					snapshotData.casting.startTime = currentTime
@@ -1199,7 +1199,7 @@ local function CastingSpell()
 				local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 				if spellId then
-					local manaCost = -TRB.Classes.SpellBase.GetManaCost({ spellId = spellId })
+					local manaCost = -TRB.Classes.SpellBase.GetManaCost({ id = spellId })
 
 					snapshotData.casting.startTime = currentSpellStartTime / 1000
 					snapshotData.casting.endTime = currentSpellEndTime / 1000
