@@ -83,6 +83,7 @@ ClassModules\Classes\MonkClasses.lua
 ClassModules\Classes\PaladinClasses.lua
 ClassModules\Classes\PriestClasses.lua
 ClassModules\Classes\ShamanClasses.lua
+ClassModules\Classes\WarriorClasses.lua
 
 Init.lua
 

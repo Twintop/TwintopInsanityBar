@@ -22,6 +22,7 @@ local talents --[[@as TRB.Classes.Talents]]
 Global_TwintopResourceBar = {}
 TRB.Data.character = {}
 
+---@type table<string, TRB.Classes.SpecCache>
 local specCache = {
 	arms = TRB.Classes.SpecCache:New(),
 	fury = TRB.Classes.SpecCache:New()
@@ -50,261 +51,31 @@ local function FillSpecializationCache()
 		pandemicModifier = 0
 	}
 
-	specCache.arms.spells = {
-		--Warrior Class Baseline Abilities
-		charge = {
-			id = 100,
-			name = "",
-			icon = "",
-			resource = 20,
-			isTalent = false,
-			baseline = true,
-		},
-		execute = {
-			id = 163201,
-			name = "",
-			icon = "",
-			healthMinimum = 0.2,
-			resource = -20,
-			resourceMax = -40,
-			texture = "",
-			thresholdId = 1,
-			settingKey = "execute",
-			isTalent = false,
-			baseline = true,
-			hasCooldown = true,
-			isSnowflake = true
-		},
-		executeMinimum = {
-			id = 163201,
-			name = "",
-			icon = "",
-			healthMinimum = 0.2,
-			resource = -20,
-			texture = "",
-			thresholdId = 2,
-			settingKey = "executeMinimum",
-			isTalent = false,
-			baseline = true,
-			hasCooldown = false,
-			isSnowflake = true
-		},
-		executeMaximum = {
-			id = 163201,
-			name = "",
-			icon = "",
-			healthMinimum = 0.2,
-			resource = -40,
-			texture = "",
-			thresholdId = 3,
-			settingKey = "executeMaximum",
-			isTalent = false,
-			baseline = true,
-			hasCooldown = false,
-			isSnowflake = true
-		},
-		hamstring = {
-			id = 1715,
-			name = "",
-			icon = "",
-			resource = -10,
-			texture = "",
-			thresholdId = 4,
-			settingKey = "hamstring",
-			isTalent = false,
-			baseline = true
-		},
-		shieldBlock = {
-			id = 2565,
-			name = "",
-			icon = "",
-			resource = -30,
-			texture = "",
-			thresholdId = 5,
-			settingKey = "shieldBlock",
-			isTalent = false,
-			baseline = true,
-			hasCooldown = true
-		},
-		slam = {
-			id = 1464,
-			name = "",
-			icon = "",
-			resource = -20,
-			texture = "",
-			thresholdId = 6,
-			settingKey = "slam",
-			isTalent = false,
-			baseline = true,
-			hasCooldown = false
-		},
-		whirlwind = {
-			id = 1680,
-			name = "",
-			icon = "",
-			resource = -40,
-			texture = "",
-			thresholdId = 7,
-			settingKey = "whirlwind",
-			isTalent = false,
-			baseline = true,
-			isSnowflake = true
-		},
-
-		-- Arms Baseline Abilities
-		deepWounds = {
-			id = 262115,
-			name = "",
-			icon = "",
-			baseDuration = 10,
-			pandemic = true,
-			pandemicTime = 3 --Refreshes add 12sec, capping at 15? --10 * 0.3				
-		},
-
-		-- Warrior Class Talents
-		impendingVictory = {
-			id = 202168,
-			name = "",
-			icon = "",
-			resource = -10,
-			texture = "",
-			thresholdId = 8,
-			settingKey = "impendingVictory",
-			isTalent = true,
-			hasCooldown = true
-		},
-		thunderClap = {
-			id = 396719,
-			name = "",
-			icon = "",
-			resource = -30,
-			texture = "",
-			thresholdId = 9,
-			settingKey = "thunderClap",
-			isTalent = true,
-			hasCooldown = true,
-			isSnowflake = true
-		},
-		bloodAndThunder = {
-			id = 384277,
-			name = "", 
-			icon = "",
-			resourceMod = -10,
-			isTalent = true
-		},
-
-		--Arms Talent abilities
-		mortalStrike = {
-			id = 12294,
-			name = "",
-			icon = "",
-			resource = -30,
-			texture = "",
-			thresholdId = 10,
-			settingKey = "mortalStrike",
-			isTalent = true,
-			hasCooldown = true,
-			isSnowflake = true
-		},
-		improvedExecute = {
-			id = 316405,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		rend = {
-			id = 388539,
-			talentId = 772,
-			name = "",
-			icon = "",
-			resource = -30,
-			texture = "",
-			thresholdId = 11,
-			settingKey = "rend",
-			isTalent = true,
-			hasCooldown = false,
-			baseDuration = 15,
-			pandemic = true
-		},
-		cleave = {
-			id = 845,
-			name = "",
-			icon = "",
-			resource = -20,
-			texture = "",
-			thresholdId = 12,
-			settingKey = "cleave",
-			isTalent = true,
-			hasCooldown = true,
-			isSnowflake = true
-		},
-		ignorePain = {
-			id = 190456,
-			name = "",
-			icon = "",
-			resource = -40,
-			texture = "",
-			thresholdId = 13,
-			settingKey = "ignorePain",
-			isTalent = true,
-			hasCooldown = true,
-			duration = 11
-		},
-		suddenDeath = {
-			id = 29725,
-			name = "",
-			icon = ""	
-		},
-		massacre = {
-			id = 281001,
-			name = "",
-			icon = "",
-			healthMinimum = 0.35,
-			isTalent = true
-		},
-		bloodletting = {
-			id = 383154,
-			name = "",
-			icon = "",
-			modifier = 6,
-			isTalent = true
-		},
-		stormOfSwords = {
-			id = 385512,
-			name = "",
-			icon = "",
-			isTalent = true,
-			resourceMod = -20
-		},
-		battlelord = {
-			id = 386631,
-			name = "",
-			icon = "",
-			resourceMod = -10
-		}
-	}
+	---@type TRB.Classes.Warrior.ArmsSpells
+	specCache.arms.spellsData.spells = TRB.Classes.Warrior.ArmsSpells:New()
+	local spells = specCache.arms.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
 
 	specCache.arms.snapshotData.audio = {
 		overcapCue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.arms.snapshotData.snapshots[specCache.arms.spells.execute.id] = TRB.Classes.Snapshot:New(specCache.arms.spells.execute)
+	specCache.arms.snapshotData.snapshots[spells.execute.id] = TRB.Classes.Snapshot:New(spells.execute)
 	---@type TRB.Classes.Snapshot
-	specCache.arms.snapshotData.snapshots[specCache.arms.spells.shieldBlock.id] = TRB.Classes.Snapshot:New(specCache.arms.spells.shieldBlock)
+	specCache.arms.snapshotData.snapshots[spells.shieldBlock.id] = TRB.Classes.Snapshot:New(spells.shieldBlock)
 	---@type TRB.Classes.Snapshot
-	specCache.arms.snapshotData.snapshots[specCache.arms.spells.impendingVictory.id] = TRB.Classes.Snapshot:New(specCache.arms.spells.impendingVictory)
+	specCache.arms.snapshotData.snapshots[spells.impendingVictory.id] = TRB.Classes.Snapshot:New(spells.impendingVictory)
 	---@type TRB.Classes.Snapshot
-	specCache.arms.snapshotData.snapshots[specCache.arms.spells.thunderClap.id] = TRB.Classes.Snapshot:New(specCache.arms.spells.thunderClap)
+	specCache.arms.snapshotData.snapshots[spells.thunderClap.id] = TRB.Classes.Snapshot:New(spells.thunderClap)
 	---@type TRB.Classes.Snapshot
-	specCache.arms.snapshotData.snapshots[specCache.arms.spells.mortalStrike.id] = TRB.Classes.Snapshot:New(specCache.arms.spells.mortalStrike)
+	specCache.arms.snapshotData.snapshots[spells.mortalStrike.id] = TRB.Classes.Snapshot:New(spells.mortalStrike)
 	---@type TRB.Classes.Snapshot
-	specCache.arms.snapshotData.snapshots[specCache.arms.spells.cleave.id] = TRB.Classes.Snapshot:New(specCache.arms.spells.cleave)
+	specCache.arms.snapshotData.snapshots[spells.cleave.id] = TRB.Classes.Snapshot:New(spells.cleave)
 	---@type TRB.Classes.Snapshot
-	specCache.arms.snapshotData.snapshots[specCache.arms.spells.ignorePain.id] = TRB.Classes.Snapshot:New(specCache.arms.spells.ignorePain)
+	specCache.arms.snapshotData.snapshots[spells.ignorePain.id] = TRB.Classes.Snapshot:New(spells.ignorePain)
 	---@type TRB.Classes.Snapshot
-	specCache.arms.snapshotData.snapshots[specCache.arms.spells.suddenDeath.id] = TRB.Classes.Snapshot:New(specCache.arms.spells.suddenDeath)
+	specCache.arms.snapshotData.snapshots[spells.suddenDeath.id] = TRB.Classes.Snapshot:New(spells.suddenDeath)
 	---@type TRB.Classes.Snapshot
-	specCache.arms.snapshotData.snapshots[specCache.arms.spells.battlelord.id] = TRB.Classes.Snapshot:New(specCache.arms.spells.battlelord)
+	specCache.arms.snapshotData.snapshots[spells.battlelord.id] = TRB.Classes.Snapshot:New(spells.battlelord)
 
 	-- Fury
 
@@ -329,220 +100,30 @@ local function FillSpecializationCache()
 		}
 	}
 
-	specCache.fury.spells = {
-		--Warrior base abilities
-		charge = {
-			id = 100,
-			name = "",
-			icon = "",
-			resource = 20,
-			isTalent = false,
-			baseline = true,
-		},
-		execute = {
-			id = 280735,
-			name = "",
-			icon = "",
-			healthMinimum = 0.2,
-			resource = -20,
-			resourceMax = -40,
-			texture = "",
-			thresholdId = 1,
-			settingKey = "execute",
-			isTalent = false,
-			baseline = true,
-			hasCooldown = true,
-			isSnowflake = true
-		},
-		executeMinimum = {
-			id = 280735,
-			name = "",
-			icon = "",
-			healthMinimum = 0.2,
-			resource = -20,
-			texture = "",
-			thresholdId = 2,
-			settingKey = "executeMinimum",
-			isTalent = false,
-			baseline = true,
-			hasCooldown = true,
-			isSnowflake = true
-		},
-		executeMaximum = {
-			id = 280735,
-			name = "",
-			icon = "",
-			healthMinimum = 0.2,
-			resource = -40,
-			texture = "",
-			thresholdId = 3,
-			settingKey = "executeMaximum",
-			isTalent = false,
-			baseline = true,
-			hasCooldown = true,
-			isSnowflake = true
-		},
-		hamstring = {
-			id = 1715,
-			name = "",
-			icon = "",
-			resource = -10,
-			texture = "",
-			thresholdId = 4,
-			settingKey = "hamstring",
-			isTalent = false,
-			baseline = true
-		},
-		shieldBlock = {
-			id = 2565,
-			name = "",
-			icon = "",
-			resource = -30,
-			texture = "",
-			thresholdId = 5,
-			settingKey = "shieldBlock",
-			isTalent = false,
-			baseline = true,
-			hasCooldown = true
-		},
-		slam = {
-			id = 1464,
-			name = "",
-			icon = "",
-			resource = -20,
-			texture = "",
-			thresholdId = 6,
-			settingKey = "slam",
-			isTalent = false,
-			baseline = true,
-			hasCooldown = false,
-			isSnowflake = true
-		},
-		whirlwind = {
-			id = 85739, --buff ID
-			name = "",
-			icon = ""
-		},
-		
-		--Fury base abilities
-		enrage = {
-			id = 184362,
-			name = "",
-			icon = "",
-			isTalent = false,
-			baseline = true,
-		},
-
-		-- Warrior Class Talents
-		impendingVictory = {
-			id = 202168,
-			name = "",
-			icon = "",
-			resource = -10,
-			texture = "",
-			thresholdId = 7,
-			settingKey = "impendingVictory",
-			isTalent = true,
-			hasCooldown = true
-		},
-		thunderClap = {
-			id = 396719,
-			name = "",
-			icon = "",
-			resource = -30,
-			texture = "",
-			thresholdId = 8,
-			settingKey = "thunderClap",
-			isTalent = true,
-			hasCooldown = true,
-			isSnowflake = true
-		},
-		bloodAndThunder = {
-			id = 384277,
-			name = "",
-			icon = "",
-			resourceMod = -10,
-			isTalent = true
-		},
-
-		-- Fury Talent abilities
-		
-		--Talents
-		rampage = {
-			id = 184367,
-			name = "",
-			icon = "",
-			resource = -80,
-			texture = "",
-			thresholdId = 9,
-			settingKey = "rampage",
-			isTalent = true,
-			hasCooldown = false
-		},
-		improvedExecute = {
-			id = 316402,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		suddenDeath = {
-			id = 280776,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		massacre = {
-			id = 206315,
-			name = "",
-			icon = "",
-			isTalent = true,
-			healthMinimum = 0.35
-		},
-		ravager = {
-			id = 228920,
-			name = "",
-			icon = "",
-			hasTicks = true,
-			tickRate = 2,
-			duration = 12,
-			resourcePerTick = 10,
-			energizeId = 334934
-		},
-		stormOfSteel = {
-			id = 382953,
-			name = "",
-			icon = "",
-			resourcePerTick = 10,
-			charges = 2,
-			isTalent = true
-		},
-		stormOfSwords = {
-			id = 388903,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-	}
+	---@type TRB.Classes.Warrior.FurySpells
+	specCache.fury.spellsData.spells = TRB.Classes.Warrior.FurySpells:New()
+	---@diagnostic disable-next-line: cast-local-type
+	spells = specCache.fury.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 
 	specCache.fury.snapshotData.audio = {
 		overcapCue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.fury.snapshotData.snapshots[specCache.fury.spells.shieldBlock.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.shieldBlock)
+	specCache.fury.snapshotData.snapshots[spells.shieldBlock.id] = TRB.Classes.Snapshot:New(spells.shieldBlock)
 	---@type TRB.Classes.Snapshot
-	specCache.fury.snapshotData.snapshots[specCache.fury.spells.thunderClap.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.thunderClap)
+	specCache.fury.snapshotData.snapshots[spells.thunderClap.id] = TRB.Classes.Snapshot:New(spells.thunderClap)
 	---@type TRB.Classes.Snapshot
-	specCache.fury.snapshotData.snapshots[specCache.fury.spells.impendingVictory.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.impendingVictory)
+	specCache.fury.snapshotData.snapshots[spells.impendingVictory.id] = TRB.Classes.Snapshot:New(spells.impendingVictory)
 	---@type TRB.Classes.Snapshot
-	specCache.fury.snapshotData.snapshots[specCache.fury.spells.enrage.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.enrage)
+	specCache.fury.snapshotData.snapshots[spells.enrage.id] = TRB.Classes.Snapshot:New(spells.enrage)
 	---@type TRB.Classes.Snapshot
-	specCache.fury.snapshotData.snapshots[specCache.fury.spells.whirlwind.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.whirlwind)
+	specCache.fury.snapshotData.snapshots[spells.whirlwind.id] = TRB.Classes.Snapshot:New(spells.whirlwind)
 	---@type TRB.Classes.Snapshot
-	specCache.fury.snapshotData.snapshots[specCache.fury.spells.ravager.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.ravager)
+	specCache.fury.snapshotData.snapshots[spells.ravager.id] = TRB.Classes.Snapshot:New(spells.ravager)
 	---@type TRB.Classes.Snapshot
-	specCache.fury.snapshotData.snapshots[specCache.fury.spells.execute.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.execute)
+	specCache.fury.snapshotData.snapshots[spells.execute.id] = TRB.Classes.Snapshot:New(spells.execute)
 	---@type TRB.Classes.Snapshot
-	specCache.fury.snapshotData.snapshots[specCache.fury.spells.suddenDeath.id] = TRB.Classes.Snapshot:New(specCache.fury.spells.suddenDeath)
+	specCache.fury.snapshotData.snapshots[spells.suddenDeath.id] = TRB.Classes.Snapshot:New(spells.suddenDeath)
 end
 
 local function Setup_Arms()
@@ -563,7 +144,8 @@ end
 
 local function FillSpellData_Arms()
 	Setup_Arms()
-	local spells = TRB.Functions.Spell:FillSpellData(specCache.arms.spells)
+	specCache.arms.spellsData:FillSpellData()
+	local spells = specCache.arms.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
 	specCache.arms.barTextVariables.icons = {
@@ -639,13 +221,12 @@ local function FillSpellData_Arms()
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 	}
-
-	specCache.arms.spells = spells
 end
 
 local function FillSpellData_Fury()
 	Setup_Fury()
-	local spells = TRB.Functions.Spell:FillSpellData(specCache.fury.spells)
+	specCache.fury.spellsData:FillSpellData()
+	local spells = specCache.fury.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 
 	-- This is done here so that we can get icons for the options menu!
 	specCache.fury.barTextVariables.icons = {
@@ -722,8 +303,6 @@ local function FillSpellData_Fury()
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 	}
-
-	specCache.fury.spells = spells
 end
 
 local function CalculateAbilityResourceValue(resource)
@@ -738,7 +317,6 @@ end
 local function RefreshTargetTracking()
 	local currentTime = GetTime()
 	local specId = GetSpecialization()
-	local spells = TRB.Data.spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local targetData = snapshotData.targetData
 
@@ -757,7 +335,6 @@ end
 
 local function ConstructResourceBar(settings)
 	local specId = GetSpecialization()
-	local spells = TRB.Data.spells
 
 	local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
 	if entries > 0 then
@@ -766,9 +343,12 @@ local function ConstructResourceBar(settings)
 		end
 	end
 
-	for k, _ in pairs(spells) do
-		local spell = spells[k]
-		if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells|TRB.Classes.Warrior.FurySpells]]
+
+	for _, v in pairs(spells) do
+		local spell = v --[[@as TRB.Classes.SpellBase]]
+		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+			spell = spell --[[@as TRB.Classes.SpellThreshold]]
 			if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
 				TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 			end
@@ -790,7 +370,7 @@ local function ConstructResourceBar(settings)
 end
 
 local function RefreshLookupData_Arms()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.warrior.arms
@@ -976,7 +556,7 @@ local function RefreshLookupData_Arms()
 end
 
 local function RefreshLookupData_Fury()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local specSettings = TRB.Data.settings.warrior.fury
@@ -1136,7 +716,6 @@ local function FillSnapshotDataCasting(spell)
 end
 
 local function CastingSpell()
-	local spells = TRB.Data.spells
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local currentTime = GetTime()
@@ -1176,7 +755,7 @@ local function UpdateSnapshot()
 	local currentTime = GetTime()
 	TRB.Functions.Character:UpdateSnapshot()
 	
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells|TRB.Classes.Warrior.FurySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -1189,7 +768,7 @@ local function UpdateSnapshot_Arms()
 	local currentTime = GetTime()
 	UpdateSnapshot()
 
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -1204,7 +783,7 @@ local function UpdateSnapshot_Fury()
 	local currentTime = GetTime()
 	UpdateSnapshot()
 
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -1221,7 +800,6 @@ local function UpdateResourceBar()
 	local specId = GetSpecialization()
 	local coreSettings = TRB.Data.settings.core
 	local classSettings = TRB.Data.settings.warrior
-	local spells = TRB.Data.spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
@@ -1235,6 +813,7 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
@@ -1276,9 +855,11 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
-				for k, v in pairs(spells) do
-					local spell = spells[k]
-					if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+
+				for _, v in pairs(spells) do
+					local spell = v --[[@as TRB.Classes.SpellBase]]
+					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+						spell = spell --[[@as TRB.Classes.SpellThreshold]]
 						local resourceAmount = CalculateAbilityResourceValue(spell.resource)
 						local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
@@ -1299,16 +880,16 @@ local function UpdateResourceBar()
 									targetUnitHealth = target:GetHealthPercent()
 								end
 								
-								local healthMinimum = spells.execute.healthMinimum
+								local healthMinimum = spells.execute.attributes.healthMinimum
 								
 								if talents:IsTalentActive(spells.massacre) then
-									healthMinimum = spells.massacre.healthMinimum
+									healthMinimum = spells.massacre.attributes.healthMinimum
 								end
 
 								if snapshots[spells.suddenDeath.id].buff.isActive then
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -spells.execute.resourceMax, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -spells.execute.attributes.resourceMax, TRB.Data.character.maxResource)
 								else
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, math.min(math.max(-resourceAmount, normalizedResource), -spells.execute.resourceMax), TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, math.min(math.max(-resourceAmount, normalizedResource), -spells.execute.attributes.resourceMax), TRB.Data.character.maxResource)
 								end
 
 								if UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
@@ -1442,6 +1023,7 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
@@ -1491,14 +1073,16 @@ local function UpdateResourceBar()
 					targetUnitHealth = target:GetHealthPercent()
 				end
 									
-				local healthMinimum = spells.execute.healthMinimum
+				local healthMinimum = spells.execute.attributes.healthMinimum
 				if talents:IsTalentActive(spells.massacre) then
-					healthMinimum = spells.massacre.healthMinimum
+					healthMinimum = spells.massacre.attributes.healthMinimum
 				end
 
-				for k, v in pairs(spells) do
-					local spell = spells[k]
-					if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+
+				for _, v in pairs(spells) do
+					local spell = v --[[@as TRB.Classes.SpellBase]]
+					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+						spell = spell --[[@as TRB.Classes.SpellThreshold]]
 						local resourceAmount = CalculateAbilityResourceValue(spell.resource)
 						local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 						
@@ -1525,7 +1109,7 @@ local function UpdateResourceBar()
 										showThreshold = false
 									else
 										if spell.settingKey == "execute" then
-											TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, math.min(math.max(-resourceAmount, normalizedResource), -spells.execute.resourceMax), TRB.Data.character.maxResource)
+											TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, math.min(math.max(-resourceAmount, normalizedResource), -spells.execute.attributes.resourceMax), TRB.Data.character.maxResource)
 										end
 
 										if snapshots[spell.id].cooldown:IsUnusable() then
@@ -1623,7 +1207,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local triggerUpdate = false
 	local _
 	local specId = GetSpecialization()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells|TRB.Classes.Warrior.FurySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local targetData = snapshotData.targetData
@@ -1757,7 +1341,7 @@ local function SwitchSpec()
 		FillSpellData_Arms()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.arms)
 
-		local spells = TRB.Data.spells
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -1886,10 +1470,11 @@ function TRB.Functions.Class:CheckCharacter()
 	TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Rage)
 
 	if specId == 1 then
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
 		TRB.Data.character.specName = "arms"
 
-		if talents:IsTalentActive(TRB.Data.spells.bloodletting) then
-			TRB.Data.character.pandemicModifier = TRB.Data.spells.bloodletting.modifier
+		if talents:IsTalentActive(spells.bloodletting) then
+			TRB.Data.character.pandemicModifier = spells.bloodletting.attributes.pandemicModifier
 		end
 	elseif specId == 2 then
 		TRB.Data.character.specName = "fury"
@@ -2019,12 +1604,14 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local snapshots = snapshotData.snapshots
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
-	local spells = TRB.Data.spells
+	local spells
 	local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 	local settings = nil
 	if specId == 1 then
+		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells]]
 		settings = TRB.Data.settings.warrior.arms
 	elseif specId == 2 then
+		spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.FurySpells]]
 		settings = TRB.Data.settings.warrior.fury
 	else
 		return false
@@ -2150,15 +1737,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	local specId = GetSpecialization()
-	local settings = TRB.Data.settings.warrior
-	local spells = TRB.Data.spells
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-
-	if specId == 1 then
-	elseif specId == 2 then
-	elseif specId == 3 then
-	end
 	return nil
 end
 
