@@ -8,6 +8,7 @@ TRB.Classes = TRB.Classes or {}
 ---| '"TRB.Classes.SpellThreshold"' # TRB.Classes.SpellThreshold
 ---| '"TRB.Classes.SpellComboPointThreshold"' # TRB.Classes.SpellComboPointThreshold
 ---| '"TRB.Classes.Priest.HolyWordSpell"' # TRB.Classes.Priest.HolyWordSpell
+---| '"TRB.Classes.Shaman.OverloadSpell"' # TRB.Classes.Shaman.OverloadSpell
 
 ---@class TRB.Classes.SpellsData
 ---@field public spells TRB.Classes.SpecializationSpellsBase # Dictionary of spells

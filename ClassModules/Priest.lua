@@ -237,7 +237,6 @@ local function FillSpecializationCache()
 
 	---@type TRB.Classes.Priest.HolySpells
 	specCache.holy.spellsData.spells = TRB.Classes.Priest.HolySpells:New()
-	
 	---@diagnostic disable-next-line: cast-local-type
 	spells = specCache.holy.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
 
@@ -345,7 +344,6 @@ local function FillSpecializationCache()
 
 	---@type TRB.Classes.Priest.ShadowSpells
 	specCache.shadow.spellsData.spells = TRB.Classes.Priest.ShadowSpells:New()
-	
 	---@diagnostic disable-next-line: cast-local-type
 	spells = specCache.shadow.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 
@@ -998,7 +996,6 @@ end
 local function RefreshTargetTracking()
 	local currentTime = GetTime()
 	local specId = GetSpecialization()
-	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 
 	---@type TRB.Classes.TargetData
@@ -1009,6 +1006,7 @@ local function RefreshTargetTracking()
 	elseif specId == 2 then -- Holy
 		targetData:UpdateTrackedSpells(currentTime)
 	elseif specId == 3 then -- Shadow
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.ShadowSpells]]
 		targetData:UpdateTrackedSpells(currentTime)
 
 		targetData.count[spells.auspiciousSpirits.id] = targetData.count[spells.auspiciousSpirits.id] or 0
@@ -3550,9 +3548,12 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
-				for k, v in pairs(spells) do
-					local spell = spells[k] --[[@as TRB.Classes.SpellThreshold]]
-					if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+
+				local pairOffset = 0
+				for _, v in pairs(TRB.Data.spellsData.spells) do
+					local spell = v --[[@as TRB.Classes.SpellBase]]
+					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+						spell = spell --[[@as TRB.Classes.SpellThreshold]]
 						pairOffset = (spell.thresholdId - 1) * 3
 						local resourceAmount = spell.resource
 						local currentResource = currentResource

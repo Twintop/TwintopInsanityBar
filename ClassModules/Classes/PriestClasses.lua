@@ -21,8 +21,7 @@ TRB.Classes.Priest.HolyWordSpell.__index = TRB.Classes.Priest.HolyWordSpell
 function TRB.Classes.Priest.HolyWordSpell:New(spellAttributes)
     ---@type TRB.Classes.SpellBase
     local spellBase = TRB.Classes.SpellBase
-    ---@type TRB.Classes.Priest.HolyWordSpell
-    local self = setmetatable(spellBase:New(spellAttributes), {__index = TRB.Classes.Priest.HolyWordSpell})
+    self = setmetatable(spellBase:New(spellAttributes), {__index = TRB.Classes.Priest.HolyWordSpell})
 
     table.insert(self.classTypes, "TRB.Classes.Priest.HolyWordSpell")
     
@@ -40,7 +39,6 @@ function TRB.Classes.Priest.HolyWordSpell:New(spellAttributes)
 
     return self
 end
-
 
 
 ---@class TRB.Classes.Priest.HealerSpells : TRB.Classes.Healer.HealerSpells

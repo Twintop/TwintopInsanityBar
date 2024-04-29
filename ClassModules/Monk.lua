@@ -1497,9 +1497,10 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
-				for k, v in pairs(spells) do
-					local spell = spells[k]
-					if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then	
+				for _, v in pairs(TRB.Data.spellsData.spells) do
+					local spell = v --[[@as TRB.Classes.SpellBase]]
+					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+						spell = spell --[[@as TRB.Classes.SpellThreshold]]
 						local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
 						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
@@ -1508,7 +1509,7 @@ local function UpdateResourceBar()
 						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
 						if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 							showThreshold = false
 						elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 							showThreshold = false
@@ -1531,7 +1532,9 @@ elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not s
 							end
 						end
 
-						if spell.comboPoints == true and snapshotData.attributes.resource2 == 0 then
+						if  spell:Is("TRB.Classes.SpellComboPointThreshold") and
+							spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true
+							and snapshotData.attributes.resource2 == 0 then
 							thresholdColor = specSettings.colors.threshold.unusable
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 						end
