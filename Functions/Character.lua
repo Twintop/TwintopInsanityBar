@@ -11,7 +11,9 @@ end
 
 local function OnAdvFlyDisabled()
 	TRB.Data.character.advancedFlight = false
-	TRB.Functions.Bar:ShowResourceBar()
+	if TRB.Data.specSupported == true then
+		TRB.Functions.Bar:ShowResourceBar()
+	end
 end
 
 TRB.Details.addonData.libs.LibAdvFlight.RegisterCallback(TRB.Details.addonData.libs.LibAdvFlight.Events.ADV_FLYING_ENABLED, OnAdvFlyEnabled);
@@ -20,13 +22,18 @@ TRB.Details.addonData.libs.LibAdvFlight.RegisterCallback(TRB.Details.addonData.l
 --TODO: Move this somewhere else.
 --This is a fallback method for the Advanced Flight checking on a class that doesn't have support. Hide everything bar related.
 function TRB.Functions.Class:HideResourceBar(force)
-
-	---@type TRB.Classes.SnapshotData
-	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
-
 	TRB.Frames.barContainerFrame:Hide()
-	snapshotData.attributes.isTracking = false
 end
+
+--TODO: Move this somewhere else.
+--This is a fallback method for the Advanced Flight checking on a class that doesn't have support. Hide everything bar related.
+function TRB.Functions.Class:EventRegistration()
+	TRB.Data.specSupported = false
+	TRB.Details.addonData.registered = false
+
+	TRB.Functions.Bar:HideResourceBar()
+end
+
 
 function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.guid = UnitGUID("player")
