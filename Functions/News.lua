@@ -13,6 +13,7 @@ local content = [====[
 ## General
 
 - [#386 - REFACTOR (Twintop)](#386) Overhaul how spelldata is stored and used under the hood.
+- (FIX (Twintop)) Prevent Lua errors from occuring when on a Dragonriding mount and on an unsupported class (Death Knight, Mage, or Warlock).
 
 ### Healers
 

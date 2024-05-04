@@ -17,6 +17,17 @@ end
 TRB.Details.addonData.libs.LibAdvFlight.RegisterCallback(TRB.Details.addonData.libs.LibAdvFlight.Events.ADV_FLYING_ENABLED, OnAdvFlyEnabled);
 TRB.Details.addonData.libs.LibAdvFlight.RegisterCallback(TRB.Details.addonData.libs.LibAdvFlight.Events.ADV_FLYING_DISABLED, OnAdvFlyDisabled);
 
+--TODO: Move this somewhere else.
+--This is a fallback method for the Advanced Flight checking on a class that doesn't have support. Hide everything bar related.
+function TRB.Functions.Class:HideResourceBar(force)
+
+	---@type TRB.Classes.SnapshotData
+	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
+
+	TRB.Frames.barContainerFrame:Hide()
+	snapshotData.attributes.isTracking = false
+end
+
 function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.guid = UnitGUID("player")
 	TRB.Data.character.isPvp = TRB.Functions.Talent:ArePvpTalentsActive()
