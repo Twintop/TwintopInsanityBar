@@ -393,8 +393,8 @@ local function RefreshLookupData_Arms()
 			castingRageColor = specSettings.colors.text.overcap
 		elseif specSettings.colors.text.overThresholdEnabled then
 			local _overThreshold = false
-			for k, v in pairs(spells) do
-				local spell = spells[k]
+			for _, v in pairs(spells) do
+				local spell = v --[[@as TRB.Classes.SpellBase]]
 				if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= normalizedRage then
 					_overThreshold = true
 					break
@@ -579,8 +579,8 @@ local function RefreshLookupData_Fury()
 			castingRageColor = specSettings.colors.text.overcap
 		elseif specSettings.colors.text.overThresholdEnabled then
 			local _overThreshold = false
-			for k, v in pairs(spells) do
-				local spell = spells[k]
+			for _, v in pairs(spells) do
+				local spell = v --[[@as TRB.Classes.SpellBase]]
 				if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= normalizedRage then
 					_overThreshold = true
 					break

@@ -1379,8 +1379,8 @@ local function RefreshLookupData_Feral()
 			castingEnergyColor = specSettings.colors.text.overcap
 		elseif specSettings.colors.text.overThresholdEnabled then
 			local _overThreshold = false
-			for k, v in pairs(spells) do
-				local spell = spells[k]
+			for _, v in pairs(spells) do
+				local spell = v --[[@as TRB.Classes.SpellBase]]
 				if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
 					_overThreshold = true
 					break
@@ -2596,9 +2596,10 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
-				for k, v in pairs(spells) do
-					local spell = spells[k]
-					if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+				for _, v in pairs(TRB.Data.spellsData.spells) do
+					local spell = v --[[@as TRB.Classes.SpellBase]]
+					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+						spell = spell --[[@as TRB.Classes.SpellThreshold]]
 						pairOffset = (spell.thresholdId - 1) * 3
 
 						local resourceAmount = spell.resource

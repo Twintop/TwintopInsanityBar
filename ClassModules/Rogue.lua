@@ -53,513 +53,11 @@ local function FillSpecializationCache()
 		effects = {
 		}
 	}
-
-	specCache.assassination.spells = {
-		-- Class Poisons
-		cripplingPoison = {
-			id = 3409,
-			name = "",
-			icon = "",
-			isTalent = false
-		},
-		woundPoison = {
-			id = 8680,
-			name = "",
-			icon = "",
-			isTalent = false
-		},
-		numbingPoison = {
-			id = 5760,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		atrophicPoison = {
-			id = 392388,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-
-		-- Assassination Poisons
-		deadlyPoison = {
-			id = 2818,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		amplifyingPoison = {
-			id = 383414,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-
-		-- Rogue Class Baseline Abilities
-		stealth = {
-			id = 1784,
-			name = "",
-			icon = ""
-		},
-		ambush = {
-			id = 8676,
-			name = "",
-			icon = "",
-			resource = -50,
-			comboPointsGenerated = 2,
-			stealth = true,
-			texture = "",
-			thresholdId = 1,
-			settingKey = "ambush",
-			baseline = true,
-			viciousVenoms = true
-		},
-		cheapShot = {
-			id = 1833,
-			name = "",
-			icon = "",
-			resource = -40,
-			comboPointsGenerated = 1,
-			stealth = true,
-			texture = "",
-			thresholdId = 2,
-			settingKey = "cheapShot",
-			rushedSetup = true,
-			baseline = true
-		},
-		crimsonVial = {
-			id = 185311,
-			name = "",
-			icon = "",
-			resource = -20,
-			comboPointsGenerated = 0,
-			texture = "",
-			thresholdId = 3,
-			settingKey = "crimsonVial",
-			hasCooldown = true,
-			cooldown = 30,
-			nimbleFingers = true,
-			baseline = true
-		},
-		distract = {
-			id = 1725,
-			name = "",
-			icon = "",
-			resource = -30,
-			comboPointsGenerated = 0,
-			texture = "",
-			thresholdId = 4,
-			settingKey = "distract",
-			hasCooldown = true,
-			cooldown = 30,
-			rushedSetup = true,
-			baseline = true
-		},
-		kidneyShot = {
-			id = 408,
-			name = "",
-			icon = "",
-			resource = -25,
-			comboPoints = true,
-			texture = "",
-			thresholdId = 5,
-			settingKey = "kidneyShot",
-			hasCooldown = true,
-			cooldown = 20,
-			rushedSetup = true,
-			baseline = true
-		},
-		sliceAndDice = {
-			id = 315496,
-			name = "",
-			icon = "",
-			resource = -25,
-			comboPoints = true,
-			texture = "",
-			thresholdId = 6,
-			settingKey = "sliceAndDice",
-			hasCooldown = false,
-			isSnowflake = true,
-			pandemicTimes = {
-				12 * 0.3, -- 0 CP, show same as if we had 1
-				12 * 0.3,
-				18 * 0.3,
-				24 * 0.3,
-				30 * 0.3,
-				36 * 0.3,
-				42 * 0.3,
-				48 * 0.3
-			},
-			baseline = true
-		},
-		feint = {
-			id = 1966,
-			name = "",
-			icon = "",
-			resource = -35,
-			comboPointsGenerated = 0,
-			texture = "",
-			thresholdId = 7,
-			settingKey = "feint",
-			hasCooldown = true,
-			cooldown = 15,
-			nimbleFingers = true,
-			hasCharges = true,
-			isTalent = false,
-			baseline = true
-		},
-
-		--Rogue Talent Abilities
-		shiv = {
-			id = 5938,
-			name = "",
-			icon = "",
-			resource = -30,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 8,
-			settingKey = "shiv",
-			hasCooldown = true,
-			hasCharges = true,
-			isSnowflake = true,
-			cooldown = 25,
-			isTalent = true,
-			baseline = true
-		},
-		sap = { -- Baseline
-			id = 6770,
-			name = "",
-			icon = "",
-			resource = -35,
-			comboPointsGenerated = 0,
-			stealth = true,
-			texture = "",
-			thresholdId = 9,
-			settingKey = "sap",
-			rushedSetup = true,
-			baseline = true
-		},
-		nimbleFingers = {
-			id = 378427,
-			name = "",
-			icon = "",
-			resourceMod = -10,
-			isTalent = true
-		},
-		gouge = {
-			id = 1776,
-			name = "",
-			icon = "",
-			resource = -25,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 10,
-			settingKey = "gouge",
-			hasCooldown = true,
-			cooldown = 15,
-			isTalent = true
-		},
-		subterfuge = {
-			id = 115192,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		rushedSetup = {
-			id = 378803,
-			name = "",
-			icon = "",
-			resourceMod = 0.8,
-			isTalent = true
-		},
-		tightSpender = {
-			id = 381621,
-			name = "",
-			icon = "",
-			resourceMod = 0.9,
-			isTalent = true
-		},
-		echoingReprimand = {
-			id = 385616,
-			name = "",
-			icon = "",
-			resource = -10,
-			comboPointsGenerated = 2,
-			texture = "",
-			thresholdId = 11,
-			settingKey = "echoingReprimand",
-			hasCooldown = true,
-			cooldown = 45,
-			isTalent = true,
-			buffId = {					
-				323558, -- 2
-				323559, -- 3
-				323560, -- 4
-				354835, -- 4
-				354838, -- 5
-			}
-		},
-		echoingReprimand_2CP = {
-			id = 323558,
-			name = "",
-			icon = "",
-			comboPoint = 2
-		},
-		echoingReprimand_3CP = {
-			id = 323559,
-			name = "",
-			icon = "",
-			comboPoint = 3
-		},
-		echoingReprimand_4CP = {
-			id = 323560,
-			name = "",
-			icon = "",
-			comboPoint = 4
-		},
-		echoingReprimand_4CP2 = {
-			id = 354835,
-			name = "",
-			icon = "",
-			comboPoint = 4
-		},
-		echoingReprimand_5CP = {
-			id = 354838,
-			name = "",
-			icon = "",
-			comboPoint = 5
-		},
-		shadowDance = {
-			id = 185422,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-
-		-- Assassination Baseline Abilities
-		envenom = {
-			id = 32645,
-			name = "",
-			icon = "",
-			resource = -35,
-			comboPoints = true,
-			texture = "",
-			thresholdId = 12,
-			settingKey = "envenom",
-			baseline = true
-		},
-		fanOfKnives = {
-			id = 51723,
-			name = "",
-			icon = "",
-			resource = -35,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 13,
-			settingKey = "fanOfKnives",
-			baseline = true
-		},
-		garrote = {
-			id = 703,
-			name = "",
-			icon = "",
-			resource = -45,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 14,
-			settingKey = "garrote",
-			hasCooldown = true,
-			cooldown = 6,
-			baseDuration = 18,
-			baseline = true,
-			isSnowflake = true
-		},
-		mutilate = {
-			id = 1329,
-			name = "",
-			icon = "",
-			resource = -50,
-			comboPointsGenerated = 2,
-			texture = "",
-			thresholdId = 15,
-			settingKey = "mutilate",
-			baseline = true,
-			viciousVenoms = true
-		},
-		poisonedKnife = {
-			id = 185565,
-			name = "",
-			icon = "",
-			resource = -40,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 16,
-			settingKey = "poisonedKnife",
-			baseline = true
-		},
-		rupture = {
-			id = 1943,
-			name = "",
-			icon = "",
-			resource = -25,
-			comboPoints = true,
-			texture = "",
-			thresholdId = 17,
-			settingKey = "rupture",
-			pandemicTimes = {
-				8 * 0.3, -- 0 CP, show same as if we had 1
-				8 * 0.3,
-				12 * 0.3,
-				16 * 0.3,
-				20 * 0.3,
-				24 * 0.3,
-				28 * 0.3,
-				32 * 0.3,
-			},
-			baseline = true
-		},
-
-		-- Assassination Spec Abilities
-		internalBleeding = {
-			id = 381627,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		lightweightShiv = {
-			id = 394983,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		crimsonTempest = {
-			id = 121411,
-			name = "",
-			icon = "",
-			resource = -30,
-			comboPoints = true,
-			texture = "",
-			thresholdId = 18,
-			settingKey = "crimsonTempest",
-			pandemicTimes = {
-				6 * 0.3, -- 0 CP, show same as if we had 1
-				6 * 0.3,
-				8 * 0.3,
-				10 * 0.3,
-				12 * 0.3,
-				14 * 0.3,
-				16 * 0.3,
-				18 * 0.3, -- Kyrian ability buff
-			},
-			isTalent = true
-		},
-		improvedGarrote = {
-			id = 381632,
-			name = "",
-			icon = "",
-			stealthBuffId = 392401,
-			buffId = 392403,
-			isTalent = true
-		},
-		viciousVenoms = {
-			id = 381634,
-			name = "",
-			icon = "",
-			isTalent = true,
-			energyMod = {
-				[0] = 0,
-				[1] = -5,
-				[2] = -10
-			}
-		},
-		-- TODO: Add Doomblade as a bleed
-		blindside = {
-			id = 121153,
-			name = "",
-			icon = "",
-			duration = 10,
-			isTalent = true
-		},
-		tinyToxicBlade = {
-			id = 381800,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		serratedBoneSpike = {
-			id = 385424,
-			name = "",
-			icon = "",
-			resource = -15,
-			comboPointsGenerated = 2,
-			texture = "",
-			thresholdId = 19,
-			settingKey = "serratedBoneSpike",
-			hasCooldown = true,
-			debuffId = 394036,
-			isTalent = true
-		},
-		sepsis = {
-			id = 385408,
-			name = "",
-			icon = "",
-			resource = -25,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 20,
-			settingKey = "sepsis",
-			hasCooldown = true,
-			cooldown = 90,
-			buffId = 375939,
-			isTalent = true
-		},
-		kingsbane = {
-			id = 385627,
-			name = "",
-			icon = "",
-			resource = -35,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 21,
-			settingKey = "kingsbane",
-			hasCooldown = true,
-			cooldown = 60,
-			isTalent = true
-		},
-
-		-- PvP
-		deathFromAbove = {
-			id = 269513,
-			name = "",
-			icon = "",
-			resource = -25,
-			texture = "",
-			thresholdId = 22,
-			settingKey = "deathFromAbove",
-			comboPoints = true,
-			hasCooldown = true,
-			isPvp = true,
-			cooldown = 30
-		},
-		dismantle = {
-			id = 207777,
-			name = "",
-			icon = "",
-			resource = -25,
-			texture = "",
-			thresholdId = 23,
-			settingKey = "dismantle",
-			hasCooldown = true,
-			isPvp = true,
-			cooldown = 45
-		},
-
-		adrenalineRush = {
-			id = 13750,
-			name = "",
-			icon = "",
-		},
-	}
+	
+	---@type TRB.Classes.Rogue.AssassinationSpells
+	specCache.assassination.spellsData.spells = TRB.Classes.Rogue.AssassinationSpells:New()
+	---@diagnostic disable-next-line: cast-local-type
+	local spells = specCache.assassination.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 
 	specCache.assassination.snapshotData.attributes.resourceRegen = 0
 	specCache.assassination.snapshotData.attributes.comboPoints = 0
@@ -567,27 +65,27 @@ local function FillSpecializationCache()
 		overcapCue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.crimsonVial.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.crimsonVial)
+	specCache.assassination.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.distract.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.distract)
+	specCache.assassination.snapshotData.snapshots[spells.distract.id] = TRB.Classes.Snapshot:New(spells.distract)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.kidneyShot.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.kidneyShot)
+	specCache.assassination.snapshotData.snapshots[spells.kidneyShot.id] = TRB.Classes.Snapshot:New(spells.kidneyShot)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.sliceAndDice)
+	specCache.assassination.snapshotData.snapshots[spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(spells.sliceAndDice)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.shiv.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.shiv)
+	specCache.assassination.snapshotData.snapshots[spells.shiv.id] = TRB.Classes.Snapshot:New(spells.shiv)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.feint.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.feint)
+	specCache.assassination.snapshotData.snapshots[spells.feint.id] = TRB.Classes.Snapshot:New(spells.feint)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.gouge.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.gouge)
+	specCache.assassination.snapshotData.snapshots[spells.gouge.id] = TRB.Classes.Snapshot:New(spells.gouge)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.garrote.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.garrote)
+	specCache.assassination.snapshotData.snapshots[spells.garrote.id] = TRB.Classes.Snapshot:New(spells.garrote)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.improvedGarrote.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.improvedGarrote, {
+	specCache.assassination.snapshotData.snapshots[spells.improvedGarrote.id] = TRB.Classes.Snapshot:New(spells.improvedGarrote, {
 		isActiveStealth = false
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.echoingReprimand,
+	specCache.assassination.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand,
 	{
 		enabled = {
 			[1] = false,
@@ -600,31 +98,31 @@ local function FillSpecializationCache()
 		}
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.echoingReprimand_2CP.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.echoingReprimand_2CP)
+	specCache.assassination.snapshotData.snapshots[spells.echoingReprimand_2CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_2CP)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.echoingReprimand_3CP.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.echoingReprimand_3CP)
+	specCache.assassination.snapshotData.snapshots[spells.echoingReprimand_3CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_3CP)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.echoingReprimand_4CP.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.echoingReprimand_4CP)
+	specCache.assassination.snapshotData.snapshots[spells.echoingReprimand_4CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_4CP)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.echoingReprimand_4CP2.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.echoingReprimand_4CP2)
+	specCache.assassination.snapshotData.snapshots[spells.echoingReprimand_4CP2.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_4CP2)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.echoingReprimand_5CP.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.echoingReprimand_5CP)
+	specCache.assassination.snapshotData.snapshots[spells.echoingReprimand_5CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_5CP)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.serratedBoneSpike.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.serratedBoneSpike)
+	specCache.assassination.snapshotData.snapshots[spells.serratedBoneSpike.id] = TRB.Classes.Snapshot:New(spells.serratedBoneSpike)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.sepsis.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.sepsis)
+	specCache.assassination.snapshotData.snapshots[spells.sepsis.id] = TRB.Classes.Snapshot:New(spells.sepsis)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.kingsbane.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.kingsbane)
+	specCache.assassination.snapshotData.snapshots[spells.kingsbane.id] = TRB.Classes.Snapshot:New(spells.kingsbane)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.deathFromAbove)
+	specCache.assassination.snapshotData.snapshots[spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(spells.deathFromAbove)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.blindside.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.blindside)
+	specCache.assassination.snapshotData.snapshots[spells.blindside.id] = TRB.Classes.Snapshot:New(spells.blindside)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.dismantle.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.dismantle)
+	specCache.assassination.snapshotData.snapshots[spells.dismantle.id] = TRB.Classes.Snapshot:New(spells.dismantle)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.subterfuge.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.subterfuge)
+	specCache.assassination.snapshotData.snapshots[spells.subterfuge.id] = TRB.Classes.Snapshot:New(spells.subterfuge)
 	---@type TRB.Classes.Snapshot
-	specCache.assassination.snapshotData.snapshots[specCache.assassination.spells.shadowDance.id] = TRB.Classes.Snapshot:New(specCache.assassination.spells.shadowDance)
+	specCache.assassination.snapshotData.snapshots[spells.shadowDance.id] = TRB.Classes.Snapshot:New(spells.shadowDance)
 
 	specCache.assassination.barTextVariables = {
 		icons = {},
@@ -654,534 +152,11 @@ local function FillSpecializationCache()
 		effects = {
 		}
 	}
-
-	specCache.outlaw.spells = {
-		-- Class Poisons
-		cripplingPoison = {
-			id = 3409,
-			name = "",
-			icon = "",
-			isTalent = false
-		},
-		woundPoison = {
-			id = 8680,
-			name = "",
-			icon = "",
-			isTalent = false
-		},
-		numbingPoison = {
-			id = 5760,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		atrophicPoison = {
-			id = 392388,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-
-		-- Outlaw Poisons
-		
-		-- Rogue Class Baseline Abilities
-		stealth = {
-			id = 1784,
-			name = "",
-			icon = ""
-		},
-		ambush = {
-			id = 8676,
-			name = "",
-			icon = "",
-			resource = -50,
-			comboPointsGenerated = 2,
-			stealth = true,
-			texture = "",
-			thresholdId = 1,
-			settingKey = "ambush",
-			baseline = true
-		},
-		cheapShot = {
-			id = 1833,
-			name = "",
-			icon = "",
-			resource = -40,
-			comboPointsGenerated = 1,
-			stealth = true,
-			dirtyTricks = true,
-			texture = "",
-			thresholdId = 2,
-			settingKey = "cheapShot",
-			rushedSetup = true,
-			baseline = true
-		},
-		crimsonVial = {
-			id = 185311,
-			name = "",
-			icon = "",
-			resource = -20,
-			comboPointsGenerated = 0,
-			texture = "",
-			thresholdId = 3,
-			settingKey = "crimsonVial",
-			hasCooldown = true,
-			cooldown = 30,
-			nimbleFingers = true,
-			baseline = true
-		},
-		distract = {
-			id = 1725,
-			name = "",
-			icon = "",
-			resource = -30,
-			comboPointsGenerated = 0,
-			texture = "",
-			thresholdId = 4,
-			settingKey = "distract",
-			hasCooldown = true,
-			cooldown = 30,
-			rushedSetup = true,
-			baseline = true
-		},
-		kidneyShot = {
-			id = 408,
-			name = "",
-			icon = "",
-			resource = -25,
-			comboPoints = true,
-			texture = "",
-			thresholdId = 5,
-			settingKey = "kidneyShot",
-			hasCooldown = true,
-			cooldown = 20,
-			rushedSetup = true,
-			baseline = true
-		},
-		sliceAndDice = {
-			id = 315496,
-			name = "",
-			icon = "",
-			resource = -25,
-			comboPoints = true,
-			texture = "",
-			thresholdId = 6,
-			settingKey = "sliceAndDice",
-			hasCooldown = false,
-			isSnowflake = true,
-			pandemicTimes = {
-				12 * 0.3, -- 0 CP, show same as if we had 1
-				12 * 0.3,
-				18 * 0.3,
-				24 * 0.3,
-				30 * 0.3,
-				36 * 0.3,
-				42 * 0.3,
-				48 * 0.3
-			},
-			baseline = true
-		},
-		feint = {
-			id = 1966,
-			name = "",
-			icon = "",
-			resource = -35,
-			comboPointsGenerated = 0,
-			texture = "",
-			thresholdId = 7,
-			settingKey = "feint",
-			hasCooldown = true,
-			cooldown = 15,
-			nimbleFingers = true,
-			hasCharges = true,
-			isTalent = false,
-			baseline = true
-		},
-
-		--Rogue Talent Abilities
-		shiv = {
-			id = 5938,
-			name = "",
-			icon = "",
-			resource = -30,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 8,
-			settingKey = "shiv",
-			hasCooldown = true,
-			cooldown = 25,
-			isTalent = true,
-			baseline = true
-		},
-		sap = { -- Baseline
-			id = 6770,
-			name = "",
-			icon = "",
-			resource = -35,
-			comboPointsGenerated = 0,
-			stealth = true,
-			dirtyTricks = true,
-			texture = "",
-			thresholdId = 9,
-			settingKey = "sap",
-			rushedSetup = true,
-			baseline = true
-		},
-		nimbleFingers = {
-			id = 378427,
-			name = "",
-			icon = "",
-			resourceMod = -10,
-			isTalent = true
-		},
-		gouge = {
-			id = 1776,
-			name = "",
-			icon = "",
-			resource = -25,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 10,
-			settingKey = "gouge",
-			hasCooldown = true,
-			cooldown = 15,
-			dirtyTricks = true,
-			isTalent = true
-		},
-		subterfuge = {
-			id = 115192,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		rushedSetup = {
-			id = 378803,
-			name = "",
-			icon = "",
-			resourceMod = 0.8,
-			isTalent = true
-		},
-		tightSpender = {
-			id = 381621,
-			name = "",
-			icon = "",
-			resourceMod = 0.9,
-			isTalent = true
-		},
-		echoingReprimand = {
-			id = 385616,
-			name = "",
-			icon = "",
-			resource = -10,
-			comboPointsGenerated = 2,
-			texture = "",
-			thresholdId = 11,
-			settingKey = "echoingReprimand",
-			hasCooldown = true,
-			cooldown = 45,
-			isTalent = true,
-			buffId = {
-				323558, -- 2
-				323559, -- 3
-				323560, -- 4
-				354835, -- 4
-				354838, -- 5
-			}
-		},
-		echoingReprimand_2CP = {
-			id = 323558,
-			name = "",
-			icon = "",
-			comboPoint = 2
-		},
-		echoingReprimand_3CP = {
-			id = 323559,
-			name = "",
-			icon = "",
-			comboPoint = 3
-		},
-		echoingReprimand_4CP = {
-			id = 323560,
-			name = "",
-			icon = "",
-			comboPoint = 4
-		},
-		echoingReprimand_4CP2 = {
-			id = 354835,
-			name = "",
-			icon = "",
-			comboPoint = 4
-		},
-		echoingReprimand_5CP = {
-			id = 354838,
-			name = "",
-			icon = "",
-			comboPoint = 5
-		},
-		shadowDance = {
-			id = 185422,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-
-		-- Outlaw Baseline Abilities
-		betweenTheEyes = {
-			id = 315341,
-			name = "",
-			icon = "",
-			resource = -25,
-			comboPoints = true,
-			texture = "",
-			thresholdId = 12,
-			settingKey = "betweenTheEyes",
-			hasCooldown = true,
-			isSnowflake = true,
-			cooldown = 45,
-			restlessBlades = true,
-			baseline = true
-		},
-		dispatch = {
-			id = 2098,
-			name = "",
-			icon = "",
-			resource = -35,
-			comboPoints = true,
-			texture = "",
-			thresholdId = 13,
-			settingKey = "dispatch",
-			baseline = true
-		},
-		pistolShot = {
-			id = 185763,
-			name = "",
-			icon = "",
-			resource = -40,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 14,
-			settingKey = "pistolShot",
-			hasCooldown = false,
-			isSnowflake = true,
-			baseline = true
-		},
-		sinisterStrike = {
-			id = 193315,
-			name = "",
-			icon = "",
-			resource = -45,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 15,
-			settingKey = "sinisterStrike",
-			hasCooldown = false,
-			isSnowflake = true,
-			baseline = true
-		},
-		opportunity = {
-			id = 195627,
-			name = "",
-			icon = "",
-			resourceModifier = 0.5,
-			baseline = true,
-			isTalent = true
-		},
-		bladeFlurry = {
-			id = 13877,
-			name = "",
-			icon = "",
-			resource = -15,
-			texture = "",
-			thresholdId = 16,
-			settingKey = "bladeFlurry",
-			hasCooldown = true,
-			cooldown = 30,
-			restlessBlades = true,
-			baseline = true,
-			isTalent = true
-		},
-
-		-- Outlaw Spec Abilities
-		adrenalineRush = {
-			id = 13750,
-			name = "",
-			icon = "",
-			restlessBlades = true,
-			isTalent = true
-		},
-		restlessBlades = {
-			id = 79096,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		dirtyTricks = {
-			id = 108216,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		rollTheBones = {
-			id = 315508,
-			name = "",
-			icon = "",
-			resource = -25,
-			texture = "",
-			thresholdId = 17,
-			settingKey = "rollTheBones",
-			hasCooldown = true,
-			cooldown = 45,
-			restlessBlades = true
-		},
-
-		-- Roll the Bones
-		broadside = {
-			id = 193356,
-			name = "",
-			icon = "",
-		},
-		buriedTreasure = {
-			id = 199600,
-			name = "",
-			icon = "",
-		},
-		grandMelee = {
-			id = 193358,
-			name = "",
-			icon = "",
-		},
-		ruthlessPrecision = {
-			id = 193357,
-			name = "",
-			icon = "",
-		},
-		skullAndCrossbones = {
-			id = 199603,
-			name = "",
-			icon = "",
-		},
-		trueBearing = {
-			id = 193359,
-			name = "",
-			icon = "",
-		},
-		countTheOdds = {
-			id = 381982,
-			name = "",
-			icon = "",
-			duration = 5
-		},
-
-		sepsis = {
-			id = 385408,
-			name = "",
-			icon = "",
-			resource = -25,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 18,
-			settingKey = "sepsis",
-			hasCooldown = true,
-			cooldown = 90,
-			buffId = 375939,
-			restlessBlades = true,
-			isTalent = true
-		},
-		ghostlyStrike = {
-			id = 196937,
-			name = "",
-			icon = "",
-			resource = -30,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 19,
-			settingKey = "ghostlyStrike",
-			hasCooldown = true,
-			isTalent = true,
-			cooldown = 35,
-			restlessBlades = true
-		},
-		bladeRush = {
-			id = 271877,
-			name = "",
-			icon = "",
-			isTalent = true,
-			resource = 25,
-			duration = 5,
-			cooldown = 45,
-			restlessBlades = true
-		},
-		dreadblades = {
-			id = 343142,
-			name = "",
-			icon = "",
-			resource = -50,
-			texture = "",
-			thresholdId = 20,
-			settingKey = "dreadblades",
-			hasCooldown = true,
-			isTalent = true,
-			cooldown = 90,
-			restlessBlades = true
-		},
-		keepItRolling = {
-			id = 381989,
-			name = "",
-			icon = "",
-			isTalent = true,
-			duration = 30,
-			cooldown = 60 * 7,
-			restlessBlades = true
-		},
-		killingSpree = {
-			id = 51690,
-			name = "",
-			icon = "",
-			resource = -40,
-			texture = "",
-			thresholdId = 21,
-			settingKey = "killingSpree",
-			comboPoints = true,
-			hasCooldown = true,
-			isTalent = true,
-			cooldown = 90,
-			restlessBlades = true
-		},
-		-- TODO: Implement this!
-		greenskinsWickers = {
-			id = 386823,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-
-		-- PvP
-		deathFromAbove = {
-			id = 269513,
-			name = "",
-			icon = "",
-			resource = -25,
-			texture = "",
-			thresholdId = 22,
-			settingKey = "deathFromAbove",
-			comboPoints = true,
-			hasCooldown = true,
-			isPvp = true,
-			cooldown = 30
-		},
-		dismantle = {
-			id = 207777,
-			name = "",
-			icon = "",
-			resource = -25,
-			texture = "",
-			thresholdId = 23,
-			settingKey = "dismantle",
-			hasCooldown = true,
-			isPvp = true,
-			cooldown = 45
-		},
-	}
+	
+	---@type TRB.Classes.Rogue.OutlawSpells
+	specCache.outlaw.spellsData.spells = TRB.Classes.Rogue.OutlawSpells:New()
+	---@diagnostic disable-next-line: cast-local-type
+	spells = specCache.outlaw.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 
 	specCache.outlaw.snapshotData.attributes.resourceRegen = 0
 	specCache.outlaw.snapshotData.attributes.comboPoints = 0
@@ -1189,37 +164,37 @@ local function FillSpecializationCache()
 		overcapCue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.crimsonVial.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.crimsonVial)
+	specCache.outlaw.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.distract.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.distract)
+	specCache.outlaw.snapshotData.snapshots[spells.distract.id] = TRB.Classes.Snapshot:New(spells.distract)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.feint.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.feint)
+	specCache.outlaw.snapshotData.snapshots[spells.feint.id] = TRB.Classes.Snapshot:New(spells.feint)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.kidneyShot.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.kidneyShot)
+	specCache.outlaw.snapshotData.snapshots[spells.kidneyShot.id] = TRB.Classes.Snapshot:New(spells.kidneyShot)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.shiv.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.shiv)
+	specCache.outlaw.snapshotData.snapshots[spells.shiv.id] = TRB.Classes.Snapshot:New(spells.shiv)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.gouge.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.gouge)
+	specCache.outlaw.snapshotData.snapshots[spells.gouge.id] = TRB.Classes.Snapshot:New(spells.gouge)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.betweenTheEyes.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.betweenTheEyes)
+	specCache.outlaw.snapshotData.snapshots[spells.betweenTheEyes.id] = TRB.Classes.Snapshot:New(spells.betweenTheEyes)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.bladeFlurry.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.bladeFlurry)
+	specCache.outlaw.snapshotData.snapshots[spells.bladeFlurry.id] = TRB.Classes.Snapshot:New(spells.bladeFlurry)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.bladeRush.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.bladeRush)
+	specCache.outlaw.snapshotData.snapshots[spells.bladeRush.id] = TRB.Classes.Snapshot:New(spells.bladeRush)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.ghostlyStrike.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.ghostlyStrike)
+	specCache.outlaw.snapshotData.snapshots[spells.ghostlyStrike.id] = TRB.Classes.Snapshot:New(spells.ghostlyStrike)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.dreadblades.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.dreadblades)
+	specCache.outlaw.snapshotData.snapshots[spells.dreadblades.id] = TRB.Classes.Snapshot:New(spells.dreadblades)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.sliceAndDice)
+	specCache.outlaw.snapshotData.snapshots[spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(spells.sliceAndDice)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.opportunity.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.opportunity)
+	specCache.outlaw.snapshotData.snapshots[spells.opportunity.id] = TRB.Classes.Snapshot:New(spells.opportunity)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.subterfuge.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.subterfuge)
+	specCache.outlaw.snapshotData.snapshots[spells.subterfuge.id] = TRB.Classes.Snapshot:New(spells.subterfuge)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.shadowDance.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.shadowDance)
+	specCache.outlaw.snapshotData.snapshots[spells.shadowDance.id] = TRB.Classes.Snapshot:New(spells.shadowDance)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.echoingReprimand,
+	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand,
 	{
 		enabled = {
 			[1] = false,
@@ -1232,43 +207,43 @@ local function FillSpecializationCache()
 		}
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.echoingReprimand_2CP.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.echoingReprimand_2CP)
+	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand_2CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_2CP)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.echoingReprimand_3CP.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.echoingReprimand_3CP)
+	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand_3CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_3CP)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.echoingReprimand_4CP.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.echoingReprimand_4CP)
+	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand_4CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_4CP)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.echoingReprimand_4CP2.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.echoingReprimand_4CP2)
+	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand_4CP2.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_4CP2)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.echoingReprimand_5CP.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.echoingReprimand_5CP)
+	specCache.outlaw.snapshotData.snapshots[spells.echoingReprimand_5CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_5CP)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.sepsis.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.sepsis)
+	specCache.outlaw.snapshotData.snapshots[spells.sepsis.id] = TRB.Classes.Snapshot:New(spells.sepsis)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.deathFromAbove)
+	specCache.outlaw.snapshotData.snapshots[spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(spells.deathFromAbove)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.dismantle.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.dismantle)
+	specCache.outlaw.snapshotData.snapshots[spells.dismantle.id] = TRB.Classes.Snapshot:New(spells.dismantle)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.killingSpree.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.killingSpree)
+	specCache.outlaw.snapshotData.snapshots[spells.killingSpree.id] = TRB.Classes.Snapshot:New(spells.killingSpree)
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.rollTheBones.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.rollTheBones, {
+	specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id] = TRB.Classes.Snapshot:New(spells.rollTheBones, {
 		---@type table<integer, TRB.Classes.Snapshot>
 		buffs = {
-			[specCache.outlaw.spells.broadside.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.broadside, {
+			[spells.broadside.id] = TRB.Classes.Snapshot:New(spells.broadside, {
 				fromCountTheOdds = false
 			}),
-			[specCache.outlaw.spells.buriedTreasure.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.buriedTreasure, {
+			[spells.buriedTreasure.id] = TRB.Classes.Snapshot:New(spells.buriedTreasure, {
 				fromCountTheOdds = false
 			}),
-			[specCache.outlaw.spells.grandMelee.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.grandMelee, {
+			[spells.grandMelee.id] = TRB.Classes.Snapshot:New(spells.grandMelee, {
 				fromCountTheOdds = false
 			}),
-			[specCache.outlaw.spells.ruthlessPrecision.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.ruthlessPrecision, {
+			[spells.ruthlessPrecision.id] = TRB.Classes.Snapshot:New(spells.ruthlessPrecision, {
 				fromCountTheOdds = false
 			}),
-			[specCache.outlaw.spells.skullAndCrossbones.id] = TRB.Classes.Snapshot:New(specCache.outlaw.spells.skullAndCrossbones, {
+			[spells.skullAndCrossbones.id] = TRB.Classes.Snapshot:New(spells.skullAndCrossbones, {
 				fromCountTheOdds = false
 			}),
-			[specCache.outlaw.spells.trueBearing.id] =TRB.Classes.Snapshot:New(specCache.outlaw.spells.trueBearing, {
+			[spells.trueBearing.id] =TRB.Classes.Snapshot:New(spells.trueBearing, {
 				fromCountTheOdds = false
 			})
 		},
@@ -1277,17 +252,17 @@ local function FillSpecializationCache()
 		goodBuffs = false
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.broadside.id] = specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.rollTheBones.id].attributes.buffs[specCache.outlaw.spells.broadside.id]
+	specCache.outlaw.snapshotData.snapshots[spells.broadside.id] = specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.broadside.id]
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.buriedTreasure.id] = specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.rollTheBones.id].attributes.buffs[specCache.outlaw.spells.buriedTreasure.id]
+	specCache.outlaw.snapshotData.snapshots[spells.buriedTreasure.id] = specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.buriedTreasure.id]
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.grandMelee.id] = specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.rollTheBones.id].attributes.buffs[specCache.outlaw.spells.grandMelee.id]
+	specCache.outlaw.snapshotData.snapshots[spells.grandMelee.id] = specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.grandMelee.id]
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.ruthlessPrecision.id] = specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.rollTheBones.id].attributes.buffs[specCache.outlaw.spells.ruthlessPrecision.id]
+	specCache.outlaw.snapshotData.snapshots[spells.ruthlessPrecision.id] = specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.ruthlessPrecision.id]
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.skullAndCrossbones.id] = specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.rollTheBones.id].attributes.buffs[specCache.outlaw.spells.skullAndCrossbones.id]
+	specCache.outlaw.snapshotData.snapshots[spells.skullAndCrossbones.id] = specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.skullAndCrossbones.id]
 	---@type TRB.Classes.Snapshot
-	specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.trueBearing.id] = specCache.outlaw.snapshotData.snapshots[specCache.outlaw.spells.rollTheBones.id].attributes.buffs[specCache.outlaw.spells.trueBearing.id]
+	specCache.outlaw.snapshotData.snapshots[spells.trueBearing.id] = specCache.outlaw.snapshotData.snapshots[spells.rollTheBones.id].attributes.buffs[spells.trueBearing.id]
 
 	specCache.outlaw.barTextVariables = {
 		icons = {},
@@ -1316,530 +291,11 @@ local function FillSpecializationCache()
 		effects = {
 		}
 	}
-
-	specCache.subtlety.spells = {
-		-- Class Poisons
-		cripplingPoison = {
-			id = 3409,
-			name = "",
-			icon = "",
-			isTalent = false
-		},
-		woundPoison = {
-			id = 8680,
-			name = "",
-			icon = "",
-			isTalent = false
-		},
-		numbingPoison = {
-			id = 5760,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		atrophicPoison = {
-			id = 392388,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-
-		-- Rogue Class Baseline Abilities
-		stealth = {
-			id = 1784,
-			name = "",
-			icon = ""
-		},
-		eviscerate = { -- This is technically a Rogue ability but is missing from the other specs
-			id = 196819,
-			name = "",
-			icon = "",
-			resource = -35,
-			comboPoints = true,
-			texture = "",
-			thresholdId = 1,
-			settingKey = "eviscerate",
-			baseline = true,
-			isSnowflake = true
-		},
-		cheapShot = {
-			id = 1833,
-			name = "",
-			icon = "",
-			resource = -40,
-			comboPointsGenerated = 1,
-			stealth = true,
-			texture = "",
-			thresholdId = 2,
-			settingKey = "cheapShot",
-			rushedSetup = true,
-			baseline = true,
-			isSnowflake = true
-		},
-		crimsonVial = {
-			id = 185311,
-			name = "",
-			icon = "",
-			resource = -20,
-			comboPointsGenerated = 0,
-			texture = "",
-			thresholdId = 3,
-			settingKey = "crimsonVial",
-			hasCooldown = true,
-			cooldown = 30,
-			nimbleFingers = true,
-			baseline = true
-		},
-		distract = {
-			id = 1725,
-			name = "",
-			icon = "",
-			resource = -30,
-			comboPointsGenerated = 0,
-			texture = "",
-			thresholdId = 4,
-			settingKey = "distract",
-			hasCooldown = true,
-			cooldown = 30,
-			rushedSetup = true,
-			baseline = true
-		},
-		kidneyShot = {
-			id = 408,
-			name = "",
-			icon = "",
-			resource = -25,
-			comboPoints = true,
-			texture = "",
-			thresholdId = 5,
-			settingKey = "kidneyShot",
-			hasCooldown = true,
-			cooldown = 20,
-			rushedSetup = true,
-			baseline = true
-		},
-		sliceAndDice = {
-			id = 315496,
-			name = "",
-			icon = "",
-			resource = -25,
-			comboPoints = true,
-			texture = "",
-			thresholdId = 6,
-			settingKey = "sliceAndDice",
-			hasCooldown = false,
-			isSnowflake = true,
-			pandemicTimes = {
-				12 * 0.3, -- 0 CP, show same as if we had 1
-				12 * 0.3,
-				18 * 0.3,
-				24 * 0.3,
-				30 * 0.3,
-				36 * 0.3,
-				42 * 0.3,
-				48 * 0.3
-			},
-			baseline = true
-		},
-		feint = {
-			id = 1966,
-			name = "",
-			icon = "",
-			resource = -35,
-			comboPointsGenerated = 0,
-			texture = "",
-			thresholdId = 7,
-			settingKey = "feint",
-			hasCooldown = true,
-			cooldown = 15,
-			nimbleFingers = true,
-			hasCharges = true,
-			isTalent = false,
-			baseline = true
-		},
-
-		--Rogue Talent Abilities
-		shiv = {
-			id = 5938,
-			name = "",
-			icon = "",
-			resource = -30,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 8,
-			settingKey = "shiv",
-			hasCooldown = true,
-			cooldown = 25,
-			isTalent = true
-		},
-		sap = { -- Baseline
-			id = 6770,
-			name = "",
-			icon = "",
-			resource = -35,
-			comboPointsGenerated = 0,
-			stealth = true,
-			texture = "",
-			thresholdId = 9,
-			settingKey = "sap",
-			rushedSetup = true,
-			baseline = true
-		},
-		nimbleFingers = {
-			id = 378427,
-			name = "",
-			icon = "",
-			resourceMod = -10,
-			isTalent = true
-		},
-		gouge = {
-			id = 1776,
-			name = "",
-			icon = "",
-			resource = -25,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 10,
-			settingKey = "gouge",
-			hasCooldown = true,
-			cooldown = 15,
-			isTalent = true
-		},
-		subterfuge = {
-			id = 115192,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		rushedSetup = {
-			id = 378803,
-			name = "",
-			icon = "",
-			resourceMod = 0.8,
-			isTalent = true
-		},
-		tightSpender = {
-			id = 381621,
-			name = "",
-			icon = "",
-			resourceMod = 0.9,
-			isTalent = true
-		},
-		echoingReprimand = {
-			id = 385616,
-			name = "",
-			icon = "",
-			resource = -10,
-			comboPointsGenerated = 2,
-			texture = "",
-			thresholdId = 11,
-			settingKey = "echoingReprimand",
-			hasCooldown = true,
-			cooldown = 45,
-			isTalent = true,
-			buffId = {					
-				323558, -- 2
-				323559, -- 3
-				323560, -- 4
-				354835, -- 4
-				354838, -- 5
-			}
-		},
-		echoingReprimand_2CP = {
-			id = 323558,
-			name = "",
-			icon = "",
-			comboPoint = 2
-		},
-		echoingReprimand_3CP = {
-			id = 323559,
-			name = "",
-			icon = "",
-			comboPoint = 3
-		},
-		echoingReprimand_4CP = {
-			id = 323560,
-			name = "",
-			icon = "",
-			comboPoint = 4
-		},
-		echoingReprimand_4CP2 = {
-			id = 354835,
-			name = "",
-			icon = "",
-			comboPoint = 4
-		},
-		echoingReprimand_5CP = {
-			id = 354838,
-			name = "",
-			icon = "",
-			comboPoint = 5
-		},
-		shadowDance = {
-			id = 185422,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-
-		-- Subtlety Baseline Abilities
-		backstab = {
-			id = 53,
-			name = "",
-			icon = "",
-			resource = -40,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 12,
-			settingKey = "backstab",
-			baseline = true,
-			isSnowflake = true
-		},
-		blackPowder = {
-			id = 319175,
-			name = "",
-			icon = "",
-			resource = -35,
-			comboPoints = true,
-			texture = "",
-			thresholdId = 13,
-			settingKey = "blackPowder",
-			baseline = true,
-			isSnowflake = true
-		},
-		rupture = {
-			id = 1943,
-			name = "",
-			icon = "",
-			resource = -25,
-			comboPoints = true,
-			texture = "",
-			thresholdId = 14,
-			settingKey = "rupture",
-			pandemicTimes = {
-				8 * 0.3, -- 0 CP, show same as if we had 1
-				8 * 0.3,
-				12 * 0.3,
-				16 * 0.3,
-				20 * 0.3,
-				24 * 0.3,
-				28 * 0.3,
-				32 * 0.3,
-			},
-			baseline = true,
-			isSnowflake = true
-		},
-		shadowstrike = {
-			id = 185438,
-			name = "",
-			icon = "",
-			resource = -45,
-			comboPointsGenerated = 2,
-			stealth = true,
-			texture = "",
-			thresholdId = 15,
-			settingKey = "shadowstrike",
-			baseline = true
-		},
-		shurikenStorm = {
-			id = 197835,
-			name = "",
-			icon = "",
-			resource = -45,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 16,
-			settingKey = "shurikenStorm",
-			baseline = true,
-			isSnowflake = true
-		},
-		shurikenToss = {
-			id = 114014,
-			name = "",
-			icon = "",
-			resource = -40,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 17,
-			settingKey = "shurikenToss",
-			baseline = true
-		},
-		shadowTechniques = {
-			id = 196911,
-			name = "",
-			icon = ""
-		},
-		symbolsOfDeath = {
-			id = 212283,
-			name = "",
-			icon = "",
-			baseline = true
-		},
-
-		-- Subtlety Spec Abilities			
-		shadowBlades = {
-			id = 121471,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		gloomblade = {
-			id = 200758,
-			name = "",
-			icon = "",
-			resource = -40,
-			texture = "",
-			thresholdId = 18,
-			settingKey = "gloomblade",
-			isTalent = true,
-			isSnowflake = true
-		},
-		secretTechnique = {
-			id = 280719,
-			name = "",
-			icon = "",
-			resource = -30,
-			comboPoints = true,
-			texture = "",
-			thresholdId = 19,
-			settingKey = "secretTechnique",
-			hasCooldown = true,
-			isTalent = true
-		},
-		shurikenTornado = {
-			id = 277925,
-			name = "",
-			icon = "",
-			resource = -60,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 20,
-			settingKey = "shurikenTornado",
-			hasCooldown = true,
-			isTalent = true
-		},
-		sepsis = {
-			id = 385408,
-			name = "",
-			icon = "",
-			resource = -25,
-			comboPointsGenerated = 1,
-			texture = "",
-			thresholdId = 21,
-			settingKey = "sepsis",
-			hasCooldown = true,
-			cooldown = 90,
-			buffId = 375939,
-			isTalent = true
-		},
-		goremawsBite = {
-			id = 426591,
-			name = "",
-			icon = "",
-			buffId = 426593,
-			resource = -25,
-			comboPointsGenerated = 3,
-			texture = "",
-			thresholdId = 22,
-			settingKey = "goremawsBite",
-			hasCooldown = true,
-			isTalent = true
-		},
-		shadowFocus = {
-			id = 108209,
-			name = "",
-			icon = "",
-			isTalent = true,
-			resourceMod = 0.9
-		},
-		shotInTheDark = {
-			id = 257506,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		flagellation = {
-			id = 384631,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		silentStorm = {
-			id = 385727,
-			name = "",
-			icon = "",
-		},
-		finalityBlackPowder = {
-			id = 385948,
-			name = "",
-			icon = "",
-		},
-		finalityEviscerate = {
-			id = 385949,
-			name = "",
-			icon = "",
-		},
-		finalityRupture = {
-			id = 385951,
-			name = "",
-			icon = "",
-		},
-		shadowcraft = {
-			id = 426594,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-		inevitability = {
-			id = 382512,
-			name = "",
-			icon = "",
-			isTalent = true
-		},
-
-
-		-- PvP
-		deathFromAbove = {
-			id = 269513,
-			name = "",
-			icon = "",
-			resource = -25,
-			texture = "",
-			thresholdId = 23,
-			settingKey = "deathFromAbove",
-			comboPoints = true,
-			hasCooldown = true,
-			isPvp = true
-		},
-		dismantle = {
-			id = 207777,
-			name = "",
-			icon = "",
-			resource = -25,
-			texture = "",
-			thresholdId = 24,
-			settingKey = "dismantle",
-			hasCooldown = true,
-			isPvp = true
-		},
-		shadowyDuel = {
-			id = 207736,
-			name = "",
-			icon = "",
-			resource = -50,
-			texture = "",
-			thresholdId = 25,
-			settingKey = "dismantle",
-			hasCooldown = true,
-			isPvp = true
-		},
-
-		adrenalineRush = {
-			id = 13750,
-			name = "",
-			icon = "",
-		},
-	}
+	
+	---@type TRB.Classes.Rogue.SubtletySpells
+	specCache.subtlety.spellsData.spells = TRB.Classes.Rogue.SubtletySpells:New()
+	---@diagnostic disable-next-line: cast-local-type
+	spells = specCache.subtlety.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 
 	specCache.subtlety.snapshotData.attributes.resourceRegen = 0
 	specCache.subtlety.snapshotData.attributes.comboPoints = 0
@@ -1847,11 +303,11 @@ local function FillSpecializationCache()
 		overcapCue = false
 	}
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.crimsonVial.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.crimsonVial)
+	specCache.subtlety.snapshotData.snapshots[spells.crimsonVial.id] = TRB.Classes.Snapshot:New(spells.crimsonVial)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.distract.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.distract)
+	specCache.subtlety.snapshotData.snapshots[spells.distract.id] = TRB.Classes.Snapshot:New(spells.distract)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.echoingReprimand,
+	specCache.subtlety.snapshotData.snapshots[spells.echoingReprimand.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand,
 	{
 		enabled = {
 			[1] = false,
@@ -1864,61 +320,61 @@ local function FillSpecializationCache()
 		}
 	})
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.echoingReprimand_2CP.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.echoingReprimand_2CP)
+	specCache.subtlety.snapshotData.snapshots[spells.echoingReprimand_2CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_2CP)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.echoingReprimand_3CP.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.echoingReprimand_3CP)
+	specCache.subtlety.snapshotData.snapshots[spells.echoingReprimand_3CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_3CP)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.echoingReprimand_4CP.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.echoingReprimand_4CP)
+	specCache.subtlety.snapshotData.snapshots[spells.echoingReprimand_4CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_4CP)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.echoingReprimand_4CP2.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.echoingReprimand_4CP2)
+	specCache.subtlety.snapshotData.snapshots[spells.echoingReprimand_4CP2.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_4CP2)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.echoingReprimand_5CP.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.echoingReprimand_5CP)
+	specCache.subtlety.snapshotData.snapshots[spells.echoingReprimand_5CP.id] = TRB.Classes.Snapshot:New(spells.echoingReprimand_5CP)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.feint.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.feint)
+	specCache.subtlety.snapshotData.snapshots[spells.feint.id] = TRB.Classes.Snapshot:New(spells.feint)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.gouge.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.gouge)
+	specCache.subtlety.snapshotData.snapshots[spells.gouge.id] = TRB.Classes.Snapshot:New(spells.gouge)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.kidneyShot.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.kidneyShot)
+	specCache.subtlety.snapshotData.snapshots[spells.kidneyShot.id] = TRB.Classes.Snapshot:New(spells.kidneyShot)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shiv.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shiv)
+	specCache.subtlety.snapshotData.snapshots[spells.shiv.id] = TRB.Classes.Snapshot:New(spells.shiv)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.sliceAndDice)
+	specCache.subtlety.snapshotData.snapshots[spells.sliceAndDice.id] = TRB.Classes.Snapshot:New(spells.sliceAndDice)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.symbolsOfDeath.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.symbolsOfDeath, nil, false, true)
+	specCache.subtlety.snapshotData.snapshots[spells.symbolsOfDeath.id] = TRB.Classes.Snapshot:New(spells.symbolsOfDeath, nil, false, true)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.goremawsBite.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.goremawsBite)
+	specCache.subtlety.snapshotData.snapshots[spells.goremawsBite.id] = TRB.Classes.Snapshot:New(spells.goremawsBite)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.secretTechnique.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.secretTechnique)
+	specCache.subtlety.snapshotData.snapshots[spells.secretTechnique.id] = TRB.Classes.Snapshot:New(spells.secretTechnique)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.sepsis.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.sepsis)
+	specCache.subtlety.snapshotData.snapshots[spells.sepsis.id] = TRB.Classes.Snapshot:New(spells.sepsis)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shadowBlades.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shadowBlades)
+	specCache.subtlety.snapshotData.snapshots[spells.shadowBlades.id] = TRB.Classes.Snapshot:New(spells.shadowBlades)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shurikenTornado.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shurikenTornado)
+	specCache.subtlety.snapshotData.snapshots[spells.shurikenTornado.id] = TRB.Classes.Snapshot:New(spells.shurikenTornado)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.deathFromAbove)
+	specCache.subtlety.snapshotData.snapshots[spells.deathFromAbove.id] = TRB.Classes.Snapshot:New(spells.deathFromAbove)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.dismantle.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.dismantle)
+	specCache.subtlety.snapshotData.snapshots[spells.dismantle.id] = TRB.Classes.Snapshot:New(spells.dismantle)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shadowyDuel.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shadowyDuel)
+	specCache.subtlety.snapshotData.snapshots[spells.shadowyDuel.id] = TRB.Classes.Snapshot:New(spells.shadowyDuel)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.subterfuge.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.subterfuge)
+	specCache.subtlety.snapshotData.snapshots[spells.subterfuge.id] = TRB.Classes.Snapshot:New(spells.subterfuge)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shadowDance.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shadowDance)
+	specCache.subtlety.snapshotData.snapshots[spells.shadowDance.id] = TRB.Classes.Snapshot:New(spells.shadowDance)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shotInTheDark.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shotInTheDark, nil, true)
+	specCache.subtlety.snapshotData.snapshots[spells.shotInTheDark.id] = TRB.Classes.Snapshot:New(spells.shotInTheDark, nil, true)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.shadowTechniques.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.shadowTechniques, nil, true, true)
+	specCache.subtlety.snapshotData.snapshots[spells.shadowTechniques.id] = TRB.Classes.Snapshot:New(spells.shadowTechniques, nil, true, true)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.flagellation.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.flagellation)
+	specCache.subtlety.snapshotData.snapshots[spells.flagellation.id] = TRB.Classes.Snapshot:New(spells.flagellation)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.silentStorm.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.silentStorm, nil, true)
+	specCache.subtlety.snapshotData.snapshots[spells.silentStorm.id] = TRB.Classes.Snapshot:New(spells.silentStorm, nil, true)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.finalityBlackPowder.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.finalityBlackPowder, nil, true)
+	specCache.subtlety.snapshotData.snapshots[spells.finalityBlackPowder.id] = TRB.Classes.Snapshot:New(spells.finalityBlackPowder, nil, true)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.finalityEviscerate.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.finalityEviscerate, nil, true)
+	specCache.subtlety.snapshotData.snapshots[spells.finalityEviscerate.id] = TRB.Classes.Snapshot:New(spells.finalityEviscerate, nil, true)
 	---@type TRB.Classes.Snapshot
-	specCache.subtlety.snapshotData.snapshots[specCache.subtlety.spells.finalityRupture.id] = TRB.Classes.Snapshot:New(specCache.subtlety.spells.finalityRupture, nil, true)
+	specCache.subtlety.snapshotData.snapshots[spells.finalityRupture.id] = TRB.Classes.Snapshot:New(spells.finalityRupture, nil, true)
 
 	specCache.subtlety.barTextVariables = {
 		icons = {},
@@ -1936,7 +392,8 @@ end
 
 local function FillSpellData_Assassination()
 	Setup_Assassination()
-	local spells = TRB.Functions.Spell:FillSpellData(specCache.assassination.spells)
+	specCache.assassination.spellsData:FillSpellData()
+	local spells = specCache.assassination.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 	
 	-- This is done here so that we can get icons for the options menu!
 	specCache.assassination.barTextVariables.icons = {
@@ -2082,8 +539,6 @@ local function FillSpellData_Assassination()
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 	}
-
-	specCache.assassination.spells = spells
 end
 
 local function Setup_Outlaw()
@@ -2096,7 +551,8 @@ end
 
 local function FillSpellData_Outlaw()
 	Setup_Outlaw()
-	local spells = TRB.Functions.Spell:FillSpellData(specCache.outlaw.spells)
+	specCache.outlaw.spellsData:FillSpellData()
+	local spells = specCache.outlaw.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
 	specCache.outlaw.barTextVariables.icons = {
@@ -2240,8 +696,6 @@ local function FillSpellData_Outlaw()
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 	}
-
-	specCache.outlaw.spells = spells
 end
 
 local function Setup_Subtlety()
@@ -2254,7 +708,8 @@ end
 
 local function FillSpellData_Subtlety()
 	Setup_Subtlety()
-	local spells = TRB.Functions.Spell:FillSpellData(specCache.subtlety.spells)
+	specCache.subtlety.spellsData:FillSpellData()
+	local spells = specCache.subtlety.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 
 	-- This is done here so that we can get icons for the options menu!
 	specCache.subtlety.barTextVariables.icons = {
@@ -2370,14 +825,12 @@ local function FillSpellData_Subtlety()
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 	}
-
-	specCache.subtlety.spells = spells
 end
 
 local function IsTargetBleeding(guid)
 	local specId = GetSpecialization()
 	if specId == 1 then -- Assassination
-		local spells = TRB.Data.spells
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 		if guid == nil then
 			guid = snapshotData.targetData.currentTargetGuid
@@ -2396,20 +849,20 @@ end
 
 local function CalculateAbilityResourceValue(resource, nimbleFingers, rushedSetup, comboPoints)
 	local specId = GetSpecialization()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]] --Shared spells + some Subtlety specific. Just cast as SubtletySpells
 	local snapshots = TRB.Data.snapshotData.snapshots --[[@as TRB.Classes.SnapshotData]]
 	local modifier = 1.0
 
 	if comboPoints == true and talents:IsTalentActive(spells.tightSpender) then
-		modifier = modifier * spells.tightSpender.resourceMod
+		modifier = modifier * spells.tightSpender.resourcePercent
 	end
 
 	if rushedSetup == true and talents:IsTalentActive(spells.rushedSetup) then
-		modifier = modifier * spells.rushedSetup.resourceMod
+		modifier = modifier * spells.rushedSetup.resourcePercent
 	end
 
 	if specId == 3 and (snapshots[spells.shadowDance.id].buff.isActive or IsStealthed()) and talents:IsTalentActive(spells.shadowFocus) then
-		modifier = modifier * spells.shadowFocus.resourceMod
+		modifier = modifier * spells.shadowFocus.resourcePercent
 	end
 
 	if nimbleFingers == true and talents:IsTalentActive(spells.nimbleFingers) then
@@ -2444,8 +897,7 @@ local function TargetsCleanup(clearAll)
 end
 
 local function ConstructResourceBar(settings)
-	local specId = GetSpecialization()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells|TRB.Classes.Rogue.OutlawSpells|TRB.Classes.Rogue.SubtletySpells]]
 
 	local entries = TRB.Functions.Table:Length(resourceFrame.thresholds)
 	if entries > 0 then
@@ -2456,9 +908,10 @@ local function ConstructResourceBar(settings)
 
 	local count = 0
 	local max = 0
-	for k, v in pairs(spells) do
-		local spell = spells[k]
-		if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+	for _, v in pairs(TRB.Data.spellsData.spells) do
+		local spell = v --[[@as TRB.Classes.SpellBase]]
+		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+			spell = spell --[[@as TRB.Classes.SpellThreshold]]
 			count = count + 1
 
 			if spell.thresholdId > max then
@@ -2485,7 +938,7 @@ end
 
 local function RefreshLookupData_Assassination()
 	local specSettings = TRB.Data.settings.rogue.assassination
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
@@ -2507,8 +960,8 @@ local function RefreshLookupData_Assassination()
 			castingEnergyColor = specSettings.colors.text.overcap
 		elseif specSettings.colors.text.overThresholdEnabled then
 			local _overThreshold = false
-			for k, v in pairs(spells) do
-				local spell = spells[k]
+			for _, v in pairs(spells) do
+				local spell = v --[[@as TRB.Classes.SpellBase]]
 				if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
 					_overThreshold = true
 					break
@@ -2650,7 +1103,7 @@ local function RefreshLookupData_Assassination()
 
 	if specSettings.colors.text.dots.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		-- Bleeds
-		if _ctTime > spells.crimsonTempest.pandemicTimes[snapshotData.attributes.resource2 + 1] then
+		if _ctTime > spells.crimsonTempest.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
 			ctCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _ctCount)
 			ctTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_ctTime))
 		elseif _ctTime > 0 then
@@ -2680,7 +1133,7 @@ local function RefreshLookupData_Assassination()
 			ibTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
-		if _ruptureTime > spells.rupture.pandemicTimes[snapshotData.attributes.resource2 + 1] then
+		if _ruptureTime > spells.rupture.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
 			ruptureCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _ruptureCount)
 			ruptureTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
 		elseif _ruptureTime > 0 then
@@ -2766,7 +1219,7 @@ local function RefreshLookupData_Assassination()
 	local _sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
 	local sadTime
 	
-	if _sadTime > spells.sliceAndDice.pandemicTimes[snapshotData.attributes.resource2 + 1] then
+	if _sadTime > spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
 		sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_sadTime))
 	elseif _sadTime > 0 then
 		sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_sadTime))
@@ -2966,7 +1419,7 @@ end
 
 local function RefreshLookupData_Outlaw()
 	local specSettings = TRB.Data.settings.rogue.outlaw
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
@@ -2987,8 +1440,8 @@ local function RefreshLookupData_Outlaw()
 			castingEnergyColor = specSettings.colors.text.overcap
 		elseif specSettings.colors.text.overThresholdEnabled then
 			local _overThreshold = false
-			for k, v in pairs(spells) do
-				local spell = spells[k]
+			for _, v in pairs(spells) do
+				local spell = v --[[@as TRB.Classes.SpellBase]]
 				if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
 					_overThreshold = true
 					break
@@ -3122,7 +1575,7 @@ local function RefreshLookupData_Outlaw()
 	local _sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
 	local sadTime
 	
-	if _sadTime > spells.sliceAndDice.pandemicTimes[snapshotData.attributes.resource2 + 1] then
+	if _sadTime > spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
 		sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_sadTime))
 	elseif _sadTime > 0 then
 		sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_sadTime))
@@ -3349,7 +1802,7 @@ end
 
 local function RefreshLookupData_Subtlety()
 	local specSettings = TRB.Data.settings.rogue.subtlety
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
@@ -3371,8 +1824,8 @@ local function RefreshLookupData_Subtlety()
 			castingEnergyColor = specSettings.colors.text.overcap
 		elseif specSettings.colors.text.overThresholdEnabled then
 			local _overThreshold = false
-			for k, v in pairs(spells) do
-				local spell = spells[k]
+			for _, v in pairs(spells) do
+				local spell = v --[[@as TRB.Classes.SpellBase]]
 				if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
 					_overThreshold = true
 					break
@@ -3468,7 +1921,7 @@ local function RefreshLookupData_Subtlety()
 
 	if specSettings.colors.text.dots.enabled and snapshotData.targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
 		-- Bleeds
-		if _ruptureTime > spells.rupture.pandemicTimes[snapshotData.attributes.resource2 + 1] then
+		if _ruptureTime > spells.rupture.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
 			ruptureCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _ruptureCount)
 			ruptureTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_ruptureTime))
 		elseif _ruptureTime > 0 then
@@ -3527,7 +1980,7 @@ local function RefreshLookupData_Subtlety()
 	local _sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
 	local sadTime
 	
-	if _sadTime > spells.sliceAndDice.pandemicTimes[snapshotData.attributes.resource2 + 1] then
+	if _sadTime > spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
 		sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_sadTime))
 	elseif _sadTime > 0 then
 		sadTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_sadTime))
@@ -3723,7 +2176,7 @@ end
 
 local function UpdateRollTheBones()
 	TRB.Functions.Character:UpdateSnapshot()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 	---@type TRB.Classes.Snapshot
 	local rollTheBones = TRB.Data.snapshotData.snapshots[spells.rollTheBones.id]
 	---@type table<integer, TRB.Classes.Snapshot>
@@ -3759,7 +2212,7 @@ end
 
 local function UpdateSnapshot()
 	TRB.Functions.Character:UpdateSnapshot()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.RogueBaseSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local currentTime = GetTime()
@@ -3809,7 +2262,7 @@ end
 
 local function UpdateSnapshot_Assassination()
 	UpdateSnapshot()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local currentTime = GetTime()
@@ -3826,7 +2279,7 @@ end
 local function UpdateSnapshot_Outlaw()
 	UpdateSnapshot()
 	UpdateRollTheBones()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 
@@ -3840,7 +2293,7 @@ end
 
 local function UpdateSnapshot_Subtlety()
 	UpdateSnapshot()
-	local spells = TRB.Data.spells
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 	---@type table<integer, TRB.Classes.Snapshot>
 	local snapshots = TRB.Data.snapshotData.snapshots
 	local currentTime = GetTime()
@@ -3862,10 +2315,8 @@ local function UpdateResourceBar()
 	local specId = GetSpecialization()
 	local coreSettings = TRB.Data.settings.core
 	local classSettings = TRB.Data.settings.rogue
-	local spells = TRB.Data.spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
-	--local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
 
 	if specId == 1 then
 		local specSettings = classSettings.assassination
@@ -3876,6 +2327,7 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
@@ -3926,23 +2378,24 @@ local function UpdateResourceBar()
 
 				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.sepsis.id].buff.isActive or snapshots[spells.shadowDance.id].buff.isActive
 				local pairOffset = 0
-				for k, v in pairs(spells) do
-					local spell = spells[k]
-					if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+				for _, v in pairs(TRB.Data.spellsData.spells) do
+					local spell = v --[[@as TRB.Classes.SpellBase]]
+					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+						spell = spell --[[@as TRB.Classes.SpellThreshold]]
 						local viciousVenomsOffset = 0
 
 						if talents:IsTalentActive(spells.viciousVenoms) then
-							viciousVenomsOffset = spells.viciousVenoms.energyMod[talents.talents[spells.viciousVenoms.id].currentRank]
+							viciousVenomsOffset = spells.viciousVenoms.attributes.energyMod[talents.talents[spells.viciousVenoms.id].currentRank]
 						end
 
-						local resourceAmount = CalculateAbilityResourceValue(spell.resource + viciousVenomsOffset, spell.nimbleFingers, spell.rushedSetup, spell.comboPoints)
+						local resourceAmount = CalculateAbilityResourceValue(spell.resource + viciousVenomsOffset, spell.attributes.nimbleFingers, spell.attributes.rushedSetup, spell.attributes.comboPoints)
 						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
 						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
-						if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
+						if spell.attributes.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
 							if spell.id == spells.ambush.id then
 								if stealthViaBuff then
 									if currentResource >= -resourceAmount then
@@ -3990,7 +2443,7 @@ local function UpdateResourceBar()
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 
-									if snapshots[spell.id].buff:GetRemainingTime(currentTime) > spells.sliceAndDice.pandemicTimes[snapshotData.attributes.resource2 + 1] then
+									if snapshots[spell.id].buff:GetRemainingTime(currentTime) > spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
 										frameLevel = TRB.Data.constants.frameLevels.thresholdBase
 									else
 										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
@@ -4037,7 +2490,9 @@ local function UpdateResourceBar()
 							end
 						end
 
-						if spell.comboPoints == true and snapshotData.attributes.resource2 == 0 then
+						if	spell:Is("TRB.Classes.SpellComboPointThreshold") and
+							spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true and
+							snapshotData.attributes.resource2 == 0 then
 							thresholdColor = specSettings.colors.threshold.unusable
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 						end
@@ -4055,7 +2510,7 @@ local function UpdateResourceBar()
 					local sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
 					if sadTime == 0 then
 						barColor = specSettings.colors.bar.noSliceAndDice
-					elseif sadTime < spells.sliceAndDice.pandemicTimes[snapshotData.attributes.resource2 + 1] then
+					elseif sadTime < spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
 						barColor = specSettings.colors.bar.sliceAndDicePandemic
 					end
 				end
@@ -4141,6 +2596,7 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
@@ -4191,19 +2647,20 @@ local function UpdateResourceBar()
 				
 				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.sepsis.id].buff.isActive or snapshots[spells.shadowDance.id].buff.isActive
 				local pairOffset = 0
-				for k, v in pairs(spells) do
-					local spell = spells[k]
-					if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
-						local resourceAmount = CalculateAbilityResourceValue(spell.resource, spell.nimbleFingers, spell.rushedSetup, spell.comboPoints)
+				for _, v in pairs(TRB.Data.spellsData.spells) do
+					local spell = v --[[@as TRB.Classes.SpellBase]]
+					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+						spell = spell --[[@as TRB.Classes.SpellThreshold]]
+						local resourceAmount = CalculateAbilityResourceValue(spell.resource, spell.attributes.nimbleFingers, spell.attributes.rushedSetup, spell.attributes.comboPoints)
 						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
 						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
-						if spell.dirtyTricks == true and talents:IsTalentActive(spells.dirtyTricks) then
+						if spell.attributes.dirtyTricks == true and talents:IsTalentActive(spells.dirtyTricks) then
 							showThreshold = false
-						elseif spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
+						elseif spell.attributes.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
 							if spell.id == spells.ambush.id then
 								if stealthViaBuff then
 									if currentResource >= -resourceAmount then
@@ -4246,7 +2703,7 @@ local function UpdateResourceBar()
 									end
 								elseif spell.id == spells.pistolShot.id then
 									if snapshots[spells.opportunity.id].buff.isActive then
-										resourceAmount = resourceAmount * spells.opportunity.resourceModifier
+										resourceAmount = resourceAmount * spells.opportunity.resourcePercent
 										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 									end
 
@@ -4294,7 +2751,7 @@ local function UpdateResourceBar()
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 
-									if snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime) > spells.sliceAndDice.pandemicTimes[snapshotData.attributes.resource2 + 1] then
+									if snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime) > spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
 										frameLevel = TRB.Data.constants.frameLevels.thresholdBase
 									else
 										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
@@ -4324,7 +2781,9 @@ local function UpdateResourceBar()
 							end
 						end
 
-						if spell.comboPoints == true and snapshotData.attributes.resource2 == 0 then
+						if	spell:Is("TRB.Classes.SpellComboPointThreshold") and
+							spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true and
+							snapshotData.attributes.resource2 == 0 then
 							thresholdColor = specSettings.colors.threshold.unusable
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 						end
@@ -4342,7 +2801,7 @@ local function UpdateResourceBar()
 					local sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
 					if sadTime == 0 then
 						barColor = specSettings.colors.bar.noSliceAndDice
-					elseif sadTime < spells.sliceAndDice.pandemicTimes[snapshotData.attributes.resource2 + 1] then
+					elseif sadTime < spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
 						barColor = specSettings.colors.bar.sliceAndDicePandemic
 					end
 				end
@@ -4417,6 +2876,7 @@ local function UpdateResourceBar()
 			TRB.Functions.Bar:HideResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
@@ -4467,17 +2927,18 @@ local function UpdateResourceBar()
 
 				local stealthViaBuff = snapshots[spells.subterfuge.id].buff.isActive or snapshots[spells.sepsis.id].buff.isActive or snapshots[spells.shadowDance.id].buff.isActive
 				local pairOffset = 0
-				for k, v in pairs(spells) do
-					local spell = spells[k]
-					if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then							
-						local resourceAmount = CalculateAbilityResourceValue(spell.resource, spell.nimbleFingers, spell.rushedSetup, spell.comboPoints)
+				for _, v in pairs(TRB.Data.spellsData.spells) do
+					local spell = v --[[@as TRB.Classes.SpellBase]]
+					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+						spell = spell --[[@as TRB.Classes.SpellThreshold]]
+						local resourceAmount = CalculateAbilityResourceValue(spell.resource, spell.attributes.nimbleFingers, spell.attributes.rushedSetup, spell.attributes.comboPoints)
 						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
 						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 					
-						if spell.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
+						if spell.attributes.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
 							--[[if spell.id == spells.ambush.id then
 								if stealthViaBuff then
 									if currentResource >= -resourceAmount then
@@ -4510,7 +2971,7 @@ local function UpdateResourceBar()
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 
-									if snapshots[spell.id].buff:GetRemainingTime(currentTime) > spells.sliceAndDice.pandemicTimes[snapshotData.attributes.resource2 + 1] then
+									if snapshots[spell.id].buff:GetRemainingTime(currentTime) > spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
 										frameLevel = TRB.Data.constants.frameLevels.thresholdBase
 									else
 										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
@@ -4612,7 +3073,8 @@ local function UpdateResourceBar()
 							end
 						end
 
-						if spell.comboPoints == true then
+						if 	spell:Is("TRB.Classes.SpellComboPointThreshold") and
+							spell--[[@as TRB.Classes.SpellComboPointThreshold]].comboPoints == true then
 							if snapshotData.attributes.resource2 == 0 then
 								thresholdColor = specSettings.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
@@ -4635,7 +3097,7 @@ local function UpdateResourceBar()
 					local sadTime = snapshots[spells.sliceAndDice.id].buff:GetRemainingTime(currentTime)
 					if sadTime == 0 then
 						barColor = specSettings.colors.bar.noSliceAndDice
-					elseif sadTime < spells.sliceAndDice.pandemicTimes[snapshotData.attributes.resource2 + 1] then
+					elseif sadTime < spells.sliceAndDice.attributes.pandemicTimes[snapshotData.attributes.resource2 + 1] then
 						barColor = specSettings.colors.bar.sliceAndDicePandemic
 					end
 				end
@@ -4713,7 +3175,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 	local triggerUpdate = false
 	local _
 	local specId = GetSpecialization()
-	local spells = TRB.Data.spells
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local targetData = snapshotData.targetData
@@ -4723,6 +3184,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 
 		if entry.sourceGuid == TRB.Data.character.guid then
 			if specId == 1 and TRB.Data.barConstructedForSpec == "assassination" then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 				if entry.spellId == spells.blindside.id then
 					snapshots[entry.spellId].buff:Initialize(entry.type)
 					if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
@@ -4779,12 +3241,13 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif entry.spellId == spells.improvedGarrote.stealthBuffId then
+				elseif entry.spellId == spells.improvedGarrote.attributes.stealthBuffId then
 					snapshots[spells.improvedGarrote.id].buff:Initialize(entry.type, true)
 				elseif entry.spellId == spells.improvedGarrote.buffId then
 					snapshots[spells.improvedGarrote.id].buff:Initialize(entry.type)
 				end
 			elseif specId == 2 and TRB.Data.barConstructedForSpec == "outlaw" then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 				if entry.spellId == spells.betweenTheEyes.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
@@ -4850,6 +3313,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					end
 				end
 			elseif specId == 3 and TRB.Data.barConstructedForSpec == "subtlety" then
+				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 				if entry.spellId == spells.goremawsBite.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
@@ -4912,6 +3376,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 
 			-- Spec agnostic
 			
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.RogueBaseSpells]]
 			if entry.spellId == spells.subterfuge.id then
 				snapshots[entry.spellId].buff:Initialize(entry.type)
 			elseif entry.spellId == spells.shadowDance.id then
@@ -5030,7 +3495,7 @@ local function SwitchSpec()
 		FillSpellData_Assassination()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.assassination)
 		
-		local spells = TRB.Data.spells
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -5062,7 +3527,7 @@ local function SwitchSpec()
 		FillSpellData_Outlaw()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.outlaw)
 		
-		local spells = TRB.Data.spells
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -5087,7 +3552,7 @@ local function SwitchSpec()
 		FillSpellData_Subtlety()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.subtlety)
 		
-		local spells = TRB.Data.spells
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
 		local targetData = TRB.Data.snapshotData.targetData
@@ -5375,7 +3840,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
 	local target = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid]
-	local spells = TRB.Data.spells
 	local settings = nil
 	if specId == 1 then
 		settings = TRB.Data.settings.rogue.assassination
@@ -5388,6 +3852,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	end
 
 	if specId == 1 then --Assassination
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.AssassinationSpells]]
 		-- Bleeds
 		if var == "$isBleeding" then
 			if IsTargetBleeding() then
@@ -5470,8 +3935,13 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if snapshots[spells.blindside.id].buff.isActive then
 				valid = true
 			end
+		elseif var == "$sbsCount" or var == "$serratedBoneSpikeCount" then
+			if snapshotData.targetData.count[spells.serratedBoneSpike.debuffId] > 0 then
+				valid = true
+			end
 		end
 	elseif specId == 2 then --Outlaw
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.OutlawSpells]]
 		-- Roll the Bones buff counts
 		if var == "$rtbCount" or var == "$rollTheBonesCount" then
 			if snapshots[spells.rollTheBones.id].attributes.count > 0 then
@@ -5525,6 +3995,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		end
 	elseif specId == 3 then --Subtlety
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.SubtletySpells]]
 		if var == "$shadowTechniquesCount" then
 			if snapshots[spells.shadowTechniques.id].buff.applications > 0 then
 				valid = true
@@ -5552,6 +4023,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		end
 	end
 
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Rogue.RogueBaseSpells]]
 	if var == "$resource" or var == "$energy" then
 		if snapshotData.attributes.resource > 0 then
 			valid = true
@@ -5604,10 +4076,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		valid = true
 	elseif var == "$sadTime" or var == "$sliceAndDiceTime" then
 		if snapshots[spells.sliceAndDice.id].buff.isActive then
-			valid = true
-		end
-	elseif var == "$sbsCount" or var == "$serratedBoneSpikeCount" then
-		if snapshotData.targetData.count[spells.serratedBoneSpike.debuffId] > 0 then
 			valid = true
 		end
 	-- Poisons
@@ -5669,15 +4137,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 end
 
 function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
-	local specId = GetSpecialization()
-	local settings = TRB.Data.settings.rogue
-	local spells = TRB.Data.spells
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-
-	if specId == 1 then
-	elseif specId == 2 then
-	elseif specId == 3 then
-	end
 	return nil
 end
 
