@@ -1,4 +1,4 @@
-## Interface: 100206
+## Interface: 100207
 ## Title: Twintop's Resource Bar
 ## Title-deDE: Twintops Ressourcenleiste
 ## Title-esES: Barra de Recursos de Twintop
