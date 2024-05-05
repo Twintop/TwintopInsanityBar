@@ -39,7 +39,7 @@ local function CalculateManaGain(mana, isPotion)
 
 	if isPotion then
 		if TRB.Data.character.items.alchemyStone then
-			modifier = modifier * spells.alchemistStone.resourcePercent
+			modifier = modifier * spells.alchemistStone.attributes.resourcePercent
 		end
 	end
 
@@ -440,12 +440,6 @@ local function FillSpellData_Windwalker()
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
 	}
-end
-
-local function CalculateAbilityResourceValue(resource, threshold)
-	local modifier = 1.0
-
-	return resource * modifier
 end
 
 local function RefreshTargetTracking()
@@ -920,7 +914,7 @@ local function RefreshLookupData_Windwalker()
 			local _overThreshold = false
 			for _, v in pairs(spells) do
 				local spell = v --[[@as TRB.Classes.SpellBase]]
-				if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
 					_overThreshold = true
 					break
 				end
@@ -1142,19 +1136,9 @@ local function RefreshLookupData_Windwalker()
 	TRB.Data.lookupLogic = lookupLogic
 end
 
-local function FillSnapshotDataCasting(spell)
-	local currentTime = GetTime()
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	snapshotData.casting.startTime = currentTime
-	snapshotData.casting.resourceRaw = spell.resource
-	snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.resource)
-	snapshotData.casting.spellId = spell.id
-	snapshotData.casting.icon = spell.icon
-end
-
 local function UpdateCastingResourceFinal()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-	snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(snapshotData.casting.resourceRaw)
+	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
 end
 
 local function UpdateCastingResourceFinal_Mistweaver()
@@ -1183,7 +1167,7 @@ local function CastingSpell()
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Monk.MistweaverSpells]]
 			if currentSpellName == nil then
 				if currentChannelId == spells.soothingMist.id then
-					local manaCost = spells.soothingMist:GetManaCostPerSecond()
+					local manaCost = -spells.soothingMist:GetPrimaryResourceCost(true)
 
 					snapshotData.casting.spellId = spells.soothingMist.id
 					snapshotData.casting.startTime = currentTime
@@ -1199,7 +1183,7 @@ local function CastingSpell()
 				local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 				if spellId then
-					local manaCost = -TRB.Classes.SpellBase.GetManaCost({ id = spellId })
+					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellId, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true)
 
 					snapshotData.casting.startTime = currentSpellStartTime / 1000
 					snapshotData.casting.endTime = currentSpellEndTime / 1000
@@ -1220,7 +1204,7 @@ local function CastingSpell()
 				if currentChannelId == spells.cracklingJadeLightning.id then
 					snapshotData.casting.spellId = spells.cracklingJadeLightning.id
 					snapshotData.casting.startTime = currentTime
-					snapshotData.casting.resourceRaw = spells.cracklingJadeLightning.resource
+					snapshotData.casting.resourceRaw = spells.cracklingJadeLightning:GetPrimaryResourceCost()
 					snapshotData.casting.icon = spells.cracklingJadeLightning.icon
 					UpdateCastingResourceFinal()
 				end
@@ -1501,7 +1485,7 @@ local function UpdateResourceBar()
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
+						local resourceAmount = -spell:GetPrimaryResourceCost()
 						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true

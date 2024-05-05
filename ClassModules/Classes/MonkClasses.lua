@@ -25,7 +25,9 @@ function TRB.Classes.Monk.MistweaverSpells:New()
     self.soothingMist = TRB.Classes.SpellBase:New({
         id = 115175,
         isTalent = true,
-        baseline = true
+        baseline = true,
+        primaryResourceType = Enum.PowerType.Mana,
+        primaryResourceTypeProperty = "costPerSec"
     })
     self.vivaciousVivification = TRB.Classes.SpellBase:New({
         id = 392883,
@@ -81,18 +83,13 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     -- Monk Class Baseline Abilities
     self.blackoutKick = TRB.Classes.SpellComboPoint:New({
         id = 100784,
-        name = "",
-        icon = "",
         comboPoints = 1,
         isTalent = false,
         baseline = true
     })
     self.cracklingJadeLightning = TRB.Classes.SpellThreshold:New({
         id = 117952,
-        name = "",
-        icon = "",
-        resource = -20,
-        texture = "",
+        primaryResourceType = Enum.PowerType.Energy,
         thresholdId = 1,
         settingKey = "cracklingJadeLightning",
         isTalent = false,
@@ -100,11 +97,8 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     })
     self.expelHarm = TRB.Classes.SpellComboPointThreshold:New({
         id = 322101,
-        name = "",
-        icon = "",
-        resource = -15,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        texture = "",
         thresholdId = 2,
         settingKey = "expelHarm",
         hasCooldown = true,
@@ -114,27 +108,20 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     })
     self.markOfTheCrane = TRB.Classes.SpellBase:New({
         id = 228287,
-        name = "",
-        icon = "",
         duration = 20,
         isTalent = false,
         baseline = true
     })
     self.spinningCraneKick = TRB.Classes.SpellComboPoint:New({
         id = 101546,
-        name = "",
-        icon = "",
         comboPoints = 2,
         isTalent = false,
         baseline = true
     })
     self.tigerPalm = TRB.Classes.SpellComboPointThreshold:New({
         id = 100780,
-        name = "",
-        icon = "",
-        resource = -50,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 2,
-        texture = "",
         thresholdId = 3,
         settingKey = "tigerPalm",
         isTalent = false,
@@ -142,8 +129,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     })
     self.touchOfDeath = TRB.Classes.SpellBase:New({
         id = 322109,
-        name = "",
-        icon = "",
         healthPercent = 0.35,
         eliteHealthPercent = 0.15,
         isTalent = false,
@@ -151,10 +136,7 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     })
     self.vivify = TRB.Classes.SpellThreshold:New({
         id = 116670,
-        name = "",
-        icon = "",
-        resource = -30,
-        texture = "",
+        primaryResourceType = Enum.PowerType.Energy,
         thresholdId = 4,
         settingKey = "vivify",
         isTalent = false,
@@ -166,18 +148,13 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     -- Monk Class Talents
     self.risingSunKick = TRB.Classes.SpellComboPoint:New({
         id = 107428,
-        name = "",
-        icon = "",
         comboPoints = 2,
         isTalent = true,
         baseline = true
     })
     self.detox = TRB.Classes.SpellThreshold:New({
         id = 218164,
-        name = "",
-        icon = "",
-        resource = -20,
-        texture = "",
+        primaryResourceType = Enum.PowerType.Energy,
         thresholdId = 5,
         settingKey = "detox",
         hasCooldown = true,
@@ -187,20 +164,15 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     })
     self.disable = TRB.Classes.SpellThreshold:New({
         id = 116095,
-        name = "",
-        icon = "",
-        resource = -15,
-        texture = "",
+        primaryResourceType = Enum.PowerType.Energy,
         thresholdId = 6,
         settingKey = "disable",
-        hasCooldown = false
+        hasCooldown = false,
+        isTalent = true
     })
     self.paralysis = TRB.Classes.SpellThreshold:New({
         id = 115078,
-        name = "",
-        icon = "",
-        resource = -20,
-        texture = "",
+        primaryResourceType = Enum.PowerType.Energy,
         thresholdId = 7,
         settingKey = "paralysis",
         hasCooldown = true,
@@ -209,8 +181,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     })
     self.paralysisRank2 = TRB.Classes.SpellBase:New({
         id = 344359,
-        name = "",
-        icon = "",
         cooldownMod = -15,
         isTalent = true,
     })
@@ -219,8 +189,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
 
     self.fistsOfFury = TRB.Classes.SpellComboPoint:New({
         id = 113656,
-        name = "",
-        icon = "",
         comboPoints = 3,
         isTalent = true
     })
@@ -228,16 +196,12 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     -- Talents
     self.strikeOfTheWindlord = TRB.Classes.SpellBase:New({
         id = 392983,
-        name = "",
-        icon = "",
         hasCooldown = true,
         isTalent = true,
         cooldown = 40
     })
     self.energizingElixir = TRB.Classes.SpellComboPoint:New({
         id = 115288,
-        name = "",
-        icon = "",
         comboPointsGenerated = 2,
         resourcePerTick = 15,
         ticks = 5,
@@ -246,14 +210,10 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     })
     self.danceOfChiJi = TRB.Classes.SpellBase:New({
         id = 325202,
-        name = "",
-        icon = "",
         isTalent = true
     })
     self.serenity = TRB.Classes.SpellBase:New({
         id = 152173,
-        name = "",
-        icon = "",
         isTalent = true
     })
 

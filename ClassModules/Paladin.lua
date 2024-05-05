@@ -39,7 +39,7 @@ local function CalculateManaGain(mana, isPotion)
 		if TRB.Data.character.items.alchemyStone then
 			local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 			local spells = spellsData.spells --[[@as TRB.Classes.Healer.HealerSpells]]
-			modifier = modifier * spells.alchemistStone.resourcePercent
+			modifier = modifier * spells.alchemistStone.attributes.resourcePercent
 		end
 	end
 
@@ -660,6 +660,7 @@ local function UpdateCastingResourceFinal()
 	TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
 end
 
+--TODO: Remove?
 local function UpdateCastingResourceFinal_Holy()
 	-- Do nothing for now
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
@@ -691,7 +692,7 @@ local function CastingSpell()
 				local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 				if spellId then
-					local manaCost = -TRB.Classes.SpellBase.GetManaCost({ id = spellId })
+					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellId, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true)
 
 					casting.startTime = currentSpellStartTime / 1000
 					casting.endTime = currentSpellEndTime / 1000
@@ -780,6 +781,8 @@ local function UpdateSnapshot_Holy()
 
 	snapshots[spells.conjuredChillglobe.id].cooldown.startTime, snapshots[spells.conjuredChillglobe.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
 	snapshots[spells.conjuredChillglobe.id].cooldown:GetRemainingTime(currentTime)
+	
+	snapshots[spells.daybreak.id].cooldown:GetRemainingTime(currentTime)
 end
 
 local function UpdateResourceBar()
@@ -863,7 +866,7 @@ local function UpdateResourceBar()
 					local daybreak = snapshots[spells.daybreak.id]
 					local daybreakThresholdColor = specSettings.colors.threshold.over
 					if specSettings.thresholds.daybreak.enabled and (not daybreak.cooldown:IsUnusable() or specSettings.thresholds.daybreak.cooldown) then
-						local daybreakMana = snapshotData.targetData.count[spells.glimmerOfLight.buffId] * daybreak.spell.resourcePercent * TRB.Data.character.maxResource
+						local daybreakMana = snapshotData.targetData.count[spells.glimmerOfLight.buffId] * daybreak.spell.attributes.resourcePercent * TRB.Data.character.maxResource
 
 						if daybreak.cooldown:IsUnusable() then
 							daybreakThresholdColor = specSettings.colors.threshold.unusable

@@ -79,7 +79,7 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     })
     self.throwGlaive = TRB.Classes.SpellThreshold:New({
         id = 185123,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Fury,
         thresholdId = 9,
         settingKey = "throwGlaive",
         hasCooldown = true,
@@ -92,7 +92,7 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     --Havoc Baseline Abilities
     self.bladeDance = TRB.Classes.SpellThreshold:New({
         id = 188499,
-        resource = -35,
+        primaryResourceType = Enum.PowerType.Fury,
         cooldown = 9,
         thresholdId = 2,
         settingKey = "bladeDance",
@@ -103,7 +103,7 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     })
     self.chaosStrike = TRB.Classes.SpellThreshold:New({
         id = 162794,
-        resource = -40,
+        primaryResourceType = Enum.PowerType.Fury,
         thresholdId = 4,
         settingKey = "chaosStrike",
         hasCooldown = false,
@@ -114,7 +114,7 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     })
     self.annihilation = TRB.Classes.SpellThreshold:New({
         id = 201427,
-        resource = -40,
+        primaryResourceType = Enum.PowerType.Fury,
         thresholdId = 1,
         settingKey = "annihilation",
         hasCooldown = false,
@@ -124,7 +124,7 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     })
     self.deathSweep = TRB.Classes.SpellThreshold:New({
         id = 210152,
-        resource = -35,
+        primaryResourceType = Enum.PowerType.Fury,
         cooldown = 9,
         thresholdId = 5,
         settingKey = "deathSweep",
@@ -137,7 +137,7 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     -- Demon Hunter Talent Abilities
     self.chaosNova = TRB.Classes.SpellThreshold:New({
         id = 179057,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Fury,
         thresholdId = 3,
         settingKey = "chaosNova",
         hasCooldown = true,
@@ -147,7 +147,7 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     -- Havoc Talent Abilities
     self.eyeBeam = TRB.Classes.SpellThreshold:New({
         id = 198013,
-        resource = -30,
+        primaryResourceType = Enum.PowerType.Fury,
         duration = 2,
         thresholdId = 6,
         settingKey = "eyeBeam",
@@ -165,7 +165,7 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     })
     self.furiousThrows = TRB.Classes.SpellBase:New({
         id = 393029,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Fury,
         isTalent = true
     })
     self.felfireHeart = TRB.Classes.SpellBase:New({ --TODO: figure out how this plays with Burning Hatred
@@ -176,7 +176,7 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     })
     self.felEruption = TRB.Classes.SpellThreshold:New({
         id = 211881,
-        resource = -10,
+        primaryResourceType = Enum.PowerType.Fury,
         cooldown = 30,
         thresholdId = 8,
         settingKey = "felEruption",
@@ -194,7 +194,7 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     })
     self.glaiveTempest = TRB.Classes.SpellThreshold:New({
         id = 342817,
-        resource = -30,
+        primaryResourceType = Enum.PowerType.Fury,
         cooldown = 20,
         thresholdId = 7,
         settingKey = "glaiveTempest",
@@ -238,7 +238,7 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     })
     self.felBarrage = TRB.Classes.SpellThreshold:New({
         id = 258925,
-        resource = -10,
+        primaryResourceType = Enum.PowerType.Fury,
         cooldown = 90,
         thresholdId = 10,
         settingKey = "felBarrage",
@@ -292,7 +292,7 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
     --Vengeance Baseline Abilities
     self.soulCleave = TRB.Classes.SpellThreshold:New({
         id = 228477,
-        resource = -30,
+        primaryResourceType = Enum.PowerType.Fury,
         thresholdId = 1,
         settingKey = "soulCleave",
         isTalent = false,
@@ -303,7 +303,7 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
     -- Demon Hunter Talent Abilities
     self.chaosNova = TRB.Classes.SpellThreshold:New({
         id = 179057,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Fury,
         thresholdId = 2,
         settingKey = "chaosNova",
         hasCooldown = true,
@@ -313,7 +313,7 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
     -- Vengeance Talent Abilities
     self.felDevastation = TRB.Classes.SpellThreshold:New({
         id = 212084,
-        resource = -50,
+        primaryResourceType = Enum.PowerType.Fury,
         thresholdId = 3,
         settingKey = "felDevastation",
         hasCooldown = true,
@@ -321,7 +321,7 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
     })
     self.spiritBomb = TRB.Classes.SpellComboPointThreshold:New({
         id = 247454,
-        resource = -40,
+        primaryResourceType = Enum.PowerType.Fury,
         thresholdId = 4,
         settingKey = "spiritBomb",
         comboPoints = true,

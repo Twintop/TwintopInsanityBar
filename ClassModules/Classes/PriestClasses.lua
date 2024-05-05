@@ -473,7 +473,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
     -- Shadow Talent Abilities			
     self.devouringPlague = TRB.Classes.SpellThreshold:New({
         id = 335467,
-        resource = -50,
+        primaryResourceType = Enum.PowerType.Insanity,
         thresholdId = 1,
         settingKey = "devouringPlague",
         isTalent = true,
@@ -481,7 +481,8 @@ function TRB.Classes.Priest.ShadowSpells:New()
     })
     self.devouringPlague2 = TRB.Classes.SpellThreshold:New({
         id = 335467,
-        resource = -100,
+        primaryResourceType = Enum.PowerType.Insanity,
+        primaryResourceTypeMod = 2,
         thresholdId = 2,
         settingKey = "devouringPlague2",
         isTalent = true,
@@ -489,7 +490,8 @@ function TRB.Classes.Priest.ShadowSpells:New()
     })
     self.devouringPlague3 = TRB.Classes.SpellThreshold:New({
         id = 335467,
-        resource = -150,
+        primaryResourceType = Enum.PowerType.Insanity,
+        primaryResourceTypeMod = 3,
         thresholdId = 3,
         settingKey = "devouringPlague3",
         isTalent = true,
@@ -546,13 +548,11 @@ function TRB.Classes.Priest.ShadowSpells:New()
     })
     self.mindsEye = TRB.Classes.SpellBase:New({
         id = 407470,
-        isTalent = true,
-        resourceMod = -5
+        isTalent = true
     })
     self.distortedReality = TRB.Classes.SpellBase:New({
         id = 409044,
-        isTalent = true,
-        resourceMod = 5
+        isTalent = true
     })
     self.surgeOfInsanity = TRB.Classes.SpellBase:New({
         id = 391399,

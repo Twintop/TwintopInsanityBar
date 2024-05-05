@@ -11,13 +11,11 @@ TRB.Classes.Warrior = TRB.Classes.Warrior or {}
 ---@class TRB.Classes.Warrior.ArmsSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public charge TRB.Classes.SpellBase
 ---@field public deepWounds TRB.Classes.SpellBase
----@field public bloodAndThunder TRB.Classes.SpellBase
 ---@field public improvedExecute TRB.Classes.SpellBase
 ---@field public suddenDeath TRB.Classes.SpellBase
 ---@field public massacre TRB.Classes.SpellBase
 ---@field public bloodletting TRB.Classes.SpellBase
 ---@field public stormOfSwords TRB.Classes.SpellBase
----@field public battlelord TRB.Classes.SpellBase
 ---@field public execute TRB.Classes.SpellThreshold
 ---@field public executeMinimum TRB.Classes.SpellThreshold
 ---@field public executeMaximum TRB.Classes.SpellThreshold
@@ -47,8 +45,8 @@ function TRB.Classes.Warrior.ArmsSpells:New()
     self.execute = TRB.Classes.SpellThreshold:New({
         id = 163201,
         healthMinimum = 0.2,
-        resource = -20,
-        resourceMax = -40,
+        primaryResourceType = Enum.PowerType.Rage,
+        primaryResourceTypeProperty = "minCost",
         thresholdId = 1,
         settingKey = "execute",
         isTalent = false,
@@ -59,7 +57,8 @@ function TRB.Classes.Warrior.ArmsSpells:New()
     self.executeMinimum = TRB.Classes.SpellThreshold:New({
         id = 163201,
         healthMinimum = 0.2,
-        resource = -20,
+        primaryResourceType = Enum.PowerType.Rage,
+        primaryResourceTypeProperty = "minCost",
         thresholdId = 2,
         settingKey = "executeMinimum",
         isTalent = false,
@@ -70,7 +69,8 @@ function TRB.Classes.Warrior.ArmsSpells:New()
     self.executeMaximum = TRB.Classes.SpellThreshold:New({
         id = 163201,
         healthMinimum = 0.2,
-        resource = -40,
+        primaryResourceType = Enum.PowerType.Rage,
+        primaryResourceTypeProperty = "cost",
         thresholdId = 3,
         settingKey = "executeMaximum",
         isTalent = false,
@@ -80,7 +80,7 @@ function TRB.Classes.Warrior.ArmsSpells:New()
     })
     self.hamstring = TRB.Classes.SpellThreshold:New({
         id = 1715,
-        resource = -10,
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdId = 4,
         settingKey = "hamstring",
         isTalent = false,
@@ -88,7 +88,7 @@ function TRB.Classes.Warrior.ArmsSpells:New()
     })
     self.shieldBlock = TRB.Classes.SpellThreshold:New({
         id = 2565,
-        resource = -30,
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdId = 5,
         settingKey = "shieldBlock",
         isTalent = false,
@@ -97,7 +97,7 @@ function TRB.Classes.Warrior.ArmsSpells:New()
     })
     self.slam = TRB.Classes.SpellThreshold:New({
         id = 1464,
-        resource = -20,
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdId = 6,
         settingKey = "slam",
         isTalent = false,
@@ -106,12 +106,11 @@ function TRB.Classes.Warrior.ArmsSpells:New()
     })
     self.whirlwind = TRB.Classes.SpellThreshold:New({
         id = 1680,
-        resource = -40,
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdId = 7,
         settingKey = "whirlwind",
         isTalent = false,
-        baseline = true,
-        isSnowflake = true
+        baseline = true
     })
 
     -- Arms Baseline Abilities
@@ -125,7 +124,7 @@ function TRB.Classes.Warrior.ArmsSpells:New()
     -- Warrior Class Talents
     self.impendingVictory = TRB.Classes.SpellThreshold:New({
         id = 202168,
-        resource = -10,
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdId = 8,
         settingKey = "impendingVictory",
         isTalent = true,
@@ -133,37 +132,30 @@ function TRB.Classes.Warrior.ArmsSpells:New()
     })
     self.thunderClap = TRB.Classes.SpellThreshold:New({
         id = 396719,
-        resource = -30,
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdId = 9,
         settingKey = "thunderClap",
         isTalent = true,
-        hasCooldown = true,
-        isSnowflake = true
-    })
-    self.bloodAndThunder = TRB.Classes.SpellBase:New({
-        id = 384277,
-        resourceMod = -10,
-        isTalent = true
+        hasCooldown = true
     })
 
     --Arms Talent abilities
     self.mortalStrike = TRB.Classes.SpellThreshold:New({
         id = 12294,
-        resource = -30,
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdId = 10,
         settingKey = "mortalStrike",
         isTalent = true,
-        hasCooldown = true,
-        isSnowflake = true
+        hasCooldown = true
     })
     self.improvedExecute = TRB.Classes.SpellBase:New({
         id = 316405,
         isTalent = true
     })
     self.rend = TRB.Classes.SpellThreshold:New({
-        id = 388539,
-        talentId = 772,
-        resource = -30,
+        id = 772,
+        debuffId = 388539,
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdId = 11,
         settingKey = "rend",
         isTalent = true,
@@ -173,16 +165,15 @@ function TRB.Classes.Warrior.ArmsSpells:New()
     })
     self.cleave = TRB.Classes.SpellThreshold:New({
         id = 845,
-        resource = -20,
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdId = 12,
         settingKey = "cleave",
         isTalent = true,
-        hasCooldown = true,
-        isSnowflake = true
+        hasCooldown = true
     })
     self.ignorePain = TRB.Classes.SpellThreshold:New({
         id = 190456,
-        resource = -40,
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdId = 13,
         settingKey = "ignorePain",
         isTalent = true,
@@ -190,7 +181,7 @@ function TRB.Classes.Warrior.ArmsSpells:New()
         duration = 11
     })
     self.suddenDeath = TRB.Classes.SpellBase:New({
-        id = 29725
+        id = 52437
     })
     self.massacre = TRB.Classes.SpellBase:New({
         id = 281001,
@@ -204,12 +195,7 @@ function TRB.Classes.Warrior.ArmsSpells:New()
     })
     self.stormOfSwords = TRB.Classes.SpellBase:New({
         id = 385512,
-        isTalent = true,
-        resourceMod = -20
-    })
-    self.battlelord = TRB.Classes.SpellBase:New({
-        id = 386631,
-        resourceMod = -10
+        isTalent = true
     })
 
     return self
@@ -220,7 +206,6 @@ end
 ---@field public charge TRB.Classes.SpellBase
 ---@field public whirlwind TRB.Classes.SpellBase
 ---@field public enrage TRB.Classes.SpellBase
----@field public bloodAndThunder TRB.Classes.SpellBase
 ---@field public improvedExecute TRB.Classes.SpellBase
 ---@field public suddenDeath TRB.Classes.SpellBase
 ---@field public massacre TRB.Classes.SpellBase
@@ -253,8 +238,8 @@ function TRB.Classes.Warrior.FurySpells:New()
     self.execute = TRB.Classes.SpellThreshold:New({
         id = 280735,
         healthMinimum = 0.2,
-        resource = -20,
-        resourceMax = -40,
+        primaryResourceType = Enum.PowerType.Rage,
+        primaryResourceTypeProperty = "minCost",
         thresholdId = 1,
         settingKey = "execute",
         isTalent = false,
@@ -265,7 +250,8 @@ function TRB.Classes.Warrior.FurySpells:New()
     self.executeMinimum = TRB.Classes.SpellThreshold:New({
         id = 280735,
         healthMinimum = 0.2,
-        resource = -20,
+        primaryResourceType = Enum.PowerType.Rage,
+        primaryResourceTypeProperty = "minCost",
         thresholdId = 2,
         settingKey = "executeMinimum",
         isTalent = false,
@@ -276,7 +262,8 @@ function TRB.Classes.Warrior.FurySpells:New()
     self.executeMaximum = TRB.Classes.SpellThreshold:New({
         id = 280735,
         healthMinimum = 0.2,
-        resource = -40,
+        primaryResourceType = Enum.PowerType.Rage,
+        primaryResourceTypeProperty = "cost",
         thresholdId = 3,
         settingKey = "executeMaximum",
         isTalent = false,
@@ -286,7 +273,7 @@ function TRB.Classes.Warrior.FurySpells:New()
     })
     self.hamstring = TRB.Classes.SpellThreshold:New({
         id = 1715,
-        resource = -10,
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdId = 4,
         settingKey = "hamstring",
         isTalent = false,
@@ -294,7 +281,7 @@ function TRB.Classes.Warrior.FurySpells:New()
     })
     self.shieldBlock = TRB.Classes.SpellThreshold:New({
         id = 2565,
-        resource = -30,
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdId = 5,
         settingKey = "shieldBlock",
         isTalent = false,
@@ -303,7 +290,7 @@ function TRB.Classes.Warrior.FurySpells:New()
     })
     self.slam = TRB.Classes.SpellThreshold:New({
         id = 1464,
-        resource = -20,
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdId = 6,
         settingKey = "slam",
         isTalent = false,
@@ -325,7 +312,7 @@ function TRB.Classes.Warrior.FurySpells:New()
     -- Warrior Class Talents
     self.impendingVictory = TRB.Classes.SpellThreshold:New({
         id = 202168,
-        resource = -10,
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdId = 7,
         settingKey = "impendingVictory",
         isTalent = true,
@@ -333,17 +320,11 @@ function TRB.Classes.Warrior.FurySpells:New()
     })
     self.thunderClap = TRB.Classes.SpellThreshold:New({
         id = 396719,
-        resource = -30,
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdId = 8,
         settingKey = "thunderClap",
         isTalent = true,
-        hasCooldown = true,
-        isSnowflake = true
-    })
-    self.bloodAndThunder = TRB.Classes.SpellBase:New({
-        id = 384277,
-        resourceMod = -10,
-        isTalent = true
+        hasCooldown = true
     })
 
     -- Fury Talent abilities
@@ -351,7 +332,7 @@ function TRB.Classes.Warrior.FurySpells:New()
     --Talents
     self.rampage = TRB.Classes.SpellThreshold:New({
         id = 184367,
-        resource = -80,
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdId = 9,
         settingKey = "rampage",
         isTalent = true,

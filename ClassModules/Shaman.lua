@@ -38,7 +38,7 @@ local function CalculateManaGain(mana, isPotion)
 
 	if isPotion then
 		if TRB.Data.character.items.alchemyStone then
-			modifier = modifier * spells.alchemistStone.resourcePercent
+			modifier = modifier * spells.alchemistStone.attributes.resourcePercent
 		end
 	end
 
@@ -659,10 +659,10 @@ local function RefreshLookupData_Elemental()
 	local currentMaelstromColor = specSettings.colors.text.currentMaelstrom
 	local castingMaelstromColor = specSettings.colors.text.castingMaelstrom
 
-	local maelstromThreshold = TRB.Data.character.earthShockThreshold
+	local maelstromThreshold = spells.earthShock:GetPrimaryResourceCost()
 
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
-		if specSettings.colors.text.overcapEnabled and overcap then 
+		if specSettings.colors.text.overcapEnabled and overcap then
 			currentMaelstromColor = specSettings.colors.text.overcapMaelstrom
 			castingMaelstromColor = specSettings.colors.text.overcapMaelstrom
 		elseif specSettings.colors.text.overThresholdEnabled and snapshotData.attributes.resource >= maelstromThreshold then
@@ -1204,19 +1204,21 @@ local function FillSnapshotDataCasting(spell, resourceMod)
 			spell.id == spells.icefury.id or
 			spell.id == spells.frostShock.id
 			then
-			resourceMultMod = spells.primalFracture.resourcePercent
+			resourceMultMod = spells.primalFracture.attributes.resourcePercent
 		end
 	end
 
 	local currentTime = GetTime()
+	if spell.resource ~= nil and spell.resource > 0 then
+		snapshotData.casting.resourceRaw = (spell.resource + resourceMod) * resourceMultMod
+		snapshotData.casting.resourceFinal = (spell.resource + resourceMod) * resourceMultMod
+	end
 	snapshotData.casting.startTime = currentTime
-	snapshotData.casting.resourceRaw = (spell.resource + resourceMod) * resourceMultMod
-	snapshotData.casting.resourceFinal = (spell.resource + resourceMod) * resourceMultMod
 	snapshotData.casting.spellId = spell.id
 	snapshotData.casting.icon = spell.icon
 end
 
-
+--TODO: Remove?
 local function UpdateCastingResourceFinal_Restoration()
 	-- Do nothing for now
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.RestorationSpells]]
@@ -1315,7 +1317,7 @@ local function CastingSpell()
 				local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 				if spellId then
-					local manaCost = -TRB.Classes.SpellBase.GetManaCost({ id = spellId })
+					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellId, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true)
 
 					snapshotData.casting.startTime = currentSpellStartTime / 1000
 					snapshotData.casting.endTime = currentSpellEndTime / 1000
@@ -1355,9 +1357,6 @@ local function UpdateSnapshot_Elemental()
 
 	snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
 	snapshots[spells.icefury.id].buff:GetRemainingTime(currentTime)
-
-	TRB.Data.character.earthShockThreshold = TRB.Data.character.earthShockThreshold
-	TRB.Data.character.earthquakeThreshold = -(spells.earthquake.resource - spells.eyeOfTheStorm.attributes.resourceMods[talents.talents[spells.eyeOfTheStorm.id].currentRank].earthquake)
 end
 
 local function UpdateSnapshot_Enhancement()
@@ -1482,8 +1481,8 @@ local function UpdateResourceBar()
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
 						pairOffset = (spell.thresholdId - 1) * 3
-						local resourceAmount = spell.resource
-						--TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+						local resourceAmount = -spell:GetPrimaryResourceCost()
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
@@ -1496,8 +1495,6 @@ local function UpdateResourceBar()
 								elseif talents:IsTalentActive(spells.elementalBlast) then
 									showThreshold = false
 								else
-									resourceAmount = resourceAmount - spells.eyeOfTheStorm.attributes.resourceMods[talents.talents[spells.eyeOfTheStorm.id].currentRank].earthShock
-									
 									if currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
@@ -1509,8 +1506,6 @@ local function UpdateResourceBar()
 								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								else
-									resourceAmount = resourceAmount - spells.eyeOfTheStorm.attributes.resourceMods[talents.talents[spells.eyeOfTheStorm.id].currentRank].elementalBlast
-									
 									if currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
@@ -1522,8 +1517,6 @@ local function UpdateResourceBar()
 								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								else
-									resourceAmount = resourceAmount - spells.eyeOfTheStorm.attributes.resourceMods[talents.talents[spells.eyeOfTheStorm.id].currentRank].earthquake
-
 									if snapshots[spells.echoesOfGreatSundering.id].buff.isActive then
 										thresholdColor = specSettings.colors.threshold.echoesOfGreatSundering
 										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
@@ -1566,7 +1559,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if currentResource >= TRB.Data.character.earthShockThreshold then
+				if currentResource >= spells.earthShock:GetPrimaryResourceCost() then
 					if specSettings.colors.bar.flashEnabled then
 						TRB.Functions.Bar:PulseFrame(barContainerFrame, specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 					else
@@ -2097,10 +2090,10 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spells.earthShock.thresholdId], spells.earthShock, TRB.Data.settings.shaman.elemental)
 		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spells.elementalBlast.thresholdId], spells.elementalBlast, TRB.Data.settings.shaman.elemental)
 
-		if (talents:IsTalentActive(spells.elementalBlast) and spells.elementalBlast.resource < TRB.Data.character.maxResource) then
-			TRB.Data.character.earthShockThreshold = -(spells.elementalBlast.resource - spells.eyeOfTheStorm.attributes.resourceMods[talents.talents[spells.eyeOfTheStorm.id].currentRank].elementalBlast)
+		if (talents:IsTalentActive(spells.elementalBlast) and spells.elementalBlast:GetPrimaryResourceCost() < TRB.Data.character.maxResource) then
+			TRB.Data.character.earthShockThreshold = -spells.elementalBlast:GetPrimaryResourceCost()
 		else
-			TRB.Data.character.earthShockThreshold = -(spells.earthShock.resource - spells.eyeOfTheStorm.attributes.resourceMods[talents.talents[spells.eyeOfTheStorm.id].currentRank].earthShock)
+			TRB.Data.character.earthShockThreshold = -spells.earthShock:GetPrimaryResourceCost()
 		end
 	elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
 		TRB.Data.character.specName = "enhancement"

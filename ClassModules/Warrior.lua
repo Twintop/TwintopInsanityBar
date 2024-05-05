@@ -74,8 +74,6 @@ local function FillSpecializationCache()
 	specCache.arms.snapshotData.snapshots[spells.ignorePain.id] = TRB.Classes.Snapshot:New(spells.ignorePain)
 	---@type TRB.Classes.Snapshot
 	specCache.arms.snapshotData.snapshots[spells.suddenDeath.id] = TRB.Classes.Snapshot:New(spells.suddenDeath)
-	---@type TRB.Classes.Snapshot
-	specCache.arms.snapshotData.snapshots[spells.battlelord.id] = TRB.Classes.Snapshot:New(spells.battlelord)
 
 	-- Fury
 
@@ -305,15 +303,6 @@ local function FillSpellData_Fury()
 	}
 end
 
-local function CalculateAbilityResourceValue(resource)
-	local modifier = 1.0
-	return resource * modifier
-end
-
-local function UpdateCastingResourceFinal()
-	TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
-end
-
 local function RefreshTargetTracking()
 	local currentTime = GetTime()
 	local specId = GetSpecialization()
@@ -395,7 +384,7 @@ local function RefreshLookupData_Arms()
 			local _overThreshold = false
 			for _, v in pairs(spells) do
 				local spell = v --[[@as TRB.Classes.SpellBase]]
-				if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= normalizedRage then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= normalizedRage then
 					_overThreshold = true
 					break
 				end
@@ -437,12 +426,12 @@ local function RefreshLookupData_Arms()
 
 	
 	--$rendCount and $rendTime
-	local _rendCount = targetData.count[spells.rend.id] or 0
+	local _rendCount = targetData.count[spells.rend.debuffId] or 0
 	local rendCount = string.format("%s", _rendCount)
 	local _rendTime = 0
 	
 	if target ~= nil then
-		_rendTime = target.spells[spells.rend.id].remainingTime or 0
+		_rendTime = target.spells[spells.rend.debuffId].remainingTime or 0
 	end
 
 	local rendTime
@@ -458,7 +447,7 @@ local function RefreshLookupData_Arms()
 	local deepWoundsTime
 
 	if specSettings.colors.text.dots.enabled and targetData.currentTargetGuid ~= nil and not UnitIsDeadOrGhost("target") and UnitCanAttack("player", "target") then
-		if target ~= nil and target.spells[spells.rend.id].active then
+		if target ~= nil and target.spells[spells.rend.debuffId].active then
 			if _rendTime > ((spells.rend.baseDuration + TRB.Data.character.pandemicModifier) * 0.3) then
 				rendCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.up, _rendCount)
 				rendTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_rendTime))
@@ -581,7 +570,7 @@ local function RefreshLookupData_Fury()
 			local _overThreshold = false
 			for _, v in pairs(spells) do
 				local spell = v --[[@as TRB.Classes.SpellBase]]
-				if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= normalizedRage then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= normalizedRage then
 					_overThreshold = true
 					break
 				end
@@ -704,15 +693,6 @@ local function RefreshLookupData_Fury()
 	lookupLogic["$ravagerRage"] = _ravagerRage
 	lookupLogic["$ravagerTicks"] = ravagerTicks
 	TRB.Data.lookupLogic = lookupLogic
-end
-
-local function FillSnapshotDataCasting(spell)
-	local currentTime = GetTime()
-	TRB.Data.snapshotData.casting.startTime = currentTime
-	TRB.Data.snapshotData.casting.resourceRaw = spell.resource
-	TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.resource)
-	TRB.Data.snapshotData.casting.spellId = spell.id
-	TRB.Data.snapshotData.casting.icon = spell.icon
 end
 
 local function CastingSpell()
@@ -855,17 +835,24 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
+				local targetUnitHealth
+				if target ~= nil then
+					targetUnitHealth = target:GetHealthPercent()
+				end
+				
+				local healthMinimum = spells.execute.attributes.healthMinimum				
+				if talents:IsTalentActive(spells.massacre) then
+					healthMinimum = spells.massacre.attributes.healthMinimum
+				end
 
 				for _, v in pairs(spells) do
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						local resourceAmount = CalculateAbilityResourceValue(spell.resource)
+						local resourceAmount = -spell:GetPrimaryResourceCost()
 						local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
-						if not (spell.id == spells.execute.id or spell.id == spells.whirlwind.id or spell.id == spells.thunderClap) then
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
-						end
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
@@ -875,30 +862,18 @@ local function UpdateResourceBar()
 							showThreshold = false
 						elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 							if spell.id == spells.execute.id then
-								local targetUnitHealth
-								if target ~= nil then
-									targetUnitHealth = target:GetHealthPercent()
-								end
-								
-								local healthMinimum = spells.execute.attributes.healthMinimum
-								
-								if talents:IsTalentActive(spells.massacre) then
-									healthMinimum = spells.massacre.attributes.healthMinimum
-								end
-
 								if snapshots[spells.suddenDeath.id].buff.isActive then
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -spells.execute.attributes.resourceMax, TRB.Data.character.maxResource)
-								else
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, math.min(math.max(-resourceAmount, normalizedResource), -spells.execute.attributes.resourceMax), TRB.Data.character.maxResource)
+									--We only show the maximum value when this proc occurs. Current and minimum thresholds being in their expected place don't matter.
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, spells.executeMaximum:GetPrimaryResourceCost() * 2, TRB.Data.character.maxResource)
+								elseif spell.settingKey == "execute" then
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, math.min(math.max(-resourceAmount, normalizedResource), spells.executeMaximum:GetPrimaryResourceCost()), TRB.Data.character.maxResource)
 								end
-
+								
 								if UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
 									showThreshold = false
-								elseif spell.settingKey == "executeMinimum" and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
-									showThreshold = false
-								elseif spell.settingKey == "executeMaximum"  and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
-									showThreshold = false
-								elseif spell.settingKey == "execute" and (targetUnitHealth >= healthMinimum) and not snapshots[spells.suddenDeath.id].buff.isActive then
+								elseif snapshots[spells.suddenDeath.id].buff.isActive then
+									thresholdColor = specSettings.colors.threshold.over
+								elseif targetUnitHealth >= healthMinimum then
 									showThreshold = false
 								elseif currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
@@ -906,67 +881,6 @@ local function UpdateResourceBar()
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
-							elseif spell.id == spells.mortalStrike.id then
-								if snapshots[spells.battlelord.id].buff.isActive then
-									resourceAmount = resourceAmount - spells.battlelord.resourceMod
-								end
-
-								if snapshots[spell.id].cooldown:IsUnusable() then
-									thresholdColor = specSettings.colors.threshold.unusable
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif currentResource >= -resourceAmount then
-									thresholdColor = specSettings.colors.threshold.over
-								else
-									thresholdColor = specSettings.colors.threshold.under
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								end
-								
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
-							elseif spell.id == spells.cleave.id then
-								if snapshots[spells.battlelord.id].buff.isActive then
-									resourceAmount = resourceAmount - spells.battlelord.resourceMod
-								end
-
-								if snapshots[spell.id].cooldown:IsUnusable() then
-									thresholdColor = specSettings.colors.threshold.unusable
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif currentResource >= -resourceAmount then
-									thresholdColor = specSettings.colors.threshold.over
-								else
-									thresholdColor = specSettings.colors.threshold.under
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								end
-								
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
-							elseif spell.id == spells.whirlwind.id then
-								if talents:IsTalentActive(spells.stormOfSwords) then
-									resourceAmount = resourceAmount + spells.stormOfSwords.resourceMod
-								end
-								
-								if currentResource >= -resourceAmount then
-									thresholdColor = specSettings.colors.threshold.over
-								else
-									thresholdColor = specSettings.colors.threshold.under
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								end
-
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
-							elseif spell.id == spells.thunderClap.id then
-								if talents:IsTalentActive(spells.bloodAndThunder) then
-									resourceAmount = resourceAmount + spells.bloodAndThunder.resourceMod
-								end
-
-								if snapshots[spell.id].cooldown:IsUnusable() then
-									thresholdColor = specSettings.colors.threshold.unusable
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif currentResource >= -resourceAmount then
-									thresholdColor = specSettings.colors.threshold.over
-								else
-									thresholdColor = specSettings.colors.threshold.under
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								end
-								
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 							end
 						elseif spell.hasCooldown then
 							if snapshots[spell.id].cooldown:IsUnusable() then
@@ -1078,12 +992,11 @@ local function UpdateResourceBar()
 					healthMinimum = spells.massacre.attributes.healthMinimum
 				end
 
-
 				for _, v in pairs(spells) do
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						local resourceAmount = CalculateAbilityResourceValue(spell.resource)
+						local resourceAmount = -spell:GetPrimaryResourceCost()
 						local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 						
 						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
@@ -1109,7 +1022,7 @@ local function UpdateResourceBar()
 										showThreshold = false
 									else
 										if spell.settingKey == "execute" then
-											TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, math.min(math.max(-resourceAmount, normalizedResource), -spells.execute.attributes.resourceMax), TRB.Data.character.maxResource)
+											TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, math.min(math.max(-resourceAmount, normalizedResource), spells.executeMaximum:GetPrimaryResourceCost()), TRB.Data.character.maxResource)
 										end
 
 										if snapshots[spell.id].cooldown:IsUnusable() then
@@ -1131,22 +1044,6 @@ local function UpdateResourceBar()
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
-							elseif spell.id == spells.thunderClap.id then
-								if talents:IsTalentActive(spells.bloodAndThunder) then
-									resourceAmount = resourceAmount + spells.bloodAndThunder.resourceMod
-								end
-								
-								if snapshots[spell.id].cooldown:IsUnusable() then
-									thresholdColor = specSettings.colors.threshold.unusable
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif currentResource >= -resourceAmount then
-									thresholdColor = specSettings.colors.threshold.over
-								else
-									thresholdColor = specSettings.colors.threshold.under
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								end
-								
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 							end
 						elseif spell.hasCooldown then
 							if snapshots[spell.id].cooldown:IsUnusable() then
@@ -1236,9 +1133,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							PlaySoundFile(TRB.Data.settings.warrior.arms.audio.suddenDeath.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					end
-				elseif entry.spellId == spells.battlelord.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-				elseif entry.spellId == spells.rend.id then
+				elseif entry.spellId == spells.rend.debuffId then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 					end
@@ -1627,15 +1522,15 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				valid = true
 			end
 		elseif var == "$rendCount" then
-			if targetData.count[spells.rend.id] > 0 then
+			if targetData.count[spells.rend.debuffId] > 0 then
 				valid = true
 			end
 		elseif var == "$rendTime" then
 			if not UnitIsDeadOrGhost("target") and
 				UnitCanAttack("player", "target") and
 				target ~= nil and
-				target.spells[spells.rend.id] ~= nil and
-				target.spells[spells.rend.id].remainingTime > 0 then
+				target.spells[spells.rend.debuffId] ~= nil and
+				target.spells[spells.rend.debuffId].remainingTime > 0 then
 				valid = true
 			end
 		elseif var == "$deepWoundsCount" then

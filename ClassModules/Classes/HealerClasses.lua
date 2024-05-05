@@ -226,7 +226,7 @@ function TRB.Classes.Healer.SymbolOfHope:CalculateTime(totalTicks, tickRate, nex
         end
 
         local estimatedManaMissing = TRB.Data.character.maxResource - (casterRegen + manaRaw + (resource / TRB.Data.resourceFactor))
-        local nextTick = self.spell.resourcePercent * math.max(0, math.min(TRB.Data.character.maxResource, estimatedManaMissing))
+        local nextTick = self.spell.attributes.resourcePercent * math.max(0, math.min(TRB.Data.character.maxResource, estimatedManaMissing))
         manaRaw = manaRaw + nextTick + casterRegen
     end
 
@@ -536,7 +536,7 @@ end
 function TRB.Classes.Healer.BlessingOfWinter:Update()
     if self.buff.isActive then
         self.buff:UpdateTicks()
-        self.mana = self.spell.resourcePercent * TRB.Data.character.maxResource * self.buff.ticks
+        self.mana = self.spell.attributes.resourcePercent * TRB.Data.character.maxResource * self.buff.ticks
     else
         self.ticks = 0
         self.mana = 0

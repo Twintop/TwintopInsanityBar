@@ -41,7 +41,7 @@ local function CalculateManaGain(mana, isPotion)
 		if TRB.Data.character.items.alchemyStone then
 			local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
 			local spells = spellsData.spells --[[@as TRB.Classes.Healer.HealerSpells]]
-			modifier = modifier * spells.alchemistStone.resourcePercent
+			modifier = modifier * spells.alchemistStone.attributes.resourcePercent
 		end
 	end
 
@@ -1201,7 +1201,7 @@ local function RefreshLookupData_Discipline()
 	snapshotData.attributes.manaRegen, _ = GetPowerRegen()
 	
 	if TRB.Data.character.items.imbuedFrostweaveSlippers then
-		snapshotData.attributes.manaRegen = snapshotData.attributes.manaRegen + (TRB.Data.character.maxResource * spells.imbuedFrostweaveSlippers.resourcePercent)
+		snapshotData.attributes.manaRegen = snapshotData.attributes.manaRegen + (TRB.Data.character.maxResource * spells.imbuedFrostweaveSlippers.attributes.resourcePercent)
 	end
 
 	local currentManaColor = specSettings.colors.text.current
@@ -2293,6 +2293,7 @@ local function RefreshLookupData_Shadow()
 	TRB.Data.lookupLogic = lookupLogic
 end
 
+--TODO: Remove?
 local function UpdateCastingResourceFinal_Discipline()
 	-- Do nothing for now
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.DisciplineSpells]]
@@ -2303,6 +2304,7 @@ local function UpdateCastingResourceFinal_Discipline()
 	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw * innervate.modifier * potionOfChilledClarity.modifier
 end
 
+--TODO: Remove?
 local function UpdateCastingResourceFinal_Holy()
 	-- Do nothing for now
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Priest.HolySpells]]
@@ -2339,7 +2341,7 @@ local function CastingSpell()
 				local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 				if spellId then
-					local manaCost = -TRB.Classes.SpellBase.GetManaCost({ id = spellId })
+					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellId, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true)
 
 					snapshotData.casting.startTime = currentSpellStartTime / 1000
 					snapshotData.casting.endTime = currentSpellEndTime / 1000
@@ -2371,7 +2373,7 @@ local function CastingSpell()
 				local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 				if spellId then
-					local manaCost = -TRB.Classes.SpellBase.GetManaCost({ id = spellId })
+					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellId, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true)
 
 					snapshotData.casting.startTime = currentSpellStartTime / 1000
 					snapshotData.casting.endTime = currentSpellEndTime / 1000
@@ -2601,10 +2603,10 @@ local function UpdateSpecificShadowfiendValues(shadowfiend)
 				end
 
 				if specId == 1 then
-					shadowfiend.attributes.resourceRaw = countValue * shadowfiend.spell.resourcePercent * TRB.Data.character.maxResource
+					shadowfiend.attributes.resourceRaw = countValue * shadowfiend.spell.attributes.resourcePercent * TRB.Data.character.maxResource
 					shadowfiend.attributes.resourceFinal = CalculateManaGain(shadowfiend.attributes.resourceRaw, false)
 				elseif specId == 2 then
-					shadowfiend.attributes.resourceRaw = countValue * shadowfiend.spell.resourcePercent * TRB.Data.character.maxResource
+					shadowfiend.attributes.resourceRaw = countValue * shadowfiend.spell.attributes.resourcePercent * TRB.Data.character.maxResource
 					shadowfiend.attributes.resourceFinal = CalculateManaGain(shadowfiend.attributes.resourceRaw, false)
 				elseif specId == 3 then
 					shadowfiend.attributes.resourceRaw = countValue * shadowfiend.spell.resource
@@ -2935,7 +2937,7 @@ local function UpdateResourceBar()
 					local shadowfiendThresholdColor = specSettings.colors.threshold.over
 					if specSettings.thresholds.shadowfiend.enabled and (not shadowfiend.cooldown:IsUnusable() or specSettings.thresholds.shadowfiend.cooldown) then
 						local haveTotem, timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = GetMaximumShadowfiendResults()
-						local shadowfiendMana = swingsRemaining * shadowfiend.spell.resourcePercent * TRB.Data.character.maxResource
+						local shadowfiendMana = swingsRemaining * shadowfiend.spell.attributes.resourcePercent * TRB.Data.character.maxResource
 
 						if shadowfiend.cooldown:IsUnusable() then
 							shadowfiendThresholdColor = specSettings.colors.threshold.unusable
@@ -3204,7 +3206,7 @@ local function UpdateResourceBar()
 					local shadowfiendThresholdColor = specSettings.colors.threshold.over
 					if specSettings.thresholds.shadowfiend.enabled and (not shadowfiend.cooldown:IsUnusable() or specSettings.thresholds.shadowfiend.cooldown) then
 						local haveTotem, timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = GetMaximumShadowfiendResults()
-						local shadowfiendMana = swingsRemaining * shadowfiend.spell.resourcePercent * TRB.Data.character.maxResource
+						local shadowfiendMana = swingsRemaining * shadowfiend.spell.attributes.resourcePercent * TRB.Data.character.maxResource
 
 						if shadowfiend.cooldown:IsUnusable() then
 							shadowfiendThresholdColor = specSettings.colors.threshold.unusable
@@ -3555,9 +3557,8 @@ local function UpdateResourceBar()
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
 						pairOffset = (spell.thresholdId - 1) * 3
-						local resourceAmount = spell.resource
-						local currentResource = currentResource
-						--TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+						local resourceAmount = -spell:GetPrimaryResourceCost()
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
@@ -3565,16 +3566,6 @@ local function UpdateResourceBar()
 						
 						if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 							if spell.settingKey == spells.devouringPlague--[[@as TRB.Classes.SpellThreshold]].settingKey then
-								if talents:IsTalentActive(spells.mindsEye) then
-									resourceAmount = resourceAmount - spells.mindsEye.resourceMod
-								end
-
-								if talents:IsTalentActive(spells.distortedReality) then
-									resourceAmount = resourceAmount - spells.distortedReality.resourceMod
-								end
-
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
-								
 								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								elseif resourceAmount >= TRB.Data.character.maxResource then
@@ -3588,29 +3579,15 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							elseif spell.settingKey == spells.devouringPlague2--[[@as TRB.Classes.SpellThreshold]].settingKey then
-								local previousResourceAmount = spells.devouringPlague.resource
-								if talents:IsTalentActive(spells.mindsEye) then
-									resourceAmount = resourceAmount - (spells.mindsEye.resourceMod*2)
-									previousResourceAmount = previousResourceAmount - (spells.mindsEye.resourceMod)
-								end
-
-								if talents:IsTalentActive(spells.distortedReality) then
-									resourceAmount = resourceAmount - (spells.distortedReality.resourceMod*2)
-									previousResourceAmount = previousResourceAmount - (spells.distortedReality.resourceMod)
-								end
-
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
-								
 								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								elseif -resourceAmount >= TRB.Data.character.maxResource then
 									showThreshold = false
-								elseif snapshots[spells.mindDevourer.id].buff.endTime ~= nil and
-									currentTime < snapshots[spells.mindDevourer.id].buff.endTime and
-									currentResource >= -previousResourceAmount then
+								elseif snapshots[spells.mindDevourer.id].buff.isActive and
+									currentResource >= spells.devouringPlague:GetPrimaryResourceCost() then
 									thresholdColor = specSettings.colors.threshold.over
 								elseif specSettings.thresholds.devouringPlagueThresholdOnlyOverShow and
-										-previousResourceAmount > currentResource  then
+										spells.devouringPlague:GetPrimaryResourceCost() > currentResource  then
 									showThreshold = false
 								elseif currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
@@ -3619,29 +3596,15 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							elseif spell.settingKey == spells.devouringPlague3--[[@as TRB.Classes.SpellThreshold]].settingKey then
-								local previousResourceAmount = spells.devouringPlague2.resource
-								if talents:IsTalentActive(spells.mindsEye) then
-									resourceAmount = resourceAmount - (spells.mindsEye.resourceMod*3)
-									previousResourceAmount = previousResourceAmount - (spells.mindsEye.resourceMod*2)
-								end
-
-								if talents:IsTalentActive(spells.distortedReality) then
-									resourceAmount = resourceAmount - (spells.distortedReality.resourceMod*3)
-									previousResourceAmount = previousResourceAmount - (spells.distortedReality.resourceMod*2)
-								end
-
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
-								
 								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								elseif -resourceAmount >= TRB.Data.character.maxResource then
 									showThreshold = false
-								elseif snapshots[spells.mindDevourer.id].buff.endTime ~= nil and
-									currentTime < snapshots[spells.mindDevourer.id].buff.endTime and
-									currentResource >= -previousResourceAmount then
+								elseif snapshots[spells.mindDevourer.id].buff.isActive and
+									currentResource >= spells.devouringPlague2:GetPrimaryResourceCost() then
 									thresholdColor = specSettings.colors.threshold.over
 								elseif specSettings.thresholds.devouringPlagueThresholdOnlyOverShow and
-									-previousResourceAmount > currentResource then
+									spells.devouringPlague2:GetPrimaryResourceCost() > currentResource then
 									showThreshold = false
 								elseif currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
@@ -3678,7 +3641,7 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= TRB.Data.character.devouringPlagueThreshold or snapshots[spells.mindDevourer.id].buff.isActive then
+				if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= spells.devouringPlague:GetPrimaryResourceCost() or snapshots[spells.mindDevourer.id].buff.isActive then
 					if specSettings.colors.bar.flashEnabled then
 						TRB.Functions.Bar:PulseFrame(barContainerFrame, specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 					else
@@ -4530,15 +4493,7 @@ function TRB.Functions.Class:CheckCharacter()
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Resource)
 
-		TRB.Data.character.devouringPlagueThreshold = -spells.devouringPlague.resource
-		
-		if talents:IsTalentActive(spells.mindsEye) then
-			TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + spells.mindsEye.resourceMod
-		end
-		
-		if talents:IsTalentActive(spells.distortedReality) then
-			TRB.Data.character.devouringPlagueThreshold = TRB.Data.character.devouringPlagueThreshold + spells.distortedReality.resourceMod
-		end
+		TRB.Data.character.devouringPlagueThreshold = -spells.devouringPlague:GetPrimaryResourceCost()
 		
 		if talents:IsTalentActive(spells.mindbender) then
 			snapshots[spells.shadowfiend.id].spell = spells.mindbender

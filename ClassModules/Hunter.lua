@@ -539,7 +539,7 @@ local function CalculateAbilityResourceValue(resource, threshold)
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Hunter.MarksmanshipSpells]]
 			local trueshot = TRB.Data.snapshotData.snapshots[spells.trueshot.id] --[[@as TRB.Classes.Snapshot]]
 			if trueshot.buff.isActive and not threshold then
-				modifier = modifier * trueshot.spell.resourcePercent
+				modifier = modifier * trueshot.spell.attributes.resourcePercent
 			end
 		end
 	end
@@ -548,7 +548,7 @@ local function CalculateAbilityResourceValue(resource, threshold)
 end
 
 local function UpdateCastingResourceFinal()
-	TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
+	TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceRaw
 end
 
 local function RefreshTargetTracking()
@@ -618,7 +618,7 @@ local function RefreshLookupData_BeastMastery()
 			local _overThreshold = false
 			for _, v in pairs(spells) do
 				local spell = v --[[@as TRB.Classes.SpellBase]]
-				if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
 					_overThreshold = true
 					break
 				end
@@ -860,7 +860,7 @@ local function RefreshLookupData_Marksmanship()
 			local _overThreshold = false
 			for _, v in pairs(spells) do
 				local spell = v --[[@as TRB.Classes.SpellBase]]
-				if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
 					_overThreshold = true
 					break
 				end
@@ -1059,7 +1059,7 @@ local function RefreshLookupData_Survival()
 			local _overThreshold = false
 			for _, v in pairs(spells) do
 				local spell = v --[[@as TRB.Classes.SpellBase]]
-				if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
 					_overThreshold = true
 					break
 				end
@@ -1242,12 +1242,19 @@ local function RefreshLookupData_Survival()
 	TRB.Data.lookupLogic = lookupLogic
 end
 
+---comment
+---@param spell TRB.Classes.SpellBase
 local function FillSnapshotDataCasting(spell)
 	local currentTime = GetTime()
 	local casting = TRB.Data.snapshotData.casting --[[@as TRB.Classes.SnapshotCasting]]
 	casting.startTime = currentTime
-	casting.resourceRaw = spell.resource
-	casting.resourceFinal = CalculateAbilityResourceValue(spell.resource)
+	if spell.resource ~= nil and spell.resource > 0 then
+		casting.resourceRaw = spell.resource
+		casting.resourceFinal = CalculateAbilityResourceValue(spell.resource)
+	else
+		casting.resourceRaw = spell:GetPrimaryResourceCost()
+		casting.resourceFinal = casting.resourceRaw
+	end
 	casting.spellId = spell.id
 	casting.icon = spell.icon
 end
@@ -1524,7 +1531,7 @@ local function UpdateResourceBar()
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
+						local resourceAmount = -spell:GetPrimaryResourceCost()
 						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
@@ -1557,11 +1564,6 @@ local function UpdateResourceBar()
 									snapshotData.audio.playedKillShotCue = false
 								end
 							elseif spell.id == spells.killCommand.id then
-								if snapshots[spells.direPack.id].buff.isActive then
-									resourceAmount = resourceAmount * spells.direPack.resourceMod
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
-								end
-
 								if snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
@@ -1769,7 +1771,7 @@ local function UpdateResourceBar()
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
+						local resourceAmount = -spell:GetPrimaryResourceCost()
 						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
@@ -1971,7 +1973,7 @@ local function UpdateResourceBar()
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						local resourceAmount = CalculateAbilityResourceValue(spell.resource, true)
+						local resourceAmount = -spell:GetPrimaryResourceCost()
 						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
@@ -2164,8 +2166,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif entry.spellId == spells.explosiveShot.id then
-					snapshots[entry.spellId].cooldown:Initialize()
 				elseif entry.spellId == spells.trueshot.id then
 					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.steadyFocus.id then
@@ -2211,6 +2211,8 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 					triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 				end
+			elseif entry.spellId == spells.explosiveShot.id then
+				snapshots[entry.spellId].cooldown:Initialize()
 			end
 		end
 

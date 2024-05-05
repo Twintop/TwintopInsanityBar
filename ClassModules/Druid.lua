@@ -41,7 +41,7 @@ local function CalculateManaGain(mana, isPotion)
 	if isPotion then
 		if TRB.Data.character.items.alchemyStone then
 			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
-			modifier = modifier * spells.alchemistStone.resourcePercent
+			modifier = modifier * spells.alchemistStone.attributes.resourcePercent
 		end
 	end
 
@@ -784,25 +784,6 @@ local function GetCurrentMoonSpell()
 	moon.cooldown:GetRemainingTime(currentTime)
 end
 
-local function CalculateAbilityResourceValue(resource, threshold, relentlessPredator)
-	local modifier = 1.0
-	local specId = GetSpecialization()
-
-	if specId == 2 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
-		local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
-		if snapshotData.snapshots[spells.incarnationAvatarOfAshamane.id].buff.isActive then
-			modifier = modifier * spells.incarnationAvatarOfAshamane.resourceMod
-		end
-		
-		if relentlessPredator and talents:IsTalentActive(spells.relentlessPredator) then
-			modifier = modifier * spells.relentlessPredator.resourceMod
-		end
-	end
-
-	return resource * modifier
-end
-
 local function RefreshTargetTracking()
 	local currentTime = GetTime()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
@@ -859,15 +840,20 @@ local function ConstructResourceBar(settings)
 			local spell = v --[[@as TRB.Classes.SpellBase]]
 			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 				spell = spell --[[@as TRB.Classes.SpellThreshold]]
-				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
-					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
-				end
-				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell, settings)
 
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
+				if resourceFrame.thresholds[spell.thresholdId] == nil then
+					resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, resourceFrame)
+				end
+				TRB.Functions.Threshold:ResetThresholdLine(resourceFrame.thresholds[spell.thresholdId], settings, true)
+				TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spell.thresholdId], spell, settings)
+	
+				resourceFrame.thresholds[spell.thresholdId]:Show()
+				resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
+				resourceFrame.thresholds[spell.thresholdId]:Hide()
+
+				if spell.id == spells.thrash.id then
+					print(spell.thresholdId)
+				end
 			end
 		end
 		TRB.Frames.resource2ContainerFrame:Show()
@@ -1185,8 +1171,8 @@ local function RefreshLookupData_Balance()
 	local pulsarRemaining = spells.primordialArcanicPulsar.attributes.maxResource - pulsarCollected
 	local _pulsarRemainingPercent = pulsarRemaining / spells.primordialArcanicPulsar.attributes.maxResource
 	local pulsarRemainingPercent = string.format("%.1f", TRB.Functions.Number:RoundTo(_pulsarRemainingPercent * 100, 1))
-	local pulsarStarsurgeCount = TRB.Functions.Number:RoundTo(pulsarRemaining / -spells.starsurge.resource, 0, ceil, true)
-	local pulsarStarfallCount = TRB.Functions.Number:RoundTo(pulsarRemaining / -spells.starfall.resource, 0, ceil, true)
+	local pulsarStarsurgeCount = TRB.Functions.Number:RoundTo(pulsarRemaining / spells.starsurge:GetPrimaryResourceCost(), 0, ceil, true)
+	local pulsarStarfallCount = TRB.Functions.Number:RoundTo(pulsarRemaining / spells.starfall:GetPrimaryResourceCost(), 0, ceil, true)
 	
 	----------------------------
 
@@ -1381,7 +1367,7 @@ local function RefreshLookupData_Feral()
 			local _overThreshold = false
 			for _, v in pairs(spells) do
 				local spell = v --[[@as TRB.Classes.SpellBase]]
-				if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= snapshotData.attributes.resource then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= snapshotData.attributes.resource then
 					_overThreshold = true
 					break
 				end
@@ -1438,7 +1424,7 @@ local function RefreshLookupData_Feral()
 	
 	----------
 	--$ripCount and $ripTime
-	local _ripCount = snapshotData.targetData.count[spells.rip.id] or 0
+	local _ripCount = snapshotData.targetData.count[spells.rip.debuffId] or 0
 	local ripCount = tostring(_ripCount)
 	local _ripTime = 0
 	local ripTime
@@ -1449,7 +1435,7 @@ local function RefreshLookupData_Feral()
 	local ripCurrent
 
 	--$rakeCount and $rakeTime
-	local _rakeCount = snapshotData.targetData.count[spells.rake.id] or 0
+	local _rakeCount = snapshotData.targetData.count[spells.rake.debuffId] or 0
 	local rakeCount = tostring(_rakeCount)
 	local _rakeTime = 0
 	local rakeTime
@@ -1460,7 +1446,7 @@ local function RefreshLookupData_Feral()
 	local rakeCurrent
 
 	--$thrashCount and $thrashTime
-	local _thrashCount = snapshotData.targetData.count[spells.thrash.id] or 0
+	local _thrashCount = snapshotData.targetData.count[spells.thrash.debuffId] or 0
 	local thrashCount = tostring(_thrashCount)
 	local _thrashTime = 0
 	local thrashTime
@@ -1471,7 +1457,7 @@ local function RefreshLookupData_Feral()
 	local thrashCurrent
 
 	--$moonfireCount and $moonfireTime
-	local _moonfireCount = snapshotData.targetData.count[spells.moonfire.id] or 0
+	local _moonfireCount = snapshotData.targetData.count[spells.moonfire.debuffId] or 0
 	local moonfireCount = tostring(_moonfireCount)
 	local _moonfireTime = 0
 	local moonfireTime
@@ -1482,17 +1468,17 @@ local function RefreshLookupData_Feral()
 	local moonfireCurrent
 	
 	if target ~= nil then
-		_moonfireTime = target.spells[spells.moonfire.id].remainingTime or 0
-		_moonfireSnapshot = target.spells[spells.moonfire.id].snapshot or 0
+		_moonfireTime = target.spells[spells.moonfire.debuffId].remainingTime or 0
+		_moonfireSnapshot = target.spells[spells.moonfire.debuffId].snapshot or 0
 		_moonfirePercent = (_moonfireSnapshot / _currentSnapshotMoonfire)
-		_ripTime = target.spells[spells.rip.id].remainingTime or 0
-		_ripSnapshot = target.spells[spells.rip.id].snapshot or 0
+		_ripTime = target.spells[spells.rip.debuffId].remainingTime or 0
+		_ripSnapshot = target.spells[spells.rip.debuffId].snapshot or 0
 		_ripPercent = (_ripSnapshot / _currentSnapshotRip)
-		_rakeTime = target.spells[spells.rake.id].remainingTime or 0
-		_rakeSnapshot = target.spells[spells.rake.id].snapshot or 0
+		_rakeTime = target.spells[spells.rake.debuffId].remainingTime or 0
+		_rakeSnapshot = target.spells[spells.rake.debuffId].snapshot or 0
 		_rakePercent = (_rakeSnapshot / _currentSnapshotRake)
-		_thrashTime = target.spells[spells.thrash.id].remainingTime or 0
-		_thrashSnapshot = target.spells[spells.thrash.id].snapshot or 0
+		_thrashTime = target.spells[spells.thrash.debuffId].remainingTime or 0
+		_thrashSnapshot = target.spells[spells.thrash.debuffId].snapshot or 0
 		_thrashPercent = (_thrashSnapshot / _currentSnapshotThrash)
 	end
 
@@ -1520,7 +1506,7 @@ local function RefreshLookupData_Feral()
 			ripTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
-		if target ~= nil and target.spells[spells.rake.id].active then
+		if target ~= nil and target.spells[spells.rake.debuffId].active then
 			local rakeColor = specSettings.colors.text.dots.same
 			if _rakePercent > 1 then
 				rakeColor = specSettings.colors.text.dots.better
@@ -1543,7 +1529,7 @@ local function RefreshLookupData_Feral()
 			rakeTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
-		if target ~= nil and target.spells[spells.thrash.id].active then
+		if target ~= nil and target.spells[spells.thrash.debuffId].active then
 			local thrashColor = specSettings.colors.text.dots.same
 			if _thrashPercent > 1 then
 				thrashColor = specSettings.colors.text.dots.better
@@ -1566,7 +1552,7 @@ local function RefreshLookupData_Feral()
 			thrashTime = string.format("|c%s%s|r", specSettings.colors.text.dots.down, TRB.Functions.BarText:TimerPrecision(0))
 		end
 
-		if talents:IsTalentActive(spells.lunarInspiration) == true and target ~= nil and target.spells[spells.moonfire.id].active then
+		if talents:IsTalentActive(spells.lunarInspiration) == true and target ~= nil and target.spells[spells.moonfire.debuffId].active then
 			local moonfireColor = specSettings.colors.text.dots.same
 			if _moonfirePercent > 1 then
 				moonfireColor = specSettings.colors.text.dots.better
@@ -2227,6 +2213,7 @@ local function FillSnapshotDataCasting_Balance(spell)
 	snapshotData.casting.icon = spell.icon
 end
 
+--TODO: Remove?
 local function UpdateCastingResourceFinal_Restoration()
 	-- Do nothing for now
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
@@ -2257,7 +2244,7 @@ local function CastingSpell()
 				if currentSpellId == spells.wrath.id then
 					FillSnapshotDataCasting_Balance(spells.wrath)
 					if talents:IsTalentActive(spells.wildSurges) then
-						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.resourceMod
+						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.attributes.resourceMod
 					end
 					if talents:IsTalentActive(spells.soulOfTheForest) and snapshotData.snapshots[spells.eclipseSolar.id].buff.isActive then
 						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * (1 + spells.soulOfTheForest.attributes.modifier.wrath)
@@ -2265,7 +2252,7 @@ local function CastingSpell()
 				elseif currentSpellId == spells.starfire.id then
 					FillSnapshotDataCasting_Balance(spells.starfire)
 					if talents:IsTalentActive(spells.wildSurges) then
-						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.resourceMod
+						snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal + spells.wildSurges.attributes.resourceMod
 					end
 					--TODO: Track how many targets were hit by the last Starfire to guess how much bonus AP you'll get?
 					--snapshotData.casting.resourceFinal = snapshotData.casting.resourceFinal * (1 + spells.soulOfTheForest.modifier.wrath)
@@ -2305,7 +2292,7 @@ local function CastingSpell()
 				local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
 
 				if spellId then
-					local manaCost = -TRB.Classes.SpellBase.GetManaCost({ id = spellId })
+					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellId, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true)
 
 					snapshotData.casting.startTime = currentSpellStartTime / 1000
 					snapshotData.casting.endTime = currentSpellEndTime / 1000
@@ -2394,22 +2381,8 @@ local function UpdateSnapshot_Balance()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local currentTime = GetTime()
 
-	local rattleTheStarsModifier = 1
-
-	if talents:IsTalentActive(spells.rattleTheStars) then
-		rattleTheStarsModifier = 1+spells.rattleTheStars.resourceMod
-	end
-
-	local incarnationChosenOfEluneStarfallModifier = 0
-	local incarnationChosenOfEluneStarsurgeModifier = 0
-
-	if snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff.isActive and talents:IsTalentActive(spells.elunesGuidance) then
-		incarnationChosenOfEluneStarfallModifier = spells.elunesGuidance.attributes.modifierStarfall
-		incarnationChosenOfEluneStarsurgeModifier = spells.elunesGuidance.attributes.modifierStarsurge
-	end
-
-	TRB.Data.character.starsurgeThreshold = (-spells.starsurge.resource + incarnationChosenOfEluneStarsurgeModifier + snapshotData.snapshots[spells.touchTheCosmos.id].buff.customProperties["resourceMod"]) * rattleTheStarsModifier
-	TRB.Data.character.starfallThreshold = (-spells.starfall.resource + incarnationChosenOfEluneStarfallModifier + snapshotData.snapshots[spells.touchTheCosmos.id].buff.customProperties["resourceMod"]) * rattleTheStarsModifier
+	TRB.Data.character.starsurgeThreshold = spells.starsurge:GetPrimaryResourceCost()
+	TRB.Data.character.starfallThreshold = spells.starfall:GetPrimaryResourceCost()
 
 	snapshotData.snapshots[spells.moonkinForm.id].buff:Refresh()
 	snapshotData.snapshots[spells.furyOfElune.id].buff:UpdateTicks(currentTime)
@@ -2589,12 +2562,6 @@ local function UpdateResourceBar()
 					passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 				end
 
-				local rattleTheStarsModifier = 1
-				
-				if talents:IsTalentActive(spells.rattleTheStars) then
-					rattleTheStarsModifier = 1 + spells.rattleTheStars.resourceMod
-				end
-
 				local pairOffset = 0
 				for _, v in pairs(TRB.Data.spellsData.spells) do
 					local spell = v --[[@as TRB.Classes.SpellBase]]
@@ -2602,9 +2569,8 @@ local function UpdateResourceBar()
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
 						pairOffset = (spell.thresholdId - 1) * 3
 
-						local resourceAmount = spell.resource
-						--NOTE: We're just going to draw this inside every isSnowflake for the time being.
-						--TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+						local resourceAmount = -spell:GetPrimaryResourceCost()
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
@@ -2612,23 +2578,6 @@ local function UpdateResourceBar()
 						
 						if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 							if spell.settingKey == spells.starsurge.settingKey then
-								local redrawThreshold = true
-
-								if snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff.isActive and talents:IsTalentActive(spells.elunesGuidance) then
-									resourceAmount = resourceAmount - spells.elunesGuidance.attributes.modifierStarsurge
-									redrawThreshold = true
-								end
-
-								if snapshotData.snapshots[spells.touchTheCosmos.id].buff.isActive then
-									resourceAmount = resourceAmount - snapshotData.snapshots[spells.touchTheCosmos.id].buff.customProperties["resourceMod"]
-									redrawThreshold = true
-								end
-
-								resourceAmount = resourceAmount * rattleTheStarsModifier
-								if redrawThreshold then
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
-								end
-								
 								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								elseif snapshotData.snapshots[spells.starweaversWeft.id].buff.isActive then
@@ -2654,31 +2603,11 @@ local function UpdateResourceBar()
 									snapshotData.audio.playedstarweaverCue = false
 								end
 							elseif spell.settingKey == spells.starsurge2.settingKey then
-								local redrawThreshold = true
-								local touchTheCosmosMod = 0
-								if snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff.isActive and talents:IsTalentActive(spells.elunesGuidance) then
-									resourceAmount = resourceAmount - (spells.elunesGuidance.attributes.modifierStarsurge * 2)
-									redrawThreshold = true
-								end
-
-								if snapshotData.snapshots[spells.touchTheCosmos.id].buff.isActive then
-									resourceAmount = resourceAmount - snapshotData.snapshots[spells.touchTheCosmos.id].buff.customProperties["resourceMod"]
-									redrawThreshold = true
-									touchTheCosmosMod = snapshotData.snapshots[spells.touchTheCosmos.id].buff.customProperties["resourceMod"]
-								end
-
-								resourceAmount = resourceAmount * rattleTheStarsModifier
-
-								if redrawThreshold then
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
-								end
-
 								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								elseif -resourceAmount >= TRB.Data.character.maxResource then
 									showThreshold = false
-								elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and
-										-(TRB.Data.character.starsurgeThreshold - touchTheCosmosMod) > currentResource then
+								elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and resourceAmount > currentResource then
 									showThreshold = false
 								elseif currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
@@ -2687,31 +2616,11 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							elseif spell.settingKey == spells.starsurge3.settingKey then
-								local redrawThreshold = true
-								local touchTheCosmosMod = 0
-								if snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff.isActive and talents:IsTalentActive(spells.elunesGuidance) then
-									resourceAmount = resourceAmount - (spells.elunesGuidance.attributes.modifierStarsurge * 3)
-									redrawThreshold = true
-								end
-
-								if snapshotData.snapshots[spells.touchTheCosmos.id].buff.isActive then
-									resourceAmount = resourceAmount - snapshotData.snapshots[spells.touchTheCosmos.id].buff.customProperties["resourceMod"]
-									redrawThreshold = true
-									touchTheCosmosMod = snapshotData.snapshots[spells.touchTheCosmos.id].buff.customProperties["resourceMod"]
-								end
-
-								resourceAmount = resourceAmount * rattleTheStarsModifier
-
-								if redrawThreshold then
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
-								end
-
 								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								elseif -resourceAmount >= TRB.Data.character.maxResource then
 									showThreshold = false
-								elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and
-										-((TRB.Data.character.starsurgeThreshold * 2) - touchTheCosmosMod) > currentResource then
+								elseif specSettings.thresholds.starsurgeThresholdOnlyOverShow and resourceAmount > currentResource then
 									showThreshold = false
 								elseif currentResource >= -resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
@@ -2720,23 +2629,6 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							elseif spell.id == spells.starfall.id then
-								local redrawThreshold = true
-								if snapshotData.snapshots[spells.incarnationChosenOfElune.id].buff.isActive and talents:IsTalentActive(spells.elunesGuidance) then
-									resourceAmount = resourceAmount - spells.elunesGuidance.attributes.modifierStarfall
-									redrawThreshold = true
-								end
-
-								if snapshotData.snapshots[spells.touchTheCosmos.id].buff.isActive then
-									resourceAmount = resourceAmount - snapshotData.snapshots[spells.touchTheCosmos.id].buff.customProperties["resourceMod"]
-									redrawThreshold = true
-								end
-
-								resourceAmount = resourceAmount * rattleTheStarsModifier
-
-								if redrawThreshold then
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
-								end
-
 								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
 								elseif currentResource >= TRB.Data.character.starfallThreshold then
@@ -2794,7 +2686,7 @@ local function UpdateResourceBar()
 					end
 				end
 				
-				if specSettings.colors.bar.flashSsEnabled and currentResource >= TRB.Data.character.starsurgeThreshold then
+				if specSettings.colors.bar.flashSsEnabled and currentResource >= spells.starsurge:GetPrimaryResourceCost() then
 					flashBar = true
 				end
 
@@ -2905,7 +2797,7 @@ local function UpdateResourceBar()
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						local resourceAmount = CalculateAbilityResourceValue(spell.resource, true, spell.attributes.relentlessPredator)
+						local resourceAmount = -spell:GetPrimaryResourceCost()
 						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
@@ -2924,8 +2816,8 @@ local function UpdateResourceBar()
 								thresholdColor = specSettings.colors.text.dots.down
 								frameLevel = TRB.Data.constants.frameLevels.thresholdBleedDownOrWorse
 							else
-								local snapshotValue = (snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid].spells[spell.id].snapshot or 1) / TRB.Data.snapshotData.attributes.bleeds[spell.settingKey]
-								local bleedUp = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid].spells[spell.id].active
+								local snapshotValue = (snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid].spells[spell.debuffId].snapshot or 1) / TRB.Data.snapshotData.attributes.bleeds[spell.settingKey]
+								local bleedUp = snapshotData.targetData.targets[snapshotData.targetData.currentTargetGuid].spells[spell.debuffId].active
 								
 								if not bleedUp then
 									thresholdColor = specSettings.colors.text.dots.down
@@ -2966,7 +2858,7 @@ local function UpdateResourceBar()
 							end
 						elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 							if spell.id == spells.ferociousBite.id and spell.settingKey == "ferociousBite" then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, math.min(math.max(-resourceAmount, currentResource), -CalculateAbilityResourceValue(spells.ferociousBite.attributes.resourceMax, true, true)), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, math.min(math.max(-resourceAmount, currentResource), spells.ferociousBiteMaximum:GetPrimaryResourceCost()), TRB.Data.character.maxResource)
 								
 								if currentResource >= -resourceAmount or snapshotData.snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
 									thresholdColor = specSettings.colors.threshold.over
@@ -2975,8 +2867,6 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							elseif spell.id == spells.ferociousBiteMinimum.id and spell.settingKey == "ferociousBiteMinimum" then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
-								
 								if currentResource >= -resourceAmount or snapshotData.snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
 									thresholdColor = specSettings.colors.threshold.over
 								else
@@ -3065,7 +2955,7 @@ local function UpdateResourceBar()
 					barColor = specSettings.colors.bar.clearcasting
 				end
 
-				if snapshotData.attributes.resource2 == 5 and currentResource >= -CalculateAbilityResourceValue(spells.ferociousBiteMaximum.resource, true, true) then
+				if snapshotData.attributes.resource2 == 5 and currentResource >= -(spells.ferociousBiteMaximum:GetPrimaryResourceCost()) then
 					barColor = specSettings.colors.bar.maxBite
 				end
 
@@ -3387,7 +3277,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				end
 			elseif specId == 2 and TRB.Data.barConstructedForSpec == "feral" then
-				if entry.spellId == spells.moonfire.id then
+				if entry.spellId == spells.moonfire.debuffId then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
@@ -3398,7 +3288,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							triggerUpdate = true
 						end
 					end
-				elseif entry.spellId == spells.rake.id then
+				elseif entry.spellId == spells.rake.debuffId then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
@@ -3420,7 +3310,7 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							triggerUpdate = true
 						end
 					end
-				elseif entry.spellId == spells.thrash.id then
+				elseif entry.spellId == spells.thrash.debuffId then
 					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 						if entry.type == "SPELL_AURA_APPLIED" or entry.type == "SPELL_AURA_REFRESH" then
@@ -4211,7 +4101,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		elseif var == "$comboPointsMax" then
 			valid = true
 		elseif var == "$ripCount" then
-			if snapshotData.targetData.count[spells.rip.id] > 0 then
+			if snapshotData.targetData.count[spells.rip.debuffId] > 0 then
 				valid = true
 			end
 		elseif var == "$ripCurrent" then
@@ -4220,28 +4110,28 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if not UnitIsDeadOrGhost("target") and
 				UnitCanAttack("player", "target") and
 				target ~= nil and
-				target.spells[spells.rip.id] ~= nil and
-				target.spells[spells.rip.id].remainingTime > 0 then
+				target.spells[spells.rip.debuffId] ~= nil and
+				target.spells[spells.rip.debuffId].remainingTime > 0 then
 				valid = true
 			end
 		elseif var == "$ripPercent" then
 			if not UnitIsDeadOrGhost("target") and
 				UnitCanAttack("player", "target") and
 				target ~= nil and
-				target.spells[spells.rip.id] ~= nil and
-				target.spells[spells.rip.id].snapshot > 0 then
+				target.spells[spells.rip.debuffId] ~= nil and
+				target.spells[spells.rip.debuffId].snapshot > 0 then
 				valid = true
 			end
 		elseif var == "$ripSnapshot" then
 			if not UnitIsDeadOrGhost("target") and
 				UnitCanAttack("player", "target") and
 				target ~= nil and
-				target.spells[spells.rip.id] ~= nil and
-				target.spells[spells.rip.id].snapshot > 0 then
+				target.spells[spells.rip.debuffId] ~= nil and
+				target.spells[spells.rip.debuffId].snapshot > 0 then
 				valid = true
 			end
 		elseif var == "$rakeCount" then
-			if snapshotData.targetData.count[spells.rake.id] > 0 then
+			if snapshotData.targetData.count[spells.rake.debuffId] > 0 then
 				valid = true
 			end
 		elseif var == "$rakeCurrent" then
@@ -4250,24 +4140,24 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if not UnitIsDeadOrGhost("target") and
 				UnitCanAttack("player", "target") and
 				target ~= nil and
-				target.spells[spells.rake.id] ~= nil and
-				target.spells[spells.rake.id].remainingTime > 0 then
+				target.spells[spells.rake.debuffId] ~= nil and
+				target.spells[spells.rake.debuffId].remainingTime > 0 then
 				valid = true
 			end
 		elseif var == "$rakePercent" then
 			if not UnitIsDeadOrGhost("target") and
 				UnitCanAttack("player", "target") and
 				target ~= nil and
-				target.spells[spells.rake.id] ~= nil and
-				target.spells[spells.rake.id].snapshot > 0 then
+				target.spells[spells.rake.debuffId] ~= nil and
+				target.spells[spells.rake.debuffId].snapshot > 0 then
 				valid = true
 			end
 		elseif var == "$rakeSnapshot" then
 			if not UnitIsDeadOrGhost("target") and
 				UnitCanAttack("player", "target") and
 				target ~= nil and
-				target.spells[spells.rake.id] ~= nil and
-				target.spells[spells.rake.id].snapshot > 0 then
+				target.spells[spells.rake.debuffId] ~= nil and
+				target.spells[spells.rake.debuffId].snapshot > 0 then
 				valid = true
 			end
 		elseif var == "$thrashCount" then
@@ -4280,28 +4170,28 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			if not UnitIsDeadOrGhost("target") and
 				UnitCanAttack("player", "target") and
 				target ~= nil and
-				target.spells[spells.thrash.id] ~= nil and
-				target.spells[spells.thrash.id].remainingTime > 0 then
+				target.spells[spells.thrash.debuffId] ~= nil and
+				target.spells[spells.thrash.debuffId].remainingTime > 0 then
 				valid = true
 			end
 		elseif var == "$thrashPercent" then
 			if not UnitIsDeadOrGhost("target") and
 				UnitCanAttack("player", "target") and
 				target ~= nil and
-				target.spells[spells.thrash.id] ~= nil and
-				target.spells[spells.thrash.id].snapshot > 0 then
+				target.spells[spells.thrash.debuffId] ~= nil and
+				target.spells[spells.thrash.debuffId].snapshot > 0 then
 				valid = true
 			end
 		elseif var == "$thrashSnapshot" then
 			if not UnitIsDeadOrGhost("target") and
 				UnitCanAttack("player", "target") and
 				target ~= nil and
-				target.spells[spells.thrash.id] ~= nil and
-				target.spells[spells.thrash.id].snapshot > 0 then
+				target.spells[spells.thrash.debuffId] ~= nil and
+				target.spells[spells.thrash.debuffId].snapshot > 0 then
 				valid = true
 			end
 		elseif var == "$moonfireCount" then
-			if talents:IsTalentActive(spells.lunarInspiration) == true and snapshotData.targetData.count[spells.moonfire.id] > 0 then
+			if talents:IsTalentActive(spells.lunarInspiration) == true and snapshotData.targetData.count[spells.moonfire.debuffId] > 0 then
 				valid = true
 			end
 		elseif var == "$moonfireCurrent" then
@@ -4313,8 +4203,8 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				not UnitIsDeadOrGhost("target") and
 				UnitCanAttack("player", "target") and
 				target ~= nil and
-				target.spells[spells.moonfire.id] ~= nil and
-				target.spells[spells.moonfire.id].remainingTime > 0 then
+				target.spells[spells.moonfire.debuffId] ~= nil and
+				target.spells[spells.moonfire.debuffId].remainingTime > 0 then
 				valid = true
 			end
 		elseif var == "$moonfirePercent" then
@@ -4322,8 +4212,8 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 				not UnitIsDeadOrGhost("target") and
 				UnitCanAttack("player", "target") and
 				target ~= nil and
-				target.spells[spells.moonfire.id] ~= nil and
-				target.spells[spells.moonfire.id].snapshot > 0 then
+				target.spells[spells.moonfire.debuffId] ~= nil and
+				target.spells[spells.moonfire.debuffId].snapshot > 0 then
 				valid = true
 			end
 		elseif var == "$moonfireSnapshot" then

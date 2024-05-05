@@ -64,7 +64,7 @@ function TRB.Classes.Druid.BalanceSpells:New()
     })
     self.starsurge = TRB.Classes.SpellThreshold:New({
         id = 78674,
-        resource = -40,
+        primaryResourceType = Enum.PowerType.LunarPower,
         thresholdId = 1,
         settingKey = "starsurge",
         isTalent = true,
@@ -73,7 +73,8 @@ function TRB.Classes.Druid.BalanceSpells:New()
     })
     self.starsurge2 = TRB.Classes.SpellThreshold:New({
         id = 78674,
-        resource = -80,
+        primaryResourceType = Enum.PowerType.LunarPower,
+        primaryResourceTypeMod = 2,
         thresholdId = 2,
         settingKey = "starsurge2",
         isTalent = true,
@@ -82,7 +83,8 @@ function TRB.Classes.Druid.BalanceSpells:New()
     })
     self.starsurge3 = TRB.Classes.SpellThreshold:New({
         id = 78674,
-        resource = -120,
+        primaryResourceType = Enum.PowerType.LunarPower,
+        primaryResourceTypeMod = 3,
         thresholdId = 3,
         settingKey = "starsurge3",
         isTalent = true,
@@ -127,7 +129,7 @@ function TRB.Classes.Druid.BalanceSpells:New()
     })
     self.starfall = TRB.Classes.SpellThreshold:New({
         id = 191034,
-        resource = -50,
+        primaryResourceType = Enum.PowerType.LunarPower,
         thresholdId = 4,
         settingKey = "starfall",
         pandemic = true,
@@ -149,7 +151,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
     })
     self.rattleTheStars = TRB.Classes.SpellBase:New({
         id = 393954,
-        resourceMod = -0.10,
         isTalent = true
     })
     self.starweaver = TRB.Classes.SpellBase:New({
@@ -223,8 +224,7 @@ function TRB.Classes.Druid.BalanceSpells:New()
         isTalent = true
     })
     self.touchTheCosmos = TRB.Classes.SpellBase:New({ -- T29 4P
-        id = 394414,
-        resourceMod = -15
+        id = 394414
     })
 
     return self
@@ -257,7 +257,7 @@ end
 ---@field public predatorySwiftness TRB.Classes.SpellBase
 ---@field public brutalSlash TRB.Classes.SpellComboPointThreshold
 ---@field public carnivorousInstinct TRB.Classes.SpellBase
----@field public bloodtalons TRB.Classes.SpellThreshold
+---@field public bloodtalons TRB.Classes.SpellBase
 ---@field public feralFrenzy TRB.Classes.SpellComboPointThreshold
 ---@field public incarnationAvatarOfAshamane TRB.Classes.SpellBase
 ---@field public relentlessPredator TRB.Classes.SpellBase
@@ -285,8 +285,9 @@ function TRB.Classes.Druid.FeralSpells:New()
 
     -- Druid Class Talents
     self.rake = TRB.Classes.SpellComboPointThreshold:New({
-        id = 155722,
-        resource = -35,
+        id = 1822,
+        debuffId = 155722,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 1,
         settingKey = "rake",
@@ -301,9 +302,9 @@ function TRB.Classes.Druid.FeralSpells:New()
         baseline = true
     })
     self.thrash = TRB.Classes.SpellComboPointThreshold:New({
-        id = 405233,
-        talentId = 106830,
-        resource = -40,
+        id = 106830,
+        debuffId = 405233,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 2,
         settingKey = "thrash",
@@ -318,7 +319,8 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.rip = TRB.Classes.SpellComboPointThreshold:New({
         id = 1079,
-        resource = -20,
+        debuffId = 1079,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         thresholdId = 4,
         settingKey = "rip",
@@ -340,7 +342,7 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.maim = TRB.Classes.SpellComboPointThreshold:New({
         id = 22570,
-        resource = -30,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         thresholdId = 5,
         settingKey = "maim",
@@ -359,8 +361,7 @@ function TRB.Classes.Druid.FeralSpells:New()
     -- Feral Spec Baseline Abilities
     self.ferociousBite = TRB.Classes.SpellComboPointThreshold:New({
         id = 22568,
-        resource = -25,
-        resourceMax = -50,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         thresholdId = 6,
         settingKey = "ferociousBite",
@@ -369,7 +370,7 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.ferociousBiteMinimum = TRB.Classes.SpellComboPointThreshold:New({
         id = 22568,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         thresholdId = 7,
         settingKey = "ferociousBiteMinimum",
@@ -378,7 +379,8 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.ferociousBiteMaximum = TRB.Classes.SpellComboPointThreshold:New({
         id = 22568,
-        resource = -50,
+        primaryResourceType = Enum.PowerType.Energy,
+        primaryResourceTypeMod = 2,
         comboPoints = true,
         thresholdId = 8,
         settingKey = "ferociousBiteMaximum",
@@ -392,7 +394,7 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.shred = TRB.Classes.SpellComboPointThreshold:New({
         id = 5221,
-        resource = -40,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 9,
         settingKey = "shred",
@@ -400,7 +402,7 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.swipe = TRB.Classes.SpellComboPointThreshold:New({
         id = 106785,
-        resource = -35,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 3,
         settingKey = "swipe",
@@ -430,7 +432,7 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.primalWrath = TRB.Classes.SpellComboPointThreshold:New({
         id = 285381,
-        resource = -20,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         thresholdId = 10,
         settingKey = "primalWrath",
@@ -442,7 +444,8 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.moonfire = TRB.Classes.SpellComboPointThreshold:New({
         id = 155625,
-        resource = -30,
+        debuffId = 155625,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 11,
         settingKey = "moonfire",
@@ -472,7 +475,7 @@ function TRB.Classes.Druid.FeralSpells:New()
         id = 202028,
         cooldown = 8,
         isHasted = true,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 12,
         settingKey = "brutalSlash",
@@ -487,33 +490,28 @@ function TRB.Classes.Druid.FeralSpells:New()
         modifierPerStack = 0.06,
         isTalent = true
     })
-    self.bloodtalons = TRB.Classes.SpellThreshold:New({
+    self.bloodtalons = TRB.Classes.SpellBase:New({
         id = 145152,
         window = 4,
-        resource = -80, --Make this dynamic
-        thresholdId = 13,
-        settingKey = "bloodtalons",
         isTalent = true,
         --isSnowflake = true,
         modifier = 1.25
     })
     self.feralFrenzy = TRB.Classes.SpellComboPointThreshold:New({
         id = 274837,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 5,
-        thresholdId = 14,
+        thresholdId = 13,
         settingKey = "feralFrenzy",
         isTalent = true,
         hasCooldown = true
     })
     self.incarnationAvatarOfAshamane = TRB.Classes.SpellBase:New({
-        id = 102543,
-        resourceMod = 0.8
+        id = 102543
     })
     self.relentlessPredator = TRB.Classes.SpellBase:New({
         id = 393771,
-        isTalent = true,
-        resourceMod = 0.9
+        isTalent = true
     })
     self.circleOfLifeAndDeath = TRB.Classes.SpellBase:New({
         id = 391969,

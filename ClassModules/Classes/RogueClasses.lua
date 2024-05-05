@@ -71,7 +71,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     -- Rogue Class Baseline Abilities
     self.cheapShot = TRB.Classes.SpellComboPointThreshold:New({
         id = 1833,
-        resource = -40,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         stealth = true,
         thresholdId = 2,
@@ -82,7 +82,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     })
     self.crimsonVial = TRB.Classes.SpellThreshold:New({
         id = 185311,
-        resource = -20,
+        primaryResourceType = Enum.PowerType.Energy,
         thresholdId = 3,
         settingKey = "crimsonVial",
         hasCooldown = true,
@@ -92,7 +92,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     })
     self.distract = TRB.Classes.SpellThreshold:New({
         id = 1725,
-        resource = -30,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 0,
         thresholdId = 4,
         settingKey = "distract",
@@ -103,7 +103,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     })
     self.kidneyShot = TRB.Classes.SpellComboPointThreshold:New({
         id = 408,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         thresholdId = 5,
         settingKey = "kidneyShot",
@@ -114,7 +114,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     })
     self.sliceAndDice = TRB.Classes.SpellComboPointThreshold:New({
         id = 315496,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         thresholdId = 6,
         settingKey = "sliceAndDice",
@@ -134,7 +134,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     })
     self.feint = TRB.Classes.SpellThreshold:New({
         id = 1966,
-        resource = -35,
+        primaryResourceType = Enum.PowerType.Energy,
         thresholdId = 7,
         settingKey = "feint",
         hasCooldown = true,
@@ -148,7 +148,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     --Rogue Talent Abilities
     self.shiv = TRB.Classes.SpellComboPointThreshold:New({
         id = 5938,
-        resource = -30,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 8,
         settingKey = "shiv",
@@ -158,7 +158,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     })
     self.sap = TRB.Classes.SpellThreshold:New({ -- Baseline
         id = 6770,
-        resource = -35,
+        primaryResourceType = Enum.PowerType.Energy,
         stealth = true,
         thresholdId = 9,
         settingKey = "sap",
@@ -167,12 +167,11 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     })
     self.nimbleFingers = TRB.Classes.SpellBase:New({
         id = 378427,
-        resourceMod = -10,
         isTalent = true
     })
     self.gouge = TRB.Classes.SpellComboPointThreshold:New({
         id = 1776,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 10,
         settingKey = "gouge",
@@ -186,17 +185,15 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     })
     self.rushedSetup = TRB.Classes.SpellBase:New({
         id = 378803,
-        resourcePercent = 0.8,
         isTalent = true
     })
     self.tightSpender = TRB.Classes.SpellBase:New({
         id = 381621,
-        resourcePercent = 0.9,
         isTalent = true
     })
     self.echoingReprimand = TRB.Classes.SpellComboPointThreshold:New({
         id = 385616,
-        resource = -10,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 2,
         thresholdId = 11,
         settingKey = "echoingReprimand",
@@ -241,7 +238,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     })
     self.sepsis = TRB.Classes.SpellComboPointThreshold:New({
         id = 385408,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 100,
         settingKey = "sepsis",
@@ -253,7 +250,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     -- PvP
     self.deathFromAbove = TRB.Classes.SpellComboPointThreshold:New({
         id = 269513,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Energy,
         thresholdId = 101,
         settingKey = "deathFromAbove",
         comboPoints = true,
@@ -262,7 +259,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     })
     self.dismantle = TRB.Classes.SpellThreshold:New({
         id = 207777,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Energy,
         thresholdId = 102,
         settingKey = "dismantle",
         hasCooldown = true,
@@ -313,7 +310,7 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
     -- Rogue Class Baseline Abilities
     self.ambush = TRB.Classes.SpellComboPointThreshold:New({
         id = 8676,
-        resource = -50,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 2,
         stealth = true,
         thresholdId = 1,
@@ -326,7 +323,7 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
     -- Assassination Baseline Abilities
     self.envenom = TRB.Classes.SpellComboPointThreshold:New({
         id = 32645,
-        resource = -35,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         thresholdId = 12,
         settingKey = "envenom",
@@ -334,7 +331,7 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
     })
     self.fanOfKnives = TRB.Classes.SpellComboPointThreshold:New({
         id = 51723,
-        resource = -35,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 13,
         settingKey = "fanOfKnives",
@@ -342,7 +339,7 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
     })
     self.garrote = TRB.Classes.SpellComboPointThreshold:New({
         id = 703,
-        resource = -45,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 14,
         settingKey = "garrote",
@@ -355,7 +352,7 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
     })
     self.mutilate = TRB.Classes.SpellComboPointThreshold:New({
         id = 1329,
-        resource = -50,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 2,
         thresholdId = 15,
         settingKey = "mutilate",
@@ -364,7 +361,7 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
     })
     self.poisonedKnife = TRB.Classes.SpellComboPointThreshold:New({
         id = 185565,
-        resource = -40,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 16,
         settingKey = "poisonedKnife",
@@ -372,7 +369,7 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
     })
     self.rupture = TRB.Classes.SpellComboPointThreshold:New({
         id = 1943,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         thresholdId = 17,
         settingKey = "rupture",
@@ -400,7 +397,7 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
     })
     self.crimsonTempest = TRB.Classes.SpellComboPointThreshold:New({
         id = 121411,
-        resource = -30,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         thresholdId = 18,
         settingKey = "crimsonTempest",
@@ -443,7 +440,7 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
     })
     self.serratedBoneSpike = TRB.Classes.SpellComboPointThreshold:New({
         id = 385424,
-        resource = -15,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 2,
         thresholdId = 19,
         settingKey = "serratedBoneSpike",
@@ -453,7 +450,7 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
     })
     self.kingsbane = TRB.Classes.SpellComboPointThreshold:New({
         id = 385627,
-        resource = -35,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 21,
         settingKey = "kingsbane",
@@ -507,7 +504,7 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     -- Rogue Class Baseline Abilities
     self.ambush = TRB.Classes.SpellComboPointThreshold:New({
         id = 8676,
-        resource = -50,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 2,
         stealth = true,
         thresholdId = 1,
@@ -521,7 +518,7 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     -- Outlaw Baseline Abilities
     self.betweenTheEyes = TRB.Classes.SpellComboPointThreshold:New({
         id = 315341,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         thresholdId = 12,
         settingKey = "betweenTheEyes",
@@ -533,7 +530,7 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     })
     self.dispatch = TRB.Classes.SpellComboPointThreshold:New({
         id = 2098,
-        resource = -35,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         thresholdId = 13,
         settingKey = "dispatch",
@@ -541,7 +538,7 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     })
     self.pistolShot = TRB.Classes.SpellComboPointThreshold:New({
         id = 185763,
-        resource = -40,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 14,
         settingKey = "pistolShot",
@@ -551,7 +548,7 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     })
     self.sinisterStrike = TRB.Classes.SpellComboPointThreshold:New({
         id = 193315,
-        resource = -45,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 15,
         settingKey = "sinisterStrike",
@@ -561,13 +558,12 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     })
     self.opportunity = TRB.Classes.SpellBase:New({
         id = 195627,
-        resourcePercent = 0.5,
         baseline = true,
         isTalent = true
     })
     self.bladeFlurry = TRB.Classes.SpellThreshold:New({
         id = 13877,
-        resource = -15,
+        primaryResourceType = Enum.PowerType.Energy,
         thresholdId = 16,
         settingKey = "bladeFlurry",
         hasCooldown = true,
@@ -591,7 +587,7 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     })
     self.rollTheBones = TRB.Classes.SpellThreshold:New({
         id = 315508,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Energy,
         thresholdId = 17,
         settingKey = "rollTheBones",
         hasCooldown = true,
@@ -624,7 +620,7 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     })
     self.ghostlyStrike = TRB.Classes.SpellComboPointThreshold:New({
         id = 196937,
-        resource = -30,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 19,
         settingKey = "ghostlyStrike",
@@ -643,7 +639,7 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     })
     self.dreadblades = TRB.Classes.SpellThreshold:New({
         id = 343142,
-        resource = -50,
+        primaryResourceType = Enum.PowerType.Energy,
         thresholdId = 20,
         settingKey = "dreadblades",
         hasCooldown = true,
@@ -660,7 +656,7 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     })
     self.killingSpree = TRB.Classes.SpellComboPointThreshold:New({
         id = 51690,
-        resource = -40,
+        primaryResourceType = Enum.PowerType.Energy,
         thresholdId = 21,
         settingKey = "killingSpree",
         comboPoints = true,
@@ -721,7 +717,7 @@ function TRB.Classes.Rogue.SubtletySpells:New()
 
     self.eviscerate = TRB.Classes.SpellComboPointThreshold:New({ -- This is technically a Rogue ability but is missing from the other specs
         id = 196819,
-        resource = -35,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         thresholdId = 1,
         settingKey = "eviscerate",
@@ -732,7 +728,7 @@ function TRB.Classes.Rogue.SubtletySpells:New()
     -- Subtlety Baseline Abilities
     self.backstab = TRB.Classes.SpellComboPointThreshold:New({
         id = 53,
-        resource = -40,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 12,
         settingKey = "backstab",
@@ -741,7 +737,7 @@ function TRB.Classes.Rogue.SubtletySpells:New()
     })
     self.blackPowder = TRB.Classes.SpellComboPointThreshold:New({
         id = 319175,
-        resource = -35,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         thresholdId = 13,
         settingKey = "blackPowder",
@@ -750,7 +746,7 @@ function TRB.Classes.Rogue.SubtletySpells:New()
     })
     self.rupture = TRB.Classes.SpellComboPointThreshold:New({
         id = 1943,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         thresholdId = 14,
         settingKey = "rupture",
@@ -769,7 +765,7 @@ function TRB.Classes.Rogue.SubtletySpells:New()
     })
     self.shadowstrike = TRB.Classes.SpellComboPointThreshold:New({
         id = 185438,
-        resource = -45,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 2,
         stealth = true,
         thresholdId = 15,
@@ -778,7 +774,7 @@ function TRB.Classes.Rogue.SubtletySpells:New()
     })
     self.shurikenStorm = TRB.Classes.SpellComboPointThreshold:New({
         id = 197835,
-        resource = -45,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 16,
         settingKey = "shurikenStorm",
@@ -787,7 +783,7 @@ function TRB.Classes.Rogue.SubtletySpells:New()
     })
     self.shurikenToss = TRB.Classes.SpellComboPointThreshold:New({
         id = 114014,
-        resource = -40,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 17,
         settingKey = "shurikenToss",
@@ -808,7 +804,7 @@ function TRB.Classes.Rogue.SubtletySpells:New()
     })
     self.gloomblade = TRB.Classes.SpellThreshold:New({
         id = 200758,
-        resource = -40,
+        primaryResourceType = Enum.PowerType.Energy,
         thresholdId = 18,
         settingKey = "gloomblade",
         isTalent = true,
@@ -816,7 +812,7 @@ function TRB.Classes.Rogue.SubtletySpells:New()
     })
     self.secretTechnique = TRB.Classes.SpellComboPointThreshold:New({
         id = 280719,
-        resource = -30,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
         thresholdId = 19,
         settingKey = "secretTechnique",
@@ -825,7 +821,7 @@ function TRB.Classes.Rogue.SubtletySpells:New()
     })
     self.shurikenTornado = TRB.Classes.SpellComboPointThreshold:New({
         id = 277925,
-        resource = -60,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         thresholdId = 20,
         settingKey = "shurikenTornado",
@@ -835,7 +831,7 @@ function TRB.Classes.Rogue.SubtletySpells:New()
     self.goremawsBite = TRB.Classes.SpellComboPointThreshold:New({
         id = 426591,
         buffId = 426593,
-        resource = -25,
+        primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 3,
         thresholdId = 22,
         settingKey = "goremawsBite",
@@ -845,7 +841,7 @@ function TRB.Classes.Rogue.SubtletySpells:New()
     self.shadowFocus = TRB.Classes.SpellBase:New({
         id = 108209,
         isTalent = true,
-        resourcePercent = 0.9
+        _resourcePercent = 0.9
     })
     self.shotInTheDark = TRB.Classes.SpellBase:New({
         id = 257506,
@@ -884,7 +880,7 @@ function TRB.Classes.Rogue.SubtletySpells:New()
 
     self.shadowyDuel = TRB.Classes.SpellThreshold:New({
         id = 207736,
-        resource = -50,
+        primaryResourceType = Enum.PowerType.Energy,
         thresholdId = 25,
         settingKey = "dismantle",
         hasCooldown = true,

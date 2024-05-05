@@ -113,7 +113,7 @@ function TRB.Classes.Shaman.ElementalSpells:New()
     -- Elemental Talent Abilities
     self.earthShock = TRB.Classes.SpellThreshold:New({
         id = 8042,
-        resource = -60,
+        primaryResourceType = Enum.PowerType.Maelstrom,
         thresholdId = 1,
         settingKey = "earthShock",
         isTalent = true,
@@ -122,7 +122,7 @@ function TRB.Classes.Shaman.ElementalSpells:New()
     })
     self.earthquake = TRB.Classes.SpellThreshold:New({
         id = 61882,
-        resource = -60,
+        primaryResourceType = Enum.PowerType.Maelstrom,
         thresholdId = 2,
         settingKey = "earthquake",
         isTalent = true,
@@ -204,7 +204,7 @@ function TRB.Classes.Shaman.ElementalSpells:New()
     })
     self.elementalBlast = TRB.Classes.SpellThreshold:New({
         id = 117014,
-        resource = -90,
+        primaryResourceType = Enum.PowerType.Maelstrom,
         thresholdId = 3,
         settingKey = "elementalBlast",
         isTalent = true,

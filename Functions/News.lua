@@ -24,6 +24,15 @@ local content = [====[
 
 - (FIX (Twintop)) Correctly show Spirit Bomb's threshold line as unusable when you have 0 Soul Fragments.
 
+## Hunter
+
+- (FIX (Twintop)) Fix Explosive Shot threshold line's cooldown status.
+
+## Paladin
+### Holy
+
+- (FIX (Twintop)) Fix Daybreak threshold line's cooldown status.
+
 ---
 
 # 10.2.6.10-release (2024-04-23)

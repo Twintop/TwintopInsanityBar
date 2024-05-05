@@ -67,9 +67,11 @@ end
 ---@field public texture string # Icon texture of the spell for uses in place like bar text. Usually populated automagically from the ID via lookups.
 ---@field public baseline boolean? # Is this spell a baseline ability?
 ---@field public isTalent boolean? # Is this spell available via a talent? Only used if we need to check if the talent is talented.
----@field public resource number? # How much of the primary resource a spell will generate (positive) or cost (negative).
----@field public resourceMod number? # How much of an offset to the base resource will be applied. Can be a percentage or absolute value. TODO: Split these two values out.
----@field public resourcePercent number? # How much of a percentage of the resource will be used. Implementation dependent on usage.
+---@field public primaryResourceType Enum.PowerType? # Primary resource used in API calls, e.g. Enum.PowerType.Mana
+---@field public primaryResourceTypeMod number? # Modifier applied to whatever the returned primary resource amount is, e.g. a second Devouring Plague cast cost
+---@field public primaryResourceTypeProperty string? # Which parameter to take from the return of the API call. Defaults to `cost` but can also be `minCost` or `costPerSec`.
+---@field public primaryResourceTypePropertyValue number? # Custom override value that an ability will cost. Primarily used for spells that have a max range but the value isn't returned by the API, such as Execute.
+---@field public resource number? # How much of the primary resource a spell will generate.
 ---@field public duration number? # The duration of a buff/debuff. Used by `TRB.Classes.TargetSpell` and others when the duration cannot otherwise be deduced.
 ---@field public baseDuration number? # The base duration a DoT/HoT lasts.
 ---@field public pandemic boolean? # Is this spell a DoT/HoT that can be extended to a duration 30% longer than its baseDuration (Pandemic).
@@ -85,6 +87,8 @@ end
 ---@field public tocMinVersion number? # Minimum TOC version of WoW before attempting to use/load this spell.
 ---@field public attributes { [string]: any } # Spell specific values that will need to be looked up during gameplay.
 ---@field protected classTypes trbSpellType[] # List of types that this class implements. Used for checking if a specific class implements some derived class, e.g. SpellThreshold 
+---@field private _lastNonZeroPrimaryResourceValue number? # What was the last non-zero primary resource value seen
+---@field private _lastPrimaryResourceValueCheck number? # Timestamp of the last time a check was done
 TRB.Classes.SpellBase = {}
 TRB.Classes.SpellBase.__index = TRB.Classes.SpellBase
 
@@ -103,35 +107,37 @@ function TRB.Classes.SpellBase:New(spellAttributes)
     ---@type { [string]: any }
     local attributes = {}
     for key, value in pairs(spellAttributes) do
-        if  (key == "id"              and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "spellId"         and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "buffId"          and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "debuffId"        and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "energizeId"      and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "talentId"        and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "tickId"          and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "itemId"          and type(value) == "number" and tonumber(value, 10) ~= nil) or
+        if  (key == "id"                               and type(value) == "number" and tonumber(value, 10) ~= nil) or
+            (key == "spellId"                          and type(value) == "number" and tonumber(value, 10) ~= nil) or
+            (key == "buffId"                           and type(value) == "number" and tonumber(value, 10) ~= nil) or
+            (key == "debuffId"                         and type(value) == "number" and tonumber(value, 10) ~= nil) or
+            (key == "energizeId"                       and type(value) == "number" and tonumber(value, 10) ~= nil) or
+            (key == "talentId"                         and type(value) == "number" and tonumber(value, 10) ~= nil) or
+            (key == "tickId"                           and type(value) == "number" and tonumber(value, 10) ~= nil) or
+            (key == "itemId"                           and type(value) == "number" and tonumber(value, 10) ~= nil) or
             (key == "iconName") or
-            (key == "useSpellIcon"    and type(value) == "boolean") or
+            (key == "useSpellIcon"                     and type(value) == "boolean") or
             (key == "texture") or
-            (key == "baseline"        and type(value) == "boolean") or
-            (key == "isTalent"        and type(value) == "boolean") or
-            (key == "resource"        and type(value) == "number") or
-            (key == "resourceMod"     and type(value) == "number") or
-            (key == "resourcePercent" and type(value) == "number") or
-            (key == "duration"        and type(value) == "number") or
-            (key == "baseDuration"    and type(value) == "number") or
-            (key == "pandemic"        and type(value) == "boolean") or
-            (key == "pandemicTime"    and type(value) == "number") or
-            (key == "hasCooldown"     and type(value) == "boolean") or
-            (key == "hasCharges"      and type(value) == "boolean") or
-            (key == "hasTicks"        and type(value) == "boolean") or
-            (key == "ticks"           and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "tickRate"        and type(value) == "number") or
-            (key == "resourcePerTick" and type(value) == "number") or
-            (key == "isBuff"          and type(value) == "boolean") or
-            (key == "isPvP"           and type(value) == "boolean") or
-            (key == "tocMinVersion"   and type(value) == "number") then
+            (key == "baseline"                         and type(value) == "boolean") or
+            (key == "isTalent"                         and type(value) == "boolean") or
+            (key == "primaryResourceType") or
+            (key == "primaryResourceTypeMod"           and type(value) == "number") or
+            (key == "primaryResourceTypeProperty") or
+            (key == "primaryResourceTypePropertyValue" and type(value) == "number") or
+            (key == "resource"                         and type(value) == "number") or
+            (key == "duration"                         and type(value) == "number") or
+            (key == "baseDuration"                     and type(value) == "number") or
+            (key == "pandemic"                         and type(value) == "boolean") or
+            (key == "pandemicTime"                     and type(value) == "number") or
+            (key == "hasCooldown"                      and type(value) == "boolean") or
+            (key == "hasCharges"                       and type(value) == "boolean") or
+            (key == "hasTicks"                         and type(value) == "boolean") or
+            (key == "ticks"                            and type(value) == "number" and tonumber(value, 10) ~= nil) or
+            (key == "tickRate"                         and type(value) == "number") or
+            (key == "resourcePerTick"                  and type(value) == "number") or
+            (key == "isBuff"                           and type(value) == "boolean") or
+            (key == "isPvP"                            and type(value) == "boolean") or
+            (key == "tocMinVersion"                    and type(value) == "number") then
             self[key] = value
         elseif key == "name" or key == "icon" then
             print(string.format("TRB: Unexpected property `%s` provided with value `%s`.", key, value))
@@ -151,6 +157,18 @@ function TRB.Classes.SpellBase:New(spellAttributes)
     if self.pandemic and self.baseDuration ~= nil and type(self.baseDuration) == "number" and self.baseDuration > 0 and self.pandemicTime == nil then
         self.pandemicTime = self.baseDuration * 0.3
     end
+
+    if self.primaryResourceType ~= nil then
+        self._lastNonZeroPrimaryResourceValue = 0
+        self._lastPrimaryResourceValueCheck = 0
+        if self.primaryResourceTypeProperty == nil then
+            self.primaryResourceTypeProperty = "cost"
+        end
+        if self.primaryResourceTypeMod == nil then
+            self.primaryResourceTypeMod = 1
+        end
+    end
+
 
     self.name = ""
     self.icon = ""
@@ -199,32 +217,37 @@ function TRB.Classes.SpellBase:FillSpellData()
     end
 end
 
----Gets the current mana cost of the spell.
----@return number # Mana cost of the spell.
-function TRB.Classes.SpellBase:GetManaCost()
-	local spc = GetSpellPowerCost(self.id)
-	local length = TRB.Functions.Table:Length(spc)
+local primaryResourceCostEmbargoTimespan = 0.05
 
-	for x = 1, length do
-		if spc[x]["name"] == "MANA" and spc[x]["cost"] > 0 then
-			return spc[x]["cost"]
-		end
-	end
-	return 0
-end
+---Gets the current primary resource cost of the spell.
+---@param dontReturnLastNonZero boolean? # If true, return 0 if not found instead of the last known value instead.
+---@return number # Primary resource cost of the spell.
+function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero)
+    local currentTime = GetTime()
+    if self.primaryResourceType ~= nil and self.primaryResourceTypeProperty ~= "custom" then
+        if self._lastPrimaryResourceValueCheck + primaryResourceCostEmbargoTimespan > currentTime then
+            self._lastPrimaryResourceValueCheck = currentTime
+            return self._lastNonZeroPrimaryResourceValue
+        end
+        local spc = GetSpellPowerCost(self.id)
+        if spc ~= nil then
+            for x = 1, #spc do
+                if spc[x].type == self.primaryResourceType and spc[x][self.primaryResourceTypeProperty] > 0 then
+                    local value = spc[x][self.primaryResourceTypeProperty] * self.primaryResourceTypeMod
+                    self._lastNonZeroPrimaryResourceValue = value
+                    return value
+                end
+            end
+        end
+    elseif self.primaryResourceTypeProperty == "custom" then
+        return self.primaryResourceTypePropertyValue
+    end
 
----Gets the current mana cost per second of the spell.
----@return number # Mana cost per second of the spell.
-function TRB.Classes.SpellBase:GetManaCostPerSecond()
-	local spc = GetSpellPowerCost(self.id)
-	local length = TRB.Functions.Table:Length(spc)
+    if dontReturnLastNonZero == true then
+        return 0
+    end
 
-	for x = 1, length do
-		if spc[x]["name"] == "MANA" and spc[x]["costPerSec"] > 0 then
-			return spc[x]["costPerSec"]
-		end
-	end
-	return 0
+	return self._lastNonZeroPrimaryResourceValue
 end
 
 ---Determines if the current SpellBase is also another type, such as SpellThreshold.
@@ -251,7 +274,7 @@ end
 ---@param spell TRB.Classes.SpellThreshold|TRB.Classes.SpellComboPointThreshold # Spell to check
 ---@return boolean # Is this a valid Threshold spell
 local function spellThreshold_IsValid(spell)
-    if spell ~= nil and spell.id ~= nil and spell.resource ~= nil and spell.resource < 0 and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+    if spell ~= nil and spell.id ~= nil and spell.primaryResourceType ~= nil and spell.thresholdId ~= nil and spell.settingKey ~= nil then
         return true
     end
     return false

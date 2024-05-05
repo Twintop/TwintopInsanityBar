@@ -347,14 +347,8 @@ local function FillSpellData_Vengeance()
 	}
 end
 
-local function CalculateAbilityResourceValue(resource)
-	local modifier = 1.0
-
-	return resource * modifier
-end
-
 local function UpdateCastingResourceFinal()
-	TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
+	TRB.Data.snapshotData.casting.resourceFinal = TRB.Data.snapshotData.casting.resourceRaw
 end
 
 local function RefreshTargetTracking()
@@ -423,7 +417,7 @@ local function RefreshLookupData_Havoc()
 			local _overThreshold = false
 			for _, v in pairs(spells) do
 				local spell = v --[[@as TRB.Classes.SpellBase]]
-				if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= normalizedResource then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= normalizedResource then
 					_overThreshold = true
 					break
 				end
@@ -607,7 +601,7 @@ local function RefreshLookupData_Vengeance()
 			local _overThreshold = false
 			for _, v in pairs(spells) do
 				local spell = v --[[@as TRB.Classes.SpellBase]]
-				if spell ~= nil and spell.resource ~= nil and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell.resource >= normalizedResource then
+				if spell ~= nil and spell.resource and (spell.baseline or talents.talents[spell.id]:IsActive()) and spell:GetPrimaryResourceCost() >= normalizedResource then
 					_overThreshold = true
 					break
 				end
@@ -727,15 +721,6 @@ local function RefreshLookupData_Vengeance()
 	lookupLogic["$resourceOvercap"] = overcap
 	lookupLogic["$furyOvercap"] = overcap
 	TRB.Data.lookupLogic = lookupLogic
-end
-
-local function FillSnapshotDataCasting(spell)
-	local currentTime = GetTime()
-	TRB.Data.snapshotData.casting.startTime = currentTime
-	TRB.Data.snapshotData.casting.resourceRaw = spell.resource
-	TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.resource)
-	TRB.Data.snapshotData.casting.spellId = spell.id
-	TRB.Data.snapshotData.casting.icon = spell.icon
 end
 
 local function CastingSpell()
@@ -931,7 +916,7 @@ local function UpdateResourceBar()
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						local resourceAmount = CalculateAbilityResourceValue(spell.resource)
+						local resourceAmount = -spell:GetPrimaryResourceCost()
 
 						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
@@ -1099,7 +1084,7 @@ local function UpdateResourceBar()
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						local resourceAmount = CalculateAbilityResourceValue(spell.resource)
+						local resourceAmount = -spell:GetPrimaryResourceCost()
 
 						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 

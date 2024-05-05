@@ -693,11 +693,8 @@ local function FeralLoadDefaultSettings(includeBarText)
 			brutalSlash = {
 				enabled = true, -- 12
 			},
-			bloodtalons = { --Incase a notification line ever makes sense
-				enabled = false, -- 13
-			},
 			feralFrenzy = {
-				enabled = true, -- 14
+				enabled = true, -- 13
 			},
 		},
 		generation = {
