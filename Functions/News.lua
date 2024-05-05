@@ -9,6 +9,31 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 *Localization of the addon is underway! If you're interested in helping translate, please [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know. Thank you!*
 
+# 10.2.7.0-release (2024-05-07)
+## General
+
+- [#386 - REFACTOR (Twintop)](#386) Overhaul how spell data is stored and used under the hood.
+- [#386 - REFACTOR (Twintop)](#386) Clean up unneeded spells, snapshots, and special threshold code as a result of refactors.
+- (FIX (Twintop)) Prevent Lua errors from occuring when on a Dragonriding mount and on an unsupported class (Death Knight, Mage, or Warlock).
+
+### Healers
+
+- (FIX (Twintop)) Ensure the passive mana generation lines for Potion of Frozen Focus and Potion of Chilled Clarity render properly.
+
+## Demon Hunter
+### Vengeance
+
+- (FIX (Twintop)) Correctly show Spirit Bomb's threshold line as unusable when you have 0 Soul Fragments.
+
+## Hunter
+
+- (FIX (Twintop)) Fix Explosive Shot threshold line's cooldown status.
+
+## Paladin
+### Holy
+
+- (FIX (Twintop)) Fix Daybreak threshold line's cooldown status.
+
 ---
 
 # 10.2.6.10-release (2024-04-23)

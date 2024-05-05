@@ -11,11 +11,29 @@ end
 
 local function OnAdvFlyDisabled()
 	TRB.Data.character.advancedFlight = false
-	TRB.Functions.Bar:ShowResourceBar()
+	if TRB.Data.specSupported == true then
+		TRB.Functions.Bar:ShowResourceBar()
+	end
 end
 
 TRB.Details.addonData.libs.LibAdvFlight.RegisterCallback(TRB.Details.addonData.libs.LibAdvFlight.Events.ADV_FLYING_ENABLED, OnAdvFlyEnabled);
 TRB.Details.addonData.libs.LibAdvFlight.RegisterCallback(TRB.Details.addonData.libs.LibAdvFlight.Events.ADV_FLYING_DISABLED, OnAdvFlyDisabled);
+
+--TODO: Move this somewhere else.
+--This is a fallback method for the Advanced Flight checking on a class that doesn't have support. Hide everything bar related.
+function TRB.Functions.Class:HideResourceBar(force)
+	TRB.Frames.barContainerFrame:Hide()
+end
+
+--TODO: Move this somewhere else.
+--This is a fallback method for the Advanced Flight checking on a class that doesn't have support. Hide everything bar related.
+function TRB.Functions.Class:EventRegistration()
+	TRB.Data.specSupported = false
+	TRB.Details.addonData.registered = false
+
+	TRB.Functions.Bar:HideResourceBar()
+end
+
 
 function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.guid = UnitGUID("player")
@@ -24,8 +42,8 @@ function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.onTaxi = UnitOnTaxi("player")
 	TRB.Data.character.advancedFlight = TRB.Details.addonData.libs.LibAdvFlight.IsAdvFlyEnabled()
 
-	TRB.Data.barTextCache = {}
-	TRB.Functions.Spell:FillSpellData()
+	--TRB.Data.barTextCache = {}
+	--TRB.Functions.Spell:FillSpellData()
 end
 
 function TRB.Functions.Character:UpdateSnapshot()
@@ -77,16 +95,18 @@ function TRB.Functions.Character:UpdateSnapshot()
 	snapshotData.attributes.intellect, _, _, _ = UnitStat("player", 4)
 end
 
+---Loads data from the specialization cache in to the main TRB.Data table
+---@param cache TRB.Classes.SpecCache
 function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	Global_TwintopResourceBar = cache.Global_TwintopResourceBar
 
 	TRB.Data.character = cache.character
-	TRB.Data.spells = cache.spells
+	TRB.Data.spellsData = cache.spellsData
 	TRB.Data.talents = cache.talents
 	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons
 	TRB.Data.barTextVariables.values = cache.barTextVariables.values
 	TRB.Data.snapshotData = cache.snapshotData
-
+	TRB.Data.barTextCache = {}
 end
 
 ---Fills the specialization cache with a combination of global and spec specific settings

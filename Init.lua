@@ -23,7 +23,8 @@ TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFC69B6D" .. L["Wa
 local addonData = {
 	loaded = false,
 	registered = false,
-	libs = {}
+	libs = {},
+	toc = select(4, GetBuildInfo())
 }
 addonData.libs.SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
 addonData.libs.SharedMedia:Register("sound", L["LSMSoundWilhelmScream"], "Interface\\Addons\\TwintopInsanityBar\\Sounds\\wilhelm.ogg")
@@ -151,7 +152,9 @@ TRB.Data.character = {
 	items = {}
 }
 
-TRB.Data.spells = {}
+---@type TRB.Classes.SpellsData
+---@diagnostic disable-next-line: missing-fields
+TRB.Data.spellsData = {}
 
 TRB.Data.lookup = {}
 TRB.Data.lookupLogic = {}
