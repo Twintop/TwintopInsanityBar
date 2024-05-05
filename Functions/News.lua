@@ -9,10 +9,11 @@ local oUi = TRB.Data.constants.optionsUi
 local content = [====[
 *Localization of the addon is underway! If you're interested in helping translate, please [join the Discord server](https://discord.gg/eThqxM78xm) and let Twintop know. Thank you!*
 
-# 10.2.6.11-release (2024-04-27)
+# 10.2.7.0-release (2024-05-07)
 ## General
 
-- [#386 - REFACTOR (Twintop)](#386) Overhaul how spelldata is stored and used under the hood.
+- [#386 - REFACTOR (Twintop)](#386) Overhaul how spell data is stored and used under the hood.
+- [#386 - REFACTOR (Twintop)](#386) Clean up unneeded spells, snapshots, and special threshold code as a result of refactors.
 - (FIX (Twintop)) Prevent Lua errors from occuring when on a Dragonriding mount and on an unsupported class (Death Knight, Mage, or Warlock).
 
 ### Healers
