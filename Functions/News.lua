@@ -20,6 +20,10 @@ local content = [====[
 
 - (FIX (Twintop)) Ensure the passive mana generation lines for Potion of Frozen Focus and Potion of Chilled Clarity render properly.
 
+### Localization
+
+- [#8 - UPDATE (Koroshy)](#8) Add more French (frFR) localizations.
+
 ## Demon Hunter
 ### Vengeance
 
