@@ -177,26 +177,26 @@ end
 
 ---@class TRB.Classes.Priest.HolySpells : TRB.Classes.Priest.HealerSpells
 ---@field public flashHeal TRB.Classes.SpellBase
----@field public smite TRB.Classes.Priest.HolyWordSpell
----@field public heal TRB.Classes.Priest.HolyWordSpell
----@field public prayerOfMending TRB.Classes.Priest.HolyWordSpell
----@field public renew TRB.Classes.Priest.HolyWordSpell
 ---@field public holyWordSerenity TRB.Classes.SpellBase
----@field public prayerOfHealing TRB.Classes.Priest.HolyWordSpell
 ---@field public holyWordChastise TRB.Classes.SpellBase
 ---@field public holyWordSanctify TRB.Classes.SpellBase
----@field public holyFire TRB.Classes.Priest.HolyWordSpell
----@field public circleOfHealing TRB.Classes.Priest.HolyWordSpell
----@field public symbolOfHope TRB.Classes.SpellThreshold
----@field public lightOfTheNaaru TRB.Classes.Priest.HolyWordSpell
----@field public harmoniousApparatus TRB.Classes.Priest.HolyWordSpell
----@field public apotheosis TRB.Classes.Priest.HolyWordSpell
 ---@field public resonantWords TRB.Classes.SpellBase
 ---@field public lightweaver TRB.Classes.SpellBase
 ---@field public miracleWorker TRB.Classes.SpellBase
 ---@field public divineConversation TRB.Classes.SpellBase
 ---@field public prayerFocus TRB.Classes.SpellBase
 ---@field public sacredReverence TRB.Classes.SpellBase
+---@field public symbolOfHope TRB.Classes.SpellThreshold
+---@field public smite TRB.Classes.Priest.HolyWordSpell
+---@field public heal TRB.Classes.Priest.HolyWordSpell
+---@field public prayerOfMending TRB.Classes.Priest.HolyWordSpell
+---@field public renew TRB.Classes.Priest.HolyWordSpell
+---@field public prayerOfHealing TRB.Classes.Priest.HolyWordSpell
+---@field public holyFire TRB.Classes.Priest.HolyWordSpell
+---@field public circleOfHealing TRB.Classes.Priest.HolyWordSpell
+---@field public lightOfTheNaaru TRB.Classes.Priest.HolyWordSpell
+---@field public harmoniousApparatus TRB.Classes.Priest.HolyWordSpell
+---@field public apotheosis TRB.Classes.Priest.HolyWordSpell
 TRB.Classes.Priest.HolySpells = setmetatable({}, {__index = TRB.Classes.Priest.HealerSpells})
 TRB.Classes.Priest.HolySpells.__index = TRB.Classes.Priest.HolySpells
 
@@ -357,9 +357,6 @@ end
 ---@field public twistOfFate TRB.Classes.SpellBase
 ---@field public halo TRB.Classes.SpellBase
 ---@field public mindgames TRB.Classes.SpellBase
----@field public devouringPlague TRB.Classes.SpellThreshold
----@field public devouringPlague2 TRB.Classes.SpellThreshold
----@field public devouringPlague3 TRB.Classes.SpellThreshold
 ---@field public shadowyApparition TRB.Classes.SpellBase
 ---@field public auspiciousSpirits TRB.Classes.SpellBase
 ---@field public misery TRB.Classes.SpellBase
@@ -368,9 +365,6 @@ end
 ---@field public voidform TRB.Classes.SpellBase
 ---@field public darkAscension TRB.Classes.SpellBase
 ---@field public mindSpike TRB.Classes.SpellBase
----@field public darkEvangelism TRB.Classes.SpellBase
----@field public mindsEye TRB.Classes.SpellBase
----@field public distortedReality TRB.Classes.SpellBase
 ---@field public surgeOfInsanity TRB.Classes.SpellBase
 ---@field public mindFlayInsanity TRB.Classes.SpellBase
 ---@field public mindSpikeInsanity TRB.Classes.SpellBase
@@ -379,7 +373,6 @@ end
 ---@field public shadowCrash TRB.Classes.SpellBase
 ---@field public shadowyInsight TRB.Classes.SpellBase
 ---@field public mindMelt TRB.Classes.SpellBase
----@field public maddeningTouch TRB.Classes.SpellBase
 ---@field public mindbender TRB.Classes.SpellBase
 ---@field public devouredDespair TRB.Classes.SpellBase
 ---@field public mindDevourer TRB.Classes.SpellBase
@@ -391,6 +384,9 @@ end
 ---@field public idolOfYoggSaron TRB.Classes.SpellBase
 ---@field public thingFromBeyond TRB.Classes.SpellBase
 ---@field public deathsTorment TRB.Classes.SpellBase
+---@field public devouringPlague TRB.Classes.SpellThreshold
+---@field public devouringPlague2 TRB.Classes.SpellThreshold
+---@field public devouringPlague3 TRB.Classes.SpellThreshold
 TRB.Classes.Priest.ShadowSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Priest.ShadowSpells.__index = TRB.Classes.Priest.ShadowSpells
 
@@ -542,18 +538,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
         resource = 4,
         isTalent = true
     })
-    self.darkEvangelism = TRB.Classes.SpellBase:New({
-        id = 73510,
-        isTalent = true
-    })
-    self.mindsEye = TRB.Classes.SpellBase:New({
-        id = 407470,
-        isTalent = true
-    })
-    self.distortedReality = TRB.Classes.SpellBase:New({
-        id = 409044,
-        isTalent = true
-    })
     self.surgeOfInsanity = TRB.Classes.SpellBase:New({
         id = 391399,
         isTalent = true
@@ -592,12 +576,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
     })
     self.mindMelt = TRB.Classes.SpellBase:New({
         id = 391092,
-        isTalent = true
-    })
-    self.maddeningTouch = TRB.Classes.SpellBase:New({
-        id = 73510,
-        resource = 1,
-        perRank = 0.5,
         isTalent = true
     })
     self.mindbender = TRB.Classes.SpellBase:New({

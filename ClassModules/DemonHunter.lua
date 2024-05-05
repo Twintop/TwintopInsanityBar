@@ -184,18 +184,13 @@ local function FillSpellData_Havoc()
 		{ variable = "#chaosNova", icon = spells.chaosNova.icon, description = spells.chaosNova.name, printInSettings = true },
 		{ variable = "#chaosStrike", icon = spells.chaosStrike.icon, description = spells.chaosStrike.name, printInSettings = true },
 		{ variable = "#deathSweep", icon = spells.deathSweep.icon, description = spells.deathSweep.name, printInSettings = true },
-		{ variable = "#demonicAppetite", icon = spells.demonicAppetite.icon, description = spells.demonicAppetite.name, printInSettings = true },
-		{ variable = "#demonsBite", icon = spells.demonsBite.icon, description = spells.demonsBite.name, printInSettings = true },
 		{ variable = "#eyeBeam", icon = spells.eyeBeam.icon, description = spells.eyeBeam.name, printInSettings = true },
 		{ variable = "#felBarrage", icon = spells.felBarrage.icon, description = spells.felBarrage.name, printInSettings = true },
-		{ variable = "#felBlade", icon = spells.felBlade.icon, description = spells.felBlade.name, printInSettings = true },
 		{ variable = "#felEruption", icon = spells.felEruption.icon, description = spells.felEruption.name, printInSettings = true },
-		{ variable = "#firstBlood", icon = spells.firstBlood.icon, description = spells.firstBlood.name, printInSettings = true },
 		{ variable = "#glaiveTempest", icon = spells.glaiveTempest.icon, description = spells.glaiveTempest.name, printInSettings = true },
 		{ variable = "#immolationAura", icon = spells.immolationAura.icon, description = spells.immolationAura.name, printInSettings = true },
 		{ variable = "#metamorphosis", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = true },			
 		{ variable = "#meta", icon = spells.metamorphosis.icon, description = spells.metamorphosis.name, printInSettings = false },
-		{ variable = "#momentum", icon = spells.momentum.icon, description = spells.momentum.name, printInSettings = true },
 		{ variable = "#tacticalRetreat", icon = spells.tacticalRetreat.icon, description = spells.tacticalRetreat.name, printInSettings = true },
 		{ variable = "#unboundChaos", icon = spells.unboundChaos.icon, description = spells.unboundChaos.name, printInSettings = true },
 	}
@@ -506,18 +501,13 @@ local function RefreshLookupData_Havoc()
 	lookup["#chaosNova"] = spells.chaosNova.icon
 	lookup["#chaosStrike"] = spells.chaosStrike.icon
 	lookup["#deathSweep"] = spells.deathSweep.icon
-	lookup["#demonicAppetite"] = spells.demonicAppetite.icon
-	lookup["#demonsBite"] = spells.demonsBite.icon
 	lookup["#eyeBeam"] = spells.eyeBeam.icon
 	lookup["#felBarrage"] = spells.felBarrage.icon
-	lookup["#felBlade"] = spells.felBlade.icon
 	lookup["#felEruption"] = spells.felEruption.icon
-	lookup["#firstBlood"] = spells.firstBlood.icon
 	lookup["#glaiveTempest"] = spells.glaiveTempest.icon
 	lookup["#immolationAura"] = spells.immolationAura.icon
 	lookup["#metamorphosis"] = spells.metamorphosis.icon
 	lookup["#meta"] = spells.metamorphosis.icon
-	lookup["#momentum"] = spells.momentum.icon
 	lookup["#tacticalRetreat"] = spells.tacticalRetreat.icon
 	lookup["#unboundChaos"] = spells.unboundChaos.icon
 	lookup["$metaTime"] = metamorphosisTime
@@ -932,22 +922,7 @@ local function UpdateResourceBar()
 						elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 							showThreshold = false
 						elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-							if spell.id == spells.throwGlaive.id then
-								if talents:IsTalentActive(spells.furiousThrows) then
-									resourceAmount = spells.furiousThrows.resource
-									if snapshotData.snapshots[spells.throwGlaive.id].cooldown.charges == 0 then
-										thresholdColor = specSettings.colors.threshold.unusable
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif currentResource >= -resourceAmount then
-										thresholdColor = specSettings.colors.threshold.over
-									else
-										thresholdColor = specSettings.colors.threshold.under
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end
-								else
-									showThreshold = false
-								end
-							elseif spell.id == spells.chaosStrike.id or spell.id == spells.annihilation.id then
+							if spell.id == spells.chaosStrike.id or spell.id == spells.annihilation.id then
 								if snapshotData.snapshots[spells.chaosTheory.id].buff.isActive then
 									thresholdColor = specSettings.colors.threshold.special
 									frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
@@ -958,6 +933,8 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							end
+						elseif resourceAmount == 0 then
+							showThreshold = false
 						elseif spell.hasCooldown then
 							if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specSettings.colors.threshold.unusable
@@ -1107,6 +1084,8 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							end
+						elseif resourceAmount == 0 then
+							showThreshold = false
 						elseif spell.hasCooldown then
 							if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specSettings.colors.threshold.unusable

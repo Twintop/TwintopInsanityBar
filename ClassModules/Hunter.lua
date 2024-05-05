@@ -77,8 +77,6 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.wailingArrow.id] = TRB.Classes.Snapshot:New(spells.wailingArrow)
 	---@type TRB.Classes.Snapshot
-	specCache.beastMastery.snapshotData.snapshots[spells.direPack.id] = TRB.Classes.Snapshot:New(spells.direPack)
-	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.callOfTheWild.id] = TRB.Classes.Snapshot:New(spells.callOfTheWild)
 	---@type TRB.Classes.Snapshot
 	specCache.beastMastery.snapshotData.snapshots[spells.beastCleave.id] = TRB.Classes.Snapshot:New(spells.beastCleave)
@@ -157,8 +155,6 @@ local function FillSpecializationCache()
 	specCache.marksmanship.snapshotData.snapshots[spells.wailingArrow.id] = TRB.Classes.Snapshot:New(spells.wailingArrow)
 	---@type TRB.Classes.Snapshot
 	specCache.marksmanship.snapshotData.snapshots[spells.sniperShot.id] = TRB.Classes.Snapshot:New(spells.sniperShot)
-	---@type TRB.Classes.Snapshot
-	specCache.marksmanship.snapshotData.snapshots[spells.eagletalonsTrueFocus.id] = TRB.Classes.Snapshot:New(spells.eagletalonsTrueFocus, nil, true)
 	---@type TRB.Classes.Snapshot
 	specCache.marksmanship.snapshotData.snapshots[spells.barrage.id] = TRB.Classes.Snapshot:New(spells.barrage)
 
@@ -373,7 +369,6 @@ local function FillSpellData_Marksmanship()
 		{ variable = "#serpentSting", icon = spells.serpentSting.icon, description = spells.serpentSting.name, printInSettings = true },
 		{ variable = "#steadyFocus", icon = spells.steadyFocus.icon, description = spells.steadyFocus.name, printInSettings = true },
 		{ variable = "#steadyShot", icon = spells.steadyShot.icon, description = spells.steadyShot.name, printInSettings = true },
-		{ variable = "#trickShots", icon = spells.trickShots.icon, description = spells.trickShots.name, printInSettings = true },
 		{ variable = "#trueshot", icon = spells.trueshot.icon, description = spells.trueshot.name, printInSettings = true },
 		{ variable = "#wailingArrow", icon = spells.wailingArrow.icon, description = spells.wailingArrow.name, printInSettings = true }
 	}
@@ -974,7 +969,6 @@ local function RefreshLookupData_Marksmanship()
 	lookup["#serpentSting"] = spells.serpentSting.icon
 	lookup["#steadyFocus"] = spells.steadyFocus.icon
 	lookup["#steadyShot"] = spells.steadyShot.icon
-	lookup["#trickShots"] = spells.trickShots.icon
 	lookup["#trueshot"] = spells.trueshot.icon
 	lookup["#wailingArrow"] = spells.wailingArrow.icon
 	lookup["$steadyFocusTime"] = steadyFocusTime
@@ -1318,7 +1312,7 @@ local function CastingSpell()
 					if talents:IsTalentActive(spells.improvedSteadyShot) then
 						FillSnapshotDataCasting(spells.improvedSteadyShot)
 					else
-					FillSnapshotDataCasting(spells.steadyShot)
+						FillSnapshotDataCasting(spells.steadyShot)
 					end
 				elseif spellName == spells.scareBeast.name then
 					FillSnapshotDataCasting(spells.scareBeast)
@@ -1574,6 +1568,8 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							end
+						elseif resourceAmount == 0 then
+							showThreshold = false
 						elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 							showThreshold = false
 						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
@@ -1843,6 +1839,8 @@ local function UpdateResourceBar()
 									snapshotData.audio.playedKillShotCue = false
 								end
 							end
+						elseif resourceAmount == 0 then
+							showThreshold = false
 						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 							showThreshold = false
 						elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
@@ -2028,6 +2026,8 @@ local function UpdateResourceBar()
 									end
 								end
 							end
+						elseif resourceAmount == 0 then
+							showThreshold = false
 						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 							showThreshold = false
 						elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
@@ -2141,8 +2141,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()
 					end
-				elseif entry.spellId == spells.direPack.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.callOfTheWild.id then
 					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.beastCleave.buffId then
@@ -2177,8 +2175,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 							PlaySoundFile(TRB.Data.settings.hunter.marksmanship.audio.lockAndLoad.sound, TRB.Data.settings.core.audio.channel.channel)
 						end
 					end
-				elseif entry.spellId == spells.eagletalonsTrueFocus.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type, true)
 				elseif entry.spellId == spells.wailingArrow.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						snapshots[entry.spellId].cooldown:Initialize()

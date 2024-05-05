@@ -64,7 +64,6 @@ end
 ---@field public spinningCraneKick TRB.Classes.SpellComboPoint
 ---@field public risingSunKick TRB.Classes.SpellComboPoint
 ---@field public fistsOfFury TRB.Classes.SpellComboPoint
----@field public energizingElixir TRB.Classes.SpellComboPoint
 ---@field public cracklingJadeLightning TRB.Classes.SpellThreshold
 ---@field public vivify TRB.Classes.SpellThreshold
 ---@field public detox TRB.Classes.SpellThreshold
@@ -199,14 +198,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
         hasCooldown = true,
         isTalent = true,
         cooldown = 40
-    })
-    self.energizingElixir = TRB.Classes.SpellComboPoint:New({
-        id = 115288,
-        comboPointsGenerated = 2,
-        resourcePerTick = 15,
-        ticks = 5,
-        tickRate = 1,
-        isTalent = true
     })
     self.danceOfChiJi = TRB.Classes.SpellBase:New({
         id = 325202,

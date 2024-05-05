@@ -15,7 +15,6 @@ TRB.Classes.Warrior = TRB.Classes.Warrior or {}
 ---@field public suddenDeath TRB.Classes.SpellBase
 ---@field public massacre TRB.Classes.SpellBase
 ---@field public bloodletting TRB.Classes.SpellBase
----@field public stormOfSwords TRB.Classes.SpellBase
 ---@field public execute TRB.Classes.SpellThreshold
 ---@field public executeMinimum TRB.Classes.SpellThreshold
 ---@field public executeMaximum TRB.Classes.SpellThreshold
@@ -193,10 +192,6 @@ function TRB.Classes.Warrior.ArmsSpells:New()
         pandemicModifier = 6,
         isTalent = true
     })
-    self.stormOfSwords = TRB.Classes.SpellBase:New({
-        id = 385512,
-        isTalent = true
-    })
 
     return self
 end
@@ -211,7 +206,6 @@ end
 ---@field public massacre TRB.Classes.SpellBase
 ---@field public ravager TRB.Classes.SpellBase
 ---@field public stormOfSteel TRB.Classes.SpellBase
----@field public stormOfSwords TRB.Classes.SpellBase
 ---@field public execute TRB.Classes.SpellThreshold
 ---@field public executeMinimum TRB.Classes.SpellThreshold
 ---@field public executeMaximum TRB.Classes.SpellThreshold
@@ -295,8 +289,7 @@ function TRB.Classes.Warrior.FurySpells:New()
         settingKey = "slam",
         isTalent = false,
         baseline = true,
-        hasCooldown = false,
-        isSnowflake = true
+        hasCooldown = false
     })
     self.whirlwind = TRB.Classes.SpellBase:New({
         id = 85739, --buff ID
@@ -363,10 +356,6 @@ function TRB.Classes.Warrior.FurySpells:New()
         id = 382953,
         resourcePerTick = 10,
         charges = 2,
-        isTalent = true
-    })
-    self.stormOfSwords = TRB.Classes.SpellBase:New({
-        id = 388903,
         isTalent = true
     })
 

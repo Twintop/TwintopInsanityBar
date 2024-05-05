@@ -567,7 +567,6 @@ local function FillSpellData_Outlaw()
 		{ variable = "#broadside", icon = spells.broadside.icon, description = spells.broadside.name, printInSettings = true },
 		{ variable = "#buriedTreasure", icon = spells.buriedTreasure.icon, description = spells.buriedTreasure.name, printInSettings = true },
 		{ variable = "#deathFromAbove", icon = spells.deathFromAbove.icon, description = spells.deathFromAbove.name, printInSettings = true },
-		{ variable = "#dirtyTricks", icon = spells.dirtyTricks.icon, description = spells.dirtyTricks.name, printInSettings = true },
 		{ variable = "#dispatch", icon = spells.dispatch.icon, description = spells.dispatch.name, printInSettings = true },
 		{ variable = "#dismantle", icon = spells.dismantle.icon, description = spells.dismantle.name, printInSettings = true },
 		{ variable = "#dreadblades", icon = spells.dreadblades.icon, description = spells.dreadblades.name, printInSettings = true },
@@ -1611,7 +1610,6 @@ local function RefreshLookupData_Outlaw()
 	lookup["#broadside"] = spells.broadside.icon
 	lookup["#buriedTreasure"] = spells.buriedTreasure.icon
 	lookup["#deathFromAbove"] = spells.numbingPoison.icon
-	lookup["#dirtyTricks"] = spells.dirtyTricks.icon
 	lookup["#dispatch"] = spells.dispatch.icon
 	lookup["#dismantle"] = spells.numbingPoison.icon
 	lookup["#dreadblades"] = spells.dreadblades.icon
@@ -2382,21 +2380,7 @@ local function UpdateResourceBar()
 							end
 						else
 							if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
-								if spell.id == spells.shiv.id then
-									if not talents:IsTalentActive(spell) then -- Talent not selected
-										showThreshold = false
-									elseif talents:IsTalentActive(spells.tinyToxicBlade) then -- Don't show this threshold
-										showThreshold = false
-									elseif snapshots[spell.id].cooldown.charges == 0 then
-										thresholdColor = specSettings.colors.threshold.unusable
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									elseif currentResource >= -resourceAmount then
-										thresholdColor = specSettings.colors.threshold.over
-									else
-										thresholdColor = specSettings.colors.threshold.under
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-									end
-								elseif spell.id == spells.sliceAndDice.id then
+								if spell.id == spells.sliceAndDice.id then
 									if currentResource >= -resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
@@ -2427,6 +2411,8 @@ local function UpdateResourceBar()
 										end
 									end
 								end
+							elseif resourceAmount == 0 then
+								showThreshold = false
 							elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
@@ -2619,9 +2605,7 @@ local function UpdateResourceBar()
 						local thresholdColor = specSettings.colors.threshold.over
 						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
-						if spell.attributes.dirtyTricks == true and talents:IsTalentActive(spells.dirtyTricks) then
-							showThreshold = false
-						elseif spell.attributes.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
+						if spell.attributes.stealth and not IsStealthed() then -- Don't show stealthed lines when unstealthed.
 							if spell.id == spells.ambush.id then
 								if stealthViaBuff then
 									if currentResource >= -resourceAmount then
@@ -2663,11 +2647,6 @@ local function UpdateResourceBar()
 										end
 									end
 								elseif spell.id == spells.pistolShot.id then
-									--[[if snapshots[spells.opportunity.id].buff.isActive then
-										resourceAmount = resourceAmount * spells.opportunity.resourcePercent
-										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
-									end]]
-
 									if currentResource >= -resourceAmount then
 										if snapshots[spells.opportunity.id].buff.isActive then
 											thresholdColor = specSettings.colors.threshold.special
@@ -2718,6 +2697,8 @@ local function UpdateResourceBar()
 										frameLevel = TRB.Data.constants.frameLevels.thresholdHighPriority
 									end
 								end
+							elseif resourceAmount == 0 then
+								showThreshold = false
 							elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
@@ -3010,6 +2991,8 @@ local function UpdateResourceBar()
 										frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 									end
 								end
+							elseif resourceAmount == 0 then
+								showThreshold = false
 							elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
 								showThreshold = false
 							elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
@@ -3471,6 +3454,8 @@ local function SwitchSpec()
 		targetData:AddSpellTracking(spells.numbingPoison)
 		targetData:AddSpellTracking(spells.woundPoison)
 		targetData:AddSpellTracking(spells.serratedBoneSpike, true, false, false)
+
+		spells.shiv:ResetPrimaryResourceCost()
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Assassination
 		TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.rogue.assassination)

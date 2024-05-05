@@ -125,16 +125,6 @@ local function FillSpecializationCache()
 			modifier = 1
 		}
 	})
-	---@type TRB.Classes.Snapshot
-	specCache.balance.snapshotData.snapshots[spells.touchTheCosmos.id] = TRB.Classes.Snapshot:New(spells.touchTheCosmos)
-	specCache.balance.snapshotData.snapshots[spells.touchTheCosmos.id].buff:SetCustomProperties({
-		{
-			name = "resourceMod",
-			dataType = "number",
-			index = 1,
-			modifier = 0.1
-		}
-	})
 
 	-- Feral
 	specCache.feral.Global_TwintopResourceBar = {
@@ -493,7 +483,6 @@ local function FillSpellData_Feral()
 		{ variable = "#lunarInspiration", icon = spells.lunarInspiration.icon, description = spells.lunarInspiration.name, printInSettings = true },
 		{ variable = "#maim", icon = spells.maim.icon, description = spells.maim.name, printInSettings = true },
 		{ variable = "#moonfire", icon = spells.moonfire.icon, description = spells.moonfire.name, printInSettings = true },
-		{ variable = "#predatorySwiftness", icon = spells.predatorySwiftness.icon, description = spells.predatorySwiftness.name, printInSettings = true },
 		{ variable = "#predatorRevealed", icon = spells.predatorRevealed.icon, description = spells.predatorRevealed.name, printInSettings = true },
 		{ variable = "#primalWrath", icon = spells.primalWrath.icon, description = spells.primalWrath.name, printInSettings = true },
 		{ variable = "#prowl", icon = spells.prowl.icon, description = spells.prowl.name, printInSettings = true },
@@ -1720,7 +1709,6 @@ local function RefreshLookupData_Feral()
 	lookup["#maim"] = spells.maim.icon
 	lookup["#moonfire"] = spells.moonfire.icon
 	lookup["#predatorRevealed"] = spells.predatorRevealed.icon
-	lookup["#predatorySwiftness"] = spells.predatorySwiftness.icon
 	lookup["#primalWrath"] = spells.primalWrath.icon
 	lookup["#prowl"] = spells.prowl.icon
 	lookup["#stealth"] = spells.prowl.icon
@@ -2654,6 +2642,8 @@ local function UpdateResourceBar()
 								end
 							end
 						--The rest isn't used. Keeping it here for consistency until I can finish abstracting this whole mess out
+						elseif resourceAmount == 0 then
+						showThreshold = false
 						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 							showThreshold = false
 						elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
@@ -2910,9 +2900,9 @@ local function UpdateResourceBar()
 									thresholdColor = specSettings.colors.threshold.under
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
-							elseif spell.id == spells.bloodtalons.id then
-								--TODO: How much resource is required to start this? Then do we move it?
 							end
+						elseif resourceAmount == 0 then
+							showThreshold = false
 						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 							showThreshold = false
 						elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
@@ -3273,8 +3263,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshotData.snapshots[entry.spellId].attributes.checkAfter = currentTime + 20
 						spells.newMoon.attributes.currentIcon = select(3, GetSpellInfo(202767)) -- Use the old Legion artifact spell ID since New Moon's icon returns incorrect for several seconds after casting Full Moon
 					end
-				elseif entry.spellId == spells.touchTheCosmos.id then
-					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				end
 			elseif specId == 2 and TRB.Data.barConstructedForSpec == "feral" then
 				if entry.spellId == spells.moonfire.debuffId then

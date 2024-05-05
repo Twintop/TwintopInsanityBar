@@ -11,9 +11,6 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@class TRB.Classes.Druid.BalanceSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public moonfire TRB.Classes.SpellBase
 ---@field public starfire TRB.Classes.SpellBase
----@field public starsurge TRB.Classes.SpellThreshold
----@field public starsurge2 TRB.Classes.SpellThreshold
----@field public starsurge3 TRB.Classes.SpellThreshold
 ---@field public moonkinForm TRB.Classes.SpellBase
 ---@field public sunfire TRB.Classes.SpellBase
 ---@field public wrath TRB.Classes.SpellBase
@@ -21,10 +18,8 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public eclipseSolar TRB.Classes.SpellBase
 ---@field public eclipseLunar TRB.Classes.SpellBase
 ---@field public naturesBalance TRB.Classes.SpellBase
----@field public starfall TRB.Classes.SpellThreshold
 ---@field public stellarFlare TRB.Classes.SpellBase
 ---@field public wildSurges TRB.Classes.SpellBase
----@field public rattleTheStars TRB.Classes.SpellBase
 ---@field public starweaver TRB.Classes.SpellBase
 ---@field public starweaversWarp TRB.Classes.SpellBase
 ---@field public starweaversWeft TRB.Classes.SpellBase
@@ -32,13 +27,15 @@ TRB.Classes.Druid = TRB.Classes.Druid or {}
 ---@field public primordialArcanicPulsar TRB.Classes.SpellBase
 ---@field public soulOfTheForest TRB.Classes.SpellBase
 ---@field public incarnationChosenOfElune TRB.Classes.SpellBase
----@field public elunesGuidance TRB.Classes.SpellBase
 ---@field public furyOfElune TRB.Classes.SpellBase
 ---@field public newMoon TRB.Classes.SpellBase
 ---@field public halfMoon TRB.Classes.SpellBase
 ---@field public fullMoon TRB.Classes.SpellBase
 ---@field public sunderedFirmament TRB.Classes.SpellBase
----@field public touchTheCosmos TRB.Classes.SpellBase
+---@field public starsurge TRB.Classes.SpellThreshold
+---@field public starsurge2 TRB.Classes.SpellThreshold
+---@field public starsurge3 TRB.Classes.SpellThreshold
+---@field public starfall TRB.Classes.SpellThreshold
 TRB.Classes.Druid.BalanceSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Druid.BalanceSpells.__index = TRB.Classes.Druid.BalanceSpells
 
@@ -149,10 +146,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
         isTalent = true,
         resourceMod = 2
     })
-    self.rattleTheStars = TRB.Classes.SpellBase:New({
-        id = 393954,
-        isTalent = true
-    })
     self.starweaver = TRB.Classes.SpellBase:New({
         id = 393940,
         isTalent = true
@@ -187,12 +180,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
         talentId = 394013,
         isTalent = true
     })
-    self.elunesGuidance = TRB.Classes.SpellBase:New({
-        id = 393991,
-        modifierStarsurge = -8,
-        modifierStarfall = -10,
-        isTalent = true
-    })
     self.furyOfElune = TRB.Classes.SpellBase:New({
         id = 202770,
         duration = 8,
@@ -223,9 +210,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
         tickRate = 0.5,
         isTalent = true
     })
-    self.touchTheCosmos = TRB.Classes.SpellBase:New({ -- T29 4P
-        id = 394414
-    })
 
     return self
 end
@@ -234,36 +218,33 @@ end
 ---@class TRB.Classes.Druid.FeralSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public shadowmeld TRB.Classes.SpellBase
 ---@field public catForm TRB.Classes.SpellBase
+---@field public sunfire TRB.Classes.SpellBase
+---@field public prowl TRB.Classes.SpellBase
+---@field public tigersFury TRB.Classes.SpellBase
+---@field public momentOfClarity TRB.Classes.SpellBase
+---@field public clearcasting TRB.Classes.SpellBase
+---@field public lunarInspiration TRB.Classes.SpellBase
+---@field public suddenAmbush TRB.Classes.SpellBase
+---@field public berserk TRB.Classes.SpellBase
+---@field public carnivorousInstinct TRB.Classes.SpellBase
+---@field public bloodtalons TRB.Classes.SpellBase
+---@field public incarnationAvatarOfAshamane TRB.Classes.SpellBase
+---@field public circleOfLifeAndDeath TRB.Classes.SpellBase
+---@field public apexPredatorsCraving TRB.Classes.SpellBase
+---@field public predatorRevealed TRB.Classes.SpellBase
 ---@field public rake TRB.Classes.SpellComboPointThreshold
 ---@field public thrash TRB.Classes.SpellComboPointThreshold
 ---@field public rip TRB.Classes.SpellComboPointThreshold
 ---@field public maim TRB.Classes.SpellComboPointThreshold
----@field public sunfire TRB.Classes.SpellBase
 ---@field public ferociousBite TRB.Classes.SpellComboPointThreshold
 ---@field public ferociousBiteMinimum TRB.Classes.SpellComboPointThreshold
 ---@field public ferociousBiteMaximum TRB.Classes.SpellComboPointThreshold
----@field public prowl TRB.Classes.SpellBase
 ---@field public shred TRB.Classes.SpellComboPointThreshold
 ---@field public swipe TRB.Classes.SpellComboPointThreshold
----@field public tigersFury TRB.Classes.SpellBase
----@field public omenOfClarity TRB.Classes.SpellBase
----@field public momentOfClarity TRB.Classes.SpellBase
----@field public clearcasting TRB.Classes.SpellBase
 ---@field public primalWrath TRB.Classes.SpellComboPointThreshold
----@field public lunarInspiration TRB.Classes.SpellBase
 ---@field public moonfire TRB.Classes.SpellComboPointThreshold
----@field public suddenAmbush TRB.Classes.SpellBase
----@field public berserk TRB.Classes.SpellBase
----@field public predatorySwiftness TRB.Classes.SpellBase
 ---@field public brutalSlash TRB.Classes.SpellComboPointThreshold
----@field public carnivorousInstinct TRB.Classes.SpellBase
----@field public bloodtalons TRB.Classes.SpellBase
 ---@field public feralFrenzy TRB.Classes.SpellComboPointThreshold
----@field public incarnationAvatarOfAshamane TRB.Classes.SpellBase
----@field public relentlessPredator TRB.Classes.SpellBase
----@field public circleOfLifeAndDeath TRB.Classes.SpellBase
----@field public apexPredatorsCraving TRB.Classes.SpellBase
----@field public predatorRevealed TRB.Classes.SpellBase
 TRB.Classes.Druid.FeralSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Druid.FeralSpells.__index = TRB.Classes.Druid.FeralSpells
 
@@ -365,8 +346,7 @@ function TRB.Classes.Druid.FeralSpells:New()
         comboPoints = true,
         thresholdId = 6,
         settingKey = "ferociousBite",
-        isSnowflake = true, -- Really between 25-50 energy, minus Relentless Predator
-        relentlessPredator = true
+        isSnowflake = true -- Really between 25-50 energy, minus Relentless Predator
     })
     self.ferociousBiteMinimum = TRB.Classes.SpellComboPointThreshold:New({
         id = 22568,
@@ -374,8 +354,7 @@ function TRB.Classes.Druid.FeralSpells:New()
         comboPoints = true,
         thresholdId = 7,
         settingKey = "ferociousBiteMinimum",
-        isSnowflake = true,
-        relentlessPredator = true
+        isSnowflake = true
     })
     self.ferociousBiteMaximum = TRB.Classes.SpellComboPointThreshold:New({
         id = 22568,
@@ -384,8 +363,7 @@ function TRB.Classes.Druid.FeralSpells:New()
         comboPoints = true,
         thresholdId = 8,
         settingKey = "ferociousBiteMaximum",
-        isSnowflake = true,
-        relentlessPredator = true
+        isSnowflake = true
     })
     self.prowl = TRB.Classes.SpellBase:New({
         id = 5215,
@@ -416,10 +394,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         id = 5217,
         modifier = 1.15,
         hasCooldown = true,
-        isTalent = true
-    })
-    self.omenOfClarity = TRB.Classes.SpellBase:New({
-        id = 16864,
         isTalent = true
     })
     self.momentOfClarity = TRB.Classes.SpellBase:New({
@@ -467,10 +441,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         energizeId = 343216,
         tickRate = 1.5
     })
-    self.predatorySwiftness = TRB.Classes.SpellBase:New({
-        id = 69369,
-        isTalent = true
-    })
     self.brutalSlash = TRB.Classes.SpellComboPointThreshold:New({
         id = 202028,
         cooldown = 8,
@@ -508,10 +478,6 @@ function TRB.Classes.Druid.FeralSpells:New()
     })
     self.incarnationAvatarOfAshamane = TRB.Classes.SpellBase:New({
         id = 102543
-    })
-    self.relentlessPredator = TRB.Classes.SpellBase:New({
-        id = 393771,
-        isTalent = true
     })
     self.circleOfLifeAndDeath = TRB.Classes.SpellBase:New({
         id = 391969,
@@ -580,8 +546,7 @@ function TRB.Classes.Druid.RestorationSpells:New()
         isTalent = true
     })
     self.reforestation = TRB.Classes.SpellBase:New({
-        id = 392360,
-        --isTalent = true
+        id = 392360
     })
     self.clearcasting = TRB.Classes.SpellBase:New({
         id = 16870

@@ -358,7 +358,6 @@ local function FillSpellData_Windwalker()
 		{ variable = "#danceOfChiJi", icon = spells.danceOfChiJi.icon, description = spells.danceOfChiJi.name, printInSettings = true },
 		{ variable = "#detox", icon = spells.detox.icon, description = spells.detox.name, printInSettings = true },
 		{ variable = "#disable", icon = spells.disable.icon, description = spells.disable.name, printInSettings = true },
-		{ variable = "#energizingElixir", icon = spells.energizingElixir.icon, description = spells.energizingElixir.name, printInSettings = true },
 		{ variable = "#expelHarm", icon = spells.expelHarm.icon, description = spells.expelHarm.name, printInSettings = true },
 		{ variable = "#fistsOfFury", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = true },
 		{ variable = "#fof", icon = spells.fistsOfFury.icon, description = spells.fistsOfFury.name, printInSettings = false },
@@ -1043,7 +1042,6 @@ local function RefreshLookupData_Windwalker()
 	lookup["#danceOfChiJi"] = spells.danceOfChiJi.icon
 	lookup["#detox"] = spells.detox.icon
 	lookup["#disable"] = spells.disable.icon
-	lookup["#energizingElixir"] = spells.energizingElixir.icon
 	lookup["#expelHarm"] = spells.expelHarm.icon
 	lookup["#fistsOfFury"] = spells.fistsOfFury.icon
 	lookup["#fof"] = spells.fistsOfFury.icon
@@ -1493,6 +1491,8 @@ local function UpdateResourceBar()
 						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
 						if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+						elseif resourceAmount == 0 then
+							showThreshold = false
 						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 							showThreshold = false
 						elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then

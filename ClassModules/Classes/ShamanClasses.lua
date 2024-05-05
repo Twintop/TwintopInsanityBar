@@ -37,26 +37,24 @@ end
 
 
 ---@class TRB.Classes.Shaman.ElementalSpells : TRB.Classes.SpecializationSpellsBase
----@field public lightningBolt TRB.Classes.Shaman.OverloadSpell
 ---@field public flameShock TRB.Classes.SpellBase
 ---@field public lavaBurst TRB.Classes.SpellBase
----@field public chainLightning TRB.Classes.Shaman.OverloadSpell
 ---@field public frostShock TRB.Classes.SpellBase
 ---@field public hex TRB.Classes.SpellBase
----@field public earthShock TRB.Classes.SpellThreshold
----@field public earthquake TRB.Classes.SpellThreshold
 ---@field public inundate TRB.Classes.SpellBase
 ---@field public flowOfPower TRB.Classes.SpellBase
----@field public icefury TRB.Classes.Shaman.OverloadSpell
 ---@field public stormkeeper TRB.Classes.SpellBase
 ---@field public surgeOfPower TRB.Classes.SpellBase
----@field public eyeOfTheStorm TRB.Classes.SpellBase
----@field public elementalBlast TRB.Classes.SpellThreshold
 ---@field public echoesOfGreatSundering TRB.Classes.SpellBase
 ---@field public ascendance TRB.Classes.SpellBase
----@field public lavaBeam TRB.Classes.Shaman.OverloadSpell
----@field public lightningShield TRB.Classes.SpellBase
 ---@field public primalFracture TRB.Classes.SpellBase
+---@field public lightningBolt TRB.Classes.Shaman.OverloadSpell
+---@field public chainLightning TRB.Classes.Shaman.OverloadSpell
+---@field public icefury TRB.Classes.Shaman.OverloadSpell
+---@field public lavaBeam TRB.Classes.Shaman.OverloadSpell
+---@field public earthShock TRB.Classes.SpellThreshold
+---@field public earthquake TRB.Classes.SpellThreshold
+---@field public elementalBlast TRB.Classes.SpellThreshold
 TRB.Classes.Shaman.ElementalSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Shaman.ElementalSpells.__index = TRB.Classes.Shaman.ElementalSpells
 
@@ -177,27 +175,6 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         id = 285514,
         isTalent = true
     })
-    self.eyeOfTheStorm = TRB.Classes.SpellBase:New({
-        id = 381708,
-        resourceMods = {
-            [0] = {
-                earthShock = 0,
-                earthquake = 0,
-                elementalBlast = 0
-            },
-            [1] = {
-                earthShock = -5,
-                earthquake = -5,
-                elementalBlast = -7
-            },
-            [2] = {
-                earthShock = -10,
-                earthquake = -10,
-                elementalBlast = -15
-            }
-        },
-        isTalent = true
-    })
     self.powerOfTheMaelstrom = TRB.Classes.SpellBase:New({
         id = 191877,
         isTalent = true
@@ -222,10 +199,6 @@ function TRB.Classes.Shaman.ElementalSpells:New()
         id = 114074,
         resource = 4, --Tooltip says 3, but spell ID 217891 and in game says 4
         overload = 3
-    })
-    self.lightningShield = TRB.Classes.SpellBase:New({
-        id = 192106,
-        resource = 5
     })
 
     --TODO: Add Searing Flames passive resource

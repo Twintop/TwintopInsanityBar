@@ -283,7 +283,6 @@ local function FillSpellData_Elemental()
 		{ variable = "#lavaBeam", icon = spells.lavaBeam.icon, description = spells.lavaBeam.name, printInSettings = true },
 		{ variable = "#lavaBurst", icon = spells.lavaBurst.icon, description = spells.lavaBurst.name, printInSettings = true },
 		{ variable = "#lightningBolt", icon = spells.lightningBolt.icon, description = spells.lightningBolt.name, printInSettings = true },
-		{ variable = "#lightningShield", icon = spells.lightningShield.icon, description = spells.lightningShield.name, printInSettings = true },
 		{ variable = "#primalFracture", icon = spells.primalFracture.icon, description = spells.primalFracture.name, printInSettings = true },
 		{ variable = "#stormkeeper", icon = spells.stormkeeper.icon, description = spells.stormkeeper.name, printInSettings = true },
 	}
@@ -773,7 +772,6 @@ local function RefreshLookupData_Elemental()
 	lookup["#lavaBeam"] = spells.lavaBeam.icon
 	lookup["#lavaBurst"] = spells.lavaBurst.icon
 	lookup["#lightningBolt"] = spells.lightningBolt.icon
-	lookup["#lightningShield"] = spells.lightningShield.icon
 	lookup["#primalFracture"] = spells.primalFracture.icon
 	lookup["#stormkeeper"] = spells.stormkeeper.icon
 	lookup["$maelstromPlusCasting"] = maelstromPlusCasting
@@ -1530,6 +1528,8 @@ local function UpdateResourceBar()
 								end
 							end
 						--The rest isn't used. Keeping it here for consistency until I can finish abstracting this whole mess out
+						elseif resourceAmount == 0 then
+							showThreshold = false
 						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 							showThreshold = false
 						elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then

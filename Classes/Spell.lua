@@ -250,6 +250,11 @@ function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero)
 	return self._lastNonZeroPrimaryResourceValue
 end
 
+---Resets the last non-zero resource value to 0.
+function TRB.Classes.SpellBase:ResetPrimaryResourceCost()
+    self._lastNonZeroPrimaryResourceValue = 0
+end
+
 ---Determines if the current SpellBase is also another type, such as SpellThreshold.
 ---@param spellType trbSpellType # Spell Class type we're checking
 ---@return boolean # Is it of this type

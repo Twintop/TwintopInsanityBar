@@ -17,6 +17,12 @@ TRB.Classes.DemonHunter = TRB.Classes.DemonHunter or {}
 ---@field public immolationAura5 TRB.Classes.SpellBase
 ---@field public immolationAura6 TRB.Classes.SpellBase
 ---@field public metamorphosis TRB.Classes.SpellBase
+---@field public burningHatred TRB.Classes.SpellBase
+---@field public felfireHeart TRB.Classes.SpellBase
+---@field public blindFury TRB.Classes.SpellBase
+---@field public unboundChaos TRB.Classes.SpellBase
+---@field public tacticalRetreat TRB.Classes.SpellBase
+---@field public chaosTheory TRB.Classes.SpellBase
 ---@field public throwGlaive TRB.Classes.SpellThreshold
 ---@field public bladeDance TRB.Classes.SpellThreshold
 ---@field public chaosStrike TRB.Classes.SpellThreshold
@@ -24,20 +30,8 @@ TRB.Classes.DemonHunter = TRB.Classes.DemonHunter or {}
 ---@field public deathSweep TRB.Classes.SpellThreshold
 ---@field public chaosNova TRB.Classes.SpellThreshold
 ---@field public eyeBeam TRB.Classes.SpellThreshold
----@field public burningHatred TRB.Classes.SpellBase
----@field public furiousThrows TRB.Classes.SpellBase
----@field public felfireHeart TRB.Classes.SpellBase
 ---@field public felEruption TRB.Classes.SpellThreshold
----@field public blindFury TRB.Classes.SpellBase
 ---@field public glaiveTempest TRB.Classes.SpellThreshold
----@field public demonsBite TRB.Classes.SpellBase
----@field public demonicAppetite TRB.Classes.SpellBase
----@field public felBlade TRB.Classes.SpellBase
----@field public unboundChaos TRB.Classes.SpellBase
----@field public firstBlood TRB.Classes.SpellBase
----@field public tacticalRetreat TRB.Classes.SpellBase
----@field public momentum TRB.Classes.SpellBase
----@field public chaosTheory TRB.Classes.SpellBase
 ---@field public felBarrage TRB.Classes.SpellThreshold
 TRB.Classes.DemonHunter.HavocSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.DemonHunter.HavocSpells.__index = TRB.Classes.DemonHunter.HavocSpells
@@ -84,7 +78,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
         settingKey = "throwGlaive",
         hasCooldown = true,
         hasCharges = true,
-        isSnowflake = true,
         isTalent = false,
         baseline = true
     })
@@ -163,11 +156,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
         duration = 12,
         isTalent = true
     })
-    self.furiousThrows = TRB.Classes.SpellBase:New({
-        id = 393029,
-        primaryResourceType = Enum.PowerType.Fury,
-        isTalent = true
-    })
     self.felfireHeart = TRB.Classes.SpellBase:New({ --TODO: figure out how this plays with Burning Hatred
         id = 388109,
         duration = 4, -- These don't match what's seen on the PTR, should be 2,
@@ -201,27 +189,9 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
         hasCooldown = true,
         isTalent = true
     })
-
-    self.demonsBite = TRB.Classes.SpellBase:New({
-        id = 162243,
-        resource = 20,
-        resourceMax = 30
-    })
-    self.demonicAppetite = TRB.Classes.SpellBase:New({
-        id = 206478,
-        resource = 30
-    })
-    self.felBlade = TRB.Classes.SpellBase:New({
-        id = 232893,
-        resource = 40
-    })
     self.unboundChaos = TRB.Classes.SpellBase:New({
         id = 347462,
         duration = 20
-    })
-    self.firstBlood = TRB.Classes.SpellBase:New({
-        id = 206416,
-        resourceAdjustment = -20
     })
     self.tacticalRetreat = TRB.Classes.SpellBase:New({
         id = 389890,
@@ -229,9 +199,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
         tickRate = 1,
         hasTicks = true,
         isTalent = true
-    })
-    self.momentum = TRB.Classes.SpellBase:New({
-        id = 206476
     })
     self.chaosTheory = TRB.Classes.SpellBase:New({
         id = 390195

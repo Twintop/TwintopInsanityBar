@@ -13,10 +13,7 @@ TRB.Classes.Rogue = TRB.Classes.Rogue or {}
 ---@field public numbingPoison TRB.Classes.SpellBase
 ---@field public atrophicPoison TRB.Classes.SpellBase
 ---@field public stealth TRB.Classes.SpellBase
----@field public nimbleFingers TRB.Classes.SpellBase
 ---@field public subterfuge TRB.Classes.SpellBase
----@field public rushedSetup TRB.Classes.SpellBase
----@field public tightSpender TRB.Classes.SpellBase
 ---@field public shadowDance TRB.Classes.SpellBase
 ---@field public adrenalineRush TRB.Classes.SpellBase
 ---@field public crimsonVial TRB.Classes.SpellThreshold
@@ -76,7 +73,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         stealth = true,
         thresholdId = 2,
         settingKey = "cheapShot",
-        rushedSetup = true,
         baseline = true,
         isSnowflake = true
     })
@@ -87,7 +83,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         settingKey = "crimsonVial",
         hasCooldown = true,
         cooldown = 30,
-        nimbleFingers = true,
         baseline = true
     })
     self.distract = TRB.Classes.SpellThreshold:New({
@@ -98,7 +93,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         settingKey = "distract",
         hasCooldown = true,
         cooldown = 30,
-        rushedSetup = true,
         baseline = true
     })
     self.kidneyShot = TRB.Classes.SpellComboPointThreshold:New({
@@ -109,7 +103,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         settingKey = "kidneyShot",
         hasCooldown = true,
         cooldown = 20,
-        rushedSetup = true,
         baseline = true
     })
     self.sliceAndDice = TRB.Classes.SpellComboPointThreshold:New({
@@ -139,7 +132,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         settingKey = "feint",
         hasCooldown = true,
         cooldown = 15,
-        nimbleFingers = true,
         hasCharges = true,
         isTalent = false,
         baseline = true
@@ -153,7 +145,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         thresholdId = 8,
         settingKey = "shiv",
         hasCooldown = true,
-        cooldown = 25,
         isTalent = true
     })
     self.sap = TRB.Classes.SpellThreshold:New({ -- Baseline
@@ -162,12 +153,7 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         stealth = true,
         thresholdId = 9,
         settingKey = "sap",
-        rushedSetup = true,
         baseline = true
-    })
-    self.nimbleFingers = TRB.Classes.SpellBase:New({
-        id = 378427,
-        isTalent = true
     })
     self.gouge = TRB.Classes.SpellComboPointThreshold:New({
         id = 1776,
@@ -181,14 +167,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     })
     self.subterfuge = TRB.Classes.SpellBase:New({
         id = 115192,
-        isTalent = true
-    })
-    self.rushedSetup = TRB.Classes.SpellBase:New({
-        id = 378803,
-        isTalent = true
-    })
-    self.tightSpender = TRB.Classes.SpellBase:New({
-        id = 381621,
         isTalent = true
     })
     self.echoingReprimand = TRB.Classes.SpellComboPointThreshold:New({
@@ -274,12 +252,8 @@ end
 ---@field public deadlyPoison TRB.Classes.SpellBase
 ---@field public amplifyingPoison TRB.Classes.SpellBase
 ---@field public internalBleeding TRB.Classes.SpellBase
----@field public lightweightShiv TRB.Classes.SpellBase
 ---@field public improvedGarrote TRB.Classes.SpellBase
----@field public viciousVenoms TRB.Classes.SpellBase
 ---@field public blindside TRB.Classes.SpellBase
----@field public tinyToxicBlade TRB.Classes.SpellBase
----@field public adrenalineRush TRB.Classes.SpellBase
 ---@field public ambush TRB.Classes.SpellComboPointThreshold
 ---@field public envenom TRB.Classes.SpellComboPointThreshold
 ---@field public fanOfKnives TRB.Classes.SpellComboPointThreshold
@@ -315,9 +289,9 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         stealth = true,
         thresholdId = 1,
         settingKey = "ambush",
-        baseline = true,
-        viciousVenoms = true
+        baseline = true
     })
+    self.shiv.baseline = true
     self.shiv.hasCharges = true
     
     -- Assassination Baseline Abilities
@@ -356,8 +330,7 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         comboPointsGenerated = 2,
         thresholdId = 15,
         settingKey = "mutilate",
-        baseline = true,
-        viciousVenoms = true
+        baseline = true
     })
     self.poisonedKnife = TRB.Classes.SpellComboPointThreshold:New({
         id = 185565,
@@ -391,10 +364,6 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         id = 381627,
         isTalent = true
     })
-    self.lightweightShiv = TRB.Classes.SpellBase:New({
-        id = 394983,
-        isTalent = true
-    })
     self.crimsonTempest = TRB.Classes.SpellComboPointThreshold:New({
         id = 121411,
         primaryResourceType = Enum.PowerType.Energy,
@@ -419,23 +388,10 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         buffId = 392403,
         isTalent = true
     })
-    self.viciousVenoms = TRB.Classes.SpellBase:New({
-        id = 381634,
-        isTalent = true,
-        energyMod = {
-            [0] = 0,
-            [1] = -5,
-            [2] = -10
-        }
-    })
     -- TODO: Add Doomblade as a bleed
     self.blindside = TRB.Classes.SpellBase:New({
         id = 121153,
         duration = 10,
-        isTalent = true
-    })
-    self.tinyToxicBlade = TRB.Classes.SpellBase:New({
-        id = 381800,
         isTalent = true
     })
     self.serratedBoneSpike = TRB.Classes.SpellComboPointThreshold:New({
@@ -472,7 +428,6 @@ end
 ---@class TRB.Classes.Rogue.OutlawSpells : TRB.Classes.Rogue.RogueBaseSpells
 ---@field public opportunity TRB.Classes.SpellBase
 ---@field public restlessBlades TRB.Classes.SpellBase
----@field public dirtyTricks TRB.Classes.SpellBase
 ---@field public broadside TRB.Classes.SpellBase
 ---@field public buriedTreasure TRB.Classes.SpellBase
 ---@field public grandMelee TRB.Classes.SpellBase
@@ -511,9 +466,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         settingKey = "ambush",
         baseline = true
     })
-    self.cheapShot.attributes.dirtyTricks = true
-    self.sap.attributes.dirtyTricks = true
-    self.gouge.attributes.dirtyTricks = true
     
     -- Outlaw Baseline Abilities
     self.betweenTheEyes = TRB.Classes.SpellComboPointThreshold:New({
@@ -577,12 +529,9 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     self.adrenalineRush.attributes.restlessBlades = true
     self.adrenalineRush.isTalent = true
 
+    --TODO: Actually implement Restless Blades cooldown remaining color changes. Maybe. Or just remove it.
     self.restlessBlades = TRB.Classes.SpellBase:New({
         id = 79096,
-        isTalent = true
-    })
-    self.dirtyTricks = TRB.Classes.SpellBase:New({
-        id = 108216,
         isTalent = true
     })
     self.rollTheBones = TRB.Classes.SpellThreshold:New({
@@ -685,7 +634,6 @@ end
 ---@field public shadowTechniques TRB.Classes.SpellBase
 ---@field public symbolsOfDeath TRB.Classes.SpellBase
 ---@field public shadowBlades TRB.Classes.SpellBase
----@field public shadowFocus TRB.Classes.SpellBase
 ---@field public shotInTheDark TRB.Classes.SpellBase
 ---@field public flagellation TRB.Classes.SpellBase
 ---@field public silentStorm TRB.Classes.SpellBase
@@ -694,7 +642,6 @@ end
 ---@field public finalityRupture TRB.Classes.SpellBase
 ---@field public shadowcraft TRB.Classes.SpellBase
 ---@field public inevitability TRB.Classes.SpellBase
----@field public killCommand TRB.Classes.SpellBase
 ---@field public gloomblade TRB.Classes.SpellThreshold
 ---@field public eviscerate TRB.Classes.SpellComboPointThreshold
 ---@field public backstab TRB.Classes.SpellComboPointThreshold
@@ -797,7 +744,8 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         baseline = true
     })
 
-    -- Subtlety Spec Abilities			
+    -- Subtlety Spec Abilities		
+    --TODO: Do something with this tracking!	
     self.shadowBlades = TRB.Classes.SpellBase:New({
         id = 121471,
         isTalent = true
@@ -837,11 +785,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         settingKey = "goremawsBite",
         hasCooldown = true,
         isTalent = true
-    })
-    self.shadowFocus = TRB.Classes.SpellBase:New({
-        id = 108209,
-        isTalent = true,
-        _resourcePercent = 0.9
     })
     self.shotInTheDark = TRB.Classes.SpellBase:New({
         id = 257506,

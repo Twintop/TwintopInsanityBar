@@ -858,9 +858,7 @@ local function UpdateResourceBar()
 						local thresholdColor = specSettings.colors.threshold.over
 						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
-						if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
-							showThreshold = false
-						elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+						if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 							if spell.id == spells.execute.id then
 								if snapshots[spells.suddenDeath.id].buff.isActive then
 									--We only show the maximum value when this proc occurs. Current and minimum thresholds being in their expected place don't matter.
@@ -882,6 +880,10 @@ local function UpdateResourceBar()
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 								end
 							end
+						elseif resourceAmount == 0 then
+							showThreshold = false
+						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+							showThreshold = false
 						elseif spell.hasCooldown then
 							if snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specSettings.colors.threshold.unusable
@@ -1005,9 +1007,7 @@ local function UpdateResourceBar()
 						local thresholdColor = specSettings.colors.threshold.over
 						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
 
-						if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
-							showThreshold = false
-						elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
+						if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 							if spell.id == spells.execute.id then
 								if talents:IsTalentActive(spells.improvedExecute) then
 									showThreshold = false
@@ -1035,16 +1035,11 @@ local function UpdateResourceBar()
 										end
 									end
 								end
-							elseif spell.id == spells.slam.id then
-								if talents:IsTalentActive(spells.stormOfSwords) then
-									showThreshold = false
-								elseif currentResource >= -resourceAmount then
-									thresholdColor = specSettings.colors.threshold.over
-								else
-									thresholdColor = specSettings.colors.threshold.under
-									frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
-								end
 							end
+						elseif resourceAmount == 0 then
+							showThreshold = false
+						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
+							showThreshold = false
 						elseif spell.hasCooldown then
 							if snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specSettings.colors.threshold.unusable

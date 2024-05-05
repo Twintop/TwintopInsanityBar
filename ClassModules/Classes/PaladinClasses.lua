@@ -9,13 +9,9 @@ TRB.Classes.Paladin = TRB.Classes.Paladin or {}
 
 
 ---@class TRB.Classes.Paladin.HolySpells : TRB.Classes.Healer.HealerSpells
----@field public flashHeal TRB.Classes.SpellBase
----@field public resonantWords TRB.Classes.SpellBase
----@field public lightweaver TRB.Classes.SpellBase
----@field public miracleWorker TRB.Classes.SpellBase
----@field public divineConversation TRB.Classes.SpellBase
----@field public prayerFocus TRB.Classes.SpellBase
----@field public sacredReverence TRB.Classes.SpellBase
+---@field public infusionOfLight TRB.Classes.SpellBase
+---@field public glimmerOfLight TRB.Classes.SpellBase
+---@field public daybreak TRB.Classes.SpellThreshold
 TRB.Classes.Paladin.HolySpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Paladin.HolySpells.__index = TRB.Classes.Paladin.HolySpells
 

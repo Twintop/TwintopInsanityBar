@@ -9,7 +9,6 @@ TRB.Classes.Hunter = TRB.Classes.Hunter or {}
 
 ---@class TRB.Classes.Hunter.HunterBaseSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public concussiveShot TRB.Classes.SpellBase
----@field public alphaPredator TRB.Classes.SpellBase
 ---@field public arcaneShot TRB.Classes.SpellThreshold
 ---@field public revivePet TRB.Classes.SpellThreshold
 ---@field public wingClip TRB.Classes.SpellThreshold
@@ -104,13 +103,7 @@ function TRB.Classes.Hunter.HunterBaseSpells:New()
         thresholdId = 9,
         settingKey = "serpentSting",
         isTalent = true,
-        baseDuration = 18,
-        --pandemic = true,
-        --baseDuration = 18
-    })
-    self.alphaPredator = TRB.Classes.SpellBase:New({
-        id = 269737,
-        isTalent = true
+        baseDuration = 18
     })
 
     return self
@@ -121,13 +114,9 @@ end
 ---@field public savagery TRB.Classes.SpellBase
 ---@field public frenzy TRB.Classes.SpellBase
 ---@field public cobraSting TRB.Classes.SpellBase
----@field public cobraSenses TRB.Classes.SpellBase
----@field public warOrders TRB.Classes.SpellBase
----@field public huntersPrey TRB.Classes.SpellBase
 ---@field public beastialWrath TRB.Classes.SpellBase
 ---@field public barbedWrath TRB.Classes.SpellBase
 ---@field public scentOfBlood TRB.Classes.SpellBase
----@field public direPack TRB.Classes.SpellBase
 ---@field public beastCleave TRB.Classes.SpellBase
 ---@field public callOfTheWild TRB.Classes.SpellBase
 ---@field public bloodFrenzy TRB.Classes.SpellBase
@@ -197,11 +186,6 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         id = 392296,
         isTalent = true
     })
-    self.cobraSenses = TRB.Classes.SpellBase:New({
-        id = 378244,
-        killCommandCooldownReductionModifier = 1,
-        isTalent = true
-    })
     self.aMurderOfCrows = TRB.Classes.SpellThreshold:New({
         id = 131894,
         primaryResourceType = Enum.PowerType.Focus,
@@ -209,15 +193,6 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         settingKey = "aMurderOfCrows",
         hasCooldown = true,
         cooldown = 60,
-        isTalent = true
-    })
-    self.warOrders = TRB.Classes.SpellBase:New({
-        id = 393933,
-        perRankMod = 0.5, --Needed?
-        isTalent = true
-    })
-    self.huntersPrey = TRB.Classes.SpellBase:New({
-        id = 378210,
         isTalent = true
     })
     self.beastialWrath = TRB.Classes.SpellBase:New({
@@ -240,10 +215,6 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
     })
     self.scentOfBlood = TRB.Classes.SpellBase:New({
         id = 193532,
-        isTalent = true
-    })
-    self.direPack = TRB.Classes.SpellBase:New({
-        id = 378745,
         isTalent = true
     })
     self.beastCleave = TRB.Classes.SpellBase:New({
@@ -286,17 +257,13 @@ end
 
 ---@class TRB.Classes.Hunter.MarksmanshipSpells : TRB.Classes.Hunter.HunterBaseSpells
 ---@field public steadyShot TRB.Classes.SpellBase
----@field public crackShot TRB.Classes.SpellBase
 ---@field public improvedSteadyShot TRB.Classes.SpellBase
 ---@field public rapidFire TRB.Classes.SpellBase
 ---@field public deathblow TRB.Classes.SpellBase
 ---@field public deadeye TRB.Classes.SpellBase
----@field public quickLoad TRB.Classes.SpellBase
----@field public trickShots TRB.Classes.SpellBase
 ---@field public steadyFocus TRB.Classes.SpellBase
 ---@field public trueshot TRB.Classes.SpellBase
 ---@field public lockAndLoad TRB.Classes.SpellBase
----@field public eagletalonsTrueFocus TRB.Classes.SpellBase
 ---@field public aimedShot TRB.Classes.SpellThreshold
 ---@field public chimaeraShot TRB.Classes.SpellThreshold
 ---@field public multiShot TRB.Classes.SpellThreshold
@@ -329,11 +296,6 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         settingKey = "aimedShot",
         hasCooldown = true,
         isSnowflake = true,
-        isTalent = true
-    })
-    self.crackShot = TRB.Classes.SpellBase:New({
-        id = 321293,
-        primaryResourceType = Enum.PowerType.Focus, --Arcane Shot and Chimaera Shot
         isTalent = true
     })
     self.improvedSteadyShot = TRB.Classes.SpellBase:New({
@@ -378,15 +340,6 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         id = 321460,
         isTalent = true
     })
-    self.quickLoad = TRB.Classes.SpellBase:New({-- TODO:Quick Load implementation. May not be needed?
-        id = 378771,
-        isTalent = true
-    })
-    self.trickShots = TRB.Classes.SpellBase:New({ --TODO: Do these ricochets generate Focus from Rapid Fire Rank 2?
-        id = 257044,
-        shots = 5,
-        isTalent = true
-    })
     self.steadyFocus = TRB.Classes.SpellBase:New({
         id = 193534,
         talentId = 193533,
@@ -402,11 +355,6 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
     -- TODO: Bulletstorm support?
     self.lockAndLoad = TRB.Classes.SpellBase:New({
         id = 194594,
-        isTalent = true
-    })
-    self.eagletalonsTrueFocus = TRB.Classes.SpellBase:New({-- TODO: Apply this to Arcane Shot, Chimaera Shot, Multi-Shot, and Aimed Shot.
-        id = 336851,
-        modifier = 0.75,
         isTalent = true
     })
 

@@ -3614,6 +3614,8 @@ local function UpdateResourceBar()
 								end
 							end
 						--The rest isn't used. Keeping it here for consistency until I can finish abstracting this whole mess out
+						elseif resourceAmount == 0 then
+							showThreshold = false
 						elseif spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 							showThreshold = false
 						elseif spell.isPvp and (not TRB.Data.character.isPvp or not talents:IsTalentActive(spell)) then
