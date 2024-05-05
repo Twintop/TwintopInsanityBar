@@ -552,19 +552,21 @@ local function ConstructResourceBar(settings)
 
 	if specId == 1 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
+		local thresholdId = 1
 		for _, v in pairs(spells) do
 			local spell = v --[[@as TRB.Classes.SpellBase]]
 			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 				spell = spell --[[@as TRB.Classes.SpellThreshold]]
-				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
-					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+				if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
+					TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
-				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell, settings)
+				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
+				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[thresholdId], spell, settings)
 
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
+				TRB.Frames.resourceFrame.thresholds[thresholdId]:Show()
+				TRB.Frames.resourceFrame.thresholds[thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
+				TRB.Frames.resourceFrame.thresholds[thresholdId]:Hide()
+				thresholdId = thresholdId + 1
 			end
 		end
 	elseif specId == 2 then
@@ -598,19 +600,22 @@ local function ConstructResourceBar(settings)
 		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], spells.conjuredChillglobe, TRB.Data.settings.evoker.preservation)
 	elseif specId == 3 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
+		local thresholdId = 1
 		for _, v in pairs(spells) do
 			local spell = v --[[@as TRB.Classes.SpellBase]]
 			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 				spell = spell --[[@as TRB.Classes.SpellThreshold]]
-				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
-					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+				if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
+					TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
-				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell, settings)
+				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
+				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[thresholdId], spell, settings)
 
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
+				TRB.Frames.resourceFrame.thresholds[thresholdId]:Show()
+				TRB.Frames.resourceFrame.thresholds[thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
+				TRB.Frames.resourceFrame.thresholds[thresholdId]:Hide()
+
+				thresholdId = thresholdId + 1
 			end
 		end
 	end
@@ -1033,19 +1038,6 @@ local function RefreshLookupData_Augmentation()
 	lookupLogic["$essenceMax"] = TRB.Data.character.maxResource2
 	lookupLogic["$comboPointsMax"] = TRB.Data.character.maxResource2
 	TRB.Data.lookupLogic = lookupLogic
-end
-
-local function FillSnapshotDataCasting(spell)
-	local currentTime = GetTime()
-	TRB.Data.snapshotData.casting.startTime = currentTime
-	TRB.Data.snapshotData.casting.resourceRaw = spell.mana
-	TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(spell.mana)
-	TRB.Data.snapshotData.casting.spellId = spell.id
-	TRB.Data.snapshotData.casting.icon = spell.icon
-end
-
-local function UpdateCastingResourceFinal()
-	TRB.Data.snapshotData.casting.resourceFinal = CalculateAbilityResourceValue(TRB.Data.snapshotData.casting.resourceRaw)
 end
 
 --TODO: Remove?

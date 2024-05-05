@@ -42,7 +42,7 @@ TRB.Classes.Druid.BalanceSpells.__index = TRB.Classes.Druid.BalanceSpells
 function TRB.Classes.Druid.BalanceSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Druid.BalanceSpells) --[[@as TRB.Classes.Druid.BalanceSpells]]
+    self = setmetatable(base:New(), {__index = TRB.Classes.Druid.BalanceSpells})
     -- Druid Class Baseline Abilities
     self.moonfire = TRB.Classes.SpellBase:New({
         id = 164812,
@@ -62,7 +62,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
     self.starsurge = TRB.Classes.SpellThreshold:New({
         id = 78674,
         primaryResourceType = Enum.PowerType.LunarPower,
-        thresholdId = 1,
         settingKey = "starsurge",
         isTalent = true,
         baseline = true,
@@ -72,7 +71,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
         id = 78674,
         primaryResourceType = Enum.PowerType.LunarPower,
         primaryResourceTypeMod = 2,
-        thresholdId = 2,
         settingKey = "starsurge2",
         isTalent = true,
         baseline = true,
@@ -82,7 +80,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
         id = 78674,
         primaryResourceType = Enum.PowerType.LunarPower,
         primaryResourceTypeMod = 3,
-        thresholdId = 3,
         settingKey = "starsurge3",
         isTalent = true,
         baseline = true,
@@ -127,7 +124,6 @@ function TRB.Classes.Druid.BalanceSpells:New()
     self.starfall = TRB.Classes.SpellThreshold:New({
         id = 191034,
         primaryResourceType = Enum.PowerType.LunarPower,
-        thresholdId = 4,
         settingKey = "starfall",
         pandemic = true,
         baseDuration = 8,
@@ -251,7 +247,7 @@ TRB.Classes.Druid.FeralSpells.__index = TRB.Classes.Druid.FeralSpells
 function TRB.Classes.Druid.FeralSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Druid.FeralSpells) --[[@as TRB.Classes.Druid.FeralSpells]]
+    self = setmetatable(base:New(),  {__index = TRB.Classes.Druid.FeralSpells})
 
     -- Racial abilities
     self.shadowmeld = TRB.Classes.SpellBase:New({
@@ -270,7 +266,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         debuffId = 155722,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 1,
         settingKey = "rake",
         hasSnapshot = true,
         pandemic = true,
@@ -287,7 +282,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         debuffId = 405233,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 2,
         settingKey = "thrash",
         hasSnapshot = true,
         pandemic = true,
@@ -303,7 +297,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         debuffId = 1079,
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
-        thresholdId = 4,
         settingKey = "rip",
         hasSnapshot = true,
         pandemicTimes = {
@@ -325,7 +318,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         id = 22570,
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
-        thresholdId = 5,
         settingKey = "maim",
         hasCooldown = true,
         cooldown = 20,
@@ -344,7 +336,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         id = 22568,
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
-        thresholdId = 6,
         settingKey = "ferociousBite",
         isSnowflake = true -- Really between 25-50 energy, minus Relentless Predator
     })
@@ -352,7 +343,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         id = 22568,
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
-        thresholdId = 7,
         settingKey = "ferociousBiteMinimum",
         isSnowflake = true
     })
@@ -361,7 +351,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         primaryResourceType = Enum.PowerType.Energy,
         primaryResourceTypeMod = 2,
         comboPoints = true,
-        thresholdId = 8,
         settingKey = "ferociousBiteMaximum",
         isSnowflake = true
     })
@@ -374,7 +363,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         id = 5221,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 9,
         settingKey = "shred",
         isClearcasting = true
     })
@@ -382,7 +370,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         id = 106785,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 3,
         settingKey = "swipe",
         isSnowflake = true,
         isTalent = false,
@@ -408,7 +395,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         id = 285381,
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
-        thresholdId = 10,
         settingKey = "primalWrath",
         isTalent = true
     })
@@ -421,7 +407,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         debuffId = 155625,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 11,
         settingKey = "moonfire",
         isSnowflake = true,
         hasSnapshot = true,
@@ -447,7 +432,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         isHasted = true,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 12,
         settingKey = "brutalSlash",
         isSnowflake = true,
         isTalent = true,
@@ -471,7 +455,6 @@ function TRB.Classes.Druid.FeralSpells:New()
         id = 274837,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 5,
-        thresholdId = 13,
         settingKey = "feralFrenzy",
         isTalent = true,
         hasCooldown = true
@@ -513,7 +496,7 @@ TRB.Classes.Druid.RestorationSpells.__index = TRB.Classes.Druid.RestorationSpell
 function TRB.Classes.Druid.RestorationSpells:New()
     ---@type TRB.Classes.Healer.HealerSpells
     local base = TRB.Classes.Healer.HealerSpells
-    self = setmetatable(base:New(), TRB.Classes.Druid.RestorationSpells) --[[@as TRB.Classes.Druid.RestorationSpells]]
+    self = setmetatable(base:New(), {__index = TRB.Classes.Druid.RestorationSpells})
 
     -- Druid Class Baseline Abilities
     self.moonfire = TRB.Classes.SpellBase:New({

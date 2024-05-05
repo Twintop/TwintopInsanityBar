@@ -192,35 +192,35 @@ local function HavocLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			annihilation = {
-				enabled = true, -- 1
+				enabled = true,
 			},
 			bladeDance = {
-				enabled = true, -- 2
+				enabled = true,
 			},
 			chaosNova = {
-				enabled = true, -- 3
+				enabled = true,
 			},
 			chaosStrike = {
-				enabled = true, -- 4
+				enabled = true,
 			},
 			deathSweep = {
-				enabled = true, -- 5
+				enabled = true,
 			},
 			eyeBeam = {
-				enabled = true, -- 6
+				enabled = true,
 			},
 			-- Talents
 			glaiveTempest = {
-				enabled = true, -- 7
+				enabled = true,
 			},
 			felEruption = {
-				enabled = true, -- 8
+				enabled = true,
 			},
 			throwGlaive = {
-				enabled = true, -- 9
+				enabled = true,
 			},
 			felBarrage = {
-				enabled = true, -- 10
+				enabled = true,
 			}
 		},
 		displayBar = {
@@ -499,17 +499,17 @@ local function VengeanceLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			soulCleave = {
-				enabled = true, -- 1
+				enabled = true,
 			},
 			chaosNova = {
-				enabled = true, -- 2
+				enabled = true,
 			},
 			-- Talents
 			felDevastation = {
-				enabled = true, -- 4
+				enabled = true,
 			},
 			spiritBomb = {
-				enabled = true, -- 5
+				enabled = true,
 			},
 		},
 		displayBar = {

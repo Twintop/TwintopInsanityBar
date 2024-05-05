@@ -3550,15 +3550,14 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
-
-				local pairOffset = 0
+				local thresholdId = 1
 				for _, v in pairs(TRB.Data.spellsData.spells) do
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						pairOffset = (spell.thresholdId - 1) * 3
+						pairOffset = (thresholdId - 1) * 3
 						local resourceAmount = -spell:GetPrimaryResourceCost()
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
@@ -3639,7 +3638,9 @@ local function UpdateResourceBar()
 							end
 						end
 
-						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spells[spell.settingKey].id], specSettings)
+						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spells[spell.settingKey].id], specSettings)
+
+						thresholdId = thresholdId + 1
 					end
 				end
 

@@ -210,7 +210,7 @@ function TRB.Classes.SpellBase:FillSpellData()
             self.icon = string.format("|T%s:0|t", icon)
             self.name = name
 
-            if self.thresholdId ~= nil then
+            if self.settingKey ~= nil then
                 self.texture = icon
             end
         end
@@ -279,7 +279,7 @@ end
 ---@param spell TRB.Classes.SpellThreshold|TRB.Classes.SpellComboPointThreshold # Spell to check
 ---@return boolean # Is this a valid Threshold spell
 local function spellThreshold_IsValid(spell)
-    if spell ~= nil and spell.id ~= nil and spell.primaryResourceType ~= nil and spell.thresholdId ~= nil and spell.settingKey ~= nil then
+    if spell ~= nil and spell.id ~= nil and spell.primaryResourceType ~= nil and spell.settingKey ~= nil then
         return true
     end
     return false
@@ -287,7 +287,6 @@ end
 
 
 ---@class TRB.Classes.SpellThreshold : TRB.Classes.SpellBase
----@field public thresholdId integer # Index of the threshold to be controlled
 ---@field public settingKey string # Key used for lookups. Typically the same as the name in the `spells` dictionary.
 ---@field public isSnowflake boolean? # Is this threshold a special snowflake that needs to be handled manually?
 TRB.Classes.SpellThreshold = setmetatable({}, {__index = TRB.Classes.SpellBase})
@@ -307,8 +306,7 @@ function TRB.Classes.SpellThreshold:New(spellAttributes)
     table.insert(self.classTypes, "TRB.Classes.SpellThreshold")
     
     for key, value in pairs(spellAttributes) do
-        if  (key == "thresholdId"   and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "settingKey") or
+        if  (key == "settingKey") or
             (key == "isSnowflake"   and type(value) == "boolean") then
             self[key] = value
             self.attributes[key] = nil
@@ -365,7 +363,6 @@ end
 
 
 ---@class TRB.Classes.SpellComboPointThreshold : TRB.Classes.SpellComboPoint
----@field public thresholdId integer # Index of the threshold to be controlled
 ---@field public settingKey string # Key used for lookups. Typically the same as the name in the `spells` dictionary.
 ---@field public isSnowflake boolean? # Is this threshold a special snowflake that needs to be handled manually?
 TRB.Classes.SpellComboPointThreshold = setmetatable({}, {__index = TRB.Classes.SpellComboPoint})
@@ -386,8 +383,7 @@ function TRB.Classes.SpellComboPointThreshold:New(spellAttributes)
     table.insert(self.classTypes, "TRB.Classes.SpellComboPointThreshold")
     
     for key, value in pairs(spellAttributes) do
-        if  (key == "thresholdId"   and type(value) == "number" and tonumber(value, 10) ~= nil) or
-            (key == "settingKey") or
+        if  (key == "settingKey") or
             (key == "isSnowflake"   and type(value) == "boolean") then
             self[key] = value
             self.attributes[key] = nil

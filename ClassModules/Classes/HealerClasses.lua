@@ -565,7 +565,7 @@ TRB.Classes.Healer.HealerSpells.__index = TRB.Classes.Healer.HealerSpells
 function TRB.Classes.Healer.HealerSpells:New()
     ---@type TRB.Classes.SpecializationSpellsBase
     local base = TRB.Classes.SpecializationSpellsBase
-    self = setmetatable(base:New(), TRB.Classes.Healer.HealerSpells) --[[@as TRB.Classes.Healer.HealerSpells]]
+    self = setmetatable(base:New(), {__index = TRB.Classes.Healer.HealerSpells})
     
     -- External mana
     self.symbolOfHope = TRB.Classes.SpellBase:New({
@@ -596,51 +596,51 @@ function TRB.Classes.Healer.HealerSpells:New()
         id = 370607,
         itemId = 191384,
         spellId = 370607,
+        primaryResourceType = Enum.PowerType.Mana,
         iconName = "inv_10_alchemy_bottle_shape1_blue",
         useSpellIcon = true,
-        thresholdId = 1,
         settingKey = "aeratedManaPotionRank1"
     })
     self.aeratedManaPotionRank2 = TRB.Classes.SpellThreshold:New({
         id = 370607,
         itemId = 191385,
         spellId = 370607,
+        primaryResourceType = Enum.PowerType.Mana,
         iconName = "inv_10_alchemy_bottle_shape1_blue",
         useSpellIcon = true,
-        thresholdId = 2,
         settingKey = "aeratedManaPotionRank2"
     })
     self.aeratedManaPotionRank3 = TRB.Classes.SpellThreshold:New({
         id = 370607,
         itemId = 191386,
         spellId = 370607,
+        primaryResourceType = Enum.PowerType.Mana,
         iconName = "inv_10_alchemy_bottle_shape1_blue",
         useSpellIcon = true,
-        thresholdId = 3,
         settingKey = "aeratedManaPotionRank3"
     })
     self.potionOfFrozenFocusRank1 = TRB.Classes.SpellThreshold:New({
         id = 371033,
         itemId = 191363,
         spellId = 371033,
+        primaryResourceType = Enum.PowerType.Mana,
         useSpellIcon = true,
-        thresholdId = 4,
         settingKey = "potionOfFrozenFocusRank1"
     })
     self.potionOfFrozenFocusRank2 = TRB.Classes.SpellThreshold:New({
         id = 371033,
         itemId = 191364,
         spellId = 371033,
+        primaryResourceType = Enum.PowerType.Mana,
         useSpellIcon = true,
-        thresholdId = 5,
         settingKey = "potionOfFrozenFocusRank2"
     })
     self.potionOfFrozenFocusRank3 = TRB.Classes.SpellThreshold:New({
         id = 371033,
         itemId = 191365,
         spellId = 371033,
+        primaryResourceType = Enum.PowerType.Mana,
         useSpellIcon = true,
-        thresholdId = 6,
         settingKey = "potionOfFrozenFocusRank3"
     })
     self.potionOfChilledClarity = TRB.Classes.SpellBase:New({
@@ -652,8 +652,8 @@ function TRB.Classes.Healer.HealerSpells:New()
         id = 396391,
         itemId = 194300,
         spellId = 396391,
+        primaryResourceType = Enum.PowerType.Mana,
         useSpellIcon = true,
-        thresholdId = 7,
         settingKey = "conjuredChillglobe",
         mana = 4830,
         duration = 10,

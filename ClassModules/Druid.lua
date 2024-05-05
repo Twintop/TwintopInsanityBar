@@ -806,58 +806,33 @@ local function ConstructResourceBar(settings)
 		end
 	end
 
-	if specId == 1 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
-		for x = 1, 4 do -- SS30, SS60, SS90, SF50
-			if TRB.Frames.resourceFrame.thresholds[x] == nil then
-				TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
-			end
+	local spells = TRB.Data.spellsData.spells
+	local thresholdId = 1
+	for _, v in pairs(spells) do
+		local spell = v --[[@as TRB.Classes.SpellBase]]
+		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+			spell = spell --[[@as TRB.Classes.SpellThreshold]]
+			print(spell.name, spell.settingKey)
 
-			TRB.Frames.resourceFrame.thresholds[x]:Show()
-			TRB.Frames.resourceFrame.thresholds[x]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-			TRB.Frames.resourceFrame.thresholds[x]:Hide()
+			if resourceFrame.thresholds[thresholdId] == nil then
+				resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, resourceFrame)
+			end
+			TRB.Functions.Threshold:ResetThresholdLine(resourceFrame.thresholds[thresholdId], settings, true)
+			TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[thresholdId], spell, settings)
+
+			resourceFrame.thresholds[thresholdId]:Show()
+			resourceFrame.thresholds[thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
+			resourceFrame.thresholds[thresholdId]:Hide()
+			
+			thresholdId = thresholdId + 1
 		end
-		
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.starsurge, settings)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.starsurge2, settings)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], spells.starsurge3, settings)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], spells.starfall, settings)
+	end
+
+	if specId == 1 then
 		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif specId == 2 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.FeralSpells]]
-		for _, v in pairs(spells) do
-			local spell = v --[[@as TRB.Classes.SpellBase]]
-			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
-				spell = spell --[[@as TRB.Classes.SpellThreshold]]
-
-				if resourceFrame.thresholds[spell.thresholdId] == nil then
-					resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, resourceFrame)
-				end
-				TRB.Functions.Threshold:ResetThresholdLine(resourceFrame.thresholds[spell.thresholdId], settings, true)
-				TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spell.thresholdId], spell, settings)
-	
-				resourceFrame.thresholds[spell.thresholdId]:Show()
-				resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-				resourceFrame.thresholds[spell.thresholdId]:Hide()
-
-				if spell.id == spells.thrash.id then
-					print(spell.thresholdId)
-				end
-			end
-		end
 		TRB.Frames.resource2ContainerFrame:Show()
 	elseif specId == 4 then
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.RestorationSpells]]
-		for x = 1, 7 do
-			if TRB.Frames.resourceFrame.thresholds[x] == nil then
-				TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
-			end
-
-			TRB.Frames.resourceFrame.thresholds[x]:Show()
-			TRB.Frames.resourceFrame.thresholds[x]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-			TRB.Frames.resourceFrame.thresholds[x]:Hide()
-		end
-
 		for x = 1, 7 do
 			if TRB.Frames.passiveFrame.thresholds[x] == nil then
 				TRB.Frames.passiveFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.passiveFrame)
@@ -867,14 +842,7 @@ local function ConstructResourceBar(settings)
 			TRB.Frames.passiveFrame.thresholds[x]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 			TRB.Frames.passiveFrame.thresholds[x]:Hide()
 		end
-		
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.aeratedManaPotionRank1, TRB.Data.settings.druid.restoration)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.aeratedManaPotionRank2, TRB.Data.settings.druid.restoration)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], spells.aeratedManaPotionRank3, TRB.Data.settings.druid.restoration)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], spells.potionOfFrozenFocusRank1, TRB.Data.settings.druid.restoration)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], spells.potionOfFrozenFocusRank2, TRB.Data.settings.druid.restoration)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], spells.potionOfFrozenFocusRank3, TRB.Data.settings.druid.restoration)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], spells.conjuredChillglobe, TRB.Data.settings.druid.restoration)
+
 		TRB.Frames.resource2ContainerFrame:Hide()
 	end
 
@@ -2551,14 +2519,15 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
+				local thresholdId = 1
 				for _, v in pairs(TRB.Data.spellsData.spells) do
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						pairOffset = (spell.thresholdId - 1) * 3
+						pairOffset = (thresholdId - 1) * 3
 
 						local resourceAmount = -spell:GetPrimaryResourceCost()
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
@@ -2672,7 +2641,8 @@ local function UpdateResourceBar()
 							snapshotCooldown = snapshotData.snapshots[spell.id].cooldown
 						end
 
-						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshotCooldown, specSettings)
+						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshotCooldown, specSettings)
+						thresholdId = thresholdId + 1
 					end
 				end
 				
@@ -2783,12 +2753,13 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
+				local thresholdId = 1
 				for _, v in pairs(spells) do
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
 						local resourceAmount = -spell:GetPrimaryResourceCost()
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
@@ -2848,7 +2819,7 @@ local function UpdateResourceBar()
 							end
 						elseif spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 							if spell.id == spells.ferociousBite.id and spell.settingKey == "ferociousBite" then
-								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, math.min(math.max(-resourceAmount, currentResource), spells.ferociousBiteMaximum:GetPrimaryResourceCost()), TRB.Data.character.maxResource)
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, math.min(math.max(-resourceAmount, currentResource), spells.ferociousBiteMaximum:GetPrimaryResourceCost()), TRB.Data.character.maxResource)
 								
 								if currentResource >= -resourceAmount or snapshotData.snapshots[spells.apexPredatorsCraving.id].buff.isActive == true then
 									thresholdColor = specSettings.colors.threshold.over
@@ -2934,9 +2905,11 @@ local function UpdateResourceBar()
 							frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 						end
 
-						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshotData.snapshots[spell.id], specSettings)
+						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshotData.snapshots[spell.id], specSettings)
+						
+						pairOffset = pairOffset + 3
+						thresholdId = thresholdId + 1
 					end
-					pairOffset = pairOffset + 3
 				end
 
 				local barColor = specSettings.colors.bar.base

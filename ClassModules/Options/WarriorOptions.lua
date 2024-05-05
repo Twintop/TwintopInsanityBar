@@ -199,43 +199,43 @@ local function ArmsLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			execute = {
-				enabled = true, -- 1
+				enabled = true,
 			},
 			executeMinimum = {
-				enabled = true, -- 2
+				enabled = true,
 			},
 			executeMaximum = {
-				enabled = true, -- 3
+				enabled = true,
 			},
 			hamstring = {
-				enabled = false -- 4
+				enabled = false,
 			},
 			shieldBlock = {
-				enabled = false, -- 5
+				enabled = false,
 			},
 			slam = {
-				enabled = true, -- 6
+				enabled = true,
 			},
 			whirlwind = {
-				enabled = true, -- 7
+				enabled = true,
 			},
 			impendingVictory = {
-				enabled = true, -- 8
+				enabled = true,
 			},
 			thunderClap = {
-				enabled = true -- 9
+				enabled = true,
 			},
 			mortalStrike = {
-				enabled = true, -- 10
+				enabled = true,
 			},
 			rend = {
-				enabled = true, -- 11
+				enabled = true,
 			},
 			cleave = {
-				enabled = true, -- 12
+				enabled = true,
 			},
 			ignorePain = {
-				enabled = true, -- 13
+				enabled = true,
 			}
 		},
 		displayBar = {
@@ -522,31 +522,31 @@ local function FuryLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			execute = {
-				enabled = true, -- 1
+				enabled = true,
 			},
 			executeMinimum = {
-				enabled = true, -- 2
+				enabled = true,
 			},
 			executeMaximum = {
-				enabled = true, -- 3
+				enabled = true,
 			},
 			hamstring = {
-				enabled = false -- 4
+				enabled = false,
 			},
 			shieldBlock = {
-				enabled = false, -- 5
+				enabled = false,
 			},
 			slam = {
-				enabled = false, -- 6
+				enabled = false,
 			},
 			impendingVictory = {
-				enabled = true, -- 7
+				enabled = true,
 			},
 			thunderClap = {
-				enabled = false -- 8
+				enabled = false,
 			},
 			rampage = {
-				enabled = true, -- 9
+				enabled = true,
 			},
 		},
 		displayBar = {

@@ -567,37 +567,43 @@ local function ConstructResourceBar(settings)
 
 	if specId == 1 then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.ElementalSpells]]
+		local thresholdId = 1
 		for _, v in pairs(spells) do
 			local spell = v --[[@as TRB.Classes.SpellBase]]
 			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 				spell = spell --[[@as TRB.Classes.SpellThreshold]]
-				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
-					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+				if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
+					TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
-				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell, settings)
+				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
+				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[thresholdId], spell, settings)
 
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
+				TRB.Frames.resourceFrame.thresholds[thresholdId]:Show()
+				TRB.Frames.resourceFrame.thresholds[thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
+				TRB.Frames.resourceFrame.thresholds[thresholdId]:Hide()
+
+				thresholdId = thresholdId + 1
 			end
 		end
 		TRB.Frames.resource2ContainerFrame:Hide()
 	elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Shaman.EnhancementSpells]]
+		local thresholdId = 1
 		for _, v in pairs(spells) do
 			local spell = v --[[@as TRB.Classes.SpellBase]]
 			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 				spell = spell --[[@as TRB.Classes.SpellThreshold]]
-				if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
-					TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+				if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
+					TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 				end
-				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell, settings)
+				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
+				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[thresholdId], spell, settings)
 
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
+				TRB.Frames.resourceFrame.thresholds[thresholdId]:Show()
+				TRB.Frames.resourceFrame.thresholds[thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
+				TRB.Frames.resourceFrame.thresholds[thresholdId]:Hide()
+
+				thresholdId = thresholdId + 1
 			end
 		end
 		TRB.Frames.resource2ContainerFrame:Show()
@@ -1474,13 +1480,14 @@ local function UpdateResourceBar()
 				local barColor = specSettings.colors.bar.base
 
 				local pairOffset = 0
+				local thresholdId = 1
 				for _, v in pairs(TRB.Data.spellsData.spells) do
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						pairOffset = (spell.thresholdId - 1) * 3
+						pairOffset = (thresholdId - 1) * 3
 						local resourceAmount = -spell:GetPrimaryResourceCost()
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
@@ -1553,9 +1560,11 @@ local function UpdateResourceBar()
 							end
 						end
 						
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
-						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spell.id], specSettings)
+						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spell.id], specSettings)
+
+						thresholdId = thresholdId + 1
 					end
 				end
 
@@ -2087,8 +2096,8 @@ function TRB.Functions.Class:CheckCharacter()
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Maelstrom)
 
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spells.earthShock.thresholdId], spells.earthShock, TRB.Data.settings.shaman.elemental)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[spells.elementalBlast.thresholdId], spells.elementalBlast, TRB.Data.settings.shaman.elemental)
+		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.earthShock, TRB.Data.settings.shaman.elemental)
+		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.elementalBlast, TRB.Data.settings.shaman.elemental)
 
 		if (talents:IsTalentActive(spells.elementalBlast) and spells.elementalBlast:GetPrimaryResourceCost() < TRB.Data.character.maxResource) then
 			TRB.Data.character.earthShockThreshold = -spells.elementalBlast:GetPrimaryResourceCost()

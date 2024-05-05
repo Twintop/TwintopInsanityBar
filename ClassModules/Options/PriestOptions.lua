@@ -259,33 +259,33 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			aeratedManaPotionRank1 = {
-				enabled = false, -- 1
+				enabled = false,
 			},
 			aeratedManaPotionRank2 = {
-				enabled = false, -- 2
+				enabled = false,
 			},
 			aeratedManaPotionRank3 = {
-				enabled = true, -- 3
+				enabled = true,
 			},
 			potionOfFrozenFocusRank1 = {
-				enabled = false, -- 4
+				enabled = false,
 			},
 			potionOfFrozenFocusRank2 = {
-				enabled = false, -- 5
+				enabled = false,
 			},
 			potionOfFrozenFocusRank3 = {
-				enabled = true, -- 6
+				enabled = true,
 			},
 			conjuredChillglobe = {
-				enabled = true, -- 7
+				enabled = true,
 				cooldown = true
 			},
 			shadowfiend = {
-				enabled = true, -- 8
+				enabled = true,
 				cooldown = false
 			},
 			mindbender = {
-				enabled = true, -- 9
+				enabled = true,
 				cooldown = false
 			},
 			potionCooldown = {
@@ -755,33 +755,33 @@ local function HolyLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			aeratedManaPotionRank1 = {
-				enabled = false, -- 1
+				enabled = false,
 			},
 			aeratedManaPotionRank2 = {
-				enabled = false, -- 2
+				enabled = false,
 			},
 			aeratedManaPotionRank3 = {
-				enabled = true, -- 3
+				enabled = true,
 			},
 			potionOfFrozenFocusRank1 = {
-				enabled = false, -- 4
+				enabled = false,
 			},
 			potionOfFrozenFocusRank2 = {
-				enabled = false, -- 5
+				enabled = false,
 			},
 			potionOfFrozenFocusRank3 = {
-				enabled = true, -- 6
+				enabled = true,
 			},
 			conjuredChillglobe = {
-				enabled = true, -- 7
+				enabled = true,
 				cooldown = true
 			},
 			shadowfiend = {
-				enabled = true, -- 8
+				enabled = true,
 				cooldown = false
 			},
 			symbolOfHope = {
-				enabled = true, -- 9
+				enabled = true,
 				cooldown = false,
 				minimumManaPercent = 25
 			},
@@ -1227,13 +1227,13 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			devouringPlagueThresholdOnlyOverShow = false,
-			devouringPlague = { -- 1
+			devouringPlague = {
 				enabled = true,
 			},
-			devouringPlague2 = { -- 2
+			devouringPlague2 = {
 				enabled = true,
 			},
-			devouringPlague3 = { -- 3
+			devouringPlague3 = {
 				enabled = true,
 			}
 		},

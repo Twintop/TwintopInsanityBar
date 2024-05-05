@@ -33,28 +33,24 @@ function TRB.Classes.Hunter.HunterBaseSpells:New()
         id = 185358,
         iconName = "ability_impalingbolt",
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 1,
         settingKey = "arcaneShot",
         baseline = true
     })
     self.revivePet = TRB.Classes.SpellThreshold:New({
         id = 982,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 2,
         settingKey = "revivePet",
         baseline = true
     })
     self.wingClip = TRB.Classes.SpellThreshold:New({
         id = 195645,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 3,
         settingKey = "wingClip",
         baseline = true
     })
     self.killCommand = TRB.Classes.SpellThreshold:New({
         id = 34026,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 4,
         settingKey = "killCommand",
         hasCooldown = true,
         isTalent = true,
@@ -67,7 +63,6 @@ function TRB.Classes.Hunter.HunterBaseSpells:New()
     self.killShot = TRB.Classes.SpellThreshold:New({
         id = 53351,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 5,
         settingKey = "killShot",
         healthMinimum = 0.2,
         hasCooldown = true,
@@ -76,13 +71,11 @@ function TRB.Classes.Hunter.HunterBaseSpells:New()
     self.scareBeast = TRB.Classes.SpellThreshold:New({
         id = 1513,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 6,
         settingKey = "scareBeast"
     })
     self.explosiveShot = TRB.Classes.SpellThreshold:New({
         id = 212431,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 7,
         settingKey = "explosiveShot",
         hasCooldown = true,
         cooldown = 30,
@@ -91,7 +84,6 @@ function TRB.Classes.Hunter.HunterBaseSpells:New()
     self.barrage = TRB.Classes.SpellThreshold:New({
         id = 120360,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 8,
         settingKey = "barrage",
         isTalent = true,
         hasCooldown = true,
@@ -100,7 +92,6 @@ function TRB.Classes.Hunter.HunterBaseSpells:New()
     self.serpentSting = TRB.Classes.SpellThreshold:New({
         id = 271788,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 9,
         settingKey = "serpentSting",
         isTalent = true,
         baseDuration = 18
@@ -144,7 +135,6 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
     self.cobraShot = TRB.Classes.SpellThreshold:New({
         id = 193455,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 10,
         settingKey = "cobraShot",
         killCommandCooldownReduction = 2,
         isTalent = true
@@ -152,7 +142,6 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
     self.multiShot = TRB.Classes.SpellThreshold:New({
         id = 2643,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 11,
         settingKey = "multiShot",
         isTalent = true
     })
@@ -189,7 +178,6 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
     self.aMurderOfCrows = TRB.Classes.SpellThreshold:New({
         id = 131894,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 12,
         settingKey = "aMurderOfCrows",
         hasCooldown = true,
         cooldown = 60,
@@ -207,7 +195,6 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
     self.wailingArrow = TRB.Classes.SpellThreshold:New({
         id = 392060,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 13,
         settingKey = "wailingArrow",
         hasCooldown = true,
         cooldown = 60,
@@ -235,7 +222,6 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
     self.direBeastBasilisk = TRB.Classes.SpellThreshold:New({
         id = 205691,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 14,
         settingKey = "direBeastBasilisk",
         hasCooldown = true,
         cooldown = 120,
@@ -244,7 +230,6 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
     self.direBeastHawk = TRB.Classes.SpellThreshold:New({
         id = 208652,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 15,
         settingKey = "direBeastHawk",
         hasCooldown = true,
         cooldown = 30,
@@ -292,7 +277,6 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
     self.aimedShot = TRB.Classes.SpellThreshold:New({
         id = 19434,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 10,
         settingKey = "aimedShot",
         hasCooldown = true,
         isSnowflake = true,
@@ -313,7 +297,6 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
     self.chimaeraShot = TRB.Classes.SpellThreshold:New({
         id = 342049,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 11,
         settingKey = "chimaeraShot",
         isTalent = true
     })
@@ -324,14 +307,12 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
     self.multiShot = TRB.Classes.SpellThreshold:New({
         id = 257620,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 12,
         settingKey = "multiShot",
         isTalent = true
     })
     self.burstingShot = TRB.Classes.SpellThreshold:New({
         id = 186387,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 13,
         settingKey = "burstingShot",
         hasCooldown = true,
         isTalent = true
@@ -361,7 +342,6 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
     self.wailingArrow = TRB.Classes.SpellThreshold:New({
         id = 355589,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 14,
         settingKey = "wailingArrow",
         hasCooldown = true,
         cooldown = 60,
@@ -372,7 +352,6 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
     self.sniperShot = TRB.Classes.SpellThreshold:New({
         id = 203155,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 15,
         settingKey = "sniperShot",
         hasCooldown = true,
         cooldown = 10,
@@ -407,8 +386,6 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
     self.killCommand = TRB.Classes.SpellBase:New({
         id = 34026,
         resource = 15,
-        --thresholdId = 4,
-        --settingKey = "killCommand",
         isSnowflake = true,
         hasCooldown = true,
         baseline = true,
@@ -421,7 +398,6 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
     self.raptorStrike = TRB.Classes.SpellThreshold:New({
         id = 186270,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 10,
         isSnowflake = true,
         settingKey = "raptorStrike",
         isTalent = true
@@ -450,7 +426,6 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
     self.carve = TRB.Classes.SpellThreshold:New({
         id = 187708,
         primaryResourceType = Enum.PowerType.Focus,
-        thresholdId = 11,
         settingKey = "carve",
         hasCooldown = true,
         isTalent = true
@@ -461,14 +436,12 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
         isTalent = true,
         hasCooldown = true,
         hasCharges = true,
-        thresholdId = 12,
         settingKey = "butchery"
     })
     self.mongooseBite = TRB.Classes.SpellThreshold:New({
         id = 259387,
         primaryResourceType = Enum.PowerType.Focus,
-        isSnowflake = true,
-        thresholdId = 4, --NOTE this take's Kill Command's stypical threshold ID only so all the rest at the class level stay consistent!
+        isSnowflake = true, --NOTE this take's Kill Command's stypical threshold ID only so all the rest at the class level stay consistent!
         settingKey = "mongooseBite",
         isTalent = true
     })

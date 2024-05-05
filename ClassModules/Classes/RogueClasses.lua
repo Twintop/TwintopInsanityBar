@@ -71,7 +71,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
         stealth = true,
-        thresholdId = 2,
         settingKey = "cheapShot",
         baseline = true,
         isSnowflake = true
@@ -79,7 +78,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     self.crimsonVial = TRB.Classes.SpellThreshold:New({
         id = 185311,
         primaryResourceType = Enum.PowerType.Energy,
-        thresholdId = 3,
         settingKey = "crimsonVial",
         hasCooldown = true,
         cooldown = 30,
@@ -89,7 +87,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         id = 1725,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 0,
-        thresholdId = 4,
         settingKey = "distract",
         hasCooldown = true,
         cooldown = 30,
@@ -99,7 +96,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         id = 408,
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
-        thresholdId = 5,
         settingKey = "kidneyShot",
         hasCooldown = true,
         cooldown = 20,
@@ -109,7 +105,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         id = 315496,
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
-        thresholdId = 6,
         settingKey = "sliceAndDice",
         hasCooldown = false,
         isSnowflake = true,
@@ -128,7 +123,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     self.feint = TRB.Classes.SpellThreshold:New({
         id = 1966,
         primaryResourceType = Enum.PowerType.Energy,
-        thresholdId = 7,
         settingKey = "feint",
         hasCooldown = true,
         cooldown = 15,
@@ -142,7 +136,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         id = 5938,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 8,
         settingKey = "shiv",
         hasCooldown = true,
         isTalent = true
@@ -151,7 +144,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         id = 6770,
         primaryResourceType = Enum.PowerType.Energy,
         stealth = true,
-        thresholdId = 9,
         settingKey = "sap",
         baseline = true
     })
@@ -159,7 +151,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         id = 1776,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 10,
         settingKey = "gouge",
         hasCooldown = true,
         cooldown = 15,
@@ -173,7 +164,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         id = 385616,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 2,
-        thresholdId = 11,
         settingKey = "echoingReprimand",
         hasCooldown = true,
         cooldown = 45,
@@ -218,7 +208,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
         id = 385408,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 100,
         settingKey = "sepsis",
         hasCooldown = true,
         cooldown = 90,
@@ -229,7 +218,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     self.deathFromAbove = TRB.Classes.SpellComboPointThreshold:New({
         id = 269513,
         primaryResourceType = Enum.PowerType.Energy,
-        thresholdId = 101,
         settingKey = "deathFromAbove",
         comboPoints = true,
         hasCooldown = true,
@@ -238,7 +226,6 @@ function TRB.Classes.Rogue.RogueBaseSpells:New()
     self.dismantle = TRB.Classes.SpellThreshold:New({
         id = 207777,
         primaryResourceType = Enum.PowerType.Energy,
-        thresholdId = 102,
         settingKey = "dismantle",
         hasCooldown = true,
         isPvp = true
@@ -287,7 +274,6 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 2,
         stealth = true,
-        thresholdId = 1,
         settingKey = "ambush",
         baseline = true
     })
@@ -299,7 +285,6 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         id = 32645,
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
-        thresholdId = 12,
         settingKey = "envenom",
         baseline = true
     })
@@ -307,7 +292,6 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         id = 51723,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 13,
         settingKey = "fanOfKnives",
         baseline = true
     })
@@ -315,7 +299,6 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         id = 703,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 14,
         settingKey = "garrote",
         hasCooldown = true,
         cooldown = 6,
@@ -328,7 +311,6 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         id = 1329,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 2,
-        thresholdId = 15,
         settingKey = "mutilate",
         baseline = true
     })
@@ -336,7 +318,6 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         id = 185565,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 16,
         settingKey = "poisonedKnife",
         baseline = true
     })
@@ -344,7 +325,6 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         id = 1943,
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
-        thresholdId = 17,
         settingKey = "rupture",
         pandemicTimes = {
             8 * 0.3, -- 0 CP, show same as if we had 1
@@ -368,7 +348,6 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         id = 121411,
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
-        thresholdId = 18,
         settingKey = "crimsonTempest",
         pandemicTimes = {
             6 * 0.3, -- 0 CP, show same as if we had 1
@@ -398,7 +377,6 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         id = 385424,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 2,
-        thresholdId = 19,
         settingKey = "serratedBoneSpike",
         hasCooldown = true,
         debuffId = 394036,
@@ -408,18 +386,11 @@ function TRB.Classes.Rogue.AssassinationSpells:New()
         id = 385627,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 21,
         settingKey = "kingsbane",
         hasCooldown = true,
         cooldown = 60,
         isTalent = true
     })
-
-    -- TODO: Remove Sepsis, Death From Above and Dismantle once thresholdId is removed.
-    self.sepsis.thresholdId = 20
-    -- PvP
-    self.deathFromAbove.thresholdId = 22
-    self.dismantle.thresholdId = 23
 
     return self
 end
@@ -462,7 +433,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 2,
         stealth = true,
-        thresholdId = 1,
         settingKey = "ambush",
         baseline = true
     })
@@ -472,7 +442,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         id = 315341,
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
-        thresholdId = 12,
         settingKey = "betweenTheEyes",
         hasCooldown = true,
         isSnowflake = true,
@@ -484,7 +453,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         id = 2098,
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
-        thresholdId = 13,
         settingKey = "dispatch",
         baseline = true
     })
@@ -492,7 +460,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         id = 185763,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 14,
         settingKey = "pistolShot",
         hasCooldown = false,
         isSnowflake = true,
@@ -502,7 +469,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         id = 193315,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 15,
         settingKey = "sinisterStrike",
         hasCooldown = false,
         isSnowflake = true,
@@ -516,7 +482,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     self.bladeFlurry = TRB.Classes.SpellThreshold:New({
         id = 13877,
         primaryResourceType = Enum.PowerType.Energy,
-        thresholdId = 16,
         settingKey = "bladeFlurry",
         hasCooldown = true,
         cooldown = 30,
@@ -537,7 +502,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     self.rollTheBones = TRB.Classes.SpellThreshold:New({
         id = 315508,
         primaryResourceType = Enum.PowerType.Energy,
-        thresholdId = 17,
         settingKey = "rollTheBones",
         hasCooldown = true,
         cooldown = 45,
@@ -571,7 +535,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         id = 196937,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 19,
         settingKey = "ghostlyStrike",
         hasCooldown = true,
         isTalent = true,
@@ -589,7 +552,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     self.dreadblades = TRB.Classes.SpellThreshold:New({
         id = 343142,
         primaryResourceType = Enum.PowerType.Energy,
-        thresholdId = 20,
         settingKey = "dreadblades",
         hasCooldown = true,
         isTalent = true,
@@ -606,7 +568,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
     self.killingSpree = TRB.Classes.SpellComboPointThreshold:New({
         id = 51690,
         primaryResourceType = Enum.PowerType.Energy,
-        thresholdId = 21,
         settingKey = "killingSpree",
         comboPoints = true,
         hasCooldown = true,
@@ -619,12 +580,6 @@ function TRB.Classes.Rogue.OutlawSpells:New()
         id = 386823,
         isTalent = true
     })
-
-    -- TODO: Remove Sepsis, Death From Above and Dismantle once thresholdId is removed.
-    self.sepsis.thresholdId = 18
-    -- PvP
-    self.deathFromAbove.thresholdId = 22
-    self.dismantle.thresholdId = 23
 
     return self
 end
@@ -666,7 +621,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         id = 196819,
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
-        thresholdId = 1,
         settingKey = "eviscerate",
         baseline = true,
         isSnowflake = true
@@ -677,7 +631,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         id = 53,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 12,
         settingKey = "backstab",
         baseline = true,
         isSnowflake = true
@@ -686,7 +639,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         id = 319175,
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
-        thresholdId = 13,
         settingKey = "blackPowder",
         baseline = true,
         isSnowflake = true
@@ -695,7 +647,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         id = 1943,
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
-        thresholdId = 14,
         settingKey = "rupture",
         pandemicTimes = {
             8 * 0.3, -- 0 CP, show same as if we had 1
@@ -715,7 +666,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 2,
         stealth = true,
-        thresholdId = 15,
         settingKey = "shadowstrike",
         baseline = true
     })
@@ -723,7 +673,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         id = 197835,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 16,
         settingKey = "shurikenStorm",
         baseline = true,
         isSnowflake = true
@@ -732,7 +681,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         id = 114014,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 17,
         settingKey = "shurikenToss",
         baseline = true
     })
@@ -753,7 +701,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
     self.gloomblade = TRB.Classes.SpellThreshold:New({
         id = 200758,
         primaryResourceType = Enum.PowerType.Energy,
-        thresholdId = 18,
         settingKey = "gloomblade",
         isTalent = true,
         isSnowflake = true
@@ -762,7 +709,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         id = 280719,
         primaryResourceType = Enum.PowerType.Energy,
         comboPoints = true,
-        thresholdId = 19,
         settingKey = "secretTechnique",
         hasCooldown = true,
         isTalent = true
@@ -771,7 +717,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         id = 277925,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 20,
         settingKey = "shurikenTornado",
         hasCooldown = true,
         isTalent = true
@@ -781,7 +726,6 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         buffId = 426593,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 3,
-        thresholdId = 22,
         settingKey = "goremawsBite",
         hasCooldown = true,
         isTalent = true
@@ -815,16 +759,10 @@ function TRB.Classes.Rogue.SubtletySpells:New()
         isTalent = true
     })
 
-    -- TODO: Remove Sepsis, Death From Above and Dismantle once thresholdId is removed.
-    self.sepsis.thresholdId = 21
     -- PvP
-    self.deathFromAbove.thresholdId = 23
-    self.dismantle.thresholdId = 24
-
     self.shadowyDuel = TRB.Classes.SpellThreshold:New({
         id = 207736,
         primaryResourceType = Enum.PowerType.Energy,
-        thresholdId = 25,
         settingKey = "dismantle",
         hasCooldown = true,
         isPvp = true

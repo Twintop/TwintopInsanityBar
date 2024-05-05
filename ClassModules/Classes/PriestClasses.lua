@@ -68,8 +68,8 @@ function TRB.Classes.Priest.HealerSpells:New()
            id = 34433,
            iconName = "spell_shadow_shadowfiend",
            energizeId = 343727,
-           thresholdId = 8,
            settingKey = "shadowfiend",
+           primaryResourceType = Enum.PowerType.Mana,
            isTalent = true,
            baseline = false,
            resourcePercent = 0.005,
@@ -164,8 +164,8 @@ function TRB.Classes.Priest.DisciplineSpells:New()
         id = 123040,
         iconName = "spell_shadow_soulleech_3",
         energizeId = 123051,
-        thresholdId = 9, -- Really piggybacking off of #8
         settingKey = "mindbender",
+        primaryResourceType = Enum.PowerType.Mana,
         isTalent = true,
         duration = 12,
         resourcePercent = 0.002
@@ -284,8 +284,8 @@ function TRB.Classes.Priest.HolySpells:New()
         id = 64901,
         duration = 4.0, --Hasted
         resourcePercent = 0.02,
-        thresholdId = 9,
         settingKey = "symbolOfHope",
+        primaryResourceType = Enum.PowerType.Mana,
         ticks = 4,
         tickId = 265144,
         isTalent = true
@@ -470,7 +470,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
     self.devouringPlague = TRB.Classes.SpellThreshold:New({
         id = 335467,
         primaryResourceType = Enum.PowerType.Insanity,
-        thresholdId = 1,
         settingKey = "devouringPlague",
         isTalent = true,
         isSnowflake = true
@@ -479,7 +478,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
         id = 335467,
         primaryResourceType = Enum.PowerType.Insanity,
         primaryResourceTypeMod = 2,
-        thresholdId = 2,
         settingKey = "devouringPlague2",
         isTalent = true,
         isSnowflake = true
@@ -488,7 +486,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
         id = 335467,
         primaryResourceType = Enum.PowerType.Insanity,
         primaryResourceTypeMod = 3,
-        thresholdId = 3,
         settingKey = "devouringPlague3",
         isTalent = true,
         isSnowflake = true

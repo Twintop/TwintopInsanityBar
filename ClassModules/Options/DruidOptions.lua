@@ -203,16 +203,16 @@ local function BalanceLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			starsurgeThresholdOnlyOverShow = false,
-			starsurge = { -- 1
+			starsurge = {
 				enabled = true
 			},
-			starsurge2 = { -- 2
+			starsurge2 = {
 				enabled = true
 			},
-			starsurge3 = { -- 3
+			starsurge3 = {
 				enabled = true
 			},
-			starfall = { -- 4
+			starfall = {
 				enabled = true
 			},
 		},
@@ -658,43 +658,43 @@ local function FeralLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			rake = {
-				enabled = true, -- 1
+				enabled = true,
 			},
 			thrash = {
-				enabled = true, -- 2
+				enabled = true,
 			},
 			swipe = {
-				enabled = false, -- 3
+				enabled = false,
 			},
 			rip = {
-				enabled = true, -- 4
+				enabled = true,
 			},
 			maim = {
-				enabled = false, -- 5
+				enabled = false,
 			},
 			ferociousBite = {
-				enabled = true, -- 6
+				enabled = true,
 			},
 			ferociousBiteMinimum = {
-				enabled = false -- 7
+				enabled = false,
 			},
 			ferociousBiteMaximum = {
-				enabled = true -- 8
+				enabled = true,
 			},
 			shred = {
-				enabled = true, -- 9
+				enabled = true,
 			},
 			primalWrath = {
-				enabled = true, -- 10
+				enabled = true,
 			},
 			moonfire = {
-				enabled = true, -- 11
+				enabled = true,
 			},
 			brutalSlash = {
-				enabled = true, -- 12
+				enabled = true,
 			},
 			feralFrenzy = {
-				enabled = true, -- 13
+				enabled = true,
 			},
 		},
 		generation = {
@@ -1018,25 +1018,25 @@ local function RestorationLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			aeratedManaPotionRank1 = {
-				enabled = false, -- 1
+				enabled = false,
 			},
 			aeratedManaPotionRank2 = {
-				enabled = false, -- 2
+				enabled = false,
 			},
 			aeratedManaPotionRank3 = {
-				enabled = true, -- 3
+				enabled = true,
 			},
 			potionOfFrozenFocusRank1 = {
-				enabled = false, -- 4
+				enabled = false,
 			},
 			potionOfFrozenFocusRank2 = {
-				enabled = false, -- 5
+				enabled = false,
 			},
 			potionOfFrozenFocusRank3 = {
-				enabled = true, -- 6
+				enabled = true,
 			},
 			conjuredChillglobe = {
-				enabled = true, -- 7
+				enabled = true,
 				cooldown = true
 			},
 			potionCooldown = {

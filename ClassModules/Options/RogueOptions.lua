@@ -194,78 +194,78 @@ local function AssassinationLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			-- Rogue
-			ambush = { --
-				enabled = true, -- 1
+			ambush = {
+				enabled = true,
 			},
-			cheapShot = { --
-				enabled = false, -- 2
+			cheapShot = {
+				enabled = false,
 			},
-			crimsonVial = { --
-				enabled = true, -- 3
+			crimsonVial = {
+				enabled = true,
 			},
-			distract = { --
-				enabled = false, -- 4
+			distract = {
+				enabled = false,
 			},
-			kidneyShot = { --
-				enabled = false, -- 5
+			kidneyShot = {
+				enabled = false,
 			},
-			sliceAndDice = { --
-				enabled = true, -- 6
+			sliceAndDice = {
+				enabled = true,
 			},
-			feint = { --
-				enabled = true, -- 7
+			feint = {
+				enabled = true,
 			},
 			-- Rogue Talents
-			shiv = { --
-				enabled = false, -- 8
+			shiv = {
+				enabled = false,
 			},
-			sap = { --
-				enabled = false, -- 9
+			sap = {
+				enabled = false,
 			},
-			gouge = { --
-				enabled = false, -- 10
+			gouge = {
+				enabled = false,
 			},
-			echoingReprimand = { --
-				enabled = true, -- 11
+			echoingReprimand = {
+				enabled = true,
 			},
 			-- Assassination
-			envenom = { --
-				enabled = true, -- 12
+			envenom = {
+				enabled = true,
 			},
-			fanOfKnives = { --
-				enabled = true, -- 13
+			fanOfKnives = {
+				enabled = true,
 			},
-			garrote = { --
-				enabled = true, -- 14
+			garrote = {
+				enabled = true,
 			},
-			mutilate = { --
-				enabled = true, -- 15
+			mutilate = {
+				enabled = true,
 			},
-			poisonedKnife = { --
-				enabled = false, -- 16
+			poisonedKnife = {
+				enabled = false,
 			},
-			rupture = { --
-				enabled = true, -- 17
+			rupture = {
+				enabled = true,
 			},
 			-- Assassination Talents
-			crimsonTempest = { --
-				enabled = true, -- 18
+			crimsonTempest = {
+				enabled = true,
 			},
-			serratedBoneSpike = { --
-				enabled = true, -- 19
+			serratedBoneSpike = {
+				enabled = true,
 			},
-			sepsis = { --
-				enabled = true, -- 20
+			sepsis = {
+				enabled = true,
 			},
-			kingsbane = { --
-				enabled = true, -- 21
+			kingsbane = {
+				enabled = true,
 			},
 			-- PvP					
 			deathFromAbove = {
-				enabled = false, -- 22
+				enabled = false,
 			},
 			dismantle = {
-				enabled = false, -- 23
+				enabled = false,
 			},
 		},
 		generation = {
@@ -593,77 +593,77 @@ local function OutlawLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			-- Rogue
-			ambush = { --
-				enabled = true, -- 1
+			ambush = {
+				enabled = true,
 			},
-			cheapShot = { --
-				enabled = false, -- 2
+			cheapShot = {
+				enabled = false,
 			},
-			crimsonVial = { --
-				enabled = true, -- 3
+			crimsonVial = {
+				enabled = true,
 			},
-			distract = { --
-				enabled = false, -- 4
+			distract = {
+				enabled = false,
 			},
-			kidneyShot = { --
-				enabled = false, -- 5
+			kidneyShot = {
+				enabled = false,
 			},
-			sliceAndDice = { --
-				enabled = true, -- 6
+			sliceAndDice = {
+				enabled = true,
 			},
-			feint = { --
-				enabled = true, -- 7
+			feint = {
+				enabled = true,
 			},
 			-- Rogue Talents
-			shiv = { --
-				enabled = false, -- 8
+			shiv = {
+				enabled = false,
 			},
-			sap = { --
-				enabled = false, -- 9
+			sap = {
+				enabled = false,
 			},
-			gouge = { --
-				enabled = false, -- 10
+			gouge = {
+				enabled = false,
 			},
-			echoingReprimand = { --
-				enabled = true, -- 11
+			echoingReprimand = {
+				enabled = true,
 			},
 			-- Outlaw
 			betweenTheEyes = {
-				enabled = true, -- 12
+				enabled = true,
 			},
 			dispatch = {
-				enabled = true, -- 13
+				enabled = true,
 			},
 			pistolShot = {
-				enabled = true, -- 14
+				enabled = true,
 			},
 			sinisterStrike = {
-				enabled = true, -- 15
+				enabled = true,
 			},
 			bladeFlurry = {
-				enabled = true, -- 16
+				enabled = true,
 			},
 			rollTheBones = {
-				enabled = true, -- 17
+				enabled = true,
 			},
-			sepsis = { --
-				enabled = true, -- 18
+			sepsis = {
+				enabled = true,
 			},
 			ghostlyStrike = {
-				enabled = true, -- 19
+				enabled = true,
 			},
 			dreadblades = {
-				enabled = true, -- 20
+				enabled = true,
 			},
 			killingSpree = {
-				enabled = true, -- 21
+				enabled = true,
 			},
 			-- PvP					
 			deathFromAbove = {
-				enabled = false, -- 22
+				enabled = false,
 			},
 			dismantle = {
-				enabled = false, -- 23
+				enabled = false,
 			},
 		},
 		generation = {
@@ -993,82 +993,82 @@ local function SubtletyLoadDefaultSettings(includeBarText)
 			-- Rogue
 			-- Technically a Rogue ability but missing from Assassination and Outlaw
 			eviscerate = {
-				enabled = true, -- 1
+				enabled = true,
 			},
 			cheapShot = {
-				enabled = false, -- 2
+				enabled = false,
 			},
 			crimsonVial = {
-				enabled = true, -- 3
+				enabled = true,
 			},
 			distract = {
-				enabled = false, -- 4
+				enabled = false,
 			},
 			kidneyShot = {
-				enabled = false, -- 5
+				enabled = false,
 			},
 			sliceAndDice = {
-				enabled = true, -- 6
+				enabled = true,
 			},
 			feint = {
-				enabled = true, -- 7
+				enabled = true,
 			},
 			-- Rogue Talents
 			shiv = {
-				enabled = false, -- 8
+				enabled = false,
 			},
 			sap = {
-				enabled = false, -- 9
+				enabled = false,
 			},
 			gouge = {
-				enabled = false, -- 10
+				enabled = false,
 			},
 			echoingReprimand = {
-				enabled = true, -- 11
+				enabled = true,
 			},
 			-- Subtlety
 			backstab = {
-				enabled = true, -- 12
+				enabled = true,
 			},
 			blackPowder = {
-				enabled = true, -- 13
+				enabled = true,
 			},
 			rupture = {
-				enabled = true, -- 14
+				enabled = true,
 			},
 			shadowstrike = {
-				enabled = true, -- 15
+				enabled = true,
 			},
 			shurikenStorm = {
-				enabled = true, -- 16
+				enabled = true,
 			},
 			shurikenToss = {
-				enabled = true, -- 17
+				enabled = true,
 			},
-			gloomblade = { --
-				enabled = true, -- 18
+			gloomblade = {
+				enabled = true,
 			},
 			secretTechnique = {
-				enabled = true, -- 19
+				enabled = true,
 			},
 			shurikenTornado = {
-				enabled = true, -- 20
+				enabled = true,
 			},
 			sepsis = {
-				enabled = true, -- 21
+				enabled = true,
 			},
 			goremawsBite = {
-				enabled = true, -- 22
+				enabled = true,
 			},
 			-- PvP					
 			deathFromAbove = {
-				enabled = false, -- 23
+				enabled = false,
 			},
 			dismantle = {
-				enabled = false, -- 24
+				enabled = false,
 			},
 			shadowyDuel = {
-				enabled = false, -- 25
+				enabled = false,
 			},
 		},
 		generation = {

@@ -89,7 +89,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     self.cracklingJadeLightning = TRB.Classes.SpellThreshold:New({
         id = 117952,
         primaryResourceType = Enum.PowerType.Energy,
-        thresholdId = 1,
         settingKey = "cracklingJadeLightning",
         isTalent = false,
         baseline = true
@@ -98,7 +97,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
         id = 322101,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 1,
-        thresholdId = 2,
         settingKey = "expelHarm",
         hasCooldown = true,
         cooldown = 15,
@@ -121,7 +119,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
         id = 100780,
         primaryResourceType = Enum.PowerType.Energy,
         comboPointsGenerated = 2,
-        thresholdId = 3,
         settingKey = "tigerPalm",
         isTalent = false,
         baseline = true
@@ -136,7 +133,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     self.vivify = TRB.Classes.SpellThreshold:New({
         id = 116670,
         primaryResourceType = Enum.PowerType.Energy,
-        thresholdId = 4,
         settingKey = "vivify",
         isTalent = false,
         baseline = true
@@ -154,7 +150,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     self.detox = TRB.Classes.SpellThreshold:New({
         id = 218164,
         primaryResourceType = Enum.PowerType.Energy,
-        thresholdId = 5,
         settingKey = "detox",
         hasCooldown = true,
         cooldown = 8,
@@ -164,7 +159,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     self.disable = TRB.Classes.SpellThreshold:New({
         id = 116095,
         primaryResourceType = Enum.PowerType.Energy,
-        thresholdId = 6,
         settingKey = "disable",
         hasCooldown = false,
         isTalent = true
@@ -172,7 +166,6 @@ function TRB.Classes.Monk.WindwalkerSpells:New()
     self.paralysis = TRB.Classes.SpellThreshold:New({
         id = 115078,
         primaryResourceType = Enum.PowerType.Energy,
-        thresholdId = 7,
         settingKey = "paralysis",
         hasCooldown = true,
         cooldown = 45,

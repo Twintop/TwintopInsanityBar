@@ -194,49 +194,49 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			arcaneShot = {
-				enabled = false, -- 1
+				enabled = false,
 			},
 			revivePet = {
-				enabled = false, -- 2
+				enabled = false,
 			},
 			wingClip = {
-				enabled = false, -- 3
+				enabled = false,
 			},
 			killCommand = {
-				enabled = true, -- 4
+				enabled = true,
 			},
 			killShot = {
-				enabled = true, -- 5
+				enabled = true,
 			},
 			scareBeast = {
-				enabled = false, -- 6
+				enabled = false,
 			},
 			explosiveShot = {
-				enabled = true, -- 7
+				enabled = true,
 			},
 			barrage = {
-				enabled = true, -- 8
+				enabled = true,
 			},
 			serpentSting = {
-				enabled = true, -- 9
+				enabled = true,
 			},
 			cobraShot = {
-				enabled = true, -- 10
+				enabled = true,
 			},
 			multiShot = {
-				enabled = true, -- 11
+				enabled = true,
 			},
 			aMurderOfCrows = {
-				enabled = true, -- 12
+				enabled = true,
 			},
 			wailingArrow = {
-				enabled = true, -- 13
+				enabled = true,
 			},
 			direBeastBasilisk = {
-				enabled = true, -- 14
+				enabled = true,
 			},
 			direBeastHawk = {
-				enabled = true, -- 15
+				enabled = true,
 			}
 		},
 		generation = {
@@ -535,49 +535,49 @@ local function MarksmanshipLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			arcaneShot = {
-				enabled = true, -- 1
+				enabled = true,
 			},
 			revivePet = {
-				enabled = false, -- 2
+				enabled = false,
 			},
 			wingClip = {
-				enabled = false, -- 3
+				enabled = false,
 			},
 			killCommand = {
-				enabled = true, -- 4
+				enabled = true,
 			},
 			killShot = {
-				enabled = true, -- 5
+				enabled = true,
 			},
 			scareBeast = {
-				enabled = false, -- 6
+				enabled = false,
 			},
 			explosiveShot = {
-				enabled = true, -- 7
+				enabled = true,
 			},
 			barrage = {
-				enabled = true, -- 8
+				enabled = true,
 			},
 			serpentSting = {
-				enabled = true, -- 9
+				enabled = true,
 			},
 			aimedShot = {
-				enabled = true, -- 10
+				enabled = true,
 			},
 			chimaeraShot = {
-				enabled = true -- 11
+				enabled = true,
 			},
 			multiShot = {
-				enabled = true, -- 12
+				enabled = true,
 			},
 			burstingShot = {
-				enabled = true, -- 13
+				enabled = true,
 			},
 			wailingArrow = {
-				enabled = true, -- 14
+				enabled = true,
 			},
 			sniperShot = {
-				enabled = true, -- 15
+				enabled = true,
 			},
 		},
 		generation = {
@@ -903,43 +903,40 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			arcaneShot = {
-				enabled = false, -- 1
+				enabled = false,
 			},
 			revivePet = {
-				enabled = false, -- 2
+				enabled = false,
 			},
 			wingClip = {
-				enabled = false, -- 3
+				enabled = false,
 			},
-			--[[killCommand = {
-				enabled = true, -- 4
-			},]]
 			killShot = {
-				enabled = true, -- 5
+				enabled = true,
 			},
 			scareBeast = {
-				enabled = false, -- 6
+				enabled = false,
 			},
 			explosiveShot = {
-				enabled = true, -- 7
+				enabled = true,
 			},
 			barrage = {
-				enabled = true, -- 8
+				enabled = true,
 			},
 			serpentSting = {
-				enabled = true, -- 9
+				enabled = true,
 			},
 			raptorStrike = {
-				enabled = true, -- 10
+				enabled = true,
 			},
 			carve = {
-				enabled = true, -- 11
+				enabled = true,
 			},
 			butchery = {
-				enabled = true, -- 12
+				enabled = true,
 			},
 			mongooseBite = {
-				enabled = true, -- 4, but really 13
+				enabled = true,
 			},
 		},
 		generation = {

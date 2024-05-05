@@ -74,7 +74,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     self.throwGlaive = TRB.Classes.SpellThreshold:New({
         id = 185123,
         primaryResourceType = Enum.PowerType.Fury,
-        thresholdId = 9,
         settingKey = "throwGlaive",
         hasCooldown = true,
         hasCharges = true,
@@ -87,7 +86,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
         id = 188499,
         primaryResourceType = Enum.PowerType.Fury,
         cooldown = 9,
-        thresholdId = 2,
         settingKey = "bladeDance",
         hasCooldown = true,
         demonForm = false,
@@ -97,7 +95,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     self.chaosStrike = TRB.Classes.SpellThreshold:New({
         id = 162794,
         primaryResourceType = Enum.PowerType.Fury,
-        thresholdId = 4,
         settingKey = "chaosStrike",
         hasCooldown = false,
         isSnowflake = true,
@@ -108,7 +105,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     self.annihilation = TRB.Classes.SpellThreshold:New({
         id = 201427,
         primaryResourceType = Enum.PowerType.Fury,
-        thresholdId = 1,
         settingKey = "annihilation",
         hasCooldown = false,
         demonForm = true,
@@ -119,7 +115,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
         id = 210152,
         primaryResourceType = Enum.PowerType.Fury,
         cooldown = 9,
-        thresholdId = 5,
         settingKey = "deathSweep",
         hasCooldown = true,
         demonForm = true,
@@ -131,7 +126,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
     self.chaosNova = TRB.Classes.SpellThreshold:New({
         id = 179057,
         primaryResourceType = Enum.PowerType.Fury,
-        thresholdId = 3,
         settingKey = "chaosNova",
         hasCooldown = true,
         isTalent = true
@@ -142,7 +136,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
         id = 198013,
         primaryResourceType = Enum.PowerType.Fury,
         duration = 2,
-        thresholdId = 6,
         settingKey = "eyeBeam",
         hasCooldown = true,
         isTalent = true
@@ -166,7 +159,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
         id = 211881,
         primaryResourceType = Enum.PowerType.Fury,
         cooldown = 30,
-        thresholdId = 8,
         settingKey = "felEruption",
         hasCooldown = true,
         isTalent = false,
@@ -184,7 +176,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
         id = 342817,
         primaryResourceType = Enum.PowerType.Fury,
         cooldown = 20,
-        thresholdId = 7,
         settingKey = "glaiveTempest",
         hasCooldown = true,
         isTalent = true
@@ -207,7 +198,6 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
         id = 258925,
         primaryResourceType = Enum.PowerType.Fury,
         cooldown = 90,
-        thresholdId = 10,
         settingKey = "felBarrage",
         hasCooldown = true,
         isTalent = true
@@ -260,7 +250,6 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
     self.soulCleave = TRB.Classes.SpellThreshold:New({
         id = 228477,
         primaryResourceType = Enum.PowerType.Fury,
-        thresholdId = 1,
         settingKey = "soulCleave",
         isTalent = false,
         baseline = true,
@@ -271,7 +260,6 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
     self.chaosNova = TRB.Classes.SpellThreshold:New({
         id = 179057,
         primaryResourceType = Enum.PowerType.Fury,
-        thresholdId = 2,
         settingKey = "chaosNova",
         hasCooldown = true,
         isTalent = true
@@ -281,7 +269,6 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
     self.felDevastation = TRB.Classes.SpellThreshold:New({
         id = 212084,
         primaryResourceType = Enum.PowerType.Fury,
-        thresholdId = 3,
         settingKey = "felDevastation",
         hasCooldown = true,
         isTalent = true
@@ -289,7 +276,6 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
     self.spiritBomb = TRB.Classes.SpellComboPointThreshold:New({
         id = 247454,
         primaryResourceType = Enum.PowerType.Fury,
-        thresholdId = 4,
         settingKey = "spiritBomb",
         comboPoints = true,
         isTalent = true,

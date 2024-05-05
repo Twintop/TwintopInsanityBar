@@ -196,13 +196,13 @@ local function ElementalLoadDefaultSettings(includeBarText)
 				width=24,
 				height=24
 			},
-			earthShock = { -- 1
+			earthShock = {
 				enabled = true,
 			},
-			earthquake = { -- 2
+			earthquake = {
 				enabled = true,
 			},
-			elementalBlast = { -- 3
+			elementalBlast = {
 				enabled = true,
 			},
 		},
@@ -497,35 +497,7 @@ local function EnhancementLoadDefaultSettings(includeBarText)
 				yPos=12,
 				width=24,
 				height=24
-			},
-			--[[aeratedManaPotionRank1 = {
-				enabled = false, -- 1
-			},
-			aeratedManaPotionRank2 = {
-				enabled = false, -- 2
-			},
-			aeratedManaPotionRank3 = {
-				enabled = true, -- 3
-			},
-			potionOfFrozenFocusRank1 = {
-				enabled = false, -- 4
-			},
-			potionOfFrozenFocusRank2 = {
-				enabled = false, -- 5
-			},
-			potionOfFrozenFocusRank3 = {
-				enabled = true, -- 6
-			},
-			conjuredChillglobe = {
-				enabled = true, -- 7
-				cooldown = true
-			},
-			potionCooldown = {
-				enabled=true,
-				mode="time",
-				gcdsMax=40,
-				timeMax=60
-			},]]
+			}
 		},
 		generation = {
 			mode="gcd",
@@ -827,25 +799,25 @@ local function RestorationLoadDefaultSettings(includeBarText)
 				height=24
 			},
 			aeratedManaPotionRank1 = {
-				enabled = false, -- 1
+				enabled = false,
 			},
 			aeratedManaPotionRank2 = {
-				enabled = false, -- 2
+				enabled = false,
 			},
 			aeratedManaPotionRank3 = {
-				enabled = true, -- 3
+				enabled = true,
 			},
 			potionOfFrozenFocusRank1 = {
-				enabled = false, -- 4
+				enabled = false,
 			},
 			potionOfFrozenFocusRank2 = {
-				enabled = false, -- 5
+				enabled = false,
 			},
 			potionOfFrozenFocusRank3 = {
-				enabled = true, -- 6
+				enabled = true,
 			},
 			conjuredChillglobe = {
-				enabled = true, -- 7
+				enabled = true,
 				cooldown = true
 			},
 			potionCooldown = {

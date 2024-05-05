@@ -44,7 +44,6 @@ function TRB.Classes.Paladin.HolySpells:New()
     })
     self.daybreak = TRB.Classes.SpellThreshold:New({
         id = 414170,
-        thresholdId = 8,
         settingKey = "daybreak",
         isTalent = true,
         resourcePercent = 0.008

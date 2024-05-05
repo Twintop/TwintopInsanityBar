@@ -334,19 +334,22 @@ local function ConstructResourceBar(settings)
 
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warrior.ArmsSpells|TRB.Classes.Warrior.FurySpells]]
 
+	local thresholdId = 1
 	for _, v in pairs(spells) do
 		local spell = v --[[@as TRB.Classes.SpellBase]]
 		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 			spell = spell --[[@as TRB.Classes.SpellThreshold]]
-			if TRB.Frames.resourceFrame.thresholds[spell.thresholdId] == nil then
-				TRB.Frames.resourceFrame.thresholds[spell.thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+			if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
+				TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
 			end
-			TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], settings, true)
-			TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[spell.thresholdId], spell, settings)
+			TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
+			TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[thresholdId], spell, settings)
 
-			TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Show()
-			TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-			TRB.Frames.resourceFrame.thresholds[spell.thresholdId]:Hide()
+			TRB.Frames.resourceFrame.thresholds[thresholdId]:Show()
+			TRB.Frames.resourceFrame.thresholds[thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
+			TRB.Frames.resourceFrame.thresholds[thresholdId]:Hide()
+
+			thresholdId = thresholdId + 1
 		end
 	end
 
@@ -835,6 +838,7 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
+				local thresholdId = 1
 				local targetUnitHealth
 				if target ~= nil then
 					targetUnitHealth = target:GetHealthPercent()
@@ -852,7 +856,7 @@ local function UpdateResourceBar()
 						local resourceAmount = -spell:GetPrimaryResourceCost()
 						local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
@@ -862,9 +866,9 @@ local function UpdateResourceBar()
 							if spell.id == spells.execute.id then
 								if snapshots[spells.suddenDeath.id].buff.isActive then
 									--We only show the maximum value when this proc occurs. Current and minimum thresholds being in their expected place don't matter.
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, spells.executeMaximum:GetPrimaryResourceCost() * 2, TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, spells.executeMaximum:GetPrimaryResourceCost() * 2, TRB.Data.character.maxResource)
 								elseif spell.settingKey == "execute" then
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, math.min(math.max(-resourceAmount, normalizedResource), spells.executeMaximum:GetPrimaryResourceCost()), TRB.Data.character.maxResource)
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, math.min(math.max(-resourceAmount, normalizedResource), spells.executeMaximum:GetPrimaryResourceCost()), TRB.Data.character.maxResource)
 								end
 								
 								if UnitIsDeadOrGhost("target") or targetUnitHealth == nil then
@@ -903,9 +907,11 @@ local function UpdateResourceBar()
 							end
 						end
 
-						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spell.id], specSettings)
+						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spell.id], specSettings)
+
+						thresholdId = thresholdId + 1
+						pairOffset = pairOffset + 3
 					end
-					pairOffset = pairOffset + 3
 				end
 
 				local barColor = specSettings.colors.bar.base
@@ -984,6 +990,7 @@ local function UpdateResourceBar()
 				end
 
 				local pairOffset = 0
+				local thresholdId = 1
 				local targetUnitHealth
 				if target ~= nil then
 					targetUnitHealth = target:GetHealthPercent()
@@ -1001,7 +1008,7 @@ local function UpdateResourceBar()
 						local resourceAmount = -spell:GetPrimaryResourceCost()
 						local normalizedResource = snapshotData.attributes.resource / TRB.Data.resourceFactor
 						
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
@@ -1022,7 +1029,7 @@ local function UpdateResourceBar()
 										showThreshold = false
 									else
 										if spell.settingKey == "execute" then
-											TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[spell.thresholdId], resourceFrame, math.min(math.max(-resourceAmount, normalizedResource), spells.executeMaximum:GetPrimaryResourceCost()), TRB.Data.character.maxResource)
+											TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, math.min(math.max(-resourceAmount, normalizedResource), spells.executeMaximum:GetPrimaryResourceCost()), TRB.Data.character.maxResource)
 										end
 
 										if snapshots[spell.id].cooldown:IsUnusable() then
@@ -1059,9 +1066,11 @@ local function UpdateResourceBar()
 							end
 						end
 
-						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[spell.thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spell.id], specSettings)
+						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshots[spell.id], specSettings)
+
+						thresholdId = thresholdId + 1
+						pairOffset = pairOffset + 3
 					end
-					pairOffset = pairOffset + 3
 				end
 
 				local barColor = specSettings.colors.bar.base
