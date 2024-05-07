@@ -11,7 +11,7 @@ local content = [====[
 
 ---
 
-# 10.2.7.0-release (2024-05-07)
+# 10.2.7.1-release (2024-05-08)
 ## General
 
 - (FIX (Twintop)) Remove debug printing to chat frame.
