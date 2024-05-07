@@ -158,9 +158,9 @@ function TRB.Classes.SpellBase:New(spellAttributes)
         self.pandemicTime = self.baseDuration * 0.3
     end
 
+    self._lastPrimaryResourceValueCheck = 0
     if self.primaryResourceType ~= nil then
         self._lastNonZeroPrimaryResourceValue = 0
-        self._lastPrimaryResourceValueCheck = 0
         if self.primaryResourceTypeProperty == nil then
             self.primaryResourceTypeProperty = "cost"
         end
@@ -225,7 +225,7 @@ local primaryResourceCostEmbargoTimespan = 0.05
 function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero)
     local currentTime = GetTime()
     if self.primaryResourceType ~= nil and self.primaryResourceTypeProperty ~= "custom" then
-        if self._lastPrimaryResourceValueCheck + primaryResourceCostEmbargoTimespan > currentTime then
+        if (self._lastPrimaryResourceValueCheck or 0) + primaryResourceCostEmbargoTimespan > currentTime then
             self._lastPrimaryResourceValueCheck = currentTime
             return self._lastNonZeroPrimaryResourceValue
         end

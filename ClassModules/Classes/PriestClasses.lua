@@ -73,7 +73,8 @@ function TRB.Classes.Priest.HealerSpells:New()
            isTalent = true,
            baseline = false,
            resourcePercent = 0.005,
-           duration = 15
+           duration = 15,
+           hasCooldown = true
        })
        self.surgeOfLight = TRB.Classes.SpellBase:New({
            id = 114255,
@@ -119,6 +120,7 @@ function TRB.Classes.Priest.DisciplineSpells:New()
     })
 
     self.shadowfiend.baseline = true
+    self.shadowfiend.primaryResourceType = Enum.PowerType.Mana
     
     -- Discipline Baseline Abilities
 
@@ -288,7 +290,8 @@ function TRB.Classes.Priest.HolySpells:New()
         primaryResourceType = Enum.PowerType.Mana,
         ticks = 4,
         tickId = 265144,
-        isTalent = true
+        isTalent = true,
+        hasCooldown = true
     })
     self.lightOfTheNaaru = TRB.Classes.Priest.HolyWordSpell:New({
         id = 196985,
@@ -341,6 +344,8 @@ function TRB.Classes.Priest.HolySpells:New()
     self.sacredReverence = TRB.Classes.SpellBase:New({ -- T31 4P
         id = 423510,
     })
+
+    self.shadowfiend.primaryResourceType = Enum.PowerType.Mana
 
     return self
 end

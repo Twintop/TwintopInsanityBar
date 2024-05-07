@@ -46,7 +46,9 @@ function TRB.Classes.Paladin.HolySpells:New()
         id = 414170,
         settingKey = "daybreak",
         isTalent = true,
-        resourcePercent = 0.008
+        primaryResourceType = Enum.PowerType.Mana,
+        resourcePercent = 0.008,
+        hasCooldown = true
     })
 
     return self

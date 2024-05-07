@@ -573,7 +573,8 @@ function TRB.Classes.Healer.HealerSpells:New()
         duration = 4.0, --Hasted
         resourcePercent = 0.02,
         ticks = 4,
-        tickId = 265144
+        tickId = 265144,
+        hasCooldown = true
     })
     self.innervate = TRB.Classes.SpellBase:New({
         id = 29166,
@@ -599,7 +600,9 @@ function TRB.Classes.Healer.HealerSpells:New()
         primaryResourceType = Enum.PowerType.Mana,
         iconName = "inv_10_alchemy_bottle_shape1_blue",
         useSpellIcon = true,
-        settingKey = "aeratedManaPotionRank1"
+        settingKey = "aeratedManaPotionRank1",
+        isPotion = true,
+        hasCooldown = true
     })
     self.aeratedManaPotionRank2 = TRB.Classes.SpellThreshold:New({
         id = 370607,
@@ -608,7 +611,9 @@ function TRB.Classes.Healer.HealerSpells:New()
         primaryResourceType = Enum.PowerType.Mana,
         iconName = "inv_10_alchemy_bottle_shape1_blue",
         useSpellIcon = true,
-        settingKey = "aeratedManaPotionRank2"
+        settingKey = "aeratedManaPotionRank2",
+        isPotion = true,
+        hasCooldown = true
     })
     self.aeratedManaPotionRank3 = TRB.Classes.SpellThreshold:New({
         id = 370607,
@@ -617,7 +622,9 @@ function TRB.Classes.Healer.HealerSpells:New()
         primaryResourceType = Enum.PowerType.Mana,
         iconName = "inv_10_alchemy_bottle_shape1_blue",
         useSpellIcon = true,
-        settingKey = "aeratedManaPotionRank3"
+        settingKey = "aeratedManaPotionRank3",
+        isPotion = true,
+        hasCooldown = true
     })
     self.potionOfFrozenFocusRank1 = TRB.Classes.SpellThreshold:New({
         id = 371033,
@@ -625,7 +632,9 @@ function TRB.Classes.Healer.HealerSpells:New()
         spellId = 371033,
         primaryResourceType = Enum.PowerType.Mana,
         useSpellIcon = true,
-        settingKey = "potionOfFrozenFocusRank1"
+        settingKey = "potionOfFrozenFocusRank1",
+        isPotion = true,
+        hasCooldown = true
     })
     self.potionOfFrozenFocusRank2 = TRB.Classes.SpellThreshold:New({
         id = 371033,
@@ -633,7 +642,9 @@ function TRB.Classes.Healer.HealerSpells:New()
         spellId = 371033,
         primaryResourceType = Enum.PowerType.Mana,
         useSpellIcon = true,
-        settingKey = "potionOfFrozenFocusRank2"
+        settingKey = "potionOfFrozenFocusRank2",
+        isPotion = true,
+        hasCooldown = true
     })
     self.potionOfFrozenFocusRank3 = TRB.Classes.SpellThreshold:New({
         id = 371033,
@@ -641,7 +652,9 @@ function TRB.Classes.Healer.HealerSpells:New()
         spellId = 371033,
         primaryResourceType = Enum.PowerType.Mana,
         useSpellIcon = true,
-        settingKey = "potionOfFrozenFocusRank3"
+        settingKey = "potionOfFrozenFocusRank3",
+        isPotion = true,
+        hasCooldown = true
     })
     self.potionOfChilledClarity = TRB.Classes.SpellBase:New({
         id = 371052
@@ -657,7 +670,8 @@ function TRB.Classes.Healer.HealerSpells:New()
         settingKey = "conjuredChillglobe",
         mana = 4830,
         duration = 10,
-        ticks = 10
+        ticks = 10,
+        hasCooldown = true
     })
 
     -- Alchemist Stone

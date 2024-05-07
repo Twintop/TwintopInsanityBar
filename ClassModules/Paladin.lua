@@ -329,14 +329,24 @@ local function ConstructResourceBar(settings)
 	end
 
 	if specId == 1 then
-		for x = 1, 8 do
-			if TRB.Frames.resourceFrame.thresholds[x] == nil then
-				TRB.Frames.resourceFrame.thresholds[x] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
-			end
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Paladin.HolySpells]]
+		local thresholdId = 1
+		for _, v in pairs(spells) do
+			local spell = v --[[@as TRB.Classes.SpellBase]]
+			if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+				spell = spell --[[@as TRB.Classes.SpellThreshold]]
+				if TRB.Frames.resourceFrame.thresholds[thresholdId] == nil then
+					TRB.Frames.resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, TRB.Frames.resourceFrame)
+				end
+				TRB.Functions.Threshold:ResetThresholdLine(TRB.Frames.resourceFrame.thresholds[thresholdId], settings, true)
+				TRB.Functions.Threshold:SetThresholdIcon(TRB.Frames.resourceFrame.thresholds[thresholdId], spell, settings)
 
-			TRB.Frames.resourceFrame.thresholds[x]:Show()
-			TRB.Frames.resourceFrame.thresholds[x]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
-			TRB.Frames.resourceFrame.thresholds[x]:Hide()
+				TRB.Frames.resourceFrame.thresholds[thresholdId]:Show()
+				TRB.Frames.resourceFrame.thresholds[thresholdId]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
+				TRB.Frames.resourceFrame.thresholds[thresholdId]:Hide()
+
+				thresholdId = thresholdId + 1
+			end
 		end
 
 		for x = 1, 7 do
@@ -348,15 +358,6 @@ local function ConstructResourceBar(settings)
 			TRB.Frames.passiveFrame.thresholds[x]:SetFrameLevel(TRB.Data.constants.frameLevels.thresholdBase)
 			TRB.Frames.passiveFrame.thresholds[x]:Hide()
 		end
-		
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], TRB.Data.spellsData.spells.aeratedManaPotionRank1, TRB.Data.settings.paladin.holy)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], TRB.Data.spellsData.spells.aeratedManaPotionRank2, TRB.Data.settings.paladin.holy)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[3], TRB.Data.spellsData.spells.aeratedManaPotionRank3, TRB.Data.settings.paladin.holy)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[4], TRB.Data.spellsData.spells.potionOfFrozenFocusRank1, TRB.Data.settings.paladin.holy)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[5], TRB.Data.spellsData.spells.potionOfFrozenFocusRank2, TRB.Data.settings.paladin.holy)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[6], TRB.Data.spellsData.spells.potionOfFrozenFocusRank3, TRB.Data.settings.paladin.holy)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[7], TRB.Data.spellsData.spells.conjuredChillglobe, TRB.Data.settings.paladin.holy)
-		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[8], TRB.Data.spellsData.spells.daybreak, TRB.Data.settings.paladin.holy)
 	end
 
 	TRB.Functions.Class:CheckCharacter()
@@ -860,41 +861,6 @@ local function UpdateResourceBar()
 					castingBarValue = currentResource
 				end
 
-				TRB.Functions.Threshold:ManageCommonHealerThresholds(currentResource, castingBarValue, specSettings, snapshotData.snapshots[spells.aeratedManaPotionRank1.id].cooldown, snapshotData.snapshots[spells.conjuredChillglobe.id].cooldown, TRB.Data.character, resourceFrame, CalculateManaGain)
-
-				if talents:IsTalentActive(spells.daybreak) then
-					local daybreak = snapshots[spells.daybreak.id]
-					local daybreakThresholdColor = specSettings.colors.threshold.over
-					if specSettings.thresholds.daybreak.enabled and (not daybreak.cooldown:IsUnusable() or specSettings.thresholds.daybreak.cooldown) then
-						local daybreakMana = snapshotData.targetData.count[spells.glimmerOfLight.buffId] * daybreak.spell.attributes.resourcePercent * TRB.Data.character.maxResource
-
-						if daybreak.cooldown:IsUnusable() then
-							daybreakThresholdColor = specSettings.colors.threshold.unusable
-						end
-
-						if daybreakMana > 0 and (castingBarValue + daybreakMana) < TRB.Data.character.maxResource then
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[8], resourceFrame, (castingBarValue + daybreakMana), TRB.Data.character.maxResource)
-				---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[8].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(daybreakThresholdColor, true))
-				---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[8].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(daybreakThresholdColor, true))
-							resourceFrame.thresholds[8]:Show()
-
-							if specSettings.thresholds.icons.showCooldown and daybreak.cooldown.remaining > 0 then
-								resourceFrame.thresholds[8].icon.cooldown:SetCooldown(daybreak.cooldown.startTime, daybreak.cooldown.duration)
-							else
-								resourceFrame.thresholds[8].icon.cooldown:SetCooldown(0, 0)
-							end
-						else
-							resourceFrame.thresholds[8]:Hide()
-						end
-					else
-						resourceFrame.thresholds[8]:Hide()
-					end
-				else
-					resourceFrame.thresholds[8]:Hide()
-				end
-
 				local passiveValue, _ = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
 						
 				passiveBarValue = castingBarValue + passiveValue
@@ -918,6 +884,103 @@ local function UpdateResourceBar()
 					TRB.Functions.Bar:SetPrimaryValue(specSettings, castingFrame, castingBarValue)
 					castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
 					passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
+				end
+
+				local potion = snapshots[spells.aeratedManaPotionRank1.id].cooldown
+				local potionCooldownThreshold = 0
+				local potionThresholdColor = specSettings.colors.threshold.over
+				local potionFrameLevel = TRB.Data.constants.frameLevels.thresholdOver
+
+				if potion.onCooldown then
+					potionThresholdColor = specSettings.colors.threshold.unusable
+					potionFrameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+					if specSettings.thresholds.potionCooldown.enabled then
+						if specSettings.thresholds.potionCooldown.mode == "gcd" then
+							local gcd = TRB.Functions.Character:GetCurrentGCDTime()
+							potionCooldownThreshold = gcd * specSettings.thresholds.potionCooldown.gcdsMax
+						elseif specSettings.thresholds.potionCooldown.mode == "time" then
+							potionCooldownThreshold = specSettings.thresholds.potionCooldown.timeMax
+						end
+					end
+				end
+
+				local pairOffset = 0
+				local thresholdId = 1
+				for _, v in pairs(spells) do
+					local spell = v --[[@as TRB.Classes.SpellBase]]
+					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
+						spell = spell --[[@as TRB.Classes.SpellThreshold]]
+						
+						local showThreshold = true
+						local thresholdColor = specSettings.colors.threshold.over
+						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
+						local snapshot = snapshots[spell.id]
+						local resourceAmount = 0
+
+						if spell.attributes.isPotion then
+							snapshot = snapshots[spells.aeratedManaPotionRank1.id]
+							thresholdColor = potionThresholdColor
+							frameLevel = potionFrameLevel
+							if not potion.onCooldown or (potionCooldownThreshold > math.abs(potion.startTime + potion.duration - currentTime)) then
+								local potionMana = CalculateManaGain(TRB.Data.character.items.potions[spell.settingKey].mana, true)
+								resourceAmount = castingBarValue + potionMana
+								if specSettings.thresholds[spell.settingKey].enabled and resourceAmount < TRB.Data.character.maxResource then
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
+								else
+									showThreshold = false
+								end
+							else
+								showThreshold = false
+							end
+						elseif spell.id == spells.conjuredChillglobe.id then
+							snapshot = snapshots[spells.conjuredChillglobe.id]
+							if TRB.Data.character.items.conjuredChillglobe.isEquipped and (currentResource / TRB.Data.character.maxResource) < TRB.Data.character.items.conjuredChillglobe.manaThresholdPercent then
+								local conjuredChillglobeTotal = CalculateManaGain(TRB.Data.character.items.conjuredChillglobe.mana, true)
+								resourceAmount = castingBarValue + conjuredChillglobeTotal
+								if specSettings.thresholds.conjuredChillglobe.enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specSettings.thresholds.conjuredChillglobe.cooldown) then
+									if snapshot.cooldown.onCooldown then
+										thresholdColor = specSettings.colors.threshold.unusable
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+									end
+									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
+								else
+									showThreshold = false
+								end
+							else
+								showThreshold = false
+							end
+						elseif spell.id == spells.daybreak.id then
+							snapshot = snapshots[spell.id]
+							if talents:IsTalentActive(spell) then
+								if specSettings.thresholds[spell.settingKey].enabled and (not snapshot.cooldown:IsUnusable() or specSettings.thresholds[spell.settingKey].cooldown) then
+									local daybreakMana = snapshotData.targetData.count[spell.buffId] * snapshot.spell.attributes.resourcePercent * TRB.Data.character.maxResource
+									resourceAmount = castingBarValue + daybreakMana
+									if snapshot.cooldown:IsUnusable() then
+										thresholdColor = specSettings.colors.threshold.unusable
+										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+									end
+			
+									if daybreakMana > 0 and resourceAmount < TRB.Data.character.maxResource then
+										TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
+									else
+										showThreshold = false
+									end
+								else
+									showThreshold = false
+								end
+							else
+								showThreshold = false
+							end
+						else
+							resourceAmount = -spell:GetPrimaryResourceCost()
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+						end
+
+						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specSettings)
+
+						thresholdId = thresholdId + 1
+						pairOffset = pairOffset + 3
+					end
 				end
 
 				local resourceBarColor = nil

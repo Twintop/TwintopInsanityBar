@@ -1955,6 +1955,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		f:SetChecked(spec.thresholds.shadowfiend.cooldown)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shadowfiend.cooldown = self:GetChecked()
+			if spec.thresholds.mindbender ~= nil then
+				spec.thresholds.mindbender.cooldown = self:GetChecked()
+			end
 		end)
 		
 		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.shadowfiend.enabled)
@@ -1968,6 +1971,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		f:SetChecked(spec.thresholds.shadowfiend.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shadowfiend.enabled = self:GetChecked()
+			if spec.thresholds.mindbender ~= nil then
+				spec.thresholds.mindbender.enabled = self:GetChecked()
+			end
 			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.shadowfiend.enabled)
 		end)
 		yCoord = yCoord - 20
