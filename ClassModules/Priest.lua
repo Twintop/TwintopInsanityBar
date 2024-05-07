@@ -3043,9 +3043,6 @@ local function UpdateResourceBar()
 											showThreshold = false
 										end
 									else
-										if spell.id == spells.mindbender.id then
-											print(specSettings.thresholds[spell.settingKey].enabled, not snapshot.cooldown:IsUnusable(), specSettings.thresholds[spell.settingKey].cooldown)
-										end
 										showThreshold = false
 									end
 								else

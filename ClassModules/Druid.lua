@@ -812,7 +812,6 @@ local function ConstructResourceBar(settings)
 		local spell = v --[[@as TRB.Classes.SpellBase]]
 		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 			spell = spell --[[@as TRB.Classes.SpellThreshold]]
-			print(spell.name, spell.settingKey)
 
 			if resourceFrame.thresholds[thresholdId] == nil then
 				resourceFrame.thresholds[thresholdId] = CreateFrame("Frame", nil, resourceFrame)

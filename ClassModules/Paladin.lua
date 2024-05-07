@@ -953,7 +953,7 @@ local function UpdateResourceBar()
 							snapshot = snapshots[spell.id]
 							if talents:IsTalentActive(spell) then
 								if specSettings.thresholds[spell.settingKey].enabled and (not snapshot.cooldown:IsUnusable() or specSettings.thresholds[spell.settingKey].cooldown) then
-									local daybreakMana = snapshotData.targetData.count[spell.buffId] * snapshot.spell.attributes.resourcePercent * TRB.Data.character.maxResource
+									local daybreakMana = snapshotData.targetData.count[spells.glimmerOfLight.buffId] * snapshot.spell.attributes.resourcePercent * TRB.Data.character.maxResource
 									resourceAmount = castingBarValue + daybreakMana
 									if snapshot.cooldown:IsUnusable() then
 										thresholdColor = specSettings.colors.threshold.unusable
