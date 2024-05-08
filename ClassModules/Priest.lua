@@ -1958,11 +1958,7 @@ local function RefreshLookupData_Shadow()
 	local currentInsanityColor = specSettings.colors.text.currentInsanity
 	local castingInsanityColor = specSettings.colors.text.castingInsanity
 
-	local insanityThreshold = TRB.Data.character.devouringPlagueThreshold
-
-	if snapshots[spells.mindDevourer.id].buff.isActive then
-		insanityThreshold = 0
-	end
+	local insanityThreshold = spells.devouringPlague:GetPrimaryResourceCost()
 
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 		if specSettings.colors.text.overcapEnabled and overcap then
@@ -3836,8 +3832,7 @@ local function UpdateResourceBar()
 					passiveFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.passive, true))
 				end
 
-
-				if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= TRB.Data.character.devouringPlagueThreshold then
+				if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= spells.devouringPlague:GetPrimaryResourceCost() then
 					castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.devouringPlagueUsableCasting, true))
 				else
 					castingFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(specSettings.colors.bar.casting, true))
@@ -3865,13 +3860,13 @@ local function UpdateResourceBar()
 
 					if useEndOfVoidformColor and timeLeft <= timeThreshold then
 						barColor = specSettings.colors.bar.inVoidform1GCD
-					elseif snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= TRB.Data.character.devouringPlagueThreshold then
+					elseif snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= spells.devouringPlague:GetPrimaryResourceCost() then
 						barColor = specSettings.colors.bar.devouringPlagueUsable
 					else
 						barColor = specSettings.colors.bar.inVoidform
 					end
 				else
-					if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= TRB.Data.character.devouringPlagueThreshold then
+					if snapshots[spells.mindDevourer.id].buff.isActive or currentResource >= spells.devouringPlague:GetPrimaryResourceCost() then
 						barColor = specSettings.colors.bar.devouringPlagueUsable
 					else
 						barColor = specSettings.colors.bar.base
@@ -4643,8 +4638,6 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.specName = "shadow"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Resource)
-
-		TRB.Data.character.devouringPlagueThreshold = -spells.devouringPlague:GetPrimaryResourceCost()
 		
 		if talents:IsTalentActive(spells.mindbender) then
 			snapshots[spells.shadowfiend.id].spell = spells.mindbender

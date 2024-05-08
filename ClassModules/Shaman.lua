@@ -665,7 +665,17 @@ local function RefreshLookupData_Elemental()
 	local currentMaelstromColor = specSettings.colors.text.currentMaelstrom
 	local castingMaelstromColor = specSettings.colors.text.castingMaelstrom
 
-	local maelstromThreshold = spells.earthShock:GetPrimaryResourceCost()
+	local maelstromThreshold = TRB.Data.character.maxResource
+
+	if talents:IsTalentActive(spells.earthquake) then
+		maelstromThreshold = math.min(maelstromThreshold, spells.earthquake:GetPrimaryResourceCost())
+	end
+	
+	if talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) then
+		maelstromThreshold = math.min(maelstromThreshold, spells.earthShock:GetPrimaryResourceCost())
+	elseif talents:IsTalentActive(spells.elementalBlast) then
+		maelstromThreshold = math.min(maelstromThreshold, spells.elementalBlast:GetPrimaryResourceCost())
+	end
 
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 		if specSettings.colors.text.overcapEnabled and overcap then
@@ -1569,7 +1579,20 @@ local function UpdateResourceBar()
 					end
 				end
 
-				if currentResource >= spells.earthShock:GetPrimaryResourceCost() then
+				local maelstromThreshold = TRB.Data.character.maxResource
+
+				if talents:IsTalentActive(spells.earthquake) then
+					maelstromThreshold = math.min(maelstromThreshold, spells.earthquake:GetPrimaryResourceCost())
+				end
+				
+				if talents:IsTalentActive(spells.earthShock) and not talents:IsTalentActive(spells.elementalBlast) then
+					maelstromThreshold = math.min(maelstromThreshold, spells.earthShock:GetPrimaryResourceCost())
+				elseif talents:IsTalentActive(spells.elementalBlast) then
+					maelstromThreshold = math.min(maelstromThreshold, spells.elementalBlast:GetPrimaryResourceCost())
+				end
+
+				if currentResource >= maelstromThreshold then
+					barColor = specSettings.colors.bar.earthShock
 					if specSettings.colors.bar.flashEnabled then
 						TRB.Functions.Bar:PulseFrame(barContainerFrame, specSettings.colors.bar.flashAlpha, specSettings.colors.bar.flashPeriod)
 					else
@@ -2172,12 +2195,6 @@ function TRB.Functions.Class:CheckCharacter()
 
 		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[1], spells.earthShock, TRB.Data.settings.shaman.elemental)
 		TRB.Functions.Threshold:SetThresholdIcon(resourceFrame.thresholds[2], spells.elementalBlast, TRB.Data.settings.shaman.elemental)
-
-		if (talents:IsTalentActive(spells.elementalBlast) and spells.elementalBlast:GetPrimaryResourceCost() < TRB.Data.character.maxResource) then
-			TRB.Data.character.earthShockThreshold = -spells.elementalBlast:GetPrimaryResourceCost()
-		else
-			TRB.Data.character.earthShockThreshold = -spells.earthShock:GetPrimaryResourceCost()
-		end
 	elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
 		TRB.Data.character.specName = "enhancement"
 		local maxComboPoints = 10

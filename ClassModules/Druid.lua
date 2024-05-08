@@ -934,7 +934,7 @@ local function RefreshLookupData_Balance()
 	local currentAstralPowerColor = specSettings.colors.text.current
 	local castingAstralPowerColor = specSettings.colors.text.casting
 
-	local astralPowerThreshold = math.min(TRB.Data.character.starsurgeThreshold, TRB.Data.character.starfallThreshold)
+	local astralPowerThreshold = math.min(spells.starsurge:GetPrimaryResourceCost(), spells.starfall:GetPrimaryResourceCost())
 
 	if TRB.Functions.Class:IsValidVariableForSpec("$inCombat") then
 		if specSettings.colors.text.overcapEnabled and overcap then 
@@ -2336,9 +2336,6 @@ local function UpdateSnapshot_Balance()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local currentTime = GetTime()
 
-	TRB.Data.character.starsurgeThreshold = spells.starsurge:GetPrimaryResourceCost()
-	TRB.Data.character.starfallThreshold = spells.starfall:GetPrimaryResourceCost()
-
 	snapshotData.snapshots[spells.moonkinForm.id].buff:Refresh()
 	snapshotData.snapshots[spells.furyOfElune.id].buff:UpdateTicks(currentTime)
 	snapshotData.snapshots[spells.sunderedFirmament.id].buff:UpdateTicks(currentTime)
@@ -2539,7 +2536,7 @@ local function UpdateResourceBar()
 									showThreshold = false
 								elseif snapshots[spells.starweaversWeft.id].buff.isActive then
 									thresholdColor = specSettings.colors.threshold.over
-								elseif currentResource >= TRB.Data.character.starsurgeThreshold then
+								elseif currentResource >= spells.starsurge:GetPrimaryResourceCost() then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -2588,7 +2585,7 @@ local function UpdateResourceBar()
 							elseif spell.id == spells.starfall.id then
 								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
-								elseif currentResource >= TRB.Data.character.starfallThreshold then
+								elseif currentResource >= spells.starfall:GetPrimaryResourceCost() then
 									if snapshots[spells.starfall.id].buff.isActive and (snapshots[spells.starfall.id].buff.remaining) > (TRB.Data.character.pandemicModifier * spells.starfall.pandemicTime) then
 										thresholdColor = specSettings.colors.threshold.starfallPandemic
 									else
@@ -4078,12 +4075,12 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$pulsarNextStarsurge" then
 			if talents:IsTalentActive(spells.primordialArcanicPulsar) and
-				(((spells.primordialArcanicPulsar.attributes.maxResource or 0) - (snapshots[spells.primordialArcanicPulsar.id].buff.customProperties["currentResource"])) <= TRB.Data.character.starsurgeThreshold) then
+				(((spells.primordialArcanicPulsar.attributes.maxResource or 0) - (snapshots[spells.primordialArcanicPulsar.id].buff.customProperties["currentResource"])) <= spells.starsurge:GetPrimaryResourceCost()) then
 				valid = true
 			end
 		elseif var == "$pulsarNextStarfall" then
 			if talents:IsTalentActive(spells.primordialArcanicPulsar) and
-				(((spells.primordialArcanicPulsar.attributes.maxResource or 0) - (snapshots[spells.primordialArcanicPulsar.id].buff.customProperties["currentResource"])) <= TRB.Data.character.starfallThreshold) then
+				(((spells.primordialArcanicPulsar.attributes.maxResource or 0) - (snapshots[spells.primordialArcanicPulsar.id].buff.customProperties["currentResource"])) <= spells.starsurge:GetPrimaryResourceCost()) then
 				valid = true
 			end
 		end

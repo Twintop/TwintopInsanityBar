@@ -11,6 +11,13 @@ local content = [====[
 
 ---
 
+# 10.2.7.2-release (2024-05-08)
+## General
+
+- (FIX (Twintop)) Fix bar and primary resource color change when you have enough primary resource to use an ability. Specifically affected specs: Balance Druid, Shadow Priest, and Elemental Shaman.
+
+---
+
 # 10.2.7.1-release (2024-05-08)
 ## General
 
