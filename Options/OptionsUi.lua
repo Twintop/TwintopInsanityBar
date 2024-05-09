@@ -2559,11 +2559,11 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 			relativeTo["SoulShard5"] = "ComboPoint_5"
 			relativeToList = {
 				L["MainResourceBar"],
-				"SoulShard1",
-				"SoulShard2",
-				"SoulShard3",
-				"SoulShard4",
-				"SoulShard5",
+				L["SoulShard1"],
+				L["SoulShard2"],
+				L["SoulShard3"],
+				L["SoulShard4"],
+				L["SoulShard5"],
 				L["Screen"],
 			}
 		elseif (classId == 10 and specId == 3) then -- Windwalker Monk

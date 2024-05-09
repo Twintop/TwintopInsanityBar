@@ -357,7 +357,7 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			configuration.warlock = {}
 			
 			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.warlock.affliction) > 0 then -- Affliction
-				configuration.warlock.affliction = ExportConfigurationSections(10, 2, settings.warlock.affliction, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+				configuration.warlock.affliction = ExportConfigurationSections(9, 1, settings.warlock.affliction, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
 		elseif classId == 10 and settings.monk ~= nil then -- Monk
 			configuration.monk = {}
