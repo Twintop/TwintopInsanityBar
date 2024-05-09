@@ -1,6 +1,6 @@
 local _, TRB = ...
 local _, _, classIndexId = UnitClass("player")
-if classIndexId ~= 9 then --Only do this if we're on an Evoker!
+if classIndexId ~= 9 then --Only do this if we're on an Warlock!
 	return
 end
 
@@ -87,12 +87,12 @@ local function FillSpellData_Affliction()
 	local spells = specCache.affliction.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 
 	-- This is done here so that we can get icons for the options menu!
-	specCache.devastation.barTextVariables.icons = {
+	specCache.affliction.barTextVariables.icons = {
 		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 	}
-	specCache.devastation.barTextVariables.values = {
+	specCache.affliction.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
 		{ variable = "$haste", description = L["BarTextVariableHaste"], printInSettings = true, color = false },
 		{ variable = "$hastePercent", description = L["BarTextVariableHaste"], printInSettings = false, color = false },
@@ -603,8 +603,7 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 		return false
 	end
 
-	if specId == 1 then --Devastation			
-	elseif specId == 3 then -- Augmentation
+	if specId == 1 then --Affliction			
 	end
 
 	--Spec agnostic
