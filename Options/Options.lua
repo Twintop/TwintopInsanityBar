@@ -271,6 +271,17 @@ local function LoadDefaultSettings()
 						thresholds = true
 					}
 				},
+				warlock = {
+					affliction = {
+						specEnable = false,
+						bar = true,
+						comboPoints = true,
+						displayBar = true,
+						font = true,
+						textures = true,
+						thresholds = true
+					}
+				},
 				paladin = {
 					holy = {
 						specEnable = false,
@@ -414,6 +425,9 @@ local function LoadDefaultSettings()
 					mistweaver = true,
 					windwalker = true
 				},
+				warlock = {
+					affliction = true
+				},
 				paladin = {
 					holy = true
 				},
@@ -467,6 +481,9 @@ local function LoadDefaultSettings()
 		monk = {
 			mistweaver = {},
 			windwalker = {}
+		},
+		warlock = {
+			affliction = {}
 		},
 		paladin = {
 			holy = {}

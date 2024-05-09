@@ -72,6 +72,11 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 3 then -- Restoration
 				configuration.endOfAscendance = settings.endOfAscendance
 			end
+		elseif classId == 9 then
+			if specId == 1 then
+				configuration.colors.comboPoints = settings.colors.comboPoints
+				configuration.colors.comboPoints = settings.comboPoints
+			end
 		elseif classId == 10 then -- Monk
 			if specId == 2 then -- Mistweaver
 			elseif specId == 3 then -- Windwalker
@@ -145,6 +150,9 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			elseif specId == 2 then -- Enhancement
 			elseif specId == 3 then -- Restoration
 			end
+		elseif classId == 9 then
+			if specId == 1 then
+			end
 		elseif classId == 10 then -- Monk
 			if specId == 2 then -- Mistweaver
 			elseif specId == 3 then -- Windwalker
@@ -210,6 +218,10 @@ local function ExportConfigurationSections(classId, specId, settings, includeBar
 			if specId == 1 then -- Elemental
 			elseif specId == 2 then -- Enhancement
 			elseif specId == 3 then -- Restoration
+				configuration.passiveGeneration = settings.passiveGeneration
+			end
+		elseif classId == 9 then
+			if specId == 1 then
 				configuration.passiveGeneration = settings.passiveGeneration
 			end
 		elseif classId == 10 then -- Monk
@@ -341,6 +353,12 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 			if (specId == 3 or specId == nil) and TRB.Functions.Table:Length(settings.shaman.restoration) > 0 then -- Restoration
 				configuration.shaman.restoration = ExportConfigurationSections(7, 3, settings.shaman.restoration, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
 			end
+		elseif classId == 9 and settings.warlock ~= nil then
+			configuration.warlock = {}
+			
+			if (specId == 1 or specId == nil) and TRB.Functions.Table:Length(settings.warlock.affliction) > 0 then -- Affliction
+				configuration.warlock.affliction = ExportConfigurationSections(10, 2, settings.warlock.affliction, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText)
+			end
 		elseif classId == 10 and settings.monk ~= nil then -- Monk
 			configuration.monk = {}
 
@@ -437,6 +455,10 @@ local function ExportGetConfiguration(classId, specId, includeBarDisplay, includ
 		-- Restoration
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(7, 3, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
 
+		-- Warlock
+		-- Affliction
+		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(9, 1, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
+
 		-- Monk
 		-- Mistweaver
 		configuration = TRB.Functions.Table:Merge(configuration, ExportGetConfiguration(10, 2, settings, includeBarDisplay, includeFontAndText, includeAudioAndTracking, includeBarText))
@@ -521,6 +543,8 @@ function TRB.Functions.IO:Import(input)
 			(configuration.hunter.beastMastery ~= nil or
 			configuration.hunter.marksmanship ~= nil or
 			configuration.hunter.survival ~= nil)) or
+		(configuration.warlock ~= nil and 
+			(configuration.warlock.affliction ~= nil)) or
 		(configuration.monk ~= nil and
 			(configuration.monk.mistweaver ~= nil or
 			configuration.monk.windwalker ~= nil)) or

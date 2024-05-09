@@ -119,6 +119,7 @@ end
 ---| '"hunter"' # Hunter
 ---| '"monk"' # Monk
 ---| '"paladin' # Paladin
+---| '"warlock' # Warlock
 ---| '"priest"' # Priest
 ---| '"rogue"' # Rogue
 ---| '"shaman"' # Shaman
@@ -137,6 +138,7 @@ end
 ---| '"survival"' # Survival (Hunter)
 ---| '"discipline"' # Discipline (Priest)
 ---| '"holy"' # Holy (Paladin, Priest)
+---| '"affliction"' # Affliction (Warlock)
 ---| '"shadow"' # Shadow (Priest)
 ---| '"assassination"' # Assassination (Rogue)
 ---| '"outlaw"' # Outlaw (Rogue)
@@ -201,6 +203,7 @@ function TRB.Functions.Character:IsComboPointUser()
 		(classIndexId == 4) or -- Rogue
 		(classIndexId == 5 and (specId == 1 or specId == 2)) or -- Discipline or Holy Priest
 		(classIndexId == 7 and specId == 2) or -- Enhancement Shaman
+		(classIndexId == 9 and specId == 1) or
 		(classIndexId == 10 and specId == 3) or -- Windwalker Monk
 		(classIndexId == 11 and specId == 2) or -- Feral Druid
 		(classIndexId == 12 and specId == 2) or -- Vengeance Demon Hunter
