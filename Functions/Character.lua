@@ -119,10 +119,10 @@ end
 ---| '"hunter"' # Hunter
 ---| '"monk"' # Monk
 ---| '"paladin' # Paladin
----| '"warlock' # Warlock
 ---| '"priest"' # Priest
 ---| '"rogue"' # Rogue
 ---| '"shaman"' # Shaman
+---| '"warlock' # Warlock
 ---| '"warrior"' # Warrior
 ---@param specName string
 ---| '"havoc"' # Havoc (Demon Hunter)
@@ -138,13 +138,13 @@ end
 ---| '"survival"' # Survival (Hunter)
 ---| '"discipline"' # Discipline (Priest)
 ---| '"holy"' # Holy (Paladin, Priest)
----| '"affliction"' # Affliction (Warlock)
 ---| '"shadow"' # Shadow (Priest)
 ---| '"assassination"' # Assassination (Rogue)
 ---| '"outlaw"' # Outlaw (Rogue)
 ---| '"subtlety"' # Subtlety (Rogue)
 ---| '"elemental"' # Elemental (Shaman)
 ---| '"enhancement"' # Enhancement (Shaman)
+---| '"affliction"' # Affliction (Warlock)
 ---| '"arms"' # Arms (Warrior)
 ---| '"fury"' # Fury (Warrior)
 function TRB.Functions.Character:FillSpecializationCacheSettings(settings, cache, className, specName)
