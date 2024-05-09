@@ -124,26 +124,25 @@ local function FillSpellData_Affliction()
 		
 		{ variable = "$inCombat", description = L["BarTextVariableInCombat"], printInSettings = true, color = false },
 
-		{ variable = "$mana", description = L["PaladinHolyBarTextVariable_mana"], printInSettings = true, color = false },
+		{ variable = "$mana", description = L["WarlockAfflictionBarTextVariable_mana"], printInSettings = true, color = false },
 		{ variable = "$resource", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPercent", description = L["PaladinHolyBarTextVariable_manaPercent"], printInSettings = true, color = false },
+		{ variable = "$manaPercent", description = L["WarlockAfflictionBarTextVariable_manaPercent"], printInSettings = true, color = false },
 		{ variable = "$resourcePercent", description = "", printInSettings = false, color = false },
-		{ variable = "$manaMax", description = L["PaladinHolyBarTextVariable_manaMax"], printInSettings = true, color = false },
+		{ variable = "$manaMax", description = L["WarlockAfflictionBarTextVariable_manaMax"], printInSettings = true, color = false },
 		{ variable = "$resourceMax", description = "", printInSettings = false, color = false },
-		{ variable = "$casting", description = L["PaladinHolyBarTextVariable_casting"], printInSettings = true, color = false },
-		{ variable = "$passive", description = L["PaladinHolyBarTextVariable_passive"], printInSettings = true, color = false },
-		{ variable = "$manaPlusCasting", description = L["PaladinHolyBarTextVariable_manaPlusCasting"], printInSettings = true, color = false },
+		{ variable = "$casting", description = L["WarlockAfflictionBarTextVariable_casting"], printInSettings = true, color = false },
+		{ variable = "$passive", description = L["WarlockAfflictionBarTextVariable_passive"], printInSettings = true, color = false },
+		{ variable = "$manaPlusCasting", description = L["WarlockAfflictionBarTextVariable_manaPlusCasting"], printInSettings = true, color = false },
 		{ variable = "$resourcePlusCasting", description = "", printInSettings = false, color = false },
-		{ variable = "$manaPlusPassive", description = L["PaladinHolyBarTextVariable_manaPlusPassive"], printInSettings = true, color = false },
+		{ variable = "$manaPlusPassive", description = L["WarlockAfflictionBarTextVariable_manaPlusPassive"], printInSettings = true, color = false },
 		{ variable = "$resourcePlusPassive", description = "", printInSettings = false, color = false },
-		{ variable = "$manaTotal", description = L["PaladinHolyBarTextVariable_manaTotal"], printInSettings = true, color = false },
+		{ variable = "$manaTotal", description = L["WarlockAfflictionBarTextVariable_manaTotal"], printInSettings = true, color = false },
 		{ variable = "$resourceTotal", description = "", printInSettings = false, color = false },
 					
-		{ variable = "$soulShards", description = L["PaladinHolyBarTextVariable_soulShards"], printInSettings = true, color = false },
+		{ variable = "$soulShards", description = L["WarlockAfflictionBarTextVariable_soulShards"], printInSettings = true, color = false },
 		{ variable = "$comboPoints", description = "", printInSettings = false, color = false },
-		{ variable = "$soulShardsMax", description = L["PaladinHolyBarTextVariable_soulShardsMax"], printInSettings = true, color = false },
+		{ variable = "$soulShardsMax", description = L["WarlockAfflictionBarTextVariable_soulShardsMax"], printInSettings = true, color = false },
 		{ variable = "$comboPointsMax", description = "", printInSettings = false, color = false },
-
 
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
@@ -180,7 +179,7 @@ local function ConstructResourceBar(settings)
 		end
 	end
 
-	if specId == 1 then
+	if specId == 1 and TRB.Data.settings.core.experimental.specs.warlock.affliction then
 		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Warlock.AfflictionSpells]]
 		local thresholdId = 1
 		for _, v in pairs(spells) do
@@ -199,11 +198,13 @@ local function ConstructResourceBar(settings)
 				thresholdId = thresholdId + 1
 			end
 		end
+		TRB.Frames.resource2ContainerFrame:Show()
     end
 	TRB.Functions.Class:CheckCharacter()
-	TRB.Frames.resource2ContainerFrame:Show()
 	TRB.Functions.Bar:Construct(settings)
-	TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
+	if specId == 1 and TRB.Data.settings.core.experimental.specs.warlock.affliction then
+		TRB.Functions.Bar:SetPosition(settings, TRB.Frames.barContainerFrame)
+	end
 end
 
 
@@ -451,7 +452,7 @@ local function SwitchSpec()
 	barContainerFrame:UnregisterEvent("UNIT_POWER_FREQUENT")
 	barContainerFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	local specId = GetSpecialization()
-	if specId == 1 then
+	if specId == 1 and TRB.Data.settings.core.experimental.specs.warlock.affliction then
 		specCache.affliction.talents:GetTalents()
 		FillSpellData_Affliction()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.affliction)
@@ -493,9 +494,10 @@ resourceFrame:SetScript("OnEvent", function(self, event, arg1, ...)
 
 					local settings = TRB.Options.Warlock.LoadDefaultSettings(false)
 
-					if TwintopInsanityBarSettings.warlock == nil or
+					if TwintopInsanityBarSettings.core.experimental.specs.warlock.affliction and
+						(TwintopInsanityBarSettings.warlock == nil or
 						TwintopInsanityBarSettings.warlock.affliction == nil or
-						TwintopInsanityBarSettings.warlock.affliction.displayText == nil then
+						TwintopInsanityBarSettings.warlock.affliction.displayText == nil) then
 						settings.warlock.affliction.displayText.barText = TRB.Options.Warlock.AfflictionLoadDefaultBarTextSimpleSettings()
 					end
 
@@ -563,7 +565,7 @@ function TRB.Functions.Class:CheckCharacter()
 	TRB.Data.character.maxResource2 = 1
 	local maxComboPoints = UnitPowerMax("player", TRB.Data.resource2)
 	local settings = nil
-	if specId == 1 then
+	if specId == 1 and TRB.Data.settings.core.experimental.specs.warlock.affliction then
 		settings = TRB.Data.settings.warlock.affliction
 		TRB.Data.character.specName = "affliction"
 
@@ -578,8 +580,7 @@ end
 
 function TRB.Functions.Class:EventRegistration()
 	local specId = GetSpecialization()
-	if specId == 1 and TRB.Data.settings.core.enabled.warlock.affliction then
-		TRB.Functions.BarText:IsTtdActive(TRB.Data.settings.warlock.affliction)
+	if specId == 1 and TRB.Data.settings.core.experimental.specs.warlock.affliction then
 		TRB.Data.specSupported = true
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
@@ -621,14 +622,14 @@ function TRB.Functions.Class:HideResourceBar(force)
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 	local specId = GetSpecialization()
 
-	if specId == 1 then
+	if specId == 1 and TRB.Data.settings.core.experimental.specs.warlock.affliction then
 		if not TRB.Data.specSupported or force or
 		(TRB.Data.character.advancedFlight and not TRB.Data.settings.warlock.affliction.displayBar.dragonriding) or 
 		((not affectingCombat) and
 			(not UnitInVehicle("player")) and (
 				(not TRB.Data.settings.warlock.affliction.displayBar.alwaysShow) and (
 					(not TRB.Data.settings.warlock.affliction.displayBar.notZeroShow) or
-					(TRB.Data.settings.warlock.affliction.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource and snapshotData.attributes.resource2 == TRB.Data.character.maxResource2)
+					(TRB.Data.settings.warlock.affliction.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource and snapshotData.attributes.resource2 == 3) --Set to 3 as this is what Soul Shards end up at when out of combat
 				)
 			)) then
 			TRB.Frames.barContainerFrame:Hide()
@@ -736,7 +737,7 @@ local updateRateLimit = 0
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
 	local specId = GetSpecialization()
-	if (specId ~= 1) then
+	if (specId ~= 1 and not TRB.Data.settings.core.experimental.specs.warlock.affliction) then
 		TRB.Functions.Bar:HideResourceBar(true)
 		return
 	end
