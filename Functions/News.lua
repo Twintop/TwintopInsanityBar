@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 10.2.7.5-release (2024-05-10)
+## General
+### Localization
+
+- [#8 - UPDATE (Twintop)](#8) Include missing Holy Paladin localization for bar text variables.
+
+---
+
 # 10.2.7.4-release (2024-05-09)
 ## Hunter
 
