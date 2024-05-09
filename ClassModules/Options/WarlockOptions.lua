@@ -28,7 +28,7 @@ local function AfflictionLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionLeft"],
 			guid=TRB.Functions.String:Guid(),
-			text="", --text="$glimmerCount", could be shards counter
+			text="$soulShards/$soulShardsMax",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "LEFT",
@@ -74,7 +74,7 @@ local function AfflictionLoadDefaultBarTextSimpleSettings()
 			enabled = true,
 			name = L["PositionRight"],
 			guid=TRB.Functions.String:Guid(),
-			text="", --text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
+			text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
 			fontFace="Fonts\\FRIZQT__.TTF",
 			fontFaceName="Friz Quadrata TT",
 			fontJustifyHorizontal = "RIGHT",
@@ -199,10 +199,10 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 		},
 		bar = {
 			width=555,
-			height=34,
+			height=16,
 			xPos=0,
-			yPos=-200,
-			border=4,
+			yPos=-215,
+			border=2,
 			dragAndDrop=false,
 			pinToPersonalResourceDisplay=false,
 			showPassive=true,
@@ -210,10 +210,10 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 		},
 		comboPoints = {
 			width=25,
-			height=13,
+			height=16,
 			xPos=0,
 			yPos=4,
-			border=1,
+			border=2,
 			spacing=14,
 			relativeTo="TOP",
 			relativeToName = L["PositionAboveMiddle"],
@@ -241,9 +241,9 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 				passive="FF8080FF",
 			},
 			comboPoints = {
-				border="FFAF9942",
+				border="FF4749B5",
 				background="66000000",
-				base="FFFCE58E",
+				base="FF8788EE",
 				penultimate="FFFF9900",
 				final="FFFF0000",
 				sameColor=false
@@ -251,7 +251,7 @@ local function AfflictionLoadDefaultSettings(includeBarText)
 			threshold={
 				unusable="FFFF0000",
 				over="FF00FF00",
-				mindbender="FF8080FF",
+				special="FF8080FF",
 				outOfRange="FF440000"
 			}
 		},
@@ -320,8 +320,8 @@ local function AfflictionConstructResetDefaultsPanel(parent)
 	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.affliction
 	local yCoord = 5
 
-	StaticPopupDialogs["TwintopResourceBar_Paladin_Holy_Reset"] = {
-		text = string.format(L["ResetBarDialog"], L["PaladinHolyFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Warlock_Affliction_Reset"] = {
+		text = string.format(L["ResetBarDialog"], L["WarlockAfflictionFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
@@ -333,8 +333,8 @@ local function AfflictionConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Paladin_Holy_ResetBarTextSimple"] = {
-		text = string.format(L["ResetBarTextSimpleDialog"], L["PaladinHolyFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Warlock_Affliction_ResetBarTextSimple"] = {
+		text = string.format(L["ResetBarTextSimpleDialog"], L["WarlockAfflictionFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
@@ -346,8 +346,8 @@ local function AfflictionConstructResetDefaultsPanel(parent)
 		hideOnEscape = true,
 		preferredIndex = 3
 	}
-	StaticPopupDialogs["TwintopResourceBar_Paladin_Holy_ResetBarTextAdvanced"] = {
-		text = string.format(L["ResetBarTextAdvancedFullDialog"], L["PaladinHolyFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Warlock_Affliction_ResetBarTextAdvanced"] = {
+		text = string.format(L["ResetBarTextAdvancedFullDialog"], L["WarlockAfflictionFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
@@ -360,12 +360,12 @@ local function AfflictionConstructResetDefaultsPanel(parent)
 		preferredIndex = 3
 	}
 	--[[
-	StaticPopupDialogs["TwintopResourceBar_Paladin_Holy_ResetBarTextNarrowAdvanced"] = {
-		text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["PaladinHolyFull"]),
+	StaticPopupDialogs["TwintopResourceBar_Warlock_Affliction_ResetBarTextNarrowAdvanced"] = {
+		text = string.format(L["ResetBarTextAdvancedNarrowDialog"], L["WarlockAfflictionFull"]),
 		button1 = L["Yes"],
 		button2 = L["No"],
 		OnAccept = function()
-			spec.displayText.barText = HolyLoadDefaultBarTextNarrowAdvancedSettings()
+			spec.displayText.barText = AfflictionLoadDefaultBarTextNarrowAdvancedSettings()
 			ReloadUI()
 		end,
 		timeout = 0,
@@ -380,7 +380,7 @@ local function AfflictionConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 30
 	controls.resetButton = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetToDefaultsHeader"], oUi.xCoord, yCoord, 150, 30)
 	controls.resetButton:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Paladin_Holy_Reset")
+		StaticPopup_Show("TwintopResourceBar_Warlock_Affliction_Reset")
 	end)
 
 	yCoord = yCoord - 40
@@ -389,20 +389,20 @@ local function AfflictionConstructResetDefaultsPanel(parent)
 	yCoord = yCoord - 30
 	controls.resetButton1 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextSimple"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton1:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Paladin_Holy_ResetBarTextSimple")
+		StaticPopup_Show("TwintopResourceBar_Warlock_Affliction_ResetBarTextSimple")
 	end)
 	yCoord = yCoord - 40
 
 	--[[
 	controls.resetButton2 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedNarrow"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton2:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Paladin_Holy_ResetBarTextNarrowAdvanced")
+		StaticPopup_Show("TwintopResourceBar_Warlock_Affliction_ResetBarTextNarrowAdvanced")
 	end)
 	]]
 
 	controls.resetButton3 = TRB.Functions.OptionsUi:BuildButton(parent, L["ResetBarTextAdvancedFull"], oUi.xCoord, yCoord, 250, 30)
 	controls.resetButton3:SetScript("OnClick", function(self, ...)
-		StaticPopup_Show("TwintopResourceBar_Paladin_Holy_ResetBarTextAdvanced")
+		StaticPopup_Show("TwintopResourceBar_Warlock_Affliction_ResetBarTextAdvanced")
 	end)
 
 	TRB.Frames.interfaceSettingsFrameContainer.controls.affliction = controls
@@ -422,16 +422,16 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 
 	controls.buttons.exportButton_Warlock_Affliction_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarDisplay"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Warlock_Affliction_BarDisplay:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinHolyFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 9, 1, true, false, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 9, 1, true, false, false, false, false)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDimensionsOptions(parent, controls, spec, 9, 1, yCoord)
 
 	yCoord = yCoord - 30
-	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"], L["ResourceHolyPower"])
+	yCoord = TRB.Functions.OptionsUi:GenerateComboPointDimensionsOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"], L["ResourceSoulShards"])
 
 	yCoord = yCoord - 60
-	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 9, 1, yCoord, true, L["ResourceHolyPower"])
+	yCoord = TRB.Functions.OptionsUi:GenerateBarTexturesOptions(parent, controls, spec, 9, 1, yCoord, true, L["ResourceSoulShards"])
 
 	yCoord = yCoord - 30
 	yCoord = TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"], "notFull", false)
@@ -440,7 +440,7 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_2_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_2_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showCastingBar
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
@@ -457,7 +457,7 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_2_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_2_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showPassiveBar
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
@@ -467,7 +467,7 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 		spec.bar.showPassive = self:GetChecked()
 	end)
 
-	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerPassive"], spec.colors.bar.passive, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "passive", "bar", passiveFrame, 2)
@@ -484,53 +484,152 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"], false, true)
 	
 	yCoord = yCoord - 40
-	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PaladinHolyPowerColorsHeader"], oUi.xCoord, yCoord)
+	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockSoulShardsColorsHeader"], oUi.xCoord, yCoord)
 	controls.colors.comboPoints = {}
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceHolyPower"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.base = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ResourceSoulShards"], spec.colors.comboPoints.base, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.base
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "base")
 	end)
 
-	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinColorPickerHolyPowerBorderHeader"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.border = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerSoulShardsBorderHeader"], spec.colors.comboPoints.border, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.border
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
-	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PaladinHolyPowerColorPickerFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.comboPoints.final
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
 	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Holy_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.sameColorComboPoint = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_comboPointsSameColor", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.sameColorComboPoint
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PaladinHolyPowerCheckboxUseHighestForAll"])
-	f.tooltip = L["PaladinHolyPowerCheckboxUseHighestForAllTooltip"]
+	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockSoulShardsCheckboxUseHighestForAll"])
+	f.tooltip = L["WarlockSoulShardsCheckboxUseHighestForAllTooltip"]
 	f:SetChecked(spec.comboPoints.sameColor)
 	f:SetScript("OnClick", function(self, ...)
 		spec.comboPoints.sameColor = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, controls, spec, 9, 1, yCoord)
+	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
+
+	controls.colors.threshold = {}
+
+	yCoord = yCoord - 25
+	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceInsanity"]), spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.threshold.under
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "under")
+	end)
+
+	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceInsanity"]), spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
+	f = controls.colors.threshold.over
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
+	end)
+
+	--[[
+	controls.colors.threshold.special = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockAfflictionThresholdPassive"], spec.colors.threshold.special, 300, 25, oUi.xCoord2, yCoord-60)
+	f = controls.colors.threshold.special
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "special")
+	end)
+
+	controls.colors.threshold.outOfRange = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ThresholdOutOfRange"], spec.colors.threshold.outOfRange, 300, 25, oUi.xCoord2, yCoord-90)
+	f = controls.colors.threshold.outOfRange
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "outOfRange")
+	end)
+
+	controls.checkBoxes.thresholdOutOfRange = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_thresholdOutOfRange", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.thresholdOutOfRange
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-120)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOutOfRangeCheckbox"])
+	f.tooltip = L["ThresholdOutOfRangeCheckboxTooltip"]
+	f:SetChecked(spec.thresholds.outOfRange)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.outOfRange = self:GetChecked()
+	end)
+	]]
+
+	controls.checkBoxes.thresholdOverlapBorder = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_thresholdOverlapBorder", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.thresholdOverlapBorder
+	f:SetPoint("TOPLEFT", oUi.xCoord2, yCoord-140)
+	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdOverlapBorderCheckbox"])
+	f.tooltip = L["ThresholdOverlapBorderCheckboxTooltip"]
+	f:SetChecked(spec.thresholds.overlapBorder)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.overlapBorder = self:GetChecked()
+		TRB.Functions.Threshold:RedrawThresholdLines(spec)
+	end)
+
+	--[[
+	controls.checkBoxes.dpThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Threshold_Option_devouringPlague", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dpThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionThresholdDevouringPlague"])
+	f.tooltip = L["WarlockAfflictionThresholdDevouringPlagueTooltip"]
+	f:SetChecked(spec.thresholds.devouringPlague.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.devouringPlague.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 20
+	controls.checkBoxes.dpThreshold2Show = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Threshold_Option_devouringPlague2", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dpThreshold2Show
+	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionThresholdDevouringPlague2x"])
+	f.tooltip = L["WarlockAfflictionThresholdDevouringPlague2xTooltip"]
+	f:SetChecked(spec.thresholds.devouringPlague2.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.devouringPlague2.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 20
+	controls.checkBoxes.dpThreshold3Show = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Threshold_Option_devouringPlague3", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dpThreshold3Show
+	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionThresholdDevouringPlague3x"])
+	f.tooltip = L["WarlockAfflictionThresholdDevouringPlague3xTooltip"]
+	f:SetChecked(spec.thresholds.devouringPlague3.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.devouringPlague3.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 20
+	controls.checkBoxes.dpThresholdOnlyOverShow = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Threshold_Option_devouringPlagueOnlyOver", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dpThresholdOnlyOverShow
+	f:SetPoint("TOPLEFT", oUi.xCoord+20, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["WarlockAfflictionThresholdCheckboxOnlyCurrentNext"])
+	f.tooltip = L["WarlockAfflictionThresholdCheckboxOnlyCurrentNextTooltip"]
+	f:SetChecked(spec.thresholds.devouringPlagueThresholdOnlyOverShow)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.devouringPlagueThresholdOnlyOverShow = self:GetChecked()
+	end)
+	]]
+
+	yCoord = yCoord - 25
+	yCoord = yCoord - 25
+	yCoord = yCoord - 25
+	yCoord = yCoord - 25
+	yCoord = yCoord - 25
+	yCoord = yCoord - 50
 
 	yCoord = TRB.Functions.OptionsUi:GenerateThresholdLineIconsOptions(parent, controls, spec, 9, 1, yCoord)
-
-	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GeneratePotionOnCooldownConfigurationOptions(parent, controls, spec, 9, 1, yCoord)
 end
 
 local function AfflictionConstructFontAndTextPanel(parent)
@@ -549,7 +648,7 @@ local function AfflictionConstructFontAndTextPanel(parent)
 
 	controls.buttons.exportButton_Warlock_Affliction_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportFontText"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Warlock_Affliction_FontAndText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinHolyFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 9, 1, false, true, false, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 9, 1, false, true, false, false, false)
 	end)
 
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 9, 1, yCoord)
@@ -611,7 +710,7 @@ local function AfflictionConstructAudioAndTrackingPanel(parent)
 
 	controls.buttons.exportButton_Warlock_Affliction_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportAudioTracking"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Warlock_Affliction_AudioAndTracking:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinHolyFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 9, 1, false, false, true, false, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 9, 1, false, false, true, false, false)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
@@ -639,7 +738,7 @@ local function AfflictionConstructBarTextDisplayPanel(parent, cache)
 	TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarDisplayTextCustomizationHeader"], oUi.xCoord, yCoord)
 	controls.buttons.exportButton_Warlock_Affliction_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageExportBarText"], 400, yCoord-5, 225, 20)
 	controls.buttons.exportButton_Warlock_Affliction_BarText:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinHolyFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 9, 1, false, false, false, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 9, 1, false, false, false, true, false)
 	end)
 
 	yCoord = yCoord - 30
@@ -661,22 +760,22 @@ local function AfflictionConstructOptionsPanel(cache)
 	controls.dropDown = {}
 	controls.buttons = controls.buttons or {}
 
-	interfaceSettingsFrame.afflictionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Paladin_Holy", UIParent)
-	interfaceSettingsFrame.afflictionDisplayPanel.name = L["PaladinHolyFull"]
+	interfaceSettingsFrame.afflictionDisplayPanel = CreateFrame("Frame", "TwintopResourceBar_Options_Warlock_Affliction", UIParent)
+	interfaceSettingsFrame.afflictionDisplayPanel.name = L["WarlockAfflictionFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.afflictionDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.holyDisplayPanel, L["PaladinHoly"] .. "L["Paladin"])
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.holyDisplayPanel, L["WarlockAffliction"] .. "L["Warlock"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.afflictionDisplayPanel)
 
 	parent = interfaceSettingsFrame.afflictionDisplayPanel
 
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PaladinHolyFull"], oUi.xCoord, yCoord-5)	
+	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockAfflictionFull"], oUi.xCoord, yCoord-5)	
 	
-	controls.checkBoxes.afflictionWarlockEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Paladin_Holy_holyPaladinEnabled", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.afflictionWarlockEnabled = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_holyWarlockEnabled", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.afflictionWarlockEnabled
 	f:SetPoint("TOPLEFT", 320, yCoord-10)
 	getglobal(f:GetName() .. 'Text'):SetText(L["CheckboxEnabledQuestion"])
-	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["PaladinHolyFull"])
+	f.tooltip = string.format(L["IsBarEnabledForSpecTooltip"], L["WarlockAfflictionFull"])
 	f:SetChecked(TRB.Data.settings.core.enabled.warlock.affliction)
 	f:SetScript("OnClick", function(self, ...)
 		TRB.Data.settings.core.enabled.warlock.affliction = self:GetChecked()
@@ -694,7 +793,7 @@ local function AfflictionConstructOptionsPanel(cache)
 
 	controls.buttons.exportButton_Warlock_Affliction_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportSpecialization"], 510, yCoord-10, 150, 20)
 	controls.buttons.exportButton_Warlock_Affliction_All:SetScript("OnClick", function(self, ...)
-		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["PaladinHolyFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 9, 1, true, true, true, true, false)
+		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 9, 1, true, true, true, true, false)
 	end)
 
 	yCoord = yCoord - 52
@@ -702,12 +801,12 @@ local function AfflictionConstructOptionsPanel(cache)
 	local tabs = {}
 	local tabsheets = {}
 
-	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Paladin_Holy_Tab1", L["TabBarDisplay"], 1, parent, 85)
+	tabs[1] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Affliction_Tab1", L["TabBarDisplay"], 1, parent, 85)
 	tabs[1]:SetPoint("TOPLEFT", 15, yCoord)
-	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Paladin_Holy_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
-	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Paladin_Holy_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
-	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Paladin_Holy_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
-	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Paladin_Holy_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
+	tabs[2] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Affliction_Tab2", L["TabFontText"], 2, parent, 85, tabs[1])
+	tabs[3] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Affliction_Tab3", L["TabAudioTracking"], 3, parent, 120, tabs[2])
+	tabs[4] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Affliction_Tab4", L["TabBarText"], 4, parent, 60, tabs[3])
+	tabs[5] = TRB.Functions.OptionsUi:CreateTab("TwintopResourceBar_Options_Warlock_Affliction_Tab5", L["TabResetDefaults"], 5, parent, 100, tabs[4])
 
 	yCoord = yCoord - 15
 
@@ -715,7 +814,7 @@ local function AfflictionConstructOptionsPanel(cache)
 		PanelTemplates_TabResize(tabs[i], 0)
 		PanelTemplates_DeselectTab(tabs[i])
 		tabs[i].Text:SetPoint("TOP", 0, 0)
-		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Paladin_Holy_LayoutPanel" .. i, parent)
+		tabsheets[i] = TRB.Functions.OptionsUi:CreateTabFrameContainer("TwintopResourceBar_Warlock_Affliction_LayoutPanel" .. i, parent)
 		tabsheets[i]:Hide()
 		tabsheets[i]:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	end
