@@ -11,6 +11,21 @@ local content = [====[
 
 ---
 
+# 10.2.7.4-release (2024-05-09)
+## Hunter
+
+- [#386 - FIX (Twintop)](#386) Fix threshold line creation and subsequent Lua errors and warning chat window spam.
+
+---
+
+# 10.2.7.3-release (2024-05-09)
+## Priest
+### Holy
+
+- [#385 - FIX (Twintop)](#385) Update Harmonious Apparatus to be Voice of Harmony and fix bar color change when the current cast will take the associated Holy Word spell off cooldown.
+
+---
+
 # 10.2.7.2-release (2024-05-08)
 ## General
 
