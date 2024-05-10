@@ -567,9 +567,9 @@ local function ConstructResourceBar(settings)
 		end
 	end
 
+	local thresholdId = 1
 	for _, v in pairs(spells) do
 		local spell = v --[[@as TRB.Classes.SpellBase]]
-		local thresholdId = 1
 		if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 			spell = spell --[[@as TRB.Classes.SpellThreshold]]
 			if resourceFrame.thresholds[thresholdId] == nil then
@@ -1530,7 +1530,7 @@ local function UpdateResourceBar()
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
 						local resourceAmount = -spell:GetPrimaryResourceCost()
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource, spell)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over

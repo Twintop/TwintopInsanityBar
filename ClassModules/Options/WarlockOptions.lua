@@ -440,7 +440,7 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"])
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_2_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.showCastingBar = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Checkbox_ShowCastingBar", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showCastingBar
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowCastingBarCheckbox"])
@@ -450,14 +450,14 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 		spec.bar.showCasting = self:GetChecked()
 	end)
 
-	controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCasting"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.spending = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerCasting"], spec.colors.bar.spending, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.spending
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.bar, controls.colors, "spending", "bar", castingFrame, 2)
 	end)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_2_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
+	controls.checkBoxes.showPassiveBar = CreateFrame("CheckButton", "TwintopResourceBar_Warlock_Affliction_Checkbox_ShowPassiveBar", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.showPassiveBar
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	getglobal(f:GetName() .. 'Text'):SetText(L["ShowPassiveBarCheckbox"])
@@ -481,7 +481,7 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 40
-	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"], false, true)
+	yCoord = TRB.Functions.OptionsUi:GenerateBarBorderColorOptions(parent, controls, spec, 9, 1, yCoord, L["ResourceMana"], false)
 	
 	yCoord = yCoord - 40
 	controls.comboPointColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockSoulShardsColorsHeader"], oUi.xCoord, yCoord)
@@ -500,14 +500,14 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "border")
 	end)
 
+	yCoord = yCoord - 30
 	controls.colors.comboPoints.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerBackground"], spec.colors.comboPoints.background, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.background
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "background")
 	end)
-
 	yCoord = yCoord - 30
-	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.comboPoints.final = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockSoulShardsColorPickerFinal"], spec.colors.comboPoints.final, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.comboPoints.final
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.comboPoints, controls.colors.comboPoints, "final")
@@ -530,13 +530,13 @@ local function AfflictionConstructBarColorsAndBehaviorPanel(parent)
 	controls.colors.threshold = {}
 
 	yCoord = yCoord - 25
-	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceInsanity"]), spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.threshold.under = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdUnderMinimum"], L["ResourceSoulShards"]), spec.colors.threshold.under, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.threshold.under
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "under")
 	end)
 
-	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceInsanity"]), spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
+	controls.colors.threshold.over = TRB.Functions.OptionsUi:BuildColorPicker(parent, string.format(L["ThresholdOverMinimum"], L["ResourceSoulShards"]), spec.colors.threshold.over, 300, 25, oUi.xCoord2, yCoord-30)
 	f = controls.colors.threshold.over
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.threshold, controls.colors.threshold, "over")
@@ -654,23 +654,23 @@ local function AfflictionConstructFontAndTextPanel(parent)
 	yCoord = TRB.Functions.OptionsUi:GenerateDefaultFontOptions(parent, controls, spec, 9, 1, yCoord)
 
 	yCoord = yCoord - 40
-	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerManaTextColorsHeader"], oUi.xCoord, yCoord)
+	controls.textDisplaySection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["WarlockManaTextColorsHeader"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCurrentMana"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.current = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerCurrentMana"], spec.colors.text.current, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.current
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "current")
 	end)
 
-	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerCastingMana"], spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
+	controls.colors.text.casting = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerCastingMana"], spec.colors.text.casting, 300, 25, oUi.xCoord2, yCoord)
 	f = controls.colors.text.casting
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "casting")
 	end)
 
 	yCoord = yCoord - 30
-	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["HealerColorPickerPassiveMana"], spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
+	controls.colors.text.passive = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["WarlockColorPickerPassiveMana"], spec.colors.text.passive, 300, 25, oUi.xCoord, yCoord)
 	f = controls.colors.text.passive
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown_OLD(button, spec.colors.text, controls.colors.text, "passive")
@@ -714,10 +714,6 @@ local function AfflictionConstructAudioAndTrackingPanel(parent)
 	end)
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AudioOptionsHeader"], oUi.xCoord, yCoord)
-
-	
-	yCoord = yCoord - 60
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["HealerPassiveExternalManaGenerationTrackingHeader"], oUi.xCoord, yCoord)
 
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -840,6 +836,8 @@ end
 local function ConstructOptionsPanel(specCache)
 	TRB.Options:ConstructOptionsPanel()
 	
-	AfflictionConstructOptionsPanel(specCache.affliction)
+	if TRB.Data.settings.core.experimental.specs.warlock.affliction then
+		AfflictionConstructOptionsPanel(specCache.affliction)
+	end
 end
 TRB.Options.Warlock.ConstructOptionsPanel = ConstructOptionsPanel

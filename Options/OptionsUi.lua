@@ -2552,11 +2552,11 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				L["Screen"],
 			}
 		elseif (classId == 9 and specId == 1) then --Affliction Warlock
-			relativeTo["SoulShard1"] = "ComboPoint_1"
-			relativeTo["SoulShard2"] = "ComboPoint_2"
-			relativeTo["SoulShard3"] = "ComboPoint_3"
-			relativeTo["SoulShard4"] = "ComboPoint_4"
-			relativeTo["SoulShard5"] = "ComboPoint_5"
+			relativeTo[L["SoulShard1"]] = "ComboPoint_1"
+			relativeTo[L["SoulShard2"]] = "ComboPoint_2"
+			relativeTo[L["SoulShard3"]] = "ComboPoint_3"
+			relativeTo[L["SoulShard4"]] = "ComboPoint_4"
+			relativeTo[L["SoulShard5"]] = "ComboPoint_5"
 			relativeToList = {
 				L["MainResourceBar"],
 				L["SoulShard1"],

@@ -600,8 +600,6 @@ local function FillSpellData_Holy()
 		{ variable = "#coh", icon = spells.circleOfHealing.icon, description = spells.circleOfHealing.name, printInSettings = true },
 		{ variable = "#circleOfHealing", icon = spells.circleOfHealing.icon, description = spells.circleOfHealing.name, printInSettings = false },
 		{ variable = "#flashHeal", icon = spells.flashHeal.icon, description = spells.flashHeal.name, printInSettings = true },
-		{ variable = "#ha", icon = spells.harmoniousApparatus.icon, description = spells.harmoniousApparatus.name, printInSettings = true },
-		{ variable = "#harmoniousApparatus", icon = spells.harmoniousApparatus.icon, description = spells.harmoniousApparatus.name, printInSettings = false },
 		{ variable = "#heal", icon = spells.heal.icon, description = spells.heal.name, printInSettings = true },
 		{ variable = "#hf", icon = spells.holyFire.icon, description = spells.holyFire.name, printInSettings = true },
 		{ variable = "#holyFire", icon = spells.holyFire.icon, description = spells.holyFire.name, printInSettings = false },
@@ -2387,12 +2385,12 @@ local function CastingSpell()
 						snapshotData.casting.spellKey = "renew"
 					elseif currentSpellId == spells.smite.id then
 						snapshotData.casting.spellKey = "smite"
-					elseif talents:IsTalentActive(spells.harmoniousApparatus) then
-						if currentSpellId == spells.circleOfHealing.id then --Harmonious Apparatus / This shouldn't happen
+					elseif talents:IsTalentActive(spells.voiceOfHarmony) then
+						if currentSpellId == spells.circleOfHealing.id then --Voice of Harmony / This shouldn't happen
 							snapshotData.casting.spellKey = "circleOfHealing"
-						elseif currentSpellId == spells.prayerOfMending.id then --Harmonious Apparatus / This shouldn't happen
+						elseif currentSpellId == spells.prayerOfMending.id then --Voice of Harmony / This shouldn't happen
 							snapshotData.casting.spellKey = "prayerOfMending"
-						elseif currentSpellId == spells.holyFire.id then --Harmonious Apparatus
+						elseif currentSpellId == spells.holyFire.id then --Voice of Harmony
 							snapshotData.casting.spellKey = "holyFire"
 						end
 					end
@@ -3259,44 +3257,6 @@ local function UpdateResourceBar()
 				else
 					castingBarValue = currentResource
 				end
-				
-				TRB.Functions.Threshold:ManageCommonHealerThresholds(currentResource, castingBarValue, specSettings, snapshots[spells.aeratedManaPotionRank1.id].cooldown, snapshots[spells.conjuredChillglobe.id].cooldown, TRB.Data.character, resourceFrame, CalculateManaGain)
-
-				local shadowfiend = snapshots[spells.shadowfiend.id]
-
-				if talents:IsTalentActive(spells.shadowfiend) and not shadowfiend.buff.isActive then
-					local shadowfiendThresholdColor = specSettings.colors.threshold.over
-					if specSettings.thresholds.shadowfiend.enabled and (not shadowfiend.cooldown:IsUnusable() or specSettings.thresholds.shadowfiend.cooldown) then
-						local haveTotem, timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = GetMaximumShadowfiendResults()
-						local shadowfiendMana = swingsRemaining * shadowfiend.spell.attributes.resourcePercent * TRB.Data.character.maxResource
-
-						if shadowfiend.cooldown:IsUnusable() then
-							shadowfiendThresholdColor = specSettings.colors.threshold.unusable
-						end
-
-						if not haveTotem and shadowfiendMana > 0 and (castingBarValue + shadowfiendMana) < TRB.Data.character.maxResource then
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[8], resourceFrame, (castingBarValue + shadowfiendMana), TRB.Data.character.maxResource)
-				---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[8].texture:SetColorTexture(TRB.Functions.Color:GetRGBAFromString(shadowfiendThresholdColor, true))
-				---@diagnostic disable-next-line: undefined-field
-							resourceFrame.thresholds[8].icon:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(shadowfiendThresholdColor, true))
-							resourceFrame.thresholds[8]:Show()
-
-							if specSettings.thresholds.icons.showCooldown and shadowfiend.cooldown.remaining > 0 then
-								resourceFrame.thresholds[8].icon.cooldown:SetCooldown(shadowfiend.cooldown.startTime, shadowfiend.cooldown.duration)
-							else
-								resourceFrame.thresholds[8].icon.cooldown:SetCooldown(0, 0)
-							end
-						else
-							resourceFrame.thresholds[8]:Hide()
-						end
-					else
-						resourceFrame.thresholds[8]:Hide()
-					end
-				else
-					resourceFrame.thresholds[8]:Hide()
-				end
-
 
 				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
 				thresholdCount = thresholdCount + 1
@@ -3411,7 +3371,7 @@ local function UpdateResourceBar()
 								end
 							else
 								showThreshold = false
-							end					
+							end
 						elseif spell.id == spells.symbolOfHope.id and talents:IsTalentActive(spell) then
 							snapshot = snapshots[spells.symbolOfHope.id]
 							local currentManaPercent = (currentResource / TRB.Data.character.maxResource) * 100
@@ -3463,7 +3423,7 @@ local function UpdateResourceBar()
 							holyWordCooldownCompletes = true
 							holyWordCooldownCompletesKey = maybeHolyWordSpell.holyWordKey
 							if specSettings.bar[maybeHolyWordSpell.holyWordKey .. "Enabled"] then
-								resourceBarColor = specSettings.colors.bar[maybeHolyWordSpell]
+								resourceBarColor = specSettings.colors.bar[maybeHolyWordSpell.holyWordKey]
 							end
 						end
 					end
@@ -4250,8 +4210,6 @@ local function SwitchSpec()
 		lookup["#coh"] = spells.circleOfHealing.icon
 		lookup["#circleOfHealing"] = spells.circleOfHealing.icon
 		lookup["#flashHeal"] = spells.flashHeal.icon
-		lookup["#ha"] = spells.harmoniousApparatus.icon
-		lookup["#harmoniousApparatus"] = spells.harmoniousApparatus.icon
 		lookup["#heal"] = spells.heal.icon
 		lookup["#hf"] = spells.holyFire.icon
 		lookup["#holyFire"] = spells.holyFire.icon
