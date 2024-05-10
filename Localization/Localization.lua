@@ -129,5 +129,6 @@ L["ResourceChi"] = CHI_POWER
 L["ResourceFocus"] = POWER_TYPE_FOCUS
 L["ResourceEssence"] = POWER_TYPE_ESSENCE
 L["ResourceHolyPower"] = HOLY_POWER
+L["ResourceSoulShards"] = SOUL_SHARDS_POWER 
 
 TRB.Localization = L

@@ -369,6 +369,17 @@ local function LoadDefaultSettings()
 						thresholds = true
 					}
 				},
+				warlock = {
+					affliction = {
+						specEnable = false,
+						bar = true,
+						comboPoints = true,
+						displayBar = true,
+						font = true,
+						textures = true,
+						thresholds = true
+					}
+				},
 				warrior = {
 					arms = {
 						specEnable = false,
@@ -432,6 +443,9 @@ local function LoadDefaultSettings()
 					enhancement = true,
 					restoration = true
 				},
+				warlock = {
+					affliction = true
+				},
 				warrior = {
 					arms = true,
 					fury = true
@@ -441,6 +455,9 @@ local function LoadDefaultSettings()
 				specs = {
 					shaman = {
 						enhancement = false
+					},
+					warlock = {
+						affliction = false
 					}
 				}
 			}
@@ -486,6 +503,9 @@ local function LoadDefaultSettings()
 			enhancement = {},
 			restoration = {}
 		},
+		warlock = {
+			affliction = {}
+		},
 		warrior = {
 			arms = {},
 			fury = {}
@@ -529,8 +549,8 @@ local function ConstructAddonOptionsPanel()
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["Bar Settings"], oUi.xCoord, yCoord)
 
 	yCoord = yCoord - 30
-	controls.checkBoxes.experimentalShamanEnhancement = CreateFrame("CheckButton", "TwintopResourceBar_CB_Smooth_Bar", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.experimentalShamanEnhancement
+	controls.checkBoxes.smoothBar = CreateFrame("CheckButton", "TwintopResourceBar_CB_Smooth_Bar", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.smoothBar
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
 	---@diagnostic disable-next-line: undefined-field
 	getglobal(f:GetName() .. 'Text'):SetText(L["GlobalOptionsCheckboxSmoothBar"])
@@ -835,6 +855,19 @@ local function ConstructAddonOptionsPanel()
 	f:SetChecked(TRB.Data.settings.core.experimental.specs.shaman.enhancement)
 	f:SetScript("OnClick", function(self, ...)
 		TRB.Data.settings.core.experimental.specs.shaman.enhancement = self:GetChecked()
+	end)
+	
+	yCoord = yCoord - 30
+	controls.checkBoxes.experimentalWarlockAffliction = CreateFrame("CheckButton", "TwintopResourceBar_CB_Experimental_Warlock_Affliction", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.experimentalWarlockAffliction
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	---@diagnostic disable-next-line: undefined-field
+	getglobal(f:GetName() .. 'Text'):SetText(L["ExperimentalWarlockAffliction"])
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = L["ExperimentalWarlockAfflictionTooltip"]
+	f:SetChecked(TRB.Data.settings.core.experimental.specs.warlock.affliction)
+	f:SetScript("OnClick", function(self, ...)
+		TRB.Data.settings.core.experimental.specs.warlock.affliction = self:GetChecked()
 	end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame
@@ -2072,6 +2105,46 @@ local function ConstructImportExportPanel()
 		TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["ShamanRestorationFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 7, 3, false, false, false, true, false)
 	end)
 
+	
+	if TRB.Data.settings.core.experimental.specs.warlock.affliction then
+		yCoord = yCoord - 35
+		controls.labels.warlock = TRB.Functions.OptionsUi:BuildLabel(parent, L["Warlock"], oUi.xCoord, yCoord, 110, 20)
+
+		yCoord = yCoord - 25
+		specName = L["WarlockAffliction"]
+		controls.labels.warlockAffliction = TRB.Functions.OptionsUi:BuildLabel(parent, specName, oUi.xCoord+oUi.xPadding, yCoord, 100, 20, TRB.Options.fonts.options.exportSpec)
+		
+		buttonOffset = oUi.xCoord + oUi.xPadding + 100
+		controls.buttons.exportButton_Shaman_Enhancement_All = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAll"], buttonOffset, yCoord, 50, 20)
+		controls.buttons.exportButton_Shaman_Enhancement_All:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixAll"] .. ".", 9, 1, true, true, true, true, false)
+		end)
+		
+		buttonOffset = buttonOffset + buttonSpacing + 50
+		controls.exportButton_Shaman_Enhancement_BarDisplay = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarDisplay"], buttonOffset, yCoord, 80, 20)
+		controls.exportButton_Shaman_Enhancement_BarDisplay:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixBarDisplay"] .. ".", 9, 1, true, false, false, false, false)
+		end)
+		
+		buttonOffset = buttonOffset + buttonSpacing + 80
+		controls.exportButton_Shaman_Enhancement_FontAndText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageFontText"], buttonOffset, yCoord, 90, 20)
+		controls.exportButton_Shaman_Enhancement_FontAndText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixFontText"] .. ".", 9, 1, false, true, false, false, false)
+		end)
+		
+		buttonOffset = buttonOffset + buttonSpacing + 90
+		controls.exportButton_Shaman_Enhancement_AudioAndTracking = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageAudioTracking"], buttonOffset, yCoord, 120, 20)
+		controls.exportButton_Shaman_Enhancement_AudioAndTracking:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixAudioTracking"] .. ".", 9, 1, false, false, true, false, false)
+		end)
+		
+		buttonOffset = buttonOffset + buttonSpacing + 120
+		controls.exportButton_Shaman_Enhancement_BarText = TRB.Functions.OptionsUi:BuildButton(parent, L["ExportMessageBarText"], buttonOffset, yCoord, 70, 20)
+		controls.exportButton_Shaman_Enhancement_BarText:SetScript("OnClick", function(self, ...)
+			TRB.Functions.IO:ExportPopup(L["ExportMessagePrefix"] .. " " .. L["WarlockAfflictionFull"] .. " " .. L["ExportMessagePostfixBarText"] .. ".", 9, 1, false, false, false, true, false)
+		end)
+	end
+
 
 	yCoord = yCoord - 35
 	controls.labels.warrior = TRB.Functions.OptionsUi:BuildLabel(parent, L["Warrior"], oUi.xCoord, yCoord, 110, 20)
@@ -2231,19 +2304,19 @@ function TRB.Options:ConstructOptionsPanel()
 	localeText1 = localeText1 .. "\n" .. string.format(flagPathTemplate, "zhTW", "zhTW")
 
 	local percentFormat = "%3.2f%%"
-	local localeText2 = string.format(percentFormat, 11.77)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.52)
+	local localeText2 = string.format(percentFormat, 11.61)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.54)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.47)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.47)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 12.55)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.47)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.47)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.47)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.47)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.47)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.47)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.47)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.46)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.46)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 12.38)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.46)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.46)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.46)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.46)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.46)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.46)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.46)
 
 	local localeText3 = "unfung; Google Translate"
 	localeText3 = localeText3 .. "\n" .. "Twintop"

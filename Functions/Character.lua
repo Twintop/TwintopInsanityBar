@@ -122,6 +122,7 @@ end
 ---| '"priest"' # Priest
 ---| '"rogue"' # Rogue
 ---| '"shaman"' # Shaman
+---| '"warlock' # Warlock
 ---| '"warrior"' # Warrior
 ---@param specName string
 ---| '"havoc"' # Havoc (Demon Hunter)
@@ -143,6 +144,7 @@ end
 ---| '"subtlety"' # Subtlety (Rogue)
 ---| '"elemental"' # Elemental (Shaman)
 ---| '"enhancement"' # Enhancement (Shaman)
+---| '"affliction"' # Affliction (Warlock)
 ---| '"arms"' # Arms (Warrior)
 ---| '"fury"' # Fury (Warrior)
 function TRB.Functions.Character:FillSpecializationCacheSettings(settings, cache, className, specName)
@@ -201,6 +203,7 @@ function TRB.Functions.Character:IsComboPointUser()
 		(classIndexId == 4) or -- Rogue
 		(classIndexId == 5 and (specId == 1 or specId == 2)) or -- Discipline or Holy Priest
 		(classIndexId == 7 and specId == 2) or -- Enhancement Shaman
+		(classIndexId == 9 and specId == 1) or -- Affliction Warlock
 		(classIndexId == 10 and specId == 3) or -- Windwalker Monk
 		(classIndexId == 11 and specId == 2) or -- Feral Druid
 		(classIndexId == 12 and specId == 2) or -- Vengeance Demon Hunter
