@@ -14,7 +14,7 @@ local content = [====[
 # 10.2.7.5-release (2024-05-11)
 ## General
 
-- [#389 - EXPERIMENTAL (Koroshy, Twintop)](#389) Experimental support for Affliction Warlock.
+- [#388 - EXPERIMENTAL (Koroshy, Twintop)](#388) Experimental support for Affliction Warlock.
 
 ### Localization
 
@@ -24,7 +24,7 @@ local content = [====[
 ### Affliction
 
 - This feature is EXPERIMENTAL and is not enabled by default. To enable Affliction Warlock support, go to the main "General" options menu for Twintop's Resource Bar and check "Affliction Warlock support" under the "Experimental Features" section.
-- [#389 - EXPERIMENTAL (Koroshy, Twintop)](#389) Experimental implementation for Affliction Warlock, tracking Mana on the main Resource Bar and Soul Shards via the Combo Points bars. Currently supports only the baseline tracking of these resources and associated bar text. More to come!
+- [#388 - EXPERIMENTAL (Koroshy, Twintop)](#388) Experimental implementation for Affliction Warlock, tracking Mana on the main Resource Bar and Soul Shards via the Combo Points bars. Currently supports only the baseline tracking of these resources and associated bar text. More to come!
 
 ---
 
