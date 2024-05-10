@@ -15,7 +15,7 @@
 ## X-AuthorServer: Frostmourne-US/OCE
 ## Version: 10.2.7.5
 ## X-ReleaseType: release
-## X-ReleaseDate: 2024-05-10
+## X-ReleaseDate: 2024-05-11
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -81,10 +81,10 @@ ClassModules\Classes\EvokerClasses.lua
 ClassModules\Classes\HunterClasses.lua
 ClassModules\Classes\MonkClasses.lua
 ClassModules\Classes\PaladinClasses.lua
-ClassModules\Classes\WarlockClasses.lua
 ClassModules\Classes\PriestClasses.lua
 ClassModules\Classes\RogueClasses.lua
 ClassModules\Classes\ShamanClasses.lua
+ClassModules\Classes\WarlockClasses.lua
 ClassModules\Classes\WarriorClasses.lua
 
 Init.lua
@@ -113,10 +113,10 @@ ClassModules\Evoker.lua
 ClassModules\Hunter.lua
 ClassModules\Monk.lua
 ClassModules\Paladin.lua
-ClassModules\Warlock.lua
 ClassModules\Priest.lua
 ClassModules\Rogue.lua
 ClassModules\Shaman.lua
+ClassModules\Warlock.lua
 ClassModules\Warrior.lua
 
 Functions\News.lua
@@ -127,8 +127,8 @@ ClassModules\Options\EvokerOptions.lua
 ClassModules\Options\HunterOptions.lua
 ClassModules\Options\MonkOptions.lua
 ClassModules\Options\PaladinOptions.lua
-ClassModules\Options\WarlockOptions.lua
 ClassModules\Options\PriestOptions.lua
 ClassModules\Options\RogueOptions.lua
 ClassModules\Options\ShamanOptions.lua
+ClassModules\Options\WarlockOptions.lua
 ClassModules\Options\WarriorOptions.lua

@@ -31,6 +31,7 @@ Currently supported specs:
 - Paladin - Holy
 - Rogue - Assassination, Outlaw, Subtlety
 - Shaman - Elemental, Enhancement (Experimental/Minimal), Restoration
+- Warlock - Affliction (Experimental/Minimal)
 - Warrior - Arms, Fury
 
 This is a fully customizable resource bar for multiple classes and specs to use to track their primary resource while in combat. Features include:
