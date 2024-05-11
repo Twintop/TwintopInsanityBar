@@ -2915,7 +2915,7 @@ local function UpdateResourceBar()
 					barColor = specSettings.colors.bar.clearcasting
 				end
 
-				if snapshotData.attributes.resource2 == 5 and currentResource >= -(spells.ferociousBiteMaximum:GetPrimaryResourceCost()) then
+				if snapshotData.attributes.resource2 == 5 and currentResource >= spells.ferociousBiteMaximum:GetPrimaryResourceCost() then
 					barColor = specSettings.colors.bar.maxBite
 				end
 

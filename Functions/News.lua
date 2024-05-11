@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 10.2.7.6-release (2024-05-12)
+## Druid
+### Feral
+
+- (FIX (Twintop)) Correct logic around *Max Bite* bar color changes.
+
+---
+
 # 10.2.7.5-release (2024-05-11)
 ## General
 
