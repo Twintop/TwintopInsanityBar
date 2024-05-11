@@ -18,12 +18,14 @@ TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFF48CBA" .. L["Pa
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFFFFFFF" .. L["Priest"] .. "|r - " .. L["PriestDiscipline"] .. ", " .. L["PriestHoly"] .. ", " .. L["PriestShadow"] .. "\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFFFF468" .. L["Rogue"] .. "|r - " .. L["RogueAssassination"] .. ", " .. L["RogueOutlaw"] .. ", " .. L["RogueSubtlety"] .. "\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF0070DD" .. L["Shaman"] .. "|r - " .. L["ShamanElemental"] .. ", " .. L["ShamanEnhancement"] .. " (" .. L["ExperimentalMinimal"] .. "), " .. L["ShamanRestoration"] .. "\n"
+TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFF8788EE" .. L["Warlock"] .. "|r - " .. L["Affliction"] .. " (" .. L["ExperimentalMinimal"] .. ")\n"
 TRB.Details.supportedSpecs = TRB.Details.supportedSpecs .. "|cFFC69B6D" .. L["Warrior"] .. "|r - " .. L["WarriorArms"] .. ", " .. L["WarriorFury"]
 
 local addonData = {
 	loaded = false,
 	registered = false,
-	libs = {}
+	libs = {},
+	toc = select(4, GetBuildInfo())
 }
 addonData.libs.SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
 addonData.libs.SharedMedia:Register("sound", L["LSMSoundWilhelmScream"], "Interface\\Addons\\TwintopInsanityBar\\Sounds\\wilhelm.ogg")
@@ -37,6 +39,8 @@ end
 addonData.libs.ScrollingTable = LibStub:GetLibrary("ScrollingTable")
 
 addonData.libs.LibSmoothStatusBar = LibStub:GetLibrary("LibSmoothStatusBar-1.0")
+
+addonData.libs.LibAdvFlight = LibStub:GetLibrary("LibAdvFlight-1.0")
 
 TRB.Details.addonData = addonData
 
@@ -144,13 +148,14 @@ TRB.Data.character = {
 	guid = UnitGUID("player"),
 	className = "",
 	specName = "",
-	specGroup = GetActiveSpecGroup(),
 	maxResource = 100,
 	talents = TRB.Classes.Talents:New() --[[@as TRB.Classes.Talents]],
 	items = {}
 }
 
-TRB.Data.spells = {}
+---@type TRB.Classes.SpellsData
+---@diagnostic disable-next-line: missing-fields
+TRB.Data.spellsData = {}
 
 TRB.Data.lookup = {}
 TRB.Data.lookupLogic = {}
@@ -194,8 +199,8 @@ TRB.Frames.timerFrame.ttdSinceLastUpdate = 0
 TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
 
 -- For the following specs, we need to have a secondary bar/bars created
--- We're going to make these as StatusBars so we can use them for Death Knight runes and Warlock soulshards in the future
-if classIndexId == 2 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then
+-- We're going to make these as StatusBars so we can use them for Death Knight runes in the future
+if classIndexId == 2 or classIndexId == 4 or classIndexId == 5 or classIndexId == 7 or classIndexId == 9 or classIndexId == 10 or classIndexId == 11 or classIndexId == 12 or classIndexId == 13 then
 	TRB.Frames.resource2Frames = {}
 	TRB.Frames.resource2ContainerFrame = CreateFrame("Frame", "TwintopResourceBarFrame2", TRB.Frames.barContainerFrame, "BackdropTemplate")
 	

@@ -1,4 +1,4 @@
-## Interface: 100206
+## Interface: 100207
 ## Title: Twintop's Resource Bar
 ## Title-deDE: Twintops Ressourcenleiste
 ## Title-esES: Barra de Recursos de Twintop
@@ -13,9 +13,9 @@
 ## Title-zhTW: Twintop 的資源欄
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 10.2.6.9
+## Version: 10.2.7.5
 ## X-ReleaseType: release
-## X-ReleaseDate: 2024-04-20
+## X-ReleaseDate: 2024-05-11
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550
 ## DefaultState: enabled
@@ -35,6 +35,7 @@ Libs\json.lua
 Libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
 Libs\LibMarkdown\LibMarkdown.xml
 Libs\LibScrollingTable\lib-st.xml
+Libs\LibAdvFlight-1.0\lib.xml
 
 Localization\Localization.lua
 Localization\enUS.lua
@@ -67,12 +68,24 @@ Classes\CombatLog.lua
 Classes\Snapshot.lua
 Classes\TimeToDie.lua
 Classes\Target.lua
+Classes\Spell.lua
 Classes\Talent.lua
 
 Classes\Settings.lua
 Classes\SpecCache.lua
 
 ClassModules\Classes\HealerClasses.lua
+ClassModules\Classes\DemonHunterClasses.lua
+ClassModules\Classes\DruidClasses.lua
+ClassModules\Classes\EvokerClasses.lua
+ClassModules\Classes\HunterClasses.lua
+ClassModules\Classes\MonkClasses.lua
+ClassModules\Classes\PaladinClasses.lua
+ClassModules\Classes\PriestClasses.lua
+ClassModules\Classes\RogueClasses.lua
+ClassModules\Classes\ShamanClasses.lua
+ClassModules\Classes\WarlockClasses.lua
+ClassModules\Classes\WarriorClasses.lua
 
 Init.lua
 
@@ -85,7 +98,6 @@ Functions\Item.lua
 Functions\IO.lua
 Functions\LibSharedMedia.lua
 Functions\Number.lua
-Functions\Spell.lua
 Functions\String.lua
 Functions\Table.lua
 Functions\Talent.lua
@@ -104,6 +116,7 @@ ClassModules\Paladin.lua
 ClassModules\Priest.lua
 ClassModules\Rogue.lua
 ClassModules\Shaman.lua
+ClassModules\Warlock.lua
 ClassModules\Warrior.lua
 
 Functions\News.lua
@@ -117,4 +130,5 @@ ClassModules\Options\PaladinOptions.lua
 ClassModules\Options\PriestOptions.lua
 ClassModules\Options\RogueOptions.lua
 ClassModules\Options\ShamanOptions.lua
+ClassModules\Options\WarlockOptions.lua
 ClassModules\Options\WarriorOptions.lua

@@ -1,5 +1,9 @@
----@diagnostic disable: undefined-field, undefined-global
 local _, TRB = ...
+local _, _, classIndexId = UnitClass("player")
+if classIndexId ~= 2 and classIndexId ~= 5 and classIndexId ~= 7 and classIndexId ~= 10 and classIndexId ~= 11 and classIndexId ~= 13 then --Only do this if we're on a Healer Class!
+	return
+end
+
 TRB.Classes = TRB.Classes or {}
 TRB.Classes.Healer = TRB.Classes.Healer or {}
 
@@ -58,7 +62,8 @@ function TRB.Classes.Healer.Innervate:New(spell)
         {
             name = "modifier",
             dataType = "number",
-            index = 1
+            index = 1,
+            modifier = 1
         }
     }
     ---@type TRB.Classes.Healer.HealerRegenBase
@@ -110,7 +115,8 @@ function TRB.Classes.Healer.ManaTideTotem:New(spell)
         {
             name = "manaPerTick",
             dataType = "number",
-            index = 1
+            index = 1,
+            modifier = 1
         }
     }
     ---@type TRB.Classes.Healer.HealerRegenBase
@@ -220,7 +226,7 @@ function TRB.Classes.Healer.SymbolOfHope:CalculateTime(totalTicks, tickRate, nex
         end
 
         local estimatedManaMissing = TRB.Data.character.maxResource - (casterRegen + manaRaw + (resource / TRB.Data.resourceFactor))
-        local nextTick = self.spell.manaPercent * math.max(0, math.min(TRB.Data.character.maxResource, estimatedManaMissing))
+        local nextTick = self.spell.attributes.resourcePercent * math.max(0, math.min(TRB.Data.character.maxResource, estimatedManaMissing))
         manaRaw = manaRaw + nextTick + casterRegen
     end
 
@@ -319,7 +325,7 @@ function TRB.Classes.Healer.SymbolOfHopeBuff:Refresh(eventType, simple, unit)
                 if self.ticks <= 0 then
                     self.parent:Reset()
                 else
-                    self.parent:Update()
+                    self:UpdateTicks()
                 end
             end
         end
@@ -348,7 +354,8 @@ function TRB.Classes.Healer.PotionOfChilledClarity:New(spell)
         {
             name = "modifier",
             dataType = "number",
-            index = 2
+            index = 2,
+            modifier = 1
         }
     }
     ---@type TRB.Classes.Healer.HealerRegenBase
@@ -404,7 +411,8 @@ function TRB.Classes.Healer.ChanneledManaPotion:New(spell, calculateManaGainFunc
         {
             name = "manaPerTick",
             dataType = "number",
-            index = 1
+            index = 1,
+            modifier = 1
         }
     }
     ---@type TRB.Classes.Healer.HealerRegenBase
@@ -459,7 +467,8 @@ function TRB.Classes.Healer.MoltenRadiance:New(spell)
         {
             name = "manaPerTick",
             dataType = "number",
-            index = 3
+            index = 3,
+            modifier = 1
         }
     }
     ---@type TRB.Classes.Healer.HealerRegenBase
@@ -527,9 +536,160 @@ end
 function TRB.Classes.Healer.BlessingOfWinter:Update()
     if self.buff.isActive then
         self.buff:UpdateTicks()
-        self.mana = self.spell.manaPercent * TRB.Data.character.maxResource * self.buff.ticks
+        self.mana = self.spell.attributes.resourcePercent * TRB.Data.character.maxResource * self.buff.ticks
     else
         self.ticks = 0
         self.mana = 0
     end
+end
+
+
+---@class TRB.Classes.Healer.HealerSpells : TRB.Classes.SpecializationSpellsBase
+---@field public symbolOfHope TRB.Classes.SpellBase
+---@field public innervate TRB.Classes.SpellBase
+---@field public manaTideTotem TRB.Classes.SpellBase
+---@field public blessingOfWinter TRB.Classes.SpellBase
+---@field public alchemistStone TRB.Classes.SpellBase
+---@field public moltenRadiance TRB.Classes.SpellBase
+---@field public potionOfChilledClarity TRB.Classes.SpellBase
+---@field public aeratedManaPotionRank1 TRB.Classes.SpellThreshold
+---@field public aeratedManaPotionRank2 TRB.Classes.SpellThreshold
+---@field public aeratedManaPotionRank3 TRB.Classes.SpellThreshold
+---@field public potionOfFrozenFocusRank1 TRB.Classes.SpellThreshold
+---@field public potionOfFrozenFocusRank2 TRB.Classes.SpellThreshold
+---@field public potionOfFrozenFocusRank3 TRB.Classes.SpellThreshold
+---@field public conjuredChillglobe TRB.Classes.SpellThreshold
+TRB.Classes.Healer.HealerSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
+TRB.Classes.Healer.HealerSpells.__index = TRB.Classes.Healer.HealerSpells
+
+function TRB.Classes.Healer.HealerSpells:New()
+    ---@type TRB.Classes.SpecializationSpellsBase
+    local base = TRB.Classes.SpecializationSpellsBase
+    self = setmetatable(base:New(), {__index = TRB.Classes.Healer.HealerSpells})
+    
+    -- External mana
+    self.symbolOfHope = TRB.Classes.SpellBase:New({
+        id = 64901,
+        duration = 4.0, --Hasted
+        resourcePercent = 0.02,
+        ticks = 4,
+        tickId = 265144,
+        hasCooldown = true
+    })
+    self.innervate = TRB.Classes.SpellBase:New({
+        id = 29166,
+        duration = 10
+    })
+    self.manaTideTotem = TRB.Classes.SpellBase:New({
+        id = 320763,
+        duration = 8
+    })
+    self.blessingOfWinter = TRB.Classes.SpellBase:New({
+        id = 388011,
+        tickRate = 2,
+        hasTicks = true,
+        resourcePerTick = 0,
+        resourcePercent = 0.01
+    })
+
+    -- Potions
+    self.aeratedManaPotionRank1 = TRB.Classes.SpellThreshold:New({
+        id = 370607,
+        itemId = 191384,
+        spellId = 370607,
+        primaryResourceType = Enum.PowerType.Mana,
+        iconName = "inv_10_alchemy_bottle_shape1_blue",
+        useSpellIcon = true,
+        settingKey = "aeratedManaPotionRank1",
+        isPotion = true,
+        hasCooldown = true
+    })
+    self.aeratedManaPotionRank2 = TRB.Classes.SpellThreshold:New({
+        id = 370607,
+        itemId = 191385,
+        spellId = 370607,
+        primaryResourceType = Enum.PowerType.Mana,
+        iconName = "inv_10_alchemy_bottle_shape1_blue",
+        useSpellIcon = true,
+        settingKey = "aeratedManaPotionRank2",
+        isPotion = true,
+        hasCooldown = true
+    })
+    self.aeratedManaPotionRank3 = TRB.Classes.SpellThreshold:New({
+        id = 370607,
+        itemId = 191386,
+        spellId = 370607,
+        primaryResourceType = Enum.PowerType.Mana,
+        iconName = "inv_10_alchemy_bottle_shape1_blue",
+        useSpellIcon = true,
+        settingKey = "aeratedManaPotionRank3",
+        isPotion = true,
+        hasCooldown = true
+    })
+    self.potionOfFrozenFocusRank1 = TRB.Classes.SpellThreshold:New({
+        id = 371033,
+        itemId = 191363,
+        spellId = 371033,
+        primaryResourceType = Enum.PowerType.Mana,
+        useSpellIcon = true,
+        settingKey = "potionOfFrozenFocusRank1",
+        isPotion = true,
+        hasCooldown = true
+    })
+    self.potionOfFrozenFocusRank2 = TRB.Classes.SpellThreshold:New({
+        id = 371033,
+        itemId = 191364,
+        spellId = 371033,
+        primaryResourceType = Enum.PowerType.Mana,
+        useSpellIcon = true,
+        settingKey = "potionOfFrozenFocusRank2",
+        isPotion = true,
+        hasCooldown = true
+    })
+    self.potionOfFrozenFocusRank3 = TRB.Classes.SpellThreshold:New({
+        id = 371033,
+        itemId = 191365,
+        spellId = 371033,
+        primaryResourceType = Enum.PowerType.Mana,
+        useSpellIcon = true,
+        settingKey = "potionOfFrozenFocusRank3",
+        isPotion = true,
+        hasCooldown = true
+    })
+    self.potionOfChilledClarity = TRB.Classes.SpellBase:New({
+        id = 371052
+    })
+
+    -- Conjured Chillglobe
+    self.conjuredChillglobe = TRB.Classes.SpellThreshold:New({
+        id = 396391,
+        itemId = 194300,
+        spellId = 396391,
+        primaryResourceType = Enum.PowerType.Mana,
+        useSpellIcon = true,
+        settingKey = "conjuredChillglobe",
+        mana = 4830,
+        duration = 10,
+        ticks = 10,
+        hasCooldown = true
+    })
+
+    -- Alchemist Stone
+    self.alchemistStone = TRB.Classes.SpellBase:New({
+        id = 17619,
+        resourcePercent = 1.4,
+        itemIds = {
+            171323,
+            175941,
+            175942,
+            175943
+        }
+    })
+
+    -- Rashok's Molten Heart
+    self.moltenRadiance = TRB.Classes.SpellBase:New({
+        id = 409898,
+    })
+    
+    return self
 end

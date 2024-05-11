@@ -1517,7 +1517,19 @@ function TRB.Functions.OptionsUi:GenerateBarDisplayOptions(parent, controls, spe
 			spec.colors.bar.flashEnabled = self:GetChecked()
 		end)
 		yCoord2 = yCoord2-20
-	end	
+	end
+
+	controls.checkBoxes.dragonridingEnabled = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Checkbox_DragonridingEnabled", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.dragonridingEnabled
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord-70)
+	getglobal(f:GetName() .. 'Text'):SetText(string.format(L["ShowBarDragonriding"], flashAlphaNameShort))
+	---@diagnostic disable-next-line: inject-field
+	f.tooltip = string.format(L["ShowBarDragonridingTooltip"], flashAlphaName)
+	f:SetChecked(spec.displayBar.dragonriding)
+	f:SetScript("OnClick", function(self, ...)
+		spec.displayBar.dragonriding = self:GetChecked()
+	end)
+
 
 	return yCoord
 end
@@ -1943,6 +1955,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		f:SetChecked(spec.thresholds.shadowfiend.cooldown)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shadowfiend.cooldown = self:GetChecked()
+			if spec.thresholds.mindbender ~= nil then
+				spec.thresholds.mindbender.cooldown = self:GetChecked()
+			end
 		end)
 		
 		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.shadowfiend.enabled)
@@ -1956,6 +1971,9 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		f:SetChecked(spec.thresholds.shadowfiend.enabled)
 		f:SetScript("OnClick", function(self, ...)
 			spec.thresholds.shadowfiend.enabled = self:GetChecked()
+			if spec.thresholds.mindbender ~= nil then
+				spec.thresholds.mindbender.enabled = self:GetChecked()
+			end
 			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.shadowfiend.enabled)
 		end)
 		yCoord = yCoord - 20
@@ -2531,6 +2549,21 @@ function TRB.Functions.OptionsUi:GenerateBarTextEditor(parent, controls, spec, c
 				L["Maelstrom8"],
 				L["Maelstrom9"],
 				L["Maelstrom10"],
+				L["Screen"],
+			}
+		elseif (classId == 9 and specId == 1) then --Affliction Warlock
+			relativeTo[L["SoulShard1"]] = "ComboPoint_1"
+			relativeTo[L["SoulShard2"]] = "ComboPoint_2"
+			relativeTo[L["SoulShard3"]] = "ComboPoint_3"
+			relativeTo[L["SoulShard4"]] = "ComboPoint_4"
+			relativeTo[L["SoulShard5"]] = "ComboPoint_5"
+			relativeToList = {
+				L["MainResourceBar"],
+				L["SoulShard1"],
+				L["SoulShard2"],
+				L["SoulShard3"],
+				L["SoulShard4"],
+				L["SoulShard5"],
 				L["Screen"],
 			}
 		elseif (classId == 10 and specId == 3) then -- Windwalker Monk
