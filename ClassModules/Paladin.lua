@@ -972,8 +972,8 @@ local function UpdateResourceBar()
 								showThreshold = false
 							end
 						else
-							resourceAmount = -spell:GetPrimaryResourceCost()
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+							resourceAmount = spell:GetPrimaryResourceCost()
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 						end
 
 						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specSettings)

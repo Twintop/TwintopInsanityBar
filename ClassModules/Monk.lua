@@ -1473,8 +1473,8 @@ local function UpdateResourceBar()
 								showThreshold = false
 							end
 						else
-							resourceAmount = -spell:GetPrimaryResourceCost()
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+							resourceAmount = spell:GetPrimaryResourceCost()
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 						end
 
 						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specSettings)
@@ -1562,8 +1562,8 @@ local function UpdateResourceBar()
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						local resourceAmount = -spell:GetPrimaryResourceCost()
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+						local resourceAmount = spell:GetPrimaryResourceCost()
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
@@ -1580,14 +1580,14 @@ local function UpdateResourceBar()
 							if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specSettings.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-							elseif currentResource >= -resourceAmount then
+							elseif currentResource >= resourceAmount then
 								thresholdColor = specSettings.colors.threshold.over
 							else
 								thresholdColor = specSettings.colors.threshold.under
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						else -- This is an active/available/normal spell threshold
-							if currentResource >= -resourceAmount then
+							if currentResource >= resourceAmount then
 								thresholdColor = specSettings.colors.threshold.over
 							else
 								thresholdColor = specSettings.colors.threshold.under

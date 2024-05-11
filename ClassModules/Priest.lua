@@ -3046,8 +3046,8 @@ local function UpdateResourceBar()
 								showThreshold = false
 							end
 						else
-							resourceAmount = -spell:GetPrimaryResourceCost()
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+							resourceAmount = spell:GetPrimaryResourceCost()
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 						end
 
 						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specSettings)
@@ -3393,8 +3393,8 @@ local function UpdateResourceBar()
 								showThreshold = false
 							end
 						else
-							resourceAmount = -spell:GetPrimaryResourceCost()
-							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+							resourceAmount = spell:GetPrimaryResourceCost()
+							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 						end
 
 						TRB.Functions.Threshold:AdjustThresholdDisplay(spell, resourceFrame.thresholds[thresholdId], showThreshold, frameLevel, pairOffset, thresholdColor, snapshot, specSettings)
@@ -3660,8 +3660,8 @@ local function UpdateResourceBar()
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
 						pairOffset = (thresholdId - 1) * 3
-						local resourceAmount = -spell:GetPrimaryResourceCost()
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+						local resourceAmount = spell:GetPrimaryResourceCost()
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
@@ -3675,7 +3675,7 @@ local function UpdateResourceBar()
 									showThreshold = false
 								elseif snapshots[spells.mindDevourer.id].buff.endTime ~= nil and currentTime < snapshots[spells.mindDevourer.id].buff.endTime then
 									thresholdColor = specSettings.colors.threshold.over
-								elseif currentResource >= -resourceAmount then
+								elseif currentResource >= resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -3684,7 +3684,7 @@ local function UpdateResourceBar()
 							elseif spell.settingKey == spells.devouringPlague2--[[@as TRB.Classes.SpellThreshold]].settingKey then
 								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
-								elseif -resourceAmount >= TRB.Data.character.maxResource then
+								elseif resourceAmount >= TRB.Data.character.maxResource then
 									showThreshold = false
 								elseif snapshots[spells.mindDevourer.id].buff.isActive and
 									currentResource >= spells.devouringPlague:GetPrimaryResourceCost() then
@@ -3692,7 +3692,7 @@ local function UpdateResourceBar()
 								elseif specSettings.thresholds.devouringPlagueThresholdOnlyOverShow and
 										spells.devouringPlague:GetPrimaryResourceCost() > currentResource  then
 									showThreshold = false
-								elseif currentResource >= -resourceAmount then
+								elseif currentResource >= resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -3701,7 +3701,7 @@ local function UpdateResourceBar()
 							elseif spell.settingKey == spells.devouringPlague3--[[@as TRB.Classes.SpellThreshold]].settingKey then
 								if spell.isTalent and not talents:IsTalentActive(spell) then -- Talent not selected
 									showThreshold = false
-								elseif -resourceAmount >= TRB.Data.character.maxResource then
+								elseif resourceAmount >= TRB.Data.character.maxResource then
 									showThreshold = false
 								elseif snapshots[spells.mindDevourer.id].buff.isActive and
 									currentResource >= spells.devouringPlague2:GetPrimaryResourceCost() then
@@ -3709,7 +3709,7 @@ local function UpdateResourceBar()
 								elseif specSettings.thresholds.devouringPlagueThresholdOnlyOverShow and
 									spells.devouringPlague2:GetPrimaryResourceCost() > currentResource then
 									showThreshold = false
-								elseif currentResource >= -resourceAmount then
+								elseif currentResource >= resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -3727,14 +3727,14 @@ local function UpdateResourceBar()
 							if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specSettings.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-							elseif currentResource >= -resourceAmount then
+							elseif currentResource >= resourceAmount then
 								thresholdColor = specSettings.colors.threshold.over
 							else
 								thresholdColor = specSettings.colors.threshold.under
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						else -- This is an active/available/normal spell threshold
-							if currentResource >= -resourceAmount then
+							if currentResource >= resourceAmount then
 								thresholdColor = specSettings.colors.threshold.over
 							else
 								thresholdColor = specSettings.colors.threshold.under
