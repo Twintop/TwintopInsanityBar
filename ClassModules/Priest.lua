@@ -2055,7 +2055,7 @@ local function RefreshLookupData_Shadow()
 				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.up, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 			else
 				shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.pandemic, _shadowWordPainCount)
-				shadowWordPainTime = string.format("|c%s%sf|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
+				shadowWordPainTime = string.format("|c%s%s|r", specSettings.colors.text.dots.pandemic, TRB.Functions.BarText:TimerPrecision(_shadowWordPainTime))
 			end
 		else
 			shadowWordPainCount = string.format("|c%s%.0f|r", specSettings.colors.text.dots.down, _shadowWordPainCount)
