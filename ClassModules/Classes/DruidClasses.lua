@@ -489,6 +489,7 @@ end
 ---@field public berserkUncheckedAggression TRB.Classes.SpellBase
 ---@field public incarnationGuardianOfUrsoc TRB.Classes.SpellBase
 ---@field public afterTheWildfire TRB.Classes.SpellBase
+---@field public toothAndClaw TRB.Classes.SpellBase
 ---@field public rebirth TRB.Classes.SpellThreshold
 ---@field public frenziedRegeneration TRB.Classes.SpellThreshold
 ---@field public ironfur TRB.Classes.SpellThreshold
@@ -506,6 +507,7 @@ function TRB.Classes.Druid.GuardianSpells:New()
         id = 20484,
         baseline = true,
         settingKey = "rebirth",
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdUsable = false,
         hasCooldown = true,
         hasCharges = true
@@ -525,12 +527,7 @@ function TRB.Classes.Druid.GuardianSpells:New()
         hasCharges = true,
         hasCooldown = true,
         settingKey = "frenziedRegeneration",
-        thresholdUsable = false
-    })
-    self.ironfur = TRB.Classes.SpellThreshold:New({
-        id = 192081,
-        isTalent = true,
-        settingKey = "ironfur",
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdUsable = false
     })
 
@@ -540,8 +537,9 @@ function TRB.Classes.Druid.GuardianSpells:New()
         id = 6807,
         isTalent = true,
         settingKey = "maul",
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdUsable = false,
-        --isSnowflake = true
+        isSnowflake = true
     })
     self.berserk = TRB.Classes.SpellBase:New({
         id = 50334,
@@ -565,14 +563,29 @@ function TRB.Classes.Druid.GuardianSpells:New()
         id = 400254,
         isTalent = true,
         settingKey = "raze",
+        primaryResourceType = Enum.PowerType.Rage,
         thresholdUsable = false,
-        --isSnowflake = true
+        isSnowflake = true
     })
     self.afterTheWildfire = TRB.Classes.SpellBase:New({
         id = 371905,
         isTalent = true,
         maxRage = 200
     })
+    self.toothAndClaw = TRB.Classes.SpellBase:New({
+        id = 135286,
+        talentId = 103197,
+        isTalent = true
+    })
+    self.ironfur = TRB.Classes.SpellThreshold:New({
+        id = 192081,
+        isTalent = true,
+        settingKey = "ironfur",
+        primaryResourceType = Enum.PowerType.Rage,
+        thresholdUsable = false
+    })
+
+    return self
 end
 
 

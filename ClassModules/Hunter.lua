@@ -1529,8 +1529,8 @@ local function UpdateResourceBar()
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						local resourceAmount = -spell:GetPrimaryResourceCost()
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource, spell)
+						local resourceAmount = spell:GetPrimaryResourceCost()
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource, spell)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
@@ -1550,7 +1550,7 @@ local function UpdateResourceBar()
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									snapshotData.audio.playedKillShotCue = false
-								elseif currentResource >= -resourceAmount then
+								elseif currentResource >= resourceAmount then
 									if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
 										snapshotData.audio.playedKillShotCue = true
 										PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
@@ -1565,7 +1565,7 @@ local function UpdateResourceBar()
 								if snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif currentResource >= -resourceAmount or snapshots[spells.cobraSting.id].buff.isActive then
+								elseif currentResource >= resourceAmount or snapshots[spells.cobraSting.id].buff.isActive then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -1582,14 +1582,14 @@ local function UpdateResourceBar()
 							if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specSettings.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-							elseif currentResource >= -resourceAmount then
+							elseif currentResource >= resourceAmount then
 								thresholdColor = specSettings.colors.threshold.over
 							else
 								thresholdColor = specSettings.colors.threshold.under
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						else -- This is an active/available/normal spell threshold
-							if currentResource >= -resourceAmount then
+							if currentResource >= resourceAmount then
 								thresholdColor = specSettings.colors.threshold.over
 							else
 								thresholdColor = specSettings.colors.threshold.under
@@ -1774,8 +1774,8 @@ local function UpdateResourceBar()
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						local resourceAmount = -spell:GetPrimaryResourceCost()
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+						local resourceAmount = spell:GetPrimaryResourceCost()
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
@@ -1785,7 +1785,7 @@ local function UpdateResourceBar()
 							if spell.id == spells.arcaneShot.id then
 								if talents:IsTalentActive(spells.chimaeraShot) == true then
 									showThreshold = false
-								elseif currentResource >= -resourceAmount then
+								elseif currentResource >= resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -1795,7 +1795,7 @@ local function UpdateResourceBar()
 								if snapshots[spell.id].cooldown:IsUnusable() then
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-								elseif snapshots[spells.lockAndLoad.id].buff.isActive or currentResource >= -resourceAmount then
+								elseif snapshots[spells.lockAndLoad.id].buff.isActive or currentResource >= resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 								else
 									thresholdColor = specSettings.colors.threshold.under
@@ -1834,7 +1834,7 @@ local function UpdateResourceBar()
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									snapshotData.audio.playedKillShotCue = false
-								elseif currentResource >= -resourceAmount then
+								elseif currentResource >= resourceAmount then
 									thresholdColor = specSettings.colors.threshold.over
 									if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
 										snapshotData.audio.playedKillShotCue = true
@@ -1856,14 +1856,14 @@ local function UpdateResourceBar()
 							if snapshotData.snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specSettings.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-							elseif currentResource >= -resourceAmount then
+							elseif currentResource >= resourceAmount then
 								thresholdColor = specSettings.colors.threshold.over
 							else
 								thresholdColor = specSettings.colors.threshold.under
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						else -- This is an active/available/normal spell threshold
-							if currentResource >= -resourceAmount then
+							if currentResource >= resourceAmount then
 								thresholdColor = specSettings.colors.threshold.over
 							else
 								thresholdColor = specSettings.colors.threshold.under
@@ -1981,8 +1981,8 @@ local function UpdateResourceBar()
 					local spell = v --[[@as TRB.Classes.SpellBase]]
 					if (spell:Is("TRB.Classes.SpellThreshold") or spell:Is("TRB.Classes.SpellComboPointThreshold")) and spell:IsValid() then
 						spell = spell --[[@as TRB.Classes.SpellThreshold]]
-						local resourceAmount = -spell:GetPrimaryResourceCost()
-						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, -resourceAmount, TRB.Data.character.maxResource)
+						local resourceAmount = spell:GetPrimaryResourceCost()
+						TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
@@ -2002,7 +2002,7 @@ local function UpdateResourceBar()
 									thresholdColor = specSettings.colors.threshold.unusable
 									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
 									snapshotData.audio.playedKillShotCue = false
-								elseif currentResource >= -resourceAmount then
+								elseif currentResource >= resourceAmount then
 									if specSettings.audio.killShot.enabled and not snapshotData.audio.playedKillShotCue then
 										snapshotData.audio.playedKillShotCue = true
 										PlaySoundFile(specSettings.audio.killShot.sound, coreSettings.audio.channel.channel)
@@ -2017,7 +2017,7 @@ local function UpdateResourceBar()
 								if talents:IsTalentActive(spells.mongooseBite) then
 									showThreshold = false
 								else
-									if currentResource >= -resourceAmount then
+									if currentResource >= resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -2028,7 +2028,7 @@ local function UpdateResourceBar()
 								if not talents:IsTalentActive(spells.mongooseBite) then
 									showThreshold = false
 								else
-									if currentResource >= -resourceAmount then
+									if currentResource >= resourceAmount then
 										thresholdColor = specSettings.colors.threshold.over
 									else
 										thresholdColor = specSettings.colors.threshold.under
@@ -2046,14 +2046,14 @@ local function UpdateResourceBar()
 							if snapshots[spell.id].cooldown:IsUnusable() then
 								thresholdColor = specSettings.colors.threshold.unusable
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-							elseif currentResource >= -resourceAmount then
+							elseif currentResource >= resourceAmount then
 								thresholdColor = specSettings.colors.threshold.over
 							else
 								thresholdColor = specSettings.colors.threshold.under
 								frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 							end
 						else -- This is an active/available/normal spell threshold
-							if currentResource >= -resourceAmount then
+							if currentResource >= resourceAmount then
 								thresholdColor = specSettings.colors.threshold.over
 							else
 								thresholdColor = specSettings.colors.threshold.under

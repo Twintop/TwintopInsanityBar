@@ -463,16 +463,6 @@ local function LoadDefaultSettings()
 			},
 			experimental = {
 				specs = {
-					druid = {
-						guardian = true,
-					},
-					evoker = {
-						devastation = false,
-						augmentation = false
-					},
-					priest = {
-						discipline = false
-					},
 					shaman = {
 						enhancement = false
 					},

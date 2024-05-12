@@ -169,7 +169,6 @@ end
 ---@param snapshot TRB.Classes.Snapshot
 ---@param settings table
 function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, threshold, showThreshold, currentFrameLevel, pairOffset, thresholdColor, snapshot, settings)
-	TwintopTempSettings = settings
 	if settings.thresholds[spell.settingKey].enabled and showThreshold then
 		local currentTime = GetTime()
 		local frameLevel = currentFrameLevel

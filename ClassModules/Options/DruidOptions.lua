@@ -842,367 +842,365 @@ local function FeralLoadDefaultSettings(includeBarText)
 		return settings
 	end
 
-	local function GuardianLoadDefaultBarTextSimpleSettings()
-		---@type TRB.Classes.DisplayTextEntry[]
-		local textSettings = {
-			{
-				useDefaultFontColor = false,
-				useDefaultFontFace = false,
-				useDefaultFontSize = false,
-				enabled = true,
-				name = L["PositionLeft"],
-				guid=TRB.Functions.String:Guid(),
-				text="",
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
-				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
-				fontSize=18,
-				color = "FFFFFFFF",
-				position = {
-					xPos = 2,
-					yPos = 0,
-					relativeTo = "LEFT",
-					relativeToName = L["PositionLeft"],
-					relativeToFrame = "Resource",
-					relativeToFrameName = L["MainResourceBar"]
-				}
-			},
-			{
-				useDefaultFontColor = false,
-				useDefaultFontFace = false,
-				useDefaultFontSize = false,
-				enabled = true,
-				name = L["PositionMiddle"],
-				guid=TRB.Functions.String:Guid(),
-				text="",
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
-				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = L["PositionCenter"],
-				fontSize=18,
-				color = "FFFFFFFF",
-				position = {
-					xPos = 0,
-					yPos = 0,
-					relativeTo = "CENTER",
-					relativeToName = L["PositionCenter"],
-					relativeToFrame = "Resource",
-					relativeToFrameName = L["MainResourceBar"]
-				}
-			},
-			{
-				useDefaultFontColor = false,
-				useDefaultFontFace = false,
-				useDefaultFontSize = false,
-				enabled = true,
-				name = L["PositionRight"],
-				guid=TRB.Functions.String:Guid(),
-				text="{$casting}[$casting + ]{$passive}[$passive + ]$resource",
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
-				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
-				fontSize=18,
-				color = "FFFFFFFF",
-				position = {
-					xPos = -2,
-					yPos = 0,
-					relativeTo = "RIGHT",
-					relativeToName = L["PositionRight"],
-					relativeToFrame = "Resource",
-					relativeToFrameName = L["MainResourceBar"]
-				}
+local function GuardianLoadDefaultBarTextSimpleSettings()
+	---@type TRB.Classes.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionLeft"],
+			guid=TRB.Functions.String:Guid(),
+			text="",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = "Left",
+			fontSize=18,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 2,
+				yPos = 0,
+				relativeTo = "LEFT",
+				relativeToName = L["PositionLeft"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid=TRB.Functions.String:Guid(),
+			text="",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=18,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid=TRB.Functions.String:Guid(),
+			text="{$casting}[$casting + ]{$passive}[$passive + ]$resource",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = "Right",
+			fontSize=18,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
 			}
 		}
+	}
 
-		return textSettings
-	end
-	
-	local function GuardianLoadDefaultBarTextAdvancedSettings()
-		---@type TRB.Classes.DisplayTextEntry[]
-		local textSettings = {
-			{
-				useDefaultFontColor = false,
-				useDefaultFontFace = false,
-				useDefaultFontSize = false,
-				enabled = true,
-				name = L["PositionLeft"],
-				guid=TRB.Functions.String:Guid(),
-				text="",
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
-				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = "Left",
-				fontSize=18,
-				color = "FFFFFFFF",
-				position = {
-					xPos = 2,
-					yPos = 0,
-					relativeTo = "LEFT",
-					relativeToName = L["PositionLeft"],
-					relativeToFrame = "Resource",
-					relativeToFrameName = L["MainResourceBar"]
-				}
-			},
-			{
-				useDefaultFontColor = false,
-				useDefaultFontFace = false,
-				useDefaultFontSize = false,
-				enabled = true,
-				name = L["PositionMiddle"],
-				guid=TRB.Functions.String:Guid(),
-				text="",
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
-				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = "Center",
-				fontSize=18,
-				color = "FFFFFFFF",
-				position = {
-					xPos = 0,
-					yPos = 0,
-					relativeTo = "CENTER",
-					relativeToName = L["PositionCenter"],
-					relativeToFrame = "Resource",
-					relativeToFrameName = L["MainResourceBar"]
-				}
-			},
-			{
-				useDefaultFontColor = false,
-				useDefaultFontFace = false,
-				useDefaultFontSize = false,
-				enabled = true,
-				name = L["PositionRight"],
-				guid=TRB.Functions.String:Guid(),
-				text="{$casting}[$casting + ]{$passive}[$passive + ]$resource",
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
-				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = "Right",
-				fontSize=18,
-				color = "FFFFFFFF",
-				position = {
-					xPos = -2,
-					yPos = 0,
-					relativeTo = "RIGHT",
-					relativeToName = L["PositionRight"],
-					relativeToFrame = "Resource",
-					relativeToFrameName = L["MainResourceBar"]
-				}
+	return textSettings
+end
+TRB.Options.Druid.GuardianLoadDefaultBarTextSimpleSettings = GuardianLoadDefaultBarTextSimpleSettings
+
+local function GuardianLoadDefaultBarTextAdvancedSettings()
+	---@type TRB.Classes.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionLeft"],
+			guid=TRB.Functions.String:Guid(),
+			text="",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = "Left",
+			fontSize=18,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 2,
+				yPos = 0,
+				relativeTo = "LEFT",
+				relativeToName = L["PositionLeft"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid=TRB.Functions.String:Guid(),
+			text="",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = "Center",
+			fontSize=18,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid=TRB.Functions.String:Guid(),
+			text="{$casting}[$casting + ]{$passive}[$passive + ]$resource",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = "Right",
+			fontSize=18,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
 			}
 		}
-	
-		return textSettings
-	end
-	
-	local function GuardianLoadDefaultSettings(includeBarText)
-		local settings = {
-			hastePrecision=2,
-			thresholds = {
-				width = 2,
-				overlapBorder=true,
-				outOfRange=true,
-				bleedColors=true,
-				icons = {
-					showCooldown=true,
-					border=2,
-					relativeTo = "BOTTOM",
-					relativeToName = "Below",
-					enabled=true,
-					desaturated=true,
-					xPos=0,
-					yPos=12,
-					width=24,
-					height=24
-				},
-				rebirth = {
-					enabled = true, -- 1
-				},
-				frenziedRegeneration = {
-					enabled = true, -- 2
-				},
-				ironfur = {
-					enabled = true, -- 3
-				},
-				maul = {
-					enabled = true, -- 4
-				},
-				raze = {
-					enabled = true, -- 5
-				}
+	}
+
+	return textSettings
+end
+
+local function GuardianLoadDefaultSettings(includeBarText)
+	local settings = {
+		hastePrecision=2,
+		thresholds = {
+			width = 2,
+			overlapBorder=true,
+			outOfRange=true,
+			bleedColors=true,
+			icons = {
+				showCooldown=true,
+				border=2,
+				relativeTo = "BOTTOM",
+				relativeToName = "Below",
+				enabled=true,
+				desaturated=true,
+				xPos=0,
+				yPos=12,
+				width=24,
+				height=24
 			},
-			overcap={
-				mode="relative",
-				relative=0,
-				fixed=100
+			rebirth = {
+				enabled = true,
 			},
-			displayBar = {
-				alwaysShow=false,
-				notZeroShow=true,
-				neverShow=false
+			frenziedRegeneration = {
+				enabled = true,
+			},
+			ironfur = {
+				enabled = true,
+			},
+			maul = {
+				enabled = true,
+			},
+			raze = {
+				enabled = true,
+			}
+		},
+		overcap={
+			mode="relative",
+			relative=0,
+			fixed=100
+		},
+		displayBar = {
+			alwaysShow=false,
+			notZeroShow=true,
+			neverShow=false
+		},
+		bar = {
+			width=555,
+			height=34,
+			xPos=0,
+			yPos=-200,
+			border=4,
+			dragAndDrop=false,
+			pinToPersonalResourceDisplay=false,
+			showPassive=true,
+			showCasting=true
+		},
+		colors = {
+			text = {
+				current="FFFF0000",
+				casting="FFFFFFFF",
+				spending="FF555555",
+				passive="FFEA3C53",
+				overcap="FF800000",
+				overThreshold="FF00FF00",
+				overThresholdEnabled=false,
+				overcapEnabled=true,
+				left="FFFFFFFF",
+				middle="FFFFFFFF",
+				right="FFFFFFFF"
 			},
 			bar = {
-				width=555,
-				height=34,
-				xPos=0,
-				yPos=-200,
-				border=4,
-				dragAndDrop=false,
-				pinToPersonalResourceDisplay=false,
-				showPassive=true,
-				showCasting=true
+				border="FFC21807",
+				borderOvercap="FF800000",
+				background="66000000",
+				base="FFFF0000",
+				casting="FFFFFFFF",
+				spending="FF555555",
+				passive="FFEA3C53",
+				overcapEnabled=true,
 			},
-			colors = {
-				text = {
-					current="FFFFFF00",
-					casting="FFFFFFFF",
-					spending="FF555555",
-					passive="FFD59900",
-					overcap="FFFF0000",
-					overThreshold="FF00FF00",
-					overThresholdEnabled=false,
-					overcapEnabled=true,
-					left="FFFFFFFF",
-					middle="FFFFFFFF",
-					right="FFFFFFFF"
-				},
-				bar = {
-					border="FFFF7C0A",
-					borderOvercap="FFFF0000",
-					borderStealth="FF000000",
-					background="66000000",
-					base="FFFFFF00",
-					clearcasting="FF4A95CE",
-					maxBite="FF009900",
-					apexPredator="FFE75480",
-					casting="FFFFFFFF",
-					spending="FF555555",
-					passive="FF9F4500",
-					overcapEnabled=true,
-				},
-				threshold = {
-					under="FFFFFFFF",
-					over="FF00FF00",
-					unusable="FFFF0000",
-					outOfRange="FF440000"
-				}
-			},
-			displayText={
-				default = {
-					fontFace="Fonts\\FRIZQT__.TTF",
-					fontFaceName="Friz Quadrata TT",
-					fontJustifyHorizontal = "LEFT",
-					fontJustifyHorizontalName = "Left",
-					fontSize=18,
-					color = "FFFFFFFF",
-				},
-				barText = {}
-			},
-			audio = {
-				overcap={
-					name = "Overcap",
-					enabled=false,
-					sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
-					soundName="TRB: Air Horn"
-				}
-			},
-			textures = {
-				background="Interface\\Tooltips\\UI-Tooltip-Background",
-				backgroundName="Blizzard Tooltip",
-				border="Interface\\Buttons\\WHITE8X8",
-				borderName="1 Pixel",
-				resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
-				resourceBarName="Blizzard",
-				passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
-				passiveBarName="Blizzard",
-				castingBar="Interface\\TargetingFrame\\UI-StatusBar",
-				castingBarName="Blizzard",
-				textureLock=true
+			threshold = {
+				under="FFFFFFFF",
+				over="FF00FF00",
+				unusable="FFFF0000",
+				outOfRange="FF440000",
+				special="FFFF00FF"
 			}
-		}
-
-		if includeBarText then
-		settings.displayText = GuardianLoadDefaultBarTextSimpleSettings()
-		end
-
-		return settings
-	end
-	
-	-- Restoration
-	local function RestorationLoadDefaultBarTextSimpleSettings()
-		---@type TRB.Classes.DisplayTextEntry[]
-		local textSettings = {
-			{
-				useDefaultFontColor = false,
-				useDefaultFontFace = false,
-				useDefaultFontSize = false,
-				enabled = true,
-				name = L["PositionLeft"],
-				guid=TRB.Functions.String:Guid(),
-				text="{$efflorescenceTime}[$efflorescenceTime]",
+		},
+		displayText={
+			default = {
 				fontFace="Fonts\\FRIZQT__.TTF",
 				fontFaceName="Friz Quadrata TT",
 				fontJustifyHorizontal = "LEFT",
-				fontJustifyHorizontalName = L["PositionLeft"],
-				fontSize=16,
+				fontJustifyHorizontalName = "Left",
+				fontSize=18,
 				color = "FFFFFFFF",
-				position = {
-					xPos = 2,
-					yPos = 0,
-					relativeTo = "LEFT",
-					relativeToName = L["PositionLeft"],
-					relativeToFrame = "Resource",
-					relativeToFrameName = L["MainResourceBar"]
-				}
 			},
-			{
-				useDefaultFontColor = false,
-				useDefaultFontFace = false,
-				useDefaultFontSize = false,
-				enabled = true,
-				name = L["PositionMiddle"],
-				guid=TRB.Functions.String:Guid(),
-				text="",
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
-				fontJustifyHorizontal = "CENTER",
-				fontJustifyHorizontalName = L["PositionCenter"],
-				fontSize=16,
-				color = "FFFFFFFF",
-				position = {
-					xPos = 0,
-					yPos = 0,
-					relativeTo = "CENTER",
-					relativeToName = L["PositionCenter"],
-					relativeToFrame = "Resource",
-					relativeToFrameName = L["MainResourceBar"]
-				}
-			},
-			{
-				useDefaultFontColor = false,
-				useDefaultFontFace = false,
-				useDefaultFontSize = false,
-				enabled = true,
-				name = L["PositionRight"],
-				guid=TRB.Functions.String:Guid(),
-				text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
-				fontFace="Fonts\\FRIZQT__.TTF",
-				fontFaceName="Friz Quadrata TT",
-				fontJustifyHorizontal = "RIGHT",
-				fontJustifyHorizontalName = L["PositionRight"],
-				fontSize=16,
-				color = "FFFFFFFF",
-				position = {
-					xPos = -2,
-					yPos = 0,
-					relativeTo = "RIGHT",
-					relativeToName = L["PositionRight"],
-					relativeToFrame = "Resource",
-					relativeToFrameName = L["MainResourceBar"]
-				}
+			barText = {}
+		},
+		audio = {
+			overcap={
+				name = "Overcap",
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\AirHorn.ogg",
+				soundName="TRB: Air Horn"
+			}
+		},
+		textures = {
+			background="Interface\\Tooltips\\UI-Tooltip-Background",
+			backgroundName="Blizzard Tooltip",
+			border="Interface\\Buttons\\WHITE8X8",
+			borderName="1 Pixel",
+			resourceBar="Interface\\TargetingFrame\\UI-StatusBar",
+			resourceBarName="Blizzard",
+			passiveBar="Interface\\TargetingFrame\\UI-StatusBar",
+			passiveBarName="Blizzard",
+			castingBar="Interface\\TargetingFrame\\UI-StatusBar",
+			castingBarName="Blizzard",
+			textureLock=true
+		}
+	}
+
+	if includeBarText then
+	settings.displayText = GuardianLoadDefaultBarTextSimpleSettings()
+	end
+
+	return settings
+end
+	
+-- Restoration
+local function RestorationLoadDefaultBarTextSimpleSettings()
+	---@type TRB.Classes.DisplayTextEntry[]
+	local textSettings = {
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionLeft"],
+			guid=TRB.Functions.String:Guid(),
+			text="{$efflorescenceTime}[$efflorescenceTime]",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "LEFT",
+			fontJustifyHorizontalName = L["PositionLeft"],
+			fontSize=16,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 2,
+				yPos = 0,
+				relativeTo = "LEFT",
+				relativeToName = L["PositionLeft"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionMiddle"],
+			guid=TRB.Functions.String:Guid(),
+			text="",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "CENTER",
+			fontJustifyHorizontalName = L["PositionCenter"],
+			fontSize=16,
+			color = "FFFFFFFF",
+			position = {
+				xPos = 0,
+				yPos = 0,
+				relativeTo = "CENTER",
+				relativeToName = L["PositionCenter"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
+			}
+		},
+		{
+			useDefaultFontColor = false,
+			useDefaultFontFace = false,
+			useDefaultFontSize = false,
+			enabled = true,
+			name = L["PositionRight"],
+			guid=TRB.Functions.String:Guid(),
+			text="{$casting}[#casting$casting + ]{$passive}[$passive + ]$mana/$manaMax $manaPercent%",
+			fontFace="Fonts\\FRIZQT__.TTF",
+			fontFaceName="Friz Quadrata TT",
+			fontJustifyHorizontal = "RIGHT",
+			fontJustifyHorizontalName = L["PositionRight"],
+			fontSize=16,
+			color = "FFFFFFFF",
+			position = {
+				xPos = -2,
+				yPos = 0,
+				relativeTo = "RIGHT",
+				relativeToName = L["PositionRight"],
+				relativeToFrame = "Resource",
+				relativeToFrameName = L["MainResourceBar"]
 			}
 		}
+	}
 
 	return textSettings
 end
