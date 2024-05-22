@@ -453,7 +453,7 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
             if self.charges == nil then
                 self.maxCharges = 1
                 startTime, duration, _, _ = GetSpellCooldown(self.parent.spell.id)
-                if starTime == 0 then
+                if startTime == 0 then
                     self.charges = 1
                 else
                     self.charges = 0
