@@ -42,7 +42,7 @@ function TRB.Functions.Character:CheckCharacter()
 	TRB.Data.character.onTaxi = UnitOnTaxi("player")
 	TRB.Data.character.advancedFlight = TRB.Details.addonData.libs.LibAdvFlight.IsAdvFlyEnabled()
 
-	--TRB.Data.barTextCache = {}
+	--TRB.Data.cache.barText = {}
 	--TRB.Functions.Spell:FillSpellData()
 end
 
@@ -106,7 +106,7 @@ function TRB.Functions.Character:LoadFromSpecializationCache(cache)
 	TRB.Data.barTextVariables.icons = cache.barTextVariables.icons
 	TRB.Data.barTextVariables.values = cache.barTextVariables.values
 	TRB.Data.snapshotData = cache.snapshotData
-	TRB.Data.barTextCache = {}
+	TRB.Data.cache.barText = {}
 end
 
 ---Fills the specialization cache with a combination of global and spec specific settings
