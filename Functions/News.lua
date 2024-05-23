@@ -15,6 +15,8 @@ local content = [====[
 ## General
 
 - [#393 - FIX (Twintop)](#393) Significantly improve bar performance by caching symbol searches within bar text. Peak CPU usage reduced by ~55%, average CPU usage reduced by ~30%, and maximum memory usage reduced by ~45%. This improvement is more noticable if you have lots of or complicated bar text.
+- [#392 - FIX (Twintop)](#392) Hide bar text areas that are bound to `Screen` when the rest of the bar is hidden.
+- (FIX (Twintop)) Centralize bar hiding/showing logic for almost all specs.
 
 ## Priest
 ### Holy
