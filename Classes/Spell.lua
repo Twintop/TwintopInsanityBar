@@ -60,7 +60,7 @@ end
 ---@field public talentId integer? # Spell ID of the underlying talent.
 ---@field public tickId integer? # Spell ID of a tick of a HoT/DoT related to the main spell.
 ---@field public itemId integer? # Item ID related to the spell.
----@field public name string # Name of the spell. Populated automagically from the ID via lookups
+---@field public name string # Name of the spell. Populated automagically from the ID via lookups.
 ---@field public iconName string? # Manual override of the icon file name to use to populate `icon`.
 ---@field public icon string # Icon string of the spell. Usually populated automagically from the ID via lookups.
 ---@field public useSpellIcon boolean? # Use the icon from `spellId` instead of `id`.
@@ -202,7 +202,7 @@ function TRB.Classes.SpellBase:FillSpellData()
             else
                 name, _, icon = GetSpellInfo(self.id)
             end
-            
+
             if self.iconName ~= nil then
                 icon = "Interface\\Icons\\" .. self.iconName
             end

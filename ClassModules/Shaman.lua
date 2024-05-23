@@ -2302,70 +2302,26 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	local affectingCombat = UnitAffectingCombat("player")
 	local specId = GetSpecialization()
-	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]] or TRB.Classes.SnapshotData:New()
+	---@type TRB.Classes.SnapshotData
+	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if specId == 1 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.shaman.elemental.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.shaman.elemental.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.shaman.elemental.displayBar.notZeroShow) or
-					(TRB.Data.settings.shaman.elemental.displayBar.notZeroShow and snapshotData.attributes.resource == 0)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.shaman.elemental.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
+	if specId == 1 or (specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement) or specId == 3 then
+		local settings
+		local notZeroShowValue = TRB.Data.character.maxResource
+		local notZeroShowValueComboPoints = 0
+		local includeComboPoints = false
+		if specId == 1 then
+			settings = TRB.Data.settings.shaman.elemental
+			notZeroShowValue = 0
+		elseif specId == 2 then
+			settings = TRB.Data.settings.shaman.enhancement
+			includeComboPoints = true
+		elseif specId == 3 then
+			settings = TRB.Data.settings.shaman.restoration
 		end
-	elseif specId == 2 and TRB.Data.settings.core.experimental.specs.shaman.enhancement then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.shaman.enhancement.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.shaman.enhancement.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.shaman.enhancement.displayBar.notZeroShow) or
-					(TRB.Data.settings.shaman.enhancement.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource and snapshotData.attributes.resource2 == 0)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.shaman.enhancement.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
-		end
-	elseif specId == 3 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.shaman.restoration.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.shaman.restoration.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.shaman.restoration.displayBar.notZeroShow) or
-					(TRB.Data.settings.shaman.restoration.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.shaman.restoration.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
-		end
+
+		TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowValue, includeComboPoints, notZeroShowValueComboPoints)
 	else
 		TRB.Frames.barContainerFrame:Hide()
 		snapshotData.attributes.isTracking = false

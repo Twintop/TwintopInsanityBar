@@ -11,6 +11,18 @@ local content = [====[
 
 ---
 
+# 10.2.7.7-release (2024-05-24)
+## General
+
+- [#393 - FIX (Twintop)](#393) Significantly improve bar performance by caching symbol searches within bar text. Peak CPU usage reduced by ~55%, average CPU usage reduced by ~30%, and maximum memory usage reduced by ~45%. This improvement is more noticable if you have lots of or complicated bar text.
+
+## Priest
+### Holy
+
+- [#336 - FIX (Twintop)](#336) Show correct passive mana regen from Shadowfiend when Lightwell is also active.
+
+---
+
 # 10.2.7.6-release (2024-05-12)
 ## Druid
 ### Feral

@@ -1948,71 +1948,23 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	local affectingCombat = UnitAffectingCombat("player")
+	local specId = GetSpecialization()
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
-	local specId = GetSpecialization()
 
-	if specId == 1 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.evoker.devastation.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.evoker.devastation.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.evoker.devastation.displayBar.notZeroShow) or
-					(TRB.Data.settings.evoker.devastation.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource and snapshotData.attributes.resource2 == TRB.Data.character.maxResource2)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.evoker.devastation.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
+	if specId == 1 or specId == 2 or specId == 3 then
+		local settings
+		local notZeroShowValue = TRB.Data.character.maxResource
+		local notZeroShowValueComboPoints = TRB.Data.character.maxResource2
+		if specId == 1 then
+			settings = TRB.Data.settings.evoker.devastation
+		elseif specId == 2 then
+			settings = TRB.Data.settings.evoker.preservation
+		elseif specId == 3 then
+			settings = TRB.Data.settings.evoker.augmentation
 		end
-	elseif specId == 2 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.evoker.preservation.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.evoker.preservation.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.evoker.preservation.displayBar.notZeroShow) or
-					(TRB.Data.settings.evoker.preservation.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource and snapshotData.attributes.resource2 == TRB.Data.character.maxResource2)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.evoker.preservation.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
-		end
-	elseif specId == 3 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.evoker.augmentation.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.evoker.augmentation.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.evoker.augmentation.displayBar.notZeroShow) or
-					(TRB.Data.settings.evoker.augmentation.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource and snapshotData.attributes.resource2 == TRB.Data.character.maxResource2)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.evoker.augmentation.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
-		end
+
+		TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowValue, true, notZeroShowValueComboPoints)
 	else
 		TRB.Frames.barContainerFrame:Hide()
 		snapshotData.attributes.isTracking = false

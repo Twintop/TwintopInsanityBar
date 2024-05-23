@@ -66,6 +66,49 @@ function TRB.Functions.Bar:HideResourceBar(force)
 	TRB.Functions.Class:HideResourceBar(force)
 end
 
+---Shows or hides the resource bar based on general/generic logic.
+---Most classes will use this, the exception being Druids because of Balance with Nature's Balance.
+---@param settings table
+---@param force boolean
+---@param notZeroShowValue number
+---@param includeComboPoints boolean?
+---@param notZeroShowValueComboPoints number?
+function TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowValue, includeComboPoints, notZeroShowValueComboPoints)
+	if settings ~= nil then
+		local affectingCombat = UnitAffectingCombat("player")
+		---@type TRB.Classes.SnapshotData
+		local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
+		if not TRB.Data.specSupported or force or
+			(TRB.Data.character.advancedFlight and not settings.displayBar.dragonriding) or
+			((not affectingCombat) and
+			(not UnitInVehicle("player")) and (
+				(not settings.displayBar.alwaysShow) and (
+					(not settings.displayBar.notZeroShow) or
+					(settings.displayBar.notZeroShow and (snapshotData.attributes.resource / TRB.Data.resourceFactor) == notZeroShowValue and
+						(includeComboPoints ~= true or (includeComboPoints and (snapshotData.attributes.resource2 / TRB.Data.resource2Factor) == notZeroShowValueComboPoints))
+					)
+				)
+			)) then
+			TRB.Frames.barContainerFrame:Hide()
+			TRB.Functions.BarText:Hide(settings)
+			snapshotData.attributes.isTracking = false
+		else
+			snapshotData.attributes.isTracking = true
+			if settings.displayBar.neverShow == true then
+				TRB.Frames.barContainerFrame:Hide()
+				TRB.Functions.BarText:Hide(settings)
+			else
+				TRB.Frames.barContainerFrame:Show()
+				TRB.Functions.BarText:Show(settings)
+			end
+		end
+	else
+		TRB.Frames.barContainerFrame:Hide()
+		TRB.Functions.BarText:Hide(settings)
+		snapshotData.attributes.isTracking = false
+	end
+end
+
 function TRB.Functions.Bar:PulseFrame(frame, alphaOffset, flashPeriod)
 	frame:SetAlpha(((1.0 - alphaOffset) * math.abs(math.sin(2 * (GetTime()/flashPeriod)))) + alphaOffset)
 end

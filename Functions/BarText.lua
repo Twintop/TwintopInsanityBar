@@ -1006,3 +1006,37 @@ function TRB.Functions.BarText:TimerPrecision(value)
 		return string.format("%."..TRB.Data.settings.core.timers.precisionLow.."f", value)
 	end
 end
+
+---Hides all bar text
+---@param settings table
+function TRB.Functions.BarText:Hide(settings)
+	local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
+	---@type Frame[]
+	local textFrames = TRB.Frames.textFrames
+	local entries = TRB.Functions.Table:Length(displayText.barText)
+	if entries > 0 then
+		for i = 1, entries do
+			textFrames[i]:Hide()
+			---@diagnostic disable-next-line: undefined-field
+			textFrames[i].font:Hide()
+		end
+	end
+end
+
+---Hides all bar text
+---@param settings table
+function TRB.Functions.BarText:Show(settings)
+	local displayText = settings.displayText --[[@as TRB.Classes.DisplayText]]
+	---@type Frame[]
+	local textFrames = TRB.Frames.textFrames
+	local entries = TRB.Functions.Table:Length(displayText.barText)
+	if entries > 0 then
+		for i = 1, entries do
+			if displayText.barText[i].enabled then
+				textFrames[i]:Show()
+				---@diagnostic disable-next-line: undefined-field
+				textFrames[i].font:Show()
+			end
+		end
+	end
+end

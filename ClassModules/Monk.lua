@@ -2089,50 +2089,22 @@ end
 
 function TRB.Functions.Class:HideResourceBar(force)
 	local specId = GetSpecialization()
-	local affectingCombat = UnitAffectingCombat("player")
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if specId == 2 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.monk.mistweaver.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.monk.mistweaver.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.monk.mistweaver.displayBar.notZeroShow) or
-					(TRB.Data.settings.monk.mistweaver.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.monk.mistweaver.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
+	if specId == 2 or specId == 3 then
+		local settings
+		local notZeroShowValue = TRB.Data.character.maxResource
+		local notZeroShowValueComboPoints = 0
+		local includeComboPoints = false
+		if specId == 2 then
+			settings = TRB.Data.settings.monk.mistweaver
+		elseif specId == 3 then
+			settings = TRB.Data.settings.monk.windwalker
+			includeComboPoints = true
 		end
-	elseif specId == 3 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.monk.windwalker.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.monk.windwalker.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.monk.windwalker.displayBar.notZeroShow) or
-					(TRB.Data.settings.monk.windwalker.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.monk.windwalker.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
-		end
+
+		TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowValue, includeComboPoints, notZeroShowValueComboPoints)
 	else
 		TRB.Frames.barContainerFrame:Hide()
 		snapshotData.attributes.isTracking = false

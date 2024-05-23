@@ -1422,51 +1422,20 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	local affectingCombat = UnitAffectingCombat("player")
 	local specId = GetSpecialization()
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if specId == 1 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.warrior.arms.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.warrior.arms.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.warrior.arms.displayBar.notZeroShow) or
-					(TRB.Data.settings.warrior.arms.displayBar.notZeroShow and snapshotData.attributes.resource == 0)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.warrior.arms.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
+	if specId == 1 or specId == 2 then
+		local settings
+		local notZeroShowValue = 0
+		if specId == 1 then
+			settings = TRB.Data.settings.warrior.arms
+		elseif specId == 2 then
+			settings = TRB.Data.settings.warrior.fury
 		end
-	elseif specId == 2 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.warrior.fury.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.warrior.fury.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.warrior.fury.displayBar.notZeroShow) or
-					(TRB.Data.settings.warrior.fury.displayBar.notZeroShow and snapshotData.attributes.resource == 0)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.warrior.fury.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
-		end
+
+		TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowValue)
 	else
 		TRB.Frames.barContainerFrame:Hide()
 		snapshotData.attributes.isTracking = false

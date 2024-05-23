@@ -144,6 +144,7 @@ local function FillSpecializationCache()
 	specCache.discipline.snapshotData.snapshots[spells.shadowfiend.id] = TRB.Classes.Healer.HealerRegenBase:New(spells.shadowfiend, {
 		guid = nil,
 		totemId = nil,
+		delay = false,
 		onCooldown = false,
 		swingTime = 0,
 		remaining = {
@@ -258,6 +259,7 @@ local function FillSpecializationCache()
 	specCache.holy.snapshotData.snapshots[spells.shadowfiend.id] = TRB.Classes.Healer.HealerRegenBase:New(spells.shadowfiend, {
 		guid = nil,
 		totemId = nil,
+		delay = false,
 		onCooldown = false,
 		swingTime = 0,
 		remaining = {
@@ -362,6 +364,7 @@ local function FillSpecializationCache()
 	specCache.shadow.snapshotData.snapshots[spells.shadowfiend.id] = TRB.Classes.Snapshot:New(spells.shadowfiend, {
 		guid = nil,
 		totemId = nil,
+		delay = false,
 		onCooldown = false,
 		swingTime = 0,
 		remaining = {
@@ -2489,7 +2492,15 @@ local function GetMaximumShadowfiendResults()
 	local swingTime = shadowfiend.attributes.swingTime
 
 	local currentTime = GetTime()
-	local haveTotem, name, startTime, duration, icon = GetTotemInfo(1)
+	local haveTotem, name, startTime, duration, icon
+	
+	for i = 1, MAX_TOTEMS do
+		haveTotem, name, startTime, duration, _ = GetTotemInfo(i) --TODO: Update this for Shadow in TWW to look for the highest remaining Shadowfiend/Mindbender spawn
+		if haveTotem and (specId ~= 2 or (specId == 2 and name ~= spells.lightwell.name)) then
+			break
+		end
+	end
+
 	local timeRemaining = startTime+duration-currentTime
 
 	if not haveTotem then
@@ -2557,13 +2568,15 @@ local function UpdateSpecificShadowfiendValues(shadowfiend)
 	end
 
 	local doReset = false
-	if shadowfiend.attributes.totemId == nil then
+	if shadowfiend.attributes.delay == true then
+		--Waiting for the C_Timer.After() to run
+	elseif shadowfiend.attributes.totemId == nil then
 		doReset = true
 	else
 		local haveTotem, name, startTime, duration, icon = GetTotemInfo(shadowfiend.attributes.totemId)
-		local timeRemaining = startTime+duration-currentTime
+		local timeRemainingCalc = startTime+duration-currentTime
 
-		if settings.enabled and haveTotem and timeRemaining > 0 then
+		if settings.enabled and haveTotem and timeRemainingCalc > 0 then
 			shadowfiend.buff.isActive = true
 			if settings.enabled then
 				local _, timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = GetMaximumShadowfiendResults()
@@ -3922,11 +3935,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshotData.audio.surgeOfLightCue = false
 						snapshotData.audio.surgeOfLight2Cue = false
 					end
-				elseif entry.type == "SPELL_SUMMON" and (entry.spellId == spells.shadowfiend.id or (specId == 1 and entry.spellId == spells.mindbender.id)) then
-					local currentSf = snapshots[spells.shadowfiend.id].attributes
-					local totemId = 1
-					currentSf.guid = entry.sourceGuid
-					currentSf.totemId = totemId
 				end
 			end
 
@@ -4072,11 +4080,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining = snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining + spells.lashOfInsanity_Tendril.ticks
 					snapshots[spells.idolOfCthun.id].attributes.activeList[entry.destinationGuid].startTime = currentTime
 					snapshots[spells.idolOfCthun.id].attributes.activeList[entry.destinationGuid].tickTime = currentTime
-				elseif entry.type == "SPELL_SUMMON" and settings.mindbender.enabled and (entry.spellId == spells.shadowfiend.id or entry.spellId == spells.mindbender.id) then
-					local currentSf = snapshots[spells.shadowfiend.id].attributes
-					local totemId = 1
-					currentSf.guid = entry.sourceGuid
-					currentSf.totemId = totemId
 				end
 			end
 
@@ -4085,6 +4088,32 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
 					triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
 				end
+			elseif 	entry.type == "SPELL_SUMMON" and
+					((specId == 3 and settings.mindbender.enabled) or (specId ~= 3 and settings.shadowfiend.enabled))
+					and (entry.spellId == spells.shadowfiend.id or (specId ~= 2 and entry.spellId == spells.mindbender.id)) then
+				local currentSf = snapshots[spells.shadowfiend.id].attributes
+				currentSf.guid = entry.destinationGuid
+				currentSf.delay = true
+
+				--[[TBD if this delay is actually needed
+				C_Timer.After(0, function()
+					C_Timer.After(0.1, function()]]
+						local haveTotem, name
+						for i = 1, MAX_TOTEMS do
+							haveTotem, name, _, _, _ = GetTotemInfo(i)
+							if haveTotem and (specId ~= 2 or (specId == 2 and name ~= spells.lightwell.name)) then
+								currentSf.totemId = i
+								i = MAX_TOTEMS
+								break
+							end
+						end
+
+						currentSf.delay = false
+						if currentSf.totemId == nil then
+							currentSf.totemId = 5
+						end
+					--[[end)
+				end)]]
 			end
 		elseif specId == 3 and TRB.Data.barConstructedForSpec == "shadow" and settings.voidTendrilTracker and (entry.spellId == spells.idolOfCthun_Tendril.tickId or entry.spellId == spells.idolOfCthun_Lasher.tickId) and CheckVoidTendrilExists(entry.sourceGuid) then
 			if entry.spellId == spells.idolOfCthun_Lasher.tickId and entry.type == "SPELL_DAMAGE" then
@@ -4666,70 +4695,22 @@ end
 
 function TRB.Functions.Class:HideResourceBar(force)
 	local specId = GetSpecialization()
-	local affectingCombat = UnitAffectingCombat("player")
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if specId == 1 then
-		if not TRB.Data.specSupported or force or
-			(TRB.Data.character.advancedFlight and not TRB.Data.settings.priest.discipline.displayBar.dragonriding) or 
-			((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.priest.discipline.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.priest.discipline.displayBar.notZeroShow) or
-					(TRB.Data.settings.priest.discipline.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.priest.discipline.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
+	if specId == 1 or specId == 2 or specId == 3 then
+		local settings
+		local notZeroShowValue = TRB.Data.character.maxResource
+		if specId == 1 then
+			settings = TRB.Data.settings.priest.discipline
+		elseif specId == 2 then
+			settings = TRB.Data.settings.priest.holy
+		elseif specId == 3 then
+			settings = TRB.Data.settings.priest.shadow
+			notZeroShowValue = 0
 		end
-	elseif specId == 2 then
-		if not TRB.Data.specSupported or force or
-			(TRB.Data.character.advancedFlight and not TRB.Data.settings.priest.holy.displayBar.dragonriding) or 
-			((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.priest.holy.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.priest.holy.displayBar.notZeroShow) or
-					(TRB.Data.settings.priest.holy.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.priest.holy.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
-		end
-	elseif specId == 3 then
-		if not TRB.Data.specSupported or force or
-			(TRB.Data.character.advancedFlight and not TRB.Data.settings.priest.shadow.displayBar.dragonriding) or 
-			((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.priest.shadow.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.priest.shadow.displayBar.notZeroShow) or
-					(TRB.Data.settings.priest.shadow.displayBar.notZeroShow and snapshotData.attributes.resource == 0)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.priest.shadow.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
-		end
+
+		TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowValue)
 	else
 		TRB.Frames.barContainerFrame:Hide()
 		snapshotData.attributes.isTracking = false

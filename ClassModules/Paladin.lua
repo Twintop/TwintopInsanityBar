@@ -1340,31 +1340,19 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	local affectingCombat = UnitAffectingCombat("player")
+	local specId = GetSpecialization()
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
-	local specId = GetSpecialization()
 
 	if specId == 1 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.paladin.holy.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.paladin.holy.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.paladin.holy.displayBar.notZeroShow) or
-					(TRB.Data.settings.paladin.holy.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource and snapshotData.attributes.resource2 == TRB.Data.character.maxResource2)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.paladin.holy.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
+		local settings
+		local notZeroShowValue = TRB.Data.character.maxResource
+		local notZeroShowValueComboPoints = 0
+		if specId == 1 then
+			settings = TRB.Data.settings.paladin.holy
 		end
+
+		TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowValue, true, notZeroShowValueComboPoints)
 	else
 		TRB.Frames.barContainerFrame:Hide()
 		snapshotData.attributes.isTracking = false

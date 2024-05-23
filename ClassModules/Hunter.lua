@@ -2477,71 +2477,22 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	local affectingCombat = UnitAffectingCombat("player")
 	local specId = GetSpecialization()
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if specId == 1 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.hunter.beastMastery.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.hunter.beastMastery.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.hunter.beastMastery.displayBar.notZeroShow) or
-					(TRB.Data.settings.hunter.beastMastery.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.hunter.beastMastery.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
+	if specId == 1 or specId == 2 or specId == 3 then
+		local settings
+		local notZeroShowValue = TRB.Data.character.maxResource
+		if specId == 1 then
+			settings = TRB.Data.settings.hunter.beastMastery
+		elseif specId == 2 then
+			settings = TRB.Data.settings.hunter.marksmanship
+		elseif specId == 3 then
+			settings = TRB.Data.settings.hunter.survival
 		end
-	elseif specId == 2 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.hunter.marksmanship.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.hunter.marksmanship.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.hunter.marksmanship.displayBar.notZeroShow) or
-					(TRB.Data.settings.hunter.marksmanship.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.hunter.marksmanship.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
-		end
-	elseif specId == 3 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.hunter.survival.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.hunter.survival.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.hunter.survival.displayBar.notZeroShow) or
-					(TRB.Data.settings.hunter.survival.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.hunter.survival.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
-		end
+
+		TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowValue)
 	else
 		TRB.Frames.barContainerFrame:Hide()
 		snapshotData.attributes.isTracking = false

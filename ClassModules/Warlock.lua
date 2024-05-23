@@ -615,33 +615,20 @@ function TRB.Functions.Class:EventRegistration()
 	TRB.Functions.Bar:HideResourceBar()
 end
 
-
 function TRB.Functions.Class:HideResourceBar(force)
-	local affectingCombat = UnitAffectingCombat("player")
+	local specId = GetSpecialization()
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
-	local specId = GetSpecialization()
 
 	if specId == 1 and TRB.Data.settings.core.experimental.specs.warlock.affliction then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.warlock.affliction.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.warlock.affliction.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.warlock.affliction.displayBar.notZeroShow) or
-					(TRB.Data.settings.warlock.affliction.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource and snapshotData.attributes.resource2 == 3) --Set to 3 as this is what Soul Shards end up at when out of combat
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.warlock.affliction.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
+		local settings
+		local notZeroShowValue = TRB.Data.character.maxResource
+		local notZeroShowValueComboPoints = 3
+		if specId == 1 then
+			settings = TRB.Data.settings.warlock.affliction
 		end
+
+		TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowValue, true, notZeroShowValueComboPoints)
 	else
 		TRB.Frames.barContainerFrame:Hide()
 		snapshotData.attributes.isTracking = false

@@ -3699,71 +3699,23 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	local affectingCombat = UnitAffectingCombat("player")
 	local specId = GetSpecialization()
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
 
-	if specId == 1 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.rogue.assassination.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.rogue.assassination.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.rogue.assassination.displayBar.notZeroShow) or
-					(TRB.Data.settings.rogue.assassination.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.rogue.assassination.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
+	if specId == 1 or specId == 2 or specId == 3 then
+		local settings
+		local notZeroShowValue = TRB.Data.character.maxResource
+		local notZeroShowValueComboPoints = 0
+		if specId == 1 then
+			settings = TRB.Data.settings.rogue.assassination
+		elseif specId == 2 then
+			settings = TRB.Data.settings.rogue.outlaw
+		elseif specId == 3 then
+			settings = TRB.Data.settings.rogue.subtlety
 		end
-	elseif specId == 2 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.rogue.outlaw.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.rogue.outlaw.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.rogue.outlaw.displayBar.notZeroShow) or
-					(TRB.Data.settings.rogue.outlaw.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.rogue.outlaw.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
-		end
-	elseif specId == 3 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.rogue.subtlety.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.rogue.subtlety.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.rogue.subtlety.displayBar.notZeroShow) or
-					(TRB.Data.settings.rogue.subtlety.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.rogue.subtlety.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
-		end
+
+		TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowValue, true, notZeroShowValueComboPoints)
 	else
 		TRB.Frames.barContainerFrame:Hide()
 		snapshotData.attributes.isTracking = false

@@ -3773,75 +3773,55 @@ function TRB.Functions.Class:EventRegistration()
 end
 
 function TRB.Functions.Class:HideResourceBar(force)
-	local affectingCombat = UnitAffectingCombat("player")
+	local specId = GetSpecialization()
 	---@type TRB.Classes.SnapshotData
 	local snapshotData = TRB.Data.snapshotData or TRB.Classes.SnapshotData:New()
-	local specId = GetSpecialization()
 
-	if specId == 1 then	
-		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]		
-		if not TRB.Data.specSupported or force or 
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.druid.balance.displayBar.dragonriding) or
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.druid.balance.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.druid.balance.displayBar.notZeroShow) or
-					(TRB.Data.settings.druid.balance.displayBar.notZeroShow and
-						((not talents:IsTalentActive(spells.naturesBalance) and snapshotData.attributes.resource == 0) or
-						(talents:IsTalentActive(spells.naturesBalance) and (snapshotData.attributes.resource / TRB.Data.resourceFactor) >= 50))
+	if specId == 1 then --Balance is a special snowflake
+		local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Druid.BalanceSpells]]
+		local affectingCombat = UnitAffectingCombat("player")
+		local settings = TRB.Data.settings.druid.balance
+		if not TRB.Data.specSupported or force or
+			(TRB.Data.character.advancedFlight and not TRB.Data.settings.druid.balance.displayBar.dragonriding) or
+			((not affectingCombat) and
+				(not UnitInVehicle("player")) and (
+					(not TRB.Data.settings.druid.balance.displayBar.alwaysShow) and (
+						(not TRB.Data.settings.druid.balance.displayBar.notZeroShow) or
+						(TRB.Data.settings.druid.balance.displayBar.notZeroShow and
+							((not talents:IsTalentActive(spells.naturesBalance) and snapshotData.attributes.resource == 0) or
+							(talents:IsTalentActive(spells.naturesBalance) and (snapshotData.attributes.resource / TRB.Data.resourceFactor) >= 50))
+						)
 					)
-				)
-			)) then
+				)) then
 			TRB.Frames.barContainerFrame:Hide()
+			TRB.Functions.BarText:Hide(settings)
+
 			snapshotData.attributes.isTracking = false
 		else
 			snapshotData.attributes.isTracking = true
 			if TRB.Data.settings.druid.balance.displayBar.neverShow == true then
 				TRB.Frames.barContainerFrame:Hide()
+				TRB.Functions.BarText:Hide(settings)
+
 			else
 				TRB.Frames.barContainerFrame:Show()
+				TRB.Functions.BarText:Show(settings)
+
 			end
 		end
-	elseif specId == 2 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.druid.feral.displayBar.dragonriding) or
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.druid.feral.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.druid.feral.displayBar.notZeroShow) or
-					(TRB.Data.settings.druid.feral.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.druid.feral.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
+	elseif specId == 2 or specId == 4 then
+		local settings
+		local notZeroShowValue = TRB.Data.character.maxResource
+		local notZeroShowValueComboPoints = 0
+		local includeComboPoints = false
+		if specId == 2 then
+			settings = TRB.Data.settings.druid.feral
+			includeComboPoints = true
+		elseif specId == 4 then
+			settings = TRB.Data.settings.druid.restoration
 		end
-	elseif specId == 4 then
-		if not TRB.Data.specSupported or force or
-		(TRB.Data.character.advancedFlight and not TRB.Data.settings.druid.restoration.displayBar.dragonriding) or 
-		((not affectingCombat) and
-			(not UnitInVehicle("player")) and (
-				(not TRB.Data.settings.druid.restoration.displayBar.alwaysShow) and (
-					(not TRB.Data.settings.druid.restoration.displayBar.notZeroShow) or
-					(TRB.Data.settings.druid.restoration.displayBar.notZeroShow and snapshotData.attributes.resource == TRB.Data.character.maxResource)
-				)
-			)) then
-			TRB.Frames.barContainerFrame:Hide()
-			snapshotData.attributes.isTracking = false
-		else
-			snapshotData.attributes.isTracking = true
-			if TRB.Data.settings.druid.restoration.displayBar.neverShow == true then
-				TRB.Frames.barContainerFrame:Hide()
-			else
-				TRB.Frames.barContainerFrame:Show()
-			end
-		end
+
+		TRB.Functions.Bar:HideResourceBarGeneric(settings, force, notZeroShowValue, includeComboPoints, notZeroShowValueComboPoints)
 	else
 		TRB.Frames.barContainerFrame:Hide()
 		snapshotData.attributes.isTracking = false
