@@ -1939,85 +1939,115 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 			spec.thresholds.daybreak.enabled = self:GetChecked()
 			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.daybreakThresholdShowCooldown, spec.thresholds.daybreak.enabled)
 		end)
-		yCoord = yCoord - 20
-	elseif classId == 5 then
+		yCoord = yCoord - 20		
+	elseif classId == 5 or classId == 10 then -- Priest or Monk
 		yCoord = yCoord - 25
 		controls.labels.thresholdAbilities = TRB.Functions.OptionsUi:BuildLabel(parent, L["Abilities"], 5, yCoord, 300, 20)
 		
-		--NOTE: the order of these checkboxes is reversed!
-		yCoord = yCoord - 20
-		controls.checkBoxes.shadowfiendThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_shadowfiend_cooldown", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.shadowfiendThresholdShowCooldown
-		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
-		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
-		---@diagnostic disable-next-line: inject-field
-		f.tooltip = string.format(L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"], L["Shadowfiend"])
-		f:SetChecked(spec.thresholds.shadowfiend.cooldown)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.shadowfiend.cooldown = self:GetChecked()
-			if spec.thresholds.mindbender ~= nil then
-				spec.thresholds.mindbender.cooldown = self:GetChecked()
-			end
-		end)
-		
-		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.shadowfiend.enabled)
-		
-		controls.checkBoxes.shadowfiendThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_shadowfiend", parent, "ChatConfigCheckButtonTemplate")
-		f = controls.checkBoxes.shadowfiendThresholdShow
-		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-		getglobal(f:GetName() .. 'Text'):SetText(L["Shadowfiend"])
-		---@diagnostic disable-next-line: inject-field
-		f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["Shadowfiend"])
-		f:SetChecked(spec.thresholds.shadowfiend.enabled)
-		f:SetScript("OnClick", function(self, ...)
-			spec.thresholds.shadowfiend.enabled = self:GetChecked()
-			if spec.thresholds.mindbender ~= nil then
-				spec.thresholds.mindbender.enabled = self:GetChecked()
-			end
-			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.shadowfiend.enabled)
-		end)
-		yCoord = yCoord - 20
-
-		if specId == 2 then		
+		if classId == 5 then
 			--NOTE: the order of these checkboxes is reversed!
-			yCoord = yCoord - 25
-			controls.checkBoxes.symbolOfHopeThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_symbolOfHope_cooldown", parent, "ChatConfigCheckButtonTemplate")
-			f = controls.checkBoxes.symbolOfHopeThresholdShowCooldown
+			yCoord = yCoord - 20
+			controls.checkBoxes.shadowfiendThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_shadowfiend_cooldown", parent, "ChatConfigCheckButtonTemplate")
+			f = controls.checkBoxes.shadowfiendThresholdShowCooldown
 			f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
 			getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
 			---@diagnostic disable-next-line: inject-field
-			f.tooltip = string.format(L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"], L["SymbolOfHope"])
-			f:SetChecked(spec.thresholds.symbolOfHope.cooldown)
+			f.tooltip = string.format(L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"], L["Shadowfiend"])
+			f:SetChecked(spec.thresholds.shadowfiend.cooldown)
 			f:SetScript("OnClick", function(self, ...)
-				spec.thresholds.symbolOfHope.cooldown = self:GetChecked()
+				spec.thresholds.shadowfiend.cooldown = self:GetChecked()
+				if spec.thresholds.mindbender ~= nil then
+					spec.thresholds.mindbender.cooldown = self:GetChecked()
+				end
 			end)
 			
-			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.symbolOfHopeThresholdShowCooldown, spec.thresholds.symbolOfHope.enabled)
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.shadowfiend.enabled)
 			
-			controls.checkBoxes.symbolOfHopeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_symbolOfHope", parent, "ChatConfigCheckButtonTemplate")
-			f = controls.checkBoxes.symbolOfHopeThresholdShow
+			controls.checkBoxes.shadowfiendThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_shadowfiend", parent, "ChatConfigCheckButtonTemplate")
+			f = controls.checkBoxes.shadowfiendThresholdShow
 			f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-			getglobal(f:GetName() .. 'Text'):SetText(L["SymbolOfHope"])
+			getglobal(f:GetName() .. 'Text'):SetText(L["Shadowfiend"])
 			---@diagnostic disable-next-line: inject-field
-			f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["SymbolOfHope"])
-			f:SetChecked(spec.thresholds.symbolOfHope.enabled)
+			f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["Shadowfiend"])
+			f:SetChecked(spec.thresholds.shadowfiend.enabled)
 			f:SetScript("OnClick", function(self, ...)
-				spec.thresholds.symbolOfHope.enabled = self:GetChecked()
-				TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.symbolOfHopeThresholdShowCooldown, spec.thresholds.symbolOfHope.enabled)
+				spec.thresholds.shadowfiend.enabled = self:GetChecked()
+				if spec.thresholds.mindbender ~= nil then
+					spec.thresholds.mindbender.enabled = self:GetChecked()
+				end
+				TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.shadowfiendThresholdShowCooldown, spec.thresholds.shadowfiend.enabled)
 			end)
-
-			local title = L["ThresholdHealerSymbolOfHopeManaPercent"]
-			controls.symbolOfHopePercent = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 100, spec.thresholds.symbolOfHope.minimumManaPercent, 5, 5,
-											oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord-20)
-			controls.symbolOfHopePercent:SetScript("OnValueChanged", function(self, value)
-				value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-				value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-				self.EditBox:SetText(value)
-				spec.thresholds.symbolOfHope.minimumManaPercent = value
-			end)
-
 			yCoord = yCoord - 20
+
+			if specId == 2 then
+				--NOTE: the order of these checkboxes is reversed!
+				yCoord = yCoord - 25
+				controls.checkBoxes.symbolOfHopeThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_symbolOfHope_cooldown", parent, "ChatConfigCheckButtonTemplate")
+				f = controls.checkBoxes.symbolOfHopeThresholdShowCooldown
+				f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
+				getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
+				---@diagnostic disable-next-line: inject-field
+				f.tooltip = string.format(L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"], L["SymbolOfHope"])
+				f:SetChecked(spec.thresholds.symbolOfHope.cooldown)
+				f:SetScript("OnClick", function(self, ...)
+					spec.thresholds.symbolOfHope.cooldown = self:GetChecked()
+				end)
+				
+				TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.symbolOfHopeThresholdShowCooldown, spec.thresholds.symbolOfHope.enabled)
+				
+				controls.checkBoxes.symbolOfHopeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_symbolOfHope", parent, "ChatConfigCheckButtonTemplate")
+				f = controls.checkBoxes.symbolOfHopeThresholdShow
+				f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+				getglobal(f:GetName() .. 'Text'):SetText(L["SymbolOfHope"])
+				---@diagnostic disable-next-line: inject-field
+				f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["SymbolOfHope"])
+				f:SetChecked(spec.thresholds.symbolOfHope.enabled)
+				f:SetScript("OnClick", function(self, ...)
+					spec.thresholds.symbolOfHope.enabled = self:GetChecked()
+					TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.symbolOfHopeThresholdShowCooldown, spec.thresholds.symbolOfHope.enabled)
+				end)
+
+				local title = L["ThresholdHealerSymbolOfHopeManaPercent"]
+				controls.symbolOfHopePercent = TRB.Functions.OptionsUi:BuildSlider(parent, title, 0, 100, spec.thresholds.symbolOfHope.minimumManaPercent, 5, 5,
+												oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord-20)
+				controls.symbolOfHopePercent:SetScript("OnValueChanged", function(self, value)
+					value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
+					value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
+					self.EditBox:SetText(value)
+					spec.thresholds.symbolOfHope.minimumManaPercent = value
+				end)
+
+				yCoord = yCoord - 20
+			end
 		end
+
+		--NOTE: the order of these checkboxes is reversed!
+		yCoord = yCoord - 20
+		controls.checkBoxes.cannibalizeThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_cannibalize_cooldown", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.cannibalizeThresholdShowCooldown
+		f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
+		getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
+		---@diagnostic disable-next-line: inject-field
+		f.tooltip = string.format(L["ThresholdHealerShowWhileOnCooldownTooltipWithAbility"], L["CannibalizeIfForsaken"])
+		f:SetChecked(spec.thresholds.cannibalize.cooldown)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.cannibalize.cooldown = self:GetChecked()
+		end)
+		
+		TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.cannibalizeThresholdShowCooldown, spec.thresholds.cannibalize.enabled)
+		
+		controls.checkBoxes.cannibalizeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_cannibalize", parent, "ChatConfigCheckButtonTemplate")
+		f = controls.checkBoxes.cannibalizeThresholdShow
+		f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+		getglobal(f:GetName() .. 'Text'):SetText(L["CannibalizeIfForsaken"])
+		---@diagnostic disable-next-line: inject-field
+		f.tooltip = string.format(L["ThresholdHealerToggleAbility"], L["CannibalizeIfForsaken"])
+		f:SetChecked(spec.thresholds.cannibalize.enabled)
+		f:SetScript("OnClick", function(self, ...)
+			spec.thresholds.cannibalize.enabled = self:GetChecked()
+			TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.cannibalizeThresholdShowCooldown, spec.thresholds.cannibalize.enabled)
+		end)
+		yCoord = yCoord - 20
 	end
 
 	yCoord = yCoord - 25

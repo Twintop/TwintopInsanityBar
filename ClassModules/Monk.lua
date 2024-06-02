@@ -128,6 +128,8 @@ local function FillSpecializationCache()
 	specCache.mistweaver.snapshotData.snapshots[spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(spells.moltenRadiance)
 	---@type TRB.Classes.Healer.BlessingOfWinter
 	specCache.mistweaver.snapshotData.snapshots[spells.blessingOfWinter.id] = TRB.Classes.Healer.BlessingOfWinter:New(spells.blessingOfWinter)
+	---@type TRB.Classes.Healer.Cannibalize
+	specCache.mistweaver.snapshotData.snapshots[spells.cannibalize.id] = TRB.Classes.Healer.Cannibalize:New(spells.cannibalize)
 	---@type TRB.Classes.Snapshot
 	specCache.mistweaver.snapshotData.snapshots[spells.manaTea.id] = TRB.Classes.Snapshot:New(spells.manaTea)
 	---@type TRB.Classes.Snapshot
@@ -1298,6 +1300,9 @@ local function UpdateSnapshot_Mistweaver()
 
 	local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 	channeledManaPotion:Update()
+	
+	local cannibalize = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
+	cannibalize:Update()
 
 	-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
 	snapshots[spells.aeratedManaPotionRank1.id].cooldown.startTime, snapshots[spells.aeratedManaPotionRank1.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
@@ -1386,6 +1391,13 @@ local function UpdateResourceBar()
 					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
 				end
 
+				thresholdCount = thresholdCount + 1
+				if snapshotData.attributes.raceId == 5 and specSettings.thresholds.cannibalize.enabled and specSettings.bar.showPassive then
+					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
+				else
+					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
+				end
+
 				passiveBarValue = castingBarValue + passiveValue
 				if castingBarValue < currentResource then --Using a spender
 					if -snapshotData.casting.resourceFinal > passiveValue then
@@ -1469,6 +1481,19 @@ local function UpdateResourceBar()
 								else
 									showThreshold = false
 								end
+							else
+								showThreshold = false
+							end
+						elseif spell.id == spells.cannibalize.id then
+							snapshot = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
+							local cannibalizeTotal = CalculateManaGain(snapshot:GetMaxManaReturn())
+							resourceAmount = castingBarValue + cannibalizeTotal
+							if not snapshot.buff.isActive and snapshotData.attributes.raceId == 5 and specSettings.thresholds.cannibalize.enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specSettings.thresholds.cannibalize.cooldown) then
+								if snapshot.cooldown.onCooldown then
+									thresholdColor = specSettings.colors.threshold.unusable
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+								end
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 							else
 								showThreshold = false
 							end
@@ -1723,6 +1748,9 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif settings.passiveGeneration.blessingOfWinter and entry.spellId == spells.blessingOfWinter.id then
 					local blessingOfWinter = snapshotData.snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
 					blessingOfWinter.buff:Initialize(entry.type)
+				elseif entry.spellId == spells.cannibalize.buffId then
+					local cannibalize = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
+					cannibalize.buff:Initialize(entry.type)
 				elseif entry.spellId == spells.vivaciousVivification.id then
 					snapshots[entry.spellId].buff:Initialize(entry.type, true)
 				end
@@ -1742,6 +1770,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					end
 				elseif entry.spellId == spells.manaTea.id then
 					snapshots[entry.spellId].buff:Initialize(entry.type)
+				elseif entry.spellId == spells.cannibalize.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
+					end
 				end
 			elseif specId == 3 and TRB.Data.barConstructedForSpec == "windwalker" then --Windwalker
 				if entry.spellId == spells.strikeOfTheWindlord.id then

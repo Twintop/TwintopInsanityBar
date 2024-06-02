@@ -288,6 +288,10 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 				enabled = true,
 				cooldown = false
 			},
+			cannibalize = {
+				enabled = false,
+				cooldown = false
+			},
 			potionCooldown = {
 				enabled=true,
 				mode="time",
@@ -784,6 +788,10 @@ local function HolyLoadDefaultSettings(includeBarText)
 				enabled = true,
 				cooldown = false,
 				minimumManaPercent = 25
+			},
+			cannibalize = {
+				enabled = false,
+				cooldown = false
 			},
 			potionCooldown = {
 				enabled=true,

@@ -2305,11 +2305,11 @@ function TRB.Options:ConstructOptionsPanel()
 
 	local percentFormat = "%3.2f%%"
 	local localeText2 = string.format(percentFormat, 11.61)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.54)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 10.53)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 100.00)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.46)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.46)
-	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 12.38)
+	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 12.37)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.46)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.46)
 	localeText2 = localeText2 .. "\n" .. string.format(percentFormat, 0.46)

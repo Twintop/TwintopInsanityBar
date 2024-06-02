@@ -1960,4 +1960,5 @@ if locale == "esES" or locale == "esMX" then
     L["WarlockColorPickerPassiveMana"] = "Maná pasivo"
     L["ExperimentalWarlockAffliction"] = "Soporte técnico de Brujo Aflicción"
     L["ExperimentalWarlockAfflictionTooltip"] = "Esto permitirá el soporte experimental de Affliction Warlock dentro de la barra. Si cambia esta configuración y actualmente ha iniciado sesión en un Warlock, deberá recargar su interfaz de usuario antes de que las opciones de configuración de Affliction Warlock estén disponibles."
+    L["CannibalizeIfForsaken"] = "Canibalizar (si es abandonado)"
 end

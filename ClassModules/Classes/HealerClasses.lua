@@ -334,6 +334,44 @@ end
 
 
 --[[
+    ***********************
+    ***** Cannibalize *****
+    ***********************
+    ]]
+
+---@class TRB.Classes.Healer.Cannibalize : TRB.Classes.Healer.HealerRegenBase
+---@field public mana number
+TRB.Classes.Healer.Cannibalize = setmetatable({}, {__index = TRB.Classes.Healer.HealerRegenBase})
+TRB.Classes.Healer.Cannibalize.__index = TRB.Classes.Healer.Cannibalize
+
+---Creates a new Cannibalize object
+---@param spell table # Spell we are snapshotting, in this case Cannibalize
+---@return TRB.Classes.Healer.Cannibalize
+function TRB.Classes.Healer.Cannibalize:New(spell)
+    ---@type TRB.Classes.Healer.HealerRegenBase
+    local snapshot = TRB.Classes.Healer.HealerRegenBase
+    local self = setmetatable(snapshot:New(spell), TRB.Classes.Healer.Cannibalize)
+    self:Reset()
+    self.attributes = {}
+    return self
+end
+
+---Updates Cannibalize's values
+function TRB.Classes.Healer.Cannibalize:Update()
+    self.cooldown:Refresh()
+    self.buff:UpdateTicks()
+    if self.buff.isActive then
+        self.mana = (TRB.Data.snapshotData.attributes.manaRegen * self.buff.remaining) + self.buff.resource * TRB.Data.character.maxResource
+    else
+        self.mana = 0
+    end
+end
+
+function TRB.Classes.Healer.Cannibalize:GetMaxManaReturn()
+    return (TRB.Data.snapshotData.attributes.manaRegen * self.spell.duration) + (self.spell.duration / self.spell.tickRate) * self.spell.resourcePerTick * TRB.Data.character.maxResource
+end
+
+--[[
     *************************************
     ***** Potion of Chilled Clarity *****
     *************************************

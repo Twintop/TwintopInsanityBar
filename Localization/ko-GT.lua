@@ -1960,4 +1960,5 @@ if locale == "koKR" then
     L["WarlockColorPickerPassiveMana"] = "패시브 마나"
     L["ExperimentalWarlockAffliction"] = "고통 흑마법사 지원"
     L["ExperimentalWarlockAfflictionTooltip"] = "이를 통해 바 내에서 실험적인 고통 흑마법사 지원이 활성화됩니다. 이 설정을 변경하고 현재 흑마법사로 로그인한 경우 고통 흑마법사 구성 옵션을 사용할 수 있게 되기 전에 UI를 다시 로드해야 합니다."
+    L["CannibalizeIfForsaken"] = "식인종(포세이큰인 경우)"
 end

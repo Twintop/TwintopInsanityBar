@@ -1960,4 +1960,5 @@ if locale == "zhTW" then
     L["WarlockColorPickerPassiveMana"] = "被动法力"
     L["ExperimentalWarlockAffliction"] = "痛苦术士支持"
     L["ExperimentalWarlockAfflictionTooltip"] = "这将在栏内启用实验性的痛苦术士支持。如果您更改此设置并且当前登录了术士，则需要重新加载 UI，然后痛苦术士配置选项才可用。"
+    L["CannibalizeIfForsaken"] = "蠶食（如果被遺忘）"
 end

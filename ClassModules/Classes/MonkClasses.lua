@@ -13,6 +13,7 @@ TRB.Classes.Monk = TRB.Classes.Monk or {}
 ---@field public vivaciousVivification TRB.Classes.SpellBase
 ---@field public manaTea TRB.Classes.SpellBase
 ---@field public soulfangInfusion TRB.Classes.SpellBase
+---@field public cannibalize TRB.Classes.SpellThreshold
 TRB.Classes.Monk.MistweaverSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Monk.MistweaverSpells.__index = TRB.Classes.Monk.MistweaverSpells
 
@@ -47,6 +48,21 @@ function TRB.Classes.Monk.MistweaverSpells:New()
         tickRate = 1,
         resourcePerTick = 0.01, --1% max mana. fill manually
         duration = 3
+    })
+
+    -- Racials
+    self.cannibalize = TRB.Classes.SpellThreshold:New({
+        id = 20577,
+        buffId = 20578,
+        baseline = true,
+        resourcePerTick = 0.07,
+        duration = 10,
+        hasTicks = true,
+        tickRate = 2,
+        settingKey = "cannibalize",
+        primaryResourceType = Enum.PowerType.Mana,
+        isSnowflake = true,
+        hasCooldown = true
     })
 
     return self

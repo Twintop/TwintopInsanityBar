@@ -218,6 +218,10 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 				enabled = true,
 				cooldown = true
 			},
+			cannibalize = {
+				enabled = false,
+				cooldown = false
+			},
 			potionCooldown = {
 				enabled=true,
 				mode="time",

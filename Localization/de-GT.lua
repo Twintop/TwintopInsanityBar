@@ -1960,4 +1960,5 @@ if locale == "deDE" then
     L["WarlockColorPickerPassiveMana"] = "Passives Mana"
     L["ExperimentalWarlockAffliction"] = "Unterstützung für Affliction Warlock"
     L["ExperimentalWarlockAfflictionTooltip"] = "Dadurch wird die experimentelle Unterstützung für Affliction Warlock innerhalb der Leiste aktiviert. Wenn Sie diese Einstellung ändern und derzeit bei einem Warlock angemeldet sind, müssen Sie Ihre Benutzeroberfläche neu laden, bevor die Konfigurationsoptionen für Affliction Warlock verfügbar werden."
+    L["CannibalizeIfForsaken"] = "Kannibalisieren (wenn im Stich gelassen)"
 end

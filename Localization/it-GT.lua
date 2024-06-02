@@ -1960,4 +1960,5 @@ if locale == "itIT" then
     L["WarlockColorPickerPassiveMana"] = "Mana passivo"
     L["ExperimentalWarlockAffliction"] = "Supporto dello Stregone Afflizione"
     L["ExperimentalWarlockAfflictionTooltip"] = "Ciò consentirà il supporto sperimentale dello Stregone Afflizione all'interno del bar. Se modifichi questa impostazione e hai attualmente effettuato l'accesso su uno Stregone, dovrai ricaricare l'interfaccia utente prima che le opzioni di configurazione dello Stregone Afflizione diventino disponibili."
+    L["CannibalizeIfForsaken"] = "Cannibalizzare (se Abbandonato)"
 end

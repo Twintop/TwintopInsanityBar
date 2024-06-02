@@ -155,6 +155,8 @@ local function FillSpecializationCache()
 		resourceRaw = 0,
 		resourceFinal = 0
 	})
+	---@type TRB.Classes.Healer.Cannibalize
+	specCache.discipline.snapshotData.snapshots[spells.cannibalize.id] = TRB.Classes.Healer.Cannibalize:New(spells.cannibalize)
 	---@type TRB.Classes.Snapshot
 	specCache.discipline.snapshotData.snapshots[spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(spells.surgeOfLight)
 	---@type TRB.Classes.Snapshot
@@ -270,6 +272,8 @@ local function FillSpecializationCache()
 		resourceRaw = 0,
 		resourceFinal = 0
 	})
+	---@type TRB.Classes.Healer.Cannibalize
+	specCache.holy.snapshotData.snapshots[spells.cannibalize.id] = TRB.Classes.Healer.Cannibalize:New(spells.cannibalize)
 	---@type TRB.Classes.Snapshot
 	specCache.holy.snapshotData.snapshots[spells.apotheosis.id] = TRB.Classes.Snapshot:New(spells.apotheosis)
 	---@type TRB.Classes.Snapshot
@@ -2784,6 +2788,9 @@ local function UpdateSnapshot_Healers()
 	local blessingOfWinter = snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
 	blessingOfWinter:Update()
 	
+	local cannibalize = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
+	cannibalize:Update()
+	
 	local potionOfChilledClarity = snapshots[spells.potionOfChilledClarity.id] --[[@as TRB.Classes.Healer.PotionOfChilledClarity]]
 	potionOfChilledClarity:Update()
 
@@ -2937,8 +2944,15 @@ local function UpdateResourceBar()
 
 				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
 				thresholdCount = thresholdCount + 1
-				if specSettings.thresholds.shadowfiend.enabled and specSettings.bar.showPassive then
+				if (talents:IsTalentActive(spells.shadowfiend) or talents:IsTalentActive(spells.mindbender)) and specSettings.thresholds.shadowfiend.enabled and specSettings.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
+				else
+					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
+				end
+
+				thresholdCount = thresholdCount + 1
+				if snapshotData.attributes.raceId == 5 and specSettings.thresholds.cannibalize.enabled and specSettings.bar.showPassive then
+					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
 				else
 					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
 				end
@@ -3055,6 +3069,19 @@ local function UpdateResourceBar()
 								else
 									showThreshold = false
 								end
+							else
+								showThreshold = false
+							end
+						elseif spell.id == spells.cannibalize.id then
+							snapshot = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
+							local cannibalizeTotal = CalculateManaGain(snapshot:GetMaxManaReturn())
+							resourceAmount = castingBarValue + cannibalizeTotal
+							if not snapshot.buff.isActive and snapshotData.attributes.raceId == 5 and specSettings.thresholds.cannibalize.enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specSettings.thresholds.cannibalize.cooldown) then
+								if snapshot.cooldown.onCooldown then
+									thresholdColor = specSettings.colors.threshold.unusable
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+								end
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 							else
 								showThreshold = false
 							end
@@ -3273,8 +3300,15 @@ local function UpdateResourceBar()
 
 				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
 				thresholdCount = thresholdCount + 1
-				if specSettings.thresholds.shadowfiend.enabled and specSettings.bar.showPassive then
+				if talents:IsTalentActive(spells.shadowfiend) and specSettings.thresholds.shadowfiend.enabled and specSettings.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.shadowfiend.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
+				else
+					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
+				end
+
+				thresholdCount = thresholdCount + 1
+				if snapshotData.attributes.raceId == 5 and specSettings.thresholds.cannibalize.enabled and specSettings.bar.showPassive then
+					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
 				else
 					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
 				end
@@ -3365,9 +3399,9 @@ local function UpdateResourceBar()
 							else
 								showThreshold = false
 							end
-						elseif spell.id == spells.shadowfiend.id and talents:IsTalentActive(spell) then
+						elseif spell.id == spells.shadowfiend.id then
 							snapshot = snapshots[spells.shadowfiend.id]
-							if not snapshot.buff.isActive and specSettings.thresholds[spell.settingKey].enabled and (not snapshot.cooldown:IsUnusable() or specSettings.thresholds[spell.settingKey].cooldown) then
+							if talents:IsTalentActive(spell) and not snapshot.buff.isActive and specSettings.thresholds[spell.settingKey].enabled and (not snapshot.cooldown:IsUnusable() or specSettings.thresholds[spell.settingKey].cooldown) then
 								local haveTotem, timeRemaining, swingsRemaining, gcdsRemaining, timeToNextSwing, swingSpeed = GetMaximumShadowfiendResults()
 								local shadowfiendMana = swingsRemaining * snapshot.spell.attributes.resourcePercent * TRB.Data.character.maxResource
 
@@ -3402,6 +3436,19 @@ local function UpdateResourceBar()
 								else
 									showThreshold = false
 								end
+							else
+								showThreshold = false
+							end
+						elseif spell.id == spells.cannibalize.id then
+							snapshot = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
+							local cannibalizeTotal = CalculateManaGain(snapshot:GetMaxManaReturn())
+							resourceAmount = castingBarValue + cannibalizeTotal
+							if not snapshot.buff.isActive and snapshotData.attributes.raceId == 5 and specSettings.thresholds.cannibalize.enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specSettings.thresholds.cannibalize.cooldown) then
+								if snapshot.cooldown.onCooldown then
+									thresholdColor = specSettings.colors.threshold.unusable
+									frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
+								end
+								TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
 							else
 								showThreshold = false
 							end
@@ -3906,6 +3953,9 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				elseif settings.passiveGeneration.blessingOfWinter and entry.spellId == spells.blessingOfWinter.id then
 					local blessingOfWinter = snapshotData.snapshots[spells.blessingOfWinter.id] --[[@as TRB.Classes.Healer.BlessingOfWinter]]
 					blessingOfWinter.buff:Initialize(entry.type)
+				elseif entry.spellId == spells.cannibalize.buffId then
+					local cannibalize = snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]]
+					cannibalize.buff:Initialize(entry.type)
 				elseif entry.type == "SPELL_ENERGIZE" and entry.spellId == snapshots[spells.shadowfiend.id].spell.energizeId then
 					snapshots[spells.shadowfiend.id].attributes.swingTime = currentTime
 					snapshots[spells.shadowfiend.id].cooldown:Refresh(true)
@@ -3934,6 +3984,10 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					elseif entry.type == "SPELL_AURA_REMOVED" then -- Lost buff
 						snapshotData.audio.surgeOfLightCue = false
 						snapshotData.audio.surgeOfLight2Cue = false
+					end
+				elseif entry.spellId == spells.cannibalize.id then
+					if entry.type == "SPELL_CAST_SUCCESS" then
+						snapshots[entry.spellId].cooldown:Initialize()
 					end
 				end
 			end

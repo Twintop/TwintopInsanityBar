@@ -51,7 +51,8 @@ function TRB.Functions.Character:UpdateSnapshot()
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local targetData = snapshotData.targetData
 	local target = targetData.targets[targetData.currentTargetGuid]
-
+	
+	_, _, snapshotData.attributes.raceId = UnitRace("player")
 	if target == nil and targetData.currentTargetGuid ~= nil then
 		targetData:InitializeTarget(targetData.currentTargetGuid, UnitIsFriend("target", "player"))
 		target = targetData.targets[targetData.currentTargetGuid]

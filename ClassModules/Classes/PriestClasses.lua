@@ -43,44 +43,45 @@ end
 
 ---@class TRB.Classes.Priest.HealerSpells : TRB.Classes.Healer.HealerSpells
 ---@field public shadowWordPain TRB.Classes.SpellBase
----@field public shadowfiend TRB.Classes.SpellThreshold
 ---@field public surgeOfLight TRB.Classes.SpellBase
 ---@field public imbuedFrostweaveSlippers TRB.Classes.SpellBase
+---@field public shadowfiend TRB.Classes.SpellThreshold
+---@field public cannibalize TRB.Classes.SpellThreshold
 TRB.Classes.Priest.HealerSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Priest.HealerSpells.__index = TRB.Classes.Priest.HealerSpells
 
 function TRB.Classes.Priest.HealerSpells:New()
-       ---@type TRB.Classes.Healer.HealerSpells
-       local base = TRB.Classes.Healer.HealerSpells
-       self = setmetatable(base:New(), TRB.Classes.Priest.HealerSpells) --[[@as TRB.Classes.Priest.HealerSpells]]
-   
-       -- Priest Class Baseline Abilities
-       self.shadowWordPain = TRB.Classes.SpellBase:New({
-           id = 589,
-           baseDuration = 16,
-           pandemic = true,
-           isTalent = false,
-           baseline = true
-       })
+    ---@type TRB.Classes.Healer.HealerSpells
+    local base = TRB.Classes.Healer.HealerSpells
+    self = setmetatable(base:New(), TRB.Classes.Priest.HealerSpells) --[[@as TRB.Classes.Priest.HealerSpells]]
 
-       -- Priest Talent Abilities
-       self.shadowfiend = TRB.Classes.SpellThreshold:New({
-           id = 34433,
-           iconName = "spell_shadow_shadowfiend",
-           energizeId = 343727,
-           settingKey = "shadowfiend",
-           primaryResourceType = Enum.PowerType.Mana,
-           isTalent = true,
-           baseline = false,
-           resourcePercent = 0.005,
-           duration = 15,
-           hasCooldown = true
-       })
-       self.surgeOfLight = TRB.Classes.SpellBase:New({
-           id = 114255,
-           duration = 20,
-           isTalent = true
-       })
+    -- Priest Class Baseline Abilities
+    self.shadowWordPain = TRB.Classes.SpellBase:New({
+        id = 589,
+        baseDuration = 16,
+        pandemic = true,
+        isTalent = false,
+        baseline = true
+    })
+
+    -- Priest Talent Abilities
+    self.shadowfiend = TRB.Classes.SpellThreshold:New({
+        id = 34433,
+        iconName = "spell_shadow_shadowfiend",
+        energizeId = 343727,
+        settingKey = "shadowfiend",
+        primaryResourceType = Enum.PowerType.Mana,
+        isTalent = true,
+        baseline = false,
+        resourcePercent = 0.005,
+        duration = 15,
+        hasCooldown = true
+    })
+    self.surgeOfLight = TRB.Classes.SpellBase:New({
+        id = 114255,
+        duration = 20,
+        isTalent = true
+    })
 
     -- Imbued Frostweave Slippers
     self.imbuedFrostweaveSlippers = TRB.Classes.SpellBase:New({
@@ -89,7 +90,22 @@ function TRB.Classes.Priest.HealerSpells:New()
         resourcePercent = 0.0006
     })
 
-       return self
+    -- Racials
+    self.cannibalize = TRB.Classes.SpellThreshold:New({
+        id = 20577,
+        buffId = 20578,
+        baseline = true,
+        resourcePerTick = 0.07,
+        duration = 10,
+        hasTicks = true,
+        tickRate = 2,
+        settingKey = "cannibalize",
+        primaryResourceType = Enum.PowerType.Mana,
+        isSnowflake = true,
+        hasCooldown = true
+    })
+
+    return self
 end
 
 
