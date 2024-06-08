@@ -20,7 +20,7 @@ local content = [====[
 ## Demon Hunter
 ### Vengeance
 
-- (FIX) Fix an occasional Lua error when switching to or logging in as Vengeance.
+- (FIX (Twintop)) Fix an occasional Lua error when switching to or logging in as Vengeance.
 
 ---
 
