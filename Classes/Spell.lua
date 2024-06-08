@@ -201,6 +201,10 @@ function TRB.Classes.SpellBase:FillSpellData()
             local icon
             if self.spellId ~= nil and self.useSpellIcon == true then
                 spellInfo = C_Spell.GetSpellInfo(self.spellId) --[[@as SpellInfo]]
+
+                if spellInfo == nil then
+                    spellInfo = C_Spell.GetSpellInfo(self.id)
+                end
             else
                 spellInfo = C_Spell.GetSpellInfo(self.id) --[[@as SpellInfo]]
             end

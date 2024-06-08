@@ -2249,9 +2249,8 @@ local function AssassinationConstructOptionsPanel(cache)
 	interfaceSettingsFrame.assassinationDisplayPanel.name = L["RogueAssassinationFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.assassinationDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.assassinationDisplayPanel, L["RogueAssassinationFull"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.assassinationDisplayPanel)
-
+	TRB.Details.addonCategory.specs["assassination"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.assassinationDisplayPanel, L["RogueAssassinationFull"])
+	
 	parent = interfaceSettingsFrame.assassinationDisplayPanel
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["RogueAssassinationFull"], oUi.xCoord, yCoord-5)
@@ -3349,9 +3348,8 @@ local function OutlawConstructOptionsPanel(cache)
 	interfaceSettingsFrame.outlawDisplayPanel.name = L["RogueOutlawFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.outlawDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.outlawDisplayPanel, "OutlawL["Rogue"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.outlawDisplayPanel)
-
+	TRB.Details.addonCategory.specs["outlaw"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.outlawDisplayPanel, L["RogueOutlawFull"])
+	
 	parent = interfaceSettingsFrame.outlawDisplayPanel
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["RogueOutlawFull"], oUi.xCoord, yCoord-5)
@@ -4390,8 +4388,7 @@ local function SubtletyConstructOptionsPanel(cache)
 	interfaceSettingsFrame.subtletyDisplayPanel.name = L["RogueSubtletyFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.subtletyDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.subtletyDisplayPanel, L["RogueSubtletyFull"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.subtletyDisplayPanel)
+	TRB.Details.addonCategory.specs["subtlety"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.subtletyDisplayPanel, L["RogueSubtletyFull"])
 
 	parent = interfaceSettingsFrame.subtletyDisplayPanel
 

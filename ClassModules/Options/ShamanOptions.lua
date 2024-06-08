@@ -1598,9 +1598,8 @@ local function ElementalConstructOptionsPanel(cache)
 	interfaceSettingsFrame.elementalDisplayPanel.name = L["ShamanElementalFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.elementalDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.elementalDisplayPanel, "ElementalL["Shaman"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.elementalDisplayPanel)
-
+	TRB.Details.addonCategory.specs["elemental"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.elementalDisplayPanel, L["ShamanElementalFull"])
+	
 	parent = interfaceSettingsFrame.elementalDisplayPanel
 
 	controls.buttons = controls.buttons or {}
@@ -2072,8 +2071,7 @@ local function EnhancementConstructOptionsPanel(cache)
 	interfaceSettingsFrame.enhancementDisplayPanel.name = L["ShamanEnhancementFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.enhancementDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.enhancementDisplayPanel, "EnhancementL["Shaman"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.enhancementDisplayPanel)
+	TRB.Details.addonCategory.specs["enhancement"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.enhancementDisplayPanel, L["ShamanEnhancementFull"])
 
 	parent = interfaceSettingsFrame.enhancementDisplayPanel
 
@@ -2680,9 +2678,8 @@ local function RestorationConstructOptionsPanel(cache)
 	interfaceSettingsFrame.restorationDisplayPanel.name = L["ShamanRestorationFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.restorationDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.restorationDisplayPanel, L["ShamanRestorationFull"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.restorationDisplayPanel)
-
+	TRB.Details.addonCategory.specs["restoration"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.restorationDisplayPanel, L["ShamanRestorationFull"])
+	
 	parent = interfaceSettingsFrame.restorationDisplayPanel
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["ShamanRestorationFull"], oUi.xCoord, yCoord-5)

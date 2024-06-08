@@ -1617,8 +1617,7 @@ local function DevastationConstructOptionsPanel(cache)
 	interfaceSettingsFrame.devastationDisplayPanel.name = L["EvokerDevastationFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.devastationDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.devastationDisplayPanel, L["EvokerDevastation"] .. "L["Evoker"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.devastationDisplayPanel)
+	TRB.Details.addonCategory.specs["devastation"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.devastationDisplayPanel, L["EvokerDevastationFull"])
 
 	parent = interfaceSettingsFrame.devastationDisplayPanel
 
@@ -2330,8 +2329,7 @@ local function PreservationConstructOptionsPanel(cache)
 	interfaceSettingsFrame.preservationDisplayPanel.name = L["EvokerPreservationFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.preservationDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.preservationDisplayPanel, L["EvokerPreservation"] .. "L["Evoker"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.preservationDisplayPanel)
+	TRB.Details.addonCategory.specs["preservation"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.preservationDisplayPanel, L["EvokerPreservationFull"])
 
 	parent = interfaceSettingsFrame.preservationDisplayPanel
 
@@ -2857,8 +2855,7 @@ local function AugmentationConstructOptionsPanel(cache)
 	interfaceSettingsFrame.augmentationDisplayPanel.name = L["EvokerAugmentationFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.augmentationDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.augmentationDisplayPanel, L["EvokerAugmentation"] .. "L["Evoker"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.augmentationDisplayPanel)
+	TRB.Details.addonCategory.specs["augmentation"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.augmentationDisplayPanel, L["EvokerAugmentationFull"])
 
 	parent = interfaceSettingsFrame.augmentationDisplayPanel
 

@@ -2043,8 +2043,7 @@ local function BalanceConstructOptionsPanel(cache)
 	interfaceSettingsFrame.balanceDisplayPanel.name = L["DruidBalanceFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.balanceDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.balanceDisplayPanel, L["DruidBalanceFull"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.balanceDisplayPanel)
+	TRB.Details.addonCategory.specs["balance"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.balanceDisplayPanel, L["DruidBalanceFull"])
 
 	parent = interfaceSettingsFrame.balanceDisplayPanel
 
@@ -2983,8 +2982,7 @@ local function FeralConstructOptionsPanel(cache)
 	interfaceSettingsFrame.feralDisplayPanel.name = L["DruidFeralFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.feralDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.feralDisplayPanel, L["DruidFeralFull"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.feralDisplayPanel)
+	TRB.Details.addonCategory.specs["feral"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.feralDisplayPanel, L["DruidFeralFull"])
 
 	parent = interfaceSettingsFrame.feralDisplayPanel
 
@@ -3604,8 +3602,7 @@ local function RestorationConstructOptionsPanel(cache)
 	interfaceSettingsFrame.restorationDisplayPanel.name = L["DruidRestorationFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.restorationDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.restorationDisplayPanel, L["DruidRestorationFull"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.restorationDisplayPanel)
+	TRB.Details.addonCategory.specs["restoration"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.restorationDisplayPanel, L["DruidRestorationFull"])
 
 	parent = interfaceSettingsFrame.restorationDisplayPanel
 

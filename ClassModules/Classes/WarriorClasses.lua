@@ -122,7 +122,7 @@ function TRB.Classes.Warrior.ArmsSpells:New()
         hasCooldown = true
     })
     self.thunderClap = TRB.Classes.SpellThreshold:New({
-        id = 396719,
+        id = 6343,
         primaryResourceType = Enum.PowerType.Rage,
         settingKey = "thunderClap",
         isTalent = true,
@@ -292,7 +292,7 @@ function TRB.Classes.Warrior.FurySpells:New()
         hasCooldown = true
     })
     self.thunderClap = TRB.Classes.SpellThreshold:New({
-        id = 396719,
+        id = 6343,
         primaryResourceType = Enum.PowerType.Rage,
         settingKey = "thunderClap",
         isTalent = true,

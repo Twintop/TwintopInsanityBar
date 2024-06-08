@@ -1349,9 +1349,8 @@ local function ArmsConstructOptionsPanel(cache)
 	interfaceSettingsFrame.armsDisplayPanel.name = L["WarriorArmsFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.armsDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.armsDisplayPanel, "ArmsL["Warrior"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.armsDisplayPanel)
-
+	TRB.Details.addonCategory.specs["arms"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.armsDisplayPanel, L["WarriorArmsFull"])
+	
 	parent = interfaceSettingsFrame.armsDisplayPanel
 
 	controls.buttons = controls.buttons or {}
@@ -2039,9 +2038,8 @@ local function FuryConstructOptionsPanel(cache)
 	interfaceSettingsFrame.furyDisplayPanel.name = L["WarriorFuryFull"]
 ---@diagnostic disable-next-line: undefined-field, inject-field
 	interfaceSettingsFrame.furyDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.furyDisplayPanel, L["WarriorFuryFull"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.furyDisplayPanel)
-
+	TRB.Details.addonCategory.specs["fury"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.furyDisplayPanel, L["WarriorFuryFull"])
+	
 	parent = interfaceSettingsFrame.furyDisplayPanel
 
 	controls.buttons = controls.buttons or {}

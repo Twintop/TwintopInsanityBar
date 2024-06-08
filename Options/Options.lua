@@ -530,7 +530,7 @@ local function ConstructAddonOptionsPanel()
 	interfaceSettingsFrame.optionsPanel.name = L["GlobalOptions"]
 	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.optionsPanel.parent = parent.name
-	local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.optionsPanel, L["GlobalOptions"])
+	TRB.Details.addonCategory.global, _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.optionsPanel, L["GlobalOptions"])
 
 	parent = interfaceSettingsFrame.optionsPanel
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GlobalOptions"], oUi.xCoord, yCoord)
@@ -884,13 +884,12 @@ local function ConstructImportExportPanel()
 	local buttonOffset = 0
 	local buttonSpacing = 5
 
-
 	interfaceSettingsFrame.importExportPanel = CreateFrame("Frame", "TwintopResourceBar_Options_ImportExport", UIParent)
 	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.importExportPanel.name = string.format("%s/%s", L["Import"], L["Export"])
 	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.importExportPanel.parent = parent.name
-	local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.importExportPanel, string.format("%s/%s", L["Import"], L["Export"]))
+	TRB.Details.addonCategory.io, _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.importExportPanel, string.format("%s/%s", L["Import"], L["Export"]))
 
 	parent = interfaceSettingsFrame.importExportPanel
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format("%s/%s", L["Import"], L["Export"]), oUi.xCoord, yCoord)

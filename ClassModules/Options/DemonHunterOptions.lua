@@ -1249,8 +1249,7 @@ local function HavocConstructOptionsPanel(cache)
 	interfaceSettingsFrame.havocDisplayPanel.name = L["DemonHunterHavoc"].. " " .. L["DemonHunter"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.havocDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.havocDisplayPanel, L["DemonHunterHavoc"].. " " .. L["DemonHunter"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.havocDisplayPanel)
+	TRB.Details.addonCategory.specs["havoc"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.havocDisplayPanel, L["DemonHunterHavocFull"])
 	
 	parent = interfaceSettingsFrame.havocDisplayPanel
 
@@ -1916,8 +1915,7 @@ local function VengeanceConstructOptionsPanel(cache)
 	interfaceSettingsFrame.vengeanceDisplayPanel.name = L["DemonHunterVengeance"].. " " .. L["DemonHunter"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.vengeanceDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.vengeanceDisplayPanel, L["DemonHunterVengeance"].. " " .. L["DemonHunter"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.vengeanceDisplayPanel)
+	TRB.Details.addonCategory.specs["vengeance"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.vengeanceDisplayPanel, L["DemonHunterVengeanceFull"])
 	
 	parent = interfaceSettingsFrame.vengeanceDisplayPanel
 
