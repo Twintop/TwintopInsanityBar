@@ -11,11 +11,16 @@ local content = [====[
 
 ---
 
-# 10.2.7.8-release (2024-06-07)
+# 10.2.7.8-release (2024-06-08)
 ## General
 ### Healers
 
 - [#173 - NEW (Twintop)](#173) Add support for Cannibalize as a threshold line for Undead Discipline and Holy Priests and Mistweaver Monks. This is disabled by default.
+
+## Demon Hunter
+### Vengeance
+
+- (FIX) Fix an occasional Lua error when switching to or logging in as Vengeance.
 
 ---
 

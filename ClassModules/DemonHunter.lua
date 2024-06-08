@@ -1511,7 +1511,7 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.specName = "vengeance"
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Fury)
 		local maxComboPoints = spells.soulFragments.attributes.maxResource
-		local settings = TRB.Data.settings.druid.feral
+		local settings = TRB.Data.settings.demonhunter.vengeance
 
 		if settings ~= nil then
 			if maxComboPoints ~= TRB.Data.character.maxResource2 then
