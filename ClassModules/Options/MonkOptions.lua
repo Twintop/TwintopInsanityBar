@@ -1177,7 +1177,7 @@ local function MistweaverConstructOptionsPanel(cache)
 	interfaceSettingsFrame.mistweaverDisplayPanel.name = L["MonkMistweaverFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.mistweaverDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.mistweaverDisplayPanel, L["MonkMistweaver"] .. "L["Monk"])
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.mistweaverDisplayPanel, L["MonkMistweaver"] .. "L["Monk"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.mistweaverDisplayPanel)
 
 	parent = interfaceSettingsFrame.mistweaverDisplayPanel
@@ -2065,7 +2065,7 @@ local function WindwalkerConstructOptionsPanel(cache)
 	interfaceSettingsFrame.windwalkerDisplayPanel.name = L["MonkWindwalkerFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.windwalkerDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.windwalkerDisplayPanel, L["MonkWindwalkerFull"])
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.windwalkerDisplayPanel, L["MonkWindwalkerFull"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.windwalkerDisplayPanel)
 
 	parent = interfaceSettingsFrame.windwalkerDisplayPanel

@@ -182,7 +182,8 @@ function TRB.Classes.SpellBase:FillSpellData()
     if self.tocMinVersion == nil or TRB.Details.addonData.toc >= self.tocMinVersion then
         if self.itemId ~= nil and self.useSpellIcon ~= true then
             local _, name, icon
-            name, _, _, _, _, _, _, _, _, icon = GetItemInfo(self.itemId)
+
+            name, _, _, _, _, _, _, _, _, icon = C_Item.GetItemInfo(self.itemId)
             if name ~= nil then
                 self.name = name
             end
@@ -196,19 +197,22 @@ function TRB.Classes.SpellBase:FillSpellData()
                 self.texture = icon
             end
         elseif self.id ~= nil or (self.spellId ~= nil and self.useSpellIcon == true) then
-            local _, name, icon
+            local spellInfo
+            local icon
             if self.spellId ~= nil and self.useSpellIcon == true then
-                name, _, icon = GetSpellInfo(self.spellId)
+                spellInfo = C_Spell.GetSpellInfo(self.spellId) --[[@as SpellInfo]]
             else
-                name, _, icon = GetSpellInfo(self.id)
+                spellInfo = C_Spell.GetSpellInfo(self.id) --[[@as SpellInfo]]
             end
 
             if self.iconName ~= nil then
                 icon = "Interface\\Icons\\" .. self.iconName
+            else
+                icon = spellInfo.originalIconID
             end
 
             self.icon = string.format("|T%s:0|t", icon)
-            self.name = name
+            self.name = spellInfo.name
 
             if self.settingKey ~= nil then
                 self.texture = icon

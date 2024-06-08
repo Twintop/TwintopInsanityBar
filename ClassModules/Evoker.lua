@@ -1085,16 +1085,16 @@ local function CastingSpell()
 					return false
 				end
 			else
-				local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
+				local spellInfo = C_Spell.GetSpellInfo(currentSpellName) --[[@as SpellInfo]]
 
-				if spellId then
-					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellId, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true)
+				if spellInfo.spellID then
+					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true)
 
-					casting.startTime = currentSpellStartTime / 1000
-					casting.endTime = currentSpellEndTime / 1000
-					casting.resourceRaw = manaCost
-					casting.spellId = spellId
-					casting.icon = string.format("|T%s:0|t", spellIcon)
+					snapshotData.casting.startTime = currentSpellStartTime / 1000
+					snapshotData.casting.endTime = currentSpellEndTime / 1000
+					snapshotData.casting.resourceRaw = manaCost
+					snapshotData.casting.spellId = spellInfo.spellID
+					snapshotData.casting.icon = string.format("|T%s:0|t", spellInfo.iconID)
 
 					UpdateCastingResourceFinal_Preservation()
 				else

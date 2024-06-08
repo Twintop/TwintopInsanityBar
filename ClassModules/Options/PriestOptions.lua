@@ -2257,9 +2257,7 @@ local function DisciplineConstructOptionsPanel(cache)
 	interfaceSettingsFrame.disciplineDisplayPanel.name = L["PriestDisciplineFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.disciplineDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.disciplineDisplayPanel, "DisciplineL["Priest"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.disciplineDisplayPanel)
-
+	TRB.Details.addonCategory.specs["discipline"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.disciplineDisplayPanel, L["PriestDisciplineFull"])
 	parent = interfaceSettingsFrame.disciplineDisplayPanel
 
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestDisciplineFull"], oUi.xCoord, yCoord-5)
@@ -3424,8 +3422,7 @@ local function HolyConstructOptionsPanel(cache)
 	interfaceSettingsFrame.holyDisplayPanel.name = L["PriestHolyFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.holyDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.holyDisplayPanel, "HolyL["Priest"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.holyDisplayPanel)
+	TRB.Details.addonCategory.specs["holy"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.holyDisplayPanel, L["PriestHolyFull"])
 
 	parent = interfaceSettingsFrame.holyDisplayPanel
 
@@ -4764,8 +4761,7 @@ local function ShadowConstructOptionsPanel(cache)
 	interfaceSettingsFrame.shadowDisplayPanel.name = L["PriestShadowFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.shadowDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.shadowDisplayPanel, "ShadowL["Priest"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.shadowDisplayPanel)
+	TRB.Details.addonCategory.specs["shadow"], _ = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.shadowDisplayPanel, L["PriestShadowFull"])
 
 	parent = interfaceSettingsFrame.shadowDisplayPanel
 

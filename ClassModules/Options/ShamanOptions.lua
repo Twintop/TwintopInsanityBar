@@ -1598,7 +1598,7 @@ local function ElementalConstructOptionsPanel(cache)
 	interfaceSettingsFrame.elementalDisplayPanel.name = L["ShamanElementalFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.elementalDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.elementalDisplayPanel, "ElementalL["Shaman"])
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.elementalDisplayPanel, "ElementalL["Shaman"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.elementalDisplayPanel)
 
 	parent = interfaceSettingsFrame.elementalDisplayPanel
@@ -2072,7 +2072,7 @@ local function EnhancementConstructOptionsPanel(cache)
 	interfaceSettingsFrame.enhancementDisplayPanel.name = L["ShamanEnhancementFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.enhancementDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.enhancementDisplayPanel, "EnhancementL["Shaman"])
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.enhancementDisplayPanel, "EnhancementL["Shaman"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.enhancementDisplayPanel)
 
 	parent = interfaceSettingsFrame.enhancementDisplayPanel
@@ -2680,7 +2680,7 @@ local function RestorationConstructOptionsPanel(cache)
 	interfaceSettingsFrame.restorationDisplayPanel.name = L["ShamanRestorationFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.restorationDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.restorationDisplayPanel, L["ShamanRestorationFull"])
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.restorationDisplayPanel, L["ShamanRestorationFull"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.restorationDisplayPanel)
 
 	parent = interfaceSettingsFrame.restorationDisplayPanel

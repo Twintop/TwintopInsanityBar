@@ -287,9 +287,11 @@ function SlashCmdList.TWINTOP(msg)
 		TRB.Functions.News:Show()
 	else
 		if TRB.Data.barConstructedForSpec == nil then
-			InterfaceOptionsFrame_OpenToCategory(TRB.Frames.interfaceSettingsFrameContainer.panel)
+			Settings.OpenToCategory(TRB.Details.addonCategory.main.ID)
 		else
-			InterfaceOptionsFrame_OpenToCategory(TRB.Frames.interfaceSettingsFrameContainer.panel)
+			print(TRB.Functions.Table:Print(TRB.Details.addonCategory.specs[TRB.Data.barConstructedForSpec].parentCategory.subcategories))
+			Settings.OpenToCategory(TRB.Details.addonCategory.main.ID)
+			Settings.OpenToCategory(TRB.Details.addonCategory.specs[TRB.Data.barConstructedForSpec].ID)
 		end
 	end
 end

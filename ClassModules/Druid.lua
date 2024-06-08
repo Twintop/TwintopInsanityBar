@@ -752,7 +752,8 @@ local function GetCurrentMoonSpell()
 	local currentTime = GetTime()
 	if talents:IsTalentActive(spells.newMoon) and (moon.attributes.checkAfter == nil or currentTime >= moon.attributes.checkAfter) then
 		---@diagnostic disable-next-line: redundant-parameter
-		moon.attributes.currentSpellId = select(7, GetSpellInfo(spells.newMoon.name))
+		local spellInfo = C_Spell.GetSpellInfo(spells.newMoon.name) --[[@as SpellInfo]]
+		moon.attributes.currentSpellId = spellInfo.spellID
 
 		if moon.attributes.currentSpellId == spells.newMoon.id then
 			moon.attributes.currentKey = "newMoon"
@@ -2244,16 +2245,16 @@ local function CastingSpell()
 				TRB.Functions.Character:ResetCastingSnapshotData()
 				return false
 			else
-				local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
+				local spellInfo = C_Spell.GetSpellInfo(currentSpellName) --[[@as SpellInfo]]
 
-				if spellId then
-					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellId, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true)
+				if spellInfo.spellID then
+					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellInfo.spellID, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true)
 
 					snapshotData.casting.startTime = currentSpellStartTime / 1000
 					snapshotData.casting.endTime = currentSpellEndTime / 1000
 					snapshotData.casting.resourceRaw = manaCost
-					snapshotData.casting.spellId = spellId
-					snapshotData.casting.icon = string.format("|T%s:0|t", spellIcon)
+					snapshotData.casting.spellId = spellInfo.spellID
+					snapshotData.casting.icon = string.format("|T%s:0|t", spellInfo.iconID)
 
 					UpdateCastingResourceFinal_Restoration()
 				else
@@ -3303,7 +3304,9 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 						snapshotData.snapshots[entry.spellId].attributes.currententry.spellId = spells.newMoon.id
 						snapshotData.snapshots[entry.spellId].attributes.currentKey = "newMoon"
 						snapshotData.snapshots[entry.spellId].attributes.checkAfter = currentTime + 20
-						spells.newMoon.attributes.currentIcon = select(3, GetSpellInfo(202767)) -- Use the old Legion artifact spell ID since New Moon's icon returns incorrect for several seconds after casting Full Moon
+						local spellInfo = C_Spell.GetSpellInfo(202767) --[[@as SpellInfo]]
+---@diagnostic disable-next-line: undefined-field
+						spells.newMoon.attributes.currentIcon = spellInfo.originalIconID -- Use the old Legion artifact spell ID since New Moon's icon returns incorrect for several seconds after casting Full Moon
 					end
 				end
 			elseif specId == 2 and TRB.Data.barConstructedForSpec == "feral" then

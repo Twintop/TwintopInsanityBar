@@ -1895,7 +1895,7 @@ local function BeastMasteryConstructOptionsPanel(cache)
 	interfaceSettingsFrame.beastMasteryDisplayPanel.name = L["HunterBeastMasteryFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.beastMasteryDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.beastMasteryDisplayPanel, L["HunterBeastMasteryFull"])
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.beastMasteryDisplayPanel, L["HunterBeastMasteryFull"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.beastMasteryDisplayPanel)
 
 	parent = interfaceSettingsFrame.beastMasteryDisplayPanel
@@ -3157,7 +3157,7 @@ local function MarksmanshipConstructOptionsPanel(cache)
 	interfaceSettingsFrame.marksmanshipDisplayPanel.name = L["HunterMarksmanshipFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.marksmanshipDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.marksmanshipDisplayPanel, L["HunterMarksmanshipFull"])
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.marksmanshipDisplayPanel, L["HunterMarksmanshipFull"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.marksmanshipDisplayPanel)
 
 	parent = interfaceSettingsFrame.marksmanshipDisplayPanel
@@ -4036,7 +4036,7 @@ local function SurvivalConstructOptionsPanel(cache)
 	interfaceSettingsFrame.survivalDisplayPanel.name = L["HunterSurvivalFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.survivalDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.survivalDisplayPanel, L["HunterSurvivalFull"])
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.survivalDisplayPanel, L["HunterSurvivalFull"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.survivalDisplayPanel)
 
 	parent = interfaceSettingsFrame.survivalDisplayPanel

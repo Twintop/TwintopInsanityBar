@@ -1805,7 +1805,8 @@ local function UpdateResourceBar()
 								if specSettings.audio.aimedShot.enabled and (not snapshotData.audio.playedAimedShotCue) and snapshots[spells.aimedShot.id].cooldown:IsUsable() then
 									local remainingCd = snapshots[spells.aimedShot.id].cooldown:GetRemainingTime()
 									local timeThreshold = 0
-									local castTime = select(4, GetSpellInfo(spell.id)) / 1000
+									local spellInfo = C_Spell.GetSpellInfo(spell.id) --[[@as SpellInfo]]
+									local castTime = spellInfo.castTime / 1000
 									if specSettings.audio.aimedShot.mode == "gcd" then
 										timeThreshold = gcd * specSettings.audio.aimedShot.gcds
 									elseif specSettings.audio.aimedShot.mode == "time" then

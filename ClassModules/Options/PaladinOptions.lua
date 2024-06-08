@@ -1008,7 +1008,7 @@ local function HolyConstructOptionsPanel(cache)
 	interfaceSettingsFrame.holyDisplayPanel.name = L["PaladinHolyFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.holyDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.holyDisplayPanel, L["PaladinHoly"] .. "L["Paladin"])
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.holyDisplayPanel, L["PaladinHoly"] .. "L["Paladin"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.holyDisplayPanel)
 
 	parent = interfaceSettingsFrame.holyDisplayPanel

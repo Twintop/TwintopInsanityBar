@@ -1,4 +1,4 @@
-## Interface: 100207
+## Interface: 110000
 ## Title: Twintop's Resource Bar
 ## Title-deDE: Twintops Ressourcenleiste
 ## Title-esES: Barra de Recursos de Twintop
@@ -13,8 +13,8 @@
 ## Title-zhTW: Twintop 的資源欄
 ## Author: Twintop
 ## X-AuthorServer: Frostmourne-US/OCE
-## Version: 10.2.7.8
-## X-ReleaseType: release
+## Version: 11.0.0.0
+## X-ReleaseType: alpha
 ## X-ReleaseDate: 2024-06-07
 ## SavedVariables: TwintopInsanityBarSettings
 ## IconTexture: 1386550

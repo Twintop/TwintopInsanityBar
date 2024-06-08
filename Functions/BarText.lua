@@ -474,17 +474,16 @@ local function AddToBarTextCache(input)
 				if z ~= nil then
 					local iconName = string.sub(input, a, z)
 					local spellId = string.sub(input, a+7, z-1)
-					local _, icon
-					_, _, icon = GetSpellInfo(spellId)
+					local spellInfo = C_Spell.GetSpellInfo(spellId) --[[@as SpellInfo]]
 
-					if icon ~= nil then
+					if spellInfo.iconID ~= nil then
 						match = true
 						if p ~= a then
 							returnText = returnText .. string.sub(input, p, a-1)
 						end
 
 						returnText = returnText .. "%s"
-						TRB.Data.lookup[iconName] = string.format("|T%s:0|t", icon)
+						TRB.Data.lookup[iconName] = string.format("|T%s:0|t", spellInfo.iconID)
 						table.insert(returnVariables, iconName)
 						p = z1 + 1
 					end

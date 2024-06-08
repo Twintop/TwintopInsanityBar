@@ -2249,7 +2249,7 @@ local function AssassinationConstructOptionsPanel(cache)
 	interfaceSettingsFrame.assassinationDisplayPanel.name = L["RogueAssassinationFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.assassinationDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.assassinationDisplayPanel, L["RogueAssassinationFull"])
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.assassinationDisplayPanel, L["RogueAssassinationFull"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.assassinationDisplayPanel)
 
 	parent = interfaceSettingsFrame.assassinationDisplayPanel
@@ -3349,7 +3349,7 @@ local function OutlawConstructOptionsPanel(cache)
 	interfaceSettingsFrame.outlawDisplayPanel.name = L["RogueOutlawFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.outlawDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.outlawDisplayPanel, "OutlawL["Rogue"])
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.outlawDisplayPanel, "OutlawL["Rogue"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.outlawDisplayPanel)
 
 	parent = interfaceSettingsFrame.outlawDisplayPanel
@@ -4390,7 +4390,7 @@ local function SubtletyConstructOptionsPanel(cache)
 	interfaceSettingsFrame.subtletyDisplayPanel.name = L["RogueSubtletyFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.subtletyDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.subtletyDisplayPanel, L["RogueSubtletyFull"])
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.subtletyDisplayPanel, L["RogueSubtletyFull"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.subtletyDisplayPanel)
 
 	parent = interfaceSettingsFrame.subtletyDisplayPanel

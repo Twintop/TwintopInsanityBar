@@ -455,7 +455,9 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
                 duration = 0
             end
         else
-            startTime, duration, _, _ = GetSpellCooldown(self.parent.spell.id)
+            local spellCooldown = C_Spell.GetSpellCooldown(self.parent.spell.id) --[[@as SpellCooldownInfo]]
+            startTime = spellCooldown.startTime
+            duration = spellCooldown.duration
         end
 
         local gcd = TRB.Functions.Character:GetCurrentGCDLockRemaining()

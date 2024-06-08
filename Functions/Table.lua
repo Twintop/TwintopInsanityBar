@@ -14,7 +14,10 @@ function TRB.Functions.Table:Length(T)
 	return count
 end
 
-function TRB.Functions.Table:Print(T, indent)
+function TRB.Functions.Table:Print(T, indent, maxDepth, currentDepth)
+	maxDepth = maxDepth or 2
+	currentDepth = currentDepth or 0
+	currentDepth = currentDepth + 1
 	if not indent then
 		indent = 0
 	end
@@ -34,7 +37,11 @@ function TRB.Functions.Table:Print(T, indent)
 		elseif (type(v) == "string") then
 			toprint = toprint .. "\"" .. v .. "\",\r\n"
 		elseif (type(v) == "table") then
-			toprint = toprint .. TRB.Functions.Table:Print(v, indent + 2) .. ",\r\n"
+			if currentDepth <= maxDepth then
+				toprint = toprint .. TRB.Functions.Table:Print(v, indent + 2, maxDepth, currentDepth) .. ",\r\n"
+			else
+				toprint = toprint .. tostring(v)
+			end
 		else
 			toprint = toprint .. "\"" .. tostring(v) .. "\",\r\n"
 		end

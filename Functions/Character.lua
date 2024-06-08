@@ -219,8 +219,11 @@ end
 
 
 function TRB.Functions.Character:GetCurrentGCDLockRemaining()
+	local startTime, duration
 ---@diagnostic disable-next-line: redundant-parameter
-	local startTime, duration, _ = GetSpellCooldown(61304)
+	local spellCooldown = C_Spell.GetSpellCooldown(61304) --[[@as SpellCooldownInfo]]
+	startTime = spellCooldown.startTime
+	duration = spellCooldown.duration
 	return (startTime + duration - GetTime())
 end
 

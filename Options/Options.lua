@@ -530,8 +530,7 @@ local function ConstructAddonOptionsPanel()
 	interfaceSettingsFrame.optionsPanel.name = L["GlobalOptions"]
 	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.optionsPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.optionsPanel, L["GlobalOptions"])
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.optionsPanel)
+	local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.optionsPanel, L["GlobalOptions"])
 
 	parent = interfaceSettingsFrame.optionsPanel
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["GlobalOptions"], oUi.xCoord, yCoord)
@@ -891,8 +890,7 @@ local function ConstructImportExportPanel()
 	interfaceSettingsFrame.importExportPanel.name = string.format("%s/%s", L["Import"], L["Export"])
 	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.importExportPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.importExportPanel, string.format("%s/%s", L["Import"], L["Export"]))
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.importExportPanel)
+	local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.importExportPanel, string.format("%s/%s", L["Import"], L["Export"]))
 
 	parent = interfaceSettingsFrame.importExportPanel
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, string.format("%s/%s", L["Import"], L["Export"]), oUi.xCoord, yCoord)
@@ -2359,10 +2357,10 @@ function TRB.Options:ConstructOptionsPanel()
 
 	---@diagnostic disable-next-line: inject-field
 	interfaceSettingsFrame.panel.yCoord = yCoord
-	local layout
-	TRB.Details.addonCategory, layout = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.panel, L["TwintopsResourceBar"])
-	--Settings.RegisterAddOnCategory(TRB.Details.addonCategory)
-	InterfaceOptions_AddCategory(interfaceSettingsFrame.panel)
+	TRB.Details.addonCategory = {}
+	TRB.Details.addonCategory.specs = {}
+	TRB.Details.addonCategory.main, _ = Settings.RegisterCanvasLayoutCategory(interfaceSettingsFrame.panel, L["TwintopsResourceBar"])
+	Settings.RegisterAddOnCategory(TRB.Details.addonCategory.main)
 
 	ConstructAddonOptionsPanel()
 	ConstructImportExportPanel()

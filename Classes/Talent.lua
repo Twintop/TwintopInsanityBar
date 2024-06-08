@@ -20,13 +20,13 @@ function TRB.Classes.Talent:New(id, currentRank, maxRank)
     local self = {}
     setmetatable(self, TRB.Classes.Talent)
 
-    local name, _, icon = GetSpellInfo(id)
-    local iconString = string.format("|T%s:0|t", icon)
+    local spellInfo = C_Spell.GetSpellInfo(id) --[[@as SpellInfo]]
+    local iconString = string.format("|T%s:0|t", spellInfo.originalIconID)
 
     self.id = id
     self.currentRank = currentRank
     self.maxRank = maxRank
-    self.name = name
+    self.name = spellInfo.name
     self.icon = iconString
     return self
 end
@@ -80,18 +80,21 @@ function TRB.Classes.Talents:GetTalents()
 
 					if entryId ~= nil then
 						local entryInfo = C_Traits.GetEntryInfo(configId, entryId)
-						local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
+						
+						if entryInfo.definitionID ~= nil then
+							local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
 
-						if definitionInfo ~= nil then
-							local spellId = nil
-							if definitionInfo.spellID ~= nil then
-								spellId = definitionInfo.spellID
-							elseif definitionInfo.overriddenSpellID ~= nil then
-								spellId = definitionInfo.overriddenSpellID
-							end
-							
-							if spellId ~= nil then
-								talents[spellId] = TRB.Classes.Talent:New(spellId, node.ranksPurchased, node.maxRanks)
+							if definitionInfo ~= nil then
+								local spellId = nil
+								if definitionInfo.spellID ~= nil then
+									spellId = definitionInfo.spellID
+								elseif definitionInfo.overriddenSpellID ~= nil then
+									spellId = definitionInfo.overriddenSpellID
+								end
+								
+								if spellId ~= nil then
+									talents[spellId] = TRB.Classes.Talent:New(spellId, node.ranksPurchased, node.maxRanks)
+								end
 							end
 						end
 					end

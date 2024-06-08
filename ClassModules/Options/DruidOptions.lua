@@ -2043,7 +2043,7 @@ local function BalanceConstructOptionsPanel(cache)
 	interfaceSettingsFrame.balanceDisplayPanel.name = L["DruidBalanceFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.balanceDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.balanceDisplayPanel, L["DruidBalanceFull"])
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.balanceDisplayPanel, L["DruidBalanceFull"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.balanceDisplayPanel)
 
 	parent = interfaceSettingsFrame.balanceDisplayPanel
@@ -2983,7 +2983,7 @@ local function FeralConstructOptionsPanel(cache)
 	interfaceSettingsFrame.feralDisplayPanel.name = L["DruidFeralFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.feralDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.feralDisplayPanel, L["DruidFeralFull"])
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.feralDisplayPanel, L["DruidFeralFull"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.feralDisplayPanel)
 
 	parent = interfaceSettingsFrame.feralDisplayPanel
@@ -3604,7 +3604,7 @@ local function RestorationConstructOptionsPanel(cache)
 	interfaceSettingsFrame.restorationDisplayPanel.name = L["DruidRestorationFull"]
 ---@diagnostic disable-next-line: undefined-field
 	interfaceSettingsFrame.restorationDisplayPanel.parent = parent.name
-	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory, interfaceSettingsFrame.restorationDisplayPanel, L["DruidRestorationFull"])
+	--local category, layout = Settings.RegisterCanvasLayoutSubcategory(TRB.Details.addonCategory.main, interfaceSettingsFrame.restorationDisplayPanel, L["DruidRestorationFull"])
 	InterfaceOptions_AddCategory(interfaceSettingsFrame.restorationDisplayPanel)
 
 	parent = interfaceSettingsFrame.restorationDisplayPanel

@@ -690,7 +690,7 @@ local function CastingSpell()
 				TRB.Functions.Character:ResetCastingSnapshotData()
 				return false
 			else
-				local _, _, spellIcon, _, _, _, spellId = GetSpellInfo(currentSpellName)
+				local _, _, spellIcon, _, _, _, spellId = C_Spell.GetSpellInfo(currentSpellName)
 
 				if spellId then
 					local manaCost = -TRB.Classes.SpellBase.GetPrimaryResourceCost({ id = spellId, primaryResourceType = Enum.PowerType.Mana, primaryResourceTypeProperty = "cost", primaryResourceTypeMod = 1.0 }, true)
