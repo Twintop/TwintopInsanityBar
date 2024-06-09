@@ -3288,25 +3288,23 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 					snapshotData.snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.newMoon.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshotData.snapshots[entry.spellId].attributes.currententry.spellId = spells.halfMoon.id
-						snapshotData.snapshots[entry.spellId].attributes.currentKey = "halfMoon"
-						snapshotData.snapshots[entry.spellId].attributes.checkAfter = currentTime + 20
+						snapshotData.snapshots[spells.newMoon.id].attributes.currentSpellId = spells.halfMoon.id
+						snapshotData.snapshots[spells.newMoon.id].attributes.currentKey = "halfMoon"
+						snapshotData.snapshots[spells.newMoon.id].attributes.checkAfter = currentTime + 20
 					end
 				elseif entry.spellId == spells.halfMoon.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
-						snapshotData.snapshots[entry.spellId].attributes.currententry.spellId = spells.fullMoon.id
-						snapshotData.snapshots[entry.spellId].attributes.currentKey = "fullMoon"
-						snapshotData.snapshots[entry.spellId].attributes.checkAfter = currentTime + 20
+						snapshotData.snapshots[spells.newMoon.id].attributes.currentSpellId = spells.fullMoon.id
+						snapshotData.snapshots[spells.newMoon.id].attributes.currentKey = "fullMoon"
+						snapshotData.snapshots[spells.newMoon.id].attributes.checkAfter = currentTime + 20
 					end
 				elseif entry.spellId == spells.fullMoon.id then
 					if entry.type == "SPELL_CAST_SUCCESS" then
 						-- New Moon doesn't like to behave when we do this
-						snapshotData.snapshots[entry.spellId].attributes.currententry.spellId = spells.newMoon.id
-						snapshotData.snapshots[entry.spellId].attributes.currentKey = "newMoon"
-						snapshotData.snapshots[entry.spellId].attributes.checkAfter = currentTime + 20
-						local spellInfo = C_Spell.GetSpellInfo(202767) --[[@as SpellInfo]]
----@diagnostic disable-next-line: undefined-field
-						spells.newMoon.attributes.currentIcon = spellInfo.originalIconID -- Use the old Legion artifact spell ID since New Moon's icon returns incorrect for several seconds after casting Full Moon
+						snapshotData.snapshots[spells.newMoon.id].attributes.currentSpellId = spells.newMoon.id
+						snapshotData.snapshots[spells.newMoon.id].attributes.currentKey = "newMoon"
+						snapshotData.snapshots[spells.newMoon.id].attributes.checkAfter = currentTime + 20
+						spells.newMoon.attributes.currentIcon = select(3, GetSpellInfo(202767)) -- Use the old Legion artifact spell ID since New Moon's icon returns incorrect for several seconds after casting Full Moon
 					end
 				end
 			elseif specId == 2 and TRB.Data.barConstructedForSpec == "feral" then
