@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 11.0.0.0-alpha02 (2024-06-09)
+## Druid
+### Balance
+
+- (FIX (Twintop)) Fix Lua errors when casting New Moon, Half Moon, and Full Moon.
+
+---
+
 # 11.0.0.0-alpha01 (2024-06-08)
 ## General
 
