@@ -11,6 +11,18 @@ local content = [====[
 
 ---
 
+# 11.0.0.0-alpha03 (2024-06-10)
+## General
+
+- (FIX (Twintop)) Don't allow PvP abilities to show threshold lines if you aren't in PvP or they aren't talented.
+
+## Hunter
+### Beast Mastery
+
+- (FIX (Twintop)) Prevent bar and bar border color changes when your character does not have the appropriate talent learned.
+
+---
+
 # 11.0.0.0-alpha02 (2024-06-09)
 ## Druid
 ### Balance
