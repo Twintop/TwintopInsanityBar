@@ -136,7 +136,7 @@ function TRB.Classes.SpellBase:New(spellAttributes)
             (key == "tickRate"                         and type(value) == "number") or
             (key == "resourcePerTick"                  and type(value) == "number") or
             (key == "isBuff"                           and type(value) == "boolean") or
-            (key == "isPvP"                            and type(value) == "boolean") or
+            (key == "isPvp"                            and type(value) == "boolean") or
             (key == "tocMinVersion"                    and type(value) == "number") then
             self[key] = value
         elseif key == "name" or key == "icon" then
