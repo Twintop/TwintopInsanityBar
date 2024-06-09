@@ -1535,7 +1535,7 @@ local function UpdateResourceBar()
 						local showThreshold = true
 						local thresholdColor = specSettings.colors.threshold.over
 						local frameLevel = TRB.Data.constants.frameLevels.thresholdOver
-						
+
 						if spell.isSnowflake then -- These are special snowflakes that we need to handle manually
 							if spell.id == spells.killShot.id then
 								local targetUnitHealth
@@ -1632,7 +1632,7 @@ local function UpdateResourceBar()
 						barColor = specSettings.colors.bar.frenzyUse
 					end
 				else
-					if affectingCombat then
+					if affectingCombat and talents:IsTalentActive(spells.barbedShot) then
 						if snapshots[spells.barbedShot.id].cooldown.charges == 2 then
 							barColor = specSettings.colors.bar.frenzyUse
 						elseif talents:IsTalentActive(spells.scentOfBlood) and snapshots[spells.barbedShot.id].cooldown.charges > 0 and beastialWrathCooldownRemaining < (barbedShotPartialCharges * spells.barbedWrath.attributes.beastialWrathCooldownReduction) then
@@ -1662,7 +1662,7 @@ local function UpdateResourceBar()
 					snapshotData.audio.overcapCue = false
 				end
 
-				if beastialWrathCooldownRemaining <= gcd and affectingCombat then
+				if beastialWrathCooldownRemaining <= gcd and affectingCombat and talents:IsTalentActive(spells.beastialWrath) then
 					if specSettings.colors.bar.beastialWrathEnabled then
 						barBorderColor = specSettings.colors.bar.borderBeastialWrath
 					end
