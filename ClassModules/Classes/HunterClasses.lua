@@ -159,7 +159,6 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         duration = 8,
         hasCharges = true,
         hasCooldown = true,
-        beastialWrathCooldownReduction = 12,
         isTalent = true
     })
     self.savagery = TRB.Classes.SpellBase:New({

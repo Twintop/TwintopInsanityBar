@@ -449,7 +449,11 @@ function TRB.Classes.SnapshotCooldown:Refresh(force, retryForce)
         local startTime = nil
         local duration = 0
         if self.parent.spell.hasCharges == true then
-            self.charges, self.maxCharges, startTime, duration, _ = GetSpellCharges(self.parent.spell.id)
+            local spellCharges = C_Spell.GetSpellCharges(self.parent.spell.id)
+            self.charges = spellCharges.currentCharges
+            self.maxCharges = spellCharges.maxCharges
+            startTime = spellCharges.cooldownStartTime
+            duration = spellCharges.cooldownDuration
             if self.charges == self.maxCharges then
                 startTime = 0
                 duration = 0

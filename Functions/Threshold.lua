@@ -172,7 +172,7 @@ function TRB.Functions.Threshold:AdjustThresholdDisplay(spell, threshold, showTh
 	if settings.thresholds[spell.settingKey].enabled and showThreshold then
 		local currentTime = GetTime()
 		local frameLevel = currentFrameLevel
-		local outOfRange = settings.thresholds.outOfRange == true and UnitAffectingCombat("player") and IsSpellInRange(spell.name, "target") == 0
+		local outOfRange = settings.thresholds.outOfRange == true and UnitAffectingCombat("player") and C_Spell.IsSpellInRange(spell.name, "target") == 0
 		local thresholdUsable = false
 
 		if outOfRange then

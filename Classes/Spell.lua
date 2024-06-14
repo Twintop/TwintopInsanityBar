@@ -237,7 +237,7 @@ function TRB.Classes.SpellBase:GetPrimaryResourceCost(dontReturnLastNonZero)
             self._lastPrimaryResourceValueCheck = currentTime
             return self._lastNonZeroPrimaryResourceValue
         end
-        local spc = GetSpellPowerCost(self.id)
+        local spc = C_Spell.GetSpellPowerCost(self.id)
         if spc ~= nil then
             for x = 1, #spc do
                 if spc[x].type == self.primaryResourceType and spc[x][self.primaryResourceTypeProperty] > 0 then

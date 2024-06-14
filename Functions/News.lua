@@ -11,9 +11,10 @@ local content = [====[
 
 ---
 
-# 11.0.0.0-alpha03 (2024-06-10)
+# 11.0.0.0-alpha03 (2024-06-14)
 ## General
 
+- [#356 - FIX (Twintop)](#356) Fix more Lua errors caused by API additions and game modifications for 11.0 since last bar release.
 - (FIX (Twintop)) Don't allow PvP abilities to show threshold lines if you aren't in PvP or they aren't talented.
 
 ## Hunter
