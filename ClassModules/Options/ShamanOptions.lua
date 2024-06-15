@@ -816,10 +816,6 @@ local function RestorationLoadDefaultSettings(includeBarText)
 			potionOfFrozenFocusRank3 = {
 				enabled = true,
 			},
-			conjuredChillglobe = {
-				enabled = true,
-				cooldown = true
-			},
 			potionCooldown = {
 				enabled=true,
 				mode="time",

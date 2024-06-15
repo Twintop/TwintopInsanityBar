@@ -122,6 +122,12 @@ function TRB.Classes.TargetData:HandleCombatLogDebuff(spellId, type, guid)
     elseif type == "SPELL_AURA_REMOVED" then
         self.count[spellId] = self.count[spellId] - 1
         triggerUpdate = true
+    elseif type == "SPELL_AURA_APPLIED_DOSE" then
+        triggerUpdate = true
+    elseif type == "SPELL_AURA_REMOVED_DOSE" then
+        triggerUpdate = true
+    elseif type == "SPELL_AURA_REFRESH" then
+        triggerUpdate = true
     end
     return triggerUpdate
 end
@@ -307,6 +313,8 @@ end
 ---@field public count integer
 ---@field public hasSnapshot boolean
 ---@field public snapshot number
+---@field public hasStacks boolean
+---@field public stacks integer
 ---@field public autoUpdate boolean
 ---@field private guid string
 ---@field private target TRB.Classes.Target
@@ -352,6 +360,8 @@ function TRB.Classes.TargetSpell:New(spell, target, isDot, hasCounter, hasSnapsh
     self.count = 0
     self.hasSnapshot = hasSnapshot
     self.snapshot = 0.0
+    self.hasStacks = spell.hasStacks
+    self.stacks = 0
     self.autoUpdate = autoUpdate
     self.guid = ""
     return self
@@ -361,6 +371,31 @@ end
 ---@param guid string # The GUID of the target
 function TRB.Classes.TargetSpell:SetTargetGuid(guid)
     self.guid = guid
+end
+
+---Sets the aura related date for the target spell
+---@param self TRB.Classes.TargetSpell
+---@param unitToken string
+---@param isBuff boolean # True = Buff, False = Debuff
+local function SetAuraData(self, unitToken, isBuff)
+    local currentTime = GetTime()
+    ---@type AuraData?
+    local aura
+    
+    if isBuff then
+        aura = TRB.Functions.Aura:FindBuffById(self.id, unitToken, "player")
+    else
+        aura = TRB.Functions.Aura:FindDebuffById(self.id, unitToken, "player")
+    end
+    
+    if aura ~= nil then
+        self.active = true
+        self.remainingTime = aura.expirationTime - currentTime
+        self.endTime = aura.expirationTime
+        self.stacks = aura.applications
+    else
+        self:Reset()
+    end
 end
 
 ---Updates this spell's snapshotting
@@ -375,34 +410,14 @@ function TRB.Classes.TargetSpell:Update(currentTime)
             if self.isDot then
                 if self.spell.isBuff and self.spell.isDebuff then -- Buff on friendly, debuff on unfriendly
                     if self.target ~= nil and self.target.isFriend then
-                        local buff = TRB.Functions.Aura:FindBuffById(self.id, unitToken, "player")
-                        if buff ~= nil then
-                            self.active = true
-                            self.remainingTime = buff.expirationTime - currentTime
-                            self.endTime = buff.expirationTime
-                        end
+                        SetAuraData(self, unitToken, true)
                     else
-                        local debuff = TRB.Functions.Aura:FindDebuffById(self.id, unitToken, "player")
-                        if debuff ~= nil then
-                            self.active = true
-                            self.remainingTime = debuff.expirationTime - currentTime
-                            self.endTime = debuff.expirationTime
-                        end
+                        SetAuraData(self, unitToken, false)
                     end
                 elseif self.spell.isBuff then
-                    local buff = TRB.Functions.Aura:FindBuffById(self.id, unitToken, "player")
-                    if buff ~= nil then
-                        self.active = true
-                        self.remainingTime = buff.expirationTime - currentTime
-                        self.endTime = buff.expirationTime
-                    end
+                    SetAuraData(self, unitToken, true)
                 else
-                    local debuff = TRB.Functions.Aura:FindDebuffById(self.id, unitToken, "player")
-                    if debuff ~= nil then
-                        self.active = true
-                        self.remainingTime = debuff.expirationTime - currentTime
-                        self.endTime = debuff.expirationTime
-                    end
+                    SetAuraData(self, unitToken, false)
                 end
             end
 
@@ -432,8 +447,7 @@ function TRB.Classes.TargetSpell:HandleCombatLogBuffOrDebuff(type)
     elseif type == "SPELL_AURA_REMOVED" then
         self.active = false
         if self.isDot and self.autoUpdate then
-            self.remainingTime = 0
-            self.endTime = nil
+            self:Reset()
         end
         triggerUpdate = true
     --elseif type == "SPELL_PERIODIC_DAMAGE" then
@@ -448,4 +462,5 @@ function TRB.Classes.TargetSpell:Reset()
     self.endTime = nil
     self.count = 0
     self.snapshot = 0.0
+    self.stacks = 0
 end

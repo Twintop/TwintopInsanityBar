@@ -2050,44 +2050,13 @@ function TRB.Functions.OptionsUi:GenerateThresholdLinesForHealers(parent, contro
 		yCoord = yCoord - 20
 	end
 
-	yCoord = yCoord - 25
-	controls.labels.thresholdItems = TRB.Functions.OptionsUi:BuildLabel(parent, L["Items"], 5, yCoord, 300, 20)
+	--yCoord = yCoord - 25
+	--controls.labels.thresholdItems = TRB.Functions.OptionsUi:BuildLabel(parent, L["Items"], 5, yCoord, 300, 20)
 	
-	--NOTE: the order of these checkboxes is reversed!
-	yCoord = yCoord - 20
-	controls.checkBoxes.conjuredChillglobeThresholdShowCooldown = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_conjuredChillglobe_cooldown", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.conjuredChillglobeThresholdShowCooldown
-	f:SetPoint("TOPLEFT", oUi.xCoord+oUi.xPadding*2, yCoord-20)
-	getglobal(f:GetName() .. 'Text'):SetText(L["ThresholdShowWhileOnCooldown"])
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = string.format(L["ThresholdHealerShowWhileOnCooldownTooltipWithItem"], L["ConjuredChillglobe"])
-	f:SetChecked(spec.thresholds.conjuredChillglobe.cooldown)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.conjuredChillglobe.cooldown = self:GetChecked()
-	end)
-
-	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.conjuredChillglobeThresholdShowCooldown, spec.thresholds.conjuredChillglobe.enabled)
-	
-	controls.checkBoxes.conjuredChillglobeThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_"..className.."_"..specId.."_Threshold_Option_conjuredChillglobe", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.conjuredChillglobeThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText("Conjured Chillglobe")
-	---@diagnostic disable-next-line: inject-field
-	f.tooltip = L["ThresholdHealerToggleConjuredChillglobe"]
-	f:SetChecked(spec.thresholds.conjuredChillglobe.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.conjuredChillglobe.enabled = self:GetChecked()
-	TRB.Functions.OptionsUi:ToggleCheckboxEnabled(controls.checkBoxes.conjuredChillglobeThresholdShowCooldown, spec.thresholds.conjuredChillglobe.enabled)
-	end)
-	yCoord = yCoord - 20
-
-	yCoord = yCoord - 40
-
 	return yCoord
 end
 
 function TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, classId, specId, yCoord, primaryResourceString, includeOvercap)
-	--local _, className, _ = GetClassInfo(classId)
 	local f = nil
 	controls.barColorsSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["BarColorsChangingHeader"], oUi.xCoord, yCoord)
 

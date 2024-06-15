@@ -82,6 +82,7 @@ end
 ---@field public ticks integer? # How many ticks this spell have at the beginning.
 ---@field public tickRate number? # How many seconds between ticks.
 ---@field public resourcePerTick number? # How many resources are generated per tick.
+---@field public hasStacks boolean? # Does this spell's buff/debuff has stacks?
 ---@field public isBuff boolean? # Is this spell a buff?
 ---@field public isPvp boolean? # Is this a PvP only spell?
 ---@field public tocMinVersion number? # Minimum TOC version of WoW before attempting to use/load this spell.
@@ -135,6 +136,7 @@ function TRB.Classes.SpellBase:New(spellAttributes)
             (key == "ticks"                            and type(value) == "number" and tonumber(value, 10) ~= nil) or
             (key == "tickRate"                         and type(value) == "number") or
             (key == "resourcePerTick"                  and type(value) == "number") or
+            (key == "hasStacks"                        and type(value) == "boolean") or
             (key == "isBuff"                           and type(value) == "boolean") or
             (key == "isPvp"                            and type(value) == "boolean") or
             (key == "tocMinVersion"                    and type(value) == "number") then

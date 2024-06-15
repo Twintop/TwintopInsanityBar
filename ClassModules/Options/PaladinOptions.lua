@@ -208,10 +208,6 @@ local function HolyLoadDefaultSettings(includeBarText)
 			potionOfFrozenFocusRank3 = {
 				enabled = true,
 			},
-			conjuredChillglobe = {
-				enabled = true,
-				cooldown = true
-			},
 			daybreak = {
 				enabled = true,
 				cooldown = true

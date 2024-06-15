@@ -135,8 +135,6 @@ if locale == "enGB" then
     L["PriestShadowCheckboxMindFlayInsanityTooltip"] = "This will change the bar border colour when you are able to cast Mind Flay: Insanity / Mind Spike: Insanity"
     L["PriestShadowCheckboxDeathspeakerTooltip"] = "This will change the bar border colour when you are able to cast Shadow Word: Death with the Deathspeaker proc effect active."
     L["PriestShadowCheckboxMindDevourerTooltip"] = "This will change the bar border colour when you are able to cast Devouring Plague for 0 Insanity cost via a Mind Devourer proc."
-    L["PriestShadowCheckboxDeathsTormentTooltip"] = "This will change the bar border colour when you have X or more stacks of Death's Torment, based on configuration under the 'Audio & Tracking' tab."
-    L["PriestShadowCheckboxDeathsTormentMaxTooltip"] = "This will change the bar border colour when you are at maximum stacks of Death's Torment."
     L["PriestShadowTextColorsHeader"] = "Insanity Text Colours"
     L["PriestShadowCheckboxThresholdOverTooltip"] = "This will change the Insanity text colour when you are able to cast Devouring Plague"
     L["PriestShadowCheckboxThresholdOvercapTooltip"] = "This will change the Insanity text colour when your current hardcast spell will result in overcapping Insanity (as configured)."

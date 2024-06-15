@@ -74,7 +74,6 @@ if locale == "deDE" then
     L["Innervate"] = "Gelassenheit"
     L["Shadowfiend"] = "Schattengeist"
     L["SymbolOfHope"] = "Symbol der Hoffnung"
-    L["ConjuredChillglobe"] = "Herbeigezauberte Frostkugel"
     L["AeratedManaPotion"] = "Lufterfüllter Manatrank"
     L["PotionOfFrozenFocus"] = "Trank des gefrorenen Fokus"
     L["PotionOfChilledClarity"] = "Trank der kühlen Klarheit"

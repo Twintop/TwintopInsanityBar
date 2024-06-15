@@ -191,12 +191,6 @@ local function FillSpecializationCache()
 					mana = 36521
 				},
 			},
-			conjuredChillglobe = {
-				id = 194300,
-				isEquipped = false,
-				manaThresholdPercent = 0.65,
-				mana = 0
-			},
 			alchemyStone = false
 		}
 	}
@@ -222,8 +216,6 @@ local function FillSpecializationCache()
 	specCache.restoration.snapshotData.snapshots[spells.potionOfFrozenFocusRank1.id] = TRB.Classes.Healer.ChanneledManaPotion:New(spells.potionOfFrozenFocusRank1, CalculateManaGain)
 	---@type TRB.Classes.Snapshot
 	specCache.restoration.snapshotData.snapshots[spells.aeratedManaPotionRank1.id] = TRB.Classes.Snapshot:New(spells.aeratedManaPotionRank1)
-	---@type TRB.Classes.Snapshot
-	specCache.restoration.snapshotData.snapshots[spells.conjuredChillglobe.id] = TRB.Classes.Snapshot:New(spells.conjuredChillglobe)
 	---@type TRB.Classes.Healer.MoltenRadiance
 	specCache.restoration.snapshotData.snapshots[spells.moltenRadiance.id] = TRB.Classes.Healer.MoltenRadiance:New(spells.moltenRadiance)
 	---@type TRB.Classes.Healer.BlessingOfWinter
@@ -1410,9 +1402,6 @@ local function UpdateSnapshot_Restoration()
 	-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
 	snapshots[spells.aeratedManaPotionRank1.id].cooldown.startTime, snapshots[spells.aeratedManaPotionRank1.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
 	snapshots[spells.aeratedManaPotionRank1.id].cooldown:GetRemainingTime(currentTime)
-
-	snapshots[spells.conjuredChillglobe.id].cooldown.startTime, snapshots[spells.conjuredChillglobe.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.conjuredChillglobe.id)
-	snapshots[spells.conjuredChillglobe.id].cooldown:GetRemainingTime(currentTime)
 end
 
 local function UpdateResourceBar()
@@ -1821,23 +1810,6 @@ local function UpdateResourceBar()
 							else
 								showThreshold = false
 							end
-						elseif spell.id == spells.conjuredChillglobe.id then
-							snapshot = snapshots[spells.conjuredChillglobe.id]
-							if TRB.Data.character.items.conjuredChillglobe.isEquipped and (currentResource / TRB.Data.character.maxResource) < TRB.Data.character.items.conjuredChillglobe.manaThresholdPercent then
-								local conjuredChillglobeTotal = CalculateManaGain(TRB.Data.character.items.conjuredChillglobe.mana, true)
-								resourceAmount = castingBarValue + conjuredChillglobeTotal
-								if specSettings.thresholds.conjuredChillglobe.enabled and resourceAmount < TRB.Data.character.maxResource and (not snapshot.cooldown.onCooldown or specSettings.thresholds.conjuredChillglobe.cooldown) then
-									if snapshot.cooldown.onCooldown then
-										thresholdColor = specSettings.colors.threshold.unusable
-										frameLevel = TRB.Data.constants.frameLevels.thresholdUnusable
-									end
-									TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
-								else
-									showThreshold = false
-								end
-							else
-								showThreshold = false
-							end
 						else
 							resourceAmount = spell:GetPrimaryResourceCost()
 							TRB.Functions.Threshold:RepositionThreshold(specSettings, resourceFrame.thresholds[thresholdId], resourceFrame, resourceAmount, TRB.Data.character.maxResource)
@@ -2212,8 +2184,6 @@ function TRB.Functions.Class:CheckCharacter()
 		local trinket2ItemLink = GetInventoryItemLink("player", 14)
 
 		local alchemyStone = false
-		local conjuredChillglobe = false
-		local conjuredChillglobeMana = ""
 					
 		if trinket1ItemLink ~= nil then
 			for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.attributes.itemIds) do
@@ -2222,10 +2192,6 @@ function TRB.Functions.Class:CheckCharacter()
 				else
 					break
 				end
-			end
-
-			if alchemyStone == false then
-				conjuredChillglobe, conjuredChillglobeMana = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket1ItemLink)
 			end
 		end
 
@@ -2239,13 +2205,7 @@ function TRB.Functions.Class:CheckCharacter()
 			end
 		end
 
-		if conjuredChillglobe == false and trinket2ItemLink ~= nil then
-			conjuredChillglobe, conjuredChillglobeMana = TRB.Functions.Item:CheckTrinketForConjuredChillglobe(trinket2ItemLink)
-		end
-
 		TRB.Data.character.items.alchemyStone = alchemyStone
-		TRB.Data.character.items.conjuredChillglobe.isEquipped = conjuredChillglobe
-		TRB.Data.character.items.conjuredChillglobe.mana = conjuredChillglobeMana
 	end
 end
 

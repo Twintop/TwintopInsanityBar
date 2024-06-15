@@ -11,6 +11,49 @@ local content = [====[
 
 ---
 
+# 11.0.0.0-alpha04 (2024-06-15)
+## General
+
+- (UPDATE (Twintop)) Support tracking of target buffs/debuffs with applications.
+
+### Healers
+
+- [#382 - UPDATE (Twintop)](#382) Remove Conjured Chillglobe support.
+
+## Priest
+### Discipline
+
+- [#371 - UPDATE (Twintop)](#371) Updates to reflect the state of Discipline in beta:
+<br/>&emsp;&ensp;- Added:
+<br/>&emsp;&ensp;&emsp;&ensp;- Voidwraith support.
+<br/>&emsp;&ensp;- Removed:
+<br/>&emsp;&ensp;&emsp;&ensp;- Items: Conjured Chillglobe and Imbued Frostweave Slippers support.
+
+### Holy
+
+- [#372 - UPDATE (Twintop)](#372) Updates to reflect the state of Holy in beta:
+<br/>&emsp;&ensp;- Removed:
+<br/>&emsp;&ensp;&emsp;&ensp;- Items: Conjured Chillglobe and Imbued Frostweave Slippers support.
+<br/>&emsp;&ensp;&emsp;&ensp;- Set bonuses: Divine Conversation (T28 / S3+S4 Shadowlands) and Prayer Focus (T29 / S1 Dragonflight)
+
+### Shadow
+
+- [#373 - UPDATE (Twintop)](#373) Updates to reflect the state of Shadow in beta:
+<br/>&emsp;&ensp;- Added:
+<br/>&emsp;&ensp;&emsp;&ensp;- Void Blast (Insanity generation) and Void Infusion (Insanity generation modifier).
+<br/>&emsp;&ensp;&emsp;&ensp;- Voidwraith support.
+<br/>&emsp;&ensp;- Removed:
+<br/>&emsp;&ensp;&emsp;&ensp;- Death's Torment (Dragonflight Season 3 set bonus) support and customizations.
+<br/>&emsp;&ensp;- Correct issue when tracking Shadowy Apparition spawns from Mind Blast.
+<br/>&emsp;&ensp;- Flag Mindgames as a PvP talent.
+<br/>&emsp;&ensp;- Adjust the baseline Insanity generation of the following:
+<br/>&emsp;&ensp;&emsp;&ensp;- Mind Flay: Insanity - 2 / tick
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$reStacks` - Resonant Energy stacks on your current target
+<br/>&emsp;&ensp;&emsp;&ensp;- `$reTime` - Remaining time on Resonant Energy on your current target
+
+---
+
 # 11.0.0.0-alpha03 (2024-06-14)
 ## General
 

@@ -276,10 +276,6 @@ local function DisciplineLoadDefaultSettings(includeBarText)
 			potionOfFrozenFocusRank3 = {
 				enabled = true,
 			},
-			conjuredChillglobe = {
-				enabled = true,
-				cooldown = true
-			},
 			shadowfiend = {
 				enabled = true,
 				cooldown = false
@@ -775,10 +771,6 @@ local function HolyLoadDefaultSettings(includeBarText)
 			},
 			potionOfFrozenFocusRank3 = {
 				enabled = true,
-			},
-			conjuredChillglobe = {
-				enabled = true,
-				cooldown = true
 			},
 			shadowfiend = {
 				enabled = true,
@@ -1280,9 +1272,6 @@ local function ShadowLoadDefaultSettings(includeBarText)
 			relative=0,
 			fixed=100
 		},
-		deathsTorment={
-			stacks = 9
-		},
 		colors={
 			text={
 				currentInsanity="FFC2A3E0",
@@ -1316,14 +1305,6 @@ local function ShadowLoadDefaultSettings(includeBarText)
 				devouringPlagueUsableCasting="FFFFFFFF",
 				instantMindBlast={
 					color = "FFC2A3E0",
-					enabled = true
-				},
-				deathsTorment = {
-					color = "FFFCACAC",
-					enabled = true
-				},
-				deathsTormentMax = {
-					color = "FFFF4040",
 					enabled = true
 				},
 				mindDevourer = {
@@ -1379,18 +1360,6 @@ local function ShadowLoadDefaultSettings(includeBarText)
 			},
 			deathspeaker={
 				name = L["PriestShadowAudioDeathspeaker"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
-			},
-			deathsTorment={
-				name = L["PriestShadowAudioDeathsTorment"],
-				enabled=false,
-				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
-				soundName = L["LSMSoundBoxingArenaGong"]
-			},
-			deathsTormentMax={
-				name = L["PriestShadowAudioDeathsTormentMax"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
@@ -3776,40 +3745,6 @@ local function ShadowConstructBarColorsAndBehaviorPanel(parent)
 	f:SetScript("OnMouseDown", function(self, button, ...)
 		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "mindDevourer")
 	end)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.deathsTormentBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_deathsTormentBorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.deathsTormentBorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxDeathsTorment"])
-	f.tooltip = L["PriestShadowCheckboxDeathsTormentTooltip"]
-	f:SetChecked(spec.colors.bar.deathsTorment.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.deathsTorment.enabled = self:GetChecked()
-	end)
-
-	controls.colors.deathsTorment = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerDeathsTorment"], spec.colors.bar.deathsTorment.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.deathsTorment
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "deathsTorment")
-	end)
-	
-	yCoord = yCoord - 30
-	controls.checkBoxes.deathsTormentMaxBorderChange = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_Border_Option_deathsTormentMaxBorderChange", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.deathsTormentMaxBorderChange
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowCheckboxDeathsTormentMax"])
-	f.tooltip = L["PriestShadowCheckboxDeathsTormentMaxTooltip"]
-	f:SetChecked(spec.colors.bar.deathsTormentMax.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.colors.bar.deathsTormentMax.enabled = self:GetChecked()
-	end)
-
-	controls.colors.deathsTormentMax = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["PriestShadowColorPickerDeathsTormentMax"], spec.colors.bar.deathsTormentMax.color, 300, 25, oUi.xCoord2, yCoord)
-	f = controls.colors.deathsTormentMax
-	f:SetScript("OnMouseDown", function(self, button, ...)
-		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "deathsTormentMax")
-	end)
 
 	yCoord = yCoord - 40
 	controls.abilityThresholdSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["AbilityThresholdLinesHeader"], oUi.xCoord, yCoord)
@@ -4454,139 +4389,6 @@ local function ShadowConstructAudioAndTrackingPanel(parent)
 		PlaySoundFile(spec.audio.deathspeaker.sound, TRB.Data.settings.core.audio.channel.channel)
 	end
 
-	
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.deathsTormentProc = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_deathsTorment_Sound", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.deathsTormentProc
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowAudioCheckboxDeathsTorment"])
-	f.tooltip = L["PriestShadowAudioCheckboxDeathsTormentTooltip"]
-	f:SetChecked(spec.audio.deathsTorment.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.deathsTorment.enabled = self:GetChecked()
-
-		if spec.audio.deathsTorment.enabled then
-			PlaySoundFile(spec.audio.deathsTorment.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.deathsTormentProcAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Shadow_deathsTorment_ProcAudio", parent)
-	controls.dropDown.deathsTormentProcAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.deathsTormentProcAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.deathsTormentProcAudio, spec.audio.deathsTorment.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.deathsTormentProcAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.deathsTormentProcAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.deathsTorment.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.deathsTormentProcAudio:SetValue(newValue, newName)
-		spec.audio.deathsTorment.sound = newValue
-		spec.audio.deathsTorment.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.deathsTormentProcAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.deathsTorment.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-	
-
-	yCoord = yCoord - 60
-	controls.checkBoxes.deathsTormentMaxProc = CreateFrame("CheckButton", "TwintopResourceBar_Priest_Shadow_deathsTormentMax_Sound", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.deathsTormentMaxProc
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["PriestShadowAudioCheckboxDeathsTormentMax"])
-	f.tooltip = L["PriestShadowAudioCheckboxDeathsTormentMaxTooltip"]
-	f:SetChecked(spec.audio.deathsTormentMax.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.audio.deathsTormentMax.enabled = self:GetChecked()
-
-		if spec.audio.deathsTormentMax.enabled then
-			PlaySoundFile(spec.audio.deathsTormentMax.sound, TRB.Data.settings.core.audio.channel.channel)
-		end
-	end)
-
-	-- Create the dropdown, and configure its appearance
-	controls.dropDown.deathsTormentMaxProcAudio = LibDD:Create_UIDropDownMenu("TwintopResourceBar_Priest_Shadow_deathsTormentMax_ProcAudio", parent)
-	controls.dropDown.deathsTormentMaxProcAudio:SetPoint("TOPLEFT", oUi.xCoord, yCoord-20)
-	LibDD:UIDropDownMenu_SetWidth(controls.dropDown.deathsTormentMaxProcAudio, oUi.sliderWidth)
-	LibDD:UIDropDownMenu_SetText(controls.dropDown.deathsTormentMaxProcAudio, spec.audio.deathsTormentMax.soundName)
-	LibDD:UIDropDownMenu_JustifyText(controls.dropDown.deathsTormentMaxProcAudio, "LEFT")
-
-	-- Create and bind the initialization function to the dropdown menu
-	LibDD:UIDropDownMenu_Initialize(controls.dropDown.deathsTormentMaxProcAudio, function(self, level, menuList)
-		local entries = 25
-		local info = LibDD:UIDropDownMenu_CreateInfo()
-		local sounds = TRB.Details.addonData.libs.SharedMedia:HashTable("sound")
-		local soundsList = TRB.Details.addonData.libs.SharedMedia:List("sound")
-		if (level or 1) == 1 or menuList == nil then
-			local menus = math.ceil(TRB.Functions.Table:Length(sounds) / entries)
-			for i=0, menus-1 do
-				info.hasArrow = true
-				info.notCheckable = true
-				info.text = string.format(L["DropdownLabelSoundsX"], i+1)
-				info.menuList = i
-				LibDD:UIDropDownMenu_AddButton(info)
-			end
-		else
-			local start = entries * menuList
-
-			for k, v in pairs(soundsList) do
-				if k > start and k <= start + entries then
-					info.text = v
-					info.value = sounds[v]
-					info.checked = sounds[v] == spec.audio.deathsTormentMax.sound
-					info.func = self.SetValue
-					info.arg1 = sounds[v]
-					info.arg2 = v
-					LibDD:UIDropDownMenu_AddButton(info, level)
-				end
-			end
-		end
-	end)
-
-	-- Implement the function to change the audio
-	function controls.dropDown.deathsTormentMaxProcAudio:SetValue(newValue, newName)
-		spec.audio.deathsTormentMax.sound = newValue
-		spec.audio.deathsTormentMax.soundName = newName
-		LibDD:UIDropDownMenu_SetText(controls.dropDown.deathsTormentMaxProcAudio, newName)
-		CloseDropDownMenus()
----@diagnostic disable-next-line: redundant-parameter
-		PlaySoundFile(spec.audio.deathsTormentMax.sound, TRB.Data.settings.core.audio.channel.channel)
-	end
-
-
 	yCoord = yCoord - 60
 	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestShadowHeaderAuspiciousSpiritsTracking"], oUi.xCoord, yCoord)
 
@@ -4702,21 +4504,6 @@ local function ShadowConstructAudioAndTrackingPanel(parent)
 		value = TRB.Functions.Number:RoundTo(value, 2, nil, true)
 		self.EditBox:SetText(value)
 		spec.mindbender.timeMax = value
-	end)		
-
-
-	yCoord = yCoord - 30
-	controls.textSection = TRB.Functions.OptionsUi:BuildSectionHeader(parent, L["PriestShadowHeaderDeathsTorment"], oUi.xCoord, yCoord)
-
-	yCoord = yCoord - 60
-	title = L["PriestShadowDeathsTormentStacksBeforeChange"]
-	controls.deathsTorment = TRB.Functions.OptionsUi:BuildSlider(parent, title, 1, 11, spec.deathsTorment.stacks, 1, 0,
-									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
-	controls.deathsTorment:SetScript("OnValueChanged", function(self, value)
-		value = TRB.Functions.OptionsUi:EditBoxSetTextMinMax(self, value)
-		value = TRB.Functions.Number:RoundTo(value, 0, nil, true)
-		self.EditBox:SetText(value)
-		spec.deathsTorment.stacks = value
 	end)
 
 	TRB.Frames.interfaceSettingsFrameContainer = interfaceSettingsFrame

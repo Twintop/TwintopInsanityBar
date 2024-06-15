@@ -44,7 +44,6 @@ end
 ---@class TRB.Classes.Priest.HealerSpells : TRB.Classes.Healer.HealerSpells
 ---@field public shadowWordPain TRB.Classes.SpellBase
 ---@field public surgeOfLight TRB.Classes.SpellBase
----@field public imbuedFrostweaveSlippers TRB.Classes.SpellBase
 ---@field public shadowfiend TRB.Classes.SpellThreshold
 ---@field public cannibalize TRB.Classes.SpellThreshold
 TRB.Classes.Priest.HealerSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
@@ -81,13 +80,6 @@ function TRB.Classes.Priest.HealerSpells:New()
         id = 114255,
         duration = 20,
         isTalent = true
-    })
-
-    -- Imbued Frostweave Slippers
-    self.imbuedFrostweaveSlippers = TRB.Classes.SpellBase:New({
-        id = 419273,
-        itemId = 207817,
-        resourcePercent = 0.0006
     })
 
     -- Racials
@@ -188,6 +180,18 @@ function TRB.Classes.Priest.DisciplineSpells:New()
         duration = 12,
         resourcePercent = 0.002
     })
+
+    -- Voidweaver
+    self.voidwraith = TRB.Classes.SpellBase:New({
+        id = 451235,
+        talentId = 451234,
+        energizeId = 262485,
+        primaryResourceType = Enum.PowerType.Mana,
+        resource = 2,
+        isTalent = true,
+        duration = 15,
+        resourcePercent = 0.002
+    })
     
     return self
 end
@@ -201,8 +205,6 @@ end
 ---@field public resonantWords TRB.Classes.SpellBase
 ---@field public lightweaver TRB.Classes.SpellBase
 ---@field public miracleWorker TRB.Classes.SpellBase
----@field public divineConversation TRB.Classes.SpellBase
----@field public prayerFocus TRB.Classes.SpellBase
 ---@field public sacredReverence TRB.Classes.SpellBase
 ---@field public voiceOfHarmony TRB.Classes.SpellBase
 ---@field public lightwell TRB.Classes.SpellBase
@@ -344,28 +346,22 @@ function TRB.Classes.Priest.HolySpells:New()
         isTalent = true
     })
 
-    -- Imbued Frostweave Slippers
-    self.imbuedFrostweaveSlippers = TRB.Classes.SpellBase:New({
-        id = 419273,
-        itemId = 207817,
-        resourcePercent = 0.0006
-    })
-
     -- Set Bonuses
-    self.divineConversation = TRB.Classes.SpellBase:New({ -- T28 4P
-        id = 363727,
-        reduction = 15,
-        reductionPvp = 10
-    })
-    self.prayerFocus = TRB.Classes.SpellBase:New({ -- T29 2P
-        id = 394729,
-        holyWordReduction = 2
-    })
     self.sacredReverence = TRB.Classes.SpellBase:New({ -- T31 4P
         id = 423510,
     })
 
     self.shadowfiend.primaryResourceType = Enum.PowerType.Mana
+
+    -- Archon
+    self.resonantEnergy = TRB.Classes.SpellBase:New({
+        id = 453845,
+        debuffId = 453850,
+        isTalent = true,
+        duration = 8,
+        hasStacks = true,
+        maxStacks = 5
+    })
 
     return self
 end
@@ -396,6 +392,7 @@ end
 ---@field public deathspeaker TRB.Classes.SpellBase
 ---@field public voidTorrent TRB.Classes.SpellBase
 ---@field public shadowCrash TRB.Classes.SpellBase
+---@field public voidCrash TRB.Classes.SpellBase
 ---@field public shadowyInsight TRB.Classes.SpellBase
 ---@field public mindMelt TRB.Classes.SpellBase
 ---@field public mindbender TRB.Classes.SpellBase
@@ -408,7 +405,10 @@ end
 ---@field public lashOfInsanity_Lasher TRB.Classes.SpellBase
 ---@field public idolOfYoggSaron TRB.Classes.SpellBase
 ---@field public thingFromBeyond TRB.Classes.SpellBase
----@field public deathsTorment TRB.Classes.SpellBase
+---@field public resonantEnergy TRB.Classes.SpellBase
+---@field public voidBlast TRB.Classes.SpellBase
+---@field public voidInfusion TRB.Classes.SpellBase
+---@field public voidwraith TRB.Classes.SpellBase
 ---@field public devouringPlague TRB.Classes.SpellThreshold
 ---@field public devouringPlague2 TRB.Classes.SpellThreshold
 ---@field public devouringPlague3 TRB.Classes.SpellThreshold
@@ -484,12 +484,6 @@ function TRB.Classes.Priest.ShadowSpells:New()
         isTalent = true,
         resource = 10
     })
-    self.mindgames = TRB.Classes.SpellBase:New({
-        id = 375901,
-        isTalent = true,
-        resource = 10
-    })
-
 
     -- Shadow Talent Abilities			
     self.devouringPlague = TRB.Classes.SpellThreshold:New({
@@ -567,7 +561,7 @@ function TRB.Classes.Priest.ShadowSpells:New()
     self.mindFlayInsanity = TRB.Classes.SpellBase:New({
         id = 391403,
         buffId = 391401,
-        resource = 4,
+        resource = 3,
         isTalent = true
     })
     self.mindSpikeInsanity = TRB.Classes.SpellBase:New({
@@ -589,6 +583,11 @@ function TRB.Classes.Priest.ShadowSpells:New()
     })
     self.shadowCrash = TRB.Classes.SpellBase:New({
         id = 205385,
+        resource = 6,
+        isTalent = true
+    })
+    self.voidCrash = TRB.Classes.SpellBase:New({
+        id = 457042,
         resource = 6,
         isTalent = true
     })
@@ -655,9 +654,49 @@ function TRB.Classes.Priest.ShadowSpells:New()
         isTalent = true,
         duration = 20
     })
-    self.deathsTorment = TRB.Classes.SpellBase:New({ -- T31 4P
-        id = 423726,
-        maxStacks = 12
+
+    -- Archon
+    self.resonantEnergy = TRB.Classes.SpellBase:New({
+        id = 453845,
+        debuffId = 453850,
+        isTalent = true,
+        duration = 8,
+        hasStacks = true,
+        maxStacks = 5
+    })
+
+    -- Voidweaver
+    self.entropicRift = TRB.Classes.SpellBase:New({
+        id = 447444,
+        isTalent = true,
+        duration = 8
+    })
+    self.voidBlast = TRB.Classes.SpellBase:New({
+        id = 450983,
+        talentId = 450405,
+        resource = 6,
+        isTalent = true,
+        hasCharges = true
+    })
+    self.voidInfusion = TRB.Classes.SpellBase:New({
+        id = 450612,
+        resourceMod = 2,
+        isTalent = true
+    })
+    self.voidwraith = TRB.Classes.SpellBase:New({
+        id = 451235,
+        talentId = 451234,
+        energizeId = 262485,
+        resource = 2,
+        isTalent = true
+    })
+
+    -- PvP Talents
+    self.mindgames = TRB.Classes.SpellBase:New({
+        id = 375901,
+        isTalent = true,
+        resource = 10,
+        isPvp = true
     })
 
     return self

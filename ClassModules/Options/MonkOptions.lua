@@ -214,10 +214,6 @@ local function MistweaverLoadDefaultSettings(includeBarText)
 			potionOfFrozenFocusRank3 = {
 				enabled = true,
 			},
-			conjuredChillglobe = {
-				enabled = true,
-				cooldown = true
-			},
 			cannibalize = {
 				enabled = false,
 				cooldown = false

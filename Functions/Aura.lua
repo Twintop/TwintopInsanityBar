@@ -3,6 +3,11 @@ local _, TRB = ...
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Aura = {}
 
+---Attempts to get a buff on a target by its spellId
+---@param spellId integer
+---@param onWhom string?
+---@param byWhom string?
+---@return AuraData?
 function TRB.Functions.Aura:FindBuffById(spellId, onWhom, byWhom)
 	if onWhom == nil then
 		onWhom = "player"
@@ -20,6 +25,11 @@ function TRB.Functions.Aura:FindBuffById(spellId, onWhom, byWhom)
 	end
 end
 
+---Attempts to get a debuff by its spellId
+---@param spellId integer
+---@param onWhom string?
+---@param byWhom string?
+---@return AuraData?
 function TRB.Functions.Aura:FindDebuffById(spellId, onWhom, byWhom)
 	if onWhom == nil then
 		onWhom = "player"

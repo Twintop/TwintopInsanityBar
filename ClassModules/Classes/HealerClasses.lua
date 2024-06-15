@@ -596,7 +596,6 @@ end
 ---@field public potionOfFrozenFocusRank1 TRB.Classes.SpellThreshold
 ---@field public potionOfFrozenFocusRank2 TRB.Classes.SpellThreshold
 ---@field public potionOfFrozenFocusRank3 TRB.Classes.SpellThreshold
----@field public conjuredChillglobe TRB.Classes.SpellThreshold
 TRB.Classes.Healer.HealerSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Healer.HealerSpells.__index = TRB.Classes.Healer.HealerSpells
 
@@ -696,20 +695,6 @@ function TRB.Classes.Healer.HealerSpells:New()
     })
     self.potionOfChilledClarity = TRB.Classes.SpellBase:New({
         id = 371052
-    })
-
-    -- Conjured Chillglobe
-    self.conjuredChillglobe = TRB.Classes.SpellThreshold:New({
-        id = 396391,
-        itemId = 194300,
-        spellId = 396391,
-        primaryResourceType = Enum.PowerType.Mana,
-        useSpellIcon = true,
-        settingKey = "conjuredChillglobe",
-        mana = 4830,
-        duration = 10,
-        ticks = 10,
-        hasCooldown = true
     })
 
     -- Alchemist Stone
