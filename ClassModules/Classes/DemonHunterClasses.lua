@@ -23,6 +23,10 @@ TRB.Classes.DemonHunter = TRB.Classes.DemonHunter or {}
 ---@field public unboundChaos TRB.Classes.SpellBase
 ---@field public tacticalRetreat TRB.Classes.SpellBase
 ---@field public chaosTheory TRB.Classes.SpellBase
+---@field public artOfTheGlaive TRB.Classes.SpellBase
+---@field public glaiveFlurry TRB.Classes.SpellBase
+---@field public rendingStrike TRB.Classes.SpellBase
+---@field public studentOfSuffering TRB.Classes.SpellBase
 ---@field public throwGlaive TRB.Classes.SpellThreshold
 ---@field public bladeDance TRB.Classes.SpellThreshold
 ---@field public chaosStrike TRB.Classes.SpellThreshold
@@ -90,7 +94,8 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
         hasCooldown = true,
         demonForm = false,
         isTalent = false,
-        baseline = true
+        baseline = true,
+        isSnowflake = true
     })
     self.chaosStrike = TRB.Classes.SpellThreshold:New({
         id = 162794,
@@ -119,7 +124,8 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
         hasCooldown = true,
         demonForm = true,
         isTalent = false,
-        baseline = true
+        baseline = true,
+        isSnowflake = true
     })
 
     -- Demon Hunter Talent Abilities
@@ -203,6 +209,32 @@ function TRB.Classes.DemonHunter.HavocSpells:New()
         isTalent = true
     })
 
+    -- Aldrachi Reaver
+    self.artOfTheGlaive = TRB.Classes.SpellThreshold:New({
+        id = 444661,
+        buffId = 444661,
+        talentId = 442290,
+        isTalent = true,
+        maxStacks = 6
+    })
+    self.glaiveFlurry = TRB.Classes.SpellThreshold:New({
+        id = 442435
+    })
+    self.rendingStrike = TRB.Classes.SpellThreshold:New({
+        id = 442442
+    })
+
+    -- Fel-Scarred
+    self.studentOfSuffering = TRB.Classes.SpellThreshold:New({
+        id = 453239,
+        buffId = 453239,
+        talentId = 452412,
+        isTalent = true,
+        resourcePerTick = 5,
+        tickRate = 2,
+        hasTicks = true
+    })
+
     return self
 end
 
@@ -211,11 +243,15 @@ end
 ---@field public soulFragments TRB.Classes.SpellBase
 ---@field public immolationAura TRB.Classes.SpellBase
 ---@field public metamorphosis TRB.Classes.SpellBase
+---@field public soulFurnace TRB.Classes.SpellBase
+---@field public artOfTheGlaive TRB.Classes.SpellBase
+---@field public glaiveFlurry TRB.Classes.SpellBase
+---@field public rendingStrike TRB.Classes.SpellBase
+---@field public studentOfSuffering TRB.Classes.SpellBase
 ---@field public soulCleave TRB.Classes.SpellThreshold
 ---@field public chaosNova TRB.Classes.SpellThreshold
 ---@field public felDevastation TRB.Classes.SpellThreshold
 ---@field public spiritBomb TRB.Classes.SpellThreshold
----@field public soulFurnace TRB.Classes.SpellBase
 TRB.Classes.DemonHunter.VengeanceSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.DemonHunter.VengeanceSpells.__index = TRB.Classes.DemonHunter.VengeanceSpells
 
@@ -284,6 +320,32 @@ function TRB.Classes.DemonHunter.VengeanceSpells:New()
     self.soulFurnace = TRB.Classes.SpellBase:New({
         id = 391172,
         isTalent = true
+    })
+
+    -- Aldrachi Reaver
+    self.artOfTheGlaive = TRB.Classes.SpellThreshold:New({
+        id = 444661,
+        buffId = 444661,
+        talentId = 442290,
+        isTalent = true,
+        maxStacks = 6
+    })
+    self.glaiveFlurry = TRB.Classes.SpellThreshold:New({
+        id = 442435
+    })
+    self.rendingStrike = TRB.Classes.SpellThreshold:New({
+        id = 442442
+    })
+
+    -- Fel-Scarred
+    self.studentOfSuffering = TRB.Classes.SpellThreshold:New({
+        id = 453239,
+        buffId = 453239,
+        talentId = 452412,
+        isTalent = true,
+        resourcePerTick = 5,
+        tickRate = 2,
+        hasTicks = true
     })
 
     return self

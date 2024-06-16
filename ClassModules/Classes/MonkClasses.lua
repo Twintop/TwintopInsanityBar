@@ -12,7 +12,6 @@ TRB.Classes.Monk = TRB.Classes.Monk or {}
 ---@field public soothingMist TRB.Classes.SpellBase
 ---@field public vivaciousVivification TRB.Classes.SpellBase
 ---@field public manaTea TRB.Classes.SpellBase
----@field public soulfangInfusion TRB.Classes.SpellBase
 ---@field public cannibalize TRB.Classes.SpellThreshold
 TRB.Classes.Monk.MistweaverSpells = setmetatable({}, {__index = TRB.Classes.Healer.HealerSpells})
 TRB.Classes.Monk.MistweaverSpells.__index = TRB.Classes.Monk.MistweaverSpells
@@ -38,16 +37,6 @@ function TRB.Classes.Monk.MistweaverSpells:New()
     self.manaTea = TRB.Classes.SpellBase:New({
         id = 197908,
         isTalent = true
-    })
-
-    -- Tier Bonuses
-    self.soulfangInfusion = TRB.Classes.SpellBase:New({ -- T30 2P
-        id = 410007,
-        ticks = 3,
-        hasTicks = true,
-        tickRate = 1,
-        resourcePerTick = 0.01, --1% max mana. fill manually
-        duration = 3
     })
 
     -- Racials

@@ -33,7 +33,6 @@ local specCache = {
 local function FillSpecializationCache()
 	-- Assassination
 	specCache.assassination.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -132,7 +131,6 @@ local function FillSpecializationCache()
 
 	-- Outlaw
 	specCache.outlaw.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -271,7 +269,6 @@ local function FillSpecializationCache()
 
 	-- Subtlety
 	specCache.subtlety.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -1205,19 +1202,18 @@ local function RefreshLookupData_Assassination()
 
 	Global_TwintopResourceBar.resource.passive = _passiveEnergy
 	Global_TwintopResourceBar.resource.regen = _regenEnergy
-	Global_TwintopResourceBar.dots = {
-		amplifyingPoisonCount = _amplifyingPoisonCount,
-		atrophicPoisonCount = _atrophicPoisonCount,
-		cripplingPoisonCount = _cpCount,
-		deadlyPoisonCount = _dpCount,
-		numbingPoisonCount = _npCount,
-		woundPoisonCount = _wpCount,
-		crimsonTempestCount = _ctCount,
-		garroteCount = _garroteCount,
-		internalBleedingCount = _ibCount,
-		ruptureCount = _ruptureCount,
-		serratedBoneSpikeCount = _sbsCount
-	}
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.amplifyingPoisonCount = _amplifyingPoisonCount
+	Global_TwintopResourceBar.dots.atrophicPoisonCount = _atrophicPoisonCount
+	Global_TwintopResourceBar.dots.cripplingPoisonCount = _cpCount
+	Global_TwintopResourceBar.dots.deadlyPoisonCount = _dpCount
+	Global_TwintopResourceBar.dots.numbingPoisonCount = _npCount
+	Global_TwintopResourceBar.dots.woundPoisonCount = _wpCount
+	Global_TwintopResourceBar.dots.crimsonTempestCount = _ctCount
+	Global_TwintopResourceBar.dots.garroteCount = _garroteCount
+	Global_TwintopResourceBar.dots.internalBleedingCount = _ibCount
+	Global_TwintopResourceBar.dots.ruptureCount = _ruptureCount
+	Global_TwintopResourceBar.dots.serratedBoneSpikeCount = _sbsCount
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#amplifyingPoison"] = spells.amplifyingPoison.icon
@@ -1597,12 +1593,12 @@ local function RefreshLookupData_Outlaw()
 
 	Global_TwintopResourceBar.resource.passive = _passiveEnergy
 	Global_TwintopResourceBar.resource.regen = _regenEnergy
-	Global_TwintopResourceBar.dots = {
-		atrophicPoisonCount = _atrophicPoisonCount,
-		cripplingPoisonCount = _cpCount,
-		numbingPoisonCount = _npCount,
-		woundPoisonCount = _wpCount
-	}
+	
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.atrophicPoisonCount = _atrophicPoisonCount
+	Global_TwintopResourceBar.dots.cripplingPoisonCount = _cpCount
+	Global_TwintopResourceBar.dots.numbingPoisonCount = _npCount
+	Global_TwintopResourceBar.dots.woundPoisonCount = _wpCount
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#adrenalineRush"] = spells.adrenalineRush.icon
@@ -1971,13 +1967,13 @@ local function RefreshLookupData_Subtlety()
 
 	Global_TwintopResourceBar.resource.passive = _passiveEnergy
 	Global_TwintopResourceBar.resource.regen = _regenEnergy
-	Global_TwintopResourceBar.dots = {
-		atrophicPoisonCount = _atrophicPoisonCount,
-		cripplingPoisonCount = _cpCount,
-		numbingPoisonCount = _npCount,
-		woundPoisonCount = _wpCount,
-		ruptureCount = _ruptureCount
-	}
+
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.atrophicPoisonCount = _atrophicPoisonCount
+	Global_TwintopResourceBar.dots.cripplingPoisonCount = _cpCount
+	Global_TwintopResourceBar.dots.numbingPoisonCount = _npCount
+	Global_TwintopResourceBar.dots.woundPoisonCount = _wpCount
+	Global_TwintopResourceBar.dots.ruptureCount = _ruptureCount
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#cripplingPoison"] = spells.cripplingPoison.icon

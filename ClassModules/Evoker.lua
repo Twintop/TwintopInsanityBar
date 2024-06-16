@@ -49,7 +49,6 @@ end
 local function FillSpecializationCache()
 	-- Devastation
 	specCache.devastation.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -94,7 +93,6 @@ local function FillSpecializationCache()
 
 	-- Preservation
 	specCache.preservation.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -181,7 +179,6 @@ local function FillSpecializationCache()
 
 	-- Augmentation
 	specCache.augmentation.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -840,19 +837,18 @@ local function RefreshLookupData_Preservation()
 	Global_TwintopResourceBar.resource.potionOfChilledClarity = _potionOfChilledClarityMana or 0
 	Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
 	Global_TwintopResourceBar.resource.moltenRadiance = _mrMana or 0
-	Global_TwintopResourceBar.channeledPotion = {
-		mana = _channeledMana,
-		ticks = _potionOfFrozenFocusTicks
-	}
-	Global_TwintopResourceBar.symbolOfHope = {
-		mana = _sohMana,
-		ticks = _sohTicks
-	}
-	Global_TwintopResourceBar.emeraldCommunion = {
-		mana = _ecMana,
-		ticks = _ecTicks
-	}
+	
+	Global_TwintopResourceBar.potionOfSpiritualClarity = Global_TwintopResourceBar.potionOfSpiritualClarity or {}
+	Global_TwintopResourceBar.potionOfSpiritualClarity.mana = _channeledMana
+	Global_TwintopResourceBar.potionOfSpiritualClarity.ticks = _potionOfFrozenFocusTicks or 0
+	
+	Global_TwintopResourceBar.symbolOfHope = Global_TwintopResourceBar.symbolOfHope or {}
+	Global_TwintopResourceBar.symbolOfHope.mana = _sohMana
+	Global_TwintopResourceBar.symbolOfHope.ticks = _sohTicks or 0
 
+	Global_TwintopResourceBar.emeraldCommunion = Global_TwintopResourceBar.emeraldCommunion or {}
+	Global_TwintopResourceBar.emeraldCommunion.mana = _ecMana
+	Global_TwintopResourceBar.emeraldCommunion.ticks = _ecTicks
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#eb"] = spells.essenceBurst.icon

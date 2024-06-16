@@ -49,7 +49,6 @@ end
 local function FillSpecializationCache()
 	-- Holy
 	specCache.holy.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -515,20 +514,20 @@ local function RefreshLookupData_Holy()
 	Global_TwintopResourceBar.resource.potionOfChilledClarity = _potionOfChilledClarityMana or 0
 	Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
 	Global_TwintopResourceBar.resource.moltenRadiance = _mrMana or 0
-	Global_TwintopResourceBar.channeledPotion = {
-		mana = _channeledMana,
-		ticks = _potionOfFrozenFocusTicks
-	}
-	Global_TwintopResourceBar.symbolOfHope = {
-		mana = _sohMana,
-		ticks = _sohTicks
-	}
-	Global_TwintopResourceBar.glimmerOfLight = {
-		count = _glimmerCount,
-		targetTime = _glimmerTime,
-		minTime = _glimmerMinTime,
-		maxTime = _glimmerMaxTime
-	}
+	
+	Global_TwintopResourceBar.potionOfSpiritualClarity = Global_TwintopResourceBar.potionOfSpiritualClarity or {}
+	Global_TwintopResourceBar.potionOfSpiritualClarity.mana = _channeledMana
+	Global_TwintopResourceBar.potionOfSpiritualClarity.ticks = _potionOfFrozenFocusTicks or 0
+	
+	Global_TwintopResourceBar.symbolOfHope = Global_TwintopResourceBar.symbolOfHope or {}
+	Global_TwintopResourceBar.symbolOfHope.mana = _sohMana
+	Global_TwintopResourceBar.symbolOfHope.ticks = _sohTicks or 0
+
+	Global_TwintopResourceBar.glimmerOfLight = Global_TwintopResourceBar.glimmerOfLight or {}
+	Global_TwintopResourceBar.glimmerOfLight.count = _glimmerCount
+	Global_TwintopResourceBar.glimmerOfLight.targetTime = _glimmerTime
+	Global_TwintopResourceBar.glimmerOfLight.minTime = _glimmerMinTime
+	Global_TwintopResourceBar.glimmerOfLight.maxTime = _glimmerMaxTime
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#blessingOfWinter"] = spells.blessingOfWinter.icon

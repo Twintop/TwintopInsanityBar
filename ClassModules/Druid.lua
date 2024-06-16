@@ -51,7 +51,6 @@ end
 local function FillSpecializationCache()
 	-- Balance
 	specCache.balance.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -128,7 +127,6 @@ local function FillSpecializationCache()
 
 	-- Feral
 	specCache.feral.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -198,7 +196,6 @@ local function FillSpecializationCache()
 
 	-- Restoration
 	specCache.restoration.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -1128,21 +1125,21 @@ local function RefreshLookupData_Balance()
 	Global_TwintopResourceBar.resource.passive = _passiveAstralPower or 0
 	Global_TwintopResourceBar.resource.furyOfElune = foeAstralPower or 0
 	Global_TwintopResourceBar.resource.sunderedFirmament = sunderedFirmamentAstralPower or 0
-	Global_TwintopResourceBar.dots = {
-		sunfireCount = _sunfireCount or 0,
-		moonfireCount = _moonfireCount or 0,
-		stellarFlareCount = _stellarFlareCount or 0
-	}
-	Global_TwintopResourceBar.furyOfElune = {
-		astralPower = foeAstralPower or 0,
-		ticks = foeTicks or 0,
-		remaining = foeTime or 0
-	}
-	Global_TwintopResourceBar.sunderedFirmament = {
-		astralPower = sunderedFirmamentAstralPower or 0,
-		ticks = sunderedFirmamentTicks or 0,
-		remaining = sunderedFirmamentTime or 0
-	}
+	
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.sunfireCount = _sunfireCount or 0
+	Global_TwintopResourceBar.dots.moonfireCount = _moonfireCount or 0
+	Global_TwintopResourceBar.dots.stellarFlareCount = _stellarFlareCount or 0
+	
+	Global_TwintopResourceBar.furyOfElune = Global_TwintopResourceBar.furyOfElune or {}
+	Global_TwintopResourceBar.furyOfElune.astralPower = foeAstralPower or 0
+	Global_TwintopResourceBar.furyOfElune.ticks = foeTicks or 0
+	Global_TwintopResourceBar.furyOfElune.remaining = foeTime or 0
+
+	Global_TwintopResourceBar.sunderedFirmament = Global_TwintopResourceBar.sunderedFirmament or {}
+	Global_TwintopResourceBar.sunderedFirmament.astralPower = sunderedFirmamentAstralPower or 0
+	Global_TwintopResourceBar.sunderedFirmament.ticks = sunderedFirmamentTicks or 0
+	Global_TwintopResourceBar.sunderedFirmament.remaining = sunderedFirmamentTime or 0
 	
 	local lookup = TRB.Data.lookup or {}
 	lookup["#wrath"] = spells.wrath.icon
@@ -1634,24 +1631,24 @@ local function RefreshLookupData_Feral()
 	----------------------------
 
 	Global_TwintopResourceBar.resource.passive = _passiveEnergy or 0
-	Global_TwintopResourceBar.dots = {
-		ripCount = _ripCount or 0,
-		rakeCount = _rakeCount or 0,
-		thrashCount = _thrashCount or 0,
-		moonfireCount = _moonfireCount or 0,
-		ripPercent = _ripPercent or 0,
-		rakePercent = _rakePercent or 0,
-		thrashPercent = _thrashPercent or 0,
-		moonfirePercent = _moonfirePercent or 0,
-		ripSnapshot = _ripSnapshot or 0,
-		rakeSnapshot = _rakeSnapshot or 0,
-		thrashSnapshot = _thrashSnapshot or 0,
-		moonfireSnapshot = _moonfireSnapshot or 0,
-		ripCurrent = _currentSnapshotRip or 1,
-		rakeCurrent = _currentSnapshotRake or 1,
-		thrashCurrent = _currentSnapshotThrash or 1,
-		moonfireCurrent = _currentSnapshotMoonfire or 0,
-	}
+
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.ripCount = _ripCount or 0
+	Global_TwintopResourceBar.dots.rakeCount = _rakeCount or 0
+	Global_TwintopResourceBar.dots.thrashCount = _thrashCount or 0
+	Global_TwintopResourceBar.dots.moonfireCount = _moonfireCount or 0
+	Global_TwintopResourceBar.dots.ripPercent = _ripPercent or 0
+	Global_TwintopResourceBar.dots.rakePercent = _rakePercent or 0
+	Global_TwintopResourceBar.dots.thrashPercent = _thrashPercent or 0
+	Global_TwintopResourceBar.dots.moonfirePercent = _moonfirePercent or 0
+	Global_TwintopResourceBar.dots.ripSnapshot = _ripSnapshot or 0
+	Global_TwintopResourceBar.dots.rakeSnapshot = _rakeSnapshot or 0
+	Global_TwintopResourceBar.dots.thrashSnapshot = _thrashSnapshot or 0
+	Global_TwintopResourceBar.dots.moonfireSnapshot = _moonfireSnapshot or 0
+	Global_TwintopResourceBar.dots.ripCurrent = _currentSnapshotRip or 1
+	Global_TwintopResourceBar.dots.rakeCurrent = _currentSnapshotRake or 1
+	Global_TwintopResourceBar.dots.thrashCurrent = _currentSnapshotThrash or 1
+	Global_TwintopResourceBar.dots.moonfireCurrent = _currentSnapshotMoonfire or 0
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#apexPredatorsCraving"] = spells.apexPredatorsCraving.icon
@@ -2027,19 +2024,18 @@ local function RefreshLookupData_Restoration()
 	Global_TwintopResourceBar.resource.innervate = _innervateMana or 0
 	Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
 	Global_TwintopResourceBar.resource.moltenRadiance = _mrMana or 0
-	Global_TwintopResourceBar.potionOfSpiritualClarity = {
-		mana = _channeledMana,
-		ticks = _potionOfFrozenFocusTicks or 0
-	}
-	Global_TwintopResourceBar.symbolOfHope = {
-		mana = _sohMana,
-		ticks = _sohTicks or 0
-	}
-	Global_TwintopResourceBar.dots = {
-		sunfireCount = _sunfireCount or 0,
-		moonfireCount = _moonfireCount or 0
-	}
+	
+	Global_TwintopResourceBar.potionOfSpiritualClarity = Global_TwintopResourceBar.potionOfSpiritualClarity or {}
+	Global_TwintopResourceBar.potionOfSpiritualClarity.mana = _channeledMana
+	Global_TwintopResourceBar.potionOfSpiritualClarity.ticks = _potionOfFrozenFocusTicks or 0
+	
+	Global_TwintopResourceBar.symbolOfHope = Global_TwintopResourceBar.symbolOfHope or {}
+	Global_TwintopResourceBar.symbolOfHope.mana = _sohMana
+	Global_TwintopResourceBar.symbolOfHope.ticks = _sohTicks or 0
 
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.sunfireCount = _sunfireCount or 0
+	Global_TwintopResourceBar.dots.moonfireCount = _moonfireCount or 0
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#efflorescence"] = spells.efflorescence.icon

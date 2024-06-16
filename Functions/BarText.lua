@@ -788,16 +788,15 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 	lookupLogic["$inCombat"] = tostring(UnitAffectingCombat("player"))
 	TRB.Data.lookupLogic = lookupLogic
 
-	Global_TwintopResourceBar = {
-		ttd = {
-			ttd = ttd or "--",
-			seconds = ttdTotalSeconds or 0
-		},
-		resource = {
-			resource = snapshotData.attributes.resource or 0,
-			casting = castingAmount
-		}
-	}
+	Global_TwintopResourceBar = Global_TwintopResourceBar or {}
+	
+	Global_TwintopResourceBar.ttd = Global_TwintopResourceBar.ttd or {}
+	Global_TwintopResourceBar.ttd.ttd = ttd or "--"
+	Global_TwintopResourceBar.ttd.seconds = ttdTotalSeconds or 0
+
+	Global_TwintopResourceBar.resource = Global_TwintopResourceBar.resource or {}
+	Global_TwintopResourceBar.resource.resource = snapshotData.attributes.resource or 0
+	Global_TwintopResourceBar.resource.casting = castingAmount
 end
 
 function TRB.Functions.BarText:IsTtdActive(settings)

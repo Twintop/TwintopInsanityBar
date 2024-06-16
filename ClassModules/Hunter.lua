@@ -33,7 +33,6 @@ local specCache = {
 local function FillSpecializationCache()
 	-- Beast Mastery
 	specCache.beastMastery.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -105,7 +104,6 @@ local function FillSpecializationCache()
 	-- Marksmanship
 
 	specCache.marksmanship.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -165,7 +163,6 @@ local function FillSpecializationCache()
 
 	-- Survival
 	specCache.survival.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -731,15 +728,14 @@ local function RefreshLookupData_BeastMastery()
 	Global_TwintopResourceBar.resource.passive = _passiveFocus
 	Global_TwintopResourceBar.resource.regen = _regenFocus
 	Global_TwintopResourceBar.resource.barbedShot = _barbedShotFocus
-	Global_TwintopResourceBar.barbedShot = {
-		count = snapshots[spells.barbedShot.id].attributes.count,
-		focus = snapshots[spells.barbedShot.id].attributes.resource,
-		ticks = snapshots[spells.barbedShot.id].attributes.ticksRemaining,
-		remaining = _barbedShotTime
-	}
-	Global_TwintopResourceBar.dots = {
-		ssCount = _serpentStingCount
-	}
+	Global_TwintopResourceBar.barbedShot = Global_TwintopResourceBar.barbedShot or {}
+	Global_TwintopResourceBar.barbedShot.count = snapshots[spells.barbedShot.id].attributes.count
+	Global_TwintopResourceBar.barbedShot.focus = snapshots[spells.barbedShot.id].attributes.resource
+	Global_TwintopResourceBar.barbedShot.ticks = snapshots[spells.barbedShot.id].attributes.ticksRemaining
+	Global_TwintopResourceBar.barbedShot.remaining = _barbedShotTime
+	
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.ssCount = _serpentStingCount
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#aMurderOfCrows"] = spells.aMurderOfCrows.icon
@@ -952,9 +948,9 @@ local function RefreshLookupData_Marksmanship()
 
 	Global_TwintopResourceBar.resource.passive = _passiveFocus
 	Global_TwintopResourceBar.resource.regen = _regenFocus
-	Global_TwintopResourceBar.dots = {
-		ssCount = serpentStingCount or 0
-	}
+	
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.ssCount = _serpentStingCount
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#aimedShot"] = spells.aimedShot.icon
@@ -1154,13 +1150,13 @@ local function RefreshLookupData_Survival()
 	Global_TwintopResourceBar.resource.passive = _passiveFocus
 	Global_TwintopResourceBar.resource.regen = _regenFocus
 	Global_TwintopResourceBar.resource.termsOfEngagement = _toeFocus
-	Global_TwintopResourceBar.dots = {
-		ssCount = serpentStingCount or 0
-	}
-	Global_TwintopResourceBar.termsOfEngagement = {
-		focus = _toeFocus,
-		ticks = _toeTicks
-	}
+	
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.ssCount = _serpentStingCount
+
+	Global_TwintopResourceBar.termsOfEngagement = Global_TwintopResourceBar.termsOfEngagement or {}
+	Global_TwintopResourceBar.termsOfEngagement.focus = _toeFocus
+	Global_TwintopResourceBar.termsOfEngagement.ticks = _toeTicks
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#arcaneShot"] = spells.arcaneShot.icon

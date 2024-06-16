@@ -31,7 +31,6 @@ local specCache = {
 local function FillSpecializationCache()
 	-- Arms
 	specCache.arms.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			passive = 0
@@ -78,7 +77,6 @@ local function FillSpecializationCache()
 	-- Fury
 
 	specCache.fury.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			passive = 0,
@@ -483,10 +481,10 @@ local function RefreshLookupData_Arms()
 
 	Global_TwintopResourceBar.resource.resource = normalizedRage
 	Global_TwintopResourceBar.resource.passive = _passiveRage
-	Global_TwintopResourceBar.dots = {
-		rendCount = _rendCount,
-		deepWoundsCount = _deepWoundsCount
-	}
+		
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.rendCount = _rendCount
+	Global_TwintopResourceBar.dots.deepWoundsCount = _deepWoundsCount
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#charge"] = spells.charge.icon
@@ -634,11 +632,10 @@ local function RefreshLookupData_Fury()
 
 	Global_TwintopResourceBar.resource.resource = normalizedRage
 	Global_TwintopResourceBar.resource.passive = _passiveRage
-	Global_TwintopResourceBar.ravager = {
-		rage = _ravagerRage,
-		ticks = _ravagerTicks
-	}
-
+	
+	Global_TwintopResourceBar.ravager = Global_TwintopResourceBar.ravager or {}
+	Global_TwintopResourceBar.ravager.rage = _ravagerRage
+	Global_TwintopResourceBar.ravager.ticks = _ravagerTicks
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#charge"] = spells.charge.icon

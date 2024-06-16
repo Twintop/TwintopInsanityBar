@@ -106,7 +106,6 @@ local function FillSpecializationCache()
 
 	-- Enhancement
 	specCache.enhancement.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -148,7 +147,6 @@ local function FillSpecializationCache()
 	
 	-- Restoration
 	specCache.restoration.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -758,17 +756,17 @@ local function RefreshLookupData_Elemental()
 
 	Global_TwintopResourceBar.resource.passive = _passiveMaelstrom
 	Global_TwintopResourceBar.resource.icefury = icefuryMaelstrom
-	Global_TwintopResourceBar.dots = {
-		fsCount = flameShockCount or 0,
-	}
-	Global_TwintopResourceBar.chainLightning = {
-		targetsHit = snapshots[spells.chainLightning.id].attributes.targetsHit or 0
-	}
-	Global_TwintopResourceBar.icefury = {
-		maelstrom = icefuryMaelstrom,
-		stacks = icefuryStacks,
-		remaining = icefuryTime
-	}
+
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.fsCount = flameShockCount or 0
+
+	Global_TwintopResourceBar.chainLightning = Global_TwintopResourceBar.chainLightning or {}
+	Global_TwintopResourceBar.chainLightning.targetsHit = snapshots[spells.chainLightning.id].attributes.targetsHit or 0
+
+	Global_TwintopResourceBar.icefury = Global_TwintopResourceBar.icefury or {}
+	Global_TwintopResourceBar.icefury.maelstrom = icefuryMaelstrom
+	Global_TwintopResourceBar.icefury.stacks = icefuryStacks
+	Global_TwintopResourceBar.icefury.remaining = icefuryTime
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#ascendance"] = spells.ascendance.icon
@@ -890,10 +888,9 @@ local function RefreshLookupData_Enhancement()
 	local _ascendanceTime = snapshots[spells.ascendance.id].buff:GetRemainingTime(currentTime)
 	local ascendanceTime = TRB.Functions.BarText:TimerPrecision(_ascendanceTime)
 
-	----------------------------
-	Global_TwintopResourceBar.dots = {
-		fsCount = flameShockCount or 0,
-	}
+	----------------------------	
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.fsCount = flameShockCount or 0
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#ascendance"] = spells.ascendance.icon
@@ -1088,18 +1085,17 @@ local function RefreshLookupData_Restoration()
 	Global_TwintopResourceBar.resource.innervate = _innervateMana or 0
 	Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
 	Global_TwintopResourceBar.resource.moltenRadiance = _mrMana or 0
-	Global_TwintopResourceBar.potionOfSpiritualClarity = {
-		mana = _channeledMana,
-		ticks = _potionOfFrozenFocusTicks
-	}
-	Global_TwintopResourceBar.symbolOfHope = {
-		mana = _sohMana,
-		ticks = _sohTicks
-	}
-	Global_TwintopResourceBar.dots = {
-		fsCount = flameShockCount or 0,
-	}
-
+	
+	Global_TwintopResourceBar.potionOfSpiritualClarity = Global_TwintopResourceBar.potionOfSpiritualClarity or {}
+	Global_TwintopResourceBar.potionOfSpiritualClarity.mana = _channeledMana
+	Global_TwintopResourceBar.potionOfSpiritualClarity.ticks = _potionOfFrozenFocusTicks or 0
+	
+	Global_TwintopResourceBar.symbolOfHope = Global_TwintopResourceBar.symbolOfHope or {}
+	Global_TwintopResourceBar.symbolOfHope.mana = _sohMana
+	Global_TwintopResourceBar.symbolOfHope.ticks = _sohTicks or 0
+	
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.fsCount = flameShockCount or 0
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#ascendance"] = spells.ascendance.icon

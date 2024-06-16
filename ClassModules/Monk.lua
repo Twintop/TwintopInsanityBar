@@ -49,7 +49,6 @@ end
 local function FillSpecializationCache()
 	-- Mistweaver
 	specCache.mistweaver.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -126,8 +125,6 @@ local function FillSpecializationCache()
 	specCache.mistweaver.snapshotData.snapshots[spells.manaTea.id] = TRB.Classes.Snapshot:New(spells.manaTea)
 	---@type TRB.Classes.Snapshot
 	specCache.mistweaver.snapshotData.snapshots[spells.vivaciousVivification.id] = TRB.Classes.Snapshot:New(spells.vivaciousVivification, nil, true)
-	---@type TRB.Classes.Snapshot
-	specCache.mistweaver.snapshotData.snapshots[spells.soulfangInfusion.id] = TRB.Classes.Healer.HealerRegenBase:New(spells.soulfangInfusion)
 
 	specCache.mistweaver.barTextVariables = {
 		icons = {},
@@ -137,7 +134,6 @@ local function FillSpecializationCache()
 
 	-- Windwalker
 	specCache.windwalker.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -237,9 +233,6 @@ local function FillSpellData_Mistweaver()
 
 		{ variable = "#soh", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = true },
 		{ variable = "#symbolOfHope", icon = spells.symbolOfHope.icon, description = spells.symbolOfHope.name, printInSettings = false },
-
-		{ variable = "#si", icon = spells.soulfangInfusion.icon, description = spells.soulfangInfusion.name, printInSettings = true },
-		{ variable = "#soulfangInfusion", icon = spells.soulfangInfusion.icon, description = spells.soulfangInfusion.name, printInSettings = false },
 
 		{ variable = "#amp", icon = spells.aeratedManaPotionRank1.icon, description = spells.aeratedManaPotionRank1.name, printInSettings = true },
 		{ variable = "#aeratedManaPotion", icon = spells.aeratedManaPotionRank1.icon, description = spells.aeratedManaPotionRank1.name, printInSettings = false },
@@ -719,24 +712,13 @@ local function RefreshLookupData_Mistweaver()
 	local _potionOfFrozenFocusTime = channeledManaPotion.buff:GetRemainingTime(currentTime)
 	local potionOfFrozenFocusTime = TRB.Functions.BarText:TimerPrecision(_potionOfFrozenFocusTime)
 	
-	local soulfangInfusion = snapshots[spells.soulfangInfusion.id] --[[@as TRB.Classes.Healer.HealerRegenBase]]
-	--$siMana
-	local _siMana = soulfangInfusion.buff.resource
-	local siMana = string.format("%s", TRB.Functions.String:ConvertToShortNumberNotation(_siMana, manaPrecision, "floor", true))
-	--$siTicks
-	local _siTicks = soulfangInfusion.buff.ticks
-	local siTicks = string.format("%.0f", _siTicks)
-	--$siTime
-	local _siTime = soulfangInfusion.buff:GetRemainingTime(currentTime)
-	local siTime = TRB.Functions.BarText:TimerPrecision(_siTime)
-	
 	local manaTea = snapshots[spells.manaTea.id] --[[@as TRB.Classes.Snapshot]]
 	--$mrTime
 	local _mtTime = manaTea.buff.remaining
 	local mtTime = TRB.Functions.BarText:TimerPrecision(_mtTime)
 
 	--$passive
-	local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana + _siMana + _bowMana
+	local _passiveMana = _sohMana + _channeledMana + math.max(_innervateMana, _potionOfChilledClarityMana) + _mttMana + _mrMana + _bowMana
 	local passiveMana = string.format("|c%s%s|r", specSettings.colors.text.passive, TRB.Functions.String:ConvertToShortNumberNotation(_passiveMana, manaPrecision, "floor", true))
 	--$manaTotal
 	local _manaTotal = math.min(_passiveMana + snapshotData.casting.resourceFinal + normalizedMana, TRB.Data.character.maxResource)
@@ -768,19 +750,14 @@ local function RefreshLookupData_Mistweaver()
 	Global_TwintopResourceBar.resource.innervate = _innervateMana or 0
 	Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
 	Global_TwintopResourceBar.resource.moltenRadiance = _mrMana or 0
-	Global_TwintopResourceBar.resource.soulfangInfusion = _siMana or 0
-	Global_TwintopResourceBar.potionOfSpiritualClarity = {
-		mana = _channeledMana,
-		ticks = _potionOfFrozenFocusTicks
-	}
-	Global_TwintopResourceBar.symbolOfHope = {
-		mana = _sohMana,
-		ticks = _sohTicks
-	}
-	Global_TwintopResourceBar.soulfangInfusion = {
-		mana = _siMana,
-		ticks = _siTicks
-	}
+	
+	Global_TwintopResourceBar.potionOfSpiritualClarity = Global_TwintopResourceBar.potionOfSpiritualClarity or {}
+	Global_TwintopResourceBar.potionOfSpiritualClarity.mana = _channeledMana
+	Global_TwintopResourceBar.potionOfSpiritualClarity.ticks = _potionOfFrozenFocusTicks or 0
+	
+	Global_TwintopResourceBar.symbolOfHope = Global_TwintopResourceBar.symbolOfHope or {}
+	Global_TwintopResourceBar.symbolOfHope.mana = _sohMana
+	Global_TwintopResourceBar.symbolOfHope.ticks = _sohTicks or 0
 
 
 	local lookup = TRB.Data.lookup or {}
@@ -800,8 +777,6 @@ local function RefreshLookupData_Mistweaver()
 	lookup["#potionOfFrozenFocus"] = spells.potionOfFrozenFocusRank1.icon
 	lookup["#pocc"] = spells.potionOfChilledClarity.icon
 	lookup["#potionOfChilledClarity"] = spells.potionOfChilledClarity.icon
-	lookup["#si"] = spells.soulfangInfusion.icon
-	lookup["#soulfangInfusion"] = spells.soulfangInfusion.icon
 	lookup["$manaTotal"] = manaTotal
 	lookup["$manaMax"] = manaMax
 	lookup["$mana"] = currentMana
@@ -832,9 +807,6 @@ local function RefreshLookupData_Mistweaver()
 	lookup["$mttTime"] = mttTime
 	lookup["$mtTime"] = mtTime
 	lookup["$manaTeaTime"] = mtTime
-	lookup["$siMana"] = siMana
-	lookup["$siTicks"] = siTicks
-	lookup["$siTime"] = siTime
 	lookup["$channeledMana"] = channeledMana
 	lookup["$potionOfFrozenFocusTicks"] = potionOfFrozenFocusTicks
 	lookup["$potionOfFrozenFocusTime"] = potionOfFrozenFocusTime
@@ -873,9 +845,6 @@ local function RefreshLookupData_Mistweaver()
 	lookupLogic["$mttTime"] = _mttTime
 	lookupLogic["$mtTime"] = _mtTime
 	lookupLogic["$manaTeaTime"] = _mtTime
-	lookupLogic["$siMana"] = _siMana
-	lookupLogic["$siTicks"] = _siTicks
-	lookupLogic["$siTime"] = _siTime
 	lookupLogic["$channeledMana"] = _channeledMana
 	lookupLogic["$potionOfFrozenFocusTicks"] = _potionOfFrozenFocusTicks
 	lookupLogic["$potionOfFrozenFocusTime"] = _potionOfFrozenFocusTime
@@ -1022,17 +991,17 @@ local function RefreshLookupData_Windwalker()
 
 	Global_TwintopResourceBar.resource.passive = _passiveEnergy
 	Global_TwintopResourceBar.resource.regen = _regenEnergy
-	Global_TwintopResourceBar.dots = {
-		motcCount = _motcCount,
-		motcActiveCount = _motcActiveCount
-	}
-	Global_TwintopResourceBar.markOfTheCrane = {
-		count = _motcCount,
-		activeCount = _motcActiveCount,
-		targetTime = _motcTime,
-		minTime = _motcMinTime,
-		maxTime = _motcMaxTime
-	}
+	
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.motcCount = _motcCount
+	Global_TwintopResourceBar.dots.motcActiveCount = _motcActiveCount
+
+	Global_TwintopResourceBar.markOfTheCrane = Global_TwintopResourceBar.markOfTheCrane or {}
+	Global_TwintopResourceBar.markOfTheCrane.count = _motcCount
+	Global_TwintopResourceBar.markOfTheCrane.activeCount = _motcActiveCount
+	Global_TwintopResourceBar.markOfTheCrane.targetTime = _motcTime
+	Global_TwintopResourceBar.markOfTheCrane.minTime = _motcMinTime
+	Global_TwintopResourceBar.markOfTheCrane.maxTime = _motcMaxTime
 
 	local lookup = TRB.Data.lookup or {}
 	lookup["#blackoutKick"] = spells.blackoutKick.icon
@@ -1299,10 +1268,6 @@ local function UpdateSnapshot_Mistweaver()
 	-- We have all the mana potion item ids but we're only going to check one since they're a shared cooldown
 	snapshots[spells.aeratedManaPotionRank1.id].cooldown.startTime, snapshots[spells.aeratedManaPotionRank1.id].cooldown.duration, _ = C_Container.GetItemCooldown(TRB.Data.character.items.potions.aeratedManaPotionRank1.id)
 	snapshots[spells.aeratedManaPotionRank1.id].cooldown:GetRemainingTime(currentTime)
-
-	local soulfangInfusion = snapshots[spells.soulfangInfusion.id] --[[@as TRB.Classes.Healer.HealerRegenBase]]
-	soulfangInfusion.buff:UpdateTicks(currentTime)
-	soulfangInfusion.mana = soulfangInfusion.buff.resource
 end
 
 local function UpdateSnapshot_Windwalker()
@@ -1373,13 +1338,6 @@ local function UpdateResourceBar()
 				end
 
 				local passiveValue, thresholdCount = TRB.Functions.Threshold:ManageCommonHealerPassiveThresholds(specSettings, spells, snapshotData.snapshots, passiveFrame, castingBarValue)
-				thresholdCount = thresholdCount + 1
-				if specSettings.bar.showPassive then
-					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.soulfangInfusion.id] --[[@as TRB.Classes.Healer.HealerRegenBase]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
-				else
-					TRB.Frames.passiveFrame.thresholds[thresholdCount]:Hide()
-				end
-
 				thresholdCount = thresholdCount + 1
 				if snapshotData.attributes.raceId == 5 and specSettings.thresholds.cannibalize.enabled and specSettings.bar.showPassive then
 					passiveValue = TRB.Functions.Threshold:ManageHealerManaPassiveThreshold(specSettings, snapshots[spells.cannibalize.id] --[[@as TRB.Classes.Healer.Cannibalize]], passiveFrame, thresholdCount, castingBarValue, passiveValue)
@@ -1734,12 +1692,6 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 				if entry.spellId == spells.potionOfFrozenFocusRank1.spellId or entry.spellId == spells.potionOfFrozenFocusRank2.spellId or entry.spellId == spells.potionOfFrozenFocusRank3.spellId then
 					local channeledManaPotion = snapshots[spells.potionOfFrozenFocusRank1.id] --[[@as TRB.Classes.Healer.ChanneledManaPotion]]
 					channeledManaPotion.buff:Initialize(entry.type)
-				elseif entry.spellId == spells.soulfangInfusion.id then
-					snapshots[entry.spellId].buff:Initialize(entry.type)
-					if entry.type == "SPELL_AURA_APPLIED" then -- Gain Soulfang Infusion
-						snapshots[entry.spellId].buff:SetTickData(true, CalculateManaGain(TRB.Data.character.maxResource * spells.soulfangInfusion.resourcePerTick, false), spells.soulfangInfusion.tickRate)
-						snapshots[entry.spellId].buff:UpdateTicks(currentTime)
-					end
 				elseif entry.spellId == spells.manaTea.id then
 					snapshots[entry.spellId].buff:Initialize(entry.type)
 				elseif entry.spellId == spells.cannibalize.id then
@@ -2260,18 +2212,6 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		elseif var == "$potionCooldownSeconds" then
 			if snapshots[spells.aeratedManaPotionRank1.id].cooldown:IsUnusable() then
-				valid = true
-			end
-		elseif var == "$siMana" then
-			if snapshots[spells.soulfangInfusion.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$siTicks" then
-			if snapshots[spells.soulfangInfusion.id].buff.isActive then
-				valid = true
-			end
-		elseif var == "$siTime" then
-			if snapshots[spells.soulfangInfusion.id].buff.isActive then
 				valid = true
 			end
 		end

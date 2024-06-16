@@ -11,6 +11,59 @@ local content = [====[
 
 ---
 
+# 11.0.0.0-alpha05 (2024-06-16)
+## General
+
+- (UPDATE (Twintop)) Change how the global variable, `Global_TwintopResourceBar`, gets data populated to reduce memory usage.
+
+## Demon Hunter
+### Havoc
+
+- [#357 - UPDATE (Twintop)](#357) Updates to reflect the state of Havoc in beta:
+<br/>&emsp;&ensp;- Added:
+<br/>&emsp;&ensp;&emsp;&ensp;- Art of the Glaive support, including Glaive Flurry and Rending Strike.
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- In addition to Chaos Theory being active, now Rending Strike being active will change the threshold lines of Chaos Strike and Annihilation to be colored "special".
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Glaive Flurry being active will change the threshold lines of Blade Dance and Death Sweep to be colored "special".
+<br/>&emsp;&ensp;&emsp;&ensp;- Student of Suffering support, including passive Fury being included in `$passive` and in the Global variable.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$aotgStacks` - Number of Art of the Glaive stacks you currently have
+<br/>&emsp;&ensp;&emsp;&ensp;- `$aotgTime` - Time remaining on Art of the Glaive
+<br/>&emsp;&ensp;&emsp;&ensp;- `$gfTime` - Time remaining on Glaive Flurry
+<br/>&emsp;&ensp;&emsp;&ensp;- `$rsTime` - Time remaining on Rending Strike
+<br/>&emsp;&ensp;&emsp;&ensp;- `$sosTime` - Time remaining on Student of Suffering
+<br/>&emsp;&ensp;&emsp;&ensp;- `$sosTime` - Number of ticks left on Student of Suffering
+<br/>&emsp;&ensp;&emsp;&ensp;- `$sosTime` - Fury from Student of Suffering
+<br/>&emsp;&ensp;- New bar text icons:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#artOfTheGlaive` - Art of the Glaive
+<br/>&emsp;&ensp;&emsp;&ensp;- `#glaiveFlurry` - Glaive Flurry
+<br/>&emsp;&ensp;&emsp;&ensp;- `#rendingStrike` - Rending Strike
+<br/>&emsp;&ensp;&emsp;&ensp;- `#studentOfSuffering` - Student of Suffering
+
+### Vengeance
+
+- [#358 - UPDATE (Twintop)](#358) Updates to reflect the state of Havoc in beta:
+<br/>&emsp;&ensp;- Added:
+<br/>&emsp;&ensp;&emsp;&ensp;- Art of the Glaive support. *NOTE:* this is only the main buff, not any effects from using Reaver's Glaive. Currently, Reaver's Glaive is bugged and can't be triggered.
+<br/>&emsp;&ensp;&emsp;&ensp;- Student of Suffering support, including passive Fury being included in `$passive` and in the Global variable.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$aotgStacks` - Number of Art of the Glaive stacks you currently have
+<br/>&emsp;&ensp;&emsp;&ensp;- `$aotgTime` - Time remaining on Art of the Glaive
+<br/>&emsp;&ensp;&emsp;&ensp;- `$sosTime` - Time remaining on Student of Suffering
+<br/>&emsp;&ensp;&emsp;&ensp;- `$sosTime` - Number of ticks left on Student of Suffering
+<br/>&emsp;&ensp;&emsp;&ensp;- `$sosTime` - Fury from Student of Suffering
+<br/>&emsp;&ensp;- New bar text icons:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#artOfTheGlaive` - Art of the Glaive
+<br/>&emsp;&ensp;&emsp;&ensp;- `#studentOfSuffering` - Student of Suffering
+
+## Monk
+### Mistweaver
+
+- [#368 - UPDATE (Twintop)](#368) Updates to reflect the state of Mistweaver in beta:
+<br/>&emsp;&ensp;- Removed:
+<br/>&emsp;&ensp;&emsp;&ensp;- Set bonuses: Soulfang Infusion (T30 / S2 Dragonflight)
+
+---
+
 # 11.0.0.0-alpha04 (2024-06-15)
 ## General
 

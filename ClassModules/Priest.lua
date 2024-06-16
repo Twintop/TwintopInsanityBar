@@ -51,7 +51,6 @@ end
 local function FillSpecializationCache()
 	-- Discipline
 	specCache.discipline.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -170,7 +169,6 @@ local function FillSpecializationCache()
 
 	-- Holy
 	specCache.holy.Global_TwintopResourceBar = {
-		ttd = 0,
 		resource = {
 			resource = 0,
 			casting = 0,
@@ -289,7 +287,6 @@ local function FillSpecializationCache()
 
 	-- Shadow
 	specCache.shadow.Global_TwintopResourceBar = {
-		ttd = 0,
 		voidform = {
 		},
 		resource = {
@@ -1382,30 +1379,29 @@ local function RefreshLookupData_Discipline()
 	Global_TwintopResourceBar.resource.potionOfChilledClarity = _potionOfChilledClarityMana or 0
 	Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
 	Global_TwintopResourceBar.resource.moltenRadiance = _mrMana or 0
-	Global_TwintopResourceBar.channeledPotion = {
-		mana = _channeledMana,
-		ticks = _potionOfFrozenFocusTicks
-	}
-	Global_TwintopResourceBar.symbolOfHope = {
-		mana = _sohMana,
-		ticks = _sohTicks,
-	}
-	Global_TwintopResourceBar.shadowfiend = {
-		mana = snapshots[spells.shadowfiend.id].attributes.resourceFinal or 0,
-		gcds = snapshots[spells.shadowfiend.id].attributes.remaining.gcds or 0,
-		swings = snapshots[spells.shadowfiend.id].attributes.remaining.swings or 0,
-		time = snapshots[spells.shadowfiend.id].attributes.remaining.time or 0
-	}
-	Global_TwintopResourceBar.dots = {
-		swpCount = _shadowWordPainCount or 0
-	}
-	Global_TwintopResourceBar.atonement = {
-		count = _atonementCount,
-		targetTime = _atonementTime,
-		minTime = _atonementMinTime,
-		maxTime = _atonementMaxTime
-	}
+	
+	Global_TwintopResourceBar.potionOfSpiritualClarity = Global_TwintopResourceBar.potionOfSpiritualClarity or {}
+	Global_TwintopResourceBar.potionOfSpiritualClarity.mana = _channeledMana
+	Global_TwintopResourceBar.potionOfSpiritualClarity.ticks = _potionOfFrozenFocusTicks or 0
+	
+	Global_TwintopResourceBar.symbolOfHope = Global_TwintopResourceBar.symbolOfHope or {}
+	Global_TwintopResourceBar.symbolOfHope.mana = _sohMana
+	Global_TwintopResourceBar.symbolOfHope.ticks = _sohTicks or 0
 
+	Global_TwintopResourceBar.shadowfiend = Global_TwintopResourceBar.shadowfiend or {}
+	Global_TwintopResourceBar.shadowfiend.mana = snapshots[spells.shadowfiend.id].attributes.resourceFinal or 0
+	Global_TwintopResourceBar.shadowfiend.gcds = snapshots[spells.shadowfiend.id].attributes.remaining.gcds or 0
+	Global_TwintopResourceBar.shadowfiend.swings = snapshots[spells.shadowfiend.id].attributes.remaining.swings or 0
+	Global_TwintopResourceBar.shadowfiend.time = snapshots[spells.shadowfiend.id].attributes.remaining.time or 0
+
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.swpCount = _shadowWordPainCount or 0
+
+	Global_TwintopResourceBar.atonement = Global_TwintopResourceBar.atonement or {}
+	Global_TwintopResourceBar.atonement.count = _atonementCount
+	Global_TwintopResourceBar.atonement.targetTime = _atonementTime
+	Global_TwintopResourceBar.atonement.minTime = _atonementMinTime
+	Global_TwintopResourceBar.atonement.maxTime = _atonementMaxTime
 
 	local lookup = TRB.Data.lookup
 
@@ -1738,24 +1734,23 @@ local function RefreshLookupData_Holy()
 	Global_TwintopResourceBar.resource.potionOfChilledClarity = _potionOfChilledClarityMana or 0
 	Global_TwintopResourceBar.resource.symbolOfHope = _sohMana or 0
 	Global_TwintopResourceBar.resource.moltenRadiance = _mrMana or 0
-	Global_TwintopResourceBar.channeledPotion = {
-		mana = _channeledMana,
-		ticks = _potionOfFrozenFocusTicks
-	}
-	Global_TwintopResourceBar.symbolOfHope = {
-		mana = _sohMana,
-		ticks = _sohTicks
-	}
-	Global_TwintopResourceBar.shadowfiend = {
-		mana = snapshots[spells.shadowfiend.id].attributes.resourceFinal or 0,
-		gcds = snapshots[spells.shadowfiend.id].attributes.remaining.gcds or 0,
-		swings = snapshots[spells.shadowfiend.id].attributes.remaining.swings or 0,
-		time = snapshots[spells.shadowfiend.id].attributes.remaining.time or 0
-	}
-	Global_TwintopResourceBar.dots = {
-		swpCount = _shadowWordPainCount or 0
-	}
+	
+	Global_TwintopResourceBar.potionOfSpiritualClarity = Global_TwintopResourceBar.potionOfSpiritualClarity or {}
+	Global_TwintopResourceBar.potionOfSpiritualClarity.mana = _channeledMana
+	Global_TwintopResourceBar.potionOfSpiritualClarity.ticks = _potionOfFrozenFocusTicks or 0
+	
+	Global_TwintopResourceBar.symbolOfHope = Global_TwintopResourceBar.symbolOfHope or {}
+	Global_TwintopResourceBar.symbolOfHope.mana = _sohMana
+	Global_TwintopResourceBar.symbolOfHope.ticks = _sohTicks or 0
 
+	Global_TwintopResourceBar.shadowfiend = Global_TwintopResourceBar.shadowfiend or {}
+	Global_TwintopResourceBar.shadowfiend.mana = snapshots[spells.shadowfiend.id].attributes.resourceFinal or 0
+	Global_TwintopResourceBar.shadowfiend.gcds = snapshots[spells.shadowfiend.id].attributes.remaining.gcds or 0
+	Global_TwintopResourceBar.shadowfiend.swings = snapshots[spells.shadowfiend.id].attributes.remaining.swings or 0
+	Global_TwintopResourceBar.shadowfiend.time = snapshots[spells.shadowfiend.id].attributes.remaining.time or 0
+
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.swpCount = _shadowWordPainCount or 0
 
 	local lookup = TRB.Data.lookup
 	lookup["$manaTotal"] = manaTotal
@@ -2109,32 +2104,32 @@ local function RefreshLookupData_Shadow()
 	Global_TwintopResourceBar.resource.shadowfiend = _mbInsanity or 0
 	Global_TwintopResourceBar.resource.mindbender = _mbInsanity or 0
 	Global_TwintopResourceBar.resource.ecttv = snapshots[spells.idolOfCthun.id].attributes.resourceFinal or 0
-	Global_TwintopResourceBar.auspiciousSpirits = {
-		count = targetData.count[spells.auspiciousSpirits.id] or 0,
-		insanity = _asInsanity
-	}
-	Global_TwintopResourceBar.dots = {
-		swpCount = _shadowWordPainCount or 0,
-		vtCount = _vampiricTouchCount or 0,
-		dpCount = devouringPlagueCount or 0
-	}
-	Global_TwintopResourceBar.shadowfiend = {
-		insanity = _mbInsanity or 0,
-		gcds = snapshots[spells.shadowfiend.id].attributes.remaining.gcds or 0,
-		swings = snapshots[spells.shadowfiend.id].attributes.remaining.swings or 0,
-		time = snapshots[spells.shadowfiend.id].attributes.remaining.time or 0
-	}
-	Global_TwintopResourceBar.mindbender = {
-		insanity = _mbInsanity,
-		gcds = snapshots[spells.shadowfiend.id].attributes.remaining.gcds or 0,
-		swings = snapshots[spells.shadowfiend.id].attributes.remaining.swings or 0,
-		time = snapshots[spells.shadowfiend.id].attributes.remaining.time or 0
-	}
-	Global_TwintopResourceBar.eternalCallToTheVoid = {
-		insanity = snapshots[spells.idolOfCthun.id].attributes.resourceFinal or 0,
-		ticks = snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining or 0,
-		count = snapshots[spells.idolOfCthun.id].attributes.numberActive or 0
-	}
+	
+	Global_TwintopResourceBar.auspiciousSpirits = Global_TwintopResourceBar.auspiciousSpirits or {}
+	Global_TwintopResourceBar.auspiciousSpirits.count = targetData.count[spells.auspiciousSpirits.id] or 0
+	Global_TwintopResourceBar.auspiciousSpirits.insanity = _asInsanity
+
+	Global_TwintopResourceBar.dots = Global_TwintopResourceBar.dots or {}
+	Global_TwintopResourceBar.dots.swpCount = _shadowWordPainCount or 0
+	Global_TwintopResourceBar.dots.vtCount = _vampiricTouchCount or 0
+	Global_TwintopResourceBar.dots.dpCount = devouringPlagueCount or 0
+
+	Global_TwintopResourceBar.shadowfiend = Global_TwintopResourceBar.shadowfiend or {}
+	Global_TwintopResourceBar.shadowfiend.insanity = _mbInsanity or 0
+	Global_TwintopResourceBar.shadowfiend.gcds = snapshots[spells.shadowfiend.id].attributes.remaining.gcds or 0
+	Global_TwintopResourceBar.shadowfiend.swings = snapshots[spells.shadowfiend.id].attributes.remaining.swings or 0
+	Global_TwintopResourceBar.shadowfiend.time = snapshots[spells.shadowfiend.id].attributes.remaining.time or 0
+
+	Global_TwintopResourceBar.mindbender = Global_TwintopResourceBar.mindbender or {}
+	Global_TwintopResourceBar.mindbender.insanity = _mbInsanity or 0
+	Global_TwintopResourceBar.mindbender.gcds = snapshots[spells.shadowfiend.id].attributes.remaining.gcds or 0
+	Global_TwintopResourceBar.mindbender.swings = snapshots[spells.shadowfiend.id].attributes.remaining.swings or 0
+	Global_TwintopResourceBar.mindbender.time = snapshots[spells.shadowfiend.id].attributes.remaining.time or 0
+
+	Global_TwintopResourceBar.eternalCallToTheVoid = Global_TwintopResourceBar.eternalCallToTheVoid or {}
+	Global_TwintopResourceBar.eternalCallToTheVoid.insanity = snapshots[spells.idolOfCthun.id].attributes.resourceFinal or 0
+	Global_TwintopResourceBar.eternalCallToTheVoid.ticks = snapshots[spells.idolOfCthun.id].attributes.maxTicksRemaining or 0
+	Global_TwintopResourceBar.eternalCallToTheVoid.count = snapshots[spells.idolOfCthun.id].attributes.numberActive or 0
 
 	local lookup = TRB.Data.lookup
 
