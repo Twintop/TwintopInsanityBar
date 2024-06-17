@@ -11,15 +11,7 @@ local content = [====[
 
 ---
 
-# 10.2.7.11-release (2024-06-18)
-## Paladin
-### Holy
-
-- (FIX (Twintop)) Fix Lua error when attempting to hide the bar.
-
----
-
-# 10.2.7.10-release (2024-06-10)
+# 10.2.7.10-release (2024-06-18)
 ## General
 
 - (FIX (Twintop)) Don't allow PvP abilities to show threshold lines if you aren't in PvP or they aren't talented.
@@ -28,6 +20,11 @@ local content = [====[
 ### Beast Mastery
 
 - (FIX (Twintop)) Prevent bar and bar border color changes when your character does not have the appropriate talent learned.
+
+## Paladin
+### Holy
+
+- (FIX (Twintop)) Fix Lua error when attempting to hide the bar.
 
 ---
 
