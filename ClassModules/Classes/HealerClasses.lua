@@ -698,15 +698,78 @@ function TRB.Classes.Healer.HealerSpells:New()
     })
 
     -- Alchemist Stone
+    local alchemistStoneItemIds = {
+        -- The War Within
+        210816,
+        -- Shadowlands
+        175943,
+        175942,
+        175941,
+        171323,
+        -- Battle for Azeroth
+        171088,
+        171087,
+        171085,
+        168676,
+        168675,
+        168674,
+        166976,
+        166975,
+        166974,
+        165928,
+        165927,
+        165926,
+        152637,
+        152632,
+        -- Legion
+        151607,
+        127842,
+        -- Warlords of Draenor
+        128024,
+        128023,
+        122604,
+        122603,
+        122602,
+        122601,
+        109262,
+        -- Mists of Pandaria
+        75274,
+        -- Cataclysm
+        68777,
+        68776,
+        68775,
+        58483,
+        -- Wrath of the Lich King
+        44324,
+        44323,
+        44322,
+        -- Burning Crusade
+        35751,
+        35750,
+        35749,
+        35748,
+        13503
+    }
+
     self.alchemistStone = TRB.Classes.SpellBase:New({
         id = 17619,
         resourcePercent = 1.4,
-        itemIds = {
-            171323,
-            175941,
-            175942,
-            175943
-        }
+        isAlchemistStoneEquipped = function ()
+            local trinket1ItemLink = GetInventoryItemLink("player", 13)
+            local trinket2ItemLink = GetInventoryItemLink("player", 14)
+            if trinket1ItemLink ~= nil then
+                for x = 1, #alchemistStoneItemIds do
+                    if TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, alchemistStoneItemIds[x]) then
+                        return true
+                    end
+                    
+                    if TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, alchemistStoneItemIds[x]) then
+                        return true
+                    end
+                end
+            end
+            return false
+        end
     })
 
     -- Rashok's Molten Heart

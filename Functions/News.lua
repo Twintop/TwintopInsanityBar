@@ -11,6 +11,19 @@ local content = [====[
 
 ---
 
+# 11.0.0.0-alpha06 (2024-06-18)
+## General
+### Healers
+
+- [#384 - UPDATE (Twintop)](#384) Add detection for all Alchemist Stones.
+
+## Paladin
+### Holy
+
+- (FIX (Twintop)) Fix Lua error when attempting to hide the bar.
+
+---
+
 # 11.0.0.0-alpha05 (2024-06-16)
 ## General
 

@@ -4468,33 +4468,7 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.specName = "discipline"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
-		
-		local trinket1ItemLink = GetInventoryItemLink("player", 13)
-		local trinket2ItemLink = GetInventoryItemLink("player", 14)
-
-		local alchemyStone = false
-
-		if trinket1ItemLink ~= nil then
-			for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.attributes.itemIds) do
-				if alchemyStone == false then
-					alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, spells.alchemistStone.attributes.itemIds[x])
-				else
-					break
-				end
-			end
-		end
-
-		if alchemyStone == false and trinket2ItemLink ~= nil then
-			for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.attributes.itemIds) do
-				if alchemyStone == false then
-					alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, spells.alchemistStone.attributes.itemIds[x])
-				else
-					break
-				end
-			end
-		end
-
-		TRB.Data.character.items.alchemyStone = alchemyStone
+		TRB.Data.character.items.alchemyStone = spells.alchemistStone.attributes.isAlchemistStoneEquipped()
 		
 		if talents:IsTalentActive(spells.voidwraith) then
 			snapshots[spells.shadowfiend.id].spell = spells.voidwraith
@@ -4522,32 +4496,7 @@ function TRB.Functions.Class:CheckCharacter()
 		TRB.Data.character.specName = "holy"
 ---@diagnostic disable-next-line: missing-parameter
 		TRB.Data.character.maxResource = UnitPowerMax("player", Enum.PowerType.Mana)
-
-		local trinket1ItemLink = GetInventoryItemLink("player", 13)
-		local trinket2ItemLink = GetInventoryItemLink("player", 14)
-
-		local alchemyStone = false
-					
-		if trinket1ItemLink ~= nil then
-			for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.attributes.itemIds) do
-				if alchemyStone == false then
-					alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket1ItemLink, spells.alchemistStone.attributes.itemIds[x])
-				else
-					break
-				end
-			end
-		end
-
-		if alchemyStone == false and trinket2ItemLink ~= nil then
-			for x = 1, TRB.Functions.Table:Length(spells.alchemistStone.attributes.itemIds) do
-				if alchemyStone == false then
-					alchemyStone = TRB.Functions.Item:DoesItemLinkMatchId(trinket2ItemLink, spells.alchemistStone.attributes.itemIds[x])
-				else
-					break
-				end
-			end
-		end
-		TRB.Data.character.items.alchemyStone = alchemyStone
+		TRB.Data.character.items.alchemyStone = spells.alchemistStone.attributes.isAlchemistStoneEquipped()
 
 		local totalHolyWordCharges = 0
 		
