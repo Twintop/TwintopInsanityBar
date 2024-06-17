@@ -1309,7 +1309,7 @@ function TRB.Functions.Class:EventRegistration()
 		TRB.Data.resource = Enum.PowerType.Mana
 		TRB.Data.resourceFactor = 1
 		TRB.Data.resource2 = Enum.PowerType.HolyPower
-		TRB.Data.resourceFactor = 1
+		TRB.Data.resource2Factor = 1
 	else -- This should never happen
 		TRB.Data.specSupported = false
 	end

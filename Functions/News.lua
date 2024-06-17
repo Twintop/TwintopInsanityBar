@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 10.2.7.11-release (2024-06-18)
+## Paladin
+### Holy
+
+- (FIX (Twintop)) Fix Lua error when attempting to hide the bar.
+
+---
+
 # 10.2.7.10-release (2024-06-10)
 ## General
 
