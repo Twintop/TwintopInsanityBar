@@ -996,8 +996,17 @@ end
 
 ---Returns a string formatted time value based on settings for precision
 ---@param value number # Timer value to format
+---@param positiveOnly boolean? # Should the timer only ever show a positive number?
 ---@return string # String formatted value with correct precision based on thresholds
-function TRB.Functions.BarText:TimerPrecision(value)
+function TRB.Functions.BarText:TimerPrecision(value, positiveOnly)
+	if positiveOnly == nil then
+		positiveOnly = true
+	end
+
+	if positiveOnly and value < 0 then
+		value = 0
+	end
+
 	if value >= TRB.Data.settings.core.timers.precisionThreshold then
 		return string.format("%."..TRB.Data.settings.core.timers.precisionHigh.."f", value)
 	else

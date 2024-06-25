@@ -11,6 +11,32 @@ local content = [====[
 
 ---
 
+# 11.0.0.0-alpha07 (2024-06-26)
+## Evoker
+### Augmentation
+
+- [#362 - UPDATE (Twintop)](#364) Updates to reflect the state of Augmentation in beta:
+<br/>&emsp;&ensp;- Added:
+<br/>&emsp;&ensp;&emsp;&ensp;- Melt Armor support, applied via Breath of Eons.
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Track when the debuff is on a target and allow for the mana bar to change color while active.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$meltArmorTime` - Time remaining on Melt Armor on your current target
+<br/>&emsp;&ensp;- New bar text icons:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#meltArmor` - Melt Armor
+
+### Devastation
+
+- [#362 - UPDATE (Twintop)](#362) Updates to reflect the state of Devastation in beta:
+<br/>&emsp;&ensp;- Added:
+<br/>&emsp;&ensp;&emsp;&ensp;- Melt Armor support, applied via Deep Breath.
+<br/>&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;- Track when the debuff is on a target and allow for the mana bar to change color while active.
+<br/>&emsp;&ensp;- New bar text variables:
+<br/>&emsp;&ensp;&emsp;&ensp;- `$meltArmorTime` - Time remaining on Melt Armor on your current target
+<br/>&emsp;&ensp;- New bar text icons:
+<br/>&emsp;&ensp;&emsp;&ensp;- `#meltArmor` - Melt Armor
+
+---
+
 # 11.0.0.0-alpha06 (2024-06-18)
 ## General
 ### Healers

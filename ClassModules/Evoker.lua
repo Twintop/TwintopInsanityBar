@@ -257,6 +257,7 @@ local function FillSpellData_Devastation()
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
 		{ variable = "#eb", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = true },
 		{ variable = "#essenceBurst", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = false },
+		{ variable = "#meltArmor", icon = spells.meltArmor.icon, description = spells.meltArmor.name, printInSettings = true },
 	}
 	specCache.devastation.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -303,6 +304,8 @@ local function FillSpellData_Devastation()
 
 		{ variable = "$ebTime", description = L["EvokerDevastationBarTextVariable_ebTime"], printInSettings = true, color = false },
 		{ variable = "$ebStacks", description = L["EvokerDevastationBarTextVariable_ebStacks"], printInSettings = true, color = false },
+
+		{ variable = "$meltArmorTime", description = L["EvokerDevastationBarTextVariable_meltArmorTime"], printInSettings = true, color = false },
 
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
@@ -444,11 +447,12 @@ local function FillSpellData_Augmentation()
 
 	-- This is done here so that we can get icons for the options menu!
 	specCache.augmentation.barTextVariables.icons = {
-		{ variable = "#eb", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = true },
-		{ variable = "#essenceBurst", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = false },
-		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
 		{ variable = "#item_ITEMID_", icon = "", description = L["BarTextIconCustomItem"], printInSettings = true },
 		{ variable = "#spell_SPELLID_", icon = "", description = L["BarTextIconCustomSpell"], printInSettings = true },
+		{ variable = "#casting", icon = "", description = L["BarTextIconCasting"], printInSettings = true },
+		{ variable = "#eb", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = true },
+		{ variable = "#essenceBurst", icon = spells.essenceBurst.icon, description = spells.essenceBurst.name, printInSettings = false },
+		{ variable = "#meltArmor", icon = spells.meltArmor.icon, description = spells.meltArmor.name, printInSettings = true },
 	}
 	specCache.augmentation.barTextVariables.values = {
 		{ variable = "$gcd", description = L["BarTextVariableGcd"], printInSettings = true, color = false },
@@ -495,6 +499,8 @@ local function FillSpellData_Augmentation()
 
 		{ variable = "$ebTime", description = L["EvokerAugmentationBarTextVariable_ebTime"], printInSettings = true, color = false },
 		{ variable = "$ebStacks", description = L["EvokerAugmentationBarTextVariable_ebStacks"], printInSettings = true, color = false },
+
+		{ variable = "$meltArmorTime", description = L["EvokerAugmentationBarTextVariable_meltArmorTime"], printInSettings = true, color = false },
 
 		{ variable = "$ttd", description = L["BarTextVariableTtd"], printInSettings = true, color = true },
 		{ variable = "$ttdSeconds", description = L["BarTextVariableTtdSeconds"], printInSettings = true, color = true }
@@ -621,6 +627,8 @@ local function RefreshLookupData_Devastation()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
+	local targetData = snapshotData.targetData
+	local target = targetData.targets[targetData.currentTargetGuid]
 	local specSettings = TRB.Data.settings.evoker.devastation
 	--Spec specific implementation
 	local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
@@ -642,6 +650,16 @@ local function RefreshLookupData_Devastation()
 	local _ebStacks = snapshots[spells.essenceBurst.id].buff.applications
 	local ebStacks = string.format("%.0f", _ebStacks)
 
+	--$meltArmorTime
+	local _meltArmorTime = 0
+	local meltArmorTime
+	
+	if target ~= nil then
+		_meltArmorTime = target.spells[spells.meltArmor.id].remainingTime or 0
+	end
+	
+	meltArmorTime = TRB.Functions.BarText:TimerPrecision(_meltArmorTime)
+
 	--$essenceRegenTime
 	local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
 	if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
@@ -654,12 +672,14 @@ local function RefreshLookupData_Devastation()
 	local lookup = TRB.Data.lookup or {}
 	lookup["#eb"] = spells.essenceBurst.icon
 	lookup["#essenceBurst"] = spells.essenceBurst.icon
+	lookup["#meltArmor"] = spells.meltArmor.icon
 	lookup["$manaMax"] = TRB.Data.character.maxResource
 	lookup["$mana"] = currentMana
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
 	lookup["$resource"] = currentMana
 	lookup["$ebTime"] = ebTime
 	lookup["$ebStacks"] = ebStacks
+	lookup["$meltArmorTime"] = meltArmorTime
 	lookup["$essence"] = snapshotData.attributes.resource2
 	lookup["$essenceRegenTime"] = essenceRegenTime
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
@@ -675,6 +695,7 @@ local function RefreshLookupData_Devastation()
 	lookupLogic["$casting"] = snapshotData.casting.resourceFinal
 	lookupLogic["$ebTime"] = _ebTime
 	lookupLogic["$ebStacks"] = _ebStacks
+	lookupLogic["$meltArmorTime"] = _meltArmorTime
 	lookupLogic["$essence"] = snapshotData.attributes.resource2
 	lookupLogic["$essenceRegenTime"] = _essenceRegenTime
 	lookupLogic["$comboPoints"] = snapshotData.attributes.resource2
@@ -967,6 +988,8 @@ local function RefreshLookupData_Augmentation()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local snapshots = snapshotData.snapshots
+	local targetData = snapshotData.targetData
+	local target = targetData.targets[targetData.currentTargetGuid]
 	local specSettings = TRB.Data.settings.evoker.augmentation
 	--Spec specific implementation
 	local normalizedMana = snapshotData.attributes.resource / TRB.Data.resourceFactor
@@ -988,6 +1011,16 @@ local function RefreshLookupData_Augmentation()
 	local _ebStacks = snapshots[spells.essenceBurst.id].buff.applications
 	local ebStacks = string.format("%.0f", _ebStacks)
 
+	--$meltArmorTime
+	local _meltArmorTime = 0
+	local meltArmorTime
+	
+	if target ~= nil then
+		_meltArmorTime = target.spells[spells.meltArmor.id].remainingTime or 0
+	end
+	
+	meltArmorTime = TRB.Functions.BarText:TimerPrecision(_meltArmorTime)
+
 	--$essenceRegenTime
 	local _essenceRegenTime = (1 - (snapshotData.attributes.essencePartial / 1000)) * snapshotData.attributes.essenceRegen
 	if snapshotData.attributes.resource2 == TRB.Data.character.maxResource2 then
@@ -1000,12 +1033,14 @@ local function RefreshLookupData_Augmentation()
 	local lookup = TRB.Data.lookup or {}
 	lookup["#eb"] = spells.essenceBurst.icon
 	lookup["#essenceBurst"] = spells.essenceBurst.icon
+	lookup["#meltArmor"] = spells.meltArmor.icon
 	lookup["$manaMax"] = TRB.Data.character.maxResource
 	lookup["$mana"] = currentMana
 	lookup["$resourceMax"] = TRB.Data.character.maxResource
 	lookup["$resource"] = currentMana
 	lookup["$ebTime"] = ebTime
 	lookup["$ebStacks"] = ebStacks
+	lookup["$meltArmorTime"] = meltArmorTime
 	lookup["$essence"] = snapshotData.attributes.resource
 	lookup["$essenceRegenTime"] = essenceRegenTime
 	lookup["$comboPoints"] = snapshotData.attributes.resource2
@@ -1016,6 +1051,7 @@ local function RefreshLookupData_Augmentation()
 	local lookupLogic = TRB.Data.lookupLogic or {}
 	lookupLogic["$ebTime"] = _ebTime
 	lookupLogic["$ebStacks"] = _ebStacks
+	lookupLogic["$meltArmorTime"] = _meltArmorTime
 	lookupLogic["$manaMax"] = TRB.Data.character.maxResource
 	lookupLogic["$mana"] = snapshotData.attributes.resource
 	lookupLogic["$resourceMax"] = TRB.Data.character.maxResource
@@ -1179,6 +1215,8 @@ local function UpdateResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
+				local targetData = snapshotData.targetData
+				local target = targetData.targets[targetData.currentTargetGuid]
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
@@ -1217,6 +1255,10 @@ local function UpdateResourceBar()
 				end
 
 				barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
+
+				if target ~= nil and target.spells[spells.meltArmor.id].active and specSettings.colors.bar.meltArmor.enabled then
+					barColor = specSettings.colors.bar.meltArmor.color
+				end
 
 				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 				
@@ -1451,6 +1493,8 @@ local function UpdateResourceBar()
 
 			if specSettings.displayBar.neverShow == false then
 				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
+				local targetData = snapshotData.targetData
+				local target = targetData.targets[targetData.currentTargetGuid]
 				refreshText = true
 				local passiveBarValue = 0
 				local castingBarValue = 0
@@ -1489,6 +1533,10 @@ local function UpdateResourceBar()
 				end
 
 				barBorderFrame:SetBackdropBorderColor(TRB.Functions.Color:GetRGBAFromString(barBorderColor, true))
+
+				if target ~= nil and target.spells[spells.meltArmor.id].active and specSettings.colors.bar.meltArmor.enabled then
+					barColor = specSettings.colors.bar.meltArmor.color
+				end
 
 				resourceFrame:SetStatusBarColor(TRB.Functions.Color:GetRGBAFromString(barColor, true))
 				
@@ -1597,6 +1645,15 @@ barContainerFrame:SetScript("OnEvent", function(self, event, ...)
 			elseif specId == 3 and TRB.Data.barConstructedForSpec == "augmentation" then --Augmentation
 			end
 
+			-- Scalecommander
+			if (specId == 1 and TRB.Data.barConstructedForSpec == "devastation") or (specId == 3 and TRB.Data.barConstructedForSpec == "augmentation") then
+				if entry.spellId == spells.meltArmor.id then
+					if TRB.Functions.Class:InitializeTarget(entry.destinationGuid) then
+						triggerUpdate = targetData:HandleCombatLogDebuff(entry.spellId, entry.type, entry.destinationGuid)
+					end
+				end
+			end
+
 			-- Spec Agnostic
 			if entry.spellId == spells.essenceBurst.id then
 				snapshots[entry.spellId].buff:Initialize(entry.type)
@@ -1649,8 +1706,12 @@ local function SwitchSpec()
 		FillSpellData_Devastation()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.devastation)
 		
+		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.DevastationSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
+		local targetData = TRB.Data.snapshotData.targetData
+		targetData:AddSpellTracking(spells.meltArmor)
 
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Devastation
 		TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.evoker.devastation)
@@ -1683,8 +1744,12 @@ local function SwitchSpec()
 		FillSpellData_Augmentation()
 		TRB.Functions.Character:LoadFromSpecializationCache(specCache.augmentation)
 		
+		local spellsData = TRB.Data.spellsData --[[@as TRB.Classes.SpellsData]]
+		local spells = spellsData.spells --[[@as TRB.Classes.Evoker.AugmentationSpells]]
 		---@type TRB.Classes.TargetData
 		TRB.Data.snapshotData.targetData = TRB.Classes.TargetData:New()
+		local targetData = TRB.Data.snapshotData.targetData
+		targetData:AddSpellTracking(spells.meltArmor)
 		
 		TRB.Functions.RefreshLookupData = RefreshLookupData_Augmentation
 		TRB.Functions.Bar:UpdateSanityCheckValues(TRB.Data.settings.evoker.augmentation)
@@ -2062,6 +2127,19 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 			end
 		end
 	elseif specId == 3 then -- Augmentation
+	end
+
+	-- Scalecommander
+	if specId == 1 or specId == 3 then
+		if var == "$meltArmorTime" then
+			if not UnitIsDeadOrGhost("target") and
+				UnitCanAttack("player", "target") and
+				target ~= nil and
+				target.spells[spells.meltArmor.id] ~= nil and
+				target.spells[spells.meltArmor.id].remainingTime > 0 then
+				valid = true
+			end
+		end
 	end
 
 	--Spec agnostic

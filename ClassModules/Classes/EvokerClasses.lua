@@ -10,6 +10,7 @@ TRB.Classes.Evoker = TRB.Classes.Evoker or {}
 
 ---@class TRB.Classes.Evoker.DevastationSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public essenceBurst TRB.Classes.SpellBase
+---@field public meltArmor TRB.Classes.SpellBase
 TRB.Classes.Evoker.DevastationSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Evoker.DevastationSpells.__index = TRB.Classes.Evoker.DevastationSpells
 
@@ -20,6 +21,13 @@ function TRB.Classes.Evoker.DevastationSpells:New()
 
     self.essenceBurst = TRB.Classes.SpellBase:New({
         id = 359618
+    })
+
+    -- Scalecommander
+    self.meltArmor = TRB.Classes.SpellBase:New({
+        id = 441172,
+        talentId = 441176,
+        isTalent = true
     })
     return self
 end
@@ -56,6 +64,7 @@ end
 
 ---@class TRB.Classes.Evoker.AugmentationSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public essenceBurst TRB.Classes.SpellBase
+---@field public meltArmor TRB.Classes.SpellBase
 TRB.Classes.Evoker.AugmentationSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Evoker.AugmentationSpells.__index = TRB.Classes.Evoker.AugmentationSpells
 
@@ -66,6 +75,13 @@ function TRB.Classes.Evoker.AugmentationSpells:New()
 
     self.essenceBurst = TRB.Classes.SpellBase:New({
         id = 359618
+    })
+    
+    -- Scalecommander
+    self.meltArmor = TRB.Classes.SpellBase:New({
+        id = 441172,
+        talentId = 441176,
+        isTalent = true
     })
     return self
 end

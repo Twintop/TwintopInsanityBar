@@ -417,6 +417,10 @@ local function DevastationLoadDefaultSettings(includeBarText)
 					color = "FFAF9942",
 					enabled = true
 				},
+				meltArmor={
+					color = "FFFF9900",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border="FF246759",
@@ -1079,6 +1083,10 @@ local function AugmentationLoadDefaultSettings(includeBarText)
 					color = "FFAF9942",
 					enabled = true
 				},
+				meltArmor={
+					color = "FFFF9900",
+					enabled = true
+				},
 			},
 			comboPoints = {
 				border="FF246759",
@@ -1279,6 +1287,23 @@ local function DevastationConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 1, yCoord, L["ResourceMana"])
+
+	yCoord = yCoord - 30
+	controls.colors.meltArmor = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerDevastationColorPickerMeltArmor"], spec.colors.bar.meltArmor.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.meltArmor
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "meltArmor")
+	end)
+
+	controls.checkBoxes.meltArmor = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Devastation_Checkbox_meltArmor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.meltArmor
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerDevastationCheckboxmeltArmor"])
+	f.tooltip = L["EvokerDevastationCheckboxmeltArmorTooltip"]
+	f:SetChecked(spec.colors.bar.meltArmor.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.meltArmor.enabled = self:GetChecked()
+	end)
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
@@ -2515,6 +2540,23 @@ local function AugmentationConstructBarColorsAndBehaviorPanel(parent)
 
 	yCoord = yCoord - 90
 	yCoord = TRB.Functions.OptionsUi:GenerateBarColorOptions(parent, controls, spec, 13, 3, yCoord, L["ResourceMana"])
+
+	yCoord = yCoord - 30
+	controls.colors.meltArmor = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["EvokerAugmentationColorPickerMeltArmor"], spec.colors.bar.meltArmor.color, 300, 25, oUi.xCoord2, yCoord)
+	f = controls.colors.meltArmor
+	f:SetScript("OnMouseDown", function(self, button, ...)
+		TRB.Functions.OptionsUi:ColorOnMouseDown(button, spec.colors.bar, controls.colors, "meltArmor")
+	end)
+
+	controls.checkBoxes.meltArmor = CreateFrame("CheckButton", "TwintopResourceBar_Evoker_Augmentation_Checkbox_meltArmor", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.meltArmor
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["EvokerAugmentationCheckboxmeltArmor"])
+	f.tooltip = L["EvokerAugmentationCheckboxmeltArmorTooltip"]
+	f:SetChecked(spec.colors.bar.meltArmor.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.colors.bar.meltArmor.enabled = self:GetChecked()
+	end)
 
 	yCoord = yCoord - 30
 	controls.colors.background = TRB.Functions.OptionsUi:BuildColorPicker(parent, L["ColorPickerUnfilledBarBackground"], spec.colors.bar.background, 300, 25, oUi.xCoord2, yCoord)
