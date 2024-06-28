@@ -8,6 +8,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field public icon string
 ---@field public currentRank integer
 ---@field public maxRank integer
+---@field public subTreeActive boolean?
 TRB.Classes.Talent = {}
 TRB.Classes.Talent.__index = TRB.Classes.Talent
 
@@ -15,8 +16,9 @@ TRB.Classes.Talent.__index = TRB.Classes.Talent
 ---@param id integer # SpellId of the Talent
 ---@param currentRank integer # Current rank
 ---@param maxRank integer # Maximum ranks
+---@param subTreeActive boolean? # Is this sub tree active? Only for Hero talents.
 ---@return TRB.Classes.Talent
-function TRB.Classes.Talent:New(id, currentRank, maxRank)
+function TRB.Classes.Talent:New(id, currentRank, maxRank, subTreeActive)
     local self = {}
     setmetatable(self, TRB.Classes.Talent)
 
@@ -26,6 +28,7 @@ function TRB.Classes.Talent:New(id, currentRank, maxRank)
     self.id = id
     self.currentRank = currentRank
     self.maxRank = maxRank
+	self.subTreeActive = subTreeActive
     self.name = spellInfo.name
     self.icon = iconString
     return self
@@ -34,7 +37,7 @@ end
 ---Checks to see if the talent is currently active or not.
 ---@return boolean # True if the talent is active
 function TRB.Classes.Talent:IsActive()
-    return self.currentRank > 0
+	return self.currentRank > 0 and (self.subTreeActive == nil or self.subTreeActive == true)
 end
 
 ---@class TRB.Classes.Talents
@@ -91,9 +94,8 @@ function TRB.Classes.Talents:GetTalents()
 								elseif definitionInfo.overriddenSpellID ~= nil then
 									spellId = definitionInfo.overriddenSpellID
 								end
-								
 								if spellId ~= nil then
-									talents[spellId] = TRB.Classes.Talent:New(spellId, node.ranksPurchased, node.maxRanks)
+									talents[spellId] = TRB.Classes.Talent:New(spellId, node.currentRank, node.maxRanks, node.subTreeActive)
 								end
 							end
 						end
