@@ -11,7 +11,13 @@ local content = [====[
 
 ---
 
-# 11.0.0.0-alpha07 (2024-06-26)
+# 11.0.0.0-alpha07 (2024-06-29)
+## General
+
+- [#356 - UPDATE (Twintop)](#356) Adjust logic used to detect talents being active to:
+<br/>&emsp;&ensp;- Properly detect the active hero talent tree
+<br/>&emsp;&ensp;- No longer require "baseline" talents from being explicitly flagged as such.
+
 ## Evoker
 ### Augmentation
 
@@ -34,6 +40,48 @@ local content = [====[
 <br/>&emsp;&ensp;&emsp;&ensp;- `$meltArmorTime` - Time remaining on Melt Armor on your current target
 <br/>&emsp;&ensp;- New bar text icons:
 <br/>&emsp;&ensp;&emsp;&ensp;- `#meltArmor` - Melt Armor
+
+## Hunter
+### Beast Mastery
+
+- [#365 - UPDATE (Twintop)](#365) Updates to reflect the state of Beast Mastery in beta:
+<br/>&emsp;&ensp;- Added:
+<br/>&emsp;&ensp;&emsp;&ensp;- Black Arrow threshold line and options.
+<br/>&emsp;&ensp;- Removed:
+<br/>&emsp;&ensp;&emsp;&ensp;- A Murder of Crows threshold line and options.
+<br/>&emsp;&ensp;&emsp;&ensp;- Wailing Arrow threshold line and options.
+<br/>&emsp;&ensp;- Moved from Class Tree to Specialization Tree:
+<br/>&emsp;&ensp;&emsp;&ensp;- Barrage, Kill Command
+
+### Marksmanship
+
+- [#366 - UPDATE (Twintop)](#366) Updates to reflect the state of Beast Mastery in beta:
+<br/>&emsp;&ensp;- Added:
+<br/>&emsp;&ensp;&emsp;&ensp;- Black Arrow threshold line and options.
+<br/>&emsp;&ensp;- Updated:
+<br/>&emsp;&ensp;&emsp;&ensp;- Wailing Arrow threshold line now only appears when it replaces Aimed Shot.
+<br/>&emsp;&ensp;- Removed: 
+<br/>&emsp;&ensp;&emsp;&ensp;- Kill Command
+<br/>&emsp;&ensp;- Moved from Class Tree to Specialization Tree:
+<br/>&emsp;&ensp;&emsp;&ensp;- Barrage
+- (FIX (Twintop)) Show the correct Focus cost in bar text and in the bar progress for Aimed Shot.
+
+### Survival
+
+- [#367 - UPDATE (Twintop)](#367) Updates to reflect the state of Beast Mastery in beta:
+<br/>&emsp;&ensp;- Updated:
+<br/>&emsp;&ensp;&emsp;&ensp;- Wildfire Bomb has a threshold line. Maybe. Shrapnel Bomb comes from...where?
+<br/>&emsp;&ensp;- Removed: 
+<br/>&emsp;&ensp;&emsp;&ensp;- Carve
+<br/>&emsp;&ensp;- Moved from Class Tree to Specialization Tree:
+<br/>&emsp;&ensp;&emsp;&ensp;- Kill Command
+
+## Monk
+### Windwalker
+
+- (FIX (Twintop)) Show the correct Energy cost in bar text and in the bar progress for Crackling Jade Lightning.
+
+
 
 ---
 

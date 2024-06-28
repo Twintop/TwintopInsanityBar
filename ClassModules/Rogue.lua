@@ -2107,8 +2107,8 @@ local function FillSnapshotDataCasting(spell)
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
 	local currentTime = GetTime()
 	snapshotData.casting.startTime = currentTime
-	snapshotData.casting.resourceRaw = spell.resource
-	snapshotData.casting.resourceFinal = spell:GetPrimaryResourceCost()
+	snapshotData.casting.resourceRaw = spell:GetPrimaryResourceCost()
+	snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
 	snapshotData.casting.spellId = spell.id
 	snapshotData.casting.icon = spell.icon
 end

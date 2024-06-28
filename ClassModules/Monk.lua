@@ -1170,7 +1170,7 @@ local function CastingSpell()
 				if currentChannelId == spells.cracklingJadeLightning.id then
 					snapshotData.casting.spellId = spells.cracklingJadeLightning.id
 					snapshotData.casting.startTime = currentTime
-					snapshotData.casting.resourceRaw = spells.cracklingJadeLightning:GetPrimaryResourceCost()
+					snapshotData.casting.resourceRaw = -spells.cracklingJadeLightning:GetPrimaryResourceCost()
 					snapshotData.casting.icon = spells.cracklingJadeLightning.icon
 					UpdateCastingResourceFinal()
 				end

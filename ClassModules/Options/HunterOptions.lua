@@ -226,10 +226,7 @@ local function BeastMasteryLoadDefaultSettings(includeBarText)
 			multiShot = {
 				enabled = true,
 			},
-			aMurderOfCrows = {
-				enabled = true,
-			},
-			wailingArrow = {
+			blackArrow = {
 				enabled = true,
 			},
 			direBeastBasilisk = {
@@ -574,6 +571,9 @@ local function MarksmanshipLoadDefaultSettings(includeBarText)
 				enabled = true,
 			},
 			wailingArrow = {
+				enabled = true,
+			},
+			blackArrow = {
 				enabled = true,
 			},
 			sniperShot = {
@@ -929,15 +929,15 @@ local function SurvivalLoadDefaultSettings(includeBarText)
 			raptorStrike = {
 				enabled = true,
 			},
-			carve = {
-				enabled = true,
-			},
 			butchery = {
 				enabled = true,
 			},
 			mongooseBite = {
 				enabled = true,
 			},
+			wildfireBomb = {
+				enabled = true,
+			}
 		},
 		generation = {
 			mode="gcd",
@@ -1348,17 +1348,6 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	end)
 
 	yCoord = yCoord - 25
-	controls.checkBoxes.aMurderOfCrowsThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_aMurderOfCrows", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.aMurderOfCrowsThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxMurderOfCrows"])
-	f.tooltip = L["HunterBeastMasteryThresholdCheckboxMurderOfCrowsTooltip"]
-	f:SetChecked(spec.thresholds.aMurderOfCrows.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.aMurderOfCrows.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
 	controls.checkBoxes.barrageThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_barrage", parent, "ChatConfigCheckButtonTemplate")
 	f = controls.checkBoxes.barrageThresholdShow
 	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
@@ -1367,6 +1356,17 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.barrage.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.barrage.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.blackArrowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_blackArrow", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.blackArrowThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxBlackArrow"])
+	f.tooltip = L["HunterBeastMasteryThresholdCheckboxBlackArrowTooltip"]
+	f:SetChecked(spec.thresholds.blackArrow.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.blackArrow.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -1433,17 +1433,6 @@ local function BeastMasteryConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.serpentSting.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.serpentSting.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.wailingArrowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_BeastMastery_Threshold_Option_wailingArrow", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.wailingArrowThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterBeastMasteryThresholdCheckboxWailingArrow"])
-	f.tooltip = L["HunterBeastMasteryThresholdCheckboxWailingArrowTooltip"]
-	f:SetChecked(spec.thresholds.wailingArrow.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.wailingArrow.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -2276,6 +2265,17 @@ local function MarksmanshipConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.barrage.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.barrage.enabled = self:GetChecked()
+	end)
+
+	yCoord = yCoord - 25
+	controls.checkBoxes.blackArrowThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Marksmanship_Threshold_Option_blackArrow", parent, "ChatConfigCheckButtonTemplate")
+	f = controls.checkBoxes.blackArrowThresholdShow
+	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
+	getglobal(f:GetName() .. 'Text'):SetText(L["HunterMarksmanshipThresholdCheckboxBlackArrow"])
+	f.tooltip = L["HunterMarksmanshipThresholdCheckboxBlackArrowTooltip"]
+	f:SetChecked(spec.thresholds.blackArrow.enabled)
+	f:SetScript("OnClick", function(self, ...)
+		spec.thresholds.blackArrow.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25
@@ -3494,17 +3494,6 @@ local function SurvivalConstructBarColorsAndBehaviorPanel(parent)
 	f:SetChecked(spec.thresholds.butchery.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.butchery.enabled = self:GetChecked()
-	end)
-
-	yCoord = yCoord - 25
-	controls.checkBoxes.carveThresholdShow = CreateFrame("CheckButton", "TwintopResourceBar_Hunter_Survival_Threshold_Option_carve", parent, "ChatConfigCheckButtonTemplate")
-	f = controls.checkBoxes.carveThresholdShow
-	f:SetPoint("TOPLEFT", oUi.xCoord, yCoord)
-	getglobal(f:GetName() .. 'Text'):SetText(L["HunterSurvivalThresholdCheckboxCarve"])
-	f.tooltip = L["HunterSurvivalThresholdCheckboxCarveTooltip"]
-	f:SetChecked(spec.thresholds.carve.enabled)
-	f:SetScript("OnClick", function(self, ...)
-		spec.thresholds.carve.enabled = self:GetChecked()
 	end)
 
 	yCoord = yCoord - 25

@@ -9,15 +9,13 @@ TRB.Classes.Hunter = TRB.Classes.Hunter or {}
 
 ---@class TRB.Classes.Hunter.HunterBaseSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public concussiveShot TRB.Classes.SpellBase
+---@field public serpentSting TRB.Classes.SpellBase
 ---@field public arcaneShot TRB.Classes.SpellThreshold
 ---@field public revivePet TRB.Classes.SpellThreshold
 ---@field public wingClip TRB.Classes.SpellThreshold
----@field public killCommand TRB.Classes.SpellThreshold
 ---@field public killShot TRB.Classes.SpellThreshold
 ---@field public scareBeast TRB.Classes.SpellThreshold
 ---@field public explosiveShot TRB.Classes.SpellThreshold
----@field public barrage TRB.Classes.SpellThreshold
----@field public serpentSting TRB.Classes.SpellThreshold
 TRB.Classes.Hunter.HunterBaseSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Hunter.HunterBaseSpells.__index = TRB.Classes.Hunter.HunterBaseSpells
 
@@ -48,14 +46,6 @@ function TRB.Classes.Hunter.HunterBaseSpells:New()
         settingKey = "wingClip",
         baseline = true
     })
-    self.killCommand = TRB.Classes.SpellThreshold:New({
-        id = 34026,
-        primaryResourceType = Enum.PowerType.Focus,
-        settingKey = "killCommand",
-        hasCooldown = true,
-        isTalent = true,
-        baseline = false
-    })
     self.concussiveShot = TRB.Classes.SpellBase:New({
         id = 5116,
         isTalent = true
@@ -81,15 +71,7 @@ function TRB.Classes.Hunter.HunterBaseSpells:New()
         cooldown = 30,
         isTalent = true
     })
-    self.barrage = TRB.Classes.SpellThreshold:New({
-        id = 120360,
-        primaryResourceType = Enum.PowerType.Focus,
-        settingKey = "barrage",
-        isTalent = true,
-        hasCooldown = true,
-        cooldown = 20
-    })
-    self.serpentSting = TRB.Classes.SpellThreshold:New({
+    self.serpentSting = TRB.Classes.SpellBase:New({
         id = 271788,
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "serpentSting",
@@ -111,10 +93,11 @@ end
 ---@field public beastCleave TRB.Classes.SpellBase
 ---@field public callOfTheWild TRB.Classes.SpellBase
 ---@field public bloodFrenzy TRB.Classes.SpellBase
+---@field public barrage TRB.Classes.SpellThreshold
 ---@field public cobraShot TRB.Classes.SpellThreshold
+---@field public killCommand TRB.Classes.SpellThreshold
 ---@field public multiShot TRB.Classes.SpellThreshold
----@field public aMurderOfCrows TRB.Classes.SpellThreshold
----@field public wailingArrow TRB.Classes.SpellThreshold
+---@field public blackArrow TRB.Classes.SpellThreshold
 ---@field public direBeastBasilisk TRB.Classes.SpellThreshold
 ---@field public direBeastHawk TRB.Classes.SpellThreshold
 TRB.Classes.Hunter.BeastMasterySpells = setmetatable({}, {__index = TRB.Classes.Hunter.HunterBaseSpells})
@@ -126,12 +109,19 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
     self = setmetatable(base:New(), TRB.Classes.Hunter.BeastMasterySpells) --[[@as TRB.Classes.Hunter.BeastMasterySpells]]
 
     -- Hunter Talent Abilities	
+    self.killShot.baseline = true
 
     -- Beast Mastery Spec Baseline Abilities
-    self.killCommand.baseline = true
-    self.killCommand.isSnowflake = true
 
-    -- Beast Mastery Spec Talents			
+    -- Beast Mastery Spec Talents	
+    self.barrage = TRB.Classes.SpellThreshold:New({
+        id = 120360,
+        primaryResourceType = Enum.PowerType.Focus,
+        settingKey = "barrage",
+        isTalent = true,
+        hasCooldown = true,
+        cooldown = 20
+    })
     self.cobraShot = TRB.Classes.SpellThreshold:New({
         id = 193455,
         primaryResourceType = Enum.PowerType.Focus,
@@ -174,14 +164,6 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
         id = 392296,
         isTalent = true
     })
-    self.aMurderOfCrows = TRB.Classes.SpellThreshold:New({
-        id = 131894,
-        primaryResourceType = Enum.PowerType.Focus,
-        settingKey = "aMurderOfCrows",
-        hasCooldown = true,
-        cooldown = 60,
-        isTalent = true
-    })
     self.beastialWrath = TRB.Classes.SpellBase:New({
         id = 19574,
         isTalent = true
@@ -189,14 +171,6 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
     self.barbedWrath = TRB.Classes.SpellBase:New({
         id = 19574,
         beastialWrathCooldownReduction = 12,
-        isTalent = true
-    })
-    self.wailingArrow = TRB.Classes.SpellThreshold:New({
-        id = 392060,
-        primaryResourceType = Enum.PowerType.Focus,
-        settingKey = "wailingArrow",
-        hasCooldown = true,
-        cooldown = 60,
         isTalent = true
     })
     self.scentOfBlood = TRB.Classes.SpellBase:New({
@@ -215,6 +189,25 @@ function TRB.Classes.Hunter.BeastMasterySpells:New()
     self.bloodFrenzy = TRB.Classes.SpellBase:New({
         id = 407412,
         isTalent = true
+    })
+    self.killCommand = TRB.Classes.SpellThreshold:New({
+        id = 34026,
+        primaryResourceType = Enum.PowerType.Focus,
+        settingKey = "killCommand",
+        hasCooldown = true,
+        isTalent = true,
+        baseline = false,
+        isSnowflake = true
+    })
+
+    -- Dark Ranger
+    self.blackArrow = TRB.Classes.SpellThreshold:New({
+        id = 430703,
+        primaryResourceType = Enum.PowerType.Focus,
+        settingKey = "blackArrow",
+        hasCooldown = true,
+        isTalent = true,
+        baseline = false -- When subTreeActive = true
     })
 
     -- PvP
@@ -249,10 +242,12 @@ end
 ---@field public trueshot TRB.Classes.SpellBase
 ---@field public lockAndLoad TRB.Classes.SpellBase
 ---@field public aimedShot TRB.Classes.SpellThreshold
+---@field public barrage TRB.Classes.SpellThreshold
 ---@field public chimaeraShot TRB.Classes.SpellThreshold
 ---@field public multiShot TRB.Classes.SpellThreshold
 ---@field public burstingShot TRB.Classes.SpellThreshold
 ---@field public wailingArrow TRB.Classes.SpellThreshold
+---@field public blackArrow TRB.Classes.SpellThreshold
 ---@field public sniperShot TRB.Classes.SpellThreshold
 TRB.Classes.Hunter.MarksmanshipSpells = setmetatable({}, {__index = TRB.Classes.Hunter.HunterBaseSpells})
 TRB.Classes.Hunter.MarksmanshipSpells.__index = TRB.Classes.Hunter.MarksmanshipSpells
@@ -279,7 +274,16 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
         settingKey = "aimedShot",
         hasCooldown = true,
         isSnowflake = true,
-        isTalent = true
+        isTalent = true,
+        hasCharges = true
+    })
+    self.barrage = TRB.Classes.SpellThreshold:New({
+        id = 120360,
+        primaryResourceType = Enum.PowerType.Focus,
+        settingKey = "barrage",
+        isTalent = true,
+        hasCooldown = true,
+        cooldown = 20
     })
     self.improvedSteadyShot = TRB.Classes.SpellBase:New({
         id = 321018,
@@ -340,11 +344,24 @@ function TRB.Classes.Hunter.MarksmanshipSpells:New()
 
     self.wailingArrow = TRB.Classes.SpellThreshold:New({
         id = 355589,
+        talentId = 459806,
+        aimedShotOverrideId = 392060,
         primaryResourceType = Enum.PowerType.Focus,
         settingKey = "wailingArrow",
         hasCooldown = true,
         cooldown = 60,
-        isTalent = true
+        isTalent = true,
+        isSnowflake = true
+    })
+
+    -- Dark Ranger
+    self.blackArrow = TRB.Classes.SpellThreshold:New({
+        id = 430703,
+        primaryResourceType = Enum.PowerType.Focus,
+        settingKey = "blackArrow",
+        hasCooldown = true,
+        isTalent = true,
+        baseline = false
     })
 
     -- PvP
@@ -364,13 +381,13 @@ end
 ---@class TRB.Classes.Hunter.SurvivalSpells : TRB.Classes.Hunter.HunterBaseSpells
 ---@field public killCommand TRB.Classes.SpellBase
 ---@field public guerrillaTactics TRB.Classes.SpellBase
----@field public wildfireBomb TRB.Classes.SpellBase
 ---@field public harpoon TRB.Classes.SpellBase
 ---@field public termsOfEngagement TRB.Classes.SpellBase
 ---@field public flankingStrike TRB.Classes.SpellBase
 ---@field public coordinatedAssault TRB.Classes.SpellBase
+---@field public shrapnelBomb TRB.Classes.SpellBase
+---@field public wildfireBomb TRB.Classes.SpellThreshold
 ---@field public raptorStrike TRB.Classes.SpellThreshold
----@field public carve TRB.Classes.SpellThreshold
 ---@field public butchery TRB.Classes.SpellThreshold
 ---@field public mongooseBite TRB.Classes.SpellThreshold
 TRB.Classes.Hunter.SurvivalSpells = setmetatable({}, {__index = TRB.Classes.Hunter.HunterBaseSpells})
@@ -407,6 +424,7 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
     })
     self.wildfireBomb = TRB.Classes.SpellBase:New({
         id = 259495,
+        settingKey = "wildfireBomb",
         isTalent = true,
         hasCharges = true,
         hasCooldown = true
@@ -422,13 +440,6 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
         tickRate = 1,
         isTalent = true
     })
-    self.carve = TRB.Classes.SpellThreshold:New({
-        id = 187708,
-        primaryResourceType = Enum.PowerType.Focus,
-        settingKey = "carve",
-        hasCooldown = true,
-        isTalent = true
-    })
     self.butchery = TRB.Classes.SpellThreshold:New({
         id = 212436,
         primaryResourceType = Enum.PowerType.Focus,
@@ -440,7 +451,7 @@ function TRB.Classes.Hunter.SurvivalSpells:New()
     self.mongooseBite = TRB.Classes.SpellThreshold:New({
         id = 259387,
         primaryResourceType = Enum.PowerType.Focus,
-        isSnowflake = true, --NOTE this take's Kill Command's stypical threshold ID only so all the rest at the class level stay consistent!
+        isSnowflake = true,
         settingKey = "mongooseBite",
         isTalent = true
     })
