@@ -11,6 +11,14 @@ local content = [====[
 
 ---
 
+# 10.2.7.11-release (2024-06-29)
+## Hunter
+### Marksmanship
+
+- (FIX (Twintop)) Show the correct Focus cost in bar text and in the bar progress for Aimed Shot.
+
+---
+
 # 10.2.7.10-release (2024-06-18)
 ## General
 
