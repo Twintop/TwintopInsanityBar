@@ -12,7 +12,7 @@ local content = [====[
 ---
 
 # 11.0.0.0-alpha07 (2024-06-29)
-## General
+## General 
 
 - [#356 - UPDATE (Twintop)](#356) Adjust logic used to detect talents being active to:
 <br/>&emsp;&ensp;- Properly detect the active hero talent tree.
